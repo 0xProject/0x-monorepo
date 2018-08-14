@@ -96,14 +96,15 @@ contract MixinSignatureValidator is
             "LENGTH_GREATER_THAN_0_REQUIRED"
         );
 
-        // Ensure signature is supported
+        // Pop last byte off of signature byte array.
         uint8 signatureTypeRaw = uint8(signature.popLastByte());
+
+        // Ensure signature is supported
         require(
             signatureTypeRaw < uint8(SignatureType.NSignatureTypes),
             "SIGNATURE_UNSUPPORTED"
         );
 
-        // Pop last byte off of signature byte array.
         SignatureType signatureType = SignatureType(signatureTypeRaw);
 
         // Variables are not scoped in Solidity.
@@ -141,7 +142,12 @@ contract MixinSignatureValidator is
             v = uint8(signature[0]);
             r = signature.readBytes32(1);
             s = signature.readBytes32(33);
-            recovered = ecrecover(hash, v, r, s);
+            recovered = ecrecover(
+                hash,
+                v,
+                r,
+                s
+            );
             isValid = signerAddress == recovered;
             return isValid;
 
@@ -197,7 +203,6 @@ contract MixinSignatureValidator is
         // | 0x14 + x | 1      | Signature type is always "\x06" |
         } else if (signatureType == SignatureType.Validator) {
             // Pop last 20 bytes off of signature byte array.
-
             address validatorAddress = signature.popLast20Bytes();
             
             // Ensure signer has approved validator.

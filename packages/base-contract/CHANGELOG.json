@@ -1,5 +1,15 @@
 [
     {
+        "version": "2.0.0-rc.1",
+        "changes": [
+            {
+                "pr": 915,
+                "note": "Added strict encoding/decoding checks for sendTransaction and call"
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
         "timestamp": 1532619515,
         "version": "1.0.4",
         "changes": [

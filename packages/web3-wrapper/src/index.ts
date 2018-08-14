@@ -1,5 +1,6 @@
 export { Web3Wrapper } from './web3_wrapper';
-export { Web3WrapperErrors, NodeType } from './types';
+export { marshaller } from './marshaller';
+
 export {
     BlockParam,
     TxData,
@@ -23,3 +24,14 @@ export {
     JSONRPCErrorCallback,
     BlockParamLiteral,
 } from 'ethereum-types';
+export {
+    Web3WrapperErrors,
+    NodeType,
+    CallDataRPC,
+    CallTxDataBaseRPC,
+    AbstractBlockRPC,
+    BlockWithoutTransactionDataRPC,
+    BlockWithTransactionDataRPC,
+    TransactionRPC,
+    TxDataRPC,
+} from './types';

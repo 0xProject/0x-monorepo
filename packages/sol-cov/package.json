@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-cov",
-    "version": "1.0.3",
+    "version": "2.0.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -40,18 +40,18 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/dev-utils": "^1.0.3",
-        "@0xproject/sol-compiler": "^1.0.4",
-        "@0xproject/subproviders": "^1.0.4",
-        "@0xproject/typescript-typings": "^1.0.3",
-        "@0xproject/utils": "^1.0.4",
-        "@0xproject/web3-wrapper": "^1.1.2",
+        "@0xproject/dev-utils": "^1.0.4",
+        "@0xproject/sol-compiler": "^1.0.5",
+        "@0xproject/subproviders": "^1.0.5",
+        "@0xproject/typescript-typings": "^1.0.4",
+        "@0xproject/utils": "^1.0.5",
+        "@0xproject/web3-wrapper": "^1.2.0",
         "@types/solidity-parser-antlr": "^0.2.1",
-        "ethereum-types": "^1.0.3",
+        "ethereum-types": "^1.0.4",
         "ethereumjs-util": "^5.1.1",
         "glob": "^7.1.2",
         "istanbul": "^0.4.5",
-        "lodash": "^4.17.4",
+        "lodash": "^4.17.5",
         "loglevel": "^1.6.1",
         "mkdirp": "^0.5.1",
         "rimraf": "^2.6.2",
@@ -59,7 +59,7 @@
         "solidity-parser-antlr": "^0.2.12"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.4",
+        "@0xproject/tslint-config": "^1.0.5",
         "@types/istanbul": "^0.4.30",
         "@types/loglevel": "^1.5.3",
         "@types/mkdirp": "^0.5.1",
@@ -71,14 +71,14 @@
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
-        "mocha": "^4.0.1",
+        "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "sinon": "^4.0.0",
         "tslint": "5.11.0",
         "typedoc": "0xProject/typedoc",
-        "typescript": "2.7.1"
+        "typescript": "2.9.2"
     },
     "publishConfig": {
         "access": "public"

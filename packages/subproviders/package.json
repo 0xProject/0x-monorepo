@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/subproviders",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -30,29 +30,29 @@
         }
     },
     "dependencies": {
-        "@0xproject/assert": "^1.0.4",
-        "@0xproject/types": "^1.0.1-rc.3",
-        "@0xproject/typescript-typings": "^1.0.3",
-        "@0xproject/utils": "^1.0.4",
-        "@0xproject/web3-wrapper": "^1.1.2",
+        "@0xproject/assert": "^1.0.5",
+        "@0xproject/types": "^1.0.1-rc.4",
+        "@0xproject/typescript-typings": "^1.0.4",
+        "@0xproject/utils": "^1.0.5",
+        "@0xproject/web3-wrapper": "^1.2.0",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@ledgerhq/hw-transport-u2f": "^4.3.0",
         "@types/hdkey": "^0.7.0",
         "bip39": "^2.5.0",
         "bn.js": "^4.11.8",
         "eth-lightwallet": "^3.0.1",
-        "ethereum-types": "^1.0.3",
+        "ethereum-types": "^1.0.4",
         "ethereumjs-tx": "^1.3.5",
         "ethereumjs-util": "^5.1.1",
-        "ganache-core": "0xProject/ganache-core",
+        "ganache-core": "0xProject/ganache-core#monorepo-dep",
         "hdkey": "^0.7.1",
         "json-rpc-error": "2.0.0",
-        "lodash": "^4.17.4",
+        "lodash": "^4.17.5",
         "semaphore-async-await": "^1.5.1",
         "web3-provider-engine": "14.0.6"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.4",
+        "@0xproject/tslint-config": "^1.0.5",
         "@types/bip39": "^2.4.0",
         "@types/bn.js": "^4.11.0",
         "@types/ethereumjs-tx": "^1.0.0",
@@ -66,14 +66,14 @@
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
-        "mocha": "^4.0.1",
+        "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "sinon": "^4.0.0",
         "tslint": "5.11.0",
         "typedoc": "0xProject/typedoc",
-        "typescript": "2.7.1",
+        "typescript": "2.9.2",
         "webpack": "^3.1.0"
     },
     "optionalDependencies": {

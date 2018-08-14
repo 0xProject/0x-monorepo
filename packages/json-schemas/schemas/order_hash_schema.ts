@@ -1,5 +1,5 @@
 export const orderHashSchema = {
-    id: '/OrderHashSchema',
+    id: '/orderHashSchema',
     type: 'string',
     pattern: '^0x[0-9a-fA-F]{64}$',
 };

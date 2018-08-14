@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/json-schemas",
-    "version": "1.0.1-rc.3",
+    "version": "1.0.1-rc.4",
     "engines": {
         "node": ">=6.12"
     },
@@ -38,14 +38,14 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/json-schemas/README.md",
     "dependencies": {
-        "@0xproject/typescript-typings": "^1.0.3",
+        "@0xproject/typescript-typings": "^1.0.4",
         "@types/node": "^8.0.53",
         "jsonschema": "^1.2.0",
         "lodash.values": "^4.3.0"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.4",
-        "@0xproject/utils": "^1.0.4",
+        "@0xproject/tslint-config": "^1.0.5",
+        "@0xproject/utils": "^1.0.5",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",
@@ -54,13 +54,13 @@
         "dirty-chai": "^2.0.1",
         "lodash.foreach": "^4.5.0",
         "make-promises-safe": "^1.1.0",
-        "mocha": "^4.0.1",
+        "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
         "typedoc": "0xProject/typedoc",
-        "typescript": "2.7.1"
+        "typescript": "2.9.2"
     },
     "publishConfig": {
         "access": "public"

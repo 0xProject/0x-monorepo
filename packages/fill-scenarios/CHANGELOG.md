@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1-rc.3 - _August 13, 2018_
+
+    * Updated to use latest orderFactory interface, fixed `feeRecipient` spelling error in public interface (#936)
+    * Dependencies updated
+
 ## v1.0.1-rc.2 - _July 26, 2018_
 
     * Dependencies updated
@@ -17,7 +22,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0-rc.1 - _July 20, 2018_
+## v1.0.0-rc.1 - _July 19, 2018_
 
     * Make fill-scenarios compatible with V2 of 0x protocol (#656)
 

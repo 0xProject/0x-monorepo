@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1-rc.3 - _August 13, 2018_
+
+    * Dependencies updated
+
 ## v1.0.1-rc.2 - _July 26, 2018_
 
     * Fixed bug caused by importing non-existent dep
@@ -17,7 +21,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0-rc.1 - _July 20, 2018_
+## v1.0.0-rc.1 - _July 19, 2018_
 
     * Add support for ERC721 event watching and Exchange V2 events (#887)
 

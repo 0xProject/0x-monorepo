@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sra-report",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -34,20 +34,20 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-report/README.md",
     "dependencies": {
-        "@0xproject/assert": "^1.0.4",
-        "@0xproject/connect": "^1.0.4",
+        "@0xproject/assert": "^1.0.5",
+        "@0xproject/connect": "^1.0.5",
         "@0xproject/json-schemas": "^0.8.3",
         "@0xproject/order-utils": "^0.0.9",
         "@0xproject/types": "^0.8.2",
-        "@0xproject/typescript-typings": "^1.0.3",
-        "@0xproject/utils": "^1.0.4",
+        "@0xproject/typescript-typings": "^1.0.4",
+        "@0xproject/utils": "^1.0.5",
         "chalk": "^2.3.0",
-        "lodash": "^4.17.4",
+        "lodash": "^4.17.5",
         "newman": "^3.9.3",
         "yargs": "^10.0.3"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.4",
+        "@0xproject/tslint-config": "^1.0.5",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.48",
         "@types/nock": "^9.1.2",
@@ -58,13 +58,13 @@
         "copyfiles": "^1.2.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
-        "mocha": "^4.0.1",
+        "mocha": "^4.1.0",
         "nock": "^9.2.3",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
-        "typescript": "2.7.1"
+        "typescript": "2.9.2"
     },
     "publishConfig": {
         "access": "public"

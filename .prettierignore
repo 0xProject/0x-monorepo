@@ -15,6 +15,7 @@ lib
 /packages/contract-wrappers/src/artifacts
 /packages/order-watcher/src/artifacts
 /packages/metacoin/artifacts
+/packages/sra-api/public/
 /packages/contract-wrappers/test/artifacts
 /packages/order-watcher/test/artifacts
 /packages/migrations/artifacts/1.0.0

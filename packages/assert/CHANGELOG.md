@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.5 - _August 13, 2018_
+
+    * Dependencies updated
+
 ## v1.0.4 - _July 26, 2018_
 
     * Dependencies updated
@@ -21,7 +25,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 20, 2018_
+## v1.0.0 - _July 19, 2018_
 
     * Fix bug in string enum assertion. We erroneously were checking against the enum keys, not values (#821)
 
@@ -37,7 +41,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.2.11 - _June 1, 2018_
+## v0.2.11 - _May 31, 2018_
 
     * Incorrect publish that was unpublished
 
@@ -45,7 +49,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.2.9 - _May 5, 2018_
+## v0.2.9 - _May 4, 2018_
 
     * Dependencies updated
 

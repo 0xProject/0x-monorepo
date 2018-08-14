@@ -48,8 +48,6 @@ export {
     OrderInfo,
 } from '@0xproject/contract-wrappers';
 
-export { MessagePrefixType, MessagePrefixOpts } from '@0xproject/order-utils';
-
 export {
     ExchangeContractErrs,
     Order,

@@ -21,12 +21,25 @@ const DOC_GEN_COMMAND = 'docs:json';
 const NPM_NAMESPACE = '@0xproject/';
 const TODAYS_TIMESTAMP = moment().unix();
 
+async function confirmAsync(message: string): Promise<void> {
+    prompt.start();
+    const result = await promisify(prompt.get)([message]);
+    const didConfirm = result[message] === 'y';
+    if (!didConfirm) {
+        utils.log('Publish process aborted.');
+        process.exit(0);
+    }
+}
+
 (async () => {
     // Fetch public, updated Lerna packages
     const shouldIncludePrivate = true;
     const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
 
     if (!configs.IS_LOCAL_PUBLISH) {
+        await confirmAsync(
+            'THIS IS NOT A TEST PUBLISH! You are about to publish one or more packages to npm. Are you sure you want to continue? (y/n)',
+        );
         await confirmDocPagesRenderAsync(allUpdatedPackages);
     }
 
@@ -109,14 +122,7 @@ package.ts. Please add an entry for it and try again.`,
         opn(link);
     });
 
-    prompt.start();
-    const message = 'Do all the doc pages render properly? (yn)';
-    const result = await promisify(prompt.get)([message]);
-    const didConfirm = result[message] === 'y';
-    if (!didConfirm) {
-        utils.log('Publish process aborted.');
-        process.exit(0);
-    }
+    await confirmAsync('Do all the doc pages render properly? (y/n)');
 }
 
 async function pushChangelogsToGithubAsync(): Promise<void> {

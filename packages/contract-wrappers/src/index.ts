@@ -5,6 +5,7 @@ export { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
 export { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
 export { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
 export { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
+export { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
 
 export {
     ContractWrappersError,

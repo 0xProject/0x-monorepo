@@ -1,5 +1,19 @@
 [
     {
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Fix a bug where RelativeFSResolver would crash when trying to read a directory",
+                "pr": 909
+            },
+            {
+                "note": "Fix a bug where NpmResolver would crash when trying to read a directory",
+                "pr": 961
+            }
+        ],
+        "timestamp": 1534210131
+    },
+    {
         "timestamp": 1532619515,
         "version": "1.0.4",
         "changes": [

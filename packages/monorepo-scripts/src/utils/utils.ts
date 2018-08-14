@@ -117,7 +117,7 @@ export const utils = {
         return tags;
     },
     async getLocalGitTagsAsync(): Promise<string[]> {
-        const result = await execAsync(`git tags`, {
+        const result = await execAsync(`git tag`, {
             cwd: constants.monorepoRootPath,
         });
         const tagsString = result.stdout;

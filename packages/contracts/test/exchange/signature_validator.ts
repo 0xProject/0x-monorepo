@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { signatureUtils, assetDataUtils, MessagePrefixType, orderHashUtils } from '@0xproject/order-utils';
-import { RevertReason, SignatureType, SignedOrder } from '@0xproject/types';
+import { signatureUtils, assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
+import { RevertReason, SignatureType, SignedOrder, SignerType } from '@0xproject/types';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
@@ -113,7 +113,7 @@ describe('MixinSignatureValidator', () => {
 
         it('should revert when signature type is unsupported', async () => {
             const unsupportedSignatureType = SignatureType.NSignatureTypes;
-            const unsupportedSignatureHex = `0x${unsupportedSignatureType}`;
+            const unsupportedSignatureHex = '0x' + Buffer.from([unsupportedSignatureType]).toString('hex');
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             return expectContractCallFailed(
                 signatureValidator.publicIsValidSignature.callAsync(
@@ -126,7 +126,7 @@ describe('MixinSignatureValidator', () => {
         });
 
         it('should revert when SignatureType=Illegal', async () => {
-            const unsupportedSignatureHex = `0x${SignatureType.Illegal}`;
+            const unsupportedSignatureHex = '0x' + Buffer.from([SignatureType.Illegal]).toString('hex');
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             return expectContractCallFailed(
                 signatureValidator.publicIsValidSignature.callAsync(
@@ -139,7 +139,7 @@ describe('MixinSignatureValidator', () => {
         });
 
         it('should return false when SignatureType=Invalid and signature has a length of zero', async () => {
-            const signatureHex = `0x${SignatureType.Invalid}`;
+            const signatureHex = '0x' + Buffer.from([SignatureType.Invalid]).toString('hex');
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,
@@ -215,7 +215,7 @@ describe('MixinSignatureValidator', () => {
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(
                 orderHashHex,
-                MessagePrefixType.EthSign,
+                SignerType.Default,
             );
             const orderHashWithEthSignPrefixBuffer = ethUtil.toBuffer(orderHashWithEthSignPrefixHex);
             const ecSignature = ethUtil.ecsign(orderHashWithEthSignPrefixBuffer, signerPrivateKey);
@@ -241,7 +241,7 @@ describe('MixinSignatureValidator', () => {
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(
                 orderHashHex,
-                MessagePrefixType.EthSign,
+                SignerType.Default,
             );
             const orderHashWithEthSignPrefixBuffer = ethUtil.toBuffer(orderHashWithEthSignPrefixHex);
             const ecSignature = ethUtil.ecsign(orderHashWithEthSignPrefixBuffer, signerPrivateKey);
@@ -391,10 +391,7 @@ describe('MixinSignatureValidator', () => {
         it('should return true when SignatureType=Trezor and signature is valid', async () => {
             // Create Trezor signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithTrezorPrefixHex = signatureUtils.addSignedMessagePrefix(
-                orderHashHex,
-                MessagePrefixType.Trezor,
-            );
+            const orderHashWithTrezorPrefixHex = signatureUtils.addSignedMessagePrefix(orderHashHex, SignerType.Trezor);
             const orderHashWithTrezorPrefixBuffer = ethUtil.toBuffer(orderHashWithTrezorPrefixHex);
             const ecSignature = ethUtil.ecsign(orderHashWithTrezorPrefixBuffer, signerPrivateKey);
             // Create 0x signature from Trezor signature
@@ -417,10 +414,7 @@ describe('MixinSignatureValidator', () => {
         it('should return false when SignatureType=Trezor and signature is invalid', async () => {
             // Create Trezor signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithTrezorPrefixHex = signatureUtils.addSignedMessagePrefix(
-                orderHashHex,
-                MessagePrefixType.Trezor,
-            );
+            const orderHashWithTrezorPrefixHex = signatureUtils.addSignedMessagePrefix(orderHashHex, SignerType.Trezor);
             const orderHashWithTrezorPrefixBuffer = ethUtil.toBuffer(orderHashWithTrezorPrefixHex);
             const ecSignature = ethUtil.ecsign(orderHashWithTrezorPrefixBuffer, signerPrivateKey);
             // Create 0x signature from Trezor signature

@@ -1,11 +1,14 @@
 import { assert as sharedAssert } from '@0xproject/assert';
 // HACK: We need those two unused imports because they're actually used by sharedAssert which gets injected here
 import { Schema } from '@0xproject/json-schemas'; // tslint:disable-line:no-unused-variable
-import { signatureUtils } from '@0xproject/order-utils';
-import { ECSignature } from '@0xproject/types'; // tslint:disable-line:no-unused-variable
+import { signatureUtils, assetDataUtils } from '@0xproject/order-utils';
+import { Order } from '@0xproject/types'; // tslint:disable-line:no-unused-variable
 import { BigNumber } from '@0xproject/utils'; // tslint:disable-line:no-unused-variable
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
+import * as _ from 'lodash';
+
+import { constants } from './constants';
 
 export const assert = {
     ...sharedAssert,
@@ -16,12 +19,12 @@ export const assert = {
         signerAddress: string,
     ): Promise<void> {
         const isValid = await signatureUtils.isValidSignatureAsync(provider, orderHash, signature, signerAddress);
-        this.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
+        sharedAssert.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
     },
     isValidSubscriptionToken(variableName: string, subscriptionToken: string): void {
         const uuidRegex = new RegExp('^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$');
         const isValid = uuidRegex.test(subscriptionToken);
-        this.assert(isValid, `Expected ${variableName} to be a valid subscription token`);
+        sharedAssert.assert(isValid, `Expected ${variableName} to be a valid subscription token`);
     },
     async isSenderAddressAsync(
         variableName: string,
@@ -34,5 +37,54 @@ export const assert = {
             isSenderAddressAvailable,
             `Specified ${variableName} ${senderAddressHex} isn't available through the supplied web3 provider`,
         );
+    },
+    ordersCanBeUsedForForwarderContract(orders: Order[], etherTokenAddress: string): void {
+        sharedAssert.assert(!_.isEmpty(orders), 'Expected at least 1 signed order. Found no orders');
+        assert.ordersHaveAtMostOneUniqueValueForProperty(orders, 'makerAssetData');
+        assert.allTakerAssetDatasAreErc20Token(orders, etherTokenAddress);
+        assert.allTakerAddressesAreNull(orders);
+    },
+    feeOrdersCanBeUsedForForwarderContract(orders: Order[], zrxTokenAddress: string, etherTokenAddress: string): void {
+        if (!_.isEmpty(orders)) {
+            assert.allMakerAssetDatasAreErc20Token(orders, zrxTokenAddress);
+            assert.allTakerAssetDatasAreErc20Token(orders, etherTokenAddress);
+        }
+    },
+    allTakerAddressesAreNull(orders: Order[]): void {
+        assert.ordersHaveAtMostOneUniqueValueForProperty(orders, 'takerAddress', constants.NULL_ADDRESS);
+    },
+    allMakerAssetDatasAreErc20Token(orders: Order[], tokenAddress: string): void {
+        assert.ordersHaveAtMostOneUniqueValueForProperty(
+            orders,
+            'makerAssetData',
+            assetDataUtils.encodeERC20AssetData(tokenAddress),
+        );
+    },
+    allTakerAssetDatasAreErc20Token(orders: Order[], tokenAddress: string): void {
+        assert.ordersHaveAtMostOneUniqueValueForProperty(
+            orders,
+            'takerAssetData',
+            assetDataUtils.encodeERC20AssetData(tokenAddress),
+        );
+    },
+    /*
+     * Asserts that all the orders have the same value for the provided propertyName
+     * If the value parameter is provided, this asserts that all orders have the prope
+    */
+    ordersHaveAtMostOneUniqueValueForProperty(orders: Order[], propertyName: string, value?: any): void {
+        const allValues = _.map(orders, order => _.get(order, propertyName));
+        sharedAssert.hasAtMostOneUniqueValue(
+            allValues,
+            `Expected all orders to have the same ${propertyName} field. Found the following ${propertyName} values: ${JSON.stringify(
+                allValues,
+            )}`,
+        );
+        if (!_.isUndefined(value)) {
+            const firstValue = _.head(allValues);
+            sharedAssert.assert(
+                firstValue === value,
+                `Expected all orders to have a ${propertyName} field with value: ${value}. Found: ${firstValue}`,
+            );
+        }
     },
 };
