@@ -53,6 +53,30 @@ const DEFAULT_COMPILER_SETTINGS: solc.CompilerSettings = {
 };
 const CONFIG_FILE = 'compiler.json';
 
+async function getSolcAsync(
+    solcVersion: string,
+): Promise<{ solcInstance: solc.SolcInstance; fullSolcVersion: string }> {
+    const fullSolcVersion = binPaths[solcVersion];
+    const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
+    let solcjs: string;
+    const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
+    if (isCompilerAvailableLocally) {
+        solcjs = fs.readFileSync(compilerBinFilename).toString();
+    } else {
+        logUtils.log(`Downloading ${fullSolcVersion}...`);
+        const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
+        const response = await fetchAsync(url);
+        const SUCCESS_STATUS = 200;
+        if (response.status !== SUCCESS_STATUS) {
+            throw new Error(`Failed to load ${fullSolcVersion}`);
+        }
+        solcjs = await response.text();
+        fs.writeFileSync(compilerBinFilename, solcjs);
+    }
+    const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
+    return { solcInstance, fullSolcVersion };
+}
+
 /**
  * The Compiler facilitates compiling Solidity smart contracts and saves the results
  * to artifact files.
@@ -139,24 +163,7 @@ export class Compiler {
             const availableCompilerVersions = _.keys(binPaths);
             solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
         }
-        const fullSolcVersion = binPaths[solcVersion];
-        const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
-        let solcjs: string;
-        const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
-        if (isCompilerAvailableLocally) {
-            solcjs = fs.readFileSync(compilerBinFilename).toString();
-        } else {
-            logUtils.log(`Downloading ${fullSolcVersion}...`);
-            const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
-            const response = await fetchAsync(url);
-            const SUCCESS_STATUS = 200;
-            if (response.status !== SUCCESS_STATUS) {
-                throw new Error(`Failed to load ${fullSolcVersion}`);
-            }
-            solcjs = await response.text();
-            fs.writeFileSync(compilerBinFilename, solcjs);
-        }
-        const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
+        const { solcInstance, fullSolcVersion } = await getSolcAsync(solcVersion);
 
         logUtils.log(`Compiling ${contractName} with Solidity v${solcVersion}...`);
         const standardInput: solc.StandardInput = {
