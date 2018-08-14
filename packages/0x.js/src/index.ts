@@ -1,47 +1,35 @@
-export { ZeroEx } from './0x';
-
-export { Web3ProviderEngine, RPCSubprovider } from '@0xproject/subproviders';
+export {
+    assetDataUtils,
+    ecSignOrderHashAsync,
+    generatePseudoRandomSalt,
+    isValidSignatureAsync,
+    orderHashUtils,
+} from '@0xproject/order-utils';
 
 export {
-    ExchangeContractErrs,
-    Order,
-    SignedOrder,
-    SignerType,
-    ECSignature,
-    OrderStateValid,
-    OrderStateInvalid,
-    OrderState,
-    Token,
-    ERC20AssetData,
-    ERC721AssetData,
-    AssetProxyId,
-} from '@0xproject/types';
-
-export {
-    BlockParamLiteral,
-    FilterObject,
-    BlockParam,
-    LogWithDecodedArgs,
-    ContractEventArg,
-    Provider,
-    TransactionReceipt,
-    TransactionReceiptWithDecodedLogs,
-} from 'ethereum-types';
-
-export {
+    ContractWrappers,
+    ERC20TokenWrapper,
+    ERC721TokenWrapper,
+    EtherTokenWrapper,
+    ExchangeWrapper,
+    ERC20ProxyWrapper,
+    ERC721ProxyWrapper,
+    ForwarderWrapper,
+    ContractWrappersError,
     EventCallback,
     ContractEvent,
     IndexedFilterValues,
     BlockRange,
     OrderFillRequest,
     ContractEventArgs,
+    ContractWrappersConfig,
     MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
     LogEvent,
     DecodedLogEvent,
-    OnOrderStateChangeCallback,
-    ContractWrappersError,
+    OrderStatus,
+    OrderInfo,
     WETH9Events,
     WETH9WithdrawalEventArgs,
     WETH9ApprovalEventArgs,
@@ -56,11 +44,43 @@ export {
     ERC721TokenApprovalForAllEventArgs,
     ERC721TokenTransferEventArgs,
     ERC721TokenEvents,
+    ERC721TokenEventArgs,
     ExchangeCancelUpToEventArgs,
     ExchangeAssetProxyRegisteredEventArgs,
     ExchangeFillEventArgs,
     ExchangeCancelEventArgs,
     ExchangeEventArgs,
-    ContractWrappersConfig,
-    OrderInfo,
+    ExchangeEvents,
 } from '@0xproject/contract-wrappers';
+
+export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
+
+export { Web3ProviderEngine, RPCSubprovider, Callback, ErrorCallback, Subprovider } from '@0xproject/subproviders';
+
+export { BigNumber } from '@0xproject/utils';
+
+export {
+    Order,
+    SignedOrder,
+    ECSignature,
+    OrderStateValid,
+    OrderStateInvalid,
+    OrderState,
+    AssetProxyId,
+    ExchangeContractErrs,
+    SignerType,
+    Token,
+    ERC20AssetData,
+    ERC721AssetData,
+} from '@0xproject/types';
+
+export {
+    BlockParamLiteral,
+    FilterObject,
+    BlockParam,
+    ContractEventArg,
+    LogWithDecodedArgs,
+    Provider,
+    TransactionReceipt,
+    TransactionReceiptWithDecodedLogs,
+} from 'ethereum-types';
