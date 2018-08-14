@@ -176,6 +176,23 @@ export class Compiler {
             settings: this._compilerSettings,
         };
         const compiled: solc.StandardOutput = this._compile(solcInstance, standardInput);
+        return this._verifyAndPersistCompilationAsync(
+            contractSource,
+            contractName,
+            fullSolcVersion,
+            compiled,
+            sourceTreeHashHex,
+            currentArtifactIfExists,
+        );
+    }
+    private async _verifyAndPersistCompilationAsync(
+        contractSource: { path: string },
+        contractName: string,
+        fullSolcVersion: string,
+        compiled: solc.StandardOutput,
+        sourceTreeHashHex: string,
+        currentArtifactIfExists: ContractArtifact | void,
+    ): Promise<void> {
         const compiledData = compiled.contracts[contractSource.path][contractName];
         if (_.isUndefined(compiledData)) {
             throw new Error(
@@ -251,7 +268,7 @@ export class Compiler {
                     const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
                     logUtils.log(chalk.red(normalizedErrMsg));
                 });
-                throw new Error("Compilation errors encountered");
+                throw new Error('Compilation errors encountered');
             } else {
                 warnings.forEach(warning => {
                     const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
