@@ -18,6 +18,10 @@
             },
             {
                 "note": "Dependencies updated"
+            },
+            {
+                "note": "Added rateUtils and sortingUtils",
+                "pr": 953
             }
         ],
         "timestamp": 1534210131
