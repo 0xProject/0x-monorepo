@@ -10,7 +10,8 @@
                 "note": "Fix a bug where NpmResolver would crash when trying to read a directory",
                 "pr": 961
             }
-        ]
+        ],
+        "timestamp": 1534210131
     },
     {
         "timestamp": 1532619515,

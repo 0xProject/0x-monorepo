@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/utils",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -29,27 +29,27 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/utils/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.4",
-        "@0xproject/tslint-config": "^1.0.4",
+        "@0xproject/monorepo-scripts": "^1.0.5",
+        "@0xproject/tslint-config": "^1.0.5",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
+        "chai": "^4.0.1",
         "copyfiles": "^1.2.0",
         "make-promises-safe": "^1.1.0",
+        "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
-        "typescript": "2.9.2",
-        "chai": "^4.0.1",
-        "mocha": "^4.1.0"
+        "typescript": "2.9.2"
     },
     "dependencies": {
-        "@0xproject/types": "^1.0.1-rc.3",
-        "@0xproject/typescript-typings": "^1.0.3",
+        "@0xproject/types": "^1.0.1-rc.4",
+        "@0xproject/typescript-typings": "^1.0.4",
         "@types/node": "^8.0.53",
         "abortcontroller-polyfill": "^1.1.9",
         "bignumber.js": "~4.1.0",
         "detect-node": "2.0.3",
-        "ethereum-types": "^1.0.3",
+        "ethereum-types": "^1.0.4",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
         "isomorphic-fetch": "^2.2.1",

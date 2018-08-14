@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1-rc.3 - _August 13, 2018_
+
+    * Update ecSignOrderHashAsync to return signature string with signature type byte. Removes messagePrefixOpts. (#914)
+    * Added a synchronous `createOrder` method in `orderFactory`, updated public interfaces to support some optional parameters (#936)
+    * Added marketUtils (#937)
+    * Dependencies updated
+
 ## v1.0.1-rc.2 - _July 26, 2018_
 
     * Dependencies updated
@@ -21,7 +28,7 @@ CHANGELOG
 
     * Upgrade ethereumjs-abi dep including a fix so that addresses starting with 0 are properly decoded by `decodeERC20AssetData`
 
-## v1.0.0-rc.1 - _July 20, 2018_
+## v1.0.0-rc.1 - _July 19, 2018_
 
     * Refactor to work with V2 of 0x protocol (#636)
     * Export parseECSignature method (#684)
@@ -47,7 +54,7 @@ CHANGELOG
 
     * Add orderStateUtils, a module for computing order state needed to decide if an order is still valid
 
-## v0.0.4 - _May 5, 2018_
+## v0.0.4 - _May 4, 2018_
 
     * Dependencies updated
 
