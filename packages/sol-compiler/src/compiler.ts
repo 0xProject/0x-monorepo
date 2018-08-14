@@ -154,46 +154,48 @@ export class Compiler {
         } = {};
 
         for (const contractName of contractNames) {
-        const contractSource = this._resolver.resolve(contractName);
-        contractData[contractSource.path] = {
-            contractName,
-            currentArtifactIfExists: await getContractArtifactIfExistsAsync(this._artifactsDir, contractName),
-            sourceTreeHashHex: `0x${this._getSourceTreeHash(
-                path.join(this._contractsDir, contractSource.path),
-            ).toString('hex')}`,
-        };
-        let shouldCompile = false;
-        if (_.isUndefined(contractData[contractSource.path].currentArtifactIfExists)) {
-            shouldCompile = true;
-        } else {
-            const currentArtifact = contractData[contractSource.path].currentArtifactIfExists as ContractArtifact;
-            const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
-            const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
-            const didSourceChange =
-                currentArtifact.sourceTreeHashHex !== contractData[contractSource.path].sourceTreeHashHex;
-            shouldCompile = !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
-        }
-        if (!shouldCompile) {
-            continue;
-        }
-        let solcVersion = this._solcVersionIfExists;
-        if (_.isUndefined(solcVersion)) {
-            const solcVersionRange = parseSolidityVersionRange(contractSource.source);
-            const availableCompilerVersions = _.keys(binPaths);
-            solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
-        }
-        if (_.isUndefined(inputsByVersion[solcVersion])) {
-            inputsByVersion[solcVersion] = {
-                standardInput: {
-                    language: 'Solidity',
-                    sources: {},
-                    settings: this._compilerSettings,
-                },
-                contractsToCompile: [],
+            const contractSource = this._resolver.resolve(contractName);
+            contractData[contractSource.path] = {
+                contractName,
+                currentArtifactIfExists: await getContractArtifactIfExistsAsync(this._artifactsDir, contractName),
+                sourceTreeHashHex: `0x${this._getSourceTreeHash(
+                    path.join(this._contractsDir, contractSource.path),
+                ).toString('hex')}`,
             };
-        }
-        inputsByVersion[solcVersion].standardInput.sources[contractSource.path] = { content: contractSource.source };
-        inputsByVersion[solcVersion].contractsToCompile.push(contractSource.path);
+            let shouldCompile = false;
+            if (_.isUndefined(contractData[contractSource.path].currentArtifactIfExists)) {
+                shouldCompile = true;
+            } else {
+                const currentArtifact = contractData[contractSource.path].currentArtifactIfExists as ContractArtifact;
+                const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
+                const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
+                const didSourceChange =
+                    currentArtifact.sourceTreeHashHex !== contractData[contractSource.path].sourceTreeHashHex;
+                shouldCompile = !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
+            }
+            if (!shouldCompile) {
+                continue;
+            }
+            let solcVersion = this._solcVersionIfExists;
+            if (_.isUndefined(solcVersion)) {
+                const solcVersionRange = parseSolidityVersionRange(contractSource.source);
+                const availableCompilerVersions = _.keys(binPaths);
+                solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
+            }
+            if (_.isUndefined(inputsByVersion[solcVersion])) {
+                inputsByVersion[solcVersion] = {
+                    standardInput: {
+                        language: 'Solidity',
+                        sources: {},
+                        settings: this._compilerSettings,
+                    },
+                    contractsToCompile: [],
+                };
+            }
+            inputsByVersion[solcVersion].standardInput.sources[contractSource.path] = {
+                content: contractSource.source,
+            };
+            inputsByVersion[solcVersion].contractsToCompile.push(contractSource.path);
         }
 
         for (const solcVersion in inputsByVersion) {
