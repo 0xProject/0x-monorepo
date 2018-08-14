@@ -15,13 +15,9 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && yarn build:all",
+        "watch_without_deps": "tsc -w",
+        "build": "yarn build:all",
         "build:all": "run-p build:umd:prod build:commonjs; exit 0;",
-        "pre_build": "run-s update_artifacts generate_contract_wrappers",
-        "copy_artifacts": "copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts",
-        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json src/artifacts; done;",
-        "generate_contract_wrappers": "abi-gen --abis 'src/artifacts/@(ZRXToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
         "test:circleci": "run-s test:coverage",
         "test": "yarn run_mocha",
@@ -30,12 +26,10 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf _bundles lib test_temp src/generated_contract_wrappers",
         "build:umd:prod": "NODE_ENV=production webpack",
-        "build:commonjs": "tsc && yarn copy_artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
-        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
+        "build:commonjs": "tsc",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
-        "contracts": "ZRXToken",
         "postpublish": {
             "assets": [
                 "packages/0x.js/_bundles/index.js",
@@ -85,6 +79,7 @@
         "@0xproject/contract-wrappers": "^1.0.1-rc.3",
         "@0xproject/order-utils": "^1.0.1-rc.3",
         "@0xproject/sol-compiler": "^1.0.5",
+        "@0xproject/order-watcher": "1.0.1-rc.3",
         "@0xproject/subproviders": "^1.0.5",
         "@0xproject/types": "^1.0.1-rc.4",
         "@0xproject/typescript-typings": "^1.0.4",

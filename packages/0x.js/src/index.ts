@@ -1,28 +1,29 @@
-export { ZeroEx } from './0x';
+export { assetDataUtils, signatureUtils, generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils';
 
 export {
-    Web3ProviderEngine,
-    RPCSubprovider,
-    Callback,
-    JSONRPCRequestPayloadWithMethod,
-    ErrorCallback,
-    Subprovider,
-} from '@0xproject/subproviders';
-
-export {
+    ContractWrappers,
+    ERC20TokenWrapper,
+    ERC721TokenWrapper,
+    EtherTokenWrapper,
+    ExchangeWrapper,
+    ERC20ProxyWrapper,
+    ERC721ProxyWrapper,
+    ForwarderWrapper,
+    ContractWrappersError,
     EventCallback,
     ContractEvent,
     IndexedFilterValues,
     BlockRange,
     OrderFillRequest,
     ContractEventArgs,
+    ContractWrappersConfig,
     MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
     LogEvent,
     DecodedLogEvent,
-    OnOrderStateChangeCallback,
-    ContractWrappersError,
+    OrderStatus,
+    OrderInfo,
     WETH9Events,
     WETH9WithdrawalEventArgs,
     WETH9ApprovalEventArgs,
@@ -33,20 +34,32 @@ export {
     ERC20TokenApprovalEventArgs,
     ERC20TokenEvents,
     ERC20TokenEventArgs,
-    ERC721TokenEventArgs,
     ERC721TokenApprovalEventArgs,
     ERC721TokenApprovalForAllEventArgs,
     ERC721TokenTransferEventArgs,
     ERC721TokenEvents,
+    ERC721TokenEventArgs,
     ExchangeCancelUpToEventArgs,
     ExchangeAssetProxyRegisteredEventArgs,
     ExchangeSignatureValidatorApprovalEventArgs,
     ExchangeFillEventArgs,
     ExchangeCancelEventArgs,
     ExchangeEventArgs,
-    ContractWrappersConfig,
-    OrderInfo,
+    ExchangeEvents,
 } from '@0xproject/contract-wrappers';
+
+export {
+    Web3ProviderEngine,
+    RPCSubprovider,
+    Callback,
+    JSONRPCRequestPayloadWithMethod,
+    ErrorCallback,
+    Subprovider,
+} from '@0xproject/subproviders';
+
+export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
+
+export { BigNumber } from '@0xproject/utils';
 
 export {
     ExchangeContractErrs,
@@ -56,11 +69,11 @@ export {
     OrderStateValid,
     OrderStateInvalid,
     OrderState,
+    AssetProxyId,
+    SignerType,
     Token,
     ERC20AssetData,
     ERC721AssetData,
-    AssetProxyId,
-    OrderRelevantState,
 } from '@0xproject/types';
 
 export {
