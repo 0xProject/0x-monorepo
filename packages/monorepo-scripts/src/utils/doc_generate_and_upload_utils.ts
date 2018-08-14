@@ -28,6 +28,16 @@ const EXTERNAL_TYPE_TO_LINK: { [externalType: string]: string } = {
     'solc.CompilerSettings': 'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#input-description',
 };
 
+const CLASSES_WITH_HIDDEN_CONSTRUCTORS: string[] = [
+    'ERC20ProxyWrapper',
+    'ERC20TokenWrapper',
+    'ERC721ProxyWrapper',
+    'ERC721TokenWrapper',
+    'EtherTokenWrapper',
+    'ExchangeWrapper',
+    'ForwarderWrapper',
+];
+
 export async function generateAndUploadDocsAsync(packageName: string, isStaging: boolean): Promise<void> {
     const monorepoPackages = utils.getPackages(constants.monorepoRootPath);
     const pkg = _.find(monorepoPackages, monorepoPackage => {
@@ -145,6 +155,17 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
         _.each(file.children, (child, j) => {
             if (!_.includes(exportItems, child.name)) {
                 delete finalTypeDocOutput.children[i].children[j];
+            }
+            if (child.kindString === 'Class' && _.includes(CLASSES_WITH_HIDDEN_CONSTRUCTORS, child.name)) {
+                const classChildren = typedocOutput.children[i].children[j].children;
+                _.each(classChildren, (classChild, k) => {
+                    if (classChild.kindString === 'Constructor') {
+                        delete finalTypeDocOutput.children[i].children[j].children[k];
+                        finalTypeDocOutput.children[i].children[j].children = _.compact(
+                            finalTypeDocOutput.children[i].children[j].children,
+                        );
+                    }
+                });
             }
         });
         finalTypeDocOutput.children[i].children = _.compact(finalTypeDocOutput.children[i].children);
