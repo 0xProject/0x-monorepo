@@ -1,13 +1,13 @@
-import { feesRequestSchema } from './fees_request_schema';
+import { assetPairsRequestOptsSchema } from './asset_pairs_request_opts_schema';
+import { orderConfigRequestSchema } from './order_config_request_schema';
 import { orderBookRequestSchema } from './orderbook_request_schema';
 import { ordersRequestOptsSchema } from './orders_request_opts_schema';
 import { pagedRequestOptsSchema } from './paged_request_opts_schema';
-import { AssetPairsRequestOptsSchema } from './token_pairs_request_opts_schema';
 
 export const schemas = {
-    feesRequestSchema,
+    orderConfigRequestSchema,
     orderBookRequestSchema,
     ordersRequestOptsSchema,
     pagedRequestOptsSchema,
-    AssetPairsRequestOptsSchema,
+    assetPairsRequestOptsSchema,
 };

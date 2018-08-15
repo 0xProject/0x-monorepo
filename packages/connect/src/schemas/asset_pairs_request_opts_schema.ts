@@ -1,4 +1,4 @@
-export const AssetPairsRequestOptsSchema = {
+export const assetPairsRequestOptsSchema = {
     id: '/AssetPairsRequestOpts',
     type: 'object',
     properties: {
