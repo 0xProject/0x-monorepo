@@ -44,9 +44,6 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
     }
     public render(): React.ReactNode {
         const method = this.props.method;
-        if (typeDocUtils.isPrivateOrProtectedProperty(method.name)) {
-            return null;
-        }
 
         return (
             <div

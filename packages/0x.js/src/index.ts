@@ -61,8 +61,6 @@ export {
     ErrorCallback,
 } from '@0xproject/subproviders';
 
-export { Web3Wrapper, NodeType } from '@0xproject/web3-wrapper';
-
 export { AbiDecoder } from '@0xproject/utils';
 
 export { BigNumber } from '@0xproject/utils';

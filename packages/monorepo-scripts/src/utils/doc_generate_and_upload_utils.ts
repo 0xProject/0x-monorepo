@@ -143,7 +143,10 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
         }
     });
 
-    // For each entry, see if it was exported in index.ts. If not, remove it.
+    // For each entry, remove it if:
+    // - it was not exported in index.ts
+    // - the constructor is to be ignored
+    // - it begins with an underscore
     const exportPathToTypedocNames: ExportNameToTypedocNames = {};
     _.each(typedocOutput.children, (file, i) => {
         const exportPath = findExportPathGivenTypedocName(exportPathToExportedItems, packageName, file.name);
@@ -155,18 +158,22 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
         _.each(file.children, (child, j) => {
             if (!_.includes(exportItems, child.name)) {
                 delete finalTypeDocOutput.children[i].children[j];
+                return;
             }
-            if (child.kindString === 'Class' && _.includes(CLASSES_WITH_HIDDEN_CONSTRUCTORS, child.name)) {
-                const classChildren = typedocOutput.children[i].children[j].children;
-                _.each(classChildren, (classChild, k) => {
-                    if (classChild.kindString === 'Constructor') {
-                        delete finalTypeDocOutput.children[i].children[j].children[k];
-                        finalTypeDocOutput.children[i].children[j].children = _.compact(
-                            finalTypeDocOutput.children[i].children[j].children,
-                        );
-                    }
-                });
-            }
+            const innerChildren = typedocOutput.children[i].children[j].children;
+            _.each(innerChildren, (innerChild, k) => {
+                const isHiddenConstructor =
+                    child.kindString === 'Class' &&
+                    _.includes(CLASSES_WITH_HIDDEN_CONSTRUCTORS, child.name) &&
+                    innerChild.kindString === 'Constructor';
+                const isPrivate = _.startsWith(innerChild.name, '_');
+                if (isHiddenConstructor || isPrivate) {
+                    delete finalTypeDocOutput.children[i].children[j].children[k];
+                    finalTypeDocOutput.children[i].children[j].children = _.compact(
+                        finalTypeDocOutput.children[i].children[j].children,
+                    );
+                }
+            });
         });
         finalTypeDocOutput.children[i].children = _.compact(finalTypeDocOutput.children[i].children);
     });

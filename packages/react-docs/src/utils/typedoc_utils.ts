@@ -43,9 +43,6 @@ export const typeDocUtils = {
     isProperty(entity: TypeDocNode): boolean {
         return entity.kindString === KindString.Property;
     },
-    isPrivateOrProtectedProperty(propertyName: string): boolean {
-        return _.startsWith(propertyName, '_');
-    },
     getModuleDefinitionsBySectionName(versionDocObj: TypeDocNode, configModulePaths: string[]): TypeDocNode[] {
         const moduleDefinitions: TypeDocNode[] = [];
         const jsonModules = versionDocObj.children;
@@ -217,16 +214,14 @@ export const typeDocUtils = {
                     break;
 
                 case KindString.Property:
-                    if (!typeDocUtils.isPrivateOrProtectedProperty(entity.name)) {
-                        const property = typeDocUtils._convertProperty(
-                            entity,
-                            docsInfo.sections,
-                            sectionName,
-                            docsInfo.id,
-                            classNames,
-                        );
-                        docSection.properties.push(property);
-                    }
+                    const property = typeDocUtils._convertProperty(
+                        entity,
+                        docsInfo.sections,
+                        sectionName,
+                        docsInfo.id,
+                        classNames,
+                    );
+                    docSection.properties.push(property);
                     break;
 
                 case KindString.Variable:
