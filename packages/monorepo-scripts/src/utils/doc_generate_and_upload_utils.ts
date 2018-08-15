@@ -27,6 +27,7 @@ const EXTERNAL_TYPE_TO_LINK: { [externalType: string]: string } = {
     'solc.StandardContractOutput':
         'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#output-description',
     'solc.CompilerSettings': 'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#input-description',
+    Schema: 'https://github.com/tdegrunt/jsonschema/blob/5c2edd4baba149964aec0f23c87ad12c25a50dfb/lib/index.d.ts#L49',
 };
 
 const CLASSES_WITH_HIDDEN_CONSTRUCTORS: string[] = [

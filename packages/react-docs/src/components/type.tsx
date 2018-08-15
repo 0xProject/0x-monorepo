@@ -179,17 +179,8 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
         return [prev, ', ', curr];
     });
 
-    let typeNameUrlIfExists;
-    let typePrefixIfExists;
-    if (!_.isUndefined(props.docsInfo.typeConfigs)) {
-        typeNameUrlIfExists = !_.isUndefined(props.docsInfo.typeConfigs.typeNameToExternalLink)
-            ? props.docsInfo.typeConfigs.typeNameToExternalLink[typeName as string]
-            : undefined;
-        typePrefixIfExists = !_.isUndefined(props.docsInfo.typeConfigs.typeNameToPrefix)
-            ? props.docsInfo.typeConfigs.typeNameToPrefix[typeName as string]
-            : undefined;
-    }
     const isExportedClassReference = !!props.type.isExportedClassReference;
+    const typeNameUrlIfExists = !_.isUndefined(props.type.externalLink) ? props.type.externalLink : undefined;
     if (!_.isUndefined(typeNameUrlIfExists)) {
         typeName = (
             <a
@@ -198,7 +189,6 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
                 className="text-decoration-none"
                 style={{ color: colors.lightBlueA700 }}
             >
-                {!_.isUndefined(typePrefixIfExists) ? `${typePrefixIfExists}.` : ''}
                 {typeName}
             </a>
         );

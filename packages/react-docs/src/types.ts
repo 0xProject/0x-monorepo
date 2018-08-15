@@ -11,12 +11,6 @@ export interface DocsInfoConfig {
     markdownSections: SectionsMap;
     sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
     contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
-    typeConfigs?: DocsInfoTypeConfigs;
-}
-
-export interface DocsInfoTypeConfigs {
-    typeNameToExternalLink?: { [typeName: string]: string };
-    typeNameToPrefix?: { [typeName: string]: string };
 }
 
 export interface DocsMenu {
@@ -160,6 +154,7 @@ export interface Type {
     types?: Type[];
     method?: TypescriptMethod;
     indexSignature?: IndexSignature;
+    externalLink?: string;
 }
 
 export interface ElementType {
@@ -297,9 +292,14 @@ export interface ExportNameToTypedocNames {
     [exportName: string]: string[];
 }
 
+export interface ExternalTypeToLink {
+    [externalTypeName: string]: string;
+}
+
 export interface Metadata {
     exportPathToTypedocNames: ExportNameToTypedocNames;
     exportPathOrder: string[];
+    externalTypeToLink: ExternalTypeToLink;
 }
 
 export interface GeneratedDocJson {

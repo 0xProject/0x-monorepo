@@ -43,13 +43,7 @@ const docsInfoConfig: DocsInfoConfig = {
             [markdownSections.usage]: UsageMarkdownV1,
         },
     },
-    markdownSections: markdownSections,
-    typeConfigs: {
-        typeNameToExternalLink: {
-            Schema:
-                'https://github.com/tdegrunt/jsonschema/blob/5c2edd4baba149964aec0f23c87ad12c25a50dfb/lib/index.d.ts#L49',
-        },
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 

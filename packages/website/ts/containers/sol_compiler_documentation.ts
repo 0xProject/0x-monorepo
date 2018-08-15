@@ -37,11 +37,7 @@ const docsInfoConfig: DocsInfoConfig = {
             [markdownSections.usage]: UsageMarkdown,
         },
     },
-    markdownSections: markdownSections,
-    typeConfigs: {
-        typeNameToExternalLink: {},
-        typeNameToPrefix: {},
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 

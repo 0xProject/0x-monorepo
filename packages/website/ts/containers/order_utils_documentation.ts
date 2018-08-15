@@ -35,11 +35,6 @@ const docsInfoConfig: DocsInfoConfig = {
         },
     },
     markdownSections,
-    typeConfigs: {
-        typeNameToExternalLink: {
-            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
-        },
-    },
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 

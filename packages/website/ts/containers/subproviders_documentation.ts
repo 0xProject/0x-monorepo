@@ -39,13 +39,6 @@ const docsInfoConfig: DocsInfoConfig = {
         },
     },
     markdownSections: docSections,
-    typeConfigs: {
-        typeNameToExternalLink: {
-            Web3: constants.URL_WEB3_DOCS,
-            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
-        },
-        typeNameToPrefix: {},
-    },
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 

@@ -6,17 +6,16 @@ import {
     ContractsByVersionByNetworkId,
     DocAgnosticFormat,
     DocsInfoConfig,
-    DocsInfoTypeConfigs,
     DocsMenu,
     DoxityDocObj,
+    GeneratedDocJson,
     SectionNameToMarkdownByVersion,
     SectionsMap,
     SupportedDocJson,
     TypeDefinitionByName,
-    GeneratedDocJson,
 } from './types';
 import { doxityUtils } from './utils/doxity_utils';
-import { typeDocUtils } from './utils/typedoc_utils';
+import { TypeDocUtils } from './utils/typedoc_utils';
 
 export class DocsInfo {
     public id: string;
@@ -27,7 +26,6 @@ export class DocsInfo {
     public sections: SectionsMap;
     public sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
     public contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
-    public typeConfigs: DocsInfoTypeConfigs;
     constructor(config: DocsInfoConfig) {
         this.id = config.id;
         this.type = config.type;
@@ -37,7 +35,6 @@ export class DocsInfo {
         this.sections = config.markdownSections;
         this.sectionNameToMarkdownByVersion = config.sectionNameToMarkdownByVersion;
         this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
-        this.typeConfigs = config.typeConfigs;
     }
     public getMenuSubsectionsBySection(docAgnosticFormat?: DocAgnosticFormat): MenuSubsectionsBySection {
         const menuSubsectionsBySection = {} as MenuSubsectionsBySection;
@@ -101,7 +98,8 @@ export class DocsInfo {
         if (this.type === SupportedDocJson.Doxity) {
             return doxityUtils.convertToDocAgnosticFormat(docObj as DoxityDocObj);
         } else {
-            return typeDocUtils.convertToDocAgnosticFormat(docObj as GeneratedDocJson, this);
+            const typeDocUtils = new TypeDocUtils(docObj as GeneratedDocJson, this);
+            return typeDocUtils.convertToDocAgnosticFormat();
         }
     }
 }

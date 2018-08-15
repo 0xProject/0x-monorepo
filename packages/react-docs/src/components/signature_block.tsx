@@ -5,7 +5,6 @@ import * as React from 'react';
 import { DocsInfo } from '../docs_info';
 import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptFunction, TypescriptMethod } from '../types';
 import { constants } from '../utils/constants';
-import { typeDocUtils } from '../utils/typedoc_utils';
 
 import { Comment } from './comment';
 import { Signature } from './signature';

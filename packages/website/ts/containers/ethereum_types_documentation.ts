@@ -36,12 +36,7 @@ const docsInfoConfig: DocsInfoConfig = {
             [markdownSections.installation]: InstallationMarkdown,
         },
     },
-    markdownSections: markdownSections,
-    typeConfigs: {
-        typeNameToExternalLink: {
-            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
-        },
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 

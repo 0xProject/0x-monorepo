@@ -56,13 +56,7 @@ const docsInfoConfig: DocsInfoConfig = {
             [markdownSections.errors]: ErrorsMarkdownV1,
         },
     },
-    markdownSections: markdownSections,
-    typeConfigs: {
-        typeNameToPrefix: {},
-        typeNameToExternalLink: {
-            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
-        },
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 
