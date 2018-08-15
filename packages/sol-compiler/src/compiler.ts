@@ -114,7 +114,7 @@ export class Compiler {
      * @param fileName Name of contract with '.sol' extension.
      */
     private async _compileContractsAsync(contractNames: string[]): Promise<void> {
-        const inputsByVersion: {
+        const versionToInputs: {
             [solcVersion: string]: {
                 standardInput: solc.StandardInput;
                 contractsToCompile: string[];
@@ -158,8 +158,8 @@ export class Compiler {
                 const availableCompilerVersions = _.keys(binPaths);
                 solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
             }
-            if (_.isUndefined(inputsByVersion[solcVersion])) {
-                inputsByVersion[solcVersion] = {
+            if (_.isUndefined(versionToInputs[solcVersion])) {
+                versionToInputs[solcVersion] = {
                     standardInput: {
                         language: 'Solidity',
                         sources: {},
@@ -168,18 +168,18 @@ export class Compiler {
                     contractsToCompile: [],
                 };
             }
-            inputsByVersion[solcVersion].standardInput.sources[contractSource.path] = {
+            versionToInputs[solcVersion].standardInput.sources[contractSource.path] = {
                 content: contractSource.source,
             };
-            inputsByVersion[solcVersion].contractsToCompile.push(contractSource.path);
+            versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
         }
 
-        for (const solcVersion in inputsByVersion) {
-            if (!inputsByVersion.hasOwnProperty(solcVersion)) {
+        for (const solcVersion in versionToInputs) {
+            if (!versionToInputs.hasOwnProperty(solcVersion)) {
                 continue;
             }
 
-            const input = inputsByVersion[solcVersion];
+            const input = versionToInputs[solcVersion];
             logUtils.log(
                 `Compiling ${input.contractsToCompile.length} contracts (${
                     input.contractsToCompile
