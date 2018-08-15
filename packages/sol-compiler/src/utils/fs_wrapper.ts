@@ -10,4 +10,6 @@ export const fsWrapper = {
     doesPathExistSync: fs.existsSync,
     rmdirSync: fs.rmdirSync,
     removeFileAsync: promisify<undefined>(fs.unlink),
+    statAsync: promisify<fs.Stats>(fs.stat),
+    appendFileAsync: promisify<undefined>(fs.appendFile),
 };
