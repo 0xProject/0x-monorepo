@@ -18,7 +18,8 @@ interface ExportNameToTypedocNames {
     [exportName: string]: string[];
 }
 
-// TODO: Add the EXTERNAL_TYPE_TO_LINK mapping to the Doc JSON
+const DOC_JSON_VERSION = '0.0.1';
+
 const EXTERNAL_TYPE_TO_LINK: { [externalType: string]: string } = {
     BigNumber: 'http://mikemcl.github.io/bignumber.js',
     Error: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v9/index.d.ts#L134',
@@ -199,6 +200,7 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
 
     // Since we need additional metadata included in the doc JSON, we nest the TypeDoc JSON
     const docJson = {
+        version: DOC_JSON_VERSION,
         metadata: {
             exportPathToTypedocNames,
             exportPathOrder,
