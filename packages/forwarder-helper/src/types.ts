@@ -46,9 +46,9 @@ export interface MarketBuyOrdersInfo {
     makerAssetFillAmount: BigNumber;
     orders: SignedOrder[];
     feeOrders: SignedOrder[];
-    feePercentage?: BigNumber;
     minEthAmount: BigNumber;
     maxEthAmount: BigNumber;
+    feePercentage?: BigNumber;
 }
 
 /**
