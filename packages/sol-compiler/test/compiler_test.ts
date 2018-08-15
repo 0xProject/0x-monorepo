@@ -64,7 +64,7 @@ describe('#Compiler', function(): void {
     describe('after a successful compilation', () => {
         const contract = 'Exchange';
         let artifactPath: string;
-        let timeCompiled: number;
+        let compilationTimestamp: number;
         beforeEach(async () => {
             compilerOpts.contracts = [contract];
 
@@ -75,23 +75,25 @@ describe('#Compiler', function(): void {
 
             await new Compiler(compilerOpts).compileAsync();
 
-            timeCompiled = (await fsWrapper.statAsync(artifactPath)).mtimeMs;
+            compilationTimestamp = (await fsWrapper.statAsync(artifactPath)).mtimeMs;
         });
         it('recompilation should update artifact when source has changed', async () => {
+            // append some meaningless data to the contract, so that its hash
+            // will change, so that the compiler will decide to recompile it.
             fsWrapper.appendFileAsync(join(contractsDir, `${contract}.sol`), ' ');
 
             await new Compiler(compilerOpts).compileAsync();
 
-            const timeRecompiled = (await fsWrapper.statAsync(artifactPath)).mtimeMs;
+            const recompilationTimestamp = (await fsWrapper.statAsync(artifactPath)).mtimeMs;
 
-            expect(timeRecompiled).to.not.equal(timeCompiled);
+            expect(recompilationTimestamp).to.be.greaterThan(compilationTimestamp);
         });
         it("recompilation should NOT update artifact when source hasn't changed", async () => {
             await new Compiler(compilerOpts).compileAsync();
 
-            const timeRecompiled = (await fsWrapper.statAsync(artifactPath)).mtimeMs;
+            const recompilationTimestamp = (await fsWrapper.statAsync(artifactPath)).mtimeMs;
 
-            expect(timeRecompiled).to.equal(timeCompiled);
+            expect(recompilationTimestamp).to.equal(compilationTimestamp);
         });
     });
     it('should only compile what was requested', async () => {
