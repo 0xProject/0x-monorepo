@@ -1,4 +1,3 @@
-import { BigNumber } from '@0xproject/utils';
 
 import { FeeRecipientsResponse } from '../../../src/types';
 

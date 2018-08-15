@@ -1,6 +1,6 @@
 import { BigNumber } from '@0xproject/utils';
 
-export const apiOrderResponse = {
+export const orderResponse = {
     order: {
         makerAddress: '0x9e56625509c2f60af937f23b7b532600390e8c8b',
         takerAddress: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',

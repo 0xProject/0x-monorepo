@@ -11,6 +11,7 @@ import {
     AssetPairsRequestOpts,
     AssetPairsResponse,
     Client,
+    FeeRecipientsResponse,
     HttpRequestOptions,
     HttpRequestType,
     OrderbookRequest,
@@ -20,8 +21,6 @@ import {
     OrdersRequestOpts,
     OrdersResponse,
     PagedRequestOpts,
-    PaginatedCollection,
-    FeeRecipientsResponse,
 } from './types';
 import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 

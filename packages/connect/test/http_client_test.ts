@@ -7,12 +7,12 @@ import 'mocha';
 
 import { HttpClient } from '../src/index';
 
-import { assetDataPairsResponse } from './fixtures/standard_relayer_api/assetData_pairs';
-import * as assetDataPairsResponseJSON from './fixtures/standard_relayer_api/assetData_pairs.json';
-import { feesResponse } from './fixtures/standard_relayer_api/fees';
-import * as feesResponseJSON from './fixtures/standard_relayer_api/fees.json';
+import { assetDataPairsResponse } from './fixtures/standard_relayer_api/asset_pairs';
+import * as assetDataPairsResponseJSON from './fixtures/standard_relayer_api/asset_pairs.json';
 import { orderResponse } from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
 import * as orderResponseJSON from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f.json';
+import { orderConfigResponse } from './fixtures/standard_relayer_api/order_config';
+import * as orderConfigResponseJSON from './fixtures/standard_relayer_api/order_config.json';
 import { orderbookResponse } from './fixtures/standard_relayer_api/orderbook';
 import * as orderbookJSON from './fixtures/standard_relayer_api/orderbook.json';
 import { ordersResponse } from './fixtures/standard_relayer_api/orders';
@@ -39,7 +39,7 @@ describe('HttpClient', () => {
         });
     });
     describe('#getAssetPairsAsync', () => {
-        const url = `${relayUrl}/assetData_pairs`;
+        const url = `${relayUrl}/asset_pairs`;
         it('gets assetData pairs with default options when none are provided', async () => {
             const urlWithQuery = `${url}?page=1&per_page=100`;
             fetchMock.get(urlWithQuery, assetDataPairsResponseJSON);
@@ -134,32 +134,29 @@ describe('HttpClient', () => {
     });
     describe('#getOrderConfigAsync', () => {
         const request = {
+            makerAddress: '0x9e56625509c2f60af937f23b7b532600390e8c8b',
+            takerAddress: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',
+            makerAssetAmount: '10000000000000000',
+            takerAssetAmount: '20000000000000000',
+            expirationTimeSeconds: '1532560590',
+            makerAssetData: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
+            takerAssetData: '0x0257179264389b814a946f3e92105513705ca6b990',
             exchangeAddress: '0x12459c951127e0c374ff9105dda097662a027093',
-            maker: '0x9e56625509c2f60af937f23b7b532600390e8c8b',
-            taker: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',
-            makerTokenAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-            takerTokenAddress: '0xef7fff64389b814a946f3e92105513705ca6b990',
-            makerAssetAmount: new BigNumber('10000000000000000000'),
-            takerAssetAmount: new BigNumber('30000000000000000000'),
-            salt: new BigNumber('256'),
-            expirationTimeSeconds: new BigNumber('42'),
         };
         const url = `${relayUrl}/fees`;
         it('gets fees', async () => {
-            fetchMock.post(url, feesResponseJSON);
+            fetchMock.post(url, orderConfigResponseJSON);
             const fees = await relayerClient.getOrderConfigAsync(request);
-            expect(fees).to.be.deep.equal(feesResponse);
+            expect(fees).to.be.deep.equal(orderConfigResponse);
         });
         it('does not mutate input', async () => {
-            fetchMock.post(url, feesResponseJSON);
+            fetchMock.post(url, orderConfigResponseJSON);
             const makerAssetAmountBefore = new BigNumber(request.makerAssetAmount);
             const takerAssetAmountBefore = new BigNumber(request.takerAssetAmount);
-            const saltBefore = new BigNumber(request.salt);
             const expirationTimeSecondsBefore = new BigNumber(request.expirationTimeSeconds);
             await relayerClient.getOrderConfigAsync(request);
             expect(makerAssetAmountBefore).to.be.deep.equal(request.makerAssetAmount);
             expect(takerAssetAmountBefore).to.be.deep.equal(request.takerAssetAmount);
-            expect(saltBefore).to.be.deep.equal(request.salt);
             expect(expirationTimeSecondsBefore).to.be.deep.equal(request.expirationTimeSeconds);
         });
         it('throws an error for invalid JSON response', async () => {
