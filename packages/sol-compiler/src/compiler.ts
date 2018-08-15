@@ -188,6 +188,8 @@ export class Compiler {
                 ? semver.maxSatisfying(_.keys(binPaths), parseSolidityVersionRange(contractSource.source))
                 : this._solcVersionIfExists;
             if (_.isUndefined(versionToInputs[solcVersion])) {
+                // no inputs batched yet for this version.
+                // prepare object to hold this batch.
                 versionToInputs[solcVersion] = {
                     standardInput: {
                         language: 'Solidity',
@@ -197,6 +199,7 @@ export class Compiler {
                     contractsToCompile: [],
                 };
             }
+            // add input to the right version batch
             versionToInputs[solcVersion].standardInput.sources[contractSource.path] = {
                 content: contractSource.source,
             };
