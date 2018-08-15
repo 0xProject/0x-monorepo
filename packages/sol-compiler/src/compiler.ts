@@ -172,19 +172,7 @@ export class Compiler {
                     path.join(this._contractsDir, contractSource.path),
                 ).toString('hex')}`,
             };
-            let shouldCompile = false;
-            if (_.isUndefined(contractPathToData[contractSource.path].currentArtifactIfExists)) {
-                shouldCompile = true;
-            } else {
-                const currentArtifact = contractPathToData[contractSource.path]
-                    .currentArtifactIfExists as ContractArtifact;
-                const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
-                const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
-                const didSourceChange =
-                    currentArtifact.sourceTreeHashHex !== contractPathToData[contractSource.path].sourceTreeHashHex;
-                shouldCompile = !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
-            }
-            if (!shouldCompile) {
+            if (!this._shouldCompile(contractPathToData[contractSource.path])) {
                 continue;
             }
             const solcVersion = _.isUndefined(this._solcVersionIfExists)
@@ -229,6 +217,17 @@ export class Compiler {
                     compilerOutput,
                 );
             }
+        }
+    }
+    private _shouldCompile(contractData: ContractData): boolean {
+        if (_.isUndefined(contractData.currentArtifactIfExists)) {
+            return true;
+        } else {
+            const currentArtifact = contractData.currentArtifactIfExists as ContractArtifact;
+            const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
+            const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
+            const didSourceChange = currentArtifact.sourceTreeHashHex !== contractData.sourceTreeHashHex;
+            return !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
         }
     }
     private async _verifyAndPersistCompiledContractAsync(
