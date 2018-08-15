@@ -185,6 +185,16 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     const referenceNamesWithDuplicates = getAllReferenceNames(propertyName, finalTypeDocOutput, []);
     const referenceNames = _.uniq(referenceNamesWithDuplicates);
 
+    const exportedTypes = getAllTypeNames(finalTypeDocOutput, []);
+    const excessiveReferences = _.difference(exportedTypes, referenceNames);
+    if (!_.isEmpty(excessiveReferences)) {
+        throw new Error(
+            `${packageName} package exports BUT does not need: \n${excessiveReferences.join(
+                '\n',
+            )} \nin it\'s index.ts. Remove them then try again.`,
+        );
+    }
+
     const missingReferences: string[] = [];
     _.each(referenceNames, referenceName => {
         if (!_.includes(allExportedItems, referenceName) && _.isUndefined(EXTERNAL_TYPE_TO_LINK[referenceName])) {
@@ -228,6 +238,27 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     await execAsync(`rm -rf ${jsonFilePath}`, {
         cwd,
     });
+}
+
+function getAllTypeNames(node: any, typeNames: string[]): string[] {
+    if (!_.isObject(node)) {
+        return typeNames;
+    }
+    const typeKindStrings = ['Interface', 'Enumeration', 'Type alias'];
+    if (_.includes(typeKindStrings, node.kindString)) {
+        return [...typeNames, node.name];
+    }
+    let updatedTypeNames = typeNames;
+    _.each(node, nodeValue => {
+        if (_.isArray(nodeValue)) {
+            _.each(nodeValue, aNode => {
+                updatedTypeNames = getAllTypeNames(aNode, updatedTypeNames);
+            });
+        } else if (_.isObject(nodeValue)) {
+            updatedTypeNames = getAllTypeNames(nodeValue, updatedTypeNames);
+        }
+    });
+    return updatedTypeNames;
 }
 
 function getAllReferenceNames(propertyName: string, node: any, referenceNames: string[]): string[] {
