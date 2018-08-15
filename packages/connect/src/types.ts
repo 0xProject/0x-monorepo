@@ -94,14 +94,18 @@ export interface Asset {
 }
 
 export interface OrdersRequestOpts {
+    makerAssetProxyId?: string;
+    takerAssetProxyId?: string;
+    makerAssetAddress?: string;
+    takerAssetAddress?: string;
     exchangeAddress?: string;
-    tokenAddress?: string;
-    makerTokenAddress?: string;
-    takerTokenAddress?: string;
-    maker?: string;
-    taker?: string;
-    trader?: string;
-    feeRecipient?: string;
+    senderAddress?: string;
+    makerAssetData?: string;
+    takerAssetData?: string;
+    makerAddress?: string;
+    takerAddress?: string;
+    traderAddress?: string;
+    feeRecipientAddress?: string;
 }
 
 export interface OrderbookRequest {
@@ -122,21 +126,21 @@ export interface PaginatedCollection<T> {
 }
 
 export interface OrderConfigRequest {
+    makerAddress: string;
+    takerAddress: string;
+    makerAssetAmount: string;
+    takerAssetAmount: string;
+    makerAssetData: string;
+    takerAssetData: string;
     exchangeAddress: string;
-    maker: string;
-    taker: string;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
-    makerAssetAmount: BigNumber;
-    takerAssetAmount: BigNumber;
-    expirationTimeSeconds: BigNumber;
-    salt: BigNumber;
+    expirationTimeSeconds: string;
 }
 
 export interface OrderConfigResponse {
-    feeRecipient: string;
     makerFee: BigNumber;
     takerFee: BigNumber;
+    feeRecipientAddress: string;
+    senderAddress: string;
 }
 
 export interface PagedRequestOpts {

@@ -14,11 +14,10 @@ export const assert = {
         sharedAssert.doesConformToSchema(
             variableName,
             subscriptionOpts,
-            schemas.relayerApiOrderbookChannelSubscribePayload,
+            schemas.relayerApiOrdersChannelSubscribePayload,
         );
     },
     isOrderbookChannelHandler(variableName: string, handler: any): void {
-        sharedAssert.isFunction(`${variableName}.onSnapshot`, _.get(handler, 'onSnapshot'));
         sharedAssert.isFunction(`${variableName}.onUpdate`, _.get(handler, 'onUpdate'));
         sharedAssert.isFunction(`${variableName}.onError`, _.get(handler, 'onError'));
         sharedAssert.isFunction(`${variableName}.onClose`, _.get(handler, 'onClose'));
