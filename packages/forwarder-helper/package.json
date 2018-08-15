@@ -47,7 +47,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/forwarder-helper/README.md",
     "dependencies": {
+        "@0xproject/types": "^0.8.2",
         "@0xproject/typescript-typings": "^1.0.4",
+        "@0xproject/utils": "^1.0.5",
         "@types/node": "^8.0.53"
     },
     "devDependencies": {
