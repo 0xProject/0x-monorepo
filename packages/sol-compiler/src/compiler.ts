@@ -53,6 +53,23 @@ const DEFAULT_COMPILER_SETTINGS: solc.CompilerSettings = {
 };
 const CONFIG_FILE = 'compiler.json';
 
+interface VersionToInputs {
+    [solcVersion: string]: {
+        standardInput: solc.StandardInput;
+        contractsToCompile: string[];
+    };
+}
+
+interface ContractPathToData {
+    [contractPath: string]: ContractData;
+}
+
+interface ContractData {
+    currentArtifactIfExists: ContractArtifact | void;
+    sourceTreeHashHex: string;
+    contractName: string;
+}
+
 /**
  * The Compiler facilitates compiling Solidity smart contracts and saves the results
  * to artifact files.
@@ -137,24 +154,15 @@ export class Compiler {
      * @param fileName Name of contract with '.sol' extension.
      */
     private async _compileContractsAsync(contractNames: string[]): Promise<void> {
-        const versionToInputs: {
-            [solcVersion: string]: {
-                standardInput: solc.StandardInput;
-                contractsToCompile: string[];
-            };
-        } = {};
+        // batch input contracts together based on the version of the compiler that they require.
+        const versionToInputs: VersionToInputs = {};
 
-        const contractData: {
-            [contractPath: string]: {
-                currentArtifactIfExists: ContractArtifact | void;
-                sourceTreeHashHex: string;
-                contractName: string;
-            };
-        } = {};
+        // map contract paths to data about them for later verification and persistence
+        const contractPathToData: ContractPathToData = {};
 
         for (const contractName of contractNames) {
             const contractSource = this._resolver.resolve(contractName);
-            contractData[contractSource.path] = {
+            contractPathToData[contractSource.path] = {
                 contractName,
                 currentArtifactIfExists: await getContractArtifactIfExistsAsync(this._artifactsDir, contractName),
                 sourceTreeHashHex: `0x${this._getSourceTreeHash(
@@ -162,14 +170,15 @@ export class Compiler {
                 ).toString('hex')}`,
             };
             let shouldCompile = false;
-            if (_.isUndefined(contractData[contractSource.path].currentArtifactIfExists)) {
+            if (_.isUndefined(contractPathToData[contractSource.path].currentArtifactIfExists)) {
                 shouldCompile = true;
             } else {
-                const currentArtifact = contractData[contractSource.path].currentArtifactIfExists as ContractArtifact;
+                const currentArtifact = contractPathToData[contractSource.path]
+                    .currentArtifactIfExists as ContractArtifact;
                 const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
                 const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
                 const didSourceChange =
-                    currentArtifact.sourceTreeHashHex !== contractData[contractSource.path].sourceTreeHashHex;
+                    currentArtifact.sourceTreeHashHex !== contractPathToData[contractSource.path].sourceTreeHashHex;
                 shouldCompile = !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
             }
             if (!shouldCompile) {
@@ -216,7 +225,7 @@ export class Compiler {
             for (const contractPath of input.contractsToCompile) {
                 await this._verifyAndPersistCompiledContractAsync(
                     contractPath,
-                    contractData[contractPath],
+                    contractPathToData[contractPath],
                     fullSolcVersion,
                     compiled,
                 );
@@ -225,11 +234,7 @@ export class Compiler {
     }
     private async _verifyAndPersistCompiledContractAsync(
         contractPath: string,
-        contractMetadata: {
-            currentArtifactIfExists: ContractArtifact | void;
-            sourceTreeHashHex: string;
-            contractName: string;
-        },
+        contractMetadata: ContractData,
         fullSolcVersion: string,
         compiled: solc.StandardOutput,
     ): Promise<void> {
