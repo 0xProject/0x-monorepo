@@ -162,42 +162,31 @@ contract MixinMatchOrders is
         pure
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
-        // We settle orders at the exchange rate of the right order.
-        // The amount saved by the left maker goes to the taker.
-        // Either the left or right order will be fully filled; possibly both.
-        // The left order is fully filled iff the right order can sell more than left can buy.
-        // That is: the amount required to fill the left order is less than or equal to
-        //          the amount we can spend from the right order:
-        //          <leftTakerAssetAmountRemaining> <= <rightTakerAssetAmountRemaining> * <rightMakerToTakerRatio>
-        //          <leftTakerAssetAmountRemaining> <= <rightTakerAssetAmountRemaining> * <rightOrder.makerAssetAmount> / <rightOrder.takerAssetAmount>
-        //          <leftTakerAssetAmountRemaining> * <rightOrder.takerAssetAmount> <= <rightTakerAssetAmountRemaining> * <rightOrder.makerAssetAmount>
+        // Compute remaining amounts on partially filled orders
         uint256 leftTakerAssetAmountRemaining = safeSub(leftOrder.takerAssetAmount, leftOrderTakerAssetFilledAmount);
         uint256 rightTakerAssetAmountRemaining = safeSub(rightOrder.takerAssetAmount, rightOrderTakerAssetFilledAmount);
+        uint256 leftMakerAssetAmountRemaining = getPartialAmount(
+            leftTakerAssetAmountRemaining, leftOrder.takerAssetAmount,
+            leftOrder.makerAssetAmount);
+        uint256 rightMakerAssetAmountRemaining = getPartialAmount(
+            rightTakerAssetAmountRemaining, rightOrder.takerAssetAmount,
+            rightOrder.makerAssetAmount);
+        
+        // Compute optimal fill strategy
         uint256 leftTakerAssetFilledAmount;
         uint256 rightTakerAssetFilledAmount;
-        if (
-            safeMul(leftTakerAssetAmountRemaining, rightOrder.takerAssetAmount) <=
-            safeMul(rightTakerAssetAmountRemaining, rightOrder.makerAssetAmount)
-        ) {
-            // Left order will be fully filled: maximally fill left
-            leftTakerAssetFilledAmount = leftTakerAssetAmountRemaining;
-
-            // The right order receives an amount proportional to how much was spent.
-            rightTakerAssetFilledAmount = getPartialAmount(
-                rightOrder.takerAssetAmount,
-                rightOrder.makerAssetAmount,
-                leftTakerAssetFilledAmount
-            );
-        } else {
-            // Right order will be fully filled: maximally fill right
+        if (rightMakerAssetAmountRemaining < leftTakerAssetAmountRemaining) {
+            // Right limited
+            leftTakerAssetFilledAmount = rightMakerAssetAmountRemaining;
             rightTakerAssetFilledAmount = rightTakerAssetAmountRemaining;
-
-            // The left order receives an amount proportional to how much was spent.
-            leftTakerAssetFilledAmount = getPartialAmount(
-                rightOrder.makerAssetAmount,
-                rightOrder.takerAssetAmount,
-                rightTakerAssetFilledAmount
-            );
+        } else if (leftMakerAssetAmountRemaining < rightTakerAssetAmountRemaining) {
+            // Left limited
+            leftTakerAssetFilledAmount = leftTakerAssetAmountRemaining;
+            rightTakerAssetFilledAmount = leftMakerAssetAmountRemaining;
+        } else {
+            // Unlimited
+            leftTakerAssetFilledAmount = leftTakerAssetAmountRemaining;
+            rightTakerAssetFilledAmount = rightTakerAssetAmountRemaining;
         }
 
         // Calculate fill results for left order
