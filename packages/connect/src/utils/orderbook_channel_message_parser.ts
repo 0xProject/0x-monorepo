@@ -22,7 +22,7 @@ export const ordersChannelMessageParser = {
             case OrdersChannelMessageTypes.Update: {
                 assert.doesConformToSchema('message', messageObj, schemas.relayerApiOrdersChannelUpdateSchema);
                 const orderJson = messageObj.payload;
-                const order = relayerResponseJsonParsers.parseOrderJson(orderJson);
+                const order = relayerResponseJsonParsers.parseAPIOrderJson(orderJson);
                 return _.assign(messageObj, { payload: order });
             }
             default: {

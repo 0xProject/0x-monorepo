@@ -21,6 +21,7 @@ import {
     OrdersResponse,
     PagedRequestOpts,
     PaginatedCollection,
+    FeeRecipientsResponse,
 } from './types';
 import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 
@@ -140,7 +141,7 @@ export class HttpClient implements Client {
     /**
      * Retrieve the list of fee recipient addresses used by
      */
-    public async getFeeRecipientsAsync(): Promise<PaginatedCollection<string>> {
+    public async getFeeRecipientsAsync(): Promise<FeeRecipientsResponse> {
         return this._requestAsync('/fee_recipients', HttpRequestType.Get);
     }
 
