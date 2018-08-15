@@ -65,6 +65,29 @@ export class Compiler {
     private readonly _artifactsDir: string;
     private readonly _solcVersionIfExists: string | undefined;
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
+    private static async _getSolcAsync(
+        solcVersion: string,
+    ): Promise<{ solcInstance: solc.SolcInstance; fullSolcVersion: string }> {
+        const fullSolcVersion = binPaths[solcVersion];
+        const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
+        let solcjs: string;
+        const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
+        if (isCompilerAvailableLocally) {
+            solcjs = fs.readFileSync(compilerBinFilename).toString();
+        } else {
+            logUtils.log(`Downloading ${fullSolcVersion}...`);
+            const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
+            const response = await fetchAsync(url);
+            const SUCCESS_STATUS = 200;
+            if (response.status !== SUCCESS_STATUS) {
+                throw new Error(`Failed to load ${fullSolcVersion}`);
+            }
+            solcjs = await response.text();
+            fs.writeFileSync(compilerBinFilename, solcjs);
+        }
+        const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
+        return { solcInstance, fullSolcVersion };
+    }
     /**
      * Instantiates a new instance of the Compiler class.
      * @return An instance of the Compiler class.
@@ -199,29 +222,6 @@ export class Compiler {
                 );
             }
         }
-    }
-    private static async _getSolcAsync(
-        solcVersion: string,
-    ): Promise<{ solcInstance: solc.SolcInstance; fullSolcVersion: string }> {
-        const fullSolcVersion = binPaths[solcVersion];
-        const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
-        let solcjs: string;
-        const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
-        if (isCompilerAvailableLocally) {
-            solcjs = fs.readFileSync(compilerBinFilename).toString();
-        } else {
-            logUtils.log(`Downloading ${fullSolcVersion}...`);
-            const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
-            const response = await fetchAsync(url);
-            const SUCCESS_STATUS = 200;
-            if (response.status !== SUCCESS_STATUS) {
-                throw new Error(`Failed to load ${fullSolcVersion}`);
-            }
-            solcjs = await response.text();
-            fs.writeFileSync(compilerBinFilename, solcjs);
-        }
-        const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
-        return { solcInstance, fullSolcVersion };
     }
     private async _verifyAndPersistCompiledContractAsync(
         contractPath: string,
