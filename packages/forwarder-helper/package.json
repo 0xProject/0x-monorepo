@@ -1,0 +1,78 @@
+{
+    "name": "@0xproject/forwarder-helper",
+    "version": "1.0.0-rc.1",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Convenience object for working with the forwarder contract",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
+    "scripts": {
+        "watch_without_deps": "tsc -w",
+        "lint": "tslint --project .",
+        "test": "yarn run_mocha",
+        "rebuild_and_test": "run-s clean build test",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
+        "test:circleci": "yarn test:coverage",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
+        "clean": "shx rm -rf lib test_temp scripts",
+        "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
+        "docs:stage": "node scripts/stage_docs.js",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
+        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+    },
+    "config": {
+        "postpublish": {
+            "assets": [],
+            "docPublishConfigs": {
+                "extraFileIncludes": [
+                    "../types/src/index.ts",
+                    "../ethereum-types/src/index.ts"
+                ],
+                "s3BucketPath": "s3://doc-jsons/forwarder-helper/",
+                "s3StagingBucketPath": "s3://staging-doc-jsons/forwarder-helper/"
+            }
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "author": "",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/forwarder-helper/README.md",
+    "dependencies": {
+        "@0xproject/typescript-typings": "^1.0.4",
+        "@types/node": "^8.0.53"
+    },
+    "devDependencies": {
+        "@0xproject/monorepo-scripts": "^1.0.5",
+        "@0xproject/tslint-config": "^1.0.5",
+        "@0xproject/utils": "^1.0.5",
+        "@types/lodash.foreach": "^4.5.3",
+        "@types/lodash.values": "^4.3.3",
+        "@types/mocha": "^2.2.42",
+        "chai": "^4.0.1",
+        "chai-as-promised": "^7.1.0",
+        "chai-bignumber": "^2.0.1",
+        "copyfiles": "^1.2.0",
+        "dirty-chai": "^2.0.1",
+        "lodash.foreach": "^4.5.0",
+        "make-promises-safe": "^1.1.0",
+        "mocha": "^4.1.0",
+        "npm-run-all": "^4.1.2",
+        "nyc": "^11.0.1",
+        "shx": "^0.2.2",
+        "tslint": "5.11.0",
+        "typedoc": "0xProject/typedoc",
+        "typescript": "3.0.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
