@@ -22,7 +22,7 @@ const DOC_JSON_VERSION = '0.0.1';
 
 const EXTERNAL_TYPE_TO_LINK: { [externalType: string]: string } = {
     BigNumber: 'http://mikemcl.github.io/bignumber.js',
-    Error: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v9/index.d.ts#L134',
+    Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
     Buffer: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v9/index.d.ts#L262',
     'solc.StandardContractOutput':
         'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#output-description',
