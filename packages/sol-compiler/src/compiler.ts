@@ -184,12 +184,9 @@ export class Compiler {
             if (!shouldCompile) {
                 continue;
             }
-            let solcVersion = this._solcVersionIfExists;
-            if (_.isUndefined(solcVersion)) {
-                const solcVersionRange = parseSolidityVersionRange(contractSource.source);
-                const availableCompilerVersions = _.keys(binPaths);
-                solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
-            }
+            const solcVersion = _.isUndefined(this._solcVersionIfExists)
+                ? semver.maxSatisfying(_.keys(binPaths), parseSolidityVersionRange(contractSource.source))
+                : this._solcVersionIfExists;
             if (_.isUndefined(versionToInputs[solcVersion])) {
                 versionToInputs[solcVersion] = {
                     standardInput: {
