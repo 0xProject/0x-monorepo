@@ -81,6 +81,7 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
                         sectionName={this.props.sectionName}
                         typeDefinitionByName={this.props.typeDefinitionByName}
                         docsInfo={this.props.docsInfo}
+                        isInPopover={false}
                     />
                 </code>
                 {(method as TypescriptMethod).source && (

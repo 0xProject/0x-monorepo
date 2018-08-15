@@ -30,8 +30,8 @@ import {
 import { Badge } from './badge';
 import { Comment } from './comment';
 import { EventDefinition } from './event_definition';
-import { SignatureBlock } from './signature_block';
 import { PropertyBlock } from './property_block';
+import { SignatureBlock } from './signature_block';
 import { TypeDefinition } from './type_definition';
 
 const networkNameToColor: { [network: string]: string } = {
@@ -225,6 +225,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     customType={customType}
                     docsInfo={this.props.docsInfo}
                     typeDefinitionByName={typeDefinitionByName}
+                    isInPopover={false}
                 />
             );
         });

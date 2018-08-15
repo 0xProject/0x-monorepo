@@ -7,23 +7,26 @@ import * as ReactTooltip from 'react-tooltip';
 
 import { DocsInfo } from '../docs_info';
 import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '../types';
+import { constants } from '../utils/constants';
 
 import { Signature } from './signature';
-import { constants } from '../utils/constants';
 import { TypeDefinition } from './type_definition';
 
 const basicJsTypes = ['string', 'number', 'undefined', 'null', 'boolean'];
+
+const defaultProps = {};
 
 export interface TypeProps {
     type: TypeDef;
     docsInfo: DocsInfo;
     sectionName: string;
     typeDefinitionByName?: TypeDefinitionByName;
+    isInPopover: boolean;
 }
 
 // The return type needs to be `any` here so that we can recursively define <Type /> components within
 // <Type /> components (e.g when rendering the union type).
-export function Type(props: TypeProps): any {
+export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
     const type = props.type;
     const isReference = type.typeDocType === TypeDocTypes.Reference;
     const isArray = type.typeDocType === TypeDocTypes.Array;
@@ -50,6 +53,7 @@ export function Type(props: TypeProps): any {
                                 sectionName={props.sectionName}
                                 typeDefinitionByName={props.typeDefinitionByName}
                                 docsInfo={props.docsInfo}
+                                isInPopover={props.isInPopover}
                             />[]
                         </span>
                     );
@@ -61,6 +65,7 @@ export function Type(props: TypeProps): any {
                             sectionName={props.sectionName}
                             typeDefinitionByName={props.typeDefinitionByName}
                             docsInfo={props.docsInfo}
+                            isInPopover={props.isInPopover}
                         />
                     );
                     return subType;
@@ -89,6 +94,7 @@ export function Type(props: TypeProps): any {
                         sectionName={props.sectionName}
                         typeDefinitionByName={props.typeDefinitionByName}
                         docsInfo={props.docsInfo}
+                        isInPopover={props.isInPopover}
                     />
                 );
             });
@@ -110,6 +116,7 @@ export function Type(props: TypeProps): any {
                         shouldUseArrowSyntax={true}
                         docsInfo={props.docsInfo}
                         typeDefinitionByName={props.typeDefinitionByName}
+                        isInPopover={props.isInPopover}
                     />
                 );
             } else if (!_.isUndefined(type.indexSignature)) {
@@ -122,6 +129,7 @@ export function Type(props: TypeProps): any {
                             sectionName={props.sectionName}
                             docsInfo={props.docsInfo}
                             typeDefinitionByName={props.typeDefinitionByName}
+                            isInPopover={props.isInPopover}
                         />
                     </span>
                 );
@@ -150,6 +158,7 @@ export function Type(props: TypeProps): any {
                         sectionName={props.sectionName}
                         typeDefinitionByName={props.typeDefinitionByName}
                         docsInfo={props.docsInfo}
+                        isInPopover={props.isInPopover}
                     />
                 );
             });
@@ -180,6 +189,7 @@ export function Type(props: TypeProps): any {
             ? props.docsInfo.typeConfigs.typeNameToPrefix[typeName as string]
             : undefined;
     }
+    const isExportedClassReference = !!props.type.isExportedClassReference;
     if (!_.isUndefined(typeNameUrlIfExists)) {
         typeName = (
             <a
@@ -194,12 +204,12 @@ export function Type(props: TypeProps): any {
         );
     } else if (
         (isReference || isArray) &&
-        props.typeDefinitionByName &&
-        props.typeDefinitionByName[typeName as string]
+        ((props.typeDefinitionByName && props.typeDefinitionByName[typeName as string]) || isExportedClassReference)
     ) {
         const id = Math.random().toString();
-        const typeDefinitionAnchorId = `${constants.TYPES_SECTION_NAME}-${typeName}`;
-        let typeDefinition = props.typeDefinitionByName[typeName as string];
+        const typeDefinitionAnchorId = isExportedClassReference
+            ? props.type.name
+            : `${constants.TYPES_SECTION_NAME}-${typeName}`;
         typeName = (
             <ScrollLink
                 to={typeDefinitionAnchorId}
@@ -208,7 +218,7 @@ export function Type(props: TypeProps): any {
                 duration={sharedConstants.DOCS_SCROLL_DURATION_MS}
                 containerId={sharedConstants.DOCS_CONTAINER_ID}
             >
-                {sharedUtils.isUserOnMobile() ? (
+                {sharedUtils.isUserOnMobile() || props.isInPopover || isExportedClassReference ? (
                     <span style={{ color: colors.lightBlueA700, cursor: 'pointer' }}>{typeName}</span>
                 ) : (
                     <span
@@ -224,10 +234,11 @@ export function Type(props: TypeProps): any {
                         <ReactTooltip type="light" effect="solid" id={id} className="typeTooltip">
                             <TypeDefinition
                                 sectionName={props.sectionName}
-                                customType={typeDefinition}
+                                customType={props.typeDefinitionByName[typeName as string]}
                                 shouldAddId={false}
                                 docsInfo={props.docsInfo}
                                 typeDefinitionByName={props.typeDefinitionByName}
+                                isInPopover={true}
                             />
                         </ReactTooltip>
                     </span>
@@ -248,4 +259,6 @@ export function Type(props: TypeProps): any {
             )}
         </span>
     );
-}
+};
+
+Type.defaultProps = defaultProps;

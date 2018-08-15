@@ -7,14 +7,17 @@ import { CustomType, TypeDefinitionByName } from '../types';
 import { Signature } from './signature';
 import { Type } from './type';
 
+const defaultProps = {};
+
 export interface InterfaceProps {
     type: CustomType;
     sectionName: string;
     docsInfo: DocsInfo;
     typeDefinitionByName: TypeDefinitionByName;
+    isInPopover: boolean;
 }
 
-export const Interface = (props: InterfaceProps) => {
+export const Interface: React.SFC<InterfaceProps> = (props: InterfaceProps): any => {
     const type = props.type;
     const properties = _.map(type.children, property => {
         return (
@@ -31,6 +34,7 @@ export const Interface = (props: InterfaceProps) => {
                         shouldUseArrowSyntax={true}
                         docsInfo={props.docsInfo}
                         typeDefinitionByName={props.typeDefinitionByName}
+                        isInPopover={props.isInPopover}
                     />
                 ) : (
                     <Type
@@ -38,6 +42,7 @@ export const Interface = (props: InterfaceProps) => {
                         sectionName={props.sectionName}
                         docsInfo={props.docsInfo}
                         typeDefinitionByName={props.typeDefinitionByName}
+                        isInPopover={props.isInPopover}
                     />
                 )},
             </span>
@@ -54,6 +59,7 @@ export const Interface = (props: InterfaceProps) => {
                     sectionName={props.sectionName}
                     docsInfo={props.docsInfo}
                     typeDefinitionByName={props.typeDefinitionByName}
+                    isInPopover={props.isInPopover}
                 />
             </span>
         );
@@ -77,3 +83,5 @@ export const Interface = (props: InterfaceProps) => {
         </span>
     );
 };
+
+Interface.defaultProps = defaultProps;

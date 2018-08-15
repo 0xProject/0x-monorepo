@@ -7,6 +7,7 @@ import {
     CustomTypeChild,
     DocAgnosticFormat,
     DocSection,
+    GeneratedDocJson,
     IndexSignature,
     KindString,
     Parameter,
@@ -19,7 +20,6 @@ import {
     TypeParameter,
     TypescriptFunction,
     TypescriptMethod,
-    GeneratedDocJson,
 } from '../types';
 
 import { constants } from './constants';
@@ -72,6 +72,15 @@ export const typeDocUtils = {
             ),
         );
 
+        const classNames: string[] = [];
+        _.each(typeDocJson.children, file => {
+            _.each(file.children, child => {
+                if (child.kindString === KindString.Class) {
+                    classNames.push(child.name);
+                }
+            });
+        });
+
         const docAgnosticFormat: DocAgnosticFormat = {};
         const typeEntities: TypeDocNode[] = [];
         _.each(typeDocNameOrder, typeDocName => {
@@ -93,6 +102,7 @@ export const typeDocUtils = {
                             entities,
                             docsInfo,
                             sectionName,
+                            classNames,
                             isClassOrObjectLiteral,
                         );
                         docSection.comment = sectionComment;
@@ -106,7 +116,12 @@ export const typeDocUtils = {
                         const entities = [child];
                         const commentObj = child.comment;
                         const SectionComment = !_.isUndefined(commentObj) ? commentObj.shortText : '';
-                        const docSection = typeDocUtils._convertEntitiesToDocSection(entities, docsInfo, sectionName);
+                        const docSection = typeDocUtils._convertEntitiesToDocSection(
+                            entities,
+                            docsInfo,
+                            sectionName,
+                            classNames,
+                        );
                         docSection.comment = SectionComment;
                         docAgnosticFormat[sectionName] = docSection;
                         break;
@@ -129,6 +144,7 @@ export const typeDocUtils = {
                 typeEntities,
                 docsInfo,
                 constants.TYPES_SECTION_NAME,
+                classNames,
             );
             docAgnosticFormat[constants.TYPES_SECTION_NAME] = docSection;
         }
@@ -139,6 +155,7 @@ export const typeDocUtils = {
         entities: TypeDocNode[],
         docsInfo: DocsInfo,
         sectionName: string,
+        classNames: string[],
         isClassOrObjectLiteral: boolean = false,
     ): DocSection {
         const docSection: DocSection = {
@@ -161,6 +178,7 @@ export const typeDocUtils = {
                         docsInfo.sections,
                         sectionName,
                         docsInfo.id,
+                        classNames,
                     );
                     docSection.constructors.push(constructor);
                     break;
@@ -176,6 +194,7 @@ export const typeDocUtils = {
                                 sectionName,
                                 docsInfo.id,
                                 isClassOrObjectLiteral,
+                                classNames,
                             );
                             docSection.functions.push(func);
                         }
@@ -191,6 +210,7 @@ export const typeDocUtils = {
                             docsInfo.sections,
                             sectionName,
                             docsInfo.id,
+                            classNames,
                         );
                         docSection.methods.push(method);
                     }
@@ -203,6 +223,7 @@ export const typeDocUtils = {
                             docsInfo.sections,
                             sectionName,
                             docsInfo.id,
+                            classNames,
                         );
                         docSection.properties.push(property);
                     }
@@ -216,6 +237,7 @@ export const typeDocUtils = {
                             docsInfo.sections,
                             sectionName,
                             docsInfo.id,
+                            classNames,
                         );
                         docSection.properties.push(property);
                     } else {
@@ -225,6 +247,7 @@ export const typeDocUtils = {
                             docsInfo.sections,
                             sectionName,
                             docsInfo.id,
+                            classNames,
                         );
                         const seenTypeNames = _.map(docSection.types, t => t.name);
                         const isUnseen = !_.includes(seenTypeNames, customType.name);
@@ -235,14 +258,14 @@ export const typeDocUtils = {
                     break;
 
                 case KindString.Interface:
-                case KindString.Variable:
                 case KindString.Enumeration:
-                case KindString.TypeAlias:
+                case KindString.TypeAlias: {
                     const customType = typeDocUtils._convertCustomType(
                         entity,
                         docsInfo.sections,
                         sectionName,
                         docsInfo.id,
+                        classNames,
                     );
                     const seenTypeNames = _.map(docSection.types, t => t.name);
                     const isUnseen = !_.includes(seenTypeNames, customType.name);
@@ -250,6 +273,7 @@ export const typeDocUtils = {
                         docSection.types.push(customType);
                     }
                     break;
+                }
 
                 case KindString.Class:
                     // We currently do not support more then a single class per file
@@ -263,18 +287,24 @@ export const typeDocUtils = {
         });
         return docSection;
     },
-    _convertCustomType(entity: TypeDocNode, sections: SectionsMap, sectionName: string, docId: string): CustomType {
+    _convertCustomType(
+        entity: TypeDocNode,
+        sections: SectionsMap,
+        sectionName: string,
+        docId: string,
+        classNames: string[],
+    ): CustomType {
         const typeIfExists = !_.isUndefined(entity.type)
-            ? typeDocUtils._convertType(entity.type, sections, sectionName, docId)
+            ? typeDocUtils._convertType(entity.type, sections, sectionName, docId, classNames)
             : undefined;
         const isConstructor = false;
         const methodIfExists = !_.isUndefined(entity.declaration)
-            ? typeDocUtils._convertMethod(entity.declaration, isConstructor, sections, sectionName, docId)
+            ? typeDocUtils._convertMethod(entity.declaration, isConstructor, sections, sectionName, docId, classNames)
             : undefined;
         const doesIndexSignatureExist = !_.isUndefined(entity.indexSignature);
         const indexSignature = entity.indexSignature as TypeDocNode;
         const indexSignatureIfExists = doesIndexSignatureExist
-            ? typeDocUtils._convertIndexSignature(indexSignature, sections, sectionName, docId)
+            ? typeDocUtils._convertIndexSignature(indexSignature, sections, sectionName, docId, classNames)
             : undefined;
         const commentIfExists =
             !_.isUndefined(entity.comment) && !_.isUndefined(entity.comment.shortText)
@@ -284,13 +314,20 @@ export const typeDocUtils = {
         const childrenIfExist = !_.isUndefined(entity.children)
             ? _.map(entity.children, (child: TypeDocNode) => {
                   let childTypeIfExists = !_.isUndefined(child.type)
-                      ? typeDocUtils._convertType(child.type, sections, sectionName, docId)
+                      ? typeDocUtils._convertType(child.type, sections, sectionName, docId, classNames)
                       : undefined;
                   if (child.kindString === KindString.Method) {
                       childTypeIfExists = {
                           name: child.name,
                           typeDocType: TypeDocTypes.Reflection,
-                          method: typeDocUtils._convertMethod(child, isConstructor, sections, sectionName, docId),
+                          method: typeDocUtils._convertMethod(
+                              child,
+                              isConstructor,
+                              sections,
+                              sectionName,
+                              docId,
+                              classNames,
+                          ),
                       };
                   }
                   const c: CustomTypeChild = {
@@ -319,16 +356,23 @@ export const typeDocUtils = {
         sections: SectionsMap,
         sectionName: string,
         docId: string,
+        classNames: string[],
     ): IndexSignature {
         const key = entity.parameters[0];
         const indexSignature = {
             keyName: key.name,
-            keyType: typeDocUtils._convertType(key.type, sections, sectionName, docId),
+            keyType: typeDocUtils._convertType(key.type, sections, sectionName, docId, classNames),
             valueName: entity.type.name,
         };
         return indexSignature;
     },
-    _convertProperty(entity: TypeDocNode, sections: SectionsMap, sectionName: string, docId: string): Property {
+    _convertProperty(
+        entity: TypeDocNode,
+        sections: SectionsMap,
+        sectionName: string,
+        docId: string,
+        classNames: string[],
+    ): Property {
         const source = entity.sources[0];
         const commentIfExists = !_.isUndefined(entity.comment) ? entity.comment.shortText : undefined;
         const isConstructor = false;
@@ -336,7 +380,7 @@ export const typeDocUtils = {
         const callPath = typeDocUtils._getCallPath(sectionName, isStatic, isConstructor, entity.name);
         const property = {
             name: entity.name,
-            type: typeDocUtils._convertType(entity.type, sections, sectionName, docId),
+            type: typeDocUtils._convertType(entity.type, sections, sectionName, docId, classNames),
             source: {
                 fileName: source.fileName,
                 line: source.line,
@@ -352,6 +396,7 @@ export const typeDocUtils = {
         sections: SectionsMap,
         sectionName: string,
         docId: string,
+        classNames: string[],
     ): TypescriptMethod {
         const signature = entity.signatures[0];
         const source = entity.sources[0];
@@ -359,12 +404,12 @@ export const typeDocUtils = {
         const isStatic = _.isUndefined(entity.flags.isStatic) ? false : entity.flags.isStatic;
 
         const parameters = _.map(signature.parameters, param => {
-            return typeDocUtils._convertParameter(param, sections, sectionName, docId);
+            return typeDocUtils._convertParameter(param, sections, sectionName, docId, classNames);
         });
-        const returnType = typeDocUtils._convertType(signature.type, sections, sectionName, docId);
+        const returnType = typeDocUtils._convertType(signature.type, sections, sectionName, docId, classNames);
         const typeParameter = _.isUndefined(signature.typeParameter)
             ? undefined
-            : typeDocUtils._convertTypeParameter(signature.typeParameter[0], sections, sectionName, docId);
+            : typeDocUtils._convertTypeParameter(signature.typeParameter[0], sections, sectionName, docId, classNames);
 
         const callPath = typeDocUtils._getCallPath(sectionName, isStatic, isConstructor, entity.name);
         const method = {
@@ -384,13 +429,12 @@ export const typeDocUtils = {
         };
         return method;
     },
-    _getCallPath(sectionName: string, isStatic: boolean, isConstructor: boolean, entityName: string) {
+    _getCallPath(sectionName: string, isStatic: boolean, isConstructor: boolean, entityName: string): string {
         // HACK: we use the fact that the sectionName is the same as the property name at the top-level
         // of the public interface. In the future, we shouldn't use this hack but rather get it from the JSON.
         let callPath;
         if (isConstructor || entityName === '__type') {
             callPath = '';
-            // TODO: Get rid of this 0x-specific logic
         } else {
             const prefix = isStatic ? sectionName : `${sectionName[0].toLowerCase()}${sectionName.slice(1)}`;
             callPath = `${prefix}.`;
@@ -403,18 +447,19 @@ export const typeDocUtils = {
         sectionName: string,
         docId: string,
         isObjectLiteral: boolean,
+        classNames: string[],
     ): TypescriptFunction {
         const signature = entity.signatures[0];
         const source = entity.sources[0];
         const hasComment = !_.isUndefined(signature.comment);
 
         const parameters = _.map(signature.parameters, param => {
-            return typeDocUtils._convertParameter(param, sections, sectionName, docId);
+            return typeDocUtils._convertParameter(param, sections, sectionName, docId, classNames);
         });
-        const returnType = typeDocUtils._convertType(signature.type, sections, sectionName, docId);
+        const returnType = typeDocUtils._convertType(signature.type, sections, sectionName, docId, classNames);
         const typeParameter = _.isUndefined(signature.typeParameter)
             ? undefined
-            : typeDocUtils._convertTypeParameter(signature.typeParameter[0], sections, sectionName, docId);
+            : typeDocUtils._convertTypeParameter(signature.typeParameter[0], sections, sectionName, docId, classNames);
 
         let callPath = '';
         if (isObjectLiteral) {
@@ -442,15 +487,22 @@ export const typeDocUtils = {
         sections: SectionsMap,
         sectionName: string,
         docId: string,
+        classNames: string[],
     ): TypeParameter {
-        const type = typeDocUtils._convertType(entity.type, sections, sectionName, docId);
+        const type = typeDocUtils._convertType(entity.type, sections, sectionName, docId, classNames);
         const parameter = {
             name: entity.name,
             type,
         };
         return parameter;
     },
-    _convertParameter(entity: TypeDocNode, sections: SectionsMap, sectionName: string, docId: string): Parameter {
+    _convertParameter(
+        entity: TypeDocNode,
+        sections: SectionsMap,
+        sectionName: string,
+        docId: string,
+        classNames: string[],
+    ): Parameter {
         let comment = '<No comment>';
         if (entity.comment && entity.comment.shortText) {
             comment = entity.comment.shortText;
@@ -460,7 +512,7 @@ export const typeDocUtils = {
 
         const isOptional = !_.isUndefined(entity.flags.isOptional) ? entity.flags.isOptional : false;
 
-        const type = typeDocUtils._convertType(entity.type, sections, sectionName, docId);
+        const type = typeDocUtils._convertType(entity.type, sections, sectionName, docId, classNames);
 
         const parameter = {
             name: entity.name,
@@ -471,12 +523,18 @@ export const typeDocUtils = {
         };
         return parameter;
     },
-    _convertType(entity: TypeDocType, sections: SectionsMap, sectionName: string, docId: string): Type {
+    _convertType(
+        entity: TypeDocType,
+        sections: SectionsMap,
+        sectionName: string,
+        docId: string,
+        classNames: string[],
+    ): Type {
         const typeArguments = _.map(entity.typeArguments, typeArgument => {
-            return typeDocUtils._convertType(typeArgument, sections, sectionName, docId);
+            return typeDocUtils._convertType(typeArgument, sections, sectionName, docId, classNames);
         });
         const types = _.map(entity.types, t => {
-            return typeDocUtils._convertType(t, sections, sectionName, docId);
+            return typeDocUtils._convertType(t, sections, sectionName, docId, classNames);
         });
 
         let indexSignatureIfExists;
@@ -485,7 +543,13 @@ export const typeDocUtils = {
             !_.isUndefined(entity.declaration) && !_.isUndefined(entity.declaration.indexSignature);
         if (doesIndexSignatureExist) {
             const indexSignature = entity.declaration.indexSignature as TypeDocNode;
-            indexSignatureIfExists = typeDocUtils._convertIndexSignature(indexSignature, sections, sectionName, docId);
+            indexSignatureIfExists = typeDocUtils._convertIndexSignature(
+                indexSignature,
+                sections,
+                sectionName,
+                docId,
+                classNames,
+            );
         } else if (!_.isUndefined(entity.declaration)) {
             const isConstructor = false;
             methodIfExists = typeDocUtils._convertMethod(
@@ -494,6 +558,7 @@ export const typeDocUtils = {
                 sections,
                 sectionName,
                 docId,
+                classNames,
             );
         }
 
@@ -507,6 +572,7 @@ export const typeDocUtils = {
         const type = {
             name: entity.name,
             value: entity.value,
+            isExportedClassReference: _.includes(classNames, entity.name),
             typeDocType: entity.type,
             typeArguments,
             elementType: elementTypeIfExists,

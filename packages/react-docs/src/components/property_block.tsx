@@ -6,8 +6,8 @@ import { Property, TypeDefinitionByName } from '../types';
 import { constants } from '../utils/constants';
 
 import { Comment } from './comment';
-import { Type } from './type';
 import { SourceLink } from './source_link';
+import { Type } from './type';
 
 export interface PropertyBlockProps {
     property: Property;
@@ -56,6 +56,7 @@ export class PropertyBlock extends React.Component<PropertyBlockProps, PropertyB
                         sectionName={sectionName}
                         docsInfo={this.props.docsInfo}
                         typeDefinitionByName={this.props.typeDefinitionByName}
+                        isInPopover={false}
                     />
                 </code>
                 {property.source && (

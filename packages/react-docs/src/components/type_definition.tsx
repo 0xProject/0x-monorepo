@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { CustomType, CustomTypeChild, KindString, TypeDocTypes, TypeDefinitionByName } from '../types';
+import { CustomType, CustomTypeChild, KindString, TypeDefinitionByName, TypeDocTypes } from '../types';
 import { constants } from '../utils/constants';
 
 import { Comment } from './comment';
@@ -20,6 +20,7 @@ export interface TypeDefinitionProps {
     shouldAddId?: boolean;
     docsInfo: DocsInfo;
     typeDefinitionByName?: TypeDefinitionByName;
+    isInPopover?: boolean;
 }
 
 export interface TypeDefinitionState {
@@ -29,6 +30,7 @@ export interface TypeDefinitionState {
 export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDefinitionState> {
     public static defaultProps: Partial<TypeDefinitionProps> = {
         shouldAddId: true,
+        isInPopover: false,
     };
     constructor(props: TypeDefinitionProps) {
         super(props);
@@ -50,6 +52,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                         sectionName={this.props.sectionName}
                         docsInfo={this.props.docsInfo}
                         typeDefinitionByName={this.props.typeDefinitionByName}
+                        isInPopover={this.props.isInPopover}
                     />
                 );
                 break;
@@ -81,6 +84,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                                 sectionName={this.props.sectionName}
                                 docsInfo={this.props.docsInfo}
                                 typeDefinitionByName={this.props.typeDefinitionByName}
+                                isInPopover={this.props.isInPopover}
                             />
                         ) : (
                             <Signature
@@ -94,6 +98,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                                 shouldUseArrowSyntax={true}
                                 docsInfo={this.props.docsInfo}
                                 typeDefinitionByName={this.props.typeDefinitionByName}
+                                isInPopover={this.props.isInPopover}
                             />
                         )}
                     </span>

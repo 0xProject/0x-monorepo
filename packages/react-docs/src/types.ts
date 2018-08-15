@@ -154,6 +154,7 @@ export interface Type {
     name: string;
     typeDocType: TypeDocTypes;
     value?: string;
+    isExportedClassReference?: boolean;
     typeArguments?: Type[];
     elementType?: ElementType;
     types?: Type[];
