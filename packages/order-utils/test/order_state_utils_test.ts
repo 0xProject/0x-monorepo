@@ -2,7 +2,9 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { AbstractBalanceAndProxyAllowanceFetcher, AbstractOrderFilledCancelledFetcher, OrderStateUtils } from '../src';
+import { AbstractBalanceAndProxyAllowanceFetcher } from '../src/abstract/abstract_balance_and_proxy_allowance_fetcher';
+import { AbstractOrderFilledCancelledFetcher } from '../src/abstract/abstract_order_filled_cancelled_fetcher';
+import { OrderStateUtils } from '../src/order_state_utils';
 
 import { chaiSetup } from './utils/chai_setup';
 import { testOrderFactory } from './utils/test_order_factory';

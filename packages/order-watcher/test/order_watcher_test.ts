@@ -501,7 +501,7 @@ describe('OrderWatcher', () => {
                     expect(orderState.isValid).to.be.false();
                     const invalidOrderState = orderState as OrderStateInvalid;
                     expect(invalidOrderState.orderHash).to.be.equal(orderHash);
-                    expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderAlreadyCancelledOrFilled);
+                    expect(invalidOrderState.error).to.be.equal(ExchangeContractErrs.OrderCancelled);
                 });
                 orderWatcher.subscribe(callback);
                 await contractWrappers.exchange.cancelOrderAsync(signedOrder);
