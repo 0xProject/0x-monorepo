@@ -1,7 +1,6 @@
 import { join } from 'path';
 
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
 import 'mocha';
 
 import { Compiler } from '../src/compiler';
@@ -9,9 +8,10 @@ import { fsWrapper } from '../src/utils/fs_wrapper';
 import { CompilerOptions, ContractArtifact } from '../src/utils/types';
 
 import { exchange_binary } from './fixtures/exchange_bin';
+import { chaiSetup } from './util/chai_setup';
 import { constants } from './util/constants';
 
-chai.use(chaiAsPromised);
+chaiSetup.configure();
 const expect = chai.expect;
 
 describe('#Compiler', function(): void {
