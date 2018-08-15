@@ -219,14 +219,14 @@ export class Compiler {
 
             const { solcInstance, fullSolcVersion } = await Compiler._getSolcAsync(solcVersion);
 
-            const compiled = this._compile(solcInstance, input.standardInput);
+            const compilerOutput = this._compile(solcInstance, input.standardInput);
 
             for (const contractPath of input.contractsToCompile) {
                 await this._verifyAndPersistCompiledContractAsync(
                     contractPath,
                     contractPathToData[contractPath],
                     fullSolcVersion,
-                    compiled,
+                    compilerOutput,
                 );
             }
         }
@@ -235,13 +235,13 @@ export class Compiler {
         contractPath: string,
         contractMetadata: ContractData,
         fullSolcVersion: string,
-        compiled: solc.StandardOutput,
+        compilerOutput: solc.StandardOutput,
     ): Promise<void> {
         const contractName = contractMetadata.contractName;
         const sourceTreeHashHex = contractMetadata.sourceTreeHashHex;
         const currentArtifactIfExists = contractMetadata.currentArtifactIfExists;
 
-        const compiledData = compiled.contracts[contractPath][contractName];
+        const compiledData = compilerOutput.contracts[contractPath][contractName];
         if (_.isUndefined(compiledData)) {
             throw new Error(
                 `Contract ${contractName} not found in ${contractPath}. Please make sure your contract has the same name as it's file name`,
@@ -262,12 +262,12 @@ export class Compiler {
         }
 
         const sourceCodes = _.mapValues(
-            compiled.sources,
+            compilerOutput.sources,
             (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,
         );
         const contractVersion: ContractVersionData = {
             compilerOutput: compiledData,
-            sources: compiled.sources,
+            sources: compilerOutput.sources,
             sourceCodes,
             sourceTreeHashHex,
             compiler: {
