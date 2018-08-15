@@ -58,7 +58,7 @@ contract IERC20Token {
     /// @dev `msg.sender` approves `_spender` to spend `_value` tokens
     /// @param _spender The address of the account able to transfer the tokens
     /// @param _value The amount of wei to be approved for transfer
-    /// @return Always true if enough call has enough gas to complete execution
+    /// @return Always true if the call has enough gas to complete execution
     function approve(address _spender, uint256 _value)
         external
         returns (bool);

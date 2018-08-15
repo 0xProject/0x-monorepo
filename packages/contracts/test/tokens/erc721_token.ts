@@ -4,15 +4,15 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
-import { DummyERC721ReceiverContract } from '../../generated_contract_wrappers/dummy_erc721_receiver';
+import {
+    DummyERC721ReceiverContract,
+    DummyERC721ReceiverTokenReceivedEventArgs,
+} from '../../generated_contract_wrappers/dummy_erc721_receiver';
 import {
     DummyERC721TokenContract,
     DummyERC721TokenTransferEventArgs,
 } from '../../generated_contract_wrappers/dummy_erc721_token';
-import {
-    InvalidERC721ReceiverContract,
-    InvalidERC721ReceiverTokenReceivedEventArgs,
-} from '../../generated_contract_wrappers/invalid_erc721_receiver';
+import { InvalidERC721ReceiverContract } from '../../generated_contract_wrappers/invalid_erc721_receiver';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync, expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
@@ -132,7 +132,7 @@ describe('ERC721Token', () => {
             expect(log.args._to).to.be.equal(to);
             expect(log.args._tokenId).to.be.bignumber.equal(tokenId);
         });
-        it('should transfer the token is spender is individually approved', async () => {
+        it('should transfer the token if spender is individually approved', async () => {
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await token.approve.sendTransactionAsync(spender, tokenId),
                 constants.AWAIT_TRANSACTION_MINED_MS,
@@ -204,7 +204,7 @@ describe('ERC721Token', () => {
             const newOwner = await token.ownerOf.callAsync(tokenId);
             expect(newOwner).to.be.equal(to);
             const transferLog = txReceipt.logs[0] as LogWithDecodedArgs<DummyERC721TokenTransferEventArgs>;
-            const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<InvalidERC721ReceiverTokenReceivedEventArgs>;
+            const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<DummyERC721ReceiverTokenReceivedEventArgs>;
             expect(transferLog.args._from).to.be.equal(from);
             expect(transferLog.args._to).to.be.equal(to);
             expect(transferLog.args._tokenId).to.be.bignumber.equal(tokenId);
@@ -265,7 +265,7 @@ describe('ERC721Token', () => {
             const newOwner = await token.ownerOf.callAsync(tokenId);
             expect(newOwner).to.be.equal(to);
             const transferLog = txReceipt.logs[0] as LogWithDecodedArgs<DummyERC721TokenTransferEventArgs>;
-            const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<InvalidERC721ReceiverTokenReceivedEventArgs>;
+            const receiverLog = txReceipt.logs[1] as LogWithDecodedArgs<DummyERC721ReceiverTokenReceivedEventArgs>;
             expect(transferLog.args._from).to.be.equal(from);
             expect(transferLog.args._to).to.be.equal(to);
             expect(transferLog.args._tokenId).to.be.bignumber.equal(tokenId);

@@ -45,7 +45,7 @@ contract ERC721Token is
 
     /// @notice Transfers the ownership of an NFT from one address to another address
     /// @dev Throws unless `msg.sender` is the current owner, an authorized
-    ///      perator, or the approved address for this NFT. Throws if `_from` is
+    ///      operator, or the approved address for this NFT. Throws if `_from` is
     ///      not the current owner. Throws if `_to` is the zero address. Throws if
     ///      `_tokenId` is not a valid NFT. When transfer is complete, this function
     ///      checks if `_to` is a smart contract (code size > 0). If so, it calls

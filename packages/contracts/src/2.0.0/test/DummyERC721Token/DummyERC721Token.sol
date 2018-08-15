@@ -46,13 +46,12 @@ contract DummyERC721Token is
     /// @param _tokenId ID of the token to be minted by the msg.sender    
     function mint(address _to, uint256 _tokenId)
         external
-        onlyOwner
     {
         _mint(_to, _tokenId);
     }
 
     /// @dev Function to burn a token
-    ///      Reverts if the given token ID doesn't exist
+    ///      Reverts if the given token ID doesn't exist or not called by contract owner
     /// @param _owner Owner of token with given token ID
     /// @param _tokenId ID of the token to be burned by the msg.sender
     function burn(address _owner, uint256 _tokenId)

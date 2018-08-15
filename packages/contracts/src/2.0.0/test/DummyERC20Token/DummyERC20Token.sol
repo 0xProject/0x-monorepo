@@ -29,6 +29,7 @@ contract DummyERC20Token is
     string public name;
     string public symbol;
     uint256 public decimals;
+    uint256 public constant MAX_MINT_AMOUNT = 10000000000000000000000;
 
     constructor (
         string _name,
@@ -67,7 +68,7 @@ contract DummyERC20Token is
         external
     {
         require(
-            _value <= 10000000000000000000000,
+            _value <= MAX_MINT_AMOUNT,
             "VALUE_TOO_LARGE"
         );
 

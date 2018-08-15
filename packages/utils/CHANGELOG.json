@@ -7,7 +7,8 @@
                 "pr": 807
             },
             {
-                "note": "Store different ABIs for events with same function signature and different amount of indexed arguments",
+                "note":
+                    "Store different ABIs for events with same function signature and different amount of indexed arguments",
                 "pr": 933
             }
         ],
