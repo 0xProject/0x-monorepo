@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
 import * as promisify from 'es6-promisify';
+import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import opn = require('opn');
+import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
 import * as prompt from 'prompt';
 import semver = require('semver');
@@ -30,6 +32,8 @@ const packageNameToWebsitePath: { [name: string]: string } = {
     'order-utils': 'order-utils',
     'ethereum-types': 'ethereum-types',
 };
+
+const writeFileAsync = promisify(fs.writeFile);
 
 async function confirmAsync(message: string): Promise<void> {
     prompt.start();
@@ -81,6 +85,8 @@ async function confirmAsync(message: string): Promise<void> {
     _.each(packageToNextVersion, (versionChange: string, packageName: string) => {
         utils.log(`${packageName} -> ${versionChange}`);
     });
+    utils.log('Adding beta tag to package.json where needed...');
+    await updateAllNpmBetaTagsAsync(updatedPublicPackages, packageToNextVersion);
     utils.log(`Calling 'lerna publish'...`);
     await lernaPublishAsync(packageToNextVersion);
 })().catch(err => {
@@ -182,6 +188,43 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
     }
 
     return packageToNextVersion;
+}
+
+async function updateAllNpmBetaTagsAsync(updatedPublicPackages: Package[], packageToNextVersion: PackageToNextVersion): Promise<void> {
+    _.each(updatedPublicPackages, async pkg => {
+        const packageName = pkg.packageJson.name;
+        const nextVersion = packageToNextVersion[packageName];
+        const semVersion = semver.parse(nextVersion) as semver.SemVer;
+        if (semVersion.prerelease != null && semVersion.prerelease.length > 0) {
+            await addNpmBetaTagIfNeededAsync(pkg);
+        } else {
+            await removeNpmBetaTagIfNeededAsync(pkg);
+        }
+    });
+}
+
+async function addNpmBetaTagIfNeededAsync(pkg: Package): Promise<void> {
+    if (!packageHasNpmBetaTag(pkg)) {
+        const updatedPackageJson = _.cloneDeep(pkg.packageJson);
+        _.set(updatedPackageJson, ['publishConfig', 'tag'], 'beta');
+        const jsonPath = path.join(pkg.location, 'package.json');
+        utils.log(`Adding beta tag to ${pkg.packageJson.name}`);
+        await writeFileAsync(jsonPath, JSON.stringify(updatedPackageJson, null, 2));
+    }
+}
+
+async function removeNpmBetaTagIfNeededAsync(pkg: Package): Promise<void> {
+    if (packageHasNpmBetaTag(pkg)) {
+        const updatedPackageJson = _.cloneDeep(pkg.packageJson);
+        _.omit(updatedPackageJson, ['publishConfig', 'tag']);
+        const jsonPath = path.join(pkg.location, 'package.json');
+        utils.log(`Removing beta tag from ${pkg.packageJson.name}`);
+        await writeFileAsync(jsonPath, JSON.stringify(updatedPackageJson));
+    }
+}
+
+function packageHasNpmBetaTag(pkg: Package): boolean {
+    return _.get(pkg.packageJson, ['publishConfig', 'tag']) === 'beta';
 }
 
 async function lernaPublishAsync(packageToNextVersion: { [name: string]: string }): Promise<void> {
