@@ -190,7 +190,10 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
     return packageToNextVersion;
 }
 
-async function updateAllNpmBetaTagsAsync(updatedPublicPackages: Package[], packageToNextVersion: PackageToNextVersion): Promise<void> {
+async function updateAllNpmBetaTagsAsync(
+    updatedPublicPackages: Package[],
+    packageToNextVersion: PackageToNextVersion,
+): Promise<void> {
     _.each(updatedPublicPackages, async pkg => {
         const packageName = pkg.packageJson.name;
         const nextVersion = packageToNextVersion[packageName];
