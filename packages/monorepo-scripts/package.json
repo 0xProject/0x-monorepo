@@ -64,8 +64,7 @@
         "semver": "5.5.0",
         "semver-diff": "^2.1.0",
         "semver-sort": "0.0.4",
-        "typedoc": "0xProject/typedoc",
-        "typescript": "2.7.1"
+        "typedoc": "0xProject/typedoc"
     },
     "publishConfig": {
         "access": "public"
