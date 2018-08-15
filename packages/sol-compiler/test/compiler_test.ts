@@ -59,7 +59,7 @@ describe('#Compiler', function(): void {
         compilerOpts.contracts = [contract];
         const compiler = new Compiler(compilerOpts);
 
-        expect(compiler.compileAsync()).to.be.rejectedWith(Error);
+        expect(compiler.compileAsync()).to.be.rejected();
     });
     describe('after a successful compilation', () => {
         const contract = 'Exchange';
