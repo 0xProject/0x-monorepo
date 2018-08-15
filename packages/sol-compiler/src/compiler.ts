@@ -209,11 +209,7 @@ export class Compiler {
             versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
         }
 
-        for (const solcVersion in versionToInputs) {
-            if (!versionToInputs.hasOwnProperty(solcVersion)) {
-                continue;
-            }
-
+        for (const solcVersion of _.keys(versionToInputs)) {
             const input = versionToInputs[solcVersion];
             logUtils.log(
                 `Compiling ${input.contractsToCompile.length} contracts (${
