@@ -205,6 +205,7 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
         metadata: {
             exportPathToTypedocNames,
             exportPathOrder,
+            externalTypeToLink: EXTERNAL_TYPE_TO_LINK,
         },
         typedocJson: finalTypeDocOutput,
     };
