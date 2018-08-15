@@ -71,6 +71,8 @@ export enum WebsocketClientEventType {
     ConnectFailed = 'connectFailed',
 }
 
+export type OrdersResponse = PaginatedCollection<APIOrder>;
+
 export interface APIOrder {
     order: SignedOrder;
     metaData: object;
@@ -80,6 +82,8 @@ export interface AssetPairsRequestOpts {
     assetDataA?: string;
     assetDataB?: string;
 }
+
+export type AssetPairsResponse = PaginatedCollection<AssetPairsItem>;
 
 export interface AssetPairsItem {
     assetDataA: Asset;

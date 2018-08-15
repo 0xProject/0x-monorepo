@@ -1,14 +1,16 @@
 import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
-import { SignedOrder } from '@0xproject/types';
 
-import { AssetPairsItem, OrderbookResponse, OrderConfigResponse } from '../types';
+import { APIOrder, AssetPairsItem, AssetPairsResponse, OrderbookResponse, OrderConfigResponse, OrdersResponse } from '../types';
 
 import { typeConverters } from './type_converters';
 
 export const relayerResponseJsonParsers = {
-    parseAssetDataPairsJson(json: any): AssetPairsItem[] {
+    parseAssetDataPairsJson(json: any): AssetPairsResponse {
         assert.doesConformToSchema('assetDataPairs', json, schemas.relayerApiAssetDataPairsResponseSchema);
+        return { ...json, records: relayerResponseJsonParsers.parseAssetDataPairsJson(json.records) };
+    },
+    parseAssetPairsItemJson(json: any): AssetPairsItem[] {
         return json.map((assetDataPair: any) => {
             return typeConverters.convertStringsFieldsToBigNumbers(assetDataPair, [
                 'assetDataA.minAmount',
@@ -18,20 +20,20 @@ export const relayerResponseJsonParsers = {
             ]);
         });
     },
-    parseOrdersJson(json: any): SignedOrder[] {
-        assert.doesConformToSchema('orders', json, schemas.signedOrdersSchema);
-        return json.map((order: object) => typeConverters.convertOrderStringFieldsToBigNumber(order));
+    parseOrdersJson(json: any): OrdersResponse {
+        assert.doesConformToSchema('relayerApiOrdersResponse', json, schemas.relayerApiOrdersResponseSchema);
+        return { ...json, records: json.records.map(relayerResponseJsonParsers.parseAPIOrderJson.bind(relayerResponseJsonParsers)) };
     },
-    parseOrderJson(json: any): SignedOrder {
-        assert.doesConformToSchema('order', json, schemas.signedOrderSchema);
+    parseAPIOrderJson(json: any): APIOrder {
+        assert.doesConformToSchema('relayerApiOrder', json, schemas.relayerApiOrderSchema);
         return typeConverters.convertOrderStringFieldsToBigNumber(json);
     },
     parseOrderbookResponseJson(json: any): OrderbookResponse {
-        assert.doesConformToSchema('orderBook', json, schemas.relayerApiOrdersResponseSchema);
+        assert.doesConformToSchema('orderBook', json, schemas.relayerApiOrderbookResponseSchema);
         return typeConverters.convertOrderbookStringFieldsToBigNumber(json);
     },
     parseOrderConfigResponseJson(json: any): OrderConfigResponse {
-        assert.doesConformToSchema('fees', json, schemas.relayerApiOrderConfigResponseSchema);
+        assert.doesConformToSchema('orderConfig', json, schemas.relayerApiOrderConfigResponseSchema);
         return typeConverters.convertStringsFieldsToBigNumbers(json, ['makerFee', 'takerFee']);
     },
 };

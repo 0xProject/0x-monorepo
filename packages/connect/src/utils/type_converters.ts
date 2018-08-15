@@ -1,14 +1,27 @@
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
+import { APIOrder } from '../types';
+
 export const typeConverters = {
     convertOrderbookStringFieldsToBigNumber(orderbook: any): any {
         const bids = _.get(orderbook, 'bids', []);
         const asks = _.get(orderbook, 'asks', []);
-        return {
-            bids: bids.map((order: any) => typeConverters.convertOrderStringFieldsToBigNumber(order)),
-            asks: asks.map((order: any) => typeConverters.convertOrderStringFieldsToBigNumber(order)),
+        const convertedBids = {
+            ...bids,
+            records: bids.records.map((order: any) => typeConverters.convertAPIOrderStringFieldsToBigNumber(order)),
         };
+        const convertedAsks = {
+            ...asks,
+            records: asks.records.map((order: any) => typeConverters.convertAPIOrderStringFieldsToBigNumber(order)),
+        };
+        return {
+            bids: convertedBids,
+            asks: convertedAsks,
+        };
+    },
+    convertAPIOrderStringFieldsToBigNumber(apiOrder: any): APIOrder {
+        return { ...apiOrder, order: typeConverters.convertOrderStringFieldsToBigNumber(apiOrder.order) };
     },
     convertOrderStringFieldsToBigNumber(order: any): any {
         return typeConverters.convertStringsFieldsToBigNumbers(order, [

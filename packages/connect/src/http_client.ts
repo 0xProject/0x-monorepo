@@ -8,8 +8,8 @@ import * as queryString from 'query-string';
 import { schemas as clientSchemas } from './schemas/schemas';
 import {
     APIOrder,
-    AssetPairsItem,
     AssetPairsRequestOpts,
+    AssetPairsResponse,
     Client,
     HttpRequestOptions,
     HttpRequestType,
@@ -18,6 +18,7 @@ import {
     OrderConfigRequest,
     OrderConfigResponse,
     OrdersRequestOpts,
+    OrdersResponse,
     PagedRequestOpts,
     PaginatedCollection,
 } from './types';
@@ -61,9 +62,9 @@ export class HttpClient implements Client {
      * @param   requestOpts     Options specifying assetData information to retrieve and page information, defaults to { page: 1, perPage: 100 }
      * @return  The resulting AssetPairsItems that match the request
      */
-    public async getAssetPairsAsync(requestOpts?: AssetPairsRequestOpts & PagedRequestOpts): Promise<PaginatedCollection<AssetPairsItem>> {
+    public async getAssetPairsAsync(requestOpts?: AssetPairsRequestOpts & PagedRequestOpts): Promise<AssetPairsResponse> {
         if (!_.isUndefined(requestOpts)) {
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.AssetPairsRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.assetPairsRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
         }
         const httpRequestOpts = {
@@ -78,7 +79,7 @@ export class HttpClient implements Client {
      * @param   requestOpts     Options specifying orders to retrieve and page information, defaults to { page: 1, perPage: 100 }
      * @return  The resulting SignedOrders that match the request
      */
-    public async getOrdersAsync(requestOpts?: OrdersRequestOpts & PagedRequestOpts): Promise<PaginatedCollection<APIOrder>> {
+    public async getOrdersAsync(requestOpts?: OrdersRequestOpts & PagedRequestOpts): Promise<OrdersResponse> {
         if (!_.isUndefined(requestOpts)) {
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.ordersRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
@@ -98,7 +99,7 @@ export class HttpClient implements Client {
     public async getOrderAsync(orderHash: string): Promise<APIOrder> {
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         const responseJson = await this._requestAsync(`/order/${orderHash}`, HttpRequestType.Get);
-        const order = relayerResponseJsonParsers.parseOrderJson(responseJson);
+        const order = relayerResponseJsonParsers.parseAPIOrderJson(responseJson);
         return order;
     }
     /**
@@ -128,18 +129,19 @@ export class HttpClient implements Client {
      * @return  The resulting OrderConfigResponse that matches the request
      */
     public async getOrderConfigAsync(request: OrderConfigRequest): Promise<OrderConfigResponse> {
-        assert.doesConformToSchema('request', request, clientSchemas.feesRequestSchema);
+        assert.doesConformToSchema('request', request, clientSchemas.orderConfigRequestSchema);
         const httpRequestOpts = {
             payload: request,
         };
-        const responseJson = await this._requestAsync('/fees', HttpRequestType.Post, httpRequestOpts);
+        const responseJson = await this._requestAsync('/order_config', HttpRequestType.Post, httpRequestOpts);
         const fees = relayerResponseJsonParsers.parseOrderConfigResponseJson(responseJson);
         return fees;
     }
-
+    /**
+     * Retrieve the list of fee recipient addresses used by
+     */
     public async getFeeRecipientsAsync(): Promise<PaginatedCollection<string>> {
-        // TODO
-        return;
+        return this._requestAsync('/fee_recipients', HttpRequestType.Get);
     }
 
     /**
