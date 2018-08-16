@@ -85,10 +85,10 @@ export class Compiler {
     private static async _getSolcAsync(
         solcVersion: string,
     ): Promise<{ solcInstance: solc.SolcInstance; fullSolcVersion: string }> {
-        if (_.isUndefined(binPaths[solcVersion])) {
+        const fullSolcVersion = binPaths[solcVersion];
+        if (_.isUndefined(fullSolcVersion)) {
             throw new Error(`${solcVersion} is not a known compiler version`);
         }
-        const fullSolcVersion = binPaths[solcVersion];
         const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
         let solcjs: string;
         const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
