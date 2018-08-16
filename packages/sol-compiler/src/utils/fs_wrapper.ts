@@ -13,4 +13,16 @@ export const fsWrapper = {
     statAsync: promisify<fs.Stats>(fs.stat),
     appendFileAsync: promisify<undefined>(fs.appendFile),
     accessAsync: promisify<boolean>(fs.access),
+    doesFileExistAsync: async (filePath: string): Promise<boolean> => {
+        try {
+            await fsWrapper.accessAsync(
+                filePath,
+                // node says we need to use bitwise, but tslint says no:
+                fs.constants.F_OK | fs.constants.R_OK, // tslint:disable-line:no-bitwise
+            );
+        } catch (err) {
+            return false;
+        }
+        return true;
+    },
 };

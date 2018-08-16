@@ -82,18 +82,6 @@ export class Compiler {
     private readonly _artifactsDir: string;
     private readonly _solcVersionIfExists: string | undefined;
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
-    private static async _doesFileExistAsync(filePath: string): Promise<boolean> {
-        try {
-            await fsWrapper.accessAsync(
-                filePath,
-                // node says we need to use bitwise, but tslint says no:
-                fs.constants.F_OK | fs.constants.R_OK, // tslint:disable-line:no-bitwise
-            );
-        } catch (err) {
-            return false;
-        }
-        return true;
-    }
     private static async _getSolcAsync(
         solcVersion: string,
     ): Promise<{ solcInstance: solc.SolcInstance; fullSolcVersion: string }> {
@@ -103,7 +91,7 @@ export class Compiler {
         }
         const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
         let solcjs: string;
-        if (await Compiler._doesFileExistAsync(compilerBinFilename)) {
+        if (await fsWrapper.doesFileExistAsync(compilerBinFilename)) {
             solcjs = (await fsWrapper.readFileAsync(compilerBinFilename)).toString();
         } else {
             logUtils.log(`Downloading ${fullSolcVersion}...`);
