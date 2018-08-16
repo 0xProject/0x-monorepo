@@ -36,10 +36,10 @@
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^1.0.5",
         "@types/lodash": "4.14.104",
-        "copyfiles": "^1.2.0",
+        "copyfiles": "^2.0.0",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
-        "typescript": "2.9.2"
+        "typescript": "3.0.1"
     },
     "dependencies": {
         "lodash": "^4.17.5",
