@@ -12,4 +12,5 @@ export const fsWrapper = {
     removeFileAsync: promisify<undefined>(fs.unlink),
     statAsync: promisify<fs.Stats>(fs.stat),
     appendFileAsync: promisify<undefined>(fs.appendFile),
+    accessAsync: promisify<boolean>(fs.access),
 };

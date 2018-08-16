@@ -82,6 +82,18 @@ export class Compiler {
     private readonly _artifactsDir: string;
     private readonly _solcVersionIfExists: string | undefined;
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
+    private static async _doesFileExistAsync(filePath: string): Promise<boolean> {
+        try {
+            await fsWrapper.accessAsync(
+                filePath,
+                // node says we need to use bitwise, but tslint says no:
+                fs.constants.F_OK | fs.constants.R_OK, // tslint:disable-line:no-bitwise
+            );
+        } catch (err) {
+            return false;
+        }
+        return true;
+    }
     private static async _getSolcAsync(
         solcVersion: string,
     ): Promise<{ solcInstance: solc.SolcInstance; fullSolcVersion: string }> {
@@ -91,9 +103,8 @@ export class Compiler {
         }
         const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
         let solcjs: string;
-        const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
-        if (isCompilerAvailableLocally) {
-            solcjs = fs.readFileSync(compilerBinFilename).toString();
+        if (await Compiler._doesFileExistAsync(compilerBinFilename)) {
+            solcjs = (await fsWrapper.readFileAsync(compilerBinFilename)).toString();
         } else {
             logUtils.log(`Downloading ${fullSolcVersion}...`);
             const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
@@ -103,7 +114,10 @@ export class Compiler {
                 throw new Error(`Failed to load ${fullSolcVersion}`);
             }
             solcjs = await response.text();
-            fs.writeFileSync(compilerBinFilename, solcjs);
+            await fsWrapper.writeFileAsync(compilerBinFilename, solcjs);
+        }
+        if (solcjs.length === 0) {
+            throw new Error('No compiler available');
         }
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
         return { solcInstance, fullSolcVersion };
