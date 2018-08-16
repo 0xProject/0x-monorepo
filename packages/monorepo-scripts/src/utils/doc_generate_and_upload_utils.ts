@@ -30,6 +30,16 @@ const EXTERNAL_TYPE_TO_LINK: { [externalType: string]: string } = {
     Schema: 'https://github.com/tdegrunt/jsonschema/blob/5c2edd4baba149964aec0f23c87ad12c25a50dfb/lib/index.d.ts#L49',
 };
 
+/**
+ * If a 0x package re-exports an external package, we should add a link to it's exported items here
+ */
+const EXTERNAL_EXPORT_TO_LINK: { [externalExport: string]: string } = {
+    Web3ProviderEngine: 'https://www.npmjs.com/package/web3-provider-engine',
+    BigNumber: 'https://www.npmjs.com/package/bignumber.js',
+    Schema: 'https://github.com/tdegrunt/jsonschema/blob/v1.2.4/lib/index.d.ts#L49',
+    ValidatorResult: 'https://github.com/tdegrunt/jsonschema/blob/v1.2.4/lib/helpers.js#L31',
+};
+
 const CLASSES_WITH_HIDDEN_CONSTRUCTORS: string[] = [
     'ERC20ProxyWrapper',
     'ERC20TokenWrapper',
@@ -67,10 +77,9 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     }
 
     const pkgNameToPath: { [name: string]: string } = {};
-    _.each(monorepoPackages, pkg => {
-        pkgNameToPath[pkg.packageJson.name] = pkg.location;
-    });
+    _.each(monorepoPackages, p => (pkgNameToPath[p.packageJson.name] = p.location));
 
+    const externalExports: string[] = [];
     // For each dep that is another one of our monorepo packages, we fetch it's index.ts
     // and see which specific files we must pass to TypeDoc.
     let typeDocExtraFileIncludes: string[] = [];
@@ -84,6 +93,9 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
 
         const pathIfExists = pkgNameToPath[exportPath];
         if (_.isUndefined(pathIfExists)) {
+            _.each(exportedItems, exportedItem => {
+                externalExports.push(exportedItem);
+            });
             return; // It's an external package
         }
 
@@ -209,6 +221,24 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
         );
     }
 
+    const externalExportsToLink: { [externalExport: string]: string } = {};
+    const externalExportsWithoutLinks: string[] = [];
+    _.each(externalExports, externalExport => {
+        const linkIfExists = EXTERNAL_EXPORT_TO_LINK[externalExport];
+        if (_.isUndefined(linkIfExists)) {
+            externalExportsWithoutLinks.push(externalExport);
+            return;
+        }
+        externalExportsToLink[externalExport] = linkIfExists;
+    });
+    if (!_.isEmpty(externalExportsWithoutLinks)) {
+        throw new Error(
+            `Found the following external exports in ${packageName}'s index.ts:\n ${externalExportsWithoutLinks.join(
+                '\n',
+            )}\nThey are missing from the EXTERNAL_EXPORT_TO_LINK mapping. Add them and try again.`,
+        );
+    }
+
     // Since we need additional metadata included in the doc JSON, we nest the TypeDoc JSON
     const docJson = {
         version: DOC_JSON_VERSION,
@@ -216,6 +246,7 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
             exportPathToTypedocNames,
             exportPathOrder,
             externalTypeToLink: EXTERNAL_TYPE_TO_LINK,
+            externalExportsToLink,
         },
         typedocJson: finalTypeDocOutput,
     };
@@ -367,9 +398,15 @@ function _getExportPathToExportedItems(sf: ts.SourceFile, omitExports?: string[]
 
             case ts.SyntaxKind.ExportKeyword: {
                 const foundNode: any = node;
-                const exportPath = './index';
+                let exportPath = './index';
                 if (foundNode.parent && foundNode.parent.name) {
                     const exportItem = foundNode.parent.name.escapedText;
+                    const isExportImportRequireStatement = !_.isUndefined(
+                        _.get(foundNode, 'parent.moduleReference.expression.text'),
+                    );
+                    if (isExportImportRequireStatement) {
+                        exportPath = foundNode.parent.moduleReference.expression.text;
+                    }
                     if (!_.includes(exportsToOmit, exportItem)) {
                         exportPathToExportedItems[exportPath] = _.isUndefined(exportPathToExportedItems[exportPath])
                             ? [exportItem]
