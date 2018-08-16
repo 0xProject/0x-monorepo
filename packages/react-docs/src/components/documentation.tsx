@@ -19,6 +19,7 @@ import {
     AddressByContractName,
     DocAgnosticFormat,
     Event,
+    ExternalExportToLink,
     Property,
     SolidityMethod,
     SupportedDocJson,
@@ -26,6 +27,7 @@ import {
     TypescriptFunction,
     TypescriptMethod,
 } from '../types';
+import { constants } from '../utils/constants';
 
 import { Badge } from './badge';
 import { Comment } from './comment';
@@ -300,6 +302,8 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                             <div>{eventDefs}</div>
                         </div>
                     )}
+                {!_.isUndefined(docSection.externalExportToLink) &&
+                    this._renderExternalExports(docSection.externalExportToLink)}
                 {!_.isUndefined(typeDefs) &&
                     typeDefs.length > 0 && (
                         <div>
@@ -308,6 +312,22 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     )}
             </div>
         );
+    }
+    private _renderExternalExports(externalExportToLink: ExternalExportToLink): React.ReactNode {
+        const externalExports = _.map(externalExportToLink, (link: string, exportName: string) => {
+            return (
+                <div className="pt2">
+                    <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
+                        {`import { `}
+                        <a href={link} target="_blank" style={{ color: colors.lightBlueA700, textDecoration: 'none' }}>
+                            {exportName}
+                        </a>
+                        {` } from '${this.props.docsInfo.displayName}'`}
+                    </code>
+                </div>
+            );
+        });
+        return <div>{externalExports}</div>;
     }
     private _renderNetworkBadgesIfExists(sectionName: string): React.ReactNode {
         if (this.props.docsInfo.type !== SupportedDocJson.Doxity) {

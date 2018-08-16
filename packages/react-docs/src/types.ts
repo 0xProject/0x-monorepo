@@ -105,8 +105,9 @@ export interface DocSection {
     methods: Array<TypescriptMethod | SolidityMethod>;
     properties: Property[];
     types: CustomType[];
-    functions?: TypescriptFunction[];
+    functions: TypescriptFunction[];
     events?: Event[];
+    externalExportToLink?: ExternalExportToLink;
 }
 
 export interface TypescriptMethod extends BaseMethod {
@@ -296,10 +297,15 @@ export interface ExternalTypeToLink {
     [externalTypeName: string]: string;
 }
 
+export interface ExternalExportToLink {
+    [externalExport: string]: string;
+}
+
 export interface Metadata {
     exportPathToTypedocNames: ExportNameToTypedocNames;
     exportPathOrder: string[];
     externalTypeToLink: ExternalTypeToLink;
+    externalExportToLink: ExternalExportToLink;
 }
 
 export interface GeneratedDocJson {

@@ -221,7 +221,7 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
         );
     }
 
-    const externalExportsToLink: { [externalExport: string]: string } = {};
+    const externalExportToLink: { [externalExport: string]: string } = {};
     const externalExportsWithoutLinks: string[] = [];
     _.each(externalExports, externalExport => {
         const linkIfExists = EXTERNAL_EXPORT_TO_LINK[externalExport];
@@ -229,7 +229,7 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
             externalExportsWithoutLinks.push(externalExport);
             return;
         }
-        externalExportsToLink[externalExport] = linkIfExists;
+        externalExportToLink[externalExport] = linkIfExists;
     });
     if (!_.isEmpty(externalExportsWithoutLinks)) {
         throw new Error(
@@ -246,7 +246,7 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
             exportPathToTypedocNames,
             exportPathOrder,
             externalTypeToLink: EXTERNAL_TYPE_TO_LINK,
-            externalExportsToLink,
+            externalExportToLink,
         },
         typedocJson: finalTypeDocOutput,
     };

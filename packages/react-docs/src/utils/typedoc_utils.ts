@@ -7,13 +7,13 @@ import {
     CustomTypeChild,
     DocAgnosticFormat,
     DocSection,
+    ExternalExportToLink,
     ExternalTypeToLink,
     GeneratedDocJson,
     IndexSignature,
     KindString,
     Parameter,
     Property,
-    SectionsMap,
     Type,
     TypeDocNode,
     TypeDocType,
@@ -28,6 +28,7 @@ import { constants } from './constants';
 export class TypeDocUtils {
     private _typeDocNameOrder: string[];
     private _externalTypeToLink: ExternalTypeToLink;
+    private _externalExportToLink: ExternalExportToLink;
     private _docsInfo: DocsInfo;
     private _typeDocJson: TypeDocNode;
     private _classNames: string[];
@@ -36,6 +37,7 @@ export class TypeDocUtils {
         const exportPathOrder = generatedDocJson.metadata.exportPathOrder;
         const exportPathToTypedocNames = generatedDocJson.metadata.exportPathToTypedocNames;
         this._externalTypeToLink = generatedDocJson.metadata.externalTypeToLink;
+        this._externalExportToLink = generatedDocJson.metadata.externalExportToLink;
         this._typeDocJson = generatedDocJson.typedocJson;
 
         // TODO: Extract the non typeDoc exports, and render them somehow
@@ -88,6 +90,22 @@ export class TypeDocUtils {
     }
     public convertToDocAgnosticFormat(): DocAgnosticFormat {
         const docAgnosticFormat: DocAgnosticFormat = {};
+
+        if (!_.isEmpty(this._externalExportToLink)) {
+            this._docsInfo.sections[constants.EXTERNAL_EXPORTS_SECTION_NAME] = constants.EXTERNAL_EXPORTS_SECTION_NAME;
+            this._docsInfo.menu[constants.EXTERNAL_EXPORTS_SECTION_NAME] = [constants.EXTERNAL_EXPORTS_SECTION_NAME];
+            const docSection: DocSection = {
+                comment: 'This package also re-exports some third-party libraries for your convenience.',
+                constructors: [],
+                methods: [],
+                functions: [],
+                properties: [],
+                types: [],
+                externalExportToLink: this._externalExportToLink,
+            };
+            docAgnosticFormat[constants.EXTERNAL_EXPORTS_SECTION_NAME] = docSection;
+        }
+
         const typeEntities: TypeDocNode[] = [];
         _.each(this._typeDocNameOrder, typeDocName => {
             const fileChildIndex = _.findIndex(this._typeDocJson.children, child => child.name === typeDocName);
@@ -458,7 +476,6 @@ export class TypeDocUtils {
             method: methodIfExists,
             indexSignature: indexSignatureIfExists,
         };
-        console.log('this._externalTypeToLink', this._externalTypeToLink);
         const externalLinkIfExists = this._externalTypeToLink[entity.name];
         if (!_.isUndefined(externalLinkIfExists)) {
             type.externalLink = externalLinkIfExists;
