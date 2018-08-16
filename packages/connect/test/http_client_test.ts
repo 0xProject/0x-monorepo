@@ -143,7 +143,7 @@ describe('HttpClient', () => {
             takerAssetData: '0x0257179264389b814a946f3e92105513705ca6b990',
             exchangeAddress: '0x12459c951127e0c374ff9105dda097662a027093',
         };
-        const url = `${relayUrl}/fees`;
+        const url = `${relayUrl}/order_config`;
         it('gets fees', async () => {
             fetchMock.post(url, orderConfigResponseJSON);
             const fees = await relayerClient.getOrderConfigAsync(request);
@@ -151,9 +151,9 @@ describe('HttpClient', () => {
         });
         it('does not mutate input', async () => {
             fetchMock.post(url, orderConfigResponseJSON);
-            const makerAssetAmountBefore = new BigNumber(request.makerAssetAmount);
-            const takerAssetAmountBefore = new BigNumber(request.takerAssetAmount);
-            const expirationTimeSecondsBefore = new BigNumber(request.expirationTimeSeconds);
+            const makerAssetAmountBefore = request.makerAssetAmount;
+            const takerAssetAmountBefore = request.takerAssetAmount;
+            const expirationTimeSecondsBefore = request.expirationTimeSeconds;
             await relayerClient.getOrderConfigAsync(request);
             expect(makerAssetAmountBefore).to.be.deep.equal(request.makerAssetAmount);
             expect(takerAssetAmountBefore).to.be.deep.equal(request.takerAssetAmount);
