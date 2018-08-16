@@ -11,4 +11,15 @@ BigNumber.config({
     DECIMAL_PLACES: 78,
 });
 
+// Set a debug print function for NodeJS
+if (typeof window === 'undefined') { // Check if running in NodeJS
+    const util = require('util');
+
+    // Set a custom util.inspect function
+    (BigNumber.prototype as any)[util.inspect.custom] = function() {
+        // Return the readable string representation
+        return this.toString();
+    };
+}
+
 export { BigNumber };
