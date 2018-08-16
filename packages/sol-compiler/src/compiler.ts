@@ -197,7 +197,8 @@ export class Compiler {
             versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
         }
 
-        for (const solcVersion of _.keys(versionToInputs)) {
+        const solcVersions = _.keys(versionToInputs);
+        for (const solcVersion of solcVersions) {
             const input = versionToInputs[solcVersion];
             logUtils.log(
                 `Compiling ${input.contractsToCompile.length} contracts (${
