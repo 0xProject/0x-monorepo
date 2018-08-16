@@ -4,6 +4,8 @@ export { generatePseudoRandomSalt } from './salt';
 export { assetDataUtils } from './asset_data_utils';
 export { eip712Utils } from './eip712_utils';
 export { marketUtils } from './market_utils';
+export { rateUtils } from './rate_utils';
+export { sortingUtils } from './sorting_utils';
 
 export { OrderStateUtils } from './order_state_utils';
 export { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';

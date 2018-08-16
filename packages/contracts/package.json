@@ -59,7 +59,7 @@
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^2.0.1",
-        "copyfiles": "^1.2.0",
+        "copyfiles": "^2.0.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
         "mocha": "^4.1.0",
@@ -68,7 +68,7 @@
         "solc": "^0.4.24",
         "solhint": "^1.2.1",
         "tslint": "5.11.0",
-        "typescript": "2.9.2",
+        "typescript": "3.0.1",
         "yargs": "^10.0.3"
     },
     "dependencies": {

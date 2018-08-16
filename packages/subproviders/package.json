@@ -63,7 +63,7 @@
         "@types/sinon": "^2.2.2",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
-        "copyfiles": "^1.2.0",
+        "copyfiles": "^2.0.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
         "mocha": "^4.1.0",
@@ -73,7 +73,7 @@
         "sinon": "^4.0.0",
         "tslint": "5.11.0",
         "typedoc": "0xProject/typedoc",
-        "typescript": "2.9.2",
+        "typescript": "3.0.1",
         "webpack": "^3.1.0"
     },
     "optionalDependencies": {

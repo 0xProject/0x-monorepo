@@ -944,9 +944,9 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
-"@types/fetch-mock@^5.12.2":
-  version "5.12.2"
-  resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-5.12.2.tgz#8c96517ff74303031c65c5da2d99858e34c844d2"
+"@types/fetch-mock@^6.0.3":
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-6.0.3.tgz#54ba90776293e728089bf53ba53e3c69f1c80655"
 
 "@types/find-versions@^2.0.0":
   version "2.0.0"
@@ -3742,18 +3742,7 @@ copy-webpack-plugin@^4.0.1:
     p-limit "^1.0.0"
     serialize-javascript "^1.4.0"
 
-copyfiles@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/copyfiles/-/copyfiles-1.2.0.tgz#a8da3ac41aa2220ae29bd3c58b6984294f2c593c"
-  dependencies:
-    glob "^7.0.5"
-    ltcdr "^2.2.1"
-    minimatch "^3.0.3"
-    mkdirp "^0.5.1"
-    noms "0.0.0"
-    through2 "^2.0.1"
-
-copyfiles@^2.0.0:
+copyfiles@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/copyfiles/-/copyfiles-2.0.0.tgz#bbd78bb78e8fd6db5c67adf54249317b24560f2a"
   dependencies:
@@ -5233,9 +5222,10 @@ ethereumjs-wallet@~0.6.0:
     utf8 "^3.0.0"
     uuid "^3.3.2"
 
-ethers@3.0.22:
-  version "3.0.22"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-3.0.22.tgz#7fab1ea16521705837aa43c15831877b2716b436"
+ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
+  version "3.0.18"
+  uid b91342bd200d142af0165d6befddf783c8ae8447
+  resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
   dependencies:
     aes-js "3.0.0"
     bn.js "^4.4.0"
@@ -5978,7 +5968,7 @@ ganache-core@0xProject/ganache-core#monorepo-dep:
     ethereumjs-tx "0xProject/ethereumjs-tx#fake-tx-include-signature-by-default"
     ethereumjs-util "^5.2.0"
     ethereumjs-vm "2.3.5"
-    ethereumjs-wallet "0.6.0"
+    ethereumjs-wallet "~0.6.0"
     fake-merkle-patricia-tree "~1.0.1"
     heap "~0.2.6"
     js-scrypt "^0.2.0"
@@ -6651,8 +6641,8 @@ hdkey@^0.7.1:
     secp256k1 "^3.0.1"
 
 hdkey@^1.0.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/hdkey/-/hdkey-1.1.0.tgz#e74e7b01d2c47f797fa65d1d839adb7a44639f29"
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/hdkey/-/hdkey-1.0.0.tgz#1d658dfe966aaa542c1d499586200b325e5c0cf4"
   dependencies:
     coinstring "^2.0.0"
     safe-buffer "^5.1.1"
@@ -8506,10 +8496,6 @@ lru-cache@^4.0.1, lru-cache@^4.1.1:
 lru-cache@~2.2.1:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-2.2.4.tgz#6c658619becf14031d0d0b594b16042ce4dc063d"
-
-ltcdr@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/ltcdr/-/ltcdr-2.2.1.tgz#5ab87ad1d4c1dab8e8c08bbf037ee0c1902287cf"
 
 ltgt@^2.1.2, ltgt@~2.2.0:
   version "2.2.1"
@@ -13606,9 +13592,9 @@ typescript@2.7.1:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.1.tgz#bb3682c2c791ac90e7c6210b26478a8da085c359"
 
-typescript@2.9.2:
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
+typescript@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.0.1.tgz#43738f29585d3a87575520a4b93ab6026ef11fdb"
 
 typewise-core@^1.2, typewise-core@^1.2.0:
   version "1.2.0"

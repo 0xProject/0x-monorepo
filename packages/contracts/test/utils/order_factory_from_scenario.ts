@@ -21,6 +21,8 @@ const POINT_ONE_UNITS_EIGHTEEN_DECIMALS = new BigNumber(100_000_000_000_000_000)
 const POINT_ZERO_FIVE_UNITS_EIGHTEEN_DECIMALS = new BigNumber(50_000_000_000_000_000);
 const TEN_UNITS_FIVE_DECIMALS = new BigNumber(1_000_000);
 const FIVE_UNITS_FIVE_DECIMALS = new BigNumber(500_000);
+const TEN_UNITS_ZERO_DECIMALS = new BigNumber(10);
+const ONE_THOUSAND_UNITS_ZERO_DECIMALS = new BigNumber(1000);
 const ONE_NFT_UNIT = new BigNumber(1);
 
 export class OrderFactoryFromScenario {
@@ -28,6 +30,7 @@ export class OrderFactoryFromScenario {
     private readonly _zrxAddress: string;
     private readonly _nonZrxERC20EighteenDecimalTokenAddresses: string[];
     private readonly _erc20FiveDecimalTokenAddresses: string[];
+    private readonly _erc20ZeroDecimalTokenAddresses: string[];
     private readonly _erc721Token: DummyERC721TokenContract;
     private readonly _erc721Balances: ERC721TokenIdsByOwner;
     private readonly _exchangeAddress: string;
@@ -36,6 +39,7 @@ export class OrderFactoryFromScenario {
         zrxAddress: string,
         nonZrxERC20EighteenDecimalTokenAddresses: string[],
         erc20FiveDecimalTokenAddresses: string[],
+        erc20ZeroDecimalTokenAddresses: string[],
         erc721Token: DummyERC721TokenContract,
         erc721Balances: ERC721TokenIdsByOwner,
         exchangeAddress: string,
@@ -44,6 +48,7 @@ export class OrderFactoryFromScenario {
         this._zrxAddress = zrxAddress;
         this._nonZrxERC20EighteenDecimalTokenAddresses = nonZrxERC20EighteenDecimalTokenAddresses;
         this._erc20FiveDecimalTokenAddresses = erc20FiveDecimalTokenAddresses;
+        this._erc20ZeroDecimalTokenAddresses = erc20ZeroDecimalTokenAddresses;
         this._erc721Token = erc721Token;
         this._erc721Balances = erc721Balances;
         this._exchangeAddress = exchangeAddress;
@@ -89,6 +94,9 @@ export class OrderFactoryFromScenario {
                     erc721MakerAssetIds[0],
                 );
                 break;
+            case AssetDataScenario.ERC20ZeroDecimals:
+                makerAssetData = assetDataUtils.encodeERC20AssetData(this._erc20ZeroDecimalTokenAddresses[0]);
+                break;
             default:
                 throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.makerAssetDataScenario);
         }
@@ -109,6 +117,9 @@ export class OrderFactoryFromScenario {
                     erc721TakerAssetIds[0],
                 );
                 break;
+            case AssetDataScenario.ERC20ZeroDecimals:
+                takerAssetData = assetDataUtils.encodeERC20AssetData(this._erc20ZeroDecimalTokenAddresses[1]);
+                break;
             default:
                 throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.takerAssetDataScenario);
         }
@@ -126,6 +137,9 @@ export class OrderFactoryFromScenario {
                     case AssetDataScenario.ERC721:
                         makerAssetAmount = ONE_NFT_UNIT;
                         break;
+                    case AssetDataScenario.ERC20ZeroDecimals:
+                        makerAssetAmount = ONE_THOUSAND_UNITS_ZERO_DECIMALS;
+                        break;
                     default:
                         throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.makerAssetDataScenario);
                 }
@@ -141,6 +155,9 @@ export class OrderFactoryFromScenario {
                         break;
                     case AssetDataScenario.ERC721:
                         makerAssetAmount = ONE_NFT_UNIT;
+                        break;
+                    case AssetDataScenario.ERC20ZeroDecimals:
+                        makerAssetAmount = TEN_UNITS_ZERO_DECIMALS;
                         break;
                     default:
                         throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.makerAssetDataScenario);
@@ -166,6 +183,9 @@ export class OrderFactoryFromScenario {
                     case AssetDataScenario.ERC721:
                         takerAssetAmount = ONE_NFT_UNIT;
                         break;
+                    case AssetDataScenario.ERC20ZeroDecimals:
+                        takerAssetAmount = ONE_THOUSAND_UNITS_ZERO_DECIMALS;
+                        break;
                     default:
                         throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.takerAssetDataScenario);
                 }
@@ -181,6 +201,9 @@ export class OrderFactoryFromScenario {
                         break;
                     case AssetDataScenario.ERC721:
                         takerAssetAmount = ONE_NFT_UNIT;
+                        break;
+                    case AssetDataScenario.ERC20ZeroDecimals:
+                        takerAssetAmount = TEN_UNITS_ZERO_DECIMALS;
                         break;
                     default:
                         throw errorUtils.spawnSwitchErr('AssetDataScenario', orderScenario.takerAssetDataScenario);
