@@ -26,7 +26,7 @@ export const relayerResponseJsonParsers = {
     },
     parseAPIOrderJson(json: any): APIOrder {
         assert.doesConformToSchema('relayerApiOrder', json, schemas.relayerApiOrderSchema);
-        return typeConverters.convertOrderStringFieldsToBigNumber(json);
+        return typeConverters.convertAPIOrderStringFieldsToBigNumber(json);
     },
     parseOrderbookResponseJson(json: any): OrderbookResponse {
         assert.doesConformToSchema('orderBookResponse', json, schemas.relayerApiOrderbookResponseSchema);

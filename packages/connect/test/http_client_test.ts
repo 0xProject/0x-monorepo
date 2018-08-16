@@ -78,7 +78,7 @@ describe('HttpClient', () => {
                 page: 3,
                 perPage: 50,
             };
-            const urlWithQuery = `${url}?page=3&perPage=50&assetDataAddress=${assetDataAddress}`;
+            const urlWithQuery = `${url}?assetDataAddress=${assetDataAddress}&page=3&perPage=50`;
             fetchMock.get(urlWithQuery, ordersResponseJSON);
             const orders = await relayerClient.getOrdersAsync(ordersRequest);
             expect(orders).to.be.deep.equal(ordersResponse);
