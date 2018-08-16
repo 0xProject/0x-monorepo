@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { v4 as uuid } from 'uuid';
 import * as WebSocket from 'websocket';
 
 import {
@@ -50,11 +51,10 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
         assert.isOrderbookChannelSubscriptionOpts('subscriptionOpts', subscriptionOpts);
         assert.assert(this._client.readyState === WebSocket.w3cwebsocket.OPEN, 'WebSocket connection is closed');
         this._subscriptionOptsList.push(subscriptionOpts);
-        // TODO: update requestId management to use UUIDs for v2
         const subscribeMessage = {
             type: 'subscribe',
             channel: 'orderbook',
-            requestId: this._subscriptionOptsList.length - 1,
+            requestId: uuid(),
             payload: subscriptionOpts,
         };
         this._client.send(JSON.stringify(subscribeMessage));

@@ -59,6 +59,7 @@
         "lodash": "^4.17.5",
         "query-string": "^5.0.1",
         "sinon": "^4.0.0",
+        "uuid": "^3.3.2",
         "websocket": "^1.0.25"
     },
     "devDependencies": {
@@ -69,6 +70,7 @@
         "@types/mocha": "^2.2.42",
         "@types/query-string": "^5.0.1",
         "@types/sinon": "^2.2.2",
+        "@types/uuid": "^3.4.3",
         "@types/websocket": "^0.0.39",
         "async-child-process": "^1.1.1",
         "chai": "^4.0.1",

@@ -1258,6 +1258,12 @@
   dependencies:
     "@types/node" "*"
 
+"@types/uuid@^3.4.3":
+  version "3.4.3"
+  resolved "https://registry.npmjs.org/@types/uuid/-/uuid-3.4.3.tgz#121ace265f5569ce40f4f6d0ff78a338c732a754"
+  dependencies:
+    "@types/node" "*"
+
 "@types/valid-url@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/valid-url/-/valid-url-1.0.2.tgz#60fa435ce24bfd5ba107b8d2a80796aeaf3a8f45"
@@ -5256,9 +5262,9 @@ ethereumjs-wallet@~0.6.0:
     utf8 "^3.0.0"
     uuid "^3.3.2"
 
-ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
-  version "3.0.18"
-  resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
+ethers@3.0.22:
+  version "3.0.22"
+  resolved "https://registry.npmjs.org/ethers/-/ethers-3.0.22.tgz#7fab1ea16521705837aa43c15831877b2716b436"
   dependencies:
     aes-js "3.0.0"
     bn.js "^4.4.0"
@@ -14072,7 +14078,7 @@ uuid@^2.0.1:
 
 uuid@^3.3.2:
   version "3.3.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
+  resolved "https://registry.npmjs.org/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
 
 uvm@1.7.0:
   version "1.7.0"
