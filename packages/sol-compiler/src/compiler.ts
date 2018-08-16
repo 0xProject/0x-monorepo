@@ -179,9 +179,8 @@ export class Compiler {
             const solcVersion = _.isUndefined(this._solcVersionIfExists)
                 ? semver.maxSatisfying(_.keys(binPaths), parseSolidityVersionRange(contractSource.source))
                 : this._solcVersionIfExists;
-            if (_.isUndefined(versionToInputs[solcVersion])) {
-                // no inputs batched yet for this version.
-                // prepare object to hold this batch.
+            const isFirstContractWithThisVersion = _.isUndefined(versionToInputs[solcVersion]);
+            if (isFirstContractWithThisVersion) {
                 versionToInputs[solcVersion] = {
                     standardInput: {
                         language: 'Solidity',
