@@ -3,6 +3,10 @@
         "version": "1.0.1-rc.4",
         "changes": [
             {
+                "note": "Remove rounding error being thrown when maker amount is very small",
+                "pr": 959
+            },
+            {
                 "note": "Added rateUtils and sortingUtils",
                 "pr": 953
             },

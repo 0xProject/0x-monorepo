@@ -62,8 +62,7 @@ export interface ValidatorSignature {
 export enum ExchangeContractErrs {
     OrderFillExpired = 'ORDER_FILL_EXPIRED',
     OrderCancelExpired = 'ORDER_CANCEL_EXPIRED',
-    OrderCancelAmountZero = 'ORDER_CANCEL_AMOUNT_ZERO',
-    OrderAlreadyCancelledOrFilled = 'ORDER_ALREADY_CANCELLED_OR_FILLED',
+    OrderCancelled = 'ORDER_CANCELLED',
     OrderFillAmountZero = 'ORDER_FILL_AMOUNT_ZERO',
     OrderRemainingFillAmountZero = 'ORDER_REMAINING_FILL_AMOUNT_ZERO',
     OrderFillRoundingError = 'ORDER_FILL_ROUNDING_ERROR',
