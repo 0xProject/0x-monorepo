@@ -72,14 +72,14 @@
     read-package-tree "^5.1.6"
     semver "^5.5.0"
 
-"@0x-lerna-fork/changed@^3.0.0-beta.22":
-  version "3.0.0-beta.22"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/changed/-/changed-3.0.0-beta.22.tgz#febe7309820d88e95695fab538849302ae7e58a4"
+"@0x-lerna-fork/changed@^3.0.0-beta.25":
+  version "3.0.0-beta.25"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/changed/-/changed-3.0.0-beta.25.tgz#68fec3a4bf2b0808561db2d13d0b117659fb3242"
   dependencies:
     "@0x-lerna-fork/collect-updates" "^3.0.0-beta.22"
     "@0x-lerna-fork/command" "^3.0.0-beta.22"
     "@0x-lerna-fork/output" "^3.0.0-beta.22"
-    "@0x-lerna-fork/publish" "^3.0.0-beta.22"
+    "@0x-lerna-fork/publish" "^3.0.0-beta.25"
     chalk "^2.3.1"
 
 "@0x-lerna-fork/child-process@^3.0.0-beta.22":
@@ -102,13 +102,13 @@
     p-map-series "^1.0.0"
     p-waterfall "^1.0.0"
 
-"@0x-lerna-fork/cli@^3.0.0-beta.22":
-  version "3.0.0-beta.22"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/cli/-/cli-3.0.0-beta.22.tgz#131f5de34ede1a1c04e007d122cc8c0583355b95"
+"@0x-lerna-fork/cli@^3.0.0-beta.25":
+  version "3.0.0-beta.25"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/cli/-/cli-3.0.0-beta.25.tgz#1becdaf2cf2cbbbda7e2fcc96c3058398d7ed802"
   dependencies:
     "@0x-lerna-fork/add" "^3.0.0-beta.22"
     "@0x-lerna-fork/bootstrap" "^3.0.0-beta.22"
-    "@0x-lerna-fork/changed" "^3.0.0-beta.22"
+    "@0x-lerna-fork/changed" "^3.0.0-beta.25"
     "@0x-lerna-fork/clean" "^3.0.0-beta.22"
     "@0x-lerna-fork/create" "^3.0.0-beta.22"
     "@0x-lerna-fork/diff" "^3.0.0-beta.22"
@@ -118,7 +118,7 @@
     "@0x-lerna-fork/init" "^3.0.0-beta.22"
     "@0x-lerna-fork/link" "^3.0.0-beta.22"
     "@0x-lerna-fork/list" "^3.0.0-beta.22"
-    "@0x-lerna-fork/publish" "^3.0.0-beta.22"
+    "@0x-lerna-fork/publish" "^3.0.0-beta.25"
     "@0x-lerna-fork/run" "^3.0.0-beta.22"
     dedent "^0.7.0"
     is-ci "^1.0.10"
@@ -271,11 +271,11 @@
     p-map "^1.2.0"
     write-json-file "^2.3.0"
 
-"@0x-lerna-fork/lerna@3.0.0-beta.23":
-  version "3.0.0-beta.23"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/lerna/-/lerna-3.0.0-beta.23.tgz#102390423e6ed6c1d0b72f43da166d85bc6bd0ac"
+"@0x-lerna-fork/lerna@3.0.0-beta.25":
+  version "3.0.0-beta.25"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/lerna/-/lerna-3.0.0-beta.25.tgz#0b5b85b4af3741863937f85ef130500e23325593"
   dependencies:
-    "@0x-lerna-fork/cli" "^3.0.0-beta.22"
+    "@0x-lerna-fork/cli" "^3.0.0-beta.25"
     import-local "^1.0.0"
     npmlog "^4.1.2"
 
@@ -326,9 +326,9 @@
     signal-exit "^3.0.2"
     write-pkg "^3.1.0"
 
-"@0x-lerna-fork/npm-publish@^3.0.0-beta.22":
-  version "3.0.0-beta.22"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/npm-publish/-/npm-publish-3.0.0-beta.22.tgz#4199433a49f8b92293c220dc11f9db5dcb5ced56"
+"@0x-lerna-fork/npm-publish@^3.0.0-beta.25":
+  version "3.0.0-beta.25"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/npm-publish/-/npm-publish-3.0.0-beta.25.tgz#a448ff29808bdce8afd34c3c6a9c5e3e44d5e6e6"
   dependencies:
     "@0x-lerna-fork/child-process" "^3.0.0-beta.22"
     "@0x-lerna-fork/get-npm-exec-opts" "^3.0.0-beta.22"
@@ -384,9 +384,9 @@
     inquirer "^5.1.0"
     npmlog "^4.1.2"
 
-"@0x-lerna-fork/publish@^3.0.0-beta.22":
-  version "3.0.0-beta.22"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/publish/-/publish-3.0.0-beta.22.tgz#3fc44b93e30b872efd8161e45d1484416f01a5db"
+"@0x-lerna-fork/publish@^3.0.0-beta.25":
+  version "3.0.0-beta.25"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/publish/-/publish-3.0.0-beta.25.tgz#edcb6d68b441b8456ceafb3073509da20fa2af0c"
   dependencies:
     "@0x-lerna-fork/batch-packages" "^3.0.0-beta.22"
     "@0x-lerna-fork/child-process" "^3.0.0-beta.22"
@@ -395,7 +395,7 @@
     "@0x-lerna-fork/conventional-commits" "^3.0.0-beta.22"
     "@0x-lerna-fork/npm-conf" "^3.0.0-beta.22"
     "@0x-lerna-fork/npm-dist-tag" "^3.0.0-beta.22"
-    "@0x-lerna-fork/npm-publish" "^3.0.0-beta.22"
+    "@0x-lerna-fork/npm-publish" "^3.0.0-beta.25"
     "@0x-lerna-fork/output" "^3.0.0-beta.22"
     "@0x-lerna-fork/prompt" "^3.0.0-beta.22"
     "@0x-lerna-fork/run-lifecycle" "^3.0.0-beta.22"
@@ -944,7 +944,7 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
-"@types/fetch-mock@6.0.3":
+"@types/fetch-mock@^6.0.3":
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-6.0.3.tgz#54ba90776293e728089bf53ba53e3c69f1c80655"
 
@@ -5269,7 +5269,6 @@ ethereumjs-wallet@~0.6.0:
 
 ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
   version "3.0.18"
-  uid b91342bd200d142af0165d6befddf783c8ae8447
   resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
   dependencies:
     aes-js "3.0.0"
