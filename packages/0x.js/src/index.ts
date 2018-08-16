@@ -47,13 +47,9 @@ export { ContractWrapper } from '@0xproject/contract-wrappers/lib/src/contract_w
 
 export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
 
-export {
-    Web3ProviderEngine,
-    RPCSubprovider,
-    Callback,
-    JSONRPCRequestPayloadWithMethod,
-    ErrorCallback,
-} from '@0xproject/subproviders';
+export import Web3ProviderEngine = require('web3-provider-engine');
+
+export { RPCSubprovider, Callback, JSONRPCRequestPayloadWithMethod, ErrorCallback } from '@0xproject/subproviders';
 
 export { AbiDecoder } from '@0xproject/utils';
 
