@@ -21,6 +21,7 @@ import {
 } from '../types';
 import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
+import { ExecuteTransactionEncoder } from '../utils/execute_transaction_encoder';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from './generated/exchange';
@@ -1096,6 +1097,11 @@ export class ExchangeWrapper extends ContractWrapper {
         const zrxTokenAddress = this.getZRXTokenAddress();
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
         return zrxAssetData;
+    }
+    public async executeTransactionEncoderAsync(): Promise<ExecuteTransactionEncoder> {
+        const exchangeInstance = await this._getExchangeContractAsync();
+        const encoder = new ExecuteTransactionEncoder(exchangeInstance);
+        return encoder;
     }
     // tslint:disable:no-unused-variable
     private _invalidateContractInstances(): void {
