@@ -43,8 +43,6 @@ export {
     ContractEvents,
 } from '@0xproject/contract-wrappers';
 
-export { ContractWrapper } from '@0xproject/contract-wrappers/lib/src/contract_wrappers/contract_wrapper';
-
 export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
 
 export import Web3ProviderEngine = require('web3-provider-engine');
