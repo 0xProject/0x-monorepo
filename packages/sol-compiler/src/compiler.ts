@@ -150,7 +150,7 @@ export class Compiler {
         } else {
             contractNamesToCompile = this._specifiedContracts;
         }
-        return this._compileContractsAsync(contractNamesToCompile);
+        await this._compileContractsAsync(contractNamesToCompile);
     }
     /**
      * Compiles contract and saves artifact to artifactsDir.
