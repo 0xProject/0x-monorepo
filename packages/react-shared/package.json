@@ -43,7 +43,7 @@
         "@types/react-dom": "*",
         "@types/react-scroll": "0.0.31",
         "basscss": "^8.0.3",
-        "is-mobile": "^0.2.2",
+        "is-mobile": "^1.0.0",
         "lodash": "^4.17.5",
         "material-ui": "^0.17.1",
         "react": "15.6.1",
