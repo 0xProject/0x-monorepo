@@ -81,7 +81,7 @@
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^2.0.1",
-        "copyfiles": "^1.2.0",
+        "copyfiles": "^2.0.0",
         "dirty-chai": "^2.0.1",
         "json-loader": "^0.5.4",
         "make-promises-safe": "^1.1.0",
