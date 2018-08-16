@@ -165,16 +165,17 @@ export class Compiler {
 
         for (const contractName of contractNames) {
             const contractSource = this._resolver.resolve(contractName);
-            contractPathToData[contractSource.path] = {
+            const contractData = {
                 contractName,
                 currentArtifactIfExists: await getContractArtifactIfExistsAsync(this._artifactsDir, contractName),
                 sourceTreeHashHex: `0x${this._getSourceTreeHash(
                     path.join(this._contractsDir, contractSource.path),
                 ).toString('hex')}`,
             };
-            if (!this._shouldCompile(contractPathToData[contractSource.path])) {
+            if (!this._shouldCompile(contractData)) {
                 continue;
             }
+            contractPathToData[contractSource.path] = contractData;
             const solcVersion = _.isUndefined(this._solcVersionIfExists)
                 ? semver.maxSatisfying(_.keys(binPaths), parseSolidityVersionRange(contractSource.source))
                 : this._solcVersionIfExists;
