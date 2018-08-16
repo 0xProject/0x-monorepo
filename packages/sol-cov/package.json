@@ -79,7 +79,7 @@
         "@types/rimraf": "^2.0.2",
         "@types/solidity-parser-antlr": "^0.2.1",
         "chai": "^4.0.1",
-        "copyfiles": "^1.2.0",
+        "copyfiles": "^2.0.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
         "mocha": "^4.1.0",

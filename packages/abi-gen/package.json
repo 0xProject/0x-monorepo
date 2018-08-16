@@ -56,7 +56,7 @@
         "@types/tmp": "^0.0.33",
         "@types/yargs": "^10.0.0",
         "chai": "^4.1.2",
-        "copyfiles": "^1.2.0",
+        "copyfiles": "^2.0.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
         "mocha": "^5.2.0",
