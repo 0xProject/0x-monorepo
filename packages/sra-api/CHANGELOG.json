@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1-rc.5",
+        "changes": [
+            {
+                "note": "Add takerAddress to /orders parameters",
+                "pr": 974
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.4",
         "changes": [
             {
