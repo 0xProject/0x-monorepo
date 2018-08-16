@@ -1,4 +1,3 @@
-
 import { FeeRecipientsResponse } from '../../../src/types';
 
 export const feeRecipientsResponse: FeeRecipientsResponse = {

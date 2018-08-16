@@ -26,7 +26,7 @@ const expect = chai.expect;
 describe('HttpClient', () => {
     const relayUrl = 'https://example.com';
     const relayerClient = new HttpClient(relayUrl);
-    afterEach(() => {
+    beforeEach(() => {
         fetchMock.restore();
     });
     describe('#constructor', () => {
@@ -41,21 +41,21 @@ describe('HttpClient', () => {
     describe('#getAssetPairsAsync', () => {
         const url = `${relayUrl}/asset_pairs`;
         it('gets assetData pairs with default options when none are provided', async () => {
-            const urlWithQuery = `${url}?page=1&per_page=100`;
+            const urlWithQuery = `${url}?page=1&perPage=100`;
             fetchMock.get(urlWithQuery, assetDataPairsResponseJSON);
             const assetDataPairs = await relayerClient.getAssetPairsAsync();
             expect(assetDataPairs).to.be.deep.equal(assetDataPairsResponse);
         });
         it('gets assetData pairs with specified request options', async () => {
-            const assetDataAddress = '0x323b5d4c32345ced77393b3530b1eed0f346429d';
-            const AssetPairsRequestOpts = {
-                assetDataA: assetDataAddress,
+            const assetData = '0xf47261b04c32345ced77393b3530b1eed0f346429d';
+            const assetPairsRequestOpts = {
+                assetDataA: assetData,
                 page: 3,
                 perPage: 50,
             };
-            const urlWithQuery = `${url}?page=3&per_page=50&assetDataA=${assetDataAddress}`;
+            const urlWithQuery = `${url}?assetDataA=${assetData}&page=3&perPage=50`;
             fetchMock.get(urlWithQuery, assetDataPairsResponseJSON);
-            const assetDataPairs = await relayerClient.getAssetPairsAsync(AssetPairsRequestOpts);
+            const assetDataPairs = await relayerClient.getAssetPairsAsync(assetPairsRequestOpts);
             expect(assetDataPairs).to.be.deep.equal(assetDataPairsResponse);
         });
         it('throws an error for invalid JSON response', async () => {
@@ -66,7 +66,7 @@ describe('HttpClient', () => {
     describe('#getOrdersAsync', () => {
         const url = `${relayUrl}/orders`;
         it('gets orders with default options when none are provided', async () => {
-            const urlWithQuery = `${url}?page=1&per_page=100`;
+            const urlWithQuery = `${url}?page=1&perPage=100`;
             fetchMock.get(urlWithQuery, ordersResponseJSON);
             const orders = await relayerClient.getOrdersAsync();
             expect(orders).to.be.deep.equal(ordersResponse);
@@ -78,7 +78,7 @@ describe('HttpClient', () => {
                 page: 3,
                 perPage: 50,
             };
-            const urlWithQuery = `${url}?page=3&per_page=50&assetDataAddress=${assetDataAddress}`;
+            const urlWithQuery = `${url}?page=3&perPage=50&assetDataAddress=${assetDataAddress}`;
             fetchMock.get(urlWithQuery, ordersResponseJSON);
             const orders = await relayerClient.getOrdersAsync(ordersRequest);
             expect(orders).to.be.deep.equal(ordersResponse);
@@ -110,7 +110,7 @@ describe('HttpClient', () => {
         it('gets orderbook with default page options when none are provided', async () => {
             const urlWithQuery = `${url}?baseAssetData=${
                 request.baseAssetData
-            }&page=1&per_page=100&quoteAssetData=${request.quoteAssetData}`;
+            }&page=1&perPage=100&quoteAssetData=${request.quoteAssetData}`;
             fetchMock.get(urlWithQuery, orderbookJSON);
             const orderbook = await relayerClient.getOrderbookAsync(request);
             expect(orderbook).to.be.deep.equal(orderbookResponse);
@@ -118,7 +118,7 @@ describe('HttpClient', () => {
         it('gets orderbook with specified page options', async () => {
             const urlWithQuery = `${url}?baseAssetData=${
                 request.baseAssetData
-            }&page=3&per_page=50&quoteAssetData=${request.quoteAssetData}`;
+            }&page=3&perPage=50&quoteAssetData=${request.quoteAssetData}`;
             fetchMock.get(urlWithQuery, orderbookJSON);
             const pagedRequestOptions = {
                 page: 3,

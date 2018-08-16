@@ -70,7 +70,7 @@ export class HttpClient implements Client {
         const httpRequestOpts = {
             params: _.defaults({}, requestOpts, DEFAULT_PAGED_REQUEST_OPTS),
         };
-        const responseJson = await this._requestAsync('/assetData_pairs', HttpRequestType.Get, httpRequestOpts);
+        const responseJson = await this._requestAsync('/asset_pairs', HttpRequestType.Get, httpRequestOpts);
         const assetDataPairs = relayerResponseJsonParsers.parseAssetDataPairsJson(responseJson);
         return assetDataPairs;
     }

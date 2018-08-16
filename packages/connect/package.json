@@ -51,7 +51,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/connect/README.md",
     "dependencies": {
-        "@0xproject/assert": "^0.2.14",
+        "@0xproject/assert": "^1.0.5",
         "@0xproject/json-schemas": "^1.0.1-rc.4",
         "@0xproject/types": "^1.0.1-rc.4",
         "@0xproject/typescript-typings": "^1.0.4",
