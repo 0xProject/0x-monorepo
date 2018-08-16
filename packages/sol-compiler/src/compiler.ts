@@ -213,7 +213,9 @@ export class Compiler {
             for (const contractPath of input.contractsToCompile) {
                 await this._verifyAndPersistCompiledContractAsync(
                     contractPath,
-                    contractPathToData[contractPath],
+                    contractPathToData[contractPath].currentArtifactIfExists,
+                    contractPathToData[contractPath].sourceTreeHashHex,
+                    contractPathToData[contractPath].contractName,
                     fullSolcVersion,
                     compilerOutput,
                 );
@@ -233,14 +235,12 @@ export class Compiler {
     }
     private async _verifyAndPersistCompiledContractAsync(
         contractPath: string,
-        contractMetadata: ContractData,
+        currentArtifactIfExists: ContractArtifact | void,
+        sourceTreeHashHex: string,
+        contractName: string,
         fullSolcVersion: string,
         compilerOutput: solc.StandardOutput,
     ): Promise<void> {
-        const contractName = contractMetadata.contractName;
-        const sourceTreeHashHex = contractMetadata.sourceTreeHashHex;
-        const currentArtifactIfExists = contractMetadata.currentArtifactIfExists;
-
         const compiledData = compilerOutput.contracts[contractPath][contractName];
         if (_.isUndefined(compiledData)) {
             throw new Error(
