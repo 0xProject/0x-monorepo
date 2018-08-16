@@ -33,7 +33,6 @@ export class TypeDocUtils {
     private _classNames: string[];
     constructor(generatedDocJson: GeneratedDocJson, docsInfo: DocsInfo) {
         this._docsInfo = docsInfo;
-        console.log('generatedDocJson.metadata', generatedDocJson.metadata);
         const exportPathOrder = generatedDocJson.metadata.exportPathOrder;
         const exportPathToTypedocNames = generatedDocJson.metadata.exportPathToTypedocNames;
         this._externalTypeToLink = generatedDocJson.metadata.externalTypeToLink;
