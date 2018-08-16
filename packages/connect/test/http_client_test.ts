@@ -17,6 +17,8 @@ import { orderbookResponse } from './fixtures/standard_relayer_api/orderbook';
 import * as orderbookJSON from './fixtures/standard_relayer_api/orderbook.json';
 import { ordersResponse } from './fixtures/standard_relayer_api/orders';
 import * as ordersResponseJSON from './fixtures/standard_relayer_api/orders.json';
+import { feeRecipientsResponse } from './fixtures/standard_relayer_api/fee_recipients';
+import * as feeRecipientsResponseJSON from './fixtures/standard_relayer_api/fee_recipients.json';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
@@ -162,6 +164,28 @@ describe('HttpClient', () => {
         it('throws an error for invalid JSON response', async () => {
             fetchMock.post(url, { test: 'dummy' });
             expect(relayerClient.getOrderConfigAsync(request)).to.be.rejected();
+        });
+    });
+    describe('#getFeeRecipientsAsync', () => {
+        const url = `${relayUrl}/fee_recipients`;
+        it('gets orderbook with default page options when none are provided', async () => {
+            fetchMock.get(url, feeRecipientsResponseJSON);
+            const feeRecipients = await relayerClient.getFeeRecipientsAsync();
+            expect(feeRecipients).to.be.deep.equal(feeRecipientsResponse);
+        });
+        it('gets orderbook with specified page options', async () => {
+            const urlWithQuery = `${url}?&page=3&perPage=50`;
+            fetchMock.get(url, feeRecipientsResponseJSON);
+            const pagedRequestOptions = {
+                page: 3,
+                perPage: 50,
+            };
+            const feeRecipients = await relayerClient.getFeeRecipientsAsync(pagedRequestOptions);
+            expect(feeRecipients).to.be.deep.equal(feeRecipientsResponse);
+        });
+        it('throws an error for invalid JSON response', async () => {
+            fetchMock.get(url, { test: 'dummy' });
+            expect(relayerClient.getFeeRecipientsAsync()).to.be.rejected();
         });
     });
 });

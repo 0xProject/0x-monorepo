@@ -7,7 +7,7 @@ export interface Client {
     getOrderAsync: (orderHash: string) => Promise<APIOrder>;
     getOrderbookAsync: (request: OrderbookRequest, requestOpts?: PagedRequestOpts) => Promise<OrderbookResponse>;
     getOrderConfigAsync: (request: OrderConfigRequest) => Promise<OrderConfigResponse>;
-    getFeeRecipientsAsync: () => Promise<FeeRecipientsResponse>;
+    getFeeRecipientsAsync: (requestOpts?: PagedRequestOpts) => Promise<FeeRecipientsResponse>;
     submitOrderAsync: (signedOrder: SignedOrder) => Promise<void>;
 }
 

@@ -140,10 +140,14 @@ export class HttpClient implements Client {
     /**
      * Retrieve the list of fee recipient addresses used by
      */
-    public async getFeeRecipientsAsync(): Promise<FeeRecipientsResponse> {
-        return this._requestAsync('/fee_recipients', HttpRequestType.Get);
+    public async getFeeRecipientsAsync(requestOpts?: PagedRequestOpts): Promise<FeeRecipientsResponse> {
+        if (!_.isUndefined(requestOpts)) {
+            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
+        }
+        const feeRecipients = await this._requestAsync('/fee_recipients', HttpRequestType.Get);
+        assert.doesConformToSchema('feeRecipients', feeRecipients, schemas.relayerApiFeeRecipientsResponseSchema);
+        return feeRecipients;
     }
-
     /**
      * Submit a signed order to the API
      * @param   signedOrder     A SignedOrder instance to submit
