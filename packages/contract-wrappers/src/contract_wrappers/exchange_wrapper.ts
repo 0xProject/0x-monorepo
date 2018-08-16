@@ -35,8 +35,7 @@ export class ExchangeWrapper extends ContractWrapper {
     private _contractAddressIfExists?: string;
     private _zrxContractAddressIfExists?: string;
     /**
-     * Instantiate ExchangeWrapper. We recommend you don't instantiate this yourself, rather
-     * use it through the ContractWrappers class property (contractWrappers.exchange).
+     * Instantiate ExchangeWrapper
      * @param web3Wrapper Web3Wrapper instance to use
      * @param networkId Desired networkId
      * @param contractAddressIfExists The exchange contract address to use. This is usually pulled from

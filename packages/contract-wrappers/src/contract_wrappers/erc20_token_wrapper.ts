@@ -35,8 +35,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
     private _tokenContractsByAddress: { [address: string]: ERC20TokenContract };
     private _erc20ProxyWrapper: ERC20ProxyWrapper;
     /**
-     * Instantiate ERC20TokenWrapper. We recommend you don't instantiate this yourself, rather
-     * use it through the ContractWrappers class property (contractWrappers.erc20Token).
+     * Instantiate ERC20TokenWrapper
      * @param web3Wrapper Web3Wrapper instance to use
      * @param networkId Desired networkId
      * @param erc20ProxyWrapper The ERC20ProxyWrapper instance to use

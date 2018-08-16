@@ -17,8 +17,7 @@ export class ERC20ProxyWrapper extends ContractWrapper {
     private _erc20ProxyContractIfExists?: ERC20ProxyContract;
     private _contractAddressIfExists?: string;
     /**
-     * Instantiate ERC20ProxyWrapper. We recommend you don't instantiate this yourself, rather
-     * use it through the ContractWrappers class property (contractWrappers.erc20Proxy).
+     * Instantiate ERC20ProxyWrapper
      * @param web3Wrapper Web3Wrapper instance to use
      * @param networkId Desired networkId
      * @param contractAddressIfExists The contract address to use. This is usually pulled from

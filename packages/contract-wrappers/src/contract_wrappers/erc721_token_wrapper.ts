@@ -34,8 +34,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
     private _tokenContractsByAddress: { [address: string]: ERC721TokenContract };
     private _erc721ProxyWrapper: ERC721ProxyWrapper;
     /**
-     * Instantiate ERC721TokenWrapper. We recommend you don't instantiate this yourself, rather
-     * use it through the ContractWrappers class property (contractWrappers.erc721Token).
+     * Instantiate ERC721TokenWrapper
      * @param web3Wrapper Web3Wrapper instance to use
      * @param networkId Desired networkId
      * @param erc721ProxyWrapper The ERC721ProxyWrapper instance to use

@@ -17,8 +17,7 @@ export class ERC721ProxyWrapper extends ContractWrapper {
     private _erc721ProxyContractIfExists?: ERC721ProxyContract;
     private _contractAddressIfExists?: string;
     /**
-     * Instantiate ERC721ProxyWrapper. We recommend you don't instantiate this yourself, rather
-     * use it through the ContractWrappers class property (contractWrappers.erc721Proxy).
+     * Instantiate ERC721ProxyWrapper
      * @param web3Wrapper Web3Wrapper instance to use
      * @param networkId Desired networkId
      * @param contractAddressIfExists The contract address to use. This is usually pulled from

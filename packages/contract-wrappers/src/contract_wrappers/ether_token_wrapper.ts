@@ -25,8 +25,7 @@ export class EtherTokenWrapper extends ContractWrapper {
     } = {};
     private _erc20TokenWrapper: ERC20TokenWrapper;
     /**
-     * Instantiate EtherTokenWrapper. We recommend you don't instantiate this yourself, rather
-     * use it through the ContractWrappers class property (contractWrappers.etherToken).
+     * Instantiate EtherTokenWrapper.
      * @param web3Wrapper Web3Wrapper instance to use
      * @param networkId Desired networkId
      * @param erc20TokenWrapper The ERC20TokenWrapper instance to use
