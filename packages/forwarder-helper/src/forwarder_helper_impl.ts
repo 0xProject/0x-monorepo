@@ -20,7 +20,7 @@ export interface ForwarderHelperImplConfig {
 }
 
 export class ForwarderHelperImpl implements ForwarderHelper {
-    private _config: ForwarderHelperImplConfig;
+    public readonly config: ForwarderHelperImplConfig;
     private static _createSignedOrderWithAmounts(
         orders: SignedOrder[],
         amounts?: BigNumber[],
@@ -76,11 +76,11 @@ export class ForwarderHelperImpl implements ForwarderHelper {
         };
     }
     constructor(opts: ForwarderHelperImplConfig) {
-        this._config = ForwarderHelperImpl._sortConfig(opts);
+        this.config = ForwarderHelperImpl._sortConfig(opts);
     }
     public getMarketBuyOrdersInfo(request: MarketBuyOrdersInfoRequest): MarketBuyOrdersInfo {
         const { makerAssetFillAmount, feePercentage } = request;
-        const { orders, feeOrders, remainingFillableMakerAssetAmounts, remainingFillableFeeAmounts } = this._config;
+        const { orders, feeOrders, remainingFillableMakerAssetAmounts, remainingFillableFeeAmounts } = this.config;
         // TODO: make the slippage percentage customizable
         const slippageBufferAmount = makerAssetFillAmount.mul(SLIPPAGE_PERCENTAGE);
         const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
