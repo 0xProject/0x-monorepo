@@ -1036,6 +1036,10 @@
   version "4.14.99"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.99.tgz#e6e10c0a4cc16c7409b3181f1e66880d2fb7d4dc"
 
+"@types/lodash@^4.14.116":
+  version "4.14.116"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.116.tgz#5ccf215653e3e8c786a58390751033a9adca0eb9"
+
 "@types/loglevel@^1.5.3":
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/@types/loglevel/-/loglevel-1.5.3.tgz#adfce55383edc5998a2170ad581b3e23d6adb5b8"

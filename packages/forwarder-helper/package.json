@@ -15,21 +15,22 @@
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",
-        "run_mocha":
-            "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
         "clean": "shx rm -rf lib test_temp scripts",
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
         "docs:stage": "node scripts/stage_docs.js",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
-        "upload_docs_json":
-            "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },
     "config": {
         "postpublish": {
             "assets": [],
             "docPublishConfigs": {
-                "extraFileIncludes": ["../types/src/index.ts", "../ethereum-types/src/index.ts"],
+                "extraFileIncludes": [
+                    "../types/src/index.ts",
+                    "../ethereum-types/src/index.ts"
+                ],
                 "s3BucketPath": "s3://doc-jsons/forwarder-helper/",
                 "s3StagingBucketPath": "s3://staging-doc-jsons/forwarder-helper/"
             }
@@ -50,11 +51,13 @@
         "@0xproject/types": "^1.0.1-rc.4",
         "@0xproject/typescript-typings": "^1.0.4",
         "@0xproject/utils": "^1.0.5",
-        "@types/node": "^8.0.53"
+        "@types/node": "^8.0.53",
+        "lodash": "^4.17.10"
     },
     "devDependencies": {
         "@0xproject/monorepo-scripts": "^1.0.5",
         "@0xproject/tslint-config": "^1.0.5",
+        "@types/lodash": "^4.14.116",
         "@types/mocha": "^2.2.42",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",

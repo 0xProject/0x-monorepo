@@ -18,6 +18,9 @@
             {
                 "note":
                     "Rename `resultOrders` to `resultFeeOrders` for object returned by `findFeeOrdersThatCoverFeesForTargetOrders` in `marketUtils` api"
+            },
+            {
+                "note": "Make `sortFeeOrdersByFeeAdjustedRate` in `sortingUtils` generic"
             }
         ]
     },

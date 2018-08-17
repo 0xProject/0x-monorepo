@@ -139,11 +139,11 @@ describe('marketUtils', () => {
         );
         describe('no target orders', () => {
             it('returns empty and zero remainingFeeAmount', async () => {
-                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                const { resultFeeOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     [],
                     inputFeeOrders,
                 );
-                expect(resultOrders).to.be.empty;
+                expect(resultFeeOrders).to.be.empty;
                 expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             });
         });
@@ -162,14 +162,14 @@ describe('marketUtils', () => {
             // generate remainingFillableMakerAssetAmounts that equal the makerAssetAmount
             const remainingFillableMakerAssetAmounts = [makerAssetAmount, makerAssetAmount, makerAssetAmount];
             it('returns empty and non-zero remainingFeeAmount', async () => {
-                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                const { resultFeeOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
                     [],
                     {
                         remainingFillableMakerAssetAmounts,
                     },
                 );
-                expect(resultOrders).to.be.empty;
+                expect(resultFeeOrders).to.be.empty;
                 expect(remainingFeeAmount).to.be.bignumber.equal(new BigNumber(30));
             });
         });
@@ -183,11 +183,11 @@ describe('marketUtils', () => {
                 3,
             );
             it('returns empty and zero remainingFeeAmount', async () => {
-                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                const { resultFeeOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
                     inputFeeOrders,
                 );
-                expect(resultOrders).to.be.empty;
+                expect(resultFeeOrders).to.be.empty;
                 expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             });
         });
@@ -204,11 +204,11 @@ describe('marketUtils', () => {
                 3,
             );
             it('returns input fee orders and zero remainingFeeAmount', async () => {
-                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                const { resultFeeOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
                     inputFeeOrders,
                 );
-                expect(resultOrders).to.be.deep.equal(inputFeeOrders);
+                expect(resultFeeOrders).to.be.deep.equal(inputFeeOrders);
                 expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             });
         });
@@ -230,14 +230,14 @@ describe('marketUtils', () => {
             // 3. order is completely fillable
             const remainingFillableMakerAssetAmounts = [constants.ZERO_AMOUNT, new BigNumber(5), makerAssetAmount];
             it('returns first two input fee orders and zero remainingFeeAmount', async () => {
-                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                const { resultFeeOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
                     inputFeeOrders,
                     {
                         remainingFillableMakerAssetAmounts,
                     },
                 );
-                expect(resultOrders).to.be.deep.equal([inputFeeOrders[0], inputFeeOrders[1]]);
+                expect(resultFeeOrders).to.be.deep.equal([inputFeeOrders[0], inputFeeOrders[1]]);
                 expect(remainingFeeAmount).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             });
         });
@@ -254,11 +254,11 @@ describe('marketUtils', () => {
                 3,
             );
             it('returns input fee orders and non-zero remainingFeeAmount', async () => {
-                const { resultOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+                const { resultFeeOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
                     inputOrders,
                     inputFeeOrders,
                 );
-                expect(resultOrders).to.be.deep.equal(inputFeeOrders);
+                expect(resultFeeOrders).to.be.deep.equal(inputFeeOrders);
                 expect(remainingFeeAmount).to.be.bignumber.equal(new BigNumber(30));
             });
         });
