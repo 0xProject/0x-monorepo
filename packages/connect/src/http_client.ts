@@ -26,13 +26,6 @@ import {
 import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 
 const TRAILING_SLASHES_REGEX = /\/+$/;
-const DEFAULT_PAGED_REQUEST_OPTS: PagedRequestOpts = {
-    page: 1,
-    perPage: 100,
-};
-const DEFAULT_REQUEST_OPTS: RequestOpts = {
-    networkId: 1,
-};
 
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
@@ -73,7 +66,7 @@ export class HttpClient implements Client {
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
         }
         const httpRequestOpts = {
-            params: _.defaults({}, requestOpts, DEFAULT_REQUEST_OPTS, DEFAULT_PAGED_REQUEST_OPTS),
+            params: requestOpts,
         };
         const responseJson = await this._requestAsync('/asset_pairs', HttpRequestType.Get, httpRequestOpts);
         const assetDataPairs = relayerResponseJsonParsers.parseAssetDataPairsJson(responseJson);
@@ -91,7 +84,7 @@ export class HttpClient implements Client {
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
         }
         const httpRequestOpts = {
-            params: _.defaults({}, requestOpts, DEFAULT_REQUEST_OPTS, DEFAULT_PAGED_REQUEST_OPTS),
+            params: requestOpts,
         };
         const responseJson = await this._requestAsync(`/orders`, HttpRequestType.Get, httpRequestOpts);
         const orders = relayerResponseJsonParsers.parseOrdersJson(responseJson);
@@ -108,7 +101,7 @@ export class HttpClient implements Client {
         }
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         const httpRequestOpts = {
-            params: _.defaults({}, requestOpts, DEFAULT_REQUEST_OPTS),
+            params: requestOpts,
         };
         const responseJson = await this._requestAsync(`/order/${orderHash}`, HttpRequestType.Get, httpRequestOpts);
         const order = relayerResponseJsonParsers.parseAPIOrderJson(responseJson);
@@ -130,7 +123,7 @@ export class HttpClient implements Client {
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
         }
         const httpRequestOpts = {
-            params: _.defaults({}, request, requestOpts, DEFAULT_REQUEST_OPTS, DEFAULT_PAGED_REQUEST_OPTS),
+            params: _.defaults({}, request, requestOpts),
         };
         const responseJson = await this._requestAsync('/orderbook', HttpRequestType.Get, httpRequestOpts);
         const orderbook = relayerResponseJsonParsers.parseOrderbookResponseJson(responseJson);
@@ -147,7 +140,7 @@ export class HttpClient implements Client {
         }
         assert.doesConformToSchema('request', request, clientSchemas.orderConfigRequestSchema);
         const httpRequestOpts = {
-            params: _.defaults({}, requestOpts, DEFAULT_REQUEST_OPTS),
+            params: requestOpts,
             payload: request,
         };
         const responseJson = await this._requestAsync('/order_config', HttpRequestType.Post, httpRequestOpts);
@@ -163,7 +156,7 @@ export class HttpClient implements Client {
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
         }
         const httpRequestOpts = {
-            params: _.defaults({}, requestOpts, DEFAULT_REQUEST_OPTS, DEFAULT_PAGED_REQUEST_OPTS),
+            params: requestOpts,
         };
         const feeRecipients = await this._requestAsync('/fee_recipients', HttpRequestType.Get, httpRequestOpts);
         assert.doesConformToSchema('feeRecipients', feeRecipients, schemas.relayerApiFeeRecipientsResponseSchema);
@@ -176,7 +169,7 @@ export class HttpClient implements Client {
     public async submitOrderAsync(signedOrder: SignedOrder, requestOpts?: RequestOpts): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const httpRequestOpts = {
-            params: _.defaults({}, requestOpts, DEFAULT_REQUEST_OPTS),
+            params: requestOpts,
             payload: signedOrder,
         };
         await this._requestAsync('/order', HttpRequestType.Post, httpRequestOpts);
