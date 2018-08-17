@@ -14,6 +14,10 @@
                 "note":
                     "Update marketUtils api such that all optional parameters are bundled into one optional param and more defaults are provided",
                 "pr": 954
+            },
+            {
+                "note":
+                    "Rename `resultOrders` to `resultFeeOrders` for object returned by `findFeeOrdersThatCoverFeesForTargetOrders` in `marketUtils` api"
             }
         ]
     },

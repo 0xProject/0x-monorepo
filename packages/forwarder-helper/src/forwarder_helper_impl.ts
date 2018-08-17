@@ -1,13 +1,11 @@
+import { marketUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
-import {
-    ForwarderHelper,
-    MarketBuyOrdersInfo,
-    MarketBuyOrdersInfoRequest,
-    MarketSellOrdersInfo,
-    MarketSellOrdersInfoRequest,
-} from './types';
+import { constants } from './constants';
+import { ForwarderHelper, ForwarderHelperError, MarketBuyOrdersInfo, MarketBuyOrdersInfoRequest } from './types';
+
+const SLIPPAGE_PERCENTAGE = new BigNumber(0.2); // 20% slippage protection, possibly move this into request interface
 
 export class ForwarderHelperImpl implements ForwarderHelper {
     private _orders: SignedOrder[];
@@ -26,24 +24,40 @@ export class ForwarderHelperImpl implements ForwarderHelper {
         this._remainingFillableFeeAmountsIfExists = remainingFillableFeeAmounts;
     }
     public getMarketBuyOrdersInfo(request: MarketBuyOrdersInfoRequest): MarketBuyOrdersInfo {
-        const { makerAssetFillAmount, feePercentage, acceptableEthAmountRange } = request;
+        const { makerAssetFillAmount, feePercentage } = request;
+        // TODO: make the slippage percentage customizable
+        const slippageBufferAmount = makerAssetFillAmount.mul(SLIPPAGE_PERCENTAGE);
+        const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
+            this._orders,
+            makerAssetFillAmount,
+            {
+                remainingFillableMakerAssetAmounts: this._remainingFillableMakerAssetAmountsIfExists,
+                slippageBufferAmount,
+            },
+        );
+        if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
+            throw new Error(ForwarderHelperError.InsufficientLiquidity);
+        }
+        // TODO: update this logic to find the minimum amount of feeOrders to cover the worst case as opposed to
+        // finding order that cover all fees, this will help with estimating ETH and minimizing gas usage
+        const { resultFeeOrders, remainingFeeAmount } = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+            resultOrders,
+            this._feeOrders,
+            {
+                remainingFillableMakerAssetAmounts: this._remainingFillableMakerAssetAmountsIfExists,
+                remainingFillableFeeAmounts: this._remainingFillableFeeAmountsIfExists,
+            },
+        );
+        if (remainingFeeAmount.gt(constants.ZERO_AMOUNT)) {
+            throw new Error(ForwarderHelperError.InsufficientZrxLiquidity);
+        }
+        // TODO: calculate min and max eth usage
         return {
             makerAssetFillAmount,
-            orders: this._orders,
-            feeOrders: this._feeOrders,
-            minEthAmount: new BigNumber(0),
-            maxEthAmount: new BigNumber(0),
-            feePercentage,
-        };
-    }
-    public getMarketSellOrdersInfo(request: MarketSellOrdersInfoRequest): MarketSellOrdersInfo {
-        const { ethAmount, feePercentage, acceptableFillAmountRange } = request;
-        return {
-            ethAmount,
-            orders: this._orders,
-            feeOrders: this._feeOrders,
-            minFillAmount: new BigNumber(0),
-            maxFillAmount: new BigNumber(0),
+            orders: resultOrders,
+            feeOrders: resultFeeOrders,
+            minEthAmount: constants.ZERO_AMOUNT,
+            maxEthAmount: constants.ZERO_AMOUNT,
             feePercentage,
         };
     }

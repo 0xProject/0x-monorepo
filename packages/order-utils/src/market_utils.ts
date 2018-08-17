@@ -84,7 +84,7 @@ export const marketUtils = {
         orders: T[],
         feeOrders: T[],
         opts?: FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
-    ): { resultOrders: T[]; remainingFeeAmount: BigNumber } {
+    ): { resultFeeOrders: T[]; remainingFeeAmount: BigNumber } {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         assert.doesConformToSchema('feeOrders', feeOrders, schemas.ordersSchema);
         // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from orders
@@ -137,7 +137,7 @@ export const marketUtils = {
             },
         );
         return {
-            resultOrders,
+            resultFeeOrders: resultOrders,
             remainingFeeAmount: remainingFillAmount,
         };
         // TODO: add more orders here to cover rounding
