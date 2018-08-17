@@ -76,6 +76,9 @@ export class TypeDocUtils {
     public isProperty(entity: TypeDocNode): boolean {
         return entity.kindString === KindString.Property;
     }
+    public isUnderscorePrefixed(name: string): boolean {
+        return _.startsWith(name, '_');
+    }
     public getModuleDefinitionsBySectionName(versionDocObj: TypeDocNode, configModulePaths: string[]): TypeDocNode[] {
         const moduleDefinitions: TypeDocNode[] = [];
         const jsonModules = versionDocObj.children;
@@ -189,8 +192,7 @@ export class TypeDocUtils {
                 case KindString.Function:
                     if (entity.flags.isExported) {
                         const funcName = (entity as TypeDocNode).signatures[0].name;
-                        const isPublicFunc = !_.startsWith(funcName, '_');
-                        if (isPublicFunc) {
+                        if (!this.isUnderscorePrefixed(funcName)) {
                             const func = this._convertFunction(entity, sectionName, isClassOrObjectLiteral);
                             docSection.functions.push(func);
                         }
@@ -198,7 +200,7 @@ export class TypeDocUtils {
                     break;
 
                 case KindString.Method:
-                    if (entity.flags.isPublic) {
+                    if (entity.flags.isPublic && !this.isUnderscorePrefixed(entity.name)) {
                         isConstructor = false;
                         const method = this._convertMethod(entity, isConstructor, sectionName);
                         docSection.methods.push(method);
@@ -206,8 +208,10 @@ export class TypeDocUtils {
                     break;
 
                 case KindString.Property: {
-                    const property = this._convertProperty(entity, sectionName);
-                    docSection.properties.push(property);
+                    if (!this.isUnderscorePrefixed(entity.name)) {
+                        const property = this._convertProperty(entity, sectionName);
+                        docSection.properties.push(property);
+                    }
                     break;
                 }
 
