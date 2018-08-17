@@ -13,9 +13,9 @@ import { constants } from './constants';
 import { Package, PackageToNextVersion, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { configs } from './utils/configs';
-import { utils } from './utils/utils';
+import { DocGenerateAndUploadUtils } from './utils/doc_generate_and_upload_utils';
 import { publishReleaseNotesAsync } from './utils/github_release_utils';
-import { generateAndUploadDocsAsync } from './utils/doc_generate_and_upload_utils';
+import { utils } from './utils/utils';
 
 const DOC_GEN_COMMAND = 'docs:json';
 const NPM_NAMESPACE = '@0xproject/';
@@ -81,11 +81,12 @@ async function confirmAsync(message: string): Promise<void> {
     process.exit(1);
 });
 
-async function generateAndUploadDocJsonsAsync(updatedPublicPackages: Package[], isStaging: boolean) {
+async function generateAndUploadDocJsonsAsync(updatedPublicPackages: Package[], isStaging: boolean): Promise<void> {
     for (const pkg of updatedPublicPackages) {
         const packageName = pkg.packageJson.name;
         const nameWithoutPrefix = packageName.replace('@0xproject/', '');
-        await generateAndUploadDocsAsync(nameWithoutPrefix, isStaging);
+        const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(nameWithoutPrefix, isStaging);
+        await docGenerateAndUploadUtils.generateAndUploadDocsAsync();
     }
 }
 

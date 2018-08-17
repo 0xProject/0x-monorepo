@@ -1,6 +1,6 @@
 import * as yargs from 'yargs';
 
-import { generateAndUploadDocsAsync } from './utils/doc_generate_and_upload_utils';
+import { DocGenerateAndUploadUtils } from './utils/doc_generate_and_upload_utils';
 
 const args = yargs
     .option('package', {
@@ -19,5 +19,6 @@ const args = yargs
     const packageName = args.package;
     const isStaging = args.isStaging;
 
-    await generateAndUploadDocsAsync(packageName, isStaging);
+    const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(packageName, isStaging);
+    await docGenerateAndUploadUtils.generateAndUploadDocsAsync();
 })();
