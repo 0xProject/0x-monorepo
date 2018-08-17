@@ -54,7 +54,7 @@ export class DocGenerateAndUploadUtils {
         let updatedReferenceNames = referenceNames;
         // Some nodes of type reference are for subtypes, which we don't want to return.
         // We therefore filter them out.
-        const SUB_TYPE_PROPERTY_NAMES = ['inheritedFrom', 'overwrites', 'extendedTypes'];
+        const SUB_TYPE_PROPERTY_NAMES = ['inheritedFrom', 'overwrites', 'extendedTypes', 'implementationOf'];
         if (
             !_.isUndefined(node.type) &&
             _.isString(node.type) &&
