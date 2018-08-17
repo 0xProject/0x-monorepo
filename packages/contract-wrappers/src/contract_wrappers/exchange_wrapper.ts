@@ -21,7 +21,7 @@ import {
 } from '../types';
 import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
-import { ExecuteTransactionEncoder } from '../utils/execute_transaction_encoder';
+import { TransactionEncoder } from '../utils/transaction_encoder';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from './generated/exchange';
@@ -1098,9 +1098,14 @@ export class ExchangeWrapper extends ContractWrapper {
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
         return zrxAssetData;
     }
-    public async executeTransactionEncoderAsync(): Promise<ExecuteTransactionEncoder> {
+    /**
+     * Returns a Transaction Encoder. Transaction messages exist for the purpose of calling methods on the Exchange contract
+     * in the context of another address.
+     * @return TransactionEncoder
+     */
+    public async transactionEncoderAsync(): Promise<TransactionEncoder> {
         const exchangeInstance = await this._getExchangeContractAsync();
-        const encoder = new ExecuteTransactionEncoder(exchangeInstance);
+        const encoder = new TransactionEncoder(exchangeInstance);
         return encoder;
     }
     // tslint:disable:no-unused-variable
