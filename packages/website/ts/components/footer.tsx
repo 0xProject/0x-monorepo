@@ -32,6 +32,7 @@ const languageToMenuTitle = {
     [Language.Spanish]: 'Español',
     [Language.Korean]: '한국어',
     [Language.Chinese]: '中文',
+    [Language.Japanese]: '日本語',
 };
 
 export interface FooterProps {

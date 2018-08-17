@@ -1,0 +1,81 @@
+{
+    "TOP_HEADER": "分散取引所に力を",
+    "TOP_TAGLINE":
+        "0x は、イーサリアム ブロックチェーン上で ERC20 トークンを取引するための、オープンでパーミッションレスなプロトコルです。",
+    "BUILD_CALL_TO_ACTION": "0x で開発する",
+    "COMMUNITY_CALL_TO_ACTION": "コミュニティに参加する",
+    "PROJECTS_HEADER": "0x を利用するプロジェクト",
+    "FULL_LIST_PROMPT": "閲覧する",
+    "FULL_LIST_LINK": "全て",
+    "TOKENIZED_SECTION_HEADER": "世界中の価値がトークンに変換されつつあります",
+    "TOKENIZED_SECTION_DESCRIPTION":
+        "イーサリアム ブロックチェーンは、幅広い資産を暗号トークンとして表現する、オープンで国境をまたぐ金融システムです。多くのデジタル資産や商品が将来的にトークン化されるでしょう。",
+    "CURRENCY": "通貨",
+    "TRADITIONAL_ASSETS": "伝統的な資産",
+    "DIGITAL_GOODS": "デジタル商品",
+    "OFFCHAIN_ORDER_RELAY": "オフチェーンで注文をリレー",
+    "OONCHAIN_SETTLEMENT": "オンチェーンで約定",
+    "OFFCHAIN_ONCHAIN_DESCRIPTION":
+        "0x プロトコルでは、注文はオフチェーンで転送されます。そのため、ガスコストを削減し、ブロックチェーンの膨張を抑えることが可能です。リレーヤーは注文のブロードキャストを手助けし、取引を支援するごとに手数料を集めます。誰でもリレーヤーを構築することができます。",
+    "RELAYERS_HEADER": "0x 上のリレーヤー",
+    "BENEFITS_HEADER": "0x の利点",
+    "BENEFIT_ONE_TITLE": "トラストレスな取引所",
+    "BENEFIT_ONE_DESCRIPTION":
+        "イーサリアムの分散ネットワーク上に構築され、単一障害点もダウンタイムもありません。それぞれの取引はアトミックに処理されるため、カウンターパーティリスクの心配もありません。",
+    "BENEFIT_TWO_TITLE": "共有化された流動性",
+    "BENEFIT_TWO_DESCRIPTION":
+        "標準化された API によって、リレーヤーは簡単に流動性プールを集約することが可能です。より多くのリレーヤーが登場するにつれ、流動性のネットワーク効果が作用します。",
+    "BENEFIT_THREE_TITLE": "オープンソース",
+    "BENEFIT_THREE_DESCRIPTION":
+        "0x はオープンでパーミッションレス、自由に使用することができます。お互いに知っている取引相手で無料で取引することも、　ZRX トークンで手数料を支払い、リレーヤーの流動性プールにアクセスすることも可能です。",
+    "BUILDING_BLOCK_SECTION_HEADER": "dAppsのための構成要素",
+    "BUILDING_BLOCK_SECTION_DESCRIPTION":
+        "0xプロトコルは取引の機能が必要なdAppsのための、プラガブルな構成要素です。ウェブアプリケーションやスマート コントラクトで既に0xを使っている多くの開発者のように、あなたも 0x を使った開発をはじめてみましょう。",
+    "DEV_TOOLS_PROMPT": "ドキュメントを読んで使い方を学ぶ: ",
+    "SMART_CONTRACT": "スマート コントラクト",
+    "DOCS": "ドキュメント",
+    "AND": "、",
+    "DECENTRALIZED_GOVERNANCE": "分散型ガバナンス",
+    "DECENTRALIZED_GOVERNANCE_DESCRIPTION":
+        "分散型組織では、所有権を表現するため、そしてガバナンスの仕組みを動かすためにトークンを使用します。 0x を使うことで、分散型組織が設立資金を集める際に、シームレスかつ安全に所有権を取引することが可能になります。",
+    "PREDICTION_MARKETS": "予測市場",
+    "PREDICTION_MARKETS_DESCRIPTION":
+        "分散型予測市場プラットフォームは、現実世界の出来事の結果についての掛け金を表現するトークンのセットを作り出します。0x プロトコルによって、これらのトークンは即座に取引可能になります。",
+    "STABLE_TOKENS": "ステーブル・トークン",
+    "STABLE_TOKENS_DESCRIPTION":
+        "ステーブル・コインのように新しい経済の構成要素が成功を収めるためには、効率的で流動的なマーケットが必要とされます。0x プロトコルはこれらのトークンが安定であり続けるための基盤となる経済の仕組みを促進します。",
+    "DECENTRALIZED_LOANS": "分散型ローン",
+    "DECENTRALIZED_LOANS_DESCRIPTION":
+        "効果的な融資には、投資家がローンを購入、再販することができる流動性の高いマーケットが必要です。0x によって、貸し手が自己組織的かつ効率的に、貸付金の市場価値を決定することができるエコシステムを作ることができるようになります。",
+    "FUND_MANAGEMENT": "資産管理",
+    "FUND_MANAGEMENT_DESCRIPTION":
+        "分散型の資産管理において、ファンドマネージャーが投資に使用することのできる資産の上限は、資産クラスごとに事前に取り決められています。0x を資産管理のスマート コントラクトに埋め込む事によって、こうしたセキュリティ上の制約を強制することが可能です。",
+    "FINAL_CALL_TO_ACTION": "分散化された未来の構築をはじめよう",
+    "DOCUMENTATION": "ドキュメント",
+    "COMMUNITY": "コミュニティ",
+    "ORGANIZATION": "組織",
+    "ABOUT": "私たちについて",
+    "CAREERS": "キャリア",
+    "CONTACT": "連絡先",
+    "SOL_COMPILER": "Solidityコンパイラ",
+    "JSON_SCHEMAS": "JSONスキーマ",
+    "SOL_COV": "Solidityカバレッジ",
+    "ETHEREUM_TYPES": "Ethereum Types",
+    "SUBPROVIDERS": "サブプロバイダ",
+    "BLOG": "ブログ",
+    "FORUM": "フォーラム",
+    "CONNECT": "0x Connect",
+    "WHITEPAPER": "ホワイトペーパー",
+    "WIKI": "wiki",
+    "WEB3_WRAPPER": "Web3Wrapper",
+    "ORDER_UTILS": "Order Utils",
+    "FAQ": "よくある質問",
+    "SMART_CONTRACTS": "0x スマート コントラクト",
+    "STANDARD_RELAYER_API": "標準リレーヤー API",
+    "PORTAL_DAPP": "ポータル dApp",
+    "WEBSITE": "ウェブサイト",
+    "DEVELOPERS": "開発者",
+    "HOME": "ホーム",
+    "ROCKETCHAT": "rocket.chat",
+    "TRADE_CALL_TO_ACTION": "0x で取引する"
+}

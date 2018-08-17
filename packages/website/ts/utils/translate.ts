@@ -3,6 +3,7 @@ import { Deco, Key, Language } from 'ts/types';
 
 import * as chinese from '../../translations/chinese.json';
 import * as english from '../../translations/english.json';
+import * as japanese from '../../translations/japanese.json';
 import * as korean from '../../translations/korean.json';
 import * as russian from '../../translations/russian.json';
 import * as spanish from '../../translations/spanish.json';
@@ -13,9 +14,10 @@ const languageToTranslations = {
     [Language.Chinese]: chinese,
     [Language.Korean]: korean,
     [Language.Russian]: russian,
+    [Language.Japanese]: japanese,
 };
 
-const languagesWithoutCaps = [Language.Chinese, Language.Korean];
+const languagesWithoutCaps = [Language.Chinese, Language.Korean, Language.Japanese];
 
 interface Translation {
     [key: string]: string;
@@ -39,6 +41,8 @@ export class Translate {
             language = Language.Korean;
         } else if (_.includes(browserLanguage, 'ru-')) {
             language = Language.Russian;
+        } else if (_.includes(browserLanguage, 'ja')) {
+            language = Language.Japanese;
         }
         this.setLanguage(language);
     }

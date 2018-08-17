@@ -477,6 +477,7 @@ export enum Language {
     Chinese = 'ZH',
     Korean = 'KO',
     Russian = 'RU',
+    Japanese = 'JA',
 }
 
 export enum Deco {
