@@ -90,6 +90,7 @@ contract MExchangeCore is
     /// @param takerAddress Address of order taker.
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
+    /// @param makerAssetFilledAmount Amount of makerAsset that will be transfered.
     /// @param signature Proof that the orders was created by its maker.
     function assertValidFill(
         LibOrder.Order memory order,
@@ -97,6 +98,7 @@ contract MExchangeCore is
         address takerAddress,
         uint256 takerAssetFillAmount,
         uint256 takerAssetFilledAmount,
+        uint256 makerAssetFilledAmount,
         bytes memory signature
     )
         internal
