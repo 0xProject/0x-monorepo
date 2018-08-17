@@ -84,6 +84,10 @@ packages/order-watcher/test/artifacts/
 packages/contract-wrappers/test/artifacts/
 packages/contract-wrappers/src/artifacts/
 packages/order-watcher/src/artifacts/
+packages/0x.js/src/artifacts/
+
+# unstable generated contract artifacts:
+packages/migrations/artifacts/2.0.0/
 
 # generated contract watcher
 packages/0x.js/src/generated_contract_wrappers/
