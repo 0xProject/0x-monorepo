@@ -98,6 +98,9 @@ contract MixinExchangeCore is
         uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
         uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
+        // Compute proportional fill amounts
+        fillResults = calculateFillResults(order, takerAssetFilledAmount);
+        
         // Validate context
         assertValidFill(
             order,
@@ -105,12 +108,10 @@ contract MixinExchangeCore is
             takerAddress,
             takerAssetFillAmount,
             takerAssetFilledAmount,
+            fillResults.makerAssetFilledAmount,
             signature
         );
-
-        // Compute proportional fill amounts
-        fillResults = calculateFillResults(order, takerAssetFilledAmount);
-
+        
         // Update exchange internal state
         updateFilledState(
             order,
