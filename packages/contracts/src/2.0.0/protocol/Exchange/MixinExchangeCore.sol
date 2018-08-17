@@ -90,6 +90,12 @@ contract MixinExchangeCore is
     {
         // Fetch order info
         OrderInfo memory orderInfo = getOrderInfo(order);
+        
+        // An order can only be filled if its status is FILLABLE.
+        require(
+            orderInfo.orderStatus == uint8(OrderStatus.FILLABLE),
+            "ORDER_UNFILLABLE"
+        );
 
         // Fetch taker address
         address takerAddress = getCurrentContextAddress();
