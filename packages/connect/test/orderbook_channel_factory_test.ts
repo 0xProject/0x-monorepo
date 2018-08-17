@@ -3,15 +3,12 @@ import * as dirtyChai from 'dirty-chai';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { orderbookChannelFactory } from '../src/orderbook_channel_factory';
+import { ordersChannelFactory } from '../src/orders_channel_factory';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
 const expect = chai.expect;
-const emptyOrderbookChannelHandler = {
-    onSnapshot: () => {
-        _.noop();
-    },
+const emptyOrdersChannelHandler = {
     onUpdate: () => {
         _.noop();
     },
@@ -23,22 +20,22 @@ const emptyOrderbookChannelHandler = {
     },
 };
 
-describe('orderbookChannelFactory', () => {
+describe('ordersChannelFactory', () => {
     const websocketUrl = 'ws://localhost:8080';
-    describe('#createWebSocketOrderbookChannelAsync', () => {
+    describe('#createWebSocketOrdersChannelAsync', () => {
         it('throws when input is not a url', () => {
             const badUrlInput = 54;
             expect(
-                orderbookChannelFactory.createWebSocketOrderbookChannelAsync(
+                ordersChannelFactory.createWebSocketOrdersChannelAsync(
                     badUrlInput as any,
-                    emptyOrderbookChannelHandler,
+                    emptyOrdersChannelHandler,
                 ),
             ).to.be.rejected();
         });
         it('throws when handler has the incorrect members', () => {
             const badHandlerInput = {};
             expect(
-                orderbookChannelFactory.createWebSocketOrderbookChannelAsync(websocketUrl, badHandlerInput as any),
+                ordersChannelFactory.createWebSocketOrdersChannelAsync(websocketUrl, badHandlerInput as any),
             ).to.be.rejected();
         });
     });

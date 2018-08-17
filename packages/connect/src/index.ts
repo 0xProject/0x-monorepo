@@ -1,12 +1,12 @@
 export { HttpClient } from './http_client';
-export { orderbookChannelFactory } from './orderbook_channel_factory';
+export { ordersChannelFactory } from './orders_channel_factory';
 export {
     Client,
     OrderConfigRequest,
     OrderConfigResponse,
-    OrderbookChannel,
-    OrderbookChannelHandler,
-    OrderbookChannelSubscriptionOpts,
+    OrdersChannel,
+    OrdersChannelHandler,
+    OrdersChannelSubscriptionOpts,
     OrderbookRequest,
     OrderbookResponse,
     OrdersRequestOpts,

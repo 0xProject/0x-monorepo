@@ -147,6 +147,10 @@ export interface OrderConfigResponse {
 
 export type FeeRecipientsResponse = PaginatedCollection<string>;
 
+export interface RequestOpts {
+    networkId?: number;
+}
+
 export interface PagedRequestOpts {
     page?: number;
     perPage?: number;

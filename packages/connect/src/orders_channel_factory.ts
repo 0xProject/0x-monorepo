@@ -10,14 +10,14 @@ export const ordersChannelFactory = {
      * @param   url                  The relayer API base WS url you would like to interact with
      * @param   handler              An OrderbookChannelHandler instance that responds to various
      *                               channel updates
-     * @return  An OrderbookChannel Promise
+     * @return  An OrdersChannel Promise
      */
     async createWebSocketOrdersChannelAsync(
         url: string,
         handler: OrdersChannelHandler,
     ): Promise<OrdersChannel> {
         assert.isUri('url', url);
-        assert.isOrderbookChannelHandler('handler', handler);
+        assert.isOrdersChannelHandler('handler', handler);
         return new Promise<OrdersChannel>((resolve, reject) => {
             const client = new WebSocket.w3cwebsocket(url);
             client.onopen = () => {
