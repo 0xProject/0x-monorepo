@@ -5,50 +5,10 @@ import { exec as execAsync } from 'promisify-child-process';
 import * as ts from 'typescript';
 
 import { constants } from '../constants';
-import { ExportPathToExportedItems } from '../types';
+import { docGenConfigs } from '../doc_gen_configs';
+import { ExportInfo, ExportNameToTypedocNames, ExportPathToExportedItems } from '../types';
 
 import { utils } from './utils';
-
-interface ExportInfo {
-    exportPathToExportedItems: ExportPathToExportedItems;
-    exportPathOrder: string[];
-}
-
-interface ExportNameToTypedocNames {
-    [exportName: string]: string[];
-}
-
-const DOC_JSON_VERSION = '0.0.1';
-
-const EXTERNAL_TYPE_TO_LINK: { [externalType: string]: string } = {
-    BigNumber: 'http://mikemcl.github.io/bignumber.js',
-    Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
-    Buffer: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v9/index.d.ts#L262',
-    'solc.StandardContractOutput':
-        'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#output-description',
-    'solc.CompilerSettings': 'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#input-description',
-    Schema: 'https://github.com/tdegrunt/jsonschema/blob/5c2edd4baba149964aec0f23c87ad12c25a50dfb/lib/index.d.ts#L49',
-};
-
-/**
- * If a 0x package re-exports an external package, we should add a link to it's exported items here
- */
-const EXTERNAL_EXPORT_TO_LINK: { [externalExport: string]: string } = {
-    Web3ProviderEngine: 'https://www.npmjs.com/package/web3-provider-engine',
-    BigNumber: 'https://www.npmjs.com/package/bignumber.js',
-    Schema: 'https://github.com/tdegrunt/jsonschema/blob/v1.2.4/lib/index.d.ts#L49',
-    ValidatorResult: 'https://github.com/tdegrunt/jsonschema/blob/v1.2.4/lib/helpers.js#L31',
-};
-
-const CLASSES_WITH_HIDDEN_CONSTRUCTORS: string[] = [
-    'ERC20ProxyWrapper',
-    'ERC20TokenWrapper',
-    'ERC721ProxyWrapper',
-    'ERC721TokenWrapper',
-    'EtherTokenWrapper',
-    'ExchangeWrapper',
-    'ForwarderWrapper',
-];
 
 export async function generateAndUploadDocsAsync(packageName: string, isStaging: boolean): Promise<void> {
     const monorepoPackages = utils.getPackages(constants.monorepoRootPath);
@@ -178,7 +138,7 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
             _.each(innerChildren, (innerChild, k) => {
                 const isHiddenConstructor =
                     child.kindString === 'Class' &&
-                    _.includes(CLASSES_WITH_HIDDEN_CONSTRUCTORS, child.name) &&
+                    _.includes(docGenConfigs.CLASSES_WITH_HIDDEN_CONSTRUCTORS, child.name) &&
                     innerChild.kindString === 'Constructor';
                 const isPrivate = _.startsWith(innerChild.name, '_');
                 if (isHiddenConstructor || isPrivate) {
@@ -209,7 +169,10 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
 
     const missingReferences: string[] = [];
     _.each(referenceNames, referenceName => {
-        if (!_.includes(allExportedItems, referenceName) && _.isUndefined(EXTERNAL_TYPE_TO_LINK[referenceName])) {
+        if (
+            !_.includes(allExportedItems, referenceName) &&
+            _.isUndefined(docGenConfigs.EXTERNAL_TYPE_TO_LINK[referenceName])
+        ) {
             missingReferences.push(referenceName);
         }
     });
@@ -224,7 +187,7 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
     const externalExportToLink: { [externalExport: string]: string } = {};
     const externalExportsWithoutLinks: string[] = [];
     _.each(externalExports, externalExport => {
-        const linkIfExists = EXTERNAL_EXPORT_TO_LINK[externalExport];
+        const linkIfExists = docGenConfigs.EXTERNAL_EXPORT_TO_LINK[externalExport];
         if (_.isUndefined(linkIfExists)) {
             externalExportsWithoutLinks.push(externalExport);
             return;
@@ -241,11 +204,11 @@ export async function generateAndUploadDocsAsync(packageName: string, isStaging:
 
     // Since we need additional metadata included in the doc JSON, we nest the TypeDoc JSON
     const docJson = {
-        version: DOC_JSON_VERSION,
+        version: docGenConfigs.DOC_JSON_VERSION,
         metadata: {
             exportPathToTypedocNames,
             exportPathOrder,
-            externalTypeToLink: EXTERNAL_TYPE_TO_LINK,
+            externalTypeToLink: docGenConfigs.EXTERNAL_TYPE_TO_LINK,
             externalExportToLink,
         },
         typedocJson: finalTypeDocOutput,

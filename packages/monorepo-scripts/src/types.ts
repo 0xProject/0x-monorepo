@@ -50,6 +50,22 @@ export interface Package {
     packageJson: PackageJSON;
 }
 
+export interface DocGenConfigs {
+    DOC_JSON_VERSION: string;
+    EXTERNAL_TYPE_TO_LINK: { [externalType: string]: string };
+    EXTERNAL_EXPORT_TO_LINK: { [externalExport: string]: string };
+    CLASSES_WITH_HIDDEN_CONSTRUCTORS: string[];
+}
+
 export interface ExportPathToExportedItems {
     [pkgName: string]: string[];
+}
+
+export interface ExportInfo {
+    exportPathToExportedItems: ExportPathToExportedItems;
+    exportPathOrder: string[];
+}
+
+export interface ExportNameToTypedocNames {
+    [exportName: string]: string[];
 }
