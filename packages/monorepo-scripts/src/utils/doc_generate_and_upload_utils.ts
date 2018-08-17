@@ -411,7 +411,7 @@ export class DocGenerateAndUploadUtils {
         const externalExports: string[] = [];
         _.each(this._exportPathToExportedItems, (exportedItems, exportPath) => {
             const pathIfExists = this._monoRepoPkgNameToPath[exportPath];
-            if (_.isUndefined(pathIfExists)) {
+            if (_.isUndefined(pathIfExists) && !_.startsWith(exportPath, './')) {
                 _.each(exportedItems, exportedItem => {
                     externalExports.push(exportedItem);
                 });
