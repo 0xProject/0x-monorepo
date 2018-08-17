@@ -266,6 +266,7 @@ contract MixinExchangeCore is
     /// @param takerAddress Address of order taker.
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
+    /// @param makerAssetFilledAmount Amount of makerAsset that will be transfered.
     /// @param signature Proof that the orders was created by its maker.
     function assertValidFill(
         Order memory order,
@@ -273,6 +274,7 @@ contract MixinExchangeCore is
         address takerAddress,
         uint256 takerAssetFillAmount,
         uint256 takerAssetFilledAmount,
+        uint256 makerAssetFilledAmount,
         bytes memory signature
     )
         internal
@@ -297,7 +299,7 @@ contract MixinExchangeCore is
                 "INVALID_SENDER"
             );
         }
-
+        
         // Validate taker is allowed to fill this order
         if (order.takerAddress != address(0)) {
             require(
@@ -317,7 +319,33 @@ contract MixinExchangeCore is
                 "INVALID_ORDER_SIGNATURE"
             );
         }
-
+        
+        // Make sure taker does not pay more than desired amount
+        // NOTE: This assertion should never fail, it is here
+        //       as an extra defence against potential bugs.
+        require(
+            takerAssetFilledAmount <= takerAssetFilledAmount,
+            "BUG_TAKER_OVERPAY"
+        );
+        
+        // Make sure order is not overfilled
+        // NOTE: This assertion should never fail, it is here
+        //       as an extra defence against potential bugs.
+        require(
+            safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount) <= order.takerAssetAmount,
+            "BUG_ORDER_OVERFILL"
+        );
+        
+        // Make sure order is filled at acceptable price
+        // NOTE: This assertion should never fail, it is here
+        //       as an extra defence against potential bugs.
+        require(
+            safeMul(makerAssetFilledAmount, order.takerAssetAmount)
+            <= 
+            safeMul(takerAssetFilledAmount, order.makerAssetAmount),
+            "BUG_ORDER_FILL_PRICING"
+        );
+        
         // Validate fill order rounding
         require(
             !isRoundingError(
