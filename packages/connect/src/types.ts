@@ -11,32 +11,30 @@ export interface Client {
     submitOrderAsync: (signedOrder: SignedOrder) => Promise<void>;
 }
 
-export interface OrderbookChannel {
-    subscribe: (subscriptionOpts: OrderbookChannelSubscriptionOpts) => void;
+export interface OrdersChannel {
+    subscribe: (subscriptionOpts: OrdersChannelSubscriptionOpts) => void;
     close: () => void;
 }
 
 /**
  * baseAssetData: The address of assetData designated as the baseToken in the currency pair calculation of price
  * quoteAssetData: The address of assetData designated as the quoteToken in the currency pair calculation of price
- * snapshot: If true, a snapshot of the orderbook will be sent before the updates to the orderbook
  * limit: Maximum number of bids and asks in orderbook snapshot
  */
-export interface OrderbookChannelSubscriptionOpts {
+export interface OrdersChannelSubscriptionOpts {
     baseAssetData: string;
     quoteAssetData: string;
-    snapshot: boolean;
     limit: number;
 }
 
-export interface OrderbookChannelHandler {
+export interface OrdersChannelHandler {
     onUpdate: (
-        channel: OrderbookChannel,
-        subscriptionOpts: OrderbookChannelSubscriptionOpts,
+        channel: OrdersChannel,
+        subscriptionOpts: OrdersChannelSubscriptionOpts,
         order: APIOrder,
     ) => void;
-    onError: (channel: OrderbookChannel, err: Error, subscriptionOpts?: OrderbookChannelSubscriptionOpts) => void;
-    onClose: (channel: OrderbookChannel) => void;
+    onError: (channel: OrdersChannel, err: Error, subscriptionOpts?: OrdersChannelSubscriptionOpts) => void;
+    onClose: (channel: OrdersChannel) => void;
 }
 
 export type OrdersChannelMessage =

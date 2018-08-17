@@ -3,10 +3,10 @@ import { v4 as uuid } from 'uuid';
 import * as WebSocket from 'websocket';
 
 import {
-    OrderbookChannel,
-    OrderbookChannelHandler,
-    OrderbookChannelSubscriptionOpts,
+    OrdersChannel,
+    OrdersChannelHandler,
     OrdersChannelMessageTypes,
+    OrdersChannelSubscriptionOpts,
 } from './types';
 import { assert } from './utils/assert';
 import { ordersChannelMessageParser } from './utils/orderbook_channel_message_parser';
@@ -15,19 +15,19 @@ import { ordersChannelMessageParser } from './utils/orderbook_channel_message_pa
  * This class includes all the functionality related to interacting with a websocket endpoint
  * that implements the standard relayer API v0
  */
-export class WebSocketOrderbookChannel implements OrderbookChannel {
+export class WebSocketOrdersChannel implements OrdersChannel {
     private readonly _client: WebSocket.w3cwebsocket;
-    private readonly _handler: OrderbookChannelHandler;
-    private readonly _subscriptionOptsList: OrderbookChannelSubscriptionOpts[] = [];
+    private readonly _handler: OrdersChannelHandler;
+    private readonly _subscriptionOptsList: OrdersChannelSubscriptionOpts[] = [];
     /**
-     * Instantiates a new WebSocketOrderbookChannel instance
+     * Instantiates a new WebSocketOrdersChannel instance
      * @param   client               A WebSocket client
-     * @param   handler              An OrderbookChannelHandler instance that responds to various
+     * @param   handler              An OrdersChannelHandler instance that responds to various
      *                               channel updates
-     * @return  An instance of WebSocketOrderbookChannel
+     * @return  An instance of WebSocketOrdersChannel
      */
-    constructor(client: WebSocket.w3cwebsocket, handler: OrderbookChannelHandler) {
-        assert.isOrderbookChannelHandler('handler', handler);
+    constructor(client: WebSocket.w3cwebsocket, handler: OrdersChannelHandler) {
+        assert.isOrdersChannelHandler('handler', handler);
         // set private members
         this._client = client;
         this._handler = handler;
@@ -44,16 +44,16 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
     }
     /**
      * Subscribe to orderbook snapshots and updates from the websocket
-     * @param   subscriptionOpts     An OrderbookChannelSubscriptionOpts instance describing which
+     * @param   subscriptionOpts     An OrdersChannelSubscriptionOpts instance describing which
      *                               assetData pair to subscribe to
      */
-    public subscribe(subscriptionOpts: OrderbookChannelSubscriptionOpts): void {
-        assert.isOrderbookChannelSubscriptionOpts('subscriptionOpts', subscriptionOpts);
+    public subscribe(subscriptionOpts: OrdersChannelSubscriptionOpts): void {
+        assert.isOrdersChannelSubscriptionOpts('subscriptionOpts', subscriptionOpts);
         assert.assert(this._client.readyState === WebSocket.w3cwebsocket.OPEN, 'WebSocket connection is closed');
         this._subscriptionOptsList.push(subscriptionOpts);
         const subscribeMessage = {
             type: 'subscribe',
-            channel: 'orderbook',
+            channel: 'orders',
             requestId: uuid(),
             payload: subscriptionOpts,
         };

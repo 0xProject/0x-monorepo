@@ -1,27 +1,27 @@
 import * as WebSocket from 'websocket';
 
-import { OrderbookChannel, OrderbookChannelHandler } from './types';
+import { OrdersChannel, OrdersChannelHandler } from './types';
 import { assert } from './utils/assert';
-import { WebSocketOrderbookChannel } from './ws_orderbook_channel';
+import { WebSocketOrdersChannel } from './ws_orders_channel';
 
-export const orderbookChannelFactory = {
+export const ordersChannelFactory = {
     /**
-     * Instantiates a new WebSocketOrderbookChannel instance
+     * Instantiates a new WebSocketOrdersChannel instance
      * @param   url                  The relayer API base WS url you would like to interact with
      * @param   handler              An OrderbookChannelHandler instance that responds to various
      *                               channel updates
      * @return  An OrderbookChannel Promise
      */
-    async createWebSocketOrderbookChannelAsync(
+    async createWebSocketOrdersChannelAsync(
         url: string,
-        handler: OrderbookChannelHandler,
-    ): Promise<OrderbookChannel> {
+        handler: OrdersChannelHandler,
+    ): Promise<OrdersChannel> {
         assert.isUri('url', url);
         assert.isOrderbookChannelHandler('handler', handler);
-        return new Promise<OrderbookChannel>((resolve, reject) => {
+        return new Promise<OrdersChannel>((resolve, reject) => {
             const client = new WebSocket.w3cwebsocket(url);
             client.onopen = () => {
-                const orderbookChannel = new WebSocketOrderbookChannel(client, handler);
+                const orderbookChannel = new WebSocketOrdersChannel(client, handler);
                 resolve(orderbookChannel);
             };
             client.onerror = err => {
