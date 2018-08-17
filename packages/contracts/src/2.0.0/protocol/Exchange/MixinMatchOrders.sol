@@ -80,6 +80,7 @@ contract MixinMatchOrders is
             takerAddress,
             matchedFillResults.left.takerAssetFilledAmount,
             matchedFillResults.left.takerAssetFilledAmount,
+            matchedFillResults.left.makerAssetFilledAmount,
             leftSignature
         );
         assertValidFill(
@@ -88,9 +89,10 @@ contract MixinMatchOrders is
             takerAddress,
             matchedFillResults.right.takerAssetFilledAmount,
             matchedFillResults.right.takerAssetFilledAmount,
+            matchedFillResults.right.makerAssetFilledAmount,
             rightSignature
         );
-
+        
         // Update exchange state
         updateFilledState(
             leftOrder,
