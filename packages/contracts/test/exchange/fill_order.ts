@@ -231,7 +231,7 @@ describe('FillOrder Tests', () => {
         });
     });
 
-    describe('Testing Exchange of ERC721 Tokens', () => {
+    describe('Testing exchange of ERC721 Tokens', () => {
         it('should successfully exchange a single token between the maker and taker (via fillOrder)', async () => {
             const fillScenario = {
                 ...defaultFillScenario,

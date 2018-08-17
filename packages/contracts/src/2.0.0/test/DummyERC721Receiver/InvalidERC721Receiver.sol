@@ -18,21 +18,34 @@
 
 pragma solidity 0.4.24;
 
+import "../../tokens/ERC721Token/IERC721Receiver.sol";
 
-contract IERC721Receiver {
+
+contract InvalidERC721Receiver is
+    IERC721Receiver
+{
+    // Actual function signature is `onERC721Received(address,address,uint256,bytes)`
+    bytes4 constant internal INVALID_ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,uint256,bytes)"));
+
+    event TokenReceived(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes data
+    );
 
     /// @notice Handle the receipt of an NFT
     /// @dev The ERC721 smart contract calls this function on the recipient
-    ///  after a `transfer`. This function MAY throw to revert and reject the
-    ///  transfer. Return of other than the magic value MUST result in the
-    ///  transaction being reverted.
-    ///  Note: the contract address is always the message sender.
+    ///      after a `transfer`. This function MAY throw to revert and reject the
+    ///      transfer. Return of other than the magic value MUST result in the
+    ///      transaction being reverted.
+    ///      Note: the contract address is always the message sender.
     /// @param _operator The address which called `safeTransferFrom` function
     /// @param _from The address which previously owned the token
     /// @param _tokenId The NFT identifier which is being transferred
     /// @param _data Additional data with no specified format
     /// @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
-    ///  unless throwing
+    ///         unless throwing
     function onERC721Received(
         address _operator,
         address _from,
@@ -40,5 +53,14 @@ contract IERC721Receiver {
         bytes _data
     )
         external
-        returns (bytes4);
+        returns (bytes4)
+    {
+        emit TokenReceived(
+            _operator,
+            _from,
+            _tokenId,
+            _data
+        );
+        return INVALID_ERC721_RECEIVED;
+    }
 }

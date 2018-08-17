@@ -58,7 +58,7 @@ export class ForwarderWrapper {
     constructor(contractInstance: ForwarderContract, provider: Provider) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, this._forwarderContract.address);
+        this._logDecoder = new LogDecoder(this._web3Wrapper);
     }
     public async marketSellOrdersWithEthAsync(
         orders: SignedOrder[],

@@ -16,7 +16,6 @@ import { constants } from './constants';
 
 export class LogDecoder {
     private readonly _web3Wrapper: Web3Wrapper;
-    private readonly _contractAddress: string;
     private readonly _abiDecoder: AbiDecoder;
     public static wrapLogBigNumbers(log: any): any {
         const argNames = _.keys(log.args);
@@ -27,9 +26,8 @@ export class LogDecoder {
             }
         }
     }
-    constructor(web3Wrapper: Web3Wrapper, contractAddress: string) {
+    constructor(web3Wrapper: Web3Wrapper) {
         this._web3Wrapper = web3Wrapper;
-        this._contractAddress = contractAddress;
         const abiArrays: AbiDefinition[][] = [];
         _.forEach(artifacts, (artifact: ContractArtifact) => {
             const compilerOutput = artifact.compilerOutput;
@@ -48,7 +46,6 @@ export class LogDecoder {
     }
     public async getTxWithDecodedLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
         const tx = await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-        tx.logs = _.filter(tx.logs, log => log.address === this._contractAddress);
         tx.logs = _.map(tx.logs, log => this.decodeLogOrThrow(log));
         return tx;
     }
