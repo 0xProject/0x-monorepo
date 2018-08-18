@@ -82,13 +82,7 @@ We strongly recommend that the community help us make improvements and determine
 
 ### Install dependencies
 
-Make sure you are using Yarn v1.6. To install using brew:
-
-```
-brew unlink yarn
-brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/76215230de5f7f7bee2cfcdd7185cf49d949862d/Formula/yarn.rb
-brew switch yarn 1.6.0_1
-```
+Make sure you are using Yarn v1.9.4. To install using brew:
 
 Then install dependencies
 
