@@ -212,6 +212,30 @@ contract MixinMatchOrders is
             matchedFillResults.right.takerAssetFilledAmount
         );
 
+        // Compute fees for left order
+        matchedFillResults.left.makerFeePaid = getPartialAmount(
+            matchedFillResults.left.takerAssetFilledAmount,
+            leftOrder.takerAssetAmount,
+            leftOrder.makerFee
+        );
+        matchedFillResults.left.takerFeePaid = getPartialAmount(
+            matchedFillResults.left.takerAssetFilledAmount,
+            leftOrder.takerAssetAmount,
+            leftOrder.takerFee
+        );
+
+        // Compute fees for right order
+        matchedFillResults.right.makerFeePaid = getPartialAmount(
+            matchedFillResults.right.takerAssetFilledAmount,
+            rightOrder.takerAssetAmount,
+            rightOrder.makerFee
+        );
+        matchedFillResults.right.takerFeePaid = getPartialAmount(
+            matchedFillResults.right.takerAssetFilledAmount,
+            rightOrder.takerAssetAmount,
+            rightOrder.takerFee
+        );
+
         // Return fill results
         return matchedFillResults;
     }
