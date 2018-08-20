@@ -247,9 +247,12 @@ export const utils = {
         } = {
             [ExchangeContractErrs.OrderFillExpired]: 'This order has expired',
             [ExchangeContractErrs.OrderCancelExpired]: 'This order has expired',
-            [ExchangeContractErrs.OrderCancelled]: 'This order has been cancelled',
+            [ExchangeContractErrs.OrderCancelAmountZero]: "Order cancel amount can't be 0",
+            [ExchangeContractErrs.OrderAlreadyCancelledOrFilled]:
+                'This order has already been completely filled or cancelled',
             [ExchangeContractErrs.OrderFillAmountZero]: "Order fill amount can't be 0",
-            [ExchangeContractErrs.OrderRemainingFillAmountZero]: 'This order has already been completely filled',
+            [ExchangeContractErrs.OrderRemainingFillAmountZero]:
+                'This order has already been completely filled or cancelled',
             [ExchangeContractErrs.OrderFillRoundingError]:
                 'Rounding error will occur when filling this order. Please try filling a different amount.',
             [ExchangeContractErrs.InsufficientTakerBalance]:
