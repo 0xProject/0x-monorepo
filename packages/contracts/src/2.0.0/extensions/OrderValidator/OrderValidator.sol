@@ -124,17 +124,67 @@ contract OrderValidator {
         address assetProxy = EXCHANGE.getAssetProxy(assetProxyId);
 
         if (assetProxyId == ERC20_DATA_ID) {
+            // Query balance
             balance = IERC20Token(token).balanceOf(target);
+
+            // Query allowance
             allowance = IERC20Token(token).allowance(target, assetProxy);
         } else if (assetProxyId == ERC721_DATA_ID) {
             uint256 tokenId = assetData.readUint256(36);
-            address owner = IERC721Token(token).ownerOf(tokenId);
+
+            // Query owner of tokenId
+            address owner = getERC721TokenOwner(token, tokenId);
+
+            // Set balance to 1 if tokenId is owned by target
             balance = target == owner ? 1 : 0;
+
+            // Check if ERC721Proxy is approved to spend tokenId
             bool isApproved = IERC721Token(token).isApprovedForAll(target, assetProxy) || IERC721Token(token).getApproved(tokenId) == assetProxy;
+            
+            // Set alowance to 1 if ERC721Proxy is approved to spend tokenId
             allowance = isApproved ? 1 : 0;
         } else {
             revert("UNSUPPORTED_ASSET_PROXY");
         }
         return (balance, allowance);
+    }
+
+    /// @dev Calls `token.ownerOf(tokenId)`, but returns a null owner instead of reverting on an unowned token.
+    /// @param token Address of ERC721 token.
+    /// @param tokenId The identifier for the specific NFT.
+    /// @return Owner of tokenId or null address if unowned.
+    function getERC721TokenOwner(address token, uint256 tokenId)
+        public
+        view
+        returns (address owner)
+    {
+        assembly {
+            // load free memory pointer
+            let cdStart := mload(64)
+
+            // bytes4(keccak256(ownerOf(uint256))) = 0x6352211e
+            mstore(cdStart, 0x6352211e00000000000000000000000000000000000000000000000000000000)
+            mstore(add(cdStart, 4), tokenId)
+
+            // staticcall `ownerOf(tokenId)`
+            // `ownerOf` will revert if tokenId is not owned
+            let success := staticcall(
+                gas,      // forward all gas
+                token,    // call token contract
+                cdStart,  // start of calldata
+                36,       // length of input is 36 bytes
+                cdStart,  // write output over input
+                32        // size of output is 32 bytes
+            )
+
+            // Success implies that tokenId is owned
+            // Copy owner from return data if successful
+            if success {
+                owner := mload(cdStart)
+            }    
+        }
+
+        // Owner initialized to address(0), no need to modify if call is unsuccessful
+        return owner;
     }
 }
