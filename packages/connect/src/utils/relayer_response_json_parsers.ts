@@ -22,7 +22,10 @@ export const relayerResponseJsonParsers = {
     },
     parseOrdersJson(json: any): OrdersResponse {
         assert.doesConformToSchema('relayerApiOrdersResponse', json, schemas.relayerApiOrdersResponseSchema);
-        return { ...json, records: json.records.map(relayerResponseJsonParsers.parseAPIOrderJson.bind(relayerResponseJsonParsers)) };
+        return { ...json, records: relayerResponseJsonParsers.parseAPIOrdersJson(json.records) };
+    },
+    parseAPIOrdersJson(json: any): APIOrder[] {
+        return json.map(relayerResponseJsonParsers.parseAPIOrderJson.bind(relayerResponseJsonParsers));
     },
     parseAPIOrderJson(json: any): APIOrder {
         assert.doesConformToSchema('relayerApiOrder', json, schemas.relayerApiOrderSchema);

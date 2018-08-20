@@ -9,7 +9,11 @@ import {
     OrdersChannelSubscriptionOpts,
 } from './types';
 import { assert } from './utils/assert';
-import { ordersChannelMessageParser } from './utils/orderbook_channel_message_parser';
+import { ordersChannelMessageParser } from './utils/orders_channel_message_parser';
+
+export interface OrdersChannelSubscriptionOptsMap {
+    [key: string]: OrdersChannelSubscriptionOpts;
+}
 
 /**
  * This class includes all the functionality related to interacting with a websocket endpoint
@@ -18,7 +22,7 @@ import { ordersChannelMessageParser } from './utils/orderbook_channel_message_pa
 export class WebSocketOrdersChannel implements OrdersChannel {
     private readonly _client: WebSocket.w3cwebsocket;
     private readonly _handler: OrdersChannelHandler;
-    private readonly _subscriptionOptsList: OrdersChannelSubscriptionOpts[] = [];
+    private readonly _subscriptionOptsMap: OrdersChannelSubscriptionOptsMap = {};
     /**
      * Instantiates a new WebSocketOrdersChannel instance
      * @param   client               A WebSocket client
@@ -50,11 +54,12 @@ export class WebSocketOrdersChannel implements OrdersChannel {
     public subscribe(subscriptionOpts: OrdersChannelSubscriptionOpts): void {
         assert.isOrdersChannelSubscriptionOpts('subscriptionOpts', subscriptionOpts);
         assert.assert(this._client.readyState === WebSocket.w3cwebsocket.OPEN, 'WebSocket connection is closed');
-        this._subscriptionOptsList.push(subscriptionOpts);
+        const requestId = uuid();
+        this._subscriptionOptsMap[requestId] = subscriptionOpts;
         const subscribeMessage = {
             type: 'subscribe',
             channel: 'orders',
-            requestId: uuid(),
+            requestId,
             payload: subscriptionOpts,
         };
         this._client.send(JSON.stringify(subscribeMessage));
@@ -73,7 +78,7 @@ export class WebSocketOrdersChannel implements OrdersChannel {
         try {
             const data = message.data;
             const parserResult = ordersChannelMessageParser.parse(data);
-            const subscriptionOpts = this._subscriptionOptsList[parserResult.requestId];
+            const subscriptionOpts = this._subscriptionOptsMap[parserResult.requestId];
             if (_.isUndefined(subscriptionOpts)) {
                 this._handler.onError(
                     this,

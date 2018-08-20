@@ -191,6 +191,3 @@ describe('HttpClient', () => {
         });
     });
 });
-
-// https://example.com/fee_recipients?networkId=42&page=3&perPage=50
-// https://example.com/fee_recipients?networkId=42&page=3&perPage=50

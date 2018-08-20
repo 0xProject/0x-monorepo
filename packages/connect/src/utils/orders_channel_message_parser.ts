@@ -15,15 +15,15 @@ export const ordersChannelMessageParser = {
         assert.assert(!_.isUndefined(type), `Message is missing a type parameter: ${utf8Data}`);
         assert.isString('type', type);
         // ensure we have a request id for the resulting message
-        const requestId: number = _.get(messageObj, 'requestId');
+        const requestId: string = _.get(messageObj, 'requestId');
         assert.assert(!_.isUndefined(requestId), `Message is missing a requestId parameter: ${utf8Data}`);
-        assert.isNumber('requestId', requestId);
+        assert.isString('requestId', requestId);
         switch (type) {
             case OrdersChannelMessageTypes.Update: {
                 assert.doesConformToSchema('message', messageObj, schemas.relayerApiOrdersChannelUpdateSchema);
-                const orderJson = messageObj.payload;
-                const order = relayerResponseJsonParsers.parseAPIOrderJson(orderJson);
-                return _.assign(messageObj, { payload: order });
+                const ordersJson = messageObj.payload;
+                const orders = relayerResponseJsonParsers.parseAPIOrdersJson(ordersJson);
+                return _.assign(messageObj, { payload: orders });
             }
             default: {
                 return {

@@ -31,7 +31,7 @@ export interface OrdersChannelHandler {
     onUpdate: (
         channel: OrdersChannel,
         subscriptionOpts: OrdersChannelSubscriptionOpts,
-        order: APIOrder,
+        orders: APIOrder[],
     ) => void;
     onError: (channel: OrdersChannel, err: Error, subscriptionOpts?: OrdersChannelSubscriptionOpts) => void;
     onClose: (channel: OrdersChannel) => void;
@@ -48,13 +48,13 @@ export enum OrdersChannelMessageTypes {
 
 export interface UpdateOrdersChannelMessage {
     type: OrdersChannelMessageTypes.Update;
-    requestId: number;
-    payload: APIOrder;
+    requestId: string;
+    payload: APIOrder[];
 }
 
 export interface UnknownOrdersChannelMessage {
     type: OrdersChannelMessageTypes.Unknown;
-    requestId: number;
+    requestId: string;
     payload: undefined;
 }
 

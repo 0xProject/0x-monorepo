@@ -11,18 +11,9 @@ chai.config.includeStack = true;
 chai.use(dirtyChai);
 const expect = chai.expect;
 const emptyOrdersChannelHandler = {
-    onSnapshot: () => {
-        _.noop();
-    },
-    onUpdate: () => {
-        _.noop();
-    },
-    onError: () => {
-        _.noop();
-    },
-    onClose: () => {
-        _.noop();
-    },
+    onUpdate: _.noop,
+    onError: _.noop,
+    onClose: _.noop,
 };
 
 describe('WebSocketOrdersChannel', () => {
@@ -34,15 +25,14 @@ describe('WebSocketOrdersChannel', () => {
     const subscriptionOpts = {
         baseAssetData: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
         quoteAssetData: '0xef7fff64389b814a946f3e92105513705ca6b990',
-        snapshot: true,
         limit: 100,
     };
     describe('#subscribe', () => {
         it('throws when subscriptionOpts does not conform to schema', () => {
-            const badSubscribeCall = openOrdersChannel.subscribe.bind(openOrdersChannel, {});
-            expect(badSubscribeCall).throws(
-                'Expected subscriptionOpts to conform to schema /RelayerApiOrdersChannelSubscribePayload\nEncountered: {}\nValidation errors: instance requires property "baseAssetData", instance requires property "quoteAssetData"',
-            );
+            const badSubscribeCall = openOrdersChannel.subscribe.bind(openOrdersChannel, {
+                makerAssetData: 5,
+            });
+            expect(badSubscribeCall).throws();
         });
         it('does not throw when inputs are of correct types', () => {
             const goodSubscribeCall = openOrdersChannel.subscribe.bind(openOrdersChannel, subscriptionOpts);
