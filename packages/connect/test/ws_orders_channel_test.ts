@@ -11,9 +11,9 @@ chai.config.includeStack = true;
 chai.use(dirtyChai);
 const expect = chai.expect;
 const emptyOrdersChannelHandler = {
-    onUpdate: _.noop,
-    onError: _.noop,
-    onClose: _.noop,
+    onUpdate: _.noop.bind(_),
+    onError: _.noop.bind(_),
+    onClose: _.noop.bind(_),
 };
 
 describe('WebSocketOrdersChannel', () => {

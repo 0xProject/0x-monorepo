@@ -1,4 +1,3 @@
-import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as dirtyChai from 'dirty-chai';
@@ -9,6 +8,8 @@ import { HttpClient } from '../src/index';
 
 import { assetDataPairsResponse } from './fixtures/standard_relayer_api/asset_pairs';
 import * as assetDataPairsResponseJSON from './fixtures/standard_relayer_api/asset_pairs.json';
+import { feeRecipientsResponse } from './fixtures/standard_relayer_api/fee_recipients';
+import * as feeRecipientsResponseJSON from './fixtures/standard_relayer_api/fee_recipients.json';
 import { orderResponse } from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f';
 import * as orderResponseJSON from './fixtures/standard_relayer_api/order/0xabc67323774bdbd24d94f977fa9ac94a50f016026fd13f42990861238897721f.json';
 import { orderConfigResponse } from './fixtures/standard_relayer_api/order_config';
@@ -17,8 +18,6 @@ import { orderbookResponse } from './fixtures/standard_relayer_api/orderbook';
 import * as orderbookJSON from './fixtures/standard_relayer_api/orderbook.json';
 import { ordersResponse } from './fixtures/standard_relayer_api/orders';
 import * as ordersResponseJSON from './fixtures/standard_relayer_api/orders.json';
-import { feeRecipientsResponse } from './fixtures/standard_relayer_api/fee_recipients';
-import * as feeRecipientsResponseJSON from './fixtures/standard_relayer_api/fee_recipients.json';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
