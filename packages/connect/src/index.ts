@@ -16,4 +16,4 @@ export {
     TokenTradeInfo,
 } from './types';
 
-export { Order, SignedOrder } from '@0xproject/types';
+export { SignedOrder } from '@0xproject/types';
