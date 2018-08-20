@@ -8,7 +8,7 @@
         "watch_without_deps": "yarn pre_build && tsc -w",
         "build": "yarn pre_build && tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
         "pre_build": "run-s update_artifacts generate_contract_wrappers",
-        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/artifacts; done;",
+        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-beta-testnet/$i.json lib/artifacts; done;",
         "generate_contract_wrappers": "abi-gen --abis 'lib/artifacts/@(Exchange|DummyERC20Token|DummyERC721Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
         "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib scripts src/generated_contract_wrappers",

@@ -12,6 +12,6 @@ before('migrate contracts', async function(): Promise<void> {
         gas: devConstants.GAS_LIMIT,
         from: devConstants.TESTRPC_FIRST_ADDRESS,
     };
-    const artifactsDir = `../migrations/artifacts/2.0.0`;
+    const artifactsDir = `src/artifacts`;
     await runV2MigrationsAsync(provider, artifactsDir, txDefaults);
 });

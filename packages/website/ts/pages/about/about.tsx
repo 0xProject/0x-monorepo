@@ -82,7 +82,7 @@ const teamRow3: ProfileInfo[] = [
         name: 'Brandon Millman',
         title: 'Senior Engineer',
         description: `Full-stack engineer. Previously senior software engineer at \
-                      Twitter. Electrical and Computer Engineering at Duke.`,
+                      Twitter. Computer Science and Electrical Engineering at Duke.`,
         image: '/images/team/brandon.png',
         linkedIn: 'https://www.linkedin.com/in/brandon-millman-b093a022/',
         github: 'https://github.com/BMillman19',
@@ -198,6 +198,13 @@ const teamRow7: ProfileInfo[] = [
         description: `Growth & Business Development. Previously product and partnerships at Square. Economics at Dartmouth College.`,
         image: 'images/team/clay.png',
         linkedIn: 'https://www.linkedin.com/in/robbinsclay/',
+    },
+    {
+        name: 'Matt Taylor',
+        title: 'Marketing Lead',
+        description: `Growth & Marketing. Previously marketing at Abra and Square. Economics and Philosophy at Claremont McKenna College.`,
+        image: 'images/team/matt.jpg',
+        linkedIn: 'https://www.linkedin.com/in/mattytay/',
     },
 ];
 
