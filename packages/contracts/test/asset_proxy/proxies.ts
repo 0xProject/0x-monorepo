@@ -5,6 +5,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
+import { BasketProxyContract } from '../../generated_contract_wrappers/basket_proxy';
 import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
 import { DummyERC721ReceiverContract } from '../../generated_contract_wrappers/dummy_erc721_receiver';
 import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
@@ -42,10 +43,12 @@ describe('Asset Transfer Proxies', () => {
     let erc721Receiver: DummyERC721ReceiverContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
+    let basketProxy: BasketProxyContract;
 
     let erc20Wrapper: ERC20Wrapper;
     let erc721Wrapper: ERC721Wrapper;
     let erc721MakerTokenId: BigNumber;
+    let erc721MakerTokenId2: BigNumber;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -80,6 +83,7 @@ describe('Asset Transfer Proxies', () => {
         await erc721Wrapper.setBalancesAndAllowancesAsync();
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerTokenId = erc721Balances[makerAddress][erc721Token.address][0];
+        erc721MakerTokenId2 = erc721Balances[makerAddress][erc721Token.address][1];
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
                 from: owner,
@@ -91,12 +95,121 @@ describe('Asset Transfer Proxies', () => {
             provider,
             txDefaults,
         );
+        basketProxy = await BasketProxyContract.deployFrom0xArtifactAsync(
+            artifacts.BasketProxy,
+            provider,
+            txDefaults,
+            erc721Proxy.address,
+            erc20Proxy.address,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await basketProxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(basketProxy.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(basketProxy.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
+    });
+    describe.only('BasketProxy', () => {
+        it('should basket proxy transfer', async () => {
+            const erc721TokenAddresses = [erc721Token.address, erc721Token.address];
+            const erc721TokenIds = [erc721MakerTokenId, erc721MakerTokenId2];
+            // const erc721TokenAddresses = [erc721Token.address];
+            // const erc721TokenIds = [erc721MakerTokenId];
+            for (const token of erc721TokenIds) {
+                const newOwner = await erc721Token.ownerOf.callAsync(token);
+                console.log('oldOwner', token.toString(), newOwner);
+            }
+            let currentBalances = await erc20Wrapper.getBalancesAsync();
+            console.log('takerBalanceBefore', currentBalances[takerAddress][zrxToken.address].toString());
+            const erc20TokenAddresses = [zrxToken.address];
+            const erc20TokenAmounts = [new BigNumber(100)];
+            const tokenAddresses = [erc721TokenAddresses, erc20TokenAddresses];
+            const amount = new BigNumber(1);
+            const tokenIdOrAmount = [erc721TokenIds, erc20TokenAmounts];
+            const encodedERC721Data = assetDataUtils.encodeERC721AssetData(erc721TokenAddresses[1], erc721TokenIds[1]);
+            const encodedERC20Data = assetDataUtils.encodeERC20AssetData(erc20TokenAddresses[0]);
+            const encodedERC721TransferFrom = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                encodedERC721Data,
+                makerAddress,
+                takerAddress,
+                amount,
+            );
+            const encodedERC20TransferFrom = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                encodedERC20Data,
+                makerAddress,
+                takerAddress,
+                erc20TokenAmounts[0],
+            );
+            console.log('makerAddress', makerAddress);
+            console.log('takerAddress', takerAddress);
+            console.log('tokenAddresses', tokenAddresses);
+            console.log('tokenId1', erc721MakerTokenId.toString(16));
+            console.log('tokenId2', erc721MakerTokenId2.toString(16));
+            console.log('erc721ProxyId', await erc721Proxy.getProxyId.callAsync());
+            console.log('erc20ProxyId', await erc20Proxy.getProxyId.callAsync());
+            console.log('');
+            console.log('encodedERC721TransferFrom', encodedERC721TransferFrom);
+            console.log('encodedERC20TransferFrom', encodedERC20TransferFrom);
+            const encodedAbiData = basketProxy.BasketTokens.getABIEncodedTransactionData(
+                tokenAddresses,
+                tokenIdOrAmount,
+            );
+            console.log('');
+            console.log('basketTokens', encodedAbiData);
+            const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                encodedAbiData,
+                makerAddress,
+                takerAddress,
+                amount,
+            );
+            const callResult = await web3Wrapper.callAsync({
+                to: basketProxy.address,
+                data,
+                from: exchangeAddress,
+            });
+            console.log('');
+            console.log('callResult', callResult);
+            console.log('');
+            console.log('data', data);
+            // expect(callResult).to.equal(encodedERC721TransferFrom);
+            expect(callResult).to.equal(encodedERC20TransferFrom);
+            web3Wrapper.abiDecoder.addABI(erc721Token.abi);
+            const receipt = await web3Wrapper.awaitTransactionSuccessAsync(
+                await web3Wrapper.sendTransactionAsync({
+                    to: basketProxy.address,
+                    data,
+                    from: exchangeAddress,
+                    gas: 500_000,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            for (const token of erc721TokenIds) {
+                const newOwner = await erc721Token.ownerOf.callAsync(token);
+                console.log('newOwner', token.toString(), newOwner);
+            }
+            // console.log(receipt.logs);
+            console.log(parseInt(receipt.gasUsed as any, 16));
+            currentBalances = await erc20Wrapper.getBalancesAsync();
+            console.log('takerBalanceAfter', currentBalances[takerAddress][zrxToken.address].toString());
+        });
     });
     describe('Transfer Proxy - ERC20', () => {
         describe('transferFrom', () => {

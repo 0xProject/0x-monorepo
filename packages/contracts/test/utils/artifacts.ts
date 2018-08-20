@@ -1,6 +1,7 @@
 import { ContractArtifact } from '@0xproject/sol-compiler';
 
 import * as AssetProxyOwner from '../../artifacts/AssetProxyOwner.json';
+import * as BasketProxy from '../../artifacts/BasketProxy.json';
 import * as DummyERC20Token from '../../artifacts/DummyERC20Token.json';
 import * as DummyERC721Receiver from '../../artifacts/DummyERC721Receiver.json';
 import * as DummyERC721Token from '../../artifacts/DummyERC721Token.json';
@@ -31,6 +32,7 @@ import * as ZRX from '../../artifacts/ZRXToken.json';
 
 export const artifacts = {
     AssetProxyOwner: (AssetProxyOwner as any) as ContractArtifact,
+    BasketProxy: (BasketProxy as any) as ContractArtifact,
     DummyERC20Token: (DummyERC20Token as any) as ContractArtifact,
     DummyERC721Receiver: (DummyERC721Receiver as any) as ContractArtifact,
     DummyERC721Token: (DummyERC721Token as any) as ContractArtifact,

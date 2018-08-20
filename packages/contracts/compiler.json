@@ -20,6 +20,7 @@
     },
     "contracts": [
         "AssetProxyOwner",
+        "BasketProxy",
         "DummyERC20Token",
         "DummyERC721Receiver",
         "DummyERC721Token",
