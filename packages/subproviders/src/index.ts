@@ -1,8 +1,8 @@
 import Eth from '@ledgerhq/hw-app-eth';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
-import { LedgerEthereumClient } from './types';
-
 export import Web3ProviderEngine = require('web3-provider-engine');
+
+import { LedgerEthereumClient } from './types';
 
 /**
  * A factory method for creating a LedgerEthereumClient usable in a browser context.
@@ -38,12 +38,13 @@ export {
     NonceSubproviderErrors,
     LedgerSubproviderConfigs,
     PartialTxParams,
-    DerivedHDKeyInfo,
     JSONRPCRequestPayloadWithMethod,
     ECSignatureString,
     AccountFetchingConfigs,
     LedgerEthereumClientFactoryAsync,
     OnNextCompleted,
+    MnemonicWalletSubproviderConfigs,
+    LedgerGetAddressResult,
 } from './types';
 
 export { ECSignature } from '@0xproject/types';

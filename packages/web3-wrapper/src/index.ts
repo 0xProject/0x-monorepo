@@ -1,6 +1,8 @@
 export { Web3Wrapper } from './web3_wrapper';
 export { marshaller } from './marshaller';
 
+export { AbiDecoder } from '@0xproject/utils';
+
 export {
     BlockParam,
     TxData,
@@ -18,18 +20,35 @@ export {
     LogTopic,
     JSONRPCRequestPayload,
     TransactionReceiptStatus,
-    LogWithDecodedArgs,
     DecodedLogArgs,
     StructLog,
     JSONRPCErrorCallback,
     BlockParamLiteral,
+    ContractEventArg,
+    DecodedLogEntry,
+    LogEntryEvent,
+    OpCode,
+    TxDataPayable,
+    JSONRPCResponsePayload,
+    RawLogEntry,
+    DecodedLogEntryEvent,
+    LogWithDecodedArgs,
+    AbiDefinition,
+    RawLog,
+    FunctionAbi,
+    EventAbi,
+    EventParameter,
+    MethodAbi,
+    ConstructorAbi,
+    FallbackAbi,
+    DataItem,
+    ConstructorStateMutability,
+    StateMutability,
 } from 'ethereum-types';
 export {
     Web3WrapperErrors,
     NodeType,
     CallDataRPC,
-    CallTxDataBaseRPC,
-    AbstractBlockRPC,
     BlockWithoutTransactionDataRPC,
     BlockWithTransactionDataRPC,
     TransactionRPC,
