@@ -16,7 +16,7 @@ export class MultiSigWrapper {
     constructor(multiSigContract: MultiSigWalletContract, provider: Provider) {
         this._multiSig = multiSigContract;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, this._multiSig.address);
+        this._logDecoder = new LogDecoder(this._web3Wrapper);
     }
     public async submitTransactionAsync(
         destination: string,

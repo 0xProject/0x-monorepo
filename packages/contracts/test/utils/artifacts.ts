@@ -4,12 +4,14 @@ import * as AssetProxyOwner from '../../artifacts/AssetProxyOwner.json';
 import * as DummyERC20Token from '../../artifacts/DummyERC20Token.json';
 import * as DummyERC721Receiver from '../../artifacts/DummyERC721Receiver.json';
 import * as DummyERC721Token from '../../artifacts/DummyERC721Token.json';
+import * as DummyNoReturnERC20Token from '../../artifacts/DummyNoReturnERC20Token.json';
 import * as ERC20Proxy from '../../artifacts/ERC20Proxy.json';
 import * as ERC721Proxy from '../../artifacts/ERC721Proxy.json';
 import * as Exchange from '../../artifacts/Exchange.json';
 import * as ExchangeWrapper from '../../artifacts/ExchangeWrapper.json';
 import * as Forwarder from '../../artifacts/Forwarder.json';
 import * as IAssetProxy from '../../artifacts/IAssetProxy.json';
+import * as InvalidERC721Receiver from '../../artifacts/InvalidERC721Receiver.json';
 import * as MixinAuthorizable from '../../artifacts/MixinAuthorizable.json';
 import * as MultiSigWallet from '../../artifacts/MultiSigWallet.json';
 import * as MultiSigWalletWithTimeLock from '../../artifacts/MultiSigWalletWithTimeLock.json';
@@ -32,6 +34,7 @@ export const artifacts = {
     DummyERC20Token: (DummyERC20Token as any) as ContractArtifact,
     DummyERC721Receiver: (DummyERC721Receiver as any) as ContractArtifact,
     DummyERC721Token: (DummyERC721Token as any) as ContractArtifact,
+    DummyNoReturnERC20Token: (DummyNoReturnERC20Token as any) as ContractArtifact,
     ERC20Proxy: (ERC20Proxy as any) as ContractArtifact,
     ERC721Proxy: (ERC721Proxy as any) as ContractArtifact,
     Exchange: (Exchange as any) as ContractArtifact,
@@ -39,6 +42,7 @@ export const artifacts = {
     EtherToken: (EtherToken as any) as ContractArtifact,
     Forwarder: (Forwarder as any) as ContractArtifact,
     IAssetProxy: (IAssetProxy as any) as ContractArtifact,
+    InvalidERC721Receiver: (InvalidERC721Receiver as any) as ContractArtifact,
     MixinAuthorizable: (MixinAuthorizable as any) as ContractArtifact,
     MultiSigWallet: (MultiSigWallet as any) as ContractArtifact,
     MultiSigWalletWithTimeLock: (MultiSigWalletWithTimeLock as any) as ContractArtifact,

@@ -261,7 +261,7 @@ describe('Asset Transfer Proxies', () => {
                     erc721Receiver.address,
                     amount,
                 );
-                const logDecoder = new LogDecoder(web3Wrapper, erc721Receiver.address);
+                const logDecoder = new LogDecoder(web3Wrapper);
                 const tx = await logDecoder.getTxWithDecodedLogsAsync(
                     await web3Wrapper.sendTransactionAsync({
                         to: erc721Proxy.address,
@@ -271,7 +271,7 @@ describe('Asset Transfer Proxies', () => {
                     }),
                 );
                 // Verify that no log was emitted by erc721 receiver
-                expect(tx.logs.length).to.be.equal(0);
+                expect(tx.logs.length).to.be.equal(1);
                 // Verify transfer was successful
                 const newOwnerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(newOwnerMakerAsset).to.be.bignumber.equal(erc721Receiver.address);

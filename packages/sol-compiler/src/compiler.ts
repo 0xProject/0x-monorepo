@@ -53,6 +53,23 @@ const DEFAULT_COMPILER_SETTINGS: solc.CompilerSettings = {
 };
 const CONFIG_FILE = 'compiler.json';
 
+interface VersionToInputs {
+    [solcVersion: string]: {
+        standardInput: solc.StandardInput;
+        contractsToCompile: string[];
+    };
+}
+
+interface ContractPathToData {
+    [contractPath: string]: ContractData;
+}
+
+interface ContractData {
+    currentArtifactIfExists: ContractArtifact | void;
+    sourceTreeHashHex: string;
+    contractName: string;
+}
+
 /**
  * The Compiler facilitates compiling Solidity smart contracts and saves the results
  * to artifact files.
@@ -65,6 +82,34 @@ export class Compiler {
     private readonly _artifactsDir: string;
     private readonly _solcVersionIfExists: string | undefined;
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
+    private static async _getSolcAsync(
+        solcVersion: string,
+    ): Promise<{ solcInstance: solc.SolcInstance; fullSolcVersion: string }> {
+        const fullSolcVersion = binPaths[solcVersion];
+        if (_.isUndefined(fullSolcVersion)) {
+            throw new Error(`${solcVersion} is not a known compiler version`);
+        }
+        const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
+        let solcjs: string;
+        if (await fsWrapper.doesFileExistAsync(compilerBinFilename)) {
+            solcjs = (await fsWrapper.readFileAsync(compilerBinFilename)).toString();
+        } else {
+            logUtils.log(`Downloading ${fullSolcVersion}...`);
+            const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
+            const response = await fetchAsync(url);
+            const SUCCESS_STATUS = 200;
+            if (response.status !== SUCCESS_STATUS) {
+                throw new Error(`Failed to load ${fullSolcVersion}`);
+            }
+            solcjs = await response.text();
+            await fsWrapper.writeFileAsync(compilerBinFilename, solcjs);
+        }
+        if (solcjs.length === 0) {
+            throw new Error('No compiler available');
+        }
+        const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
+        return { solcInstance, fullSolcVersion };
+    }
     /**
      * Instantiates a new instance of the Compiler class.
      * @return An instance of the Compiler class.
@@ -107,97 +152,101 @@ export class Compiler {
         } else {
             contractNamesToCompile = this._specifiedContracts;
         }
-        for (const contractNameToCompile of contractNamesToCompile) {
-            await this._compileContractAsync(contractNameToCompile);
-        }
+        await this._compileContractsAsync(contractNamesToCompile);
     }
     /**
      * Compiles contract and saves artifact to artifactsDir.
      * @param fileName Name of contract with '.sol' extension.
      */
-    private async _compileContractAsync(contractName: string): Promise<void> {
-        const contractSource = this._resolver.resolve(contractName);
-        const absoluteContractPath = path.join(this._contractsDir, contractSource.path);
-        const currentArtifactIfExists = await getContractArtifactIfExistsAsync(this._artifactsDir, contractName);
-        const sourceTreeHashHex = `0x${this._getSourceTreeHash(absoluteContractPath).toString('hex')}`;
-        let shouldCompile = false;
-        if (_.isUndefined(currentArtifactIfExists)) {
-            shouldCompile = true;
+    private async _compileContractsAsync(contractNames: string[]): Promise<void> {
+        // batch input contracts together based on the version of the compiler that they require.
+        const versionToInputs: VersionToInputs = {};
+
+        // map contract paths to data about them for later verification and persistence
+        const contractPathToData: ContractPathToData = {};
+
+        for (const contractName of contractNames) {
+            const contractSource = this._resolver.resolve(contractName);
+            const contractData = {
+                contractName,
+                currentArtifactIfExists: await getContractArtifactIfExistsAsync(this._artifactsDir, contractName),
+                sourceTreeHashHex: `0x${this._getSourceTreeHash(
+                    path.join(this._contractsDir, contractSource.path),
+                ).toString('hex')}`,
+            };
+            if (!this._shouldCompile(contractData)) {
+                continue;
+            }
+            contractPathToData[contractSource.path] = contractData;
+            const solcVersion = _.isUndefined(this._solcVersionIfExists)
+                ? semver.maxSatisfying(_.keys(binPaths), parseSolidityVersionRange(contractSource.source))
+                : this._solcVersionIfExists;
+            const isFirstContractWithThisVersion = _.isUndefined(versionToInputs[solcVersion]);
+            if (isFirstContractWithThisVersion) {
+                versionToInputs[solcVersion] = {
+                    standardInput: {
+                        language: 'Solidity',
+                        sources: {},
+                        settings: this._compilerSettings,
+                    },
+                    contractsToCompile: [],
+                };
+            }
+            // add input to the right version batch
+            versionToInputs[solcVersion].standardInput.sources[contractSource.path] = {
+                content: contractSource.source,
+            };
+            versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
+        }
+
+        const solcVersions = _.keys(versionToInputs);
+        for (const solcVersion of solcVersions) {
+            const input = versionToInputs[solcVersion];
+            logUtils.log(
+                `Compiling ${input.contractsToCompile.length} contracts (${
+                    input.contractsToCompile
+                }) with Solidity v${solcVersion}...`,
+            );
+
+            const { solcInstance, fullSolcVersion } = await Compiler._getSolcAsync(solcVersion);
+
+            const compilerOutput = this._compile(solcInstance, input.standardInput);
+
+            for (const contractPath of input.contractsToCompile) {
+                await this._verifyAndPersistCompiledContractAsync(
+                    contractPath,
+                    contractPathToData[contractPath].currentArtifactIfExists,
+                    contractPathToData[contractPath].sourceTreeHashHex,
+                    contractPathToData[contractPath].contractName,
+                    fullSolcVersion,
+                    compilerOutput,
+                );
+            }
+        }
+    }
+    private _shouldCompile(contractData: ContractData): boolean {
+        if (_.isUndefined(contractData.currentArtifactIfExists)) {
+            return true;
         } else {
-            const currentArtifact = currentArtifactIfExists as ContractArtifact;
+            const currentArtifact = contractData.currentArtifactIfExists as ContractArtifact;
             const isUserOnLatestVersion = currentArtifact.schemaVersion === constants.LATEST_ARTIFACT_VERSION;
             const didCompilerSettingsChange = !_.isEqual(currentArtifact.compiler.settings, this._compilerSettings);
-            const didSourceChange = currentArtifact.sourceTreeHashHex !== sourceTreeHashHex;
-            shouldCompile = !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
+            const didSourceChange = currentArtifact.sourceTreeHashHex !== contractData.sourceTreeHashHex;
+            return !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
         }
-        if (!shouldCompile) {
-            return;
-        }
-        let solcVersion = this._solcVersionIfExists;
-        if (_.isUndefined(solcVersion)) {
-            const solcVersionRange = parseSolidityVersionRange(contractSource.source);
-            const availableCompilerVersions = _.keys(binPaths);
-            solcVersion = semver.maxSatisfying(availableCompilerVersions, solcVersionRange);
-        }
-        const fullSolcVersion = binPaths[solcVersion];
-        const compilerBinFilename = path.join(SOLC_BIN_DIR, fullSolcVersion);
-        let solcjs: string;
-        const isCompilerAvailableLocally = fs.existsSync(compilerBinFilename);
-        if (isCompilerAvailableLocally) {
-            solcjs = fs.readFileSync(compilerBinFilename).toString();
-        } else {
-            logUtils.log(`Downloading ${fullSolcVersion}...`);
-            const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
-            const response = await fetchAsync(url);
-            const SUCCESS_STATUS = 200;
-            if (response.status !== SUCCESS_STATUS) {
-                throw new Error(`Failed to load ${fullSolcVersion}`);
-            }
-            solcjs = await response.text();
-            fs.writeFileSync(compilerBinFilename, solcjs);
-        }
-        const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
-
-        logUtils.log(`Compiling ${contractName} with Solidity v${solcVersion}...`);
-        const standardInput: solc.StandardInput = {
-            language: 'Solidity',
-            sources: {
-                [contractSource.path]: {
-                    content: contractSource.source,
-                },
-            },
-            settings: this._compilerSettings,
-        };
-        const compiled: solc.StandardOutput = JSON.parse(
-            solcInstance.compileStandardWrapper(JSON.stringify(standardInput), importPath => {
-                const sourceCodeIfExists = this._resolver.resolve(importPath);
-                return { contents: sourceCodeIfExists.source };
-            }),
-        );
-
-        if (!_.isUndefined(compiled.errors)) {
-            const SOLIDITY_WARNING = 'warning';
-            const errors = _.filter(compiled.errors, entry => entry.severity !== SOLIDITY_WARNING);
-            const warnings = _.filter(compiled.errors, entry => entry.severity === SOLIDITY_WARNING);
-            if (!_.isEmpty(errors)) {
-                errors.forEach(error => {
-                    const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
-                    logUtils.log(chalk.red(normalizedErrMsg));
-                });
-                process.exit(1);
-            } else {
-                warnings.forEach(warning => {
-                    const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
-                    logUtils.log(chalk.yellow(normalizedWarningMsg));
-                });
-            }
-        }
-        const compiledData = compiled.contracts[contractSource.path][contractName];
+    }
+    private async _verifyAndPersistCompiledContractAsync(
+        contractPath: string,
+        currentArtifactIfExists: ContractArtifact | void,
+        sourceTreeHashHex: string,
+        contractName: string,
+        fullSolcVersion: string,
+        compilerOutput: solc.StandardOutput,
+    ): Promise<void> {
+        const compiledData = compilerOutput.contracts[contractPath][contractName];
         if (_.isUndefined(compiledData)) {
             throw new Error(
-                `Contract ${contractName} not found in ${
-                    contractSource.path
-                }. Please make sure your contract has the same name as it's file name`,
+                `Contract ${contractName} not found in ${contractPath}. Please make sure your contract has the same name as it's file name`,
             );
         }
         if (!_.isUndefined(compiledData.evm)) {
@@ -215,12 +264,12 @@ export class Compiler {
         }
 
         const sourceCodes = _.mapValues(
-            compiled.sources,
+            compilerOutput.sources,
             (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,
         );
         const contractVersion: ContractVersionData = {
             compilerOutput: compiledData,
-            sources: compiled.sources,
+            sources: compilerOutput.sources,
             sourceCodes,
             sourceTreeHashHex,
             compiler: {
@@ -250,6 +299,32 @@ export class Compiler {
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
         logUtils.log(`${contractName} artifact saved!`);
+    }
+    private _compile(solcInstance: solc.SolcInstance, standardInput: solc.StandardInput): solc.StandardOutput {
+        const compiled: solc.StandardOutput = JSON.parse(
+            solcInstance.compileStandardWrapper(JSON.stringify(standardInput), importPath => {
+                const sourceCodeIfExists = this._resolver.resolve(importPath);
+                return { contents: sourceCodeIfExists.source };
+            }),
+        );
+        if (!_.isUndefined(compiled.errors)) {
+            const SOLIDITY_WARNING = 'warning';
+            const errors = _.filter(compiled.errors, entry => entry.severity !== SOLIDITY_WARNING);
+            const warnings = _.filter(compiled.errors, entry => entry.severity === SOLIDITY_WARNING);
+            if (!_.isEmpty(errors)) {
+                errors.forEach(error => {
+                    const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
+                    logUtils.log(chalk.red(normalizedErrMsg));
+                });
+                throw new Error('Compilation errors encountered');
+            } else {
+                warnings.forEach(warning => {
+                    const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
+                    logUtils.log(chalk.yellow(normalizedWarningMsg));
+                });
+            }
+        }
+        return compiled;
     }
     /**
      * Gets the source tree hash for a file and its dependencies.
