@@ -9,45 +9,55 @@ export { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
 
 export {
     ContractWrappersError,
-    EventCallback,
-    ContractEvent,
-    Token,
     IndexedFilterValues,
     BlockRange,
-    OrderFillRequest,
     ContractEventArgs,
     ContractWrappersConfig,
     MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
-    LogEvent,
-    DecodedLogEvent,
-    OnOrderStateChangeCallback,
     OrderStatus,
     OrderInfo,
     ContractEvents,
 } from './types';
 
-export {
-    Order,
-    SignedOrder,
-    ECSignature,
-    OrderStateValid,
-    OrderStateInvalid,
-    OrderState,
-    AssetProxyId,
-} from '@0xproject/types';
+export { Order, SignedOrder, AssetProxyId } from '@0xproject/types';
 
 export {
     BlockParamLiteral,
-    FilterObject,
     BlockParam,
     ContractEventArg,
-    LogWithDecodedArgs,
     Provider,
-    TransactionReceipt,
-    TransactionReceiptWithDecodedLogs,
+    ContractAbi,
+    LogEntry,
+    RawLog,
+    JSONRPCRequestPayload,
+    JSONRPCResponsePayload,
+    JSONRPCErrorCallback,
+    DecodedLogEntry,
+    LogEntryEvent,
+    AbiDefinition,
+    DecodedLogEntryEvent,
+    LogWithDecodedArgs,
+    FunctionAbi,
+    EventAbi,
+    EventParameter,
+    DecodedLogArgs,
+    MethodAbi,
+    ConstructorAbi,
+    FallbackAbi,
+    DataItem,
+    ConstructorStateMutability,
+    StateMutability,
 } from 'ethereum-types';
+
+export {
+    ContractArtifact,
+    GeneratedCompilerOptions,
+    ContractNetworks,
+    Source,
+    ContractNetworkData,
+} from '@0xproject/sol-compiler';
 
 export {
     WETH9Events,
