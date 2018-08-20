@@ -109,9 +109,9 @@ describe('HttpClient', () => {
         };
         const url = `${relayUrl}/orderbook`;
         it('gets orderbook with default page options when none are provided', async () => {
-            const urlWithQuery = `${url}?baseAssetData=${
-                request.baseAssetData
-            }&quoteAssetData=${request.quoteAssetData}`;
+            const urlWithQuery = `${url}?baseAssetData=${request.baseAssetData}&quoteAssetData=${
+                request.quoteAssetData
+            }`;
             fetchMock.get(urlWithQuery, orderbookJSON);
             const orderbook = await relayerClient.getOrderbookAsync(request);
             expect(orderbook).to.be.deep.equal(orderbookResponse);

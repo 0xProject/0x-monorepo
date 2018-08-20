@@ -12,10 +12,7 @@ export const ordersChannelFactory = {
      *                               channel updates
      * @return  An OrdersChannel Promise
      */
-    async createWebSocketOrdersChannelAsync(
-        url: string,
-        handler: OrdersChannelHandler,
-    ): Promise<OrdersChannel> {
+    async createWebSocketOrdersChannelAsync(url: string, handler: OrdersChannelHandler): Promise<OrdersChannel> {
         assert.isUri('url', url);
         assert.isOrdersChannelHandler('handler', handler);
         return new Promise<OrdersChannel>((resolve, reject) => {

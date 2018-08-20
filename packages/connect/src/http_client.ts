@@ -59,7 +59,9 @@ export class HttpClient implements Client {
      * @param   requestOpts     Options specifying assetData information to retrieve and page information, defaults to { page: 1, perPage: 100 }
      * @return  The resulting AssetPairsItems that match the request
      */
-    public async getAssetPairsAsync(requestOpts?: RequestOpts & AssetPairsRequestOpts & PagedRequestOpts): Promise<AssetPairsResponse> {
+    public async getAssetPairsAsync(
+        requestOpts?: RequestOpts & AssetPairsRequestOpts & PagedRequestOpts,
+    ): Promise<AssetPairsResponse> {
         if (!_.isUndefined(requestOpts)) {
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.assetPairsRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
@@ -77,7 +79,9 @@ export class HttpClient implements Client {
      * @param   requestOpts     Options specifying orders to retrieve and page information, defaults to { page: 1, perPage: 100 }
      * @return  The resulting SignedOrders that match the request
      */
-    public async getOrdersAsync(requestOpts?: RequestOpts & OrdersRequestOpts & PagedRequestOpts): Promise<OrdersResponse> {
+    public async getOrdersAsync(
+        requestOpts?: RequestOpts & OrdersRequestOpts & PagedRequestOpts,
+    ): Promise<OrdersResponse> {
         if (!_.isUndefined(requestOpts)) {
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.ordersRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
@@ -134,7 +138,10 @@ export class HttpClient implements Client {
      * @param   request     A OrderConfigRequest instance describing the specific fees to retrieve
      * @return  The resulting OrderConfigResponse that matches the request
      */
-    public async getOrderConfigAsync(request: OrderConfigRequest, requestOpts?: RequestOpts): Promise<OrderConfigResponse> {
+    public async getOrderConfigAsync(
+        request: OrderConfigRequest,
+        requestOpts?: RequestOpts,
+    ): Promise<OrderConfigResponse> {
         if (!_.isUndefined(requestOpts)) {
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
         }

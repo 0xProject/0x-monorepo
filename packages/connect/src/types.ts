@@ -2,7 +2,9 @@ import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 export interface Client {
-    getAssetPairsAsync: (requestOpts?: AssetPairsRequestOpts & PagedRequestOpts) => Promise<PaginatedCollection<AssetPairsItem>>;
+    getAssetPairsAsync: (
+        requestOpts?: AssetPairsRequestOpts & PagedRequestOpts,
+    ) => Promise<PaginatedCollection<AssetPairsItem>>;
     getOrdersAsync: (requestOpts?: OrdersRequestOpts & PagedRequestOpts) => Promise<PaginatedCollection<APIOrder>>;
     getOrderAsync: (orderHash: string) => Promise<APIOrder>;
     getOrderbookAsync: (request: OrderbookRequest, requestOpts?: PagedRequestOpts) => Promise<OrderbookResponse>;
@@ -28,18 +30,12 @@ export interface OrdersChannelSubscriptionOpts {
 }
 
 export interface OrdersChannelHandler {
-    onUpdate: (
-        channel: OrdersChannel,
-        subscriptionOpts: OrdersChannelSubscriptionOpts,
-        orders: APIOrder[],
-    ) => void;
+    onUpdate: (channel: OrdersChannel, subscriptionOpts: OrdersChannelSubscriptionOpts, orders: APIOrder[]) => void;
     onError: (channel: OrdersChannel, err: Error, subscriptionOpts?: OrdersChannelSubscriptionOpts) => void;
     onClose: (channel: OrdersChannel) => void;
 }
 
-export type OrdersChannelMessage =
-    | UpdateOrdersChannelMessage
-    | UnknownOrdersChannelMessage;
+export type OrdersChannelMessage = UpdateOrdersChannelMessage | UnknownOrdersChannelMessage;
 
 export enum OrdersChannelMessageTypes {
     Update = 'update',

@@ -6,7 +6,7 @@ export const orderConfigRequestSchema = {
         takerAddress: { $ref: '/addressSchema' },
         makerAssetAmount: { $ref: '/numberSchema' },
         takerAssetAmount: { $ref: '/numberSchema' },
-        makerAssetData: { $ref: '/hexSchema'},
+        makerAssetData: { $ref: '/hexSchema' },
         takerAssetData: { $ref: '/hexSchema' },
         exchangeAddress: { $ref: '/addressSchema' },
         expirationTimeSeconds: { $ref: '/numberSchema' },

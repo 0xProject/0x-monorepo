@@ -20,10 +20,7 @@ describe('ordersChannelFactory', () => {
         it('throws when input is not a url', () => {
             const badUrlInput = 54;
             expect(
-                ordersChannelFactory.createWebSocketOrdersChannelAsync(
-                    badUrlInput as any,
-                    emptyOrdersChannelHandler,
-                ),
+                ordersChannelFactory.createWebSocketOrdersChannelAsync(badUrlInput as any, emptyOrdersChannelHandler),
             ).to.be.rejected();
         });
         it('throws when handler has the incorrect members', () => {

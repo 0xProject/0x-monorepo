@@ -1,7 +1,14 @@
 import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
 
-import { APIOrder, AssetPairsItem, AssetPairsResponse, OrderbookResponse, OrderConfigResponse, OrdersResponse } from '../types';
+import {
+    APIOrder,
+    AssetPairsItem,
+    AssetPairsResponse,
+    OrderbookResponse,
+    OrderConfigResponse,
+    OrdersResponse,
+} from '../types';
 
 import { typeConverters } from './type_converters';
 
