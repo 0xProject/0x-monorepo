@@ -14,6 +14,7 @@ import { ERC20ProxyContract } from './contract_wrappers/erc20_proxy';
 import { ERC721ProxyContract } from './contract_wrappers/erc721_proxy';
 import { ExchangeContract } from './contract_wrappers/exchange';
 import { ForwarderContract } from './contract_wrappers/forwarder';
+import { OrderValidatorContract } from './contract_wrappers/order_validator';
 import { WETH9Contract } from './contract_wrappers/weth9';
 import { ZRXTokenContract } from './contract_wrappers/zrx_token';
 
@@ -75,6 +76,7 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
         secondsRequired,
     );
     artifactsWriter.saveArtifact(assetProxyOwner);
+
     await web3Wrapper.awaitTransactionSuccessAsync(
         await erc20proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
             from: owner,
@@ -139,4 +141,14 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
         assetDataUtils.encodeERC20AssetData(etherToken.address),
     );
     artifactsWriter.saveArtifact(forwarder);
+
+    // OrderValidator
+    const orderValidator = await OrderValidatorContract.deployFrom0xArtifactAsync(
+        artifacts.OrderValidator,
+        provider,
+        txDefaults,
+        exchange.address,
+        zrxAssetData,
+    );
+    artifactsWriter.saveArtifact(orderValidator);
 };

@@ -38,7 +38,7 @@
         "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
     },
     "config": {
-        "contracts": "ZRXToken AssetProxyOwner DummyERC20Token DummyERC721Token ERC20Proxy ERC721Proxy Exchange Forwarder WETH9",
+        "contracts": "ZRXToken AssetProxyOwner DummyERC20Token DummyERC721Token ERC20Proxy ERC721Proxy Exchange Forwarder OrderValidator WETH9",
         "postpublish": {
             "assets": [
                 "packages/0x.js/_bundles/index.js",
