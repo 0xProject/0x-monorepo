@@ -1,6 +1,6 @@
 {
     "artifactsDir": "../migrations/artifacts/2.0.0",
-    "contractsDir": "src/contracts",
+    "contractsDir": "src/",
     "compilerSettings": {
         "optimizer": {
             "enabled": true,
