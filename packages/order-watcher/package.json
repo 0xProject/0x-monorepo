@@ -29,7 +29,7 @@
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "config": {
-        "contracts_v2_beta": "Exchange WETH9 ERC20Token ERC721Token"
+        "contracts_v2_beta": "AssetProxyOwner ERC20Proxy ERC20Token ERC721Proxy ERC721Token Exchange Forwarder WETH9 ZRXToken"
     },
     "repository": {
         "type": "git",
