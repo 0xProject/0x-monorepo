@@ -9,6 +9,7 @@ import { ERC20Wrapper } from './erc20_wrapper';
 import { ERC721Wrapper } from './erc721_wrapper';
 import { ExchangeWrapper } from './exchange_wrapper';
 import { ERC20BalancesByOwner, ERC721TokenIdsByOwner, TransferAmountsByMatchOrders as TransferAmounts } from './types';
+import { TransactionReceiptWithDecodedLogs } from '../../../../node_modules/ethereum-types';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -108,7 +109,7 @@ export class MatchOrderTester {
             : new BigNumber(0);
         expect(expectedOrderFilledAmountRight).to.be.bignumber.equal(orderTakerAssetFilledAmountRight);
         // Match left & right orders
-        await this._exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
+        const transactionReceipt = await this._exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
         const newERC20BalancesByOwner = await this._erc20Wrapper.getBalancesAsync();
         const newERC721TokenIdsByOwner = await this._erc721Wrapper.getBalancesAsync();
         // Calculate expected balance changes
@@ -117,6 +118,8 @@ export class MatchOrderTester {
             signedOrderRight,
             orderTakerAssetFilledAmountLeft,
             orderTakerAssetFilledAmountRight,
+            transactionReceipt,
+            takerAddress
         );
         let expectedERC20BalancesByOwner: ERC20BalancesByOwner;
         let expectedERC721TokenIdsByOwner: ERC721TokenIdsByOwner;
@@ -135,6 +138,7 @@ export class MatchOrderTester {
             expectedERC721TokenIdsByOwner,
             newERC721TokenIdsByOwner,
         );
+
         expect(didExpectedBalancesMatchRealBalances).to.be.true();
         return [newERC20BalancesByOwner, newERC721TokenIdsByOwner];
     }
@@ -150,26 +154,35 @@ export class MatchOrderTester {
         signedOrderRight: SignedOrder,
         orderTakerAssetFilledAmountLeft: BigNumber,
         orderTakerAssetFilledAmountRight: BigNumber,
+        transactionReceipt: TransactionReceiptWithDecodedLogs,
+        takerAddress: string
     ): Promise<TransferAmounts> {
-        let amountBoughtByLeftMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
-            orderHashUtils.getOrderHashHex(signedOrderLeft),
-        );
-        amountBoughtByLeftMaker = amountBoughtByLeftMaker.minus(orderTakerAssetFilledAmountLeft);
-        const amountSoldByLeftMaker = amountBoughtByLeftMaker
-            .times(signedOrderLeft.makerAssetAmount)
-            .dividedToIntegerBy(signedOrderLeft.takerAssetAmount);
-        const amountReceivedByRightMaker = amountBoughtByLeftMaker
-            .times(signedOrderRight.takerAssetAmount)
-            .dividedToIntegerBy(signedOrderRight.makerAssetAmount);
-        const amountReceivedByTaker = amountSoldByLeftMaker.minus(amountReceivedByRightMaker);
-        let amountBoughtByRightMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
-            orderHashUtils.getOrderHashHex(signedOrderRight),
-        );
-        amountBoughtByRightMaker = amountBoughtByRightMaker.minus(orderTakerAssetFilledAmountRight);
-        const amountSoldByRightMaker = amountBoughtByRightMaker
-            .times(signedOrderRight.makerAssetAmount)
-            .dividedToIntegerBy(signedOrderRight.takerAssetAmount);
-        const amountReceivedByLeftMaker = amountSoldByRightMaker;
+         // Parse logs
+         expect(transactionReceipt.logs.length).to.be.equal(2);
+         // First log is for left fill
+         const leftLog = ((transactionReceipt.logs[0] as any) as {args: { makerAddress: string, takerAddress: string, makerAssetFilledAmount: string, takerAssetFilledAmount: string, makerFeePaid: string, takerFeePaid: string}});
+         expect(leftLog.args.makerAddress).to.be.equal(signedOrderLeft.makerAddress);
+         expect(leftLog.args.takerAddress).to.be.equal(takerAddress);
+         const amountBoughtByLeftMaker = new BigNumber(leftLog.args.takerAssetFilledAmount);
+         const amountSoldByLeftMaker = new BigNumber(leftLog.args.makerAssetFilledAmount);
+         // Second log is for right fill
+         const rightLog = ((transactionReceipt.logs[1] as any) as {args: { makerAddress: string, takerAddress: string, makerAssetFilledAmount: string, takerAssetFilledAmount: string, makerFeePaid: string, takerFeePaid: string}});
+         expect(rightLog.args.makerAddress).to.be.equal(signedOrderRight.makerAddress);
+         expect(rightLog.args.takerAddress).to.be.equal(takerAddress);
+         const amountBoughtByRightMaker = new BigNumber(rightLog.args.takerAssetFilledAmount);
+         const amountSoldByRightMaker = new BigNumber(rightLog.args.makerAssetFilledAmount);
+         // Determine amount received by taker
+         const amountReceivedByTaker = amountSoldByLeftMaker.sub(amountBoughtByRightMaker);
+
+         const amountReceivedByLeftMaker = amountBoughtByLeftMaker;
+         const amountReceivedByRightMaker = amountBoughtByRightMaker;
+ 
+         console.log("Amount bought by left maker = ", JSON.stringify(amountBoughtByLeftMaker));
+         console.log("Amount sold by left maker = ", JSON.stringify(amountSoldByLeftMaker));
+         console.log("Amount bought by right maker = ", JSON.stringify(amountBoughtByRightMaker));
+         console.log("Amount sold by right maker = ", JSON.stringify(amountSoldByRightMaker)); 
+         console.log("Amount received by taker = ", JSON.stringify(amountReceivedByTaker));
+        //const amountReceivedByLeftMaker = amountSoldByRightMaker;
         const feePaidByLeftMaker = signedOrderLeft.makerFee
             .times(amountSoldByLeftMaker)
             .dividedToIntegerBy(signedOrderLeft.makerAssetAmount);

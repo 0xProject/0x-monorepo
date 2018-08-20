@@ -28,7 +28,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('matchOrders', () => {
+describe.only('matchOrders', () => {
     let makerAddressLeft: string;
     let makerAddressRight: string;
     let owner: string;
@@ -176,6 +176,109 @@ describe('matchOrders', () => {
             erc20BalancesByOwner = await erc20Wrapper.getBalancesAsync();
             erc721TokenIdsByOwner = await erc721Wrapper.getBalancesAsync();
         });
+        
+
+        /*
+        it.only('should transfer the correct amounts when orders completely fill each other', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2000), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1001), 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(3000), 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+            );
+         //   // Verify left order was fully filled
+          //  const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
+         //   expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+            // Verify right order was fully filled
+         //   const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
+         //   expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+        });
+        */
+
+        it.only('Jacobs Example', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(4), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+            );
+         //   // Verify left order was fully filled
+            const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
+            //expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+            console.log("*** LEFT ORDER INFO ***\n", JSON.stringify(leftOrderInfo), "\n***************");
+            // Verify right order was fully filled
+            const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
+         //   expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+            console.log("*** RIGHT ORDER INFO ***\n", JSON.stringify(rightOrderInfo), "\n***************");
+        });
+        
+
+        /*
+        it.only('Jacobs Example', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+            );
+         //   // Verify left order was fully filled
+          //  const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
+         //   expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+            // Verify right order was fully filled
+         //   const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
+         //   expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
+        });*/
 
         const reentrancyTest = (functionNames: string[]) => {
             _.forEach(functionNames, async (functionName: string, functionId: number) => {
