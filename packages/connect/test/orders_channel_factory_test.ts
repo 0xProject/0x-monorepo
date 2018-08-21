@@ -1,6 +1,7 @@
 import * as chai from 'chai';
 import * as dirtyChai from 'dirty-chai';
 import * as _ from 'lodash';
+
 import 'mocha';
 
 import { ordersChannelFactory } from '../src/orders_channel_factory';

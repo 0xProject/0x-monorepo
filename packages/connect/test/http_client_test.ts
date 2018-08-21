@@ -173,7 +173,7 @@ describe('HttpClient', () => {
             const feeRecipients = await relayerClient.getFeeRecipientsAsync();
             expect(feeRecipients).to.be.deep.equal(feeRecipientsResponse);
         });
-        it('gets fee reciipient with specified page options', async () => {
+        it('gets fee recipient with specified page options', async () => {
             const urlWithQuery = `${url}?networkId=42&page=3&perPage=50`;
             fetchMock.get(urlWithQuery, feeRecipientsResponseJSON);
             const pagedRequestOptions = {
