@@ -89,6 +89,12 @@ export class ASTVisitor {
         this._visitStatement(ast);
     }
     public ExpressionStatement(ast: Parser.ExpressionStatement): void {
+        // TODO update types
+        if (ast.expression.type === 'Identifier' && (ast as any).expression.name === '_') {
+            // this is "_;" in a modifier
+            // add to the modifiersStatementdIds so we can collect coverage info
+            this._modifiersStatementIds.push(this._entryId);
+        }
         this._visitStatement(ast.expression);
     }
     public InlineAssemblyStatement(ast: Parser.InlineAssemblyStatement): void {
