@@ -9,14 +9,16 @@ export { sortingUtils } from './sorting_utils';
 
 export { OrderStateUtils } from './order_state_utils';
 export { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
+export { AbstractBalanceAndProxyAllowanceLazyStore } from './abstract/abstract_balance_and_proxy_allowance_lazy_store';
 export { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
+export { AbstractOrderFilledCancelledLazyStore } from './abstract/abstract_order_filled_cancelled_lazy_store';
 
 export { OrderValidationUtils } from './order_validation_utils';
 export { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 export { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_allowance_lazy_store';
 export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_lazy_store';
 
-export { Provider } from 'ethereum-types';
+export { Provider, JSONRPCRequestPayload, JSONRPCErrorCallback, JSONRPCResponsePayload } from 'ethereum-types';
 export {
     SignedOrder,
     Order,
@@ -26,13 +28,21 @@ export {
     ERC20AssetData,
     ERC721AssetData,
     AssetProxyId,
+    SignerType,
+    SignatureType,
+    OrderStateValid,
+    OrderStateInvalid,
+    ExchangeContractErrs,
 } from '@0xproject/types';
 export {
-    CreateOrderOpts,
     OrderError,
     EIP712Parameter,
     EIP712Schema,
     EIP712Types,
     TradeSide,
     TransferType,
+    FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
+    FindOrdersThatCoverMakerAssetFillAmountOpts,
+    FeeOrdersAndRemainingFeeAmount,
+    OrdersAndRemainingFillAmount,
 } from './types';

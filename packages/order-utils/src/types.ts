@@ -69,3 +69,13 @@ export interface FindFeeOrdersThatCoverFeesForTargetOrdersOpts {
     remainingFillableFeeAmounts?: BigNumber[];
     slippageBufferAmount?: BigNumber;
 }
+
+export interface FeeOrdersAndRemainingFeeAmount<T> {
+    resultOrders: T[];
+    remainingFeeAmount: BigNumber;
+}
+
+export interface OrdersAndRemainingFillAmount<T> {
+    resultOrders: T[];
+    remainingFillAmount: BigNumber;
+}
