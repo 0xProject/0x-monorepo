@@ -212,10 +212,16 @@ export class DocGenerateAndUploadUtils {
         let modifiedTypedocOutput = this._standardizeTypedocOutputTopLevelChildNames(typedocOutput);
         modifiedTypedocOutput = this._pruneTypedocOutput(modifiedTypedocOutput);
 
+        if (!_.includes(docGenConfigs.TYPES_ONLY_LIBRARIES, this._packageName)) {
         const propertyName = ''; // Root has no property name
-        const referenceNames = DocGenerateAndUploadUtils._getAllReferenceNames(propertyName, modifiedTypedocOutput, []);
+            const referenceNames = DocGenerateAndUploadUtils._getAllReferenceNames(
+                propertyName,
+                modifiedTypedocOutput,
+                [],
+            );
         this._lookForUnusedExportedTypesThrowIfExists(referenceNames, modifiedTypedocOutput);
         this._lookForMissingReferenceExportsThrowIfExists(referenceNames);
+        }
 
         // Some of our packages re-export external package exports in their index.ts
         // Typedoc is incapable of rendering these packages, so we need to special-case them

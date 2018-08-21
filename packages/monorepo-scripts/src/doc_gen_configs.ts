@@ -38,4 +38,7 @@ export const docGenConfigs: DocGenConfigs = {
     // want them exported. E.g error enum types that can be thrown by methods. These must be manually added to this
     // config
     IGNORED_EXCESSIVE_TYPES: ['NonceSubproviderErrors', 'Web3WrapperErrors', 'ContractWrappersError', 'OrderError'],
+    // Some libraries only export types. In those cases, we cannot check if the exported types are part of the
+    // "exported public interface". Thus we add them here and skip those checks.
+    TYPES_ONLY_LIBRARIES: ['ethereum-types', 'types'],
 };
