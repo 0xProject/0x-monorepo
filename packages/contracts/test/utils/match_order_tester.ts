@@ -57,6 +57,27 @@ export class MatchOrderTester {
         );
         return doesErc721TokenIdsMatch;
     }
+
+    /*
+    private static compareTokenIdLists(list1: BigNumber[], list2: BigNumber[]) {
+         // ERC721 Token Ids
+         list1 = _.(list1);
+                    _.sortBy(tokenIds);
+                });
+            },
+        );
+        const sortedNewERC721TokenIdsByOwner = _.mapValues(realERC721TokenIdsByOwner, tokenIdsByOwner => {
+            _.mapValues(tokenIdsByOwner, tokenIds => {
+                _.sortBy(tokenIds);
+            });
+        });
+        const doesErc721TokenIdsMatch = _.isEqual(
+            sortedExpectedNewERC721TokenIdsByOwner,
+            sortedNewERC721TokenIdsByOwner,
+        );
+        return doesErc721TokenIdsMatch;
+    }*/
+
     /// @dev Constructs new MatchOrderTester.
     /// @param exchangeWrapper Used to call to the Exchange.
     /// @param erc20Wrapper Used to fetch ERC20 balances.
@@ -139,6 +160,68 @@ export class MatchOrderTester {
             newERC721TokenIdsByOwner,
         );
 
+        // Individual balance comparisons
+        const makerAssetProxyIdLeft = assetDataUtils.decodeAssetProxyId(signedOrderLeft.makerAssetData);
+        const makerERC20AssetDataLeft = makerAssetProxyIdLeft == AssetProxyId.ERC20 ? assetDataUtils.decodeERC20AssetData(signedOrderLeft.makerAssetData) : assetDataUtils.decodeERC721AssetData(signedOrderLeft.makerAssetData);
+        const makerAssetAddressLeft = makerERC20AssetDataLeft.tokenAddress;
+        const makerAssetProxyIdRight = assetDataUtils.decodeAssetProxyId(signedOrderRight.makerAssetData);
+        const makerERC20AssetDataRight = makerAssetProxyIdRight == AssetProxyId.ERC20 ? assetDataUtils.decodeERC20AssetData(signedOrderRight.makerAssetData) : assetDataUtils.decodeERC721AssetData(signedOrderRight.makerAssetData);
+        const makerAssetAddressRight = makerERC20AssetDataRight.tokenAddress;
+
+        console.log("Left Maker: Sell Amount");
+        if(makerAssetProxyIdLeft == AssetProxyId.ERC20) {
+            expect(newERC20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressLeft]).to.be.bignumber.equal(expectedERC20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressLeft]);
+        } else if(makerAssetProxyIdLeft == AssetProxyId.ERC721) {
+            expect(newERC721TokenIdsByOwner[signedOrderLeft.makerAddress][makerAssetAddressLeft].sort()).to.be.deep.equal(newERC721TokenIdsByOwner[signedOrderLeft.makerAddress][makerAssetAddressLeft].sort());
+        } else {
+            throw new Error(`Unhandled Asset Proxy ID: ${makerAssetProxyIdLeft}`);
+        }
+        
+        console.log("Left Maker: Buy Amount");
+        if(makerAssetProxyIdRight == AssetProxyId.ERC20) {
+            expect(newERC20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressRight]).to.be.bignumber.equal(expectedERC20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressRight]);
+        } else if(makerAssetProxyIdRight == AssetProxyId.ERC721) {
+            expect(newERC721TokenIdsByOwner[signedOrderLeft.makerAddress][makerAssetAddressRight].sort()).to.be.deep.equal(expectedERC721TokenIdsByOwner[signedOrderLeft.makerAddress][makerAssetAddressRight].sort());
+        } else {
+            throw new Error(`Unhandled Asset Proxy ID: ${makerAssetProxyIdRight}`);
+        }
+        
+        console.log("Left Maker: Fees");
+        expect(newERC20BalancesByOwner[signedOrderLeft.makerAddress][this._feeTokenAddress]).to.be.bignumber.equal(expectedERC20BalancesByOwner[signedOrderLeft.makerAddress][this._feeTokenAddress]);
+        
+        console.log("Right Maker: Sell Amount");
+        if(makerAssetProxyIdRight == AssetProxyId.ERC20) {
+            expect(newERC20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressRight]).to.be.bignumber.equal(expectedERC20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressRight]);
+        } else if(makerAssetProxyIdRight == AssetProxyId.ERC721) {
+            expect(newERC721TokenIdsByOwner[signedOrderRight.makerAddress][makerAssetAddressRight]).to.be.deep.equal(expectedERC721TokenIdsByOwner[signedOrderRight.makerAddress][makerAssetAddressRight]);
+        } else {
+            throw new Error(`Unhandled Asset Proxy ID: ${makerAssetProxyIdRight}`);
+        }
+
+        console.log("Right Maker: Buy Amount");
+        if(makerAssetProxyIdLeft == AssetProxyId.ERC20) {
+            expect(newERC20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressLeft]).to.be.bignumber.equal(expectedERC20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressLeft]);
+        } else if(makerAssetProxyIdLeft == AssetProxyId.ERC721) {
+            expect(newERC721TokenIdsByOwner[signedOrderRight.makerAddress][makerAssetAddressLeft].sort()).to.be.deep.equal(expectedERC721TokenIdsByOwner[signedOrderRight.makerAddress][makerAssetAddressLeft].sort());
+        } else {
+            throw new Error(`Unhandled Asset Proxy ID: ${makerAssetProxyIdLeft}`);
+        }
+        console.log("Right Maker: Fees");
+        expect(newERC20BalancesByOwner[signedOrderRight.makerAddress][this._feeTokenAddress]).to.be.bignumber.equal(expectedERC20BalancesByOwner[signedOrderRight.makerAddress][this._feeTokenAddress]);
+        console.log("Taker: Receive Amount");
+        if(makerAssetProxyIdLeft == AssetProxyId.ERC20) {
+            expect(newERC20BalancesByOwner[takerAddress][makerAssetAddressLeft]).to.be.bignumber.equal(expectedERC20BalancesByOwner[takerAddress][makerAssetAddressLeft]);
+        } else if(makerAssetProxyIdLeft == AssetProxyId.ERC721) {
+            expect(newERC721TokenIdsByOwner[takerAddress][makerAssetAddressLeft].sort()).to.be.deep.equal(expectedERC721TokenIdsByOwner[takerAddress][makerAssetAddressLeft].sort());
+        } else {
+            throw new Error(`Unhandled Asset Proxy ID: ${makerAssetProxyIdLeft}`);
+        }
+        console.log("Taker: Fees");
+        expect(newERC20BalancesByOwner[takerAddress][this._feeTokenAddress]).to.be.bignumber.equal(expectedERC20BalancesByOwner[takerAddress][this._feeTokenAddress]);
+        console.log("Balance catch-all");
+        expect(didExpectedBalancesMatchRealBalances).to.be.true();
+
+        /*
         // Compute actual transfer amounts
         let actualTransferAmounts = <TransferAmounts>{};
         const makerAssetProxyIdLeft = assetDataUtils.decodeAssetProxyId(signedOrderLeft.makerAssetData);
@@ -163,24 +246,24 @@ export class MatchOrderTester {
          // Fees
         actualTransferAmounts.feePaidByLeftMaker = erc20BalancesByOwner[signedOrderLeft.makerAddress][this._feeTokenAddress].sub(newERC20BalancesByOwner[signedOrderLeft.makerAddress][this._feeTokenAddress]);
         actualTransferAmounts.feePaidByRightMaker = erc20BalancesByOwner[signedOrderRight.makerAddress][this._feeTokenAddress].sub(newERC20BalancesByOwner[signedOrderRight.makerAddress][this._feeTokenAddress]);
-        actualTransferAmounts.totalFeePaidByTaker = erc20BalancesByOwner[takerAddress][this._feeTokenAddress].sub(newERC20BalancesByOwner[takerAddress][this._feeTokenAddress]);
+        actualTransferAmounts.totalFeePaidByTaker = erc20BalancesByOwner[takerAddress][this._feeTokenAddress].sub(newERC20BalancesByOwner[takerAddress][this._feeTokenAddress]);        
 
         console.log("amountBoughtByLeftMaker");
-        expect(expectedTransferAmounts.amountBoughtByLeftMaker).to.be.bignumber.equal(actualTransferAmounts.amountBoughtByLeftMaker);
+      //  expect(expectedTransferAmounts.amountBoughtByLeftMaker).to.be.bignumber.equal(actualTransferAmounts.amountBoughtByLeftMaker);
         console.log("amountSoldByLeftMaker");
-        expect(expectedTransferAmounts.amountSoldByLeftMaker).to.be.bignumber.equal(actualTransferAmounts.amountSoldByLeftMaker);
+       // expect(expectedTransferAmounts.amountSoldByLeftMaker).to.be.bignumber.equal(actualTransferAmounts.amountSoldByLeftMaker);
         console.log("amountBoughtByRightMaker");
-        expect(expectedTransferAmounts.amountBoughtByRightMaker).to.be.bignumber.equal(actualTransferAmounts.amountBoughtByRightMaker);
+       // expect(expectedTransferAmounts.amountBoughtByRightMaker).to.be.bignumber.equal(actualTransferAmounts.amountBoughtByRightMaker);
         console.log("amountSoldByRightMaker");
-        expect(expectedTransferAmounts.amountSoldByRightMaker).to.be.bignumber.equal(actualTransferAmounts.amountSoldByRightMaker);
+        //expect(expectedTransferAmounts.amountSoldByRightMaker).to.be.bignumber.equal(actualTransferAmounts.amountSoldByRightMaker);
         console.log("amountReceivedByTaker");
-        expect(expectedTransferAmounts.amountReceivedByTaker).to.be.bignumber.equal(actualTransferAmounts.amountReceivedByTaker);
+        //expect(expectedTransferAmounts.amountReceivedByTaker).to.be.bignumber.equal(actualTransferAmounts.amountReceivedByTaker);
         console.log("feePaidByLeftMaker");
-        expect(expectedTransferAmounts.feePaidByLeftMaker).to.be.bignumber.equal(actualTransferAmounts.feePaidByLeftMaker);
+       // expect(expectedTransferAmounts.feePaidByLeftMaker).to.be.bignumber.equal(actualTransferAmounts.feePaidByLeftMaker);
         console.log("feePaidByRightMaker");
-        expect(expectedTransferAmounts.feePaidByRightMaker).to.be.bignumber.equal(actualTransferAmounts.feePaidByRightMaker);
+        //expect(expectedTransferAmounts.feePaidByRightMaker).to.be.bignumber.equal(actualTransferAmounts.feePaidByRightMaker);
         console.log("totalFeePaidByTaker");
-        expect(expectedTransferAmounts.totalFeePaidByTaker).to.be.bignumber.equal(actualTransferAmounts.totalFeePaidByTaker);
+       // expect(expectedTransferAmounts.totalFeePaidByTaker).to.be.bignumber.equal(actualTransferAmounts.totalFeePaidByTaker);
         
 
 
@@ -204,11 +287,12 @@ export class MatchOrderTester {
             // Fee Recipients
             feeReceivedLeft,
             feeReceivedRight,
-        };*/
+        };
 
         // This is a catch-all to ensure that no other balances changed
         console.log("Catch-all");
         expect(didExpectedBalancesMatchRealBalances).to.be.true();
+        */
 
 
         return [newERC20BalancesByOwner, newERC721TokenIdsByOwner];
@@ -351,6 +435,13 @@ export class MatchOrderTester {
             _.remove(expectedNewERC721TokenIdsByOwner[makerAddressLeft][makerAssetAddressLeft], makerAssetIdLeft);
             // Right Maker
             expectedNewERC721TokenIdsByOwner[makerAddressRight][takerAssetAddressRight].push(takerAssetIdRight);
+            console.log("*** TRANSFERINF: " + JSON.stringify(makerAssetIdLeft));
+            console.log("****");
+            console.log(JSON.stringify(expectedNewERC721TokenIdsByOwner[makerAddressLeft][makerAssetAddressLeft]));
+            console.log("****");
+            console.log(JSON.stringify(expectedNewERC721TokenIdsByOwner[makerAddressRight][takerAssetAddressRight]));
+            console.log("****");
+
             // Taker: Since there is only 1 asset transferred, the taker does not receive any of the left maker asset.
         }
         // Left Taker Asset (Right Maker Asset)
