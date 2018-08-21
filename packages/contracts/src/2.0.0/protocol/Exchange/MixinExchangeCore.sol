@@ -19,6 +19,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "../../utils/ReentrancyGuard/ReentrancyGuard.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibFillResults.sol";
 import "./libs/LibOrder.sol";
@@ -30,6 +31,7 @@ import "./mixins/MAssetProxyDispatcher.sol";
 
 
 contract MixinExchangeCore is
+    ReentrancyGuard,
     LibConstants,
     LibMath,
     LibOrder,
@@ -86,43 +88,14 @@ contract MixinExchangeCore is
         bytes memory signature
     )
         public
+        nonReentrant
         returns (FillResults memory fillResults)
     {
-        // Fetch order info
-        OrderInfo memory orderInfo = getOrderInfo(order);
-
-        // Fetch taker address
-        address takerAddress = getCurrentContextAddress();
-
-        // Get amount of takerAsset to fill
-        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
-        uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
-
-        // Validate context
-        assertValidFill(
+        fillResults = fillOrderInternal(
             order,
-            orderInfo,
-            takerAddress,
             takerAssetFillAmount,
-            takerAssetFilledAmount,
             signature
         );
-
-        // Compute proportional fill amounts
-        fillResults = calculateFillResults(order, takerAssetFilledAmount);
-
-        // Update exchange internal state
-        updateFilledState(
-            order,
-            takerAddress,
-            orderInfo.orderHash,
-            orderInfo.orderTakerAssetFilledAmount,
-            fillResults
-        );
-    
-        // Settle order
-        settleOrder(order, takerAddress, fillResults);
-
         return fillResults;
     }
 
@@ -201,6 +174,57 @@ contract MixinExchangeCore is
         // All other statuses are ruled out: order is Fillable
         orderInfo.orderStatus = uint8(OrderStatus.FILLABLE);
         return orderInfo;
+    }
+
+    /// @dev Fills the input order.
+    /// @param order Order struct containing order specifications.
+    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
+    /// @param signature Proof that order has been created by maker.
+    /// @return Amounts filled and fees paid by maker and taker.
+    function fillOrderInternal(
+        Order memory order,
+        uint256 takerAssetFillAmount,
+        bytes memory signature
+    )
+        internal
+        returns (FillResults memory fillResults)
+    {
+        // Fetch order info
+        OrderInfo memory orderInfo = getOrderInfo(order);
+
+        // Fetch taker address
+        address takerAddress = getCurrentContextAddress();
+
+        // Get amount of takerAsset to fill
+        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
+        uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
+
+        // Validate context
+        assertValidFill(
+            order,
+            orderInfo,
+            takerAddress,
+            takerAssetFillAmount,
+            takerAssetFilledAmount,
+            signature
+        );
+
+        // Compute proportional fill amounts
+        fillResults = calculateFillResults(order, takerAssetFilledAmount);
+
+        // Update exchange internal state
+        updateFilledState(
+            order,
+            takerAddress,
+            orderInfo.orderHash,
+            orderInfo.orderTakerAssetFilledAmount,
+            fillResults
+        );
+    
+        // Settle order
+        settleOrder(order, takerAddress, fillResults);
+
+        return fillResults;
     }
 
     /// @dev Updates state with results of a fill order.

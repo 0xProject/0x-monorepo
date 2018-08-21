@@ -40,5 +40,4 @@ contract ReentrancyGuard {
         // Unlock mutex after function call
         locked = false;
     }
-
 }

@@ -14,6 +14,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "../../utils/ReentrancyGuard/ReentrancyGuard.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
@@ -25,6 +26,7 @@ import "./mixins/MAssetProxyDispatcher.sol";
 
 
 contract MixinMatchOrders is
+    ReentrancyGuard,
     LibConstants,
     LibMath,
     MAssetProxyDispatcher,
@@ -48,6 +50,7 @@ contract MixinMatchOrders is
         bytes memory rightSignature
     )
         public
+        nonReentrant
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         // We assume that rightOrder.takerAssetData == leftOrder.makerAssetData and rightOrder.makerAssetData == leftOrder.takerAssetData.
