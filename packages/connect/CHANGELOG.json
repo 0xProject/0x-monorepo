@@ -3,7 +3,8 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note": "Updated for SRA v2"
+                "note": "Updated for SRA v2",
+                "pr": 974
             }
         ]
     },

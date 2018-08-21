@@ -56,7 +56,7 @@ export class HttpClient implements Client {
     }
     /**
      * Retrieve assetData pair info from the API
-     * @param   requestOpts     Options specifying assetData information to retrieve and page information, defaults to { page: 1, perPage: 100 }
+     * @param   requestOpts     Options specifying assetData information to retrieve, page information, and network id.
      * @return  The resulting AssetPairsItems that match the request
      */
     public async getAssetPairsAsync(
@@ -76,7 +76,7 @@ export class HttpClient implements Client {
     }
     /**
      * Retrieve orders from the API
-     * @param   requestOpts     Options specifying orders to retrieve and page information, defaults to { page: 1, perPage: 100 }
+     * @param   requestOpts     Options specifying orders to retrieve and page information, page information, and network id.
      * @return  The resulting SignedOrders that match the request
      */
     public async getOrdersAsync(
@@ -114,7 +114,7 @@ export class HttpClient implements Client {
     /**
      * Retrieve an orderbook from the API
      * @param   request         An OrderbookRequest instance describing the specific orderbook to retrieve
-     * @param   requestOpts     Options specifying page information, defaults to { page: 1, perPage: 100 }
+     * @param   requestOpts     Options specifying page information, and network id.
      * @return  The resulting OrderbookResponse that matches the request
      */
     public async getOrderbookAsync(
@@ -135,7 +135,8 @@ export class HttpClient implements Client {
     }
     /**
      * Retrieve fee information from the API
-     * @param   request     A OrderConfigRequest instance describing the specific fees to retrieve
+     * @param   request         A OrderConfigRequest instance describing the specific fees to retrieve
+     * @param   requestOpts     Options specifying network id.
      * @return  The resulting OrderConfigResponse that matches the request
      */
     public async getOrderConfigAsync(
@@ -155,7 +156,8 @@ export class HttpClient implements Client {
         return fees;
     }
     /**
-     * Retrieve the list of fee recipient addresses used by
+     * Retrieve the list of fee recipient addresses used by the relayer.
+     * @param   requestOpts     Options specifying page information, and network id.
      */
     public async getFeeRecipientsAsync(requestOpts?: RequestOpts & PagedRequestOpts): Promise<FeeRecipientsResponse> {
         if (!_.isUndefined(requestOpts)) {
@@ -172,6 +174,7 @@ export class HttpClient implements Client {
     /**
      * Submit a signed order to the API
      * @param   signedOrder     A SignedOrder instance to submit
+     * @param   requestOpts     Options specifying network id.
      */
     public async submitOrderAsync(signedOrder: SignedOrder, requestOpts?: RequestOpts): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
