@@ -10,7 +10,7 @@
     "scripts": {
         "watch_without_deps": "tsc -w",
         "build": "tsc",
-        "clean": "shx rm -rf lib",
+        "clean": "shx rm -rf lib generated_docs",
         "lint": "tslint --project .",
         "run_mocha_unit": "mocha --require source-map-support/register --require make-promises-safe lib/test/unit/**/*_test.js --timeout 10000 --bail --exit",
         "run_mocha_integration": "mocha --require source-map-support/register --require make-promises-safe lib/test/integration/**/*_test.js --timeout 10000 --bail --exit",

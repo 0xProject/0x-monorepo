@@ -22,7 +22,7 @@
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "clean": "shx rm -rf lib lib/src/artifacts src/generated_contract_wrappers",
+        "clean": "shx rm -rf lib lib/src/artifacts src/generated_contract_wrappers generated_docs",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },

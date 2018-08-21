@@ -10,7 +10,7 @@
     "scripts": {
         "watch_without_deps": "tsc -w",
         "build": "tsc",
-        "clean": "shx rm -rf lib",
+        "clean": "shx rm -rf lib generated_docs",
         "lint": "tslint --project .",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },

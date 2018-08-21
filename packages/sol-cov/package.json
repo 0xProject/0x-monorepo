@@ -18,7 +18,7 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
-        "clean": "shx rm -rf lib test/fixtures/artifacts src/artifacts",
+        "clean": "shx rm -rf lib test/fixtures/artifacts src/artifacts generated_docs",
         "copy_test_fixtures": "copyfiles 'test/fixtures/**/*' ./lib",
         "compile_test": "sol-compiler compile",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"

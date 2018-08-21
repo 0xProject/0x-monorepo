@@ -24,7 +24,7 @@
         "rebuild_and_test": "run-s build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "clean": "shx rm -rf _bundles lib test_temp src/generated_contract_wrappers",
+        "clean": "shx rm -rf _bundles lib test_temp src/generated_contract_wrappers generated_docs",
         "build:umd:prod": "NODE_ENV=production webpack",
         "build:commonjs": "tsc",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
