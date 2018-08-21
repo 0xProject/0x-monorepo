@@ -316,7 +316,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
     private _renderExternalExports(externalExportToLink: ExternalExportToLink): React.ReactNode {
         const externalExports = _.map(externalExportToLink, (link: string, exportName: string) => {
             return (
-                <div className="pt2">
+                <div className="pt2" key={`external-export-${exportName}`}>
                     <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
                         {`import { `}
                         <a href={link} target="_blank" style={{ color: colors.lightBlueA700, textDecoration: 'none' }}>
