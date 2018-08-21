@@ -10,6 +10,7 @@ import {
 } from '@0xproject/sol-resolver';
 import { fetchAsync, logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
+import { CompilerOptions, ContractArtifact, ContractVersionData } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
 import * as _ from 'lodash';
@@ -29,7 +30,6 @@ import {
 } from './utils/compiler';
 import { constants } from './utils/constants';
 import { fsWrapper } from './utils/fs_wrapper';
-import { CompilerOptions, ContractArtifact, ContractVersionData } from './utils/types';
 import { utils } from './utils/utils';
 
 type TYPE_ALL_FILES_IDENTIFIER = '*';

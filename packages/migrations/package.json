@@ -41,6 +41,7 @@
         "@0xproject/dev-utils": "^1.0.4",
         "@0xproject/tslint-config": "^1.0.5",
         "@0xproject/types": "^1.0.1-rc.4",
+        "@0xproject/sol-compiler": "^1.0.5",
         "@types/yargs": "^10.0.0",
         "copyfiles": "^2.0.0",
         "make-promises-safe": "^1.1.0",

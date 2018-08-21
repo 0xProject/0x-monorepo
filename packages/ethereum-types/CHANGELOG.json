@@ -46,6 +46,9 @@
             {
                 "note": "Add `TransactionReceiptStatus` type",
                 "pr": 812
+            },
+            {
+                "note": "Add Artifact types: `CompilerSettings`, `CompilerOptions`, `OutputField`"
             }
         ]
     },

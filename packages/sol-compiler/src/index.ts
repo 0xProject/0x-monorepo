@@ -1,3 +1,2 @@
 export { Compiler } from './compiler';
-
-export { CompilerOptions } from './utils/types';
+export { ContractArtifact, CompilerOptions, ContractNetworks } from 'ethereum-types';

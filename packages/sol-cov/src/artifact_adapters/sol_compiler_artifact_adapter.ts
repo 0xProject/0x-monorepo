@@ -1,5 +1,5 @@
-import { CompilerOptions, ContractArtifact } from '@0xproject/sol-compiler';
 import { logUtils } from '@0xproject/utils';
+import { CompilerOptions, ContractArtifact } from 'ethereum-types';
 import * as fs from 'fs';
 import * as glob from 'glob';
 import * as _ from 'lodash';

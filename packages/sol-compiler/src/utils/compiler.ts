@@ -1,10 +1,10 @@
 import { ContractSource } from '@0xproject/sol-resolver';
 import { logUtils } from '@0xproject/utils';
+import { ContractArtifact } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as path from 'path';
 
 import { fsWrapper } from './fs_wrapper';
-import { ContractArtifact } from './types';
 
 /**
  * Gets contract data on network or returns if an artifact does not exist.

@@ -1,5 +1,5 @@
 import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
-import { ContractArtifact } from '@0xproject/sol-compiler';
+import { ContractArtifact } from 'ethereum-types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';

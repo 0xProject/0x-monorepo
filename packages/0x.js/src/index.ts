@@ -72,14 +72,6 @@ export {
 } from '@0xproject/types';
 
 export {
-    ContractArtifact,
-    GeneratedCompilerOptions,
-    ContractNetworks,
-    ContractNetworkData,
-    Source,
-} from '@0xproject/sol-compiler';
-
-export {
     BlockParamLiteral,
     ContractAbi,
     BlockParam,
@@ -105,4 +97,9 @@ export {
     DataItem,
     ConstructorStateMutability,
     StateMutability,
+    ContractArtifact,
+    GeneratedCompilerOptions,
+    ContractNetworks,
+    ContractNetworkData,
+    Source,
 } from 'ethereum-types';

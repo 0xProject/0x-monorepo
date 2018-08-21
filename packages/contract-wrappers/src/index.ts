@@ -51,15 +51,12 @@ export {
     DataItem,
     ConstructorStateMutability,
     StateMutability,
-} from 'ethereum-types';
-
-export {
     ContractArtifact,
     GeneratedCompilerOptions,
     ContractNetworks,
     Source,
     ContractNetworkData,
-} from '@0xproject/sol-compiler';
+} from 'ethereum-types';
 
 export {
     WETH9Events,

@@ -1,10 +1,10 @@
 import { DoneCallback } from '@0xproject/types';
 import * as chai from 'chai';
+import { CompilerOptions, ContractArtifact } from 'ethereum-types';
 import 'mocha';
 
 import { Compiler } from '../src/compiler';
 import { fsWrapper } from '../src/utils/fs_wrapper';
-import { CompilerOptions, ContractArtifact } from '../src/utils/types';
 
 import { exchange_binary } from './fixtures/exchange_bin';
 import { constants } from './util/constants';

@@ -1,4 +1,4 @@
-import { ContractArtifact } from '@0xproject/sol-compiler';
+import { ContractArtifact } from 'ethereum-types';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import {
