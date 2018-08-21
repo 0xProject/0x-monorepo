@@ -131,8 +131,6 @@ describe(ContractName.Forwarder, () => {
             provider,
             txDefaults,
             exchangeInstance.address,
-            wethContract.address,
-            zrxToken.address,
             zrxAssetData,
             wethAssetData,
         );

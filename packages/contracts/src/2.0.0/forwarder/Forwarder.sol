@@ -37,16 +37,12 @@ contract Forwarder is
 
     constructor (
         address _exchange,
-        address _etherToken,
-        address _zrxToken,
         bytes memory _zrxAssetData,
         bytes memory _wethAssetData
     )
         public
         LibConstants(
             _exchange,
-            _etherToken,
-            _zrxToken,
             _zrxAssetData,
             _wethAssetData
         )

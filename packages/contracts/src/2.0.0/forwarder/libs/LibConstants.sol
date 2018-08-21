@@ -18,12 +18,15 @@
 
 pragma solidity 0.4.24;
 
+import "../../utils/LibBytes/LibBytes.sol";
 import "../../protocol/Exchange/interfaces/IExchange.sol";
 import "../../tokens/EtherToken/IEtherToken.sol";
 import "../../tokens/ERC20Token/IERC20Token.sol";
 
 
 contract LibConstants {
+
+    using LibBytes for bytes;
 
     bytes4 constant internal ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
     bytes4 constant internal ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
@@ -42,17 +45,18 @@ contract LibConstants {
 
     constructor (
         address _exchange,
-        address _etherToken,
-        address _zrxToken,
         bytes memory _zrxAssetData,
         bytes memory _wethAssetData
     )
         public
     {
         EXCHANGE = IExchange(_exchange);
-        ETHER_TOKEN = IEtherToken(_etherToken);
-        ZRX_TOKEN = IERC20Token(_zrxToken);
         ZRX_ASSET_DATA = _zrxAssetData;
         WETH_ASSET_DATA = _wethAssetData;
+
+        address etherToken = _wethAssetData.readAddress(16);
+        address zrxToken = _zrxAssetData.readAddress(16);
+        ETHER_TOKEN = IEtherToken(etherToken);
+        ZRX_TOKEN = IERC20Token(zrxToken);
     }
 }
