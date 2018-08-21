@@ -11,10 +11,13 @@ export const docGenConfigs: DocGenConfigs = {
         'solc.CompilerSettings': 'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#input-description',
         Schema:
             'https://github.com/tdegrunt/jsonschema/blob/5c2edd4baba149964aec0f23c87ad12c25a50dfb/lib/index.d.ts#L49',
+        Uint8Array: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array',
+        'Ganache.GanacheOpts':
+            'https://github.com/0xProject/0x-monorepo/blob/ddf85112d7e4eb1581e0d82ce6eedad429641106/packages/typescript-typings/types/ganache-core/index.d.ts#L3',
+        'lightwallet.keystore':
+            'https://github.com/0xProject/0x-monorepo/blob/ddf85112d7e4eb1581e0d82ce6eedad429641106/packages/typescript-typings/types/eth-lightwallet/index.d.ts#L32',
     },
-    /**
-     * If a 0x package re-exports an external package, we should add a link to it's exported items here
-     */
+    // If a 0x package re-exports an external package, we should add a link to it's exported items here
     EXTERNAL_EXPORT_TO_LINK: {
         Web3ProviderEngine: 'https://www.npmjs.com/package/web3-provider-engine',
         BigNumber: 'https://www.npmjs.com/package/bignumber.js',
@@ -30,4 +33,8 @@ export const docGenConfigs: DocGenConfigs = {
         'ExchangeWrapper',
         'ForwarderWrapper',
     ],
+    // Some types are not explicitly part of the public interface like params, return values, etc... But we still
+    // want them exported. E.g error enum types that can be thrown by methods. These must be manually added to this
+    // config
+    IGNORED_EXCESSIVE_TYPES: ['NonceSubproviderErrors', 'Web3WrapperErrors', 'ContractWrappersError', 'OrderError'],
 };
