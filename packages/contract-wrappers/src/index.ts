@@ -19,6 +19,8 @@ export {
     OrderStatus,
     OrderInfo,
     ContractEvents,
+    EventCallback,
+    DecodedLogEvent,
 } from './types';
 
 export { Order, SignedOrder, AssetProxyId } from '@0xproject/types';

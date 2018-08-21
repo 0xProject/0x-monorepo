@@ -41,6 +41,8 @@ export {
     ExchangeEventArgs,
     ExchangeEvents,
     ContractEvents,
+    EventCallback,
+    DecodedLogEvent,
 } from '@0xproject/contract-wrappers';
 
 export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
