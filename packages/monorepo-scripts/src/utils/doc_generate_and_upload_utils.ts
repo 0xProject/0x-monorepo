@@ -59,7 +59,8 @@ export class DocGenerateAndUploadUtils {
             !_.isUndefined(node.type) &&
             _.isString(node.type) &&
             node.type === 'reference' &&
-            _.isUndefined(node.typeArguments) &&
+            node.name !== 'Partial' &&
+            node.name !== 'Promise' &&
             !_.includes(SUB_TYPE_PROPERTY_NAMES, propertyName)
         ) {
             updatedReferenceNames = _.uniq([...referenceNames, node.name]);
