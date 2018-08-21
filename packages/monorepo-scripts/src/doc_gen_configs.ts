@@ -2,6 +2,20 @@ import { DocGenConfigs } from './types';
 
 export const docGenConfigs: DocGenConfigs = {
     DOC_JSON_VERSION: '0.0.1',
+    // Packages for which doc pages exist
+    PACKAGES_WITH_DOC_PAGES: [
+        '0x.js',
+        'connect',
+        'json-schemas',
+        'subproviders',
+        'web3-wrapper',
+        'contract-wrappers',
+        'order-utils',
+        'order-watcher',
+        'sol-compiler',
+        'sol-cov',
+        'ethereum-types',
+    ];
     EXTERNAL_TYPE_TO_LINK: {
         Array: 'https://developer.mozilla.org/pt-PT/docs/Web/JavaScript/Reference/Global_Objects/Array',
         BigNumber: 'http://mikemcl.github.io/bignumber.js',

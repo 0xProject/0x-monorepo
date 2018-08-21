@@ -4,9 +4,10 @@ import { DocGenerateAndUploadUtils } from './utils/doc_generate_and_upload_utils
 
 const args = yargs
     .option('package', {
-        describe: 'Monorepo sub-package for which to generate DocJSON',
+        describe:
+            'Monorepo sub-package for which to generate DocJSON. If not supplied, it will do all defined in docGenConfigs.',
         type: 'string',
-        demandOption: true,
+        demandOption: false,
     })
     .option('isStaging', {
         describe: 'Whether we wish to publish docs to staging or production',
@@ -22,10 +23,10 @@ const args = yargs
     .example("$0 --package '0x.js' --isStaging true", 'Full usage example').argv;
 
 (async () => {
-    const packageName = args.package;
+    const packageNameIfExists = args.package;
     const isStaging = args.isStaging;
     const shouldUploadDocs = args.shouldUpload;
 
-    const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(packageName, isStaging, shouldUploadDocs);
+    const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(packageNameIfExists, isStaging, shouldUploadDocs);
     await docGenerateAndUploadUtils.generateAndUploadDocsAsync();
 })();

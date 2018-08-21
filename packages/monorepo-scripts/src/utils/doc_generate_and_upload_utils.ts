@@ -13,7 +13,7 @@ import { utils } from './utils';
 export class DocGenerateAndUploadUtils {
     private _isStaging: boolean;
     private _shouldUploadDocs: boolean;
-    private _packageName: string;
+    private _packageNameIfExists: string;
     private _omitExports: string[];
     private _packagePath: string;
     private _exportPathToExportedItems: ExportPathToExportedItems;
@@ -156,21 +156,21 @@ export class DocGenerateAndUploadUtils {
         };
         return exportInfo;
     }
-    constructor(packageName: string, isStaging: boolean, shouldUploadDocs: boolean) {
+    constructor(packageNameIfExists: string, isStaging: boolean, shouldUploadDocs: boolean) {
         this._isStaging = isStaging;
-        this._packageName = packageName;
+        this._packageNameIfExists = packageNameIfExists;
         this._shouldUploadDocs = shouldUploadDocs;
-        this._packagePath = `${constants.monorepoRootPath}/packages/${packageName}`;
+        this._packagePath = `${constants.monorepoRootPath}/packages/${packageNameIfExists}`;
 
         this._monoRepoPkgNameToPath = {};
         const monorepoPackages = utils.getPackages(constants.monorepoRootPath);
         _.each(monorepoPackages, p => (this._monoRepoPkgNameToPath[p.packageJson.name] = p.location));
 
         const pkg = _.find(monorepoPackages, monorepoPackage => {
-            return _.includes(monorepoPackage.packageJson.name, packageName);
+            return _.includes(monorepoPackage.packageJson.name, packageNameIfExists);
         });
         if (_.isUndefined(pkg)) {
-            throw new Error(`Couldn't find a package.json for ${packageName}`);
+            throw new Error(`Couldn't find a package.json for ${packageNameIfExists}`);
         }
         this._packageJson = pkg.packageJson;
         this._omitExports = _.get(this._packageJson, 'config.postpublish.omitExports', []);
@@ -191,17 +191,26 @@ export class DocGenerateAndUploadUtils {
         }
     }
     public async generateAndUploadDocsAsync(): Promise<void> {
+        if (!_.isUndefined(this._packageNameIfExists)) {
+            await this.generateAndUploadDocsForPackageAsync(this._packageNameIfExists);
+        } else {
+            for (const packageName of docGenConfigs.PACKAGES_WITH_DOC_PAGES) {
+                await this.generateAndUploadDocsForPackageAsync(packageName);
+            }
+        }
+    }
+    private async generateAndUploadDocsForPackageAsync(packageName: string): Promise<void> {
         // For each dep that is another one of our monorepo packages, we fetch it's index.ts
         // and see which specific files we must pass to TypeDoc, in order to generate a Doc JSON
         // the includes everything exported by the public interface.
-        const typeDocExtraFileIncludes: string[] = this._getTypeDocFileIncludesForPackage();
+        const typeDocExtraFileIncludes: string[] = this._getTypeDocFileIncludesForPackage(packageName);
 
         // In order to avoid TS errors, we need to pass TypeDoc the package's global.d.ts file
         typeDocExtraFileIncludes.push(path.join(this._packagePath, 'src', 'globals.d.ts'));
 
         const jsonFilePath = path.join(this._packagePath, 'generated_docs', 'index.json');
         const projectFiles = typeDocExtraFileIncludes.join(' ');
-        const cwd = path.join(constants.monorepoRootPath, 'packages', this._packageName);
+        const cwd = path.join(constants.monorepoRootPath, 'packages', packageName);
         // HACK: For some reason calling `typedoc` command directly from here, even with `cwd` set to the
         // packages root dir, does not work. It only works when called via a `package.json` script located
         // in the package's root.
@@ -211,18 +220,18 @@ export class DocGenerateAndUploadUtils {
 
         const typedocOutputString = readFileSync(jsonFilePath).toString();
         const typedocOutput = JSON.parse(typedocOutputString);
-        let modifiedTypedocOutput = this._standardizeTypedocOutputTopLevelChildNames(typedocOutput);
-        modifiedTypedocOutput = this._pruneTypedocOutput(modifiedTypedocOutput);
+        let modifiedTypedocOutput = this._standardizeTypedocOutputTopLevelChildNames(typedocOutput, packageName);
+        modifiedTypedocOutput = this._pruneTypedocOutput(modifiedTypedocOutput, packageName);
 
-        if (!_.includes(docGenConfigs.TYPES_ONLY_LIBRARIES, this._packageName)) {
-        const propertyName = ''; // Root has no property name
+        if (!_.includes(docGenConfigs.TYPES_ONLY_LIBRARIES, packageName)) {
+            const propertyName = ''; // Root has no property name
             const referenceNames = DocGenerateAndUploadUtils._getAllReferenceNames(
                 propertyName,
                 modifiedTypedocOutput,
                 [],
             );
-        this._lookForUnusedExportedTypesThrowIfExists(referenceNames, modifiedTypedocOutput);
-        this._lookForMissingReferenceExportsThrowIfExists(referenceNames);
+            this._lookForUnusedExportedTypesThrowIfExists(referenceNames, modifiedTypedocOutput, packageName);
+            this._lookForMissingReferenceExportsThrowIfExists(referenceNames, packageName);
         }
 
         // Some of our packages re-export external package exports in their index.ts
@@ -240,9 +249,7 @@ export class DocGenerateAndUploadUtils {
         });
         if (!_.isEmpty(externalExportsWithoutLinks)) {
             throw new Error(
-                `Found the following external exports in ${
-                    this._packageName
-                }'s index.ts:\n ${externalExportsWithoutLinks.join(
+                `Found the following external exports in ${packageName}'s index.ts:\n ${externalExportsWithoutLinks.join(
                     '\n',
                 )}\nThey are missing from the EXTERNAL_EXPORT_TO_LINK mapping. Add them and try again.`,
             );
@@ -250,7 +257,7 @@ export class DocGenerateAndUploadUtils {
 
         const exportPathToTypedocNames: ExportNameToTypedocNames = {};
         _.each(modifiedTypedocOutput.children, file => {
-            const exportPath = this._findExportPathGivenTypedocName(file.name);
+            const exportPath = this._findExportPathGivenTypedocName(file.name, packageName);
             exportPathToTypedocNames[exportPath] = _.isUndefined(exportPathToTypedocNames[exportPath])
                 ? [file.name]
                 : [...exportPathToTypedocNames[exportPath], file.name];
@@ -271,16 +278,16 @@ export class DocGenerateAndUploadUtils {
         writeFileSync(jsonFilePath, JSON.stringify(docJson, null, 2));
 
         if (this._shouldUploadDocs) {
-            await this._uploadDocsAsync(jsonFilePath, cwd);
+            await this._uploadDocsAsync(jsonFilePath, cwd, packageName);
         }
     }
-    private async _uploadDocsAsync(jsonFilePath: string, cwd: string) {
+    private async _uploadDocsAsync(jsonFilePath: string, cwd: string, packageName: string) {
         const fileName = `v${this._packageJson.version}.json`;
         utils.log(`GENERATE_UPLOAD_DOCS: Doc generation successful, uploading docs... as ${fileName}`);
 
         const S3BucketPath = this._isStaging
-            ? `s3://staging-doc-jsons/${this._packageName}/`
-            : `s3://doc-jsons/${this._packageName}/`;
+            ? `s3://staging-doc-jsons/${packageName}/`
+            : `s3://doc-jsons/${packageName}/`;
         const s3Url = `${S3BucketPath}${fileName}`;
         await execAsync(
             `aws s3 cp ${jsonFilePath} ${s3Url} --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json`,
@@ -297,7 +304,7 @@ export class DocGenerateAndUploadUtils {
     /**
      *  Look for types that are used by the public interface but are missing from a package's index.ts
      */
-    private _lookForMissingReferenceExportsThrowIfExists(referenceNames: string[]): void {
+    private _lookForMissingReferenceExportsThrowIfExists(referenceNames: string[], packageName: string): void {
         const allExportedItems = _.flatten(_.values(this._exportPathToExportedItems));
         const missingReferences: string[] = [];
         _.each(referenceNames, referenceName => {
@@ -310,7 +317,7 @@ export class DocGenerateAndUploadUtils {
         });
         if (!_.isEmpty(missingReferences)) {
             throw new Error(
-                `${this._packageName} package needs to export: \n${missingReferences.join(
+                `${packageName} package needs to export: \n${missingReferences.join(
                     '\n',
                 )} \nFrom it\'s index.ts. If any are from external dependencies, then add them to the EXTERNAL_TYPE_TO_LINK mapping.`,
             );
@@ -319,7 +326,11 @@ export class DocGenerateAndUploadUtils {
     /**
      * Look for exported types that are not used by the package's public interface
      */
-    private _lookForUnusedExportedTypesThrowIfExists(referenceNames: string[], typedocOutput: any): void {
+    private _lookForUnusedExportedTypesThrowIfExists(
+        referenceNames: string[],
+        typedocOutput: any,
+        packageName: string,
+    ): void {
         const exportedTypes = DocGenerateAndUploadUtils._getAllTypeNames(typedocOutput, []);
         const excessiveReferences = _.difference(exportedTypes, referenceNames);
         const excessiveReferencesExceptIgnored = _.difference(
@@ -328,7 +339,7 @@ export class DocGenerateAndUploadUtils {
         );
         if (!_.isEmpty(excessiveReferencesExceptIgnored)) {
             throw new Error(
-                `${this._packageName} package exports BUT does not need: \n${excessiveReferencesExceptIgnored.join(
+                `${packageName} package exports BUT does not need: \n${excessiveReferencesExceptIgnored.join(
                     '\n',
                 )} \nin it\'s index.ts. Remove them then try again.`,
             );
@@ -340,10 +351,10 @@ export class DocGenerateAndUploadUtils {
      * - the constructor is to be ignored
      * - it begins with an underscore (i.e is private)
      */
-    private _pruneTypedocOutput(typedocOutput: any): any {
+    private _pruneTypedocOutput(typedocOutput: any, packageName: string): any {
         const modifiedTypedocOutput = _.clone(typedocOutput);
         _.each(typedocOutput.children, (file, i) => {
-            const exportPath = this._findExportPathGivenTypedocName(file.name);
+            const exportPath = this._findExportPathGivenTypedocName(file.name, packageName);
             const exportItems = this._exportPathToExportedItems[exportPath];
             _.each(file.children, (child, j) => {
                 const isNotExported = !_.includes(exportItems, child.name);
@@ -377,12 +388,12 @@ export class DocGenerateAndUploadUtils {
      * monorepo). In order to enforce that the names are always prefixed with the package's name, we check and add
      * them here when necessary.
      */
-    private _standardizeTypedocOutputTopLevelChildNames(typedocOutput: any): any {
+    private _standardizeTypedocOutputTopLevelChildNames(typedocOutput: any, packageName: string): any {
         const modifiedTypedocOutput = _.clone(typedocOutput);
         _.each(typedocOutput.children, (child, i) => {
             if (!_.includes(child.name, '/src/')) {
                 const nameWithoutQuotes = child.name.replace(/"/g, '');
-                const standardizedName = `"${this._packageName}/src/${nameWithoutQuotes}"`;
+                const standardizedName = `"${packageName}/src/${nameWithoutQuotes}"`;
                 modifiedTypedocOutput.children[i].name = standardizedName;
             }
         });
@@ -391,13 +402,13 @@ export class DocGenerateAndUploadUtils {
     /**
      * Maps back each top-level TypeDoc JSON object name to the exportPath from which it was generated.
      */
-    private _findExportPathGivenTypedocName(typedocName: string): string {
+    private _findExportPathGivenTypedocName(typedocName: string, packageName: string): string {
         const typeDocNameWithoutQuotes = _.replace(typedocName, /"/g, '');
         const sanitizedExportPathToExportPath: { [sanitizedName: string]: string } = {};
         const exportPaths = _.keys(this._exportPathToExportedItems);
         const sanitizedExportPaths = _.map(exportPaths, exportPath => {
             if (_.startsWith(exportPath, './')) {
-                const sanitizedExportPath = path.join(this._packageName, 'src', exportPath);
+                const sanitizedExportPath = path.join(packageName, 'src', exportPath);
                 sanitizedExportPathToExportPath[sanitizedExportPath] = exportPath;
                 return sanitizedExportPath;
             }
@@ -438,7 +449,7 @@ export class DocGenerateAndUploadUtils {
         });
         return externalExports;
     }
-    private _getTypeDocFileIncludesForPackage(): string[] {
+    private _getTypeDocFileIncludesForPackage(packageName: string): string[] {
         let typeDocExtraFileIncludes: string[] = [];
         _.each(this._exportPathToExportedItems, (exportedItems, exportPath) => {
             const isInternalToPkg = _.startsWith(exportPath, '.');
@@ -464,9 +475,7 @@ export class DocGenerateAndUploadUtils {
                     }
                     if (!_.startsWith(innerExportPath, './')) {
                         throw new Error(
-                            `GENERATE_UPLOAD_DOCS: WARNING - ${
-                                this._packageName
-                            } is exporting one of ${innerExportItems} which is
+                            `GENERATE_UPLOAD_DOCS: WARNING - ${packageName} is exporting one of ${innerExportItems} which is
                             itself exported from an external package. To fix this, export the external dependency directly,
                             not indirectly through ${innerExportPath}.`,
                         );
