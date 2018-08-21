@@ -12,6 +12,7 @@ import { utils } from './utils';
 
 export class DocGenerateAndUploadUtils {
     private _isStaging: boolean;
+    private _shouldUploadDocs: boolean;
     private _packageName: string;
     private _omitExports: string[];
     private _packagePath: string;
@@ -155,9 +156,10 @@ export class DocGenerateAndUploadUtils {
         };
         return exportInfo;
     }
-    constructor(packageName: string, isStaging: boolean) {
+    constructor(packageName: string, isStaging: boolean, shouldUploadDocs: boolean) {
         this._isStaging = isStaging;
         this._packageName = packageName;
+        this._shouldUploadDocs = shouldUploadDocs;
         this._packagePath = `${constants.monorepoRootPath}/packages/${packageName}`;
 
         this._monoRepoPkgNameToPath = {};
@@ -268,6 +270,11 @@ export class DocGenerateAndUploadUtils {
         };
         writeFileSync(jsonFilePath, JSON.stringify(docJson, null, 2));
 
+        if (this._shouldUploadDocs) {
+            await this._uploadDocsAsync(jsonFilePath, cwd);
+        }
+    }
+    private async _uploadDocsAsync(jsonFilePath: string, cwd: string) {
         const fileName = `v${this._packageJson.version}.json`;
         utils.log(`GENERATE_UPLOAD_DOCS: Doc generation successful, uploading docs... as ${fileName}`);
 

@@ -13,12 +13,19 @@ const args = yargs
         type: 'boolean',
         demandOption: true,
     })
+    .option('shouldUpload', {
+        describe: 'Whether we wish to upload the docs to S3 or not',
+        type: 'boolean',
+        demandOption: false,
+        default: true,
+    })
     .example("$0 --package '0x.js' --isStaging true", 'Full usage example').argv;
 
 (async () => {
     const packageName = args.package;
     const isStaging = args.isStaging;
+    const shouldUploadDocs = args.shouldUpload;
 
-    const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(packageName, isStaging);
+    const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(packageName, isStaging, shouldUploadDocs);
     await docGenerateAndUploadUtils.generateAndUploadDocsAsync();
 })();
