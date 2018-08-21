@@ -374,10 +374,16 @@ export class TypeDocUtils {
         if (isConstructor || entityName === '__type') {
             callPath = '';
         } else {
-            const prefix = isStatic ? sectionName : `${sectionName[0].toLowerCase()}${sectionName.slice(1)}`;
+            const prefix = isStatic ? sectionName : this._getLowercaseSectionName(sectionName);
             callPath = `${prefix}.`;
         }
         return callPath;
+    }
+    private _getLowercaseSectionName(sectionName: string) {
+        if (_.startsWith(sectionName, 'ERC')) {
+            return `${sectionName.slice(0, 3).toLowerCase()}${sectionName.slice(3)}`;
+        }
+        return `${sectionName[0].toLowerCase()}${sectionName.slice(1)}`;
     }
     private _convertFunction(entity: TypeDocNode, sectionName: string, isObjectLiteral: boolean): TypescriptFunction {
         const signature = entity.signatures[0];
