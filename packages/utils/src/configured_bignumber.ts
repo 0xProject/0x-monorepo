@@ -12,6 +12,7 @@ BigNumber.config({
 });
 
 // Set a debug print function for NodeJS
+// Upstream issue: https://github.com/MikeMcl/bignumber.js/issues/188
 import isNode = require('detect-node');
 if (!isNode) {
     // Dynamically load a NodeJS specific module.
