@@ -3,6 +3,7 @@ import { DocGenConfigs } from './types';
 export const docGenConfigs: DocGenConfigs = {
     DOC_JSON_VERSION: '0.0.1',
     EXTERNAL_TYPE_TO_LINK: {
+        Array: 'https://developer.mozilla.org/pt-PT/docs/Web/JavaScript/Reference/Global_Objects/Array',
         BigNumber: 'http://mikemcl.github.io/bignumber.js',
         Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
         Buffer: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/v9/index.d.ts#L262',
