@@ -5258,6 +5258,7 @@ ethereumjs-wallet@~0.6.0:
 
 ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
   version "3.0.18"
+  uid b91342bd200d142af0165d6befddf783c8ae8447
   resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
   dependencies:
     aes-js "3.0.0"
@@ -12333,9 +12334,9 @@ slash@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-1.0.0.tgz#c41f2f6c39fc16d1cd17ad4b5d896114ae470d55"
 
-sleep@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/sleep/-/sleep-5.1.1.tgz#878fa1d44d08eeb0f26fb2018ef8629eb1a3ab94"
+sleep@5.2.3:
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/sleep/-/sleep-5.2.3.tgz#be8852dd8cf91c8f206d21d681c64754cbceb33c"
   dependencies:
     nan ">=2.5.1"
 
