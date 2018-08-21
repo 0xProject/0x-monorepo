@@ -57,7 +57,7 @@ export class HttpClient implements Client {
     /**
      * Retrieve assetData pair info from the API
      * @param   requestOpts     Options specifying assetData information to retrieve, page information, and network id.
-     * @return  The resulting AssetPairsItems that match the request
+     * @return  The resulting AssetPairsResponse that match the request
      */
     public async getAssetPairsAsync(
         requestOpts?: RequestOpts & AssetPairsRequestOpts & PagedRequestOpts,
@@ -77,7 +77,7 @@ export class HttpClient implements Client {
     /**
      * Retrieve orders from the API
      * @param   requestOpts     Options specifying orders to retrieve and page information, page information, and network id.
-     * @return  The resulting SignedOrders that match the request
+     * @return  The resulting OrdersResponse that match the request
      */
     public async getOrdersAsync(
         requestOpts?: RequestOpts & OrdersRequestOpts & PagedRequestOpts,
@@ -97,7 +97,7 @@ export class HttpClient implements Client {
     /**
      * Retrieve a specific order from the API
      * @param   orderHash     An orderHash generated from the desired order
-     * @return  The SignedOrder that matches the supplied orderHash
+     * @return  The APIOrder that matches the supplied orderHash
      */
     public async getOrderAsync(orderHash: string, requestOpts?: RequestOpts): Promise<APIOrder> {
         if (!_.isUndefined(requestOpts)) {
@@ -158,6 +158,7 @@ export class HttpClient implements Client {
     /**
      * Retrieve the list of fee recipient addresses used by the relayer.
      * @param   requestOpts     Options specifying page information, and network id.
+     * @return  The resulting FeeRecipientsResponse
      */
     public async getFeeRecipientsAsync(requestOpts?: RequestOpts & PagedRequestOpts): Promise<FeeRecipientsResponse> {
         if (!_.isUndefined(requestOpts)) {
