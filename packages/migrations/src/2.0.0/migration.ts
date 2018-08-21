@@ -135,8 +135,6 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
         provider,
         txDefaults,
         exchange.address,
-        etherToken.address,
-        zrxToken.address,
         assetDataUtils.encodeERC20AssetData(zrxToken.address),
         assetDataUtils.encodeERC20AssetData(etherToken.address),
     );
