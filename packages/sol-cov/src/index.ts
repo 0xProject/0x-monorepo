@@ -7,15 +7,14 @@ export { AbstractArtifactAdapter } from './artifact_adapters/abstract_artifact_a
 export { ProfilerSubprovider } from './profiler_subprovider';
 export { RevertTraceSubprovider } from './revert_trace_subprovider';
 
+export { ContractData, TraceInfo, Subtrace, TraceInfoNewContract, TraceInfoExistingContract } from './types';
 export {
-    ContractData,
-    TraceInfo,
-    Subtrace,
-    SourceRange,
-    Coverage,
-    TraceInfoNewContract,
-    TraceInfoExistingContract,
-    SingleFileSourceRange,
-} from './types';
-export { StructLog, JSONRPCRequestPayload, Provider } from 'ethereum-types';
-export { ErrorCallback, NextCallback } from '@0xproject/subproviders';
+    StructLog,
+    JSONRPCRequestPayload,
+    Provider,
+    JSONRPCErrorCallback,
+    OpCode,
+    JSONRPCResponsePayload,
+} from 'ethereum-types';
+
+export { JSONRPCRequestPayloadWithMethod } from '@0xproject/subproviders';
