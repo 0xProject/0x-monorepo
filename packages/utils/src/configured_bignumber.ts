@@ -12,7 +12,8 @@ BigNumber.config({
 });
 
 // Set a debug print function for NodeJS
-if (typeof window === 'undefined') { // Check if running in NodeJS
+import isNode = require('detect-node');
+if (!isNode) {
     const util = require('util');
 
     // Set a custom util.inspect function
