@@ -14,11 +14,12 @@ BigNumber.config({
 // Set a debug print function for NodeJS
 import isNode = require('detect-node');
 if (!isNode) {
-    const util = require('util');
+    import util = require('util');
 
     // Set a custom util.inspect function
-    (BigNumber.prototype as any)[util.inspect.custom] = function() {
+    (BigNumber.prototype as any)[util.inspect.custom] = function(): string {
         // Return the readable string representation
+        // tslint:disable-next-line: no-invalid-this
         return this.toString();
     };
 }
