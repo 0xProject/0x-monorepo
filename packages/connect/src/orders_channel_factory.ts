@@ -8,7 +8,7 @@ export const ordersChannelFactory = {
     /**
      * Instantiates a new WebSocketOrdersChannel instance
      * @param   url                  The relayer API base WS url you would like to interact with
-     * @param   handler              An OrderbookChannelHandler instance that responds to various
+     * @param   handler              An OrdersChannelHandler instance that responds to various
      *                               channel updates
      * @return  An OrdersChannel Promise
      */
@@ -18,8 +18,8 @@ export const ordersChannelFactory = {
         return new Promise<OrdersChannel>((resolve, reject) => {
             const client = new WebSocket.w3cwebsocket(url);
             client.onopen = () => {
-                const orderbookChannel = new WebSocketOrdersChannel(client, handler);
-                resolve(orderbookChannel);
+                const ordersChannel = new WebSocketOrdersChannel(client, handler);
+                resolve(ordersChannel);
             };
             client.onerror = err => {
                 reject(err);
