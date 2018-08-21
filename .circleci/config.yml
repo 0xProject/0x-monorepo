@@ -66,6 +66,15 @@ jobs:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn test:publish:circleci
+  test-doc-generation:
+    docker:
+      - image: circleci/node:9
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: yarn test:generate_docs:circleci
   test-rest:
     docker:
       - image: circleci/node:9
@@ -235,6 +244,9 @@ workflows:
           requires:
             - build
       - test-publish:
+          requires:
+            - build
+      - test-doc-generation:
           requires:
             - build
       - submit-coverage:

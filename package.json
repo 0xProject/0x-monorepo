@@ -32,12 +32,14 @@
         "rebuild": "run-s clean build",
         "rebuild:no_website": "run-s clean build:no_website",
         "test": "wsrun test $PKG --fast-exit --serial --exclude-missing",
-        "generate_docs": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
+        "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
+        "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break; done;",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing",
         "comment:postinstall": "HACK: For some reason `yarn` is not setting up symlinks properly for order-utils. We temporarily set them manually. Remove this after V2 refactor is complete."
     },
     "config": {
-        "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic"
+        "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
+        "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types"
     },
     "devDependencies": {
         "@0x-lerna-fork/lerna": "3.0.0-beta.23",

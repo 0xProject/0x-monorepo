@@ -85,7 +85,8 @@ async function generateAndUploadDocJsonsAsync(updatedPublicPackages: Package[], 
     for (const pkg of updatedPublicPackages) {
         const packageName = pkg.packageJson.name;
         const nameWithoutPrefix = packageName.replace('@0xproject/', '');
-        const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(nameWithoutPrefix, isStaging);
+        const shouldUploadDocs = true;
+        const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(nameWithoutPrefix, isStaging, shouldUploadDocs);
         await docGenerateAndUploadUtils.generateAndUploadDocsAsync();
     }
 }
