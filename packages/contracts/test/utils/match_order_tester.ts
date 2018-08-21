@@ -139,7 +139,78 @@ export class MatchOrderTester {
             newERC721TokenIdsByOwner,
         );
 
+        // Compute actual transfer amounts
+        let actualTransferAmounts = <TransferAmounts>{};
+        const makerAssetProxyIdLeft = assetDataUtils.decodeAssetProxyId(signedOrderLeft.makerAssetData);
+        if (makerAssetProxyIdLeft === AssetProxyId.ERC20) {
+            const erc20AssetData = assetDataUtils.decodeERC20AssetData(signedOrderLeft.makerAssetData);
+            const makerAssetAddressLeft = erc20AssetData.tokenAddress;
+            actualTransferAmounts.amountSoldByLeftMaker = erc20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressLeft].sub(newERC20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressLeft]);
+            actualTransferAmounts.amountBoughtByRightMaker = newERC20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressLeft].sub(erc20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressLeft]);
+            actualTransferAmounts.amountReceivedByRightMaker =  actualTransferAmounts.amountBoughtByRightMaker;
+            actualTransferAmounts.amountReceivedByTaker = newERC20BalancesByOwner[takerAddress][makerAssetAddressLeft].sub(erc20BalancesByOwner[takerAddress][makerAssetAddressLeft]);
+        } else if(makerAssetProxyIdLeft === AssetProxyId.ERC721) {
+        }
+        const makerAssetProxyIdRight = assetDataUtils.decodeAssetProxyId(signedOrderRight.makerAssetData);
+        if (makerAssetProxyIdRight === AssetProxyId.ERC20) {
+            const erc20AssetData = assetDataUtils.decodeERC20AssetData(signedOrderRight.makerAssetData);
+            const makerAssetAddressRight = erc20AssetData.tokenAddress;
+            actualTransferAmounts.amountSoldByRightMaker = erc20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressRight].sub(newERC20BalancesByOwner[signedOrderRight.makerAddress][makerAssetAddressRight]);
+            actualTransferAmounts.amountBoughtByLeftMaker = newERC20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressRight].sub(erc20BalancesByOwner[signedOrderLeft.makerAddress][makerAssetAddressRight]);
+            actualTransferAmounts.amountReceivedByLeftMaker =  actualTransferAmounts.amountBoughtByLeftMaker;
+        } else if(makerAssetProxyIdRight === AssetProxyId.ERC721) {
+        }
+         // Fees
+        actualTransferAmounts.feePaidByLeftMaker = erc20BalancesByOwner[signedOrderLeft.makerAddress][this._feeTokenAddress].sub(newERC20BalancesByOwner[signedOrderLeft.makerAddress][this._feeTokenAddress]);
+        actualTransferAmounts.feePaidByRightMaker = erc20BalancesByOwner[signedOrderRight.makerAddress][this._feeTokenAddress].sub(newERC20BalancesByOwner[signedOrderRight.makerAddress][this._feeTokenAddress]);
+        actualTransferAmounts.totalFeePaidByTaker = erc20BalancesByOwner[takerAddress][this._feeTokenAddress].sub(newERC20BalancesByOwner[takerAddress][this._feeTokenAddress]);
+
+        console.log("amountBoughtByLeftMaker");
+        expect(expectedTransferAmounts.amountBoughtByLeftMaker).to.be.bignumber.equal(actualTransferAmounts.amountBoughtByLeftMaker);
+        console.log("amountSoldByLeftMaker");
+        expect(expectedTransferAmounts.amountSoldByLeftMaker).to.be.bignumber.equal(actualTransferAmounts.amountSoldByLeftMaker);
+        console.log("amountBoughtByRightMaker");
+        expect(expectedTransferAmounts.amountBoughtByRightMaker).to.be.bignumber.equal(actualTransferAmounts.amountBoughtByRightMaker);
+        console.log("amountSoldByRightMaker");
+        expect(expectedTransferAmounts.amountSoldByRightMaker).to.be.bignumber.equal(actualTransferAmounts.amountSoldByRightMaker);
+        console.log("amountReceivedByTaker");
+        expect(expectedTransferAmounts.amountReceivedByTaker).to.be.bignumber.equal(actualTransferAmounts.amountReceivedByTaker);
+        console.log("feePaidByLeftMaker");
+        expect(expectedTransferAmounts.feePaidByLeftMaker).to.be.bignumber.equal(actualTransferAmounts.feePaidByLeftMaker);
+        console.log("feePaidByRightMaker");
+        expect(expectedTransferAmounts.feePaidByRightMaker).to.be.bignumber.equal(actualTransferAmounts.feePaidByRightMaker);
+        console.log("totalFeePaidByTaker");
+        expect(expectedTransferAmounts.totalFeePaidByTaker).to.be.bignumber.equal(actualTransferAmounts.totalFeePaidByTaker);
+        
+
+
+/*
+        const actualTransferAmounts = {
+            // Left Maker
+            amountBoughtByLeftMaker,
+            amountSoldByLeftMaker,
+            amountReceivedByLeftMaker,
+            feePaidByLeftMaker,
+            // Right Maker
+            amountBoughtByRightMaker,
+            amountSoldByRightMaker,
+            amountReceivedByRightMaker,
+            feePaidByRightMaker,
+            // Taker
+            amountReceivedByTaker,
+            feePaidByTakerLeft,
+            feePaidByTakerRight,
+            totalFeePaidByTaker,
+            // Fee Recipients
+            feeReceivedLeft,
+            feeReceivedRight,
+        };*/
+
+        // This is a catch-all to ensure that no other balances changed
+        console.log("Catch-all");
         expect(didExpectedBalancesMatchRealBalances).to.be.true();
+
+
         return [newERC20BalancesByOwner, newERC721TokenIdsByOwner];
     }
     /// @dev Calculates expected transfer amounts between order makers, fee recipients, and
@@ -180,7 +251,7 @@ export class MatchOrderTester {
          console.log("Amount bought by left maker = ", JSON.stringify(amountBoughtByLeftMaker));
          console.log("Amount sold by left maker = ", JSON.stringify(amountSoldByLeftMaker));
          console.log("Amount bought by right maker = ", JSON.stringify(amountBoughtByRightMaker));
-         console.log("Amount sold by right maker = ", JSON.stringify(amountSoldByRightMaker)); 
+         console.log("Amount sold by right maker = ", JSON.stringify(amountSoldByRightMaker));
          console.log("Amount received by taker = ", JSON.stringify(amountReceivedByTaker));
         //const amountReceivedByLeftMaker = amountSoldByRightMaker;
         const feePaidByLeftMaker = signedOrderLeft.makerFee
@@ -189,12 +260,15 @@ export class MatchOrderTester {
         const feePaidByRightMaker = signedOrderRight.makerFee
             .times(amountSoldByRightMaker)
             .dividedToIntegerBy(signedOrderRight.makerAssetAmount);
+
         const feePaidByTakerLeft = signedOrderLeft.takerFee
-            .times(amountSoldByLeftMaker)
-            .dividedToIntegerBy(signedOrderLeft.makerAssetAmount);
+            .times(amountBoughtByLeftMaker)
+            .dividedToIntegerBy(signedOrderLeft.takerAssetAmount);
+
+
         const feePaidByTakerRight = signedOrderRight.takerFee
-            .times(amountSoldByRightMaker)
-            .dividedToIntegerBy(signedOrderRight.makerAssetAmount);
+        .times(amountBoughtByRightMaker)
+        .dividedToIntegerBy(signedOrderRight.takerAssetAmount);
         const totalFeePaidByTaker = feePaidByTakerLeft.add(feePaidByTakerRight);
         const feeReceivedLeft = feePaidByLeftMaker.add(feePaidByTakerLeft);
         const feeReceivedRight = feePaidByRightMaker.add(feePaidByTakerRight);

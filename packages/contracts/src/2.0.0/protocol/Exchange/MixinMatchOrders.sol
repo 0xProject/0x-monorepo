@@ -214,8 +214,8 @@ contract MixinMatchOrders is
 
         // Compute fees for left order
         matchedFillResults.left.makerFeePaid = getPartialAmount(
-            matchedFillResults.left.takerAssetFilledAmount,
-            leftOrder.takerAssetAmount,
+            matchedFillResults.left.makerAssetFilledAmount,
+            leftOrder.makerAssetAmount,
             leftOrder.makerFee
         );
         matchedFillResults.left.takerFeePaid = getPartialAmount(
@@ -226,8 +226,8 @@ contract MixinMatchOrders is
 
         // Compute fees for right order
         matchedFillResults.right.makerFeePaid = getPartialAmount(
-            matchedFillResults.right.takerAssetFilledAmount,
-            rightOrder.takerAssetAmount,
+            matchedFillResults.right.makerAssetFilledAmount,
+            rightOrder.makerAssetAmount,
             rightOrder.makerFee
         );
         matchedFillResults.right.takerFeePaid = getPartialAmount(
