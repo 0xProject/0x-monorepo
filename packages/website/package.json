@@ -87,7 +87,7 @@
         "copyfiles": "^2.0.0",
         "css-loader": "0.23.x",
         "exports-loader": "0.6.x",
-        "imports-loader": "0.6.x",
+        "imports-loader": "0.8.x",
         "json-loader": "^0.5.4",
         "less-loader": "^2.2.3",
         "make-promises-safe": "^1.1.0",
