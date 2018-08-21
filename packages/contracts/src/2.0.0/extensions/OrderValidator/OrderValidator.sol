@@ -34,20 +34,26 @@ contract OrderValidator {
     using LibBytes for bytes;
 
     struct TraderInfo {
-        uint256 makerBalance;    // Maker's balance of makerAsset
-        uint256 makerAllowance;  // Maker's allowance to corresponding AssetProxy
-        uint256 takerBalance;    // Taker's balance of takerAsset
-        uint256 takerAllowance;  // Taker's allowance to corresponding AssetProxy
+        uint256 makerBalance;       // Maker's balance of makerAsset
+        uint256 makerAllowance;     // Maker's allowance to corresponding AssetProxy
+        uint256 takerBalance;       // Taker's balance of takerAsset
+        uint256 takerAllowance;     // Taker's allowance to corresponding AssetProxy
+        uint256 makerZrxBalance;    // Maker's balance of ZRX
+        uint256 makerZrxAllowance;  // Maker's allowance of ZRX to ERC20Proxy
+        uint256 takerZrxBalance;    // Taker's balance of ZRX
+        uint256 takerZrxAllowance;  // Taker's allowance of ZRX to ERC20Proxy
     }
 
-    // Exchange contract.
-    // solhint-disable-next-line var-name-mixedcase
+    // solhint-disable var-name-mixedcase
     IExchange internal EXCHANGE;
+    bytes internal ZRX_ASSET_DATA;
+    // solhint-enable var-name-mixedcase
 
-    constructor (address _exchange)
+    constructor (address _exchange, bytes memory _zrxAssetData)
         public
     {
         EXCHANGE = IExchange(_exchange);
+        ZRX_ASSET_DATA = _zrxAssetData;
     }
 
     /// @dev Fetches information for order and maker/taker of order.
@@ -89,6 +95,9 @@ contract OrderValidator {
     {
         (traderInfo.makerBalance, traderInfo.makerAllowance) = getBalanceAndAllowance(order.makerAddress, order.makerAssetData);
         (traderInfo.takerBalance, traderInfo.takerAllowance) = getBalanceAndAllowance(takerAddress, order.takerAssetData);
+        bytes memory zrxAssetData = ZRX_ASSET_DATA;
+        (traderInfo.makerZrxBalance, traderInfo.makerZrxAllowance) = getBalanceAndAllowance(order.makerAddress, zrxAssetData);
+        (traderInfo.takerZrxBalance, traderInfo.takerZrxAllowance) = getBalanceAndAllowance(takerAddress, zrxAssetData);
         return traderInfo;
     }
 

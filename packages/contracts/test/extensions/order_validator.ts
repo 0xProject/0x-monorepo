@@ -33,6 +33,7 @@ describe('OrderValidator', () => {
     let erc721AssetData: string;
 
     let erc20Token: DummyERC20TokenContract;
+    let zrxToken: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let exchange: ExchangeContract;
     let orderValidator: OrderValidatorContract;
@@ -62,18 +63,22 @@ describe('OrderValidator', () => {
         const erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         const erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
-        const numDummyErc20ToDeploy = 1;
-        [erc20Token] = await erc20Wrapper.deployDummyTokensAsync(numDummyErc20ToDeploy, constants.DUMMY_TOKEN_DECIMALS);
+        const numDummyErc20ToDeploy = 2;
+        [erc20Token, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
+            numDummyErc20ToDeploy,
+            constants.DUMMY_TOKEN_DECIMALS,
+        );
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
 
         [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
         erc721Proxy = await erc721Wrapper.deployProxyAsync();
 
+        const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
             txDefaults,
-            assetDataUtils.encodeERC20AssetData(erc20Token.address),
+            zrxAssetData,
         );
         const exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -84,6 +89,7 @@ describe('OrderValidator', () => {
             provider,
             txDefaults,
             exchange.address,
+            zrxAssetData,
         );
 
         erc20AssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
@@ -221,10 +227,16 @@ describe('OrderValidator', () => {
             expect(traderInfo.makerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.makerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.takerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
         });
         it('should return the correct info when balances and allowances are set', async () => {
             const makerBalance = new BigNumber(123);
             const makerAllowance = new BigNumber(456);
+            const makerZrxBalance = new BigNumber(789);
+            const takerZrxAllowance = new BigNumber(987);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20Token.setBalance.sendTransactionAsync(makerAddress, makerBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
@@ -232,6 +244,16 @@ describe('OrderValidator', () => {
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, makerAllowance, {
                     from: makerAddress,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await zrxToken.setBalance.sendTransactionAsync(makerAddress, makerZrxBalance),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, takerZrxAllowance, {
+                    from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -250,6 +272,10 @@ describe('OrderValidator', () => {
             expect(traderInfo.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
             expect(traderInfo.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
+            expect(traderInfo.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.takerZrxAllowance).to.be.bignumber.equal(takerZrxAllowance);
         });
     });
     describe('getTradersInfo', () => {
@@ -267,14 +293,24 @@ describe('OrderValidator', () => {
             expect(traderInfo1.makerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.takerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.makerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.takerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.makerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.makerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.takerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.makerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.takerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
         });
         it('should return the correct info when balances and allowances are set', async () => {
             const makerBalance = new BigNumber(123);
             const makerAllowance = new BigNumber(456);
+            const makerZrxBalance = new BigNumber(789);
+            const takerZrxAllowance = new BigNumber(987);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20Token.setBalance.sendTransactionAsync(makerAddress, makerBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
@@ -282,6 +318,16 @@ describe('OrderValidator', () => {
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, makerAllowance, {
                     from: makerAddress,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await zrxToken.setBalance.sendTransactionAsync(makerAddress, makerZrxBalance),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, takerZrxAllowance, {
+                    from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -304,10 +350,18 @@ describe('OrderValidator', () => {
             expect(traderInfo1.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo1.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo1.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
+            expect(traderInfo1.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.takerZrxAllowance).to.be.bignumber.equal(takerZrxAllowance);
             expect(traderInfo2.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo2.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo2.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
             expect(traderInfo2.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo2.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
+            expect(traderInfo2.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.takerZrxAllowance).to.be.bignumber.equal(takerZrxAllowance);
         });
     });
     describe('getOrderAndTraderInfo', () => {
@@ -327,10 +381,16 @@ describe('OrderValidator', () => {
             expect(traderInfo.makerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.makerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.takerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
         });
         it('should return the correct info when balances and allowances are set', async () => {
             const makerBalance = new BigNumber(123);
             const makerAllowance = new BigNumber(456);
+            const makerZrxBalance = new BigNumber(789);
+            const takerZrxAllowance = new BigNumber(987);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20Token.setBalance.sendTransactionAsync(makerAddress, makerBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
@@ -338,6 +398,16 @@ describe('OrderValidator', () => {
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, makerAllowance, {
                     from: makerAddress,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await zrxToken.setBalance.sendTransactionAsync(makerAddress, makerZrxBalance),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, takerZrxAllowance, {
+                    from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -363,6 +433,10 @@ describe('OrderValidator', () => {
             expect(traderInfo.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
             expect(traderInfo.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
+            expect(traderInfo.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo.takerZrxAllowance).to.be.bignumber.equal(takerZrxAllowance);
         });
     });
     describe('getOrdersAndTradersInfo', () => {
@@ -391,14 +465,24 @@ describe('OrderValidator', () => {
             expect(traderInfo1.makerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.takerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.makerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.takerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.makerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.makerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.takerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.makerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.takerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
         });
         it('should return the correct info when balances and allowances are set', async () => {
             const makerBalance = new BigNumber(123);
             const makerAllowance = new BigNumber(456);
+            const makerZrxBalance = new BigNumber(789);
+            const takerZrxAllowance = new BigNumber(987);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20Token.setBalance.sendTransactionAsync(makerAddress, makerBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
@@ -406,6 +490,16 @@ describe('OrderValidator', () => {
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, makerAllowance, {
                     from: makerAddress,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await zrxToken.setBalance.sendTransactionAsync(makerAddress, makerZrxBalance),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, takerZrxAllowance, {
+                    from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -438,10 +532,19 @@ describe('OrderValidator', () => {
             expect(traderInfo1.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo1.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo1.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
+            expect(traderInfo1.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo1.takerZrxAllowance).to.be.bignumber.equal(takerZrxAllowance);
             expect(traderInfo2.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo2.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo2.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
             expect(traderInfo2.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo2.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
+            expect(traderInfo2.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(traderInfo2.takerZrxAllowance).to.be.bignumber.equal(takerZrxAllowance);
         });
     });
 });
+// tslint:disable:max-file-line-count

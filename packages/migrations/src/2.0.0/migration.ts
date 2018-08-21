@@ -50,11 +50,12 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
     artifactsWriter.saveArtifact(etherToken);
 
     // Exchange
+    const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
     const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
         artifacts.Exchange,
         provider,
         txDefaults,
-        assetDataUtils.encodeERC20AssetData(zrxToken.address),
+        zrxAssetData,
     );
     artifactsWriter.saveArtifact(exchange);
 

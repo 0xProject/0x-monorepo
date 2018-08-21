@@ -82,6 +82,7 @@ export const runV2TestnetMigrationsAsync = async (
         provider,
         txDefaults,
         exchange.address,
+        zrxAssetData,
     );
     artifactsWriter.saveArtifact(orderValidator);
 
