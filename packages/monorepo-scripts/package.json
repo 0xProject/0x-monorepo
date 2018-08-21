@@ -47,7 +47,7 @@
         "@types/depcheck": "^0.6.0",
         "async-child-process": "^1.1.1",
         "chalk": "^2.3.0",
-        "es6-promisify": "^5.0.0",
+        "es6-promisify": "^6.0.0",
         "glob": "^7.1.2",
         "isomorphic-fetch": "2.2.1",
         "lodash": "^4.17.5",
