@@ -308,9 +308,13 @@ export class DocGenerateAndUploadUtils {
     private _lookForUnusedExportedTypesThrowIfExists(referenceNames: string[], typedocOutput: any): void {
         const exportedTypes = DocGenerateAndUploadUtils._getAllTypeNames(typedocOutput, []);
         const excessiveReferences = _.difference(exportedTypes, referenceNames);
-        if (!_.isEmpty(excessiveReferences)) {
+        const excessiveReferencesExceptIgnored = _.difference(
+            excessiveReferences,
+            docGenConfigs.IGNORED_EXCESSIVE_TYPES,
+        );
+        if (!_.isEmpty(excessiveReferencesExceptIgnored)) {
             throw new Error(
-                `${this._packageName} package exports BUT does not need: \n${excessiveReferences.join(
+                `${this._packageName} package exports BUT does not need: \n${excessiveReferencesExceptIgnored.join(
                     '\n',
                 )} \nin it\'s index.ts. Remove them then try again.`,
             );

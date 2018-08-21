@@ -55,6 +55,7 @@ export interface DocGenConfigs {
     EXTERNAL_TYPE_TO_LINK: { [externalType: string]: string };
     EXTERNAL_EXPORT_TO_LINK: { [externalExport: string]: string };
     CLASSES_WITH_HIDDEN_CONSTRUCTORS: string[];
+    IGNORED_EXCESSIVE_TYPES: string[];
 }
 
 export interface ExportPathToExportedItems {
