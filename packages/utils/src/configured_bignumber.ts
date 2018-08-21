@@ -14,7 +14,11 @@ BigNumber.config({
 // Set a debug print function for NodeJS
 import isNode = require('detect-node');
 if (!isNode) {
-    import util = require('util');
+    // Dynamically load a NodeJS specific module.
+    // Typescript requires all imports to be global, so we need to use
+    // `const` here and disable the tslint warning.
+    // tslint:disable-next-line: no-var-requires
+    const util = require('util');
 
     // Set a custom util.inspect function
     (BigNumber.prototype as any)[util.inspect.custom] = function(): string {
