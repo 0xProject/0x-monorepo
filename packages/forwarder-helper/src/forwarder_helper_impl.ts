@@ -56,6 +56,7 @@ export class ForwarderHelperImpl implements ForwarderHelper {
             orders,
             remainingFillableMakerAssetAmounts,
         );
+        // TODO: provide a feeRate to the sorting function to more accurately sort based on the current market for ZRX tokens
         const sortedOrderWithAmounts = sortingUtils.sortOrdersByFeeAdjustedRate(orderWithAmounts);
         const unbundledSortedOrderWithAmounts = ForwarderHelperImpl._unbundleSignedOrderWithAmounts(
             sortedOrderWithAmounts,
@@ -108,6 +109,7 @@ export class ForwarderHelperImpl implements ForwarderHelper {
             throw new Error(ForwarderHelperError.InsufficientZrxLiquidity);
         }
         // TODO: calculate min and max eth usage
+        // TODO: optimize orders call data
         return {
             makerAssetFillAmount,
             orders: resultOrders,
