@@ -37,10 +37,7 @@ export async function evaluatePromise<T>(
     try {
         return new Value<T>(await promise);
     } catch (e) {
-        // Canonicalize the error message to ease comparisson.
-        return new ErrorMessage(e.message
-            .replace('VM Exception while processing transaction: ', ''),
-        );
+        return new ErrorMessage(e.message);
     }
 }
 
