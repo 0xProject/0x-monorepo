@@ -69,7 +69,7 @@ Dedicated documentation pages:
 Node version >= 6.12 is required.
 
 Most of the packages require additional typings for external dependencies.
-You can include those by prepending @0xproject/typescript-typings package to your [`typeRoots`](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html) config.
+You can include those by prepending the `@0xproject/typescript-typings` package to your [`typeRoots`](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html) config.
 
 ```json
 "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
