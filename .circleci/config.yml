@@ -17,6 +17,7 @@ jobs:
             - yarn-packages-{{ .Branch }}
             - yarn-packages-master
             - yarn-packages-
+      - run: yarn cache clean
       - run:
           name: yarn
           command: yarn --frozen-lockfile install
