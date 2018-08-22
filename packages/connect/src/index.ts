@@ -11,9 +11,13 @@ export {
     OrderbookResponse,
     OrdersRequestOpts,
     PagedRequestOpts,
-    AssetPairsItem,
     AssetPairsRequestOpts,
-    Asset,
+    RequestOpts,
+    AssetPairsResponse,
+    FeeRecipientsResponse,
+    APIOrder,
+    OrdersResponse,
+    PaginatedCollection,
 } from './types';
 
 export { SignedOrder } from '@0xproject/types';
