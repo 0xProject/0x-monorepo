@@ -26,7 +26,7 @@ jobs:
           paths:
             - node_modules/
       - run: >
-            if [ -z "$(git diff --name-only v2-prototype packages/website)" ]; then
+            if [ -z "$(git diff --name-only development packages/website)" ]; then
                 yarn build --exclude website
             else
                 yarn build
