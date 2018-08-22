@@ -1,6 +1,16 @@
 [
     {
         "timestamp": 1534210131,
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Stopped exporting `Order` type",
+                "pr": 924
+            }
+        ]
+    },
+    {
+        "timestamp": 1534210131,
         "version": "1.0.5",
         "changes": [
             {

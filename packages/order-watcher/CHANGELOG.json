@@ -1,5 +1,19 @@
 [
     {
+        "version": "1.0.1-rc.4",
+        "changes": [
+            {
+                "note":
+                    "Export types: `ExchangeContractErrs`, `OrderRelevantState`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
+                "pr": 924
+            },
+            {
+                "note": "Remove exporting types: `BlockParamLiteral`, `BlockParam`, `Order`",
+                "pr": 924
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.3",
         "changes": [
             {

@@ -1,5 +1,15 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note":
+                    "Export types: `JSONRPCRequestPayload`, `Provider`, `JSONRPCErrorCallback`, `JSONRPCResponsePayload`, `JSONRPCRequestPayloadWithMethod`, `NextCallback`, `ErrorCallback`, `OnNextCompleted` and `Callback`",
+                "pr": 924
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
