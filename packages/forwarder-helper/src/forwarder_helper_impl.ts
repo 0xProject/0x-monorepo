@@ -83,7 +83,7 @@ export class ForwarderHelperImpl implements ForwarderHelper {
         const { makerAssetFillAmount, feePercentage } = request;
         const { orders, feeOrders, remainingFillableMakerAssetAmounts, remainingFillableFeeAmounts } = this.config;
         // TODO: make the slippage percentage customizable
-        const slippageBufferAmount = makerAssetFillAmount.mul(SLIPPAGE_PERCENTAGE);
+        const slippageBufferAmount = makerAssetFillAmount.mul(SLIPPAGE_PERCENTAGE).round();
         const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
             orders,
             makerAssetFillAmount,
@@ -93,7 +93,7 @@ export class ForwarderHelperImpl implements ForwarderHelper {
             },
         );
         if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
-            throw new Error(ForwarderHelperError.InsufficientLiquidity);
+            throw new Error(ForwarderHelperError.InsufficientMakerAssetLiquidity);
         }
         // TODO: update this logic to find the minimum amount of feeOrders to cover the worst case as opposed to
         // finding order that cover all fees, this will help with estimating ETH and minimizing gas usage

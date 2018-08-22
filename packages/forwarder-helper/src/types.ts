@@ -12,7 +12,7 @@ export interface ForwarderHelper {
 }
 
 export enum ForwarderHelperError {
-    InsufficientLiquidity = 'INSUFFICIENT_LIQUIDITY',
+    InsufficientMakerAssetLiquidity = 'INSUFFICIENT_MAKER_ASSET_LIQUIDITY',
     InsufficientZrxLiquidity = 'INSUFFICIENT_ZRX_LIQUIDITY',
 }
 
