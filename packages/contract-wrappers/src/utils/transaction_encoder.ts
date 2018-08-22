@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { EIP712Schema, EIP712Types, EIP712Utils } from '@0xproject/order-utils';
+import { EIP712Schema, EIP712Types, eip712Utils } from '@0xproject/order-utils';
 import { Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import _ = require('lodash');
@@ -41,11 +41,11 @@ export class TransactionEncoder {
             signerAddress,
             data,
         };
-        const executeTransactionHashBuff = EIP712Utils.structHash(
+        const executeTransactionHashBuff = eip712Utils.structHash(
             EIP712_ZEROEX_TRANSACTION_SCHEMA,
             executeTransactionData,
         );
-        const eip721MessageBuffer = EIP712Utils.createEIP712Message(executeTransactionHashBuff, exchangeAddress);
+        const eip721MessageBuffer = eip712Utils.createEIP712Message(executeTransactionHashBuff, exchangeAddress);
         const messageHex = `0x${eip721MessageBuffer.toString('hex')}`;
         return messageHex;
     }

@@ -33,6 +33,7 @@ export const docGenConfigs: DocGenConfigs = {
         'EtherTokenWrapper',
         'ExchangeWrapper',
         'ForwarderWrapper',
+        'TransactionEncoder',
     ],
     // Some types are not explicitly part of the public interface like params, return values, etc... But we still
     // want them exported. E.g error enum types that can be thrown by methods. These must be manually added to this
