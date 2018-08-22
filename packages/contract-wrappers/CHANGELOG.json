@@ -3,8 +3,12 @@
         "version": "1.0.1-rc.4",
         "changes": [
             {
-                "note": "Export missing ExchangeSignatureValidatorApprovalEventArgs type",
-                "pr": 924
+                "note": "Export missing types: TransactionEncoder, EventCallback, DecodedLogEvent, ContractAbi, JSONRPCRequestPayload, JSONRPCResponsePayload, JSONRPCErrorCallback, AbiDefinition, LogWithDecodedArgs, FunctionAbi, EventAbi, EventParameter, DecodedLogArgs, MethodAbi, ConstructorAbi, FallbackAbi, DataItem, ConstructorStateMutability, StateMutability & ExchangeSignatureValidatorApprovalEventArgs", 
+               "pr": 924
+            },
+            {
+                "note": "Remove superfluous exported types: EventCallback, ContractEvent, Token, OrderFillRequest, ContractEventArgs, LogEvent, DecodedLogEvent, OnOrderStateChangeCallback,     ECSignature, OrderStateValid, OrderStateInvalid, OrderState, FilterObject, LogWithDecodedArgs, TransactionReceipt & TransactionReceiptWithDecodedLogs", 
+               "pr": 924
             },
             {
                 "note": "Added Transaction Encoder for use with 0x Exchange executeTransaction",
