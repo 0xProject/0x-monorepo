@@ -29,7 +29,7 @@ contract LibMath is
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
-    /// @return Partial value of target.
+    /// @return Partial value of target rounded down.
     function getPartialAmount(
         uint256 numerator,
         uint256 denominator,
@@ -45,8 +45,37 @@ contract LibMath is
         );
         return partialAmount;
     }
-
-    /// @dev Checks if rounding error >= 0.1%.
+    
+    /// @dev Calculates partial value given a numerator and denominator.
+    /// @param numerator Numerator.
+    /// @param denominator Denominator.
+    /// @param target Value to calculate partial of.
+    /// @return Partial value of target rounded up.
+    function getPartialAmountCeil(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        internal
+        pure
+        returns (uint256 partialAmount)
+    {
+        require(
+            denominator > 0,
+            "DIVISION_BY_ZERO"
+        );
+        
+        // SafeDiv rounds down. To use it to round up we need to add
+        // denominator - 1. This causes anything less than an exact multiple
+        // of denominator to be rounded up.
+        partialAmount = safeDiv(
+            safeAdd(safeMul(numerator, target), safeSub(denominator, 1)),
+            denominator
+        );
+        return partialAmount;
+    }
+    
+    /// @dev Checks if rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
