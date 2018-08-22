@@ -10,8 +10,6 @@ jobs:
     steps:
       - checkout
       - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
-      - run: yarn --version
-      - run: which yarn
       - restore_cache:
           name: Restore Yarn Package Cache
           keys:
@@ -19,6 +17,9 @@ jobs:
             - yarn-packages-{{ .Branch }}
             - yarn-packages-master
             - yarn-packages-
+      - run:
+          name: yarn
+          command: yarn --frozen-lockfile install
       - run:
           name: yarn
           command: yarn --frozen-lockfile install
