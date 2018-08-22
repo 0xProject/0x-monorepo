@@ -74,14 +74,18 @@ describe('Exchange core internal functions', () => {
         );
 
         // TODO: Move to assertions.ts
+        callErrors = {
+            invalidOpcode: new Error(await getInvalidOpcodeErrorMessageForCallAsync()),
+        };
+        sendErrors = {
+            invalidOpcode: new Error(await getInvalidOpcodeErrorMessageForSendTransactionAsync()),
+        };
         for (const key in RevertReason) {
             // TODO: avoid casting
             const reason: RevertReason = RevertReason[key] as RevertReason;
             callErrors[key] = new Error(await getRevertReasonOrErrorMessageForCallAsync(reason));
             sendErrors[key] = new Error(await getRevertReasonOrErrorMessageForSendTransactionAsync(reason));
         }
-        callErrors.invalidOpcode = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
-        sendErrors.invalidOpcode = new Error(await getInvalidOpcodeErrorMessageForSendTransactionAsync());
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
     // the blockchain state for any tests which modify it!
@@ -285,7 +289,7 @@ describe('Exchange core internal functions', () => {
         ): Promise<BigNumber> {
             const totalFilledAmount = takerAssetFilledAmount.add(orderTakerAssetFilledAmount);
             if (totalFilledAmount.greaterThan(MAX_UINT256)) {
-                throw sendErrors.Uint256Overlfow;
+                throw sendErrors.Uint256Overflow;
             }
             return totalFilledAmount;
         }
