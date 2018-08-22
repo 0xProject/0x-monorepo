@@ -1,27 +1,22 @@
-import * as chai from 'chai';
 import * as _ from 'lodash';
-
-import { chaiSetup } from './chai_setup';
-
-chaiSetup.configure();
-const expect = chai.expect;
 
 class Value<T> {
     public value: T;
     constructor(value: T) {
         this.value = value;
     }
-    public toString() {
+    public toString(): string {
         return `[Value: ${this.value}]`;
     }
 }
 
+// tslint:disable-next-line: max-classes-per-file
 class ErrorMessage {
     public error: string;
     constructor(message: string) {
         this.error = message;
     }
-    public toString() {
+    public toString(): string {
         return `[Error: ${this.error}]`;
     }
 }
@@ -31,7 +26,7 @@ type PromiseResult<T> = Value<T> | ErrorMessage;
 // TODO: This seems like a generic utility function that could exist in lodash.
 //       We should replace it by a library implementation, or move it to our
 //       own.
-export async function evaluatePromise<T>(
+async function evaluatePromise<T>(
     promise: Promise<T>,
 ): Promise<PromiseResult<T>> {
     try {
