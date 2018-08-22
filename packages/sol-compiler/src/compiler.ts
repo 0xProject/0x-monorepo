@@ -159,7 +159,18 @@ export class Compiler {
     public async compileAsync(): Promise<void> {
         await createDirIfDoesNotExistAsync(this._artifactsDir);
         await createDirIfDoesNotExistAsync(SOLC_BIN_DIR);
-        await this._compileContractsAsync(this._getContractNamesToCompile());
+        await this._compileContractsAsync(this._getContractNamesToCompile(), true);
+    }
+    /**
+     * Compiles Solidity files specified during construction, and returns the
+     * compiler output given by solc.  Return value is an array of outputs:
+     * Solidity modules are batched together by version required, and each
+     * element of the returned array corresponds to a compiler version, and
+     * each element contains the output for all of the modules compiled with
+     * that version.
+     */
+    public async getCompilerOutputsAsync(): Promise<solc.StandardOutput[]> {
+        return this._compileContractsAsync(this._getContractNamesToCompile(), false);
     }
     private _getContractNamesToCompile(): string[] {
         if (this._specifiedContracts === ALL_CONTRACTS_IDENTIFIER) {
@@ -172,10 +183,14 @@ export class Compiler {
         }
     }
     /**
-     * Compiles contract and saves artifact to artifactsDir.
+     * Compiles contracts, and, if `shouldPersist` is true, saves artifacts to artifactsDir.
      * @param fileName Name of contract with '.sol' extension.
+     * @return an array of compiler outputs, where each element corresponds to a different version of solc-js.
      */
-    private async _compileContractsAsync(contractNames: string[]): Promise<void> {
+    private async _compileContractsAsync(
+        contractNames: string[],
+        shouldPersist: boolean,
+    ): Promise<solc.StandardOutput[]> {
         // batch input contracts together based on the version of the compiler that they require.
         const versionToInputs: VersionToInputs = {};
 
@@ -216,6 +231,8 @@ export class Compiler {
             versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
         }
 
+        const compilerOutputs: solc.StandardOutput[] = [];
+
         const solcVersions = _.keys(versionToInputs);
         for (const solcVersion of solcVersions) {
             const input = versionToInputs[solcVersion];
@@ -228,6 +245,7 @@ export class Compiler {
             const { solcInstance, fullSolcVersion } = await Compiler._getSolcAsync(solcVersion);
 
             const compilerOutput = this._compile(solcInstance, input.standardInput);
+            compilerOutputs.push(compilerOutput);
 
             for (const contractPath of input.contractsToCompile) {
                 const contractName = contractPathToData[contractPath].contractName;
@@ -241,16 +259,20 @@ export class Compiler {
 
                 Compiler._addHexPrefixes(compiledContract);
 
-                await this._persistCompiledContractAsync(
-                    contractPath,
-                    contractPathToData[contractPath].currentArtifactIfExists,
-                    contractPathToData[contractPath].sourceTreeHashHex,
-                    contractName,
-                    fullSolcVersion,
-                    compilerOutput,
-                );
+                if (shouldPersist) {
+                    await this._persistCompiledContractAsync(
+                        contractPath,
+                        contractPathToData[contractPath].currentArtifactIfExists,
+                        contractPathToData[contractPath].sourceTreeHashHex,
+                        contractName,
+                        fullSolcVersion,
+                        compilerOutput,
+                    );
+                }
             }
         }
+
+        return compilerOutputs;
     }
     private _shouldCompile(contractData: ContractData): boolean {
         if (_.isUndefined(contractData.currentArtifactIfExists)) {
