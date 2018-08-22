@@ -21,6 +21,7 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.OrderUtils,
+    packageName: '@0xproject/order-utils',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Order utils',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',

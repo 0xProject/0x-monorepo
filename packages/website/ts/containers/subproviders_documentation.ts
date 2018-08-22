@@ -23,6 +23,7 @@ const docSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.Subproviders,
+    packageName: '@0xproject/subproviders',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Subproviders',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',

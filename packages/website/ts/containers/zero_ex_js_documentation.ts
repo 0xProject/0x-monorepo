@@ -31,6 +31,7 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.ZeroExJs,
+    packageName: '0x.js',
     type: SupportedDocJson.TypeDoc,
     displayName: '0x.js',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',

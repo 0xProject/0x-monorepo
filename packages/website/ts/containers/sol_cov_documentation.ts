@@ -22,6 +22,7 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.SolCov,
+    packageName: '@0xproject/sol-cov',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Sol-cov',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',

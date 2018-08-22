@@ -322,7 +322,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                         <a href={link} target="_blank" style={{ color: colors.lightBlueA700, textDecoration: 'none' }}>
                             {exportName}
                         </a>
-                        {` } from '${this.props.docsInfo.displayName}'`}
+                        {` } from '${this.props.docsInfo.packageName}'`}
                     </code>
                 </div>
             );

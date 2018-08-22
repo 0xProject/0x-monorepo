@@ -22,6 +22,7 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.EthereumTypes,
+    packageName: 'ethereum-types',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Ethereum Types',
     packageUrl: 'https://github.com/0xProject/0x-monorepo/packages/ethereum-types',

@@ -22,6 +22,7 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.SolCompiler,
+    packageName: '@0xproject/sol-compiler',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Solidity Compiler',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',

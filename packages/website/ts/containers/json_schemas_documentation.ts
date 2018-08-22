@@ -25,6 +25,7 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.JSONSchemas,
+    packageName: '@0xproject/json-schemas',
     type: SupportedDocJson.TypeDoc,
     displayName: 'JSON Schemas',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',

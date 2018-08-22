@@ -21,6 +21,7 @@ export class DocsInfo {
     public id: string;
     public type: SupportedDocJson;
     public displayName: string;
+    public packageName: string;
     public packageUrl: string;
     public menu: DocsMenu;
     public sections: SectionsMap;
@@ -31,6 +32,7 @@ export class DocsInfo {
         this.type = config.type;
         this.menu = config.markdownMenu;
         this.displayName = config.displayName;
+        this.packageName = config.packageName;
         this.packageUrl = config.packageUrl;
         this.sections = config.markdownSections;
         this.sectionNameToMarkdownByVersion = config.sectionNameToMarkdownByVersion;

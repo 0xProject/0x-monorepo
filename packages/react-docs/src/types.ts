@@ -4,6 +4,7 @@ export interface SectionNameToMarkdownByVersion {
 
 export interface DocsInfoConfig {
     id: string;
+    packageName: string;
     type: SupportedDocJson;
     displayName: string;
     packageUrl: string;
@@ -309,6 +310,7 @@ export interface Metadata {
 }
 
 export interface GeneratedDocJson {
+    version: string;
     metadata: Metadata;
     typedocJson: TypeDocNode;
 }

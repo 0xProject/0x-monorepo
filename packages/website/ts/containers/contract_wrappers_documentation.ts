@@ -21,6 +21,7 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.ContractWrappers,
+    packageName: '@0xproject/contract-wrappers',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Contract Wrappers',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',

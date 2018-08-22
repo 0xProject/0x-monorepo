@@ -21,6 +21,7 @@ const docSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.Web3Wrapper,
+    packageName: '@0xproject/web3-wrapper',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Web3Wrapper',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
