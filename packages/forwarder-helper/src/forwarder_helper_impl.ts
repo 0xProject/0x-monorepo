@@ -52,15 +52,18 @@ export class ForwarderHelperImpl implements ForwarderHelper {
     }
     private static _sortConfig(opts: ForwarderHelperImplConfig): ForwarderHelperImplConfig {
         const { orders, feeOrders, remainingFillableMakerAssetAmounts, remainingFillableFeeAmounts } = opts;
+        // Bundle orders together with their remainingFillAmounts so that we can sort them together
         const orderWithAmounts = ForwarderHelperImpl._createSignedOrderWithAmounts(
             orders,
             remainingFillableMakerAssetAmounts,
         );
         // TODO: provide a feeRate to the sorting function to more accurately sort based on the current market for ZRX tokens
         const sortedOrderWithAmounts = sortingUtils.sortOrdersByFeeAdjustedRate(orderWithAmounts);
+        // Unbundle after sorting
         const unbundledSortedOrderWithAmounts = ForwarderHelperImpl._unbundleSignedOrderWithAmounts(
             sortedOrderWithAmounts,
         );
+        // Do the same bundling + unbundling for feeOrder sorting
         const feeOrderWithAmounts = ForwarderHelperImpl._createSignedOrderWithAmounts(
             feeOrders,
             remainingFillableFeeAmounts,
