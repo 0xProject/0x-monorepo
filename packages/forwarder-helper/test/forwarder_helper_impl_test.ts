@@ -97,7 +97,7 @@ describe('ForwarderHelperImpl', () => {
             const forwarderHelper = new ForwarderHelperImpl(inputForwarderHelperConfig);
             expect(() => {
                 // request for 6 makerAsset units, because we have exactly 6 available we should throw because there is a built in slippage buffer
-                const info = forwarderHelper.getMarketBuyOrdersInfo({
+                forwarderHelper.getMarketBuyOrdersInfo({
                     makerAssetFillAmount: new BigNumber(6),
                 });
             }).to.throw(ForwarderHelperError.InsufficientMakerAssetLiquidity);
@@ -110,7 +110,7 @@ describe('ForwarderHelperImpl', () => {
             const forwarderHelper = new ForwarderHelperImpl(inputForwarderHelperConfigNoFees);
             expect(() => {
                 // request for 4 makerAsset units, we need fees but no fee orders exist, show we should throw
-                const info = forwarderHelper.getMarketBuyOrdersInfo({
+                forwarderHelper.getMarketBuyOrdersInfo({
                     makerAssetFillAmount: new BigNumber(250),
                 });
             }).to.throw(ForwarderHelperError.InsufficientZrxLiquidity);

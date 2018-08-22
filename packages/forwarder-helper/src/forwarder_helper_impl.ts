@@ -41,7 +41,7 @@ export class ForwarderHelperImpl implements ForwarderHelper {
             return rest;
         });
         const amounts = _.map(signedOrderWithAmounts, order => {
-            const { remainingFillAmount, ...rest } = order;
+            const { remainingFillAmount } = order;
             return remainingFillAmount;
         });
         const compactAmounts = _.compact(amounts);
