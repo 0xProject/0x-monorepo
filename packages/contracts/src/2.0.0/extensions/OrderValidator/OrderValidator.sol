@@ -158,6 +158,25 @@ contract OrderValidator {
         return (balance, allowance);
     }
 
+    /// @dev Fetches token balances and allowances of an address for each given assetProxy. Supports ERC20 and ERC721.
+    /// @param target Address to fetch balances and allowances of.
+    /// @param assetData Array of encoded byte arrays that can be decoded by a specified proxy contract when transferring asset.
+    /// @return Balances and allowances of assets.
+    ///         For ERC721 tokens, these values will always be 1 or 0.
+    function getBalancesAndAllowances(address target, bytes[] memory assetData)
+        public
+        view
+        returns (uint256[] memory, uint256[] memory)
+    {
+        uint256 length = assetData.length;
+        uint256[] memory balances = new uint256[](length);
+        uint256[] memory allowances = new uint256[](length);
+        for (uint256 i = 0; i != length; i++) {
+            (balances[i], allowances[i]) = getBalanceAndAllowance(target, assetData[i]);
+        }
+        return (balances, allowances);
+    }
+
     /// @dev Calls `token.ownerOf(tokenId)`, but returns a null owner instead of reverting on an unowned token.
     /// @param token Address of ERC721 token.
     /// @param tokenId The identifier for the specific NFT.

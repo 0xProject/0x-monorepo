@@ -217,6 +217,56 @@ describe('OrderValidator', () => {
             });
         });
     });
+    describe('getBalancesAndAllowances', () => {
+        it('should return the correct balances and allowances when all values are 0', async () => {
+            const [
+                [erc20Balance, erc721Balance],
+                [erc20Allowance, erc721Allowance],
+            ] = await orderValidator.getBalancesAndAllowances.callAsync(makerAddress, [
+                erc20AssetData,
+                erc721AssetData,
+            ]);
+            expect(erc20Balance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(erc721Balance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(erc20Allowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(erc721Allowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+        it('should return the correct balances and allowances when balances and allowances are non-zero', async () => {
+            const balance = new BigNumber(123);
+            const allowance = new BigNumber(456);
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await erc20Token.setBalance.sendTransactionAsync(makerAddress, balance),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, allowance, {
+                    from: makerAddress,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await erc721Token.mint.sendTransactionAsync(makerAddress, tokenId),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await erc721Token.approve.sendTransactionAsync(erc721Proxy.address, tokenId, {
+                    from: makerAddress,
+                }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            const [
+                [erc20Balance, erc721Balance],
+                [erc20Allowance, erc721Allowance],
+            ] = await orderValidator.getBalancesAndAllowances.callAsync(makerAddress, [
+                erc20AssetData,
+                erc721AssetData,
+            ]);
+            expect(erc20Balance).to.be.bignumber.equal(balance);
+            expect(erc721Balance).to.be.bignumber.equal(ERC721_BALANCE);
+            expect(erc20Allowance).to.be.bignumber.equal(allowance);
+            expect(erc721Allowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+        });
+    });
     describe('getTraderInfo', () => {
         beforeEach(async () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
