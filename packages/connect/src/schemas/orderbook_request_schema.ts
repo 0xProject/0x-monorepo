@@ -2,8 +2,8 @@ export const orderBookRequestSchema = {
     id: '/OrderBookRequest',
     type: 'object',
     properties: {
-        baseTokenAddress: { $ref: '/Address' },
-        quoteTokenAddress: { $ref: '/Address' },
+        baseAssetData: { $ref: '/hexSchema' },
+        quoteAssetData: { $ref: '/hexSchema' },
     },
-    required: ['baseTokenAddress', 'quoteTokenAddress'],
+    required: ['baseAssetData', 'quoteAssetData'],
 };

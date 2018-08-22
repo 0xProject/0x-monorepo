@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.0-rc.1",
+        "changes": [
+            {
+                "note": "Updated for SRA v2",
+                "pr": 974
+            }
+        ]
+    },
+    {
         "timestamp": 1534210131,
         "version": "1.0.5",
         "changes": [

@@ -5,7 +5,11 @@ export const relayerApiFeeRecipientsResponseSchema = {
         { $ref: '/paginatedCollectionSchema' },
         {
             properties: {
-                records: { $ref: '/addressSchema' },
+                records: {
+                    id: '/relayerApiFeeRecipientsSchema',
+                    type: 'array',
+                    items: { $ref: '/addressSchema' },
+                },
             },
             required: ['records'],
         },
