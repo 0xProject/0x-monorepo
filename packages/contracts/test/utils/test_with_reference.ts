@@ -1,12 +1,14 @@
+import * as chai from 'chai';
 import * as _ from 'lodash';
+
+import { chaiSetup } from '../utils/chai_setup';
+
+chaiSetup.configure();
 
 class Value<T> {
     public value: T;
     constructor(value: T) {
         this.value = value;
-    }
-    public toString(): string {
-        return `[Value: ${this.value}]`;
     }
 }
 
@@ -15,9 +17,6 @@ class ErrorMessage {
     public error: string;
     constructor(message: string) {
         this.error = message;
-    }
-    public toString(): string {
-        return `[Error: ${this.error}]`;
     }
 }
 
@@ -101,11 +100,9 @@ export async function testWithReferenceFuncAsync(
     const actual = await evaluatePromise(testFuncAsync(...values));
 
     // Compare behaviour
-    // Note: We could also use `expect(actual).to.deep.equal(expected)` but
-    //       this results in a less readable error message.
-    if (!_.isEqual(actual, expected)) {
-        throw new Error(`Test case ${_getTestCaseString(referenceFuncAsync, values)} expected ${expected} to equal ${actual}`);
-    }
+    chai.expect(actual).to.deep.equal(expected,
+        `Test case ${_getTestCaseString(referenceFuncAsync, values)}`,
+    );
 }
 
 function _getTestCaseString(referenceFuncAsync: (...args: any[]) => Promise<any>, values: any[]): string {
