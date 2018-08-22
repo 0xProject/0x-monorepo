@@ -1,7 +1,6 @@
 0x Protocol Schemas
 
 *   [Basic types](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/basic_type_schemas.ts) (e.g Ethereum address, number, hex)
-<!-- *   [ECSignature](https://github.com/0xProject/0x-monorepo/blob/d4c1b3b0bd26e730ce6687469cdf7283877543e1/packages/json-schemas/schemas/ec_signature_schema.ts) -->
 *   [Order/SignedOrder](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/order_schemas.ts)
 *   [OrderHash](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/order_hash_schema.ts)
 
