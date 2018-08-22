@@ -20,9 +20,6 @@ jobs:
       - run:
           name: yarn
           command: yarn --frozen-lockfile install
-      - run:
-          name: yarn
-          command: yarn --frozen-lockfile install
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
