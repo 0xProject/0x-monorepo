@@ -7,6 +7,8 @@ import { TestExchangeInternalsContract } from '../../generated_contract_wrappers
 import { artifacts } from '../utils/artifacts';
 import {
     getInvalidOpcodeErrorMessageForCallAsync,
+    getInvalidOpcodeErrorMessageForSendTransactionAsync,
+    getRevertReasonOrErrorMessageForCallAsync,
     getRevertReasonOrErrorMessageForSendTransactionAsync,
 } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
@@ -41,28 +43,22 @@ const emptySignedOrder: SignedOrder = {
     signature: '',
 };
 
-const overflowErrorForCall = new Error(`revert ${RevertReason.Uint256Overflow}`);
-
-async function referenceGetPartialAmountAsync(
-    numerator: BigNumber,
-    denominator: BigNumber,
-    target: BigNumber,
-): Promise<BigNumber> {
-    const invalidOpcodeErrorForCall = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
-    const product = numerator.mul(target);
-    if (product.greaterThan(MAX_UINT256)) {
-        throw overflowErrorForCall;
-    }
-    if (denominator.eq(0)) {
-        throw invalidOpcodeErrorForCall;
-    }
-    return product.dividedToIntegerBy(denominator);
+// TODO: make the key index of VmErrors typesafe like so:
+// interface VMErrors {
+//     [reason in keyof RevertReason]: Error;
+//     invalidOpcode: Error;
+// }
+interface VMErrors {
+    [reasonKey: string]: Error;
+    invalidOpcode: Error;
+    // TODO: insufficientFunds, outOfGas, etc..
 }
 
 describe('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
-    let invalidOpcodeErrorForCall: Error | undefined;
-    let overflowErrorForSendTransaction: Error | undefined;
+
+    let callErrors: VMErrors;
+    let sendErrors: VMErrors;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -76,13 +72,34 @@ describe('Exchange core internal functions', () => {
             provider,
             txDefaults,
         );
-        overflowErrorForSendTransaction = new Error(
-            await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.Uint256Overflow),
-        );
-        invalidOpcodeErrorForCall = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
+
+        // TODO: Move to assertions.ts
+        for (const key in RevertReason) {
+            // TODO: avoid casting
+            const reason: RevertReason = RevertReason[key] as RevertReason;
+            callErrors[key] = new Error(await getRevertReasonOrErrorMessageForCallAsync(reason));
+            sendErrors[key] = new Error(await getRevertReasonOrErrorMessageForSendTransactionAsync(reason));
+        }
+        callErrors.invalidOpcode = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
+        sendErrors.invalidOpcode = new Error(await getInvalidOpcodeErrorMessageForSendTransactionAsync());
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
     // the blockchain state for any tests which modify it!
+
+    async function referenceGetPartialAmountAsync(
+        numerator: BigNumber,
+        denominator: BigNumber,
+        target: BigNumber,
+    ): Promise<BigNumber> {
+        const product = numerator.mul(target);
+        if (product.greaterThan(MAX_UINT256)) {
+            throw callErrors.Uint256Overflow;
+        }
+        if (denominator.eq(0)) {
+            throw callErrors.invalidOpcode;
+        }
+        return product.dividedToIntegerBy(denominator);
+    }
 
     describe('addFillResults', async () => {
         function makeFillResults(value: BigNumber): FillResults {
@@ -113,7 +130,7 @@ describe('Exchange core internal functions', () => {
                 (totalVal: BigNumber, singleVal: BigNumber) => {
                     const newTotal = totalVal.add(singleVal);
                     if (newTotal.greaterThan(MAX_UINT256)) {
-                        throw overflowErrorForCall;
+                        throw callErrors.Uint256Overflow;
                     }
                     return newTotal;
                 },
@@ -217,21 +234,21 @@ describe('Exchange core internal functions', () => {
         ): Promise<boolean> {
             const product = numerator.mul(target);
             if (denominator.eq(0)) {
-                throw invalidOpcodeErrorForCall;
+                throw callErrors.invalidOpcode;
             }
             const remainder = product.mod(denominator);
             if (remainder.eq(0)) {
                 return false;
             }
             if (product.greaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall;
+                throw callErrors.Uint256Overflow;
             }
             if (product.eq(0)) {
-                throw invalidOpcodeErrorForCall;
+                throw callErrors.invalidOpcode;
             }
             const remainderTimes1000000 = remainder.mul('1000000');
             if (remainderTimes1000000.greaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall;
+                throw callErrors.Uint256Overflow;
             }
             const errPercentageTimes1000000 = remainderTimes1000000.dividedToIntegerBy(product);
             return errPercentageTimes1000000.greaterThan('1000');
@@ -268,7 +285,7 @@ describe('Exchange core internal functions', () => {
         ): Promise<BigNumber> {
             const totalFilledAmount = takerAssetFilledAmount.add(orderTakerAssetFilledAmount);
             if (totalFilledAmount.greaterThan(MAX_UINT256)) {
-                throw overflowErrorForSendTransaction;
+                throw sendErrors.Uint256Overlfow;
             }
             return totalFilledAmount;
         }
