@@ -54,7 +54,10 @@ async function _getContractCallFailedErrorMessageAsync(): Promise<string> {
  * contract call. The exact error message depends on the backing Ethereum node.
  */
 export async function getInvalidOpcodeErrorMessageForCallAsync(): Promise<string> {
-    return _getGanacheOrGethError('invalid opcode', 'Contract call failed');
+    return _getGanacheOrGethError(
+        'VM Exception while processing transaction: invalid opcode',
+        'Contract call failed',
+    );
 }
 
 /**
@@ -63,7 +66,10 @@ export async function getInvalidOpcodeErrorMessageForCallAsync(): Promise<string
  * Ethereum node.
  */
 export async function getInvalidOpcodeErrorMessageForSendTransactionAsync(): Promise<string> {
-    return _getGanacheOrGethError('invalid opcode', 'Contract call failed');
+    return _getGanacheOrGethError(
+        'VM Exception while processing transaction: invalid opcode',
+        'Contract call failed',
+    );
 }
 
 /**
@@ -74,7 +80,10 @@ export async function getInvalidOpcodeErrorMessageForSendTransactionAsync(): Pro
  * @returns the expected error message.
  */
 export async function getRevertReasonOrErrorMessageForSendTransactionAsync(reason: RevertReason): Promise<string> {
-    return _getGanacheOrGethError(reason, 'always failing transaction');
+    return _getGanacheOrGethError(
+        `VM Exception while processing transaction: revert ${reason}`,
+        'always failing transaction',
+    );
 }
 
 /**
@@ -85,7 +94,10 @@ export async function getRevertReasonOrErrorMessageForSendTransactionAsync(reaso
  * @returns the expected error message.
  */
 export async function getRevertReasonOrErrorMessageForCallAsync(reason: RevertReason): Promise<string> {
-    return _getGanacheOrGethError(reason, 'always failing transaction');
+    return _getGanacheOrGethError(
+        `VM Exception while processing transaction: revert ${reason}`,
+        'always failing transaction',
+    );
 }
 
 /**
