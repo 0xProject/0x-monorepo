@@ -10,6 +10,8 @@ jobs:
     steps:
       - checkout
       - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
+      - run: yarn --version
+      - run: which yarn
       - restore_cache:
           name: Restore Yarn Package Cache
           keys:
