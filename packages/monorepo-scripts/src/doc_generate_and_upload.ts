@@ -4,8 +4,7 @@ import { DocGenerateAndUploadUtils } from './utils/doc_generate_and_upload_utils
 
 const args = yargs
     .option('package', {
-        describe:
-            'Monorepo sub-package for which to generate DocJSON',
+        describe: 'Monorepo sub-package for which to generate DocJSON',
         type: 'string',
         demandOption: true,
     })
