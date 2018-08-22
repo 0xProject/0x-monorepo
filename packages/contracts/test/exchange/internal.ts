@@ -41,7 +41,7 @@ const emptySignedOrder: SignedOrder = {
     signature: '',
 };
 
-const overflowErrorForCall = new Error(RevertReason.Uint256Overflow);
+const overflowErrorForCall = new Error(`revert ${RevertReason.Uint256Overflow}`);
 
 async function referenceGetPartialAmountAsync(
     numerator: BigNumber,
