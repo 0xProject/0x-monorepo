@@ -26,12 +26,12 @@ import {
 import { constants } from './constants';
 
 export class TypeDocUtils {
-    private _typeDocNameOrder: string[];
-    private _externalTypeToLink: ExternalTypeToLink;
-    private _externalExportToLink: ExternalExportToLink;
-    private _docsInfo: DocsInfo;
-    private _typeDocJson: TypeDocNode;
-    private _classNames: string[];
+    private readonly _typeDocNameOrder: string[];
+    private readonly _externalTypeToLink: ExternalTypeToLink;
+    private readonly _externalExportToLink: ExternalExportToLink;
+    private readonly _docsInfo: DocsInfo;
+    private readonly _typeDocJson: TypeDocNode;
+    private readonly _classNames: string[];
     constructor(generatedDocJson: GeneratedDocJson, docsInfo: DocsInfo) {
         this._docsInfo = docsInfo;
         const exportPathOrder = generatedDocJson.metadata.exportPathOrder;
@@ -191,7 +191,7 @@ export class TypeDocUtils {
 
                 case KindString.Function:
                     if (entity.flags.isExported) {
-                        const funcName = (entity as TypeDocNode).signatures[0].name;
+                        const funcName = entity.signatures[0].name;
                         if (!this.isUnderscorePrefixed(funcName)) {
                             const func = this._convertFunction(entity, sectionName, isClassOrObjectLiteral);
                             docSection.functions.push(func);
@@ -262,7 +262,7 @@ export class TypeDocUtils {
             ? this._convertMethod(entity.declaration, isConstructor, sectionName)
             : undefined;
         const doesIndexSignatureExist = !_.isUndefined(entity.indexSignature);
-        const indexSignature = entity.indexSignature as TypeDocNode;
+        const indexSignature = entity.indexSignature;
         const indexSignatureIfExists = doesIndexSignatureExist
             ? this._convertIndexSignature(indexSignature, sectionName)
             : undefined;
@@ -379,7 +379,7 @@ export class TypeDocUtils {
         }
         return callPath;
     }
-    private _getLowercaseSectionName(sectionName: string) {
+    private _getLowercaseSectionName(sectionName: string): string {
         if (_.startsWith(sectionName, 'ERC')) {
             return `${sectionName.slice(0, 3).toLowerCase()}${sectionName.slice(3)}`;
         }
@@ -461,7 +461,7 @@ export class TypeDocUtils {
         const doesIndexSignatureExist =
             !_.isUndefined(entity.declaration) && !_.isUndefined(entity.declaration.indexSignature);
         if (doesIndexSignatureExist) {
-            const indexSignature = entity.declaration.indexSignature as TypeDocNode;
+            const indexSignature = entity.declaration.indexSignature;
             indexSignatureIfExists = this._convertIndexSignature(indexSignature, sectionName);
         } else if (!_.isUndefined(entity.declaration)) {
             const isConstructor = false;

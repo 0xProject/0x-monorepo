@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { signatureUtils, assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils, signatureUtils } from '@0xproject/order-utils';
 import { RevertReason, SignatureType, SignedOrder, SignerType } from '@0xproject/types';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';

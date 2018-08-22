@@ -1,6 +1,7 @@
 import * as yargs from 'yargs';
 
 import { DocGenerateAndUploadUtils } from './utils/doc_generate_and_upload_utils';
+import { utils } from './utils/utils';
 
 const args = yargs
     .option('package', {
@@ -31,6 +32,6 @@ const args = yargs
 
     process.exit(0);
 })().catch(err => {
-    console.log(err);
+    utils.log(err);
     process.exit(1);
 });

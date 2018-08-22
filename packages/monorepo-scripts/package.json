@@ -38,6 +38,7 @@
         "@types/opn": "^5.1.0",
         "@types/rimraf": "^2.0.2",
         "@types/semver": "5.5.0",
+        "@types/yargs": "^10.0.0",
         "depcheck": "^0.6.9",
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
@@ -64,7 +65,8 @@
         "semver": "5.5.0",
         "semver-diff": "^2.1.0",
         "semver-sort": "0.0.4",
-        "typedoc": "0xProject/typedoc"
+        "typedoc": "0xProject/typedoc",
+        "yargs": "^10.0.3"
     },
     "publishConfig": {
         "access": "public"

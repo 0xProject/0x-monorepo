@@ -1,27 +1,29 @@
-import * as _ from 'lodash';
 import * as promisify from 'es6-promisify';
+import { readFileSync } from 'fs';
+import * as _ from 'lodash';
+import * as path from 'path';
+import { exec as execAsync } from 'promisify-child-process';
 import * as publishRelease from 'publish-release';
 
 import { constants } from '../constants';
 import { Package } from '../types';
+
 import { utils } from './utils';
 
-import { readFileSync } from 'fs';
-import * as path from 'path';
-import { exec as execAsync } from 'promisify-child-process';
-
 const publishReleaseAsync = promisify(publishRelease);
+// tslint:disable-next-line:completed-docs
 export async function publishReleaseNotesAsync(updatedPublishPackages: Package[]): Promise<void> {
     // Git push a tag representing this publish (publish-{commit-hash}) (truncate hash)
     const result = await execAsync('git log -n 1 --pretty=format:"%H"', { cwd: constants.monorepoRootPath });
     const latestGitCommit = result.stdout;
-    const shortenedGitCommit = latestGitCommit.slice(0, 7);
+    const prefixLength = 7;
+    const shortenedGitCommit = latestGitCommit.slice(0, prefixLength);
     const tagName = `monorepo@${shortenedGitCommit}`;
 
     await execAsync(`git rev-parse ${tagName}`);
-    await execAsync('git tag ${tagName}');
+    await execAsync(`git tag ${tagName}`);
 
-    await execAsync('git push origin ${tagName}');
+    await execAsync(`git push origin ${tagName}`);
     const releaseName = `0x monorepo - ${shortenedGitCommit}`;
 
     let assets: string[] = [];

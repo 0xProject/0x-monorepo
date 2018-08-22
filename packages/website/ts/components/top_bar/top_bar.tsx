@@ -1,10 +1,10 @@
 import { DocsInfo, DocsMenu } from '@0xproject/react-docs';
 import {
     colors,
+    constants as sharedConstants,
     MenuSubsectionsBySection,
     NestedSidebarMenu,
     Styles,
-    constants as sharedConstants,
 } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
@@ -378,13 +378,16 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     </Link>
                     {_.map(DOC_WEBSITE_PATHS_TO_KEY, (key, websitePath) => {
                         if (!this._doesUrlInclude(websitePath)) {
-                            <Link to={websitePath} className="text-decoration-none">
-                                <MenuItem className="py2">
-                                    {this.props.translate.get(key, Deco.Cap)}{' '}
-                                    {this.props.translate.get(Key.Docs, Deco.Cap)}
-                                </MenuItem>
-                            </Link>;
+                            return (
+                                <Link to={websitePath} className="text-decoration-none">
+                                    <MenuItem className="py2">
+                                        {this.props.translate.get(key, Deco.Cap)}{' '}
+                                        {this.props.translate.get(Key.Docs, Deco.Cap)}
+                                    </MenuItem>
+                                </Link>
+                            );
                         }
+                        return null;
                     })}
                     {!this._isViewingPortal() && (
                         <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">

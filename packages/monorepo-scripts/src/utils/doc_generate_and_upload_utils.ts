@@ -11,15 +11,15 @@ import { ExportInfo, ExportNameToTypedocNames, ExportPathToExportedItems, Packag
 import { utils } from './utils';
 
 export class DocGenerateAndUploadUtils {
-    private _isStaging: boolean;
-    private _shouldUploadDocs: boolean;
-    private _packageName: string;
-    private _omitExports: string[];
-    private _packagePath: string;
-    private _exportPathToExportedItems: ExportPathToExportedItems;
-    private _exportPathOrder: string[];
-    private _monoRepoPkgNameToPath: { [name: string]: string };
-    private _packageJson: PackageJSON;
+    private readonly _isStaging: boolean;
+    private readonly _shouldUploadDocs: boolean;
+    private readonly _packageName: string;
+    private readonly _omitExports: string[];
+    private readonly _packagePath: string;
+    private readonly _exportPathToExportedItems: ExportPathToExportedItems;
+    private readonly _exportPathOrder: string[];
+    private readonly _monoRepoPkgNameToPath: { [name: string]: string };
+    private readonly _packageJson: PackageJSON;
     /**
      *  Recursively iterate over the TypeDoc JSON object and find all type names
      */
@@ -278,7 +278,7 @@ export class DocGenerateAndUploadUtils {
         }
         utils.log(`GENERATE_UPLOAD_DOCS: Doc generation done for ${this._packageName}`);
     }
-    private async _uploadDocsAsync(jsonFilePath: string, cwd: string) {
+    private async _uploadDocsAsync(jsonFilePath: string, cwd: string): Promise<void> {
         const fileName = `v${this._packageJson.version}.json`;
         utils.log(`GENERATE_UPLOAD_DOCS: Doc generation successful, uploading docs... as ${fileName}`);
 

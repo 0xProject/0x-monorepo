@@ -14,9 +14,9 @@ import {
     SideToAssetToken,
     TokenByAddress,
 } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
-import { constants } from 'ts/utils/constants';
 
 // Instead of defaulting the docs version to an empty string, we pre-populate it with
 // a valid version value. This does not need to be updated however, since onLoad, it

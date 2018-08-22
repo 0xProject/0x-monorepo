@@ -1,9 +1,9 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma whitespace class-name
 // tslint:disable:no-unused-variable
+// tslint:disable:no-unbound-method
 import { BaseContract } from '@0xproject/base-contract';
-import { ContractArtifact } from 'ethereum-types';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, DataItem, DecodedLogArgs, MethodAbi, Provider, TxData, TxDataPayable } from 'ethereum-types';
-import { BigNumber, classUtils, logUtils, promisify } from '@0xproject/utils';
+import { BlockParam, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, Provider, TxData, TxDataPayable } from 'ethereum-types';
+import { BigNumber, classUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
@@ -85,3 +85,4 @@ export class {{contractName}}Contract extends BaseContract {
         classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
+// tslint:enable:no-unbound-method

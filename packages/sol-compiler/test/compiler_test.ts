@@ -80,7 +80,7 @@ describe('#Compiler', function(): void {
         it('recompilation should update artifact when source has changed', async () => {
             // append some meaningless data to the contract, so that its hash
             // will change, so that the compiler will decide to recompile it.
-            fsWrapper.appendFileAsync(join(contractsDir, `${contract}.sol`), ' ');
+            await fsWrapper.appendFileAsync(join(contractsDir, `${contract}.sol`), ' ');
 
             await new Compiler(compilerOpts).compileAsync();
 

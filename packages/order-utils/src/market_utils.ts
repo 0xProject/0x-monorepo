@@ -6,9 +6,9 @@ import * as _ from 'lodash';
 import { assert } from './assert';
 import { constants } from './constants';
 import {
+    FeeOrdersAndRemainingFeeAmount,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
     FindOrdersThatCoverMakerAssetFillAmountOpts,
-    FeeOrdersAndRemainingFeeAmount,
     OrdersAndRemainingFillAmount,
 } from './types';
 

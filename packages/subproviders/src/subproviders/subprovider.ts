@@ -53,6 +53,8 @@ export abstract class Subprovider {
      */
     public async emitPayloadAsync(payload: Partial<JSONRPCRequestPayloadWithMethod>): Promise<JSONRPCResponsePayload> {
         const finalPayload = Subprovider._createFinalPayload(payload);
+        // Promisify does the binding internally and `this` is supplied as a second argument
+        // tslint:disable-next-line:no-unbound-method
         const response = await promisify<JSONRPCResponsePayload>(this.engine.sendAsync, this.engine)(finalPayload);
         return response;
     }

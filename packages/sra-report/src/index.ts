@@ -107,4 +107,5 @@ const mainAsync = async () => {
     };
     await utils.newmanRunAsync(newmanRunOptions);
 };
-mainAsync().catch(logUtils.log);
+
+mainAsync().catch(logUtils.log.bind(logUtils));

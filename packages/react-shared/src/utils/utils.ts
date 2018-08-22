@@ -37,7 +37,7 @@ export const utils = {
         const charArray = _.map(text, (char, i) => {
             const isNumber = !_.eq(_.parseInt(char), NaN);
             const isPrevNumber = i !== 0 && !_.eq(_.parseInt(text[i - 1]), NaN);
-            if (isNumber && (i == 0 || isPrevNumber)) {
+            if (isNumber && (i === 0 || isPrevNumber)) {
                 return char;
             }
             if (char === char.toUpperCase() && i !== 0) {

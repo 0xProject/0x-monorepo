@@ -152,15 +152,6 @@ export enum SignerType {
     Trezor = 'TREZOR',
 }
 
-/**
- * Elliptic Curve signature
- */
-export interface ECSignature {
-    v: number;
-    r: string;
-    s: string;
-}
-
 export enum AssetProxyId {
     ERC20 = '0xf47261b0',
     ERC721 = '0x02571792',

@@ -77,7 +77,6 @@
         "no-unnecessary-class": true,
         "no-unnecessary-type-assertion": true,
         "no-unsafe-finally": true,
-        "no-unused-variable": [true, "check-parameters"],
         "number-literal-format": true,
         "object-literal-key-quotes": false,
         "object-literal-sort-keys": false,
@@ -124,5 +123,5 @@
             "check-preblock"
         ]
     },
-    "rulesDirectory": "lib/rules"
+    "rulesDirectory": "lib"
 }

@@ -23,8 +23,8 @@ export class ERC20Wrapper {
     /**
      * Instanitates an ERC20Wrapper
      * @param provider Web3 provider to use for all JSON RPC requests
-     * @param tokenOwnerAddresses
-     * @param contractOwnerAddress
+     * @param tokenOwnerAddresses Addresses that we want to endow as owners for dummy ERC20 tokens
+     * @param contractOwnerAddress Desired owner of the contract
      * Instance of ERC20Wrapper
      */
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {

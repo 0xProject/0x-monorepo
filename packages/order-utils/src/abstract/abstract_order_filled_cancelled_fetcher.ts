@@ -1,6 +1,6 @@
 import { BigNumber } from '@0xproject/utils';
 
-/**l
+/**
  * An abstract class to be implemented in order to use OrderStateUtils. The class that
  * implements this interface must be capable of fetching the amount filled of an order
  * and whether it's been cancelled.

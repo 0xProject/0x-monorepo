@@ -1,6 +1,6 @@
 import { BigNumber } from '@0xproject/utils';
 
-/**l
+/**
  * An abstract class to be implemented in order to use OrderStateUtils. The class that
  * implements this interface must be capable of fetching the balance and proxyAllowance
  * for an Ethereum address and assetData
