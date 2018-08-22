@@ -81,10 +81,14 @@ describe('Exchange core internal functions', () => {
             invalidOpcode: new Error(await getInvalidOpcodeErrorMessageForSendTransactionAsync()),
         };
         for (const key in RevertReason) {
-            // TODO: avoid casting
-            const reason: RevertReason = RevertReason[key] as RevertReason;
-            callErrors[key] = new Error(await getRevertReasonOrErrorMessageForCallAsync(reason));
-            sendErrors[key] = new Error(await getRevertReasonOrErrorMessageForSendTransactionAsync(reason));
+            if (RevertReason.hasOwnProperty(key)) {
+                // TODO: remove casting that ts requires
+                //       and tslint wants removed
+                // tslint:disable-next-line: no-unnecessary-type-assertion
+                const reason = RevertReason[key] as RevertReason;
+                callErrors[key] = new Error(await getRevertReasonOrErrorMessageForCallAsync(reason));
+                sendErrors[key] = new Error(await getRevertReasonOrErrorMessageForSendTransactionAsync(reason));
+            }
         }
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
