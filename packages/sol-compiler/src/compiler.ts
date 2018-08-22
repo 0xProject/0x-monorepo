@@ -159,16 +159,17 @@ export class Compiler {
     public async compileAsync(): Promise<void> {
         await createDirIfDoesNotExistAsync(this._artifactsDir);
         await createDirIfDoesNotExistAsync(SOLC_BIN_DIR);
-        let contractNamesToCompile: string[] = [];
+        await this._compileContractsAsync(this._getContractNamesToCompile());
+    }
+    private _getContractNamesToCompile(): string[] {
         if (this._specifiedContracts === ALL_CONTRACTS_IDENTIFIER) {
             const allContracts = this._nameResolver.getAll();
-            contractNamesToCompile = _.map(allContracts, contractSource =>
+            return _.map(allContracts, contractSource =>
                 path.basename(contractSource.path, constants.SOLIDITY_FILE_EXTENSION),
             );
         } else {
-            contractNamesToCompile = this._specifiedContracts;
+            return this._specifiedContracts;
         }
-        await this._compileContractsAsync(contractNamesToCompile);
     }
     /**
      * Compiles contract and saves artifact to artifactsDir.
