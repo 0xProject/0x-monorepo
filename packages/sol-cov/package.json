@@ -26,8 +26,7 @@
     "config": {
         "postpublish": {
             "assets": [],
-            "shouldPublishDocs": true,
-            "omitExports": ["ProfilerSubprovider", "RevertTraceSubprovider"]
+            "docOmitExports": ["ProfilerSubprovider", "RevertTraceSubprovider"]
         }
     },
     "repository": {

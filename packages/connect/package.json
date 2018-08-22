@@ -30,8 +30,7 @@
     },
     "config": {
         "postpublish": {
-            "assets": [],
-            "shouldPublishDocs": true
+            "assets": []
         }
     },
     "repository": {

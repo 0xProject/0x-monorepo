@@ -34,8 +34,7 @@
             "assets": [
                 "packages/0x.js/_bundles/index.js",
                 "packages/0x.js/_bundles/index.min.js"
-            ],
-            "shouldPublishDocs": true
+            ]
         }
     },
     "repository": {

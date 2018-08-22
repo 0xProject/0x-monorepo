@@ -27,8 +27,7 @@
     "config": {
         "contracts_v2_beta": "IWallet IValidator Exchange ERC20Proxy ERC20Token DummyERC20Token",
         "postpublish": {
-            "assets": [],
-            "shouldPublishDocs": true
+            "assets": []
         }
     },
     "license": "Apache-2.0",

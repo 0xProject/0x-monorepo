@@ -173,22 +173,12 @@ export class DocGenerateAndUploadUtils {
             throw new Error(`Couldn't find a package.json for ${packageName}`);
         }
         this._packageJson = pkg.packageJson;
-        this._omitExports = _.get(this._packageJson, 'config.postpublish.omitExports', []);
+        this._omitExports = _.get(this._packageJson, 'config.postpublish.docOmitExports', []);
 
         const indexPath = `${this._packagePath}/src/index.ts`;
         const exportInfo = DocGenerateAndUploadUtils._getExportPathToExportedItems(indexPath, this._omitExports);
         this._exportPathToExportedItems = exportInfo.exportPathToExportedItems;
         this._exportPathOrder = exportInfo.exportPathOrder;
-
-        const shouldPublishDocs = !!_.get(this._packageJson, 'config.postpublish.shouldPublishDocs');
-        if (!shouldPublishDocs) {
-            utils.log(
-                `GENERATE_UPLOAD_DOCS: ${
-                    this._packageJson.name
-                } packageJson.config.postpublish.shouldPublishDocs is false. Skipping doc JSON generation.`,
-            );
-            return;
-        }
     }
     public async generateAndUploadDocsAsync(): Promise<void> {
         // For each dep that is another one of our monorepo packages, we fetch it's index.ts

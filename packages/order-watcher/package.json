@@ -31,8 +31,7 @@
     "config": {
         "contracts_v2_beta": "AssetProxyOwner ERC20Proxy ERC20Token ERC721Proxy ERC721Token Exchange Forwarder OrderValidator WETH9 ZRXToken",
         "postpublish": {
-            "assets": [],
-            "shouldPublishDocs": true
+            "assets": []
         }
     },
     "repository": {
