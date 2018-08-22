@@ -19,7 +19,7 @@ jobs:
             - yarn-packages-
       - run:
           name: yarn
-          command: yarn --frozen-lockfile install; exit 0;
+          command: yarn --frozen-lockfile install || true
       - run:
           name: yarn
           command: yarn --frozen-lockfile install
