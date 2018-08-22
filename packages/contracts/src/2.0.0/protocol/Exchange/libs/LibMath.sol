@@ -65,9 +65,9 @@ contract LibMath is
             "DIVISION_BY_ZERO"
         );
         
-        // SafeDiv rounds down. To use it to round up we need to add
-        // denominator - 1. This causes anything less than an exact multiple
-        // of denominator to be rounded up.
+        // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
+        //       ceil(a / b) = floor((a + b - 1) / b)
+        // To implement `ceil(a / b)` using safeDiv.
         partialAmount = safeDiv(
             safeAdd(safeMul(numerator, target), safeSub(denominator, 1)),
             denominator
