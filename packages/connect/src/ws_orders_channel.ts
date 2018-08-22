@@ -1,32 +1,32 @@
 import * as _ from 'lodash';
+import { v4 as uuid } from 'uuid';
 import * as WebSocket from 'websocket';
 
-import {
-    OrderbookChannel,
-    OrderbookChannelHandler,
-    OrderbookChannelMessageTypes,
-    OrderbookChannelSubscriptionOpts,
-} from './types';
+import { OrdersChannel, OrdersChannelHandler, OrdersChannelMessageTypes, OrdersChannelSubscriptionOpts } from './types';
 import { assert } from './utils/assert';
-import { orderbookChannelMessageParser } from './utils/orderbook_channel_message_parser';
+import { ordersChannelMessageParser } from './utils/orders_channel_message_parser';
+
+export interface OrdersChannelSubscriptionOptsMap {
+    [key: string]: OrdersChannelSubscriptionOpts;
+}
 
 /**
  * This class includes all the functionality related to interacting with a websocket endpoint
  * that implements the standard relayer API v0
  */
-export class WebSocketOrderbookChannel implements OrderbookChannel {
+export class WebSocketOrdersChannel implements OrdersChannel {
     private readonly _client: WebSocket.w3cwebsocket;
-    private readonly _handler: OrderbookChannelHandler;
-    private readonly _subscriptionOptsList: OrderbookChannelSubscriptionOpts[] = [];
+    private readonly _handler: OrdersChannelHandler;
+    private readonly _subscriptionOptsMap: OrdersChannelSubscriptionOptsMap = {};
     /**
-     * Instantiates a new WebSocketOrderbookChannel instance
+     * Instantiates a new WebSocketOrdersChannel instance
      * @param   client               A WebSocket client
-     * @param   handler              An OrderbookChannelHandler instance that responds to various
+     * @param   handler              An OrdersChannelHandler instance that responds to various
      *                               channel updates
-     * @return  An instance of WebSocketOrderbookChannel
+     * @return  An instance of WebSocketOrdersChannel
      */
-    constructor(client: WebSocket.w3cwebsocket, handler: OrderbookChannelHandler) {
-        assert.isOrderbookChannelHandler('handler', handler);
+    constructor(client: WebSocket.w3cwebsocket, handler: OrdersChannelHandler) {
+        assert.isOrdersChannelHandler('handler', handler);
         // set private members
         this._client = client;
         this._handler = handler;
@@ -43,18 +43,18 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
     }
     /**
      * Subscribe to orderbook snapshots and updates from the websocket
-     * @param   subscriptionOpts     An OrderbookChannelSubscriptionOpts instance describing which
-     *                               token pair to subscribe to
+     * @param   subscriptionOpts     An OrdersChannelSubscriptionOpts instance describing which
+     *                               assetData pair to subscribe to
      */
-    public subscribe(subscriptionOpts: OrderbookChannelSubscriptionOpts): void {
-        assert.isOrderbookChannelSubscriptionOpts('subscriptionOpts', subscriptionOpts);
+    public subscribe(subscriptionOpts: OrdersChannelSubscriptionOpts): void {
+        assert.isOrdersChannelSubscriptionOpts('subscriptionOpts', subscriptionOpts);
         assert.assert(this._client.readyState === WebSocket.w3cwebsocket.OPEN, 'WebSocket connection is closed');
-        this._subscriptionOptsList.push(subscriptionOpts);
-        // TODO: update requestId management to use UUIDs for v2
+        const requestId = uuid();
+        this._subscriptionOptsMap[requestId] = subscriptionOpts;
         const subscribeMessage = {
             type: 'subscribe',
-            channel: 'orderbook',
-            requestId: this._subscriptionOptsList.length - 1,
+            channel: 'orders',
+            requestId,
             payload: subscriptionOpts,
         };
         this._client.send(JSON.stringify(subscribeMessage));
@@ -72,8 +72,8 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
         }
         try {
             const data = message.data;
-            const parserResult = orderbookChannelMessageParser.parse(data);
-            const subscriptionOpts = this._subscriptionOptsList[parserResult.requestId];
+            const parserResult = ordersChannelMessageParser.parse(data);
+            const subscriptionOpts = this._subscriptionOptsMap[parserResult.requestId];
             if (_.isUndefined(subscriptionOpts)) {
                 this._handler.onError(
                     this,
@@ -82,11 +82,7 @@ export class WebSocketOrderbookChannel implements OrderbookChannel {
                 return;
             }
             switch (parserResult.type) {
-                case OrderbookChannelMessageTypes.Snapshot: {
-                    this._handler.onSnapshot(this, subscriptionOpts, parserResult.payload);
-                    break;
-                }
-                case OrderbookChannelMessageTypes.Update: {
+                case OrdersChannelMessageTypes.Update: {
                     this._handler.onUpdate(this, subscriptionOpts, parserResult.payload);
                     break;
                 }

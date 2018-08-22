@@ -151,6 +151,15 @@ export const api: OpenApiSpec = {
                             },
                         },
                         {
+                            name: 'takerAddress',
+                            in: 'query',
+                            description: `Same as takerAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)`,
+                            example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
+                            schema: {
+                                $ref: '#/components/schemas/addressSchema',
+                            },
+                        },
+                        {
                             name: 'traderAddress',
                             in: 'query',
                             description: `Same as traderAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)`,

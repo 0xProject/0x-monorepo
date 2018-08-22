@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1-rc.5",
+        "changes": [
+            {
+                "note": "Update incorrect relayer api fee recipients response schema",
+                "pr": 974
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.4",
         "changes": [
             {

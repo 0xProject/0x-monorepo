@@ -13,6 +13,7 @@ const IntroMarkdownV1 = require('md/docs/json_schemas/1.0.0/introduction');
 const InstallationMarkdownV1 = require('md/docs/json_schemas/1.0.0/installation');
 const UsageMarkdownV1 = require('md/docs/json_schemas/1.0.0/usage');
 const SchemasMarkdownV1 = require('md/docs/json_schemas/1.0.0/schemas');
+const SchemasMarkdownV2 = require('md/docs/json_schemas/2.0.0/schemas');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -41,6 +42,12 @@ const docsInfoConfig: DocsInfoConfig = {
             [markdownSections.introduction]: IntroMarkdownV1,
             [markdownSections.installation]: InstallationMarkdownV1,
             [markdownSections.schemas]: SchemasMarkdownV1,
+            [markdownSections.usage]: UsageMarkdownV1,
+        },
+        '1.0.0': {
+            [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.schemas]: SchemasMarkdownV2,
             [markdownSections.usage]: UsageMarkdownV1,
         },
     },

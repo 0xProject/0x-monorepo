@@ -10,15 +10,14 @@ import * as _ from 'lodash';
 
 export const assert = {
     ...sharedAssert,
-    isOrderbookChannelSubscriptionOpts(variableName: string, subscriptionOpts: any): void {
+    isOrdersChannelSubscriptionOpts(variableName: string, subscriptionOpts: any): void {
         sharedAssert.doesConformToSchema(
             variableName,
             subscriptionOpts,
-            schemas.relayerApiOrderbookChannelSubscribePayload,
+            schemas.relayerApiOrdersChannelSubscribePayload,
         );
     },
-    isOrderbookChannelHandler(variableName: string, handler: any): void {
-        sharedAssert.isFunction(`${variableName}.onSnapshot`, _.get(handler, 'onSnapshot'));
+    isOrdersChannelHandler(variableName: string, handler: any): void {
         sharedAssert.isFunction(`${variableName}.onUpdate`, _.get(handler, 'onUpdate'));
         sharedAssert.isFunction(`${variableName}.onError`, _.get(handler, 'onError'));
         sharedAssert.isFunction(`${variableName}.onClose`, _.get(handler, 'onClose'));
