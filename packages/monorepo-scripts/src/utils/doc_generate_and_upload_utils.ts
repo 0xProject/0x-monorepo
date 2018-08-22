@@ -213,8 +213,8 @@ export class DocGenerateAndUploadUtils {
         utils.log('GENERATE_UPLOAD_DOCS: Modifying Typedoc JSON to our custom format...');
         const typedocOutputString = readFileSync(jsonFilePath).toString();
         const typedocOutput = JSON.parse(typedocOutputString);
-        let modifiedTypedocOutput = this._standardizeTypedocOutputTopLevelChildNames(typedocOutput);
-        modifiedTypedocOutput = this._pruneTypedocOutput(modifiedTypedocOutput);
+        const standardizedTypedocOutput = this._standardizeTypedocOutputTopLevelChildNames(typedocOutput);
+        const modifiedTypedocOutput = this._pruneTypedocOutput(standardizedTypedocOutput);
 
         if (!_.includes(docGenConfigs.TYPES_ONLY_LIBRARIES, this._packageName)) {
             const propertyName = ''; // Root has no property name
@@ -345,7 +345,7 @@ export class DocGenerateAndUploadUtils {
      * - it begins with an underscore (i.e is private)
      */
     private _pruneTypedocOutput(typedocOutput: any): any {
-        const modifiedTypedocOutput = _.clone(typedocOutput);
+        const modifiedTypedocOutput = _.cloneDeep(typedocOutput);
         _.each(typedocOutput.children, (file, i) => {
             const exportPath = this._findExportPathGivenTypedocName(file.name);
             const exportItems = this._exportPathToExportedItems[exportPath];
@@ -365,11 +365,11 @@ export class DocGenerateAndUploadUtils {
                     const isPrivate = _.startsWith(innerChild.name, '_');
                     if (isHiddenConstructor || isPrivate) {
                         delete modifiedTypedocOutput.children[i].children[j].children[k];
-                        modifiedTypedocOutput.children[i].children[j].children = _.compact(
-                            modifiedTypedocOutput.children[i].children[j].children,
-                        );
                     }
                 });
+                modifiedTypedocOutput.children[i].children[j].children = _.compact(
+                    modifiedTypedocOutput.children[i].children[j].children,
+                );
             });
             modifiedTypedocOutput.children[i].children = _.compact(modifiedTypedocOutput.children[i].children);
         });
@@ -382,7 +382,7 @@ export class DocGenerateAndUploadUtils {
      * them here when necessary.
      */
     private _standardizeTypedocOutputTopLevelChildNames(typedocOutput: any): any {
-        const modifiedTypedocOutput = _.clone(typedocOutput);
+        const modifiedTypedocOutput = _.cloneDeep(typedocOutput);
         _.each(typedocOutput.children, (child, i) => {
             if (!_.includes(child.name, '/src/')) {
                 const nameWithoutQuotes = child.name.replace(/"/g, '');
