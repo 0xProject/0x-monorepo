@@ -1,7 +1,10 @@
 import { DocGenConfigs } from './types';
 
 export const docGenConfigs: DocGenConfigs = {
+    // Versions our doc JSON format so we can handle breaking changes  intelligently
     DOC_JSON_VERSION: '0.0.1',
+    // Some types that are exposed by our package's public interface are external types. As such, we won't
+    // be able to render their definitions. Instead we link to them using this lookup.
     EXTERNAL_TYPE_TO_LINK: {
         Array: 'https://developer.mozilla.org/pt-PT/docs/Web/JavaScript/Reference/Global_Objects/Array',
         BigNumber: 'http://mikemcl.github.io/bignumber.js',
@@ -25,6 +28,9 @@ export const docGenConfigs: DocGenConfigs = {
         Schema: 'https://github.com/tdegrunt/jsonschema/blob/v1.2.4/lib/index.d.ts#L49',
         ValidatorResult: 'https://github.com/tdegrunt/jsonschema/blob/v1.2.4/lib/helpers.js#L31',
     },
+    // Sometimes we want to hide a constructor from rendering in our docs. An example is when our library has a
+    // factory method which instantiates an instance of a class, but we don't want users instantiating it themselves
+    // and getting confused. Any class name in this list will not have it's constructor rendered in our docs.
     CLASSES_WITH_HIDDEN_CONSTRUCTORS: [
         'ERC20ProxyWrapper',
         'ERC20TokenWrapper',

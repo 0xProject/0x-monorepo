@@ -20,7 +20,7 @@ export type ConstructorStateMutability = 'nonpayable' | 'payable';
 export type StateMutability = 'pure' | 'view' | ConstructorStateMutability;
 
 export interface MethodAbi {
-    type: 'function';
+    type: 'function'; // We hardcode this here b/c doc pages cannot render an enum value
     name: string;
     inputs: DataItem[];
     outputs: DataItem[];
@@ -30,14 +30,14 @@ export interface MethodAbi {
 }
 
 export interface ConstructorAbi {
-    type: 'constructor';
+    type: 'constructor'; // We hardcode this here b/c doc pages cannot render an enum value
     inputs: DataItem[];
     payable: boolean;
     stateMutability: ConstructorStateMutability;
 }
 
 export interface FallbackAbi {
-    type: 'fallback';
+    type: 'fallback'; // We hardcode this here b/c doc pages cannot render an enum value
     payable: boolean;
 }
 
@@ -46,7 +46,7 @@ export interface EventParameter extends DataItem {
 }
 
 export interface EventAbi {
-    type: 'event';
+    type: 'event'; // We hardcode this here b/c doc pages cannot render an enum value
     name: string;
     inputs: EventParameter[];
     anonymous: boolean;

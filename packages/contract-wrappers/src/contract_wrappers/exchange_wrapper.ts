@@ -637,7 +637,7 @@ export class ExchangeWrapper extends ContractWrapper {
     }
     /**
      * Batch version of cancelOrderAsync. Executes multiple cancels atomically in a single transaction.
-     * @param   orders                An array of orders to cancel.Optional arguments this method accepts.
+     * @param   orders                An array of orders to cancel.
      * @param   orderTransactionOpts  Optional arguments this method accepts.
      * @return  Transaction hash.
      */
