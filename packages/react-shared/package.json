@@ -41,6 +41,7 @@
         "@types/react-dom": "*",
         "@types/react-scroll": "1.5.3",
         "basscss": "^8.0.3",
+        "change-case": "^3.0.2",
         "is-mobile": "^0.2.2",
         "lodash": "^4.17.5",
         "material-ui": "^0.17.1",
