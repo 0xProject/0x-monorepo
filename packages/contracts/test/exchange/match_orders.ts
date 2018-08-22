@@ -21,10 +21,11 @@ import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { MatchOrderTester } from '../utils/match_order_tester';
 import { OrderFactory } from '../utils/order_factory';
-import { ERC20BalancesByOwner, ERC721TokenIdsByOwner, OrderInfo, OrderStatus } from '../utils/types';
+import { ERC20BalancesByOwner, ERC721TokenIdsByOwner, OrderInfo, TransferAmountsByMatchOrders as TransferAmounts, OrderStatus } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
+
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
@@ -212,7 +213,7 @@ describe.only('matchOrders', () => {
         });
         */
 
-        it('Jacobs Example', async () => {
+        it.only('Jacobs Example', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
@@ -228,6 +229,23 @@ describe.only('matchOrders', () => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
+            // TODO: These values will change after implementation of rounding up has been merged
+            const expectedTransferAmounts = {
+                // Left Maker
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
+                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18), // 100%
+                // Right Maker
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 16), // 75%
+                // Taker
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 0),
+                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18), // 100%
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 17), // 50%
+            };
+            const expectedEndStateLeft = OrderStatus.FILLABLE;
+            const expectedEndStateRight = OrderStatus.FULLY_FILLED;
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
                 signedOrderLeft,
@@ -235,15 +253,10 @@ describe.only('matchOrders', () => {
                 takerAddress,
                 erc20BalancesByOwner,
                 erc721TokenIdsByOwner,
+                expectedTransferAmounts,
+                expectedEndStateLeft,
+                expectedEndStateRight
             );
-         //   // Verify left order was fully filled
-            const leftOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-            //expect(leftOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
-            console.log("*** LEFT ORDER INFO ***\n", JSON.stringify(leftOrderInfo), "\n***************");
-            // Verify right order was fully filled
-            const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-         //   expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
-            console.log("*** RIGHT ORDER INFO ***\n", JSON.stringify(rightOrderInfo), "\n***************");
         });
         
 
@@ -825,6 +838,6 @@ describe.only('matchOrders', () => {
             // Verify right order was fully filled
             const rightOrderInfo: OrderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrderRight);
             expect(rightOrderInfo.orderStatus as OrderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
-        });
+        });*/
     });
 }); // tslint:disable-line:max-file-line-count
