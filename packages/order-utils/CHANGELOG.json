@@ -17,10 +17,17 @@
             },
             {
                 "note":
-                    "Rename `resultOrders` to `resultFeeOrders` for object returned by `findFeeOrdersThatCoverFeesForTargetOrders` in `marketUtils` api"
+                    "Rename `resultOrders` to `resultFeeOrders` for object returned by `findFeeOrdersThatCoverFeesForTargetOrders` in `marketUtils` api",
+                "pr": 954
             },
             {
-                "note": "Make `sortFeeOrdersByFeeAdjustedRate` in `sortingUtils` generic"
+                "note": "Make `sortFeeOrdersByFeeAdjustedRate` in `sortingUtils` generic",
+                "pr": 954
+            },
+            {
+                "note":
+                    "Update `findFeeOrdersThatCoverFeesForTargetOrders` to round the the nearest integer when calculating required fees",
+                "pr": 954
             }
         ]
     },
