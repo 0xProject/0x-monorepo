@@ -1,6 +1,7 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { Order, RevertReason, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import * as chai from 'chai';
 import * as _ from 'lodash';
 
 import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
@@ -16,6 +17,8 @@ import { FillResults } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
+const expect = chai.expect;
+
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
@@ -209,6 +212,43 @@ describe('Exchange core internal functions', () => {
             'getPartialAmount',
             referenceGetPartialAmountAsync,
             testGetPartialAmountAsync,
+            [uint256Values, uint256Values, uint256Values],
+        );
+    });
+
+    describe.only('getPartialAmountCeil', async () => {
+        async function referenceGetPartialAmountCeilAsync(
+            numerator: BigNumber,
+            denominator: BigNumber,
+            target: BigNumber,
+        ) {
+            if (denominator.eq(0)) {
+                throw new Error('revert DIVISION_BY_ZERO');
+            }
+            const product = numerator.mul(target);
+            const offset = product.add(denominator.sub(1));
+            if (offset.greaterThan(MAX_UINT256)) {
+                throw overflowErrorForCall;
+            }
+            const result = offset.dividedToIntegerBy(denominator);
+            if (product.mod(denominator).eq(0)) {
+                expect(result.mul(denominator)).to.be.bignumber.eq(product);
+            } else {
+                expect(result.mul(denominator)).to.be.bignumber.gt(product);
+            }
+            return result;
+        }
+        async function testGetPartialAmountCeilAsync(
+            numerator: BigNumber,
+            denominator: BigNumber,
+            target: BigNumber,
+        ): Promise<BigNumber> {
+            return testExchange.publicGetPartialAmountCeil.callAsync(numerator, denominator, target);
+        }
+        await testCombinatoriallyWithReferenceFuncAsync(
+            'getPartialAmountCeil',
+            referenceGetPartialAmountCeilAsync,
+            testGetPartialAmountCeilAsync,
             [uint256Values, uint256Values, uint256Values],
         );
     });

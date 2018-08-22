@@ -79,6 +79,23 @@ contract TestExchangeInternals is
         return getPartialAmount(numerator, denominator, target);
     }
 
+    /// @dev Calculates partial value given a numerator and denominator.
+    /// @param numerator Numerator.
+    /// @param denominator Denominator.
+    /// @param target Value to calculate partial of.
+    /// @return Partial value of target.
+    function publicGetPartialAmountCeil(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        public
+        pure
+        returns (uint256 partialAmount)
+    {
+        return getPartialAmountCeil(numerator, denominator, target);
+    }
+
     /// @dev Checks if rounding error > 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
