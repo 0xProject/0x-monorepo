@@ -11,7 +11,6 @@ export {
     ForwarderWrapper,
     IndexedFilterValues,
     BlockRange,
-    ContractEventArgs,
     ContractWrappersConfig,
     MethodOpts,
     OrderTransactionOpts,
@@ -38,11 +37,10 @@ export {
     ExchangeSignatureValidatorApprovalEventArgs,
     ExchangeFillEventArgs,
     ExchangeCancelEventArgs,
-    ExchangeEventArgs,
     ExchangeEvents,
-    ContractEvents,
     EventCallback,
     DecodedLogEvent,
+    ExchangeEventArgs,
 } from '@0xproject/contract-wrappers';
 
 export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
@@ -97,9 +95,4 @@ export {
     DataItem,
     ConstructorStateMutability,
     StateMutability,
-    ContractArtifact,
-    GeneratedCompilerOptions,
-    ContractNetworks,
-    ContractNetworkData,
-    Source,
 } from 'ethereum-types';
