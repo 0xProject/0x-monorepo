@@ -48,7 +48,8 @@
                 "pr": 812
             },
             {
-                "note": "Add Artifact types: `CompilerSettings`, `CompilerOptions`, `OutputField`"
+                "note": "Add Artifact types: `CompilerSettings`, `CompilerOptions`, `OutputField`",
+                "pr": 924
             }
         ]
     },
