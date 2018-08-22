@@ -6,6 +6,44 @@ import { chaiSetup } from './chai_setup';
 chaiSetup.configure();
 const expect = chai.expect;
 
+class Value<T> {
+    public value: T;
+    constructor(value: T) {
+        this.value = value;
+    }
+    public toString() {
+        return `[Value: ${this.value}]`;
+    }
+}
+
+class ErrorMessage {
+    public error: string;
+    constructor(message: string) {
+        this.error = message;
+    }
+    public toString() {
+        return `[Error: ${this.error}]`;
+    }
+}
+
+type PromiseResult<T> = Value<T> | ErrorMessage;
+
+// TODO: This seems like a generic utility function that could exist in lodash.
+//       We should replace it by a library implementation, or move it to our
+//       own.
+export async function evaluatePromise<T>(
+    promise: Promise<T>,
+): Promise<PromiseResult<T>> {
+    try {
+        return new Value<T>(await promise);
+    } catch (e) {
+        // Canonicalize the error message to ease comparisson.
+        return new ErrorMessage(e.message
+            .replace('VM Exception while processing transaction: ', ''),
+        );
+    }
+}
+
 export async function testWithReferenceFuncAsync<P0, R>(
     referenceFunc: (p0: P0) => Promise<R>,
     testFunc: (p0: P0) => Promise<R>,
@@ -64,39 +102,17 @@ export async function testWithReferenceFuncAsync(
     testFuncAsync: (...args: any[]) => Promise<any>,
     values: any[],
 ): Promise<void> {
-    let expectedResult: any;
-    let expectedErr: string | undefined;
-    try {
-        expectedResult = await referenceFuncAsync(...values);
-    } catch (e) {
-        expectedErr = e.message;
-    }
-    let actualResult: any | undefined;
-    try {
-        actualResult = await testFuncAsync(...values);
-        if (!_.isUndefined(expectedErr)) {
-            throw new Error(
-                `Expected error containing ${expectedErr} but got no error\n\tTest case: ${_getTestCaseString(
-                    referenceFuncAsync,
-                    values,
-                )}`,
-            );
-        }
-    } catch (e) {
-        if (_.isUndefined(expectedErr)) {
-            throw new Error(`${e.message}\n\tTest case: ${_getTestCaseString(referenceFuncAsync, values)}`);
-        } else {
-            expect(e.message).to.contain(
-                expectedErr,
-                `${e.message}\n\tTest case: ${_getTestCaseString(referenceFuncAsync, values)}`,
-            );
-        }
-    }
-    if (!_.isUndefined(actualResult) && !_.isUndefined(expectedResult)) {
-        expect(actualResult).to.deep.equal(
-            expectedResult,
-            `Test case: ${_getTestCaseString(referenceFuncAsync, values)}`,
-        );
+    // Measure correct behaviour
+    const expected = await evaluatePromise(referenceFuncAsync(...values));
+
+    // Measure actual behaviour
+    const actual = await evaluatePromise(testFuncAsync(...values));
+
+    // Compare behaviour
+    // Note: We could also use `expect(actual).to.deep.equal(expected)` but
+    //       this results in a less readable error message.
+    if (!_.isEqual(actual, expected)) {
+        throw new Error(`Test case ${_getTestCaseString(referenceFuncAsync, values)} expected ${expected} to equal ${actual}`);
     }
 }
 
