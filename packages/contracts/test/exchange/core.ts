@@ -10,6 +10,7 @@ import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
 import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
+import { DummyNoReturnERC20TokenContract } from '../../generated_contract_wrappers/dummy_no_return_erc20_token';
 import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
 import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated_contract_wrappers/exchange';
@@ -39,6 +40,7 @@ describe('Exchange core', () => {
     let erc20TokenB: DummyERC20TokenContract;
     let zrxToken: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
+    let noReturnErc20Token: DummyNoReturnERC20TokenContract;
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
@@ -157,6 +159,137 @@ describe('Exchange core', () => {
             return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
                 RevertReason.OrderUnfillable,
+            );
+        });
+    });
+
+    describe('Testing exchange of ERC20 tokens with no return values', () => {
+        before(async () => {
+            noReturnErc20Token = await DummyNoReturnERC20TokenContract.deployFrom0xArtifactAsync(
+                artifacts.DummyNoReturnERC20Token,
+                provider,
+                txDefaults,
+                constants.DUMMY_TOKEN_NAME,
+                constants.DUMMY_TOKEN_SYMBOL,
+                constants.DUMMY_TOKEN_DECIMALS,
+                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await noReturnErc20Token.setBalance.sendTransactionAsync(makerAddress, constants.INITIAL_ERC20_BALANCE),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await noReturnErc20Token.approve.sendTransactionAsync(
+                    erc20Proxy.address,
+                    constants.INITIAL_ERC20_ALLOWANCE,
+                    { from: makerAddress },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+        });
+        it('should transfer the correct amounts when makerAssetAmount === takerAssetAmount', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData: assetDataUtils.encodeERC20AssetData(noReturnErc20Token.address),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+            });
+
+            const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const initialFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+
+            const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const finalFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
+            expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
+            expect(finalTakerBalanceA).to.be.bignumber.equal(initialTakerBalanceA.plus(signedOrder.makerAssetAmount));
+            expect(finalTakerBalanceB).to.be.bignumber.equal(initialTakerBalanceB.minus(signedOrder.takerAssetAmount));
+            expect(finalMakerZrxBalance).to.be.bignumber.equal(initialMakerZrxBalance.minus(signedOrder.makerFee));
+            expect(finalTakerZrxBalance).to.be.bignumber.equal(initialTakerZrxBalance.minus(signedOrder.takerFee));
+            expect(finalFeeRecipientZrxBalance).to.be.bignumber.equal(
+                initialFeeRecipientZrxBalance.plus(signedOrder.makerFee.plus(signedOrder.takerFee)),
+            );
+        });
+        it('should transfer the correct amounts when makerAssetAmount > takerAssetAmount', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData: assetDataUtils.encodeERC20AssetData(noReturnErc20Token.address),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+            });
+
+            const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const initialFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+
+            const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const finalFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
+            expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
+            expect(finalTakerBalanceA).to.be.bignumber.equal(initialTakerBalanceA.plus(signedOrder.makerAssetAmount));
+            expect(finalTakerBalanceB).to.be.bignumber.equal(initialTakerBalanceB.minus(signedOrder.takerAssetAmount));
+            expect(finalMakerZrxBalance).to.be.bignumber.equal(initialMakerZrxBalance.minus(signedOrder.makerFee));
+            expect(finalTakerZrxBalance).to.be.bignumber.equal(initialTakerZrxBalance.minus(signedOrder.takerFee));
+            expect(finalFeeRecipientZrxBalance).to.be.bignumber.equal(
+                initialFeeRecipientZrxBalance.plus(signedOrder.makerFee.plus(signedOrder.takerFee)),
+            );
+        });
+        it('should transfer the correct amounts when makerAssetAmount < takerAssetAmount', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData: assetDataUtils.encodeERC20AssetData(noReturnErc20Token.address),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
+            });
+
+            const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const initialFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+
+            const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const finalFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
+            expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
+            expect(finalTakerBalanceA).to.be.bignumber.equal(initialTakerBalanceA.plus(signedOrder.makerAssetAmount));
+            expect(finalTakerBalanceB).to.be.bignumber.equal(initialTakerBalanceB.minus(signedOrder.takerAssetAmount));
+            expect(finalMakerZrxBalance).to.be.bignumber.equal(initialMakerZrxBalance.minus(signedOrder.makerFee));
+            expect(finalTakerZrxBalance).to.be.bignumber.equal(initialTakerZrxBalance.minus(signedOrder.takerFee));
+            expect(finalFeeRecipientZrxBalance).to.be.bignumber.equal(
+                initialFeeRecipientZrxBalance.plus(signedOrder.makerFee.plus(signedOrder.takerFee)),
             );
         });
     });

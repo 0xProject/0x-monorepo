@@ -504,7 +504,11 @@ export class FillOrderCombinatorialUtils {
         const actFilledTakerAmount = await this.exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
         expect(actFilledTakerAmount).to.be.bignumber.equal(expFilledTakerAmount, 'filledTakerAmount');
 
-        expect(txReceipt.logs.length).to.be.equal(1, 'logs length');
+        const exchangeLogs = _.filter(
+            txReceipt.logs,
+            txLog => txLog.address === this.exchangeWrapper.getExchangeAddress(),
+        );
+        expect(exchangeLogs.length).to.be.equal(1, 'logs length');
         // tslint:disable-next-line:no-unnecessary-type-assertion
         const log = txReceipt.logs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>;
         expect(log.args.makerAddress).to.be.equal(makerAddress, 'log.args.makerAddress');

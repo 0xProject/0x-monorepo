@@ -21,54 +21,67 @@ pragma solidity 0.4.24;
 
 contract IERC20Token {
 
-    /// @notice send `value` token to `to` from `msg.sender`
+    // solhint-disable no-simple-event-func-name
+    event Transfer(
+        address indexed _from,
+        address indexed _to,
+        uint256 _value
+    );
+
+    event Approval(
+        address indexed _owner,
+        address indexed _spender,
+        uint256 _value
+    );
+
+    /// @dev send `value` token to `to` from `msg.sender`
     /// @param _to The address of the recipient
     /// @param _value The amount of token to be transferred
-    /// @return Whether the transfer was successful or not
+    /// @return True if transfer was successful
     function transfer(address _to, uint256 _value)
-        public
+        external
         returns (bool);
 
-    /// @notice send `value` token to `to` from `from` on the condition it is approved by `from`
+    /// @dev send `value` token to `to` from `from` on the condition it is approved by `from`
     /// @param _from The address of the sender
     /// @param _to The address of the recipient
     /// @param _value The amount of token to be transferred
-    /// @return Whether the transfer was successful or not
-    function transferFrom(address _from, address _to, uint256 _value)
-        public
+    /// @return True if transfer was successful
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _value
+    )
+        external
         returns (bool);
     
-    /// @notice `msg.sender` approves `_spender` to spend `_value` tokens
+    /// @dev `msg.sender` approves `_spender` to spend `_value` tokens
     /// @param _spender The address of the account able to transfer the tokens
     /// @param _value The amount of wei to be approved for transfer
-    /// @return Whether the approval was successful or not
+    /// @return Always true if the call has enough gas to complete execution
     function approve(address _spender, uint256 _value)
-        public
+        external
         returns (bool);
 
+    /// @dev Query total supply of token
+    /// @return Total supply of token
+    function totalSupply()
+        external
+        view
+        returns (uint256);
+    
     /// @param _owner The address from which the balance will be retrieved
-    /// @return The balance
+    /// @return Balance of owner
     function balanceOf(address _owner)
-        public view
+        external
+        view
         returns (uint256);
 
     /// @param _owner The address of the account owning tokens
     /// @param _spender The address of the account able to transfer the tokens
     /// @return Amount of remaining tokens allowed to spent
     function allowance(address _owner, address _spender)
-        public view
+        external
+        view
         returns (uint256);
-
-    // solhint-disable-next-line no-simple-event-func-name
-    event Transfer(
-        address indexed _from,
-        address indexed _to,
-        uint256 _value
-    );
-    
-    event Approval(
-        address indexed _owner,
-        address indexed _spender,
-        uint256 _value
-    );
 }

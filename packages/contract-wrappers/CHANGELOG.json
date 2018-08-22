@@ -5,6 +5,10 @@
             {
                 "note": "Export missing ExchangeSignatureValidatorApprovalEventArgs type",
                 "pr": 924
+            },
+            {
+                "note": "Added Transaction Encoder for use with 0x Exchange executeTransaction",
+                "pr": 975
             }
         ]
     },

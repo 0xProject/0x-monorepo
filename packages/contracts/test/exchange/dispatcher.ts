@@ -145,7 +145,7 @@ describe('AssetProxyDispatcher', () => {
         });
 
         it('should log an event with correct arguments when an asset proxy is registered', async () => {
-            const logDecoder = new LogDecoder(web3Wrapper, assetProxyDispatcher.address);
+            const logDecoder = new LogDecoder(web3Wrapper);
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
             );

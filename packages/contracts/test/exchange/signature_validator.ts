@@ -65,7 +65,7 @@ describe('MixinSignatureValidator', () => {
             txDefaults,
             signerAddress,
         );
-        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, signatureValidator.address);
+        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper);
         await web3Wrapper.awaitTransactionSuccessAsync(
             await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
                 from: signerAddress,

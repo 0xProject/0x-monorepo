@@ -29,7 +29,7 @@
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
-        "contracts_v2_beta": "Exchange ERC20Proxy ERC20Token ERC721Proxy ERC721Token WETH9 ZRXToken Forwarder",
+        "contracts_v2_beta": "AssetProxyOwner Exchange ERC20Proxy ERC20Token ERC721Proxy ERC721Token WETH9 ZRXToken Forwarder OrderValidator",
         "contracts_v2": "DummyERC20Token DummyERC721Token",
         "postpublish": {
             "assets": [],

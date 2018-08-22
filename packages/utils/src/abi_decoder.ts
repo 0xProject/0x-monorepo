@@ -20,7 +20,7 @@ import { BigNumber } from './configured_bignumber';
  * signature from the ABI and attempts to decode the logs using it.
  */
 export class AbiDecoder {
-    private readonly _methodIds: { [signatureHash: string]: EventAbi } = {};
+    private readonly _methodIds: { [signatureHash: string]: { [numIndexedArgs: number]: EventAbi } } = {};
     /**
      * Instantiate an AbiDecoder
      * @param abiArrays An array of contract ABI's
@@ -36,10 +36,11 @@ export class AbiDecoder {
      */
     public tryToDecodeLogOrNoop<ArgsType extends DecodedLogArgs>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
         const methodId = log.topics[0];
-        const event = this._methodIds[methodId];
-        if (_.isUndefined(event)) {
+        const numIndexedArgs = log.topics.length - 1;
+        if (_.isUndefined(this._methodIds[methodId]) || _.isUndefined(this._methodIds[methodId][numIndexedArgs])) {
             return log;
         }
+        const event = this._methodIds[methodId][numIndexedArgs];
         const ethersInterface = new ethers.Interface([event]);
         const decodedParams: DecodedLogArgs = {};
         let topicsIndex = 1;
@@ -58,7 +59,6 @@ export class AbiDecoder {
             }
             throw error;
         }
-
         let didFailToDecode = false;
         _.forEach(event.inputs, (param: EventParameter, i: number) => {
             // Indexed parameters are stored in topics. Non-indexed ones in decodedData
@@ -100,7 +100,11 @@ export class AbiDecoder {
         _.map(abiArray, (abi: AbiDefinition) => {
             if (abi.type === AbiType.Event) {
                 const topic = ethersInterface.events[abi.name].topics[0];
-                this._methodIds[topic] = abi;
+                const numIndexedArgs = _.reduce(abi.inputs, (sum, input) => (input.indexed ? sum + 1 : sum), 0);
+                this._methodIds[topic] = {
+                    ...this._methodIds[topic],
+                    [numIndexedArgs]: abi,
+                };
             }
         });
     }

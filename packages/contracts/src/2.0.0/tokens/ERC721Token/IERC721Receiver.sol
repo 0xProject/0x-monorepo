@@ -1,61 +1,44 @@
 /*
-The MIT License (MIT)
 
-Copyright (c) 2016 Smart Contract Solutions, Inc.
+  Copyright 2018 ZeroEx Intl.
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+    http://www.apache.org/licenses/LICENSE-2.0
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
 */
 
 pragma solidity 0.4.24;
 
 
-/**
- * @title ERC721 token receiver interface
- * @dev Interface for any contract that wants to support safeTransfers
- *      rom ERC721 asset contracts.
- * Modified from https://github.com/OpenZeppelin/zeppelin-solidity/blob/master/contracts/token/ERC721/ERC721Receiver.sol
- */
 contract IERC721Receiver {
-    /**
-    * @dev Magic value to be returned upon successful reception of an NFT
-    *  Equals to `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`,
-    *  which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
-    */
-    bytes4 constant internal ERC721_RECEIVED = 0xf0b9e5ba;
 
-    /**
-    * @notice Handle the receipt of an NFT
-    * @dev The ERC721 smart contract calls this function on the recipient
-    *  after a `safetransfer`. This function MAY throw to revert and reject the
-    *  transfer. This function MUST use 50,000 gas or less. Return of other
-    *  than the magic value MUST result in the transaction being reverted.
-    *  Note: the contract address is always the message sender.
-    * @param _from The sending address
-    * @param _tokenId The NFT identifier which is being transfered
-    * @param _data Additional data with no specified format
-    * @return `bytes4(keccak256("onERC721Received(address,uint256,bytes)"))`
-    */
+    /// @notice Handle the receipt of an NFT
+    /// @dev The ERC721 smart contract calls this function on the recipient
+    ///  after a `transfer`. This function MAY throw to revert and reject the
+    ///  transfer. Return of other than the magic value MUST result in the
+    ///  transaction being reverted.
+    ///  Note: the contract address is always the message sender.
+    /// @param _operator The address which called `safeTransferFrom` function
+    /// @param _from The address which previously owned the token
+    /// @param _tokenId The NFT identifier which is being transferred
+    /// @param _data Additional data with no specified format
+    /// @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+    ///  unless throwing
     function onERC721Received(
+        address _operator,
         address _from,
         uint256 _tokenId,
-        bytes _data)
-        public
+        bytes _data
+    )
+        external
         returns (bytes4);
 }

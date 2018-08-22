@@ -42,7 +42,7 @@
         "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types"
     },
     "devDependencies": {
-        "@0x-lerna-fork/lerna": "3.0.0-beta.23",
+        "@0x-lerna-fork/lerna": "3.0.0-beta.25",
         "async-child-process": "^1.1.1",
         "coveralls": "^3.0.0",
         "ganache-cli": "6.1.3",
