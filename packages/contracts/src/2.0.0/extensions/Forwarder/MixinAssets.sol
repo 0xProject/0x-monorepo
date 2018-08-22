@@ -18,10 +18,10 @@
 
 pragma solidity 0.4.24;
 
-import "../utils/LibBytes/LibBytes.sol";
-import "../utils/Ownable/Ownable.sol";
-import "../tokens/ERC20Token/IERC20Token.sol";
-import "../tokens/ERC721Token/IERC721Token.sol";
+import "../../utils/LibBytes/LibBytes.sol";
+import "../../utils/Ownable/Ownable.sol";
+import "../../tokens/ERC20Token/IERC20Token.sol";
+import "../../tokens/ERC721Token/IERC721Token.sol";
 import "./libs/LibConstants.sol";
 import "./mixins/MAssets.sol";
 
@@ -67,7 +67,7 @@ contract MixinAssets is
         } else if (proxyId == ERC721_DATA_ID) {
             transferERC721Token(assetData, amount);
         } else {
-            revert("UNSUPPORTED_TOKEN_PROXY");
+            revert("UNSUPPORTED_ASSET_PROXY");
         }
     }
 

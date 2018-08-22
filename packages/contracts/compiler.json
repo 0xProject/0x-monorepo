@@ -39,6 +39,7 @@
         "MixinAuthorizable",
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",
+        "OrderValidator",
         "TestAssetProxyOwner",
         "TestAssetProxyDispatcher",
         "TestConstants",

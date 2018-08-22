@@ -15,6 +15,7 @@ import * as InvalidERC721Receiver from '../../artifacts/InvalidERC721Receiver.js
 import * as MixinAuthorizable from '../../artifacts/MixinAuthorizable.json';
 import * as MultiSigWallet from '../../artifacts/MultiSigWallet.json';
 import * as MultiSigWalletWithTimeLock from '../../artifacts/MultiSigWalletWithTimeLock.json';
+import * as OrderValidator from '../../artifacts/OrderValidator.json';
 import * as TestAssetProxyDispatcher from '../../artifacts/TestAssetProxyDispatcher.json';
 import * as TestAssetProxyOwner from '../../artifacts/TestAssetProxyOwner.json';
 import * as TestConstants from '../../artifacts/TestConstants.json';
@@ -46,6 +47,7 @@ export const artifacts = {
     MixinAuthorizable: (MixinAuthorizable as any) as ContractArtifact,
     MultiSigWallet: (MultiSigWallet as any) as ContractArtifact,
     MultiSigWalletWithTimeLock: (MultiSigWalletWithTimeLock as any) as ContractArtifact,
+    OrderValidator: (OrderValidator as any) as ContractArtifact,
     TestAssetProxyOwner: (TestAssetProxyOwner as any) as ContractArtifact,
     TestAssetProxyDispatcher: (TestAssetProxyDispatcher as any) as ContractArtifact,
     TestConstants: (TestConstants as any) as ContractArtifact,

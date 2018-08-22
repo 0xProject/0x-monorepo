@@ -27,7 +27,7 @@ contract LibForwarderErrors {
     string constant OVERSOLD_WETH = "OVERSOLD_WETH";                                              // More WETH sold than provided with current message call.
     string constant COMPLETE_FILL_FAILED = "COMPLETE_FILL_FAILED";                                // Desired purchase amount not completely filled (required for ZRX fees only).
     string constant TRANSFER_FAILED = "TRANSFER_FAILED";                                          // Asset transfer failed.
-    string constant UNSUPPORTED_TOKEN_PROXY = "UNSUPPORTED_TOKEN_PROXY";                          // Proxy in assetData not supported.
+    string constant UNSUPPORTED_ASSET_PROXY = "UNSUPPORTED_ASSET_PROXY";                          // Proxy in assetData not supported.
     string constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY = "DEFAULT_FUNCTION_WETH_CONTRACT_ONLY";  // Fallback function may only be used for WETH withdrawals.
     string constant INVALID_MSG_VALUE = "INVALID_MSG_VALUE";                                      // msg.value must be greater than 0.
     string constant INVALID_AMOUNT = "INVALID_AMOUNT";                                            // Amount must equal 1.

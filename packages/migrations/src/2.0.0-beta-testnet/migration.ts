@@ -12,6 +12,7 @@ import { AssetProxyOwnerContract } from './contract_wrappers/asset_proxy_owner';
 import { ERC20ProxyContract } from './contract_wrappers/erc20_proxy';
 import { ERC721ProxyContract } from './contract_wrappers/erc721_proxy';
 import { ExchangeContract } from './contract_wrappers/exchange';
+import { OrderValidatorContract } from './contract_wrappers/order_validator';
 
 /**
  * Custom migrations should be defined in this function. This will be called with the CLI 'migrate:v2-beta-testnet' command.
@@ -74,6 +75,16 @@ export const runV2TestnetMigrationsAsync = async (
         constants.ASSET_PROXY_OWNER_TIMELOCK,
     );
     artifactsWriter.saveArtifact(assetProxyOwner);
+
+    // Deploy OrderValidator
+    const orderValidator = await OrderValidatorContract.deployFrom0xArtifactAsync(
+        artifacts.OrderValidator,
+        provider,
+        txDefaults,
+        exchange.address,
+        zrxAssetData,
+    );
+    artifactsWriter.saveArtifact(orderValidator);
 
     // Authorize Exchange contracts to call AssetProxies
     txHash = await erc20proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address);
