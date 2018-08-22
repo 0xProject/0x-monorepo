@@ -3,6 +3,7 @@ import { logUtils } from '@0xproject/utils';
 import { NodeType } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceipt, TransactionReceiptStatus, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import * as abi from 'ethereumjs-abi';
 import * as _ from 'lodash';
 
 import { web3Wrapper } from './web3_wrapper';
@@ -82,7 +83,7 @@ export async function getInvalidOpcodeErrorMessageForSendTransactionAsync(): Pro
 export async function getRevertReasonOrErrorMessageForSendTransactionAsync(reason: RevertReason): Promise<string> {
     return _getGanacheOrGethError(
         `VM Exception while processing transaction: revert ${reason}`,
-        'always failing transaction',
+        `invalid data for function output (arg="data", errorArg=undefined, errorValue=undefined, value="${abi.simpleEncode('Error(string)', reason).toString('hex')}", reason="${reason}")]`,
     );
 }
 
@@ -96,7 +97,7 @@ export async function getRevertReasonOrErrorMessageForSendTransactionAsync(reaso
 export async function getRevertReasonOrErrorMessageForCallAsync(reason: RevertReason): Promise<string> {
     return _getGanacheOrGethError(
         `VM Exception while processing transaction: revert ${reason}`,
-        'always failing transaction',
+        `invalid data for function output (arg="data", errorArg=undefined, errorValue=undefined, value="${abi.simpleEncode('Error(string)', reason).toString('hex')}", reason="${reason}")]`,
     );
 }
 
