@@ -134,10 +134,15 @@ export class MatchOrderTester {
         const transactionReceipt = await this._exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
         const newERC20BalancesByOwner = await this._erc20Wrapper.getBalancesAsync();
         const newERC721TokenIdsByOwner = await this._erc721Wrapper.getBalancesAsync();
-        // Calculate expected fees
-       
-
-        // Verify logs
+        // Verify logs & return values
+        this._verifyLogsAsync(
+            signedOrderLeft,
+            signedOrderRight,
+            transactionReceipt,
+            takerAddress,
+            expectedTransferAmounts
+        );
+        // Verify exchange state
 
         // Verify balances
 
@@ -328,78 +333,45 @@ export class MatchOrderTester {
     /// @param orderTakerAssetFilledAmountLeft How much left order has been filled, prior to matching orders.
     /// @param orderTakerAssetFilledAmountRight How much the right order has been filled, prior to matching orders.
     /// @return TransferAmounts A struct containing the expected transfer amounts.
-    private async _calculateExpectedTransferAmountsAsync(
+    private async _verifyLogsAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
-        orderTakerAssetFilledAmountLeft: BigNumber,
-        orderTakerAssetFilledAmountRight: BigNumber,
         transactionReceipt: TransactionReceiptWithDecodedLogs,
-        takerAddress: string
-    ): Promise<TransferAmounts> {
+        takerAddress: string,
+        expectedTransferAmounts: TransferAmounts
+    ) {
         // Parse logs
-         expect(transactionReceipt.logs.length).to.be.equal(2);
-         // First log is for left fill
-         const leftLog = ((transactionReceipt.logs[0] as any) as {args: { makerAddress: string, takerAddress: string, makerAssetFilledAmount: string, takerAssetFilledAmount: string, makerFeePaid: string, takerFeePaid: string}});
-         expect(leftLog.args.makerAddress).to.be.equal(signedOrderLeft.makerAddress);
-         expect(leftLog.args.takerAddress).to.be.equal(takerAddress);
-         const amountBoughtByLeftMaker = new BigNumber(leftLog.args.takerAssetFilledAmount);
-         const amountSoldByLeftMaker = new BigNumber(leftLog.args.makerAssetFilledAmount);
-         // Second log is for right fill
-         const rightLog = ((transactionReceipt.logs[1] as any) as {args: { makerAddress: string, takerAddress: string, makerAssetFilledAmount: string, takerAssetFilledAmount: string, makerFeePaid: string, takerFeePaid: string}});
-         expect(rightLog.args.makerAddress).to.be.equal(signedOrderRight.makerAddress);
-         expect(rightLog.args.takerAddress).to.be.equal(takerAddress);
-         const amountBoughtByRightMaker = new BigNumber(rightLog.args.takerAssetFilledAmount);
-         const amountSoldByRightMaker = new BigNumber(rightLog.args.makerAssetFilledAmount);
-         // Determine amount received by taker
-         const amountReceivedByTaker = amountSoldByLeftMaker.sub(amountBoughtByRightMaker);
-
-         const amountReceivedByLeftMaker = amountBoughtByLeftMaker;
-         const amountReceivedByRightMaker = amountBoughtByRightMaker;
- 
-         console.log("Amount bought by left maker = ", JSON.stringify(amountBoughtByLeftMaker));
-         console.log("Amount sold by left maker = ", JSON.stringify(amountSoldByLeftMaker));
-         console.log("Amount bought by right maker = ", JSON.stringify(amountBoughtByRightMaker));
-         console.log("Amount sold by right maker = ", JSON.stringify(amountSoldByRightMaker));
-         console.log("Amount received by taker = ", JSON.stringify(amountReceivedByTaker));
-        //const amountReceivedByLeftMaker = amountSoldByRightMaker;
-        const feePaidByLeftMaker = signedOrderLeft.makerFee
-            .times(amountSoldByLeftMaker)
-            .dividedToIntegerBy(signedOrderLeft.makerAssetAmount);
-        const feePaidByRightMaker = signedOrderRight.makerFee
-            .times(amountSoldByRightMaker)
-            .dividedToIntegerBy(signedOrderRight.makerAssetAmount);
-        const feePaidByTakerLeft = signedOrderLeft.takerFee
-            .times(amountBoughtByLeftMaker)
-            .dividedToIntegerBy(signedOrderLeft.takerAssetAmount);
-
-
-        const feePaidByTakerRight = signedOrderRight.takerFee
-        .times(amountBoughtByRightMaker)
-        .dividedToIntegerBy(signedOrderRight.takerAssetAmount);
-        const totalFeePaidByTaker = feePaidByTakerLeft.add(feePaidByTakerRight);
-        const feeReceivedLeft = feePaidByLeftMaker.add(feePaidByTakerLeft);
-        const feeReceivedRight = feePaidByRightMaker.add(feePaidByTakerRight);
-        // Return values
-        const expectedTransferAmounts = {
-            // Left Maker
-            amountBoughtByLeftMaker,
-            amountSoldByLeftMaker,
-          //  amountReceivedByLeftMaker,
-            feePaidByLeftMaker,
-            // Right Maker
-            amountBoughtByRightMaker,
-            amountSoldByRightMaker,
-          //  amountReceivedByRightMaker,
-            feePaidByRightMaker,
-            // Taker
-            amountReceivedByTaker,
-            feePaidByTakerLeft,
-            feePaidByTakerRight,
-          //  totalFeePaidByTaker,
-            // Fee Recipients
-        //    feeReceivedLeft,
-         //   feeReceivedRight,
-        };
+        expect(transactionReceipt.logs.length, "Checking number of logs").to.be.equal(2);
+        // First log is for left fill
+        const leftLog = ((transactionReceipt.logs[0] as any) as {args: { makerAddress: string, takerAddress: string, makerAssetFilledAmount: string, takerAssetFilledAmount: string, makerFeePaid: string, takerFeePaid: string}});
+        expect(leftLog.args.makerAddress, "Checking logged maker address of left order").to.be.equal(signedOrderLeft.makerAddress);
+        expect(leftLog.args.takerAddress, "Checking logged taker address of right order").to.be.equal(takerAddress);
+        const amountBoughtByLeftMaker = new BigNumber(leftLog.args.takerAssetFilledAmount);
+        const amountSoldByLeftMaker = new BigNumber(leftLog.args.makerAssetFilledAmount);
+        const feePaidByLeftMaker = new BigNumber(leftLog.args.makerFeePaid);
+        const feePaidByTakerLeft = new BigNumber(leftLog.args.takerFeePaid);
+        // Second log is for right fill
+        const rightLog = ((transactionReceipt.logs[1] as any) as {args: { makerAddress: string, takerAddress: string, makerAssetFilledAmount: string, takerAssetFilledAmount: string, makerFeePaid: string, takerFeePaid: string}});
+        expect(rightLog.args.makerAddress, "Checking logged maker address of right order").to.be.equal(signedOrderRight.makerAddress);
+        expect(rightLog.args.takerAddress, "Checking loggerd taker address of right order").to.be.equal(takerAddress);
+        const amountBoughtByRightMaker = new BigNumber(rightLog.args.takerAssetFilledAmount);
+        const amountSoldByRightMaker = new BigNumber(rightLog.args.makerAssetFilledAmount);
+        const feePaidByRightMaker = new BigNumber(rightLog.args.makerFeePaid);
+        const feePaidByTakerRight = new BigNumber(rightLog.args.takerFeePaid);
+        // Derive amount received by taker
+        const amountReceivedByTaker = amountSoldByLeftMaker.sub(amountBoughtByRightMaker);
+        // Verify log values - left order
+        expect(expectedTransferAmounts.amountBoughtByLeftMaker, "Checking logged amount bought by left maker").to.be.bignumber.equal(amountBoughtByLeftMaker);
+        expect(expectedTransferAmounts.amountSoldByLeftMaker, "Checking logged amount sold by left maker").to.be.bignumber.equal(amountSoldByLeftMaker);
+        expect(expectedTransferAmounts.feePaidByLeftMaker, "Checking logged fee paid by left maker").to.be.bignumber.equal(feePaidByLeftMaker);
+        expect(expectedTransferAmounts.feePaidByTakerLeft, "Checking logged fee paid on left order by taker").to.be.bignumber.equal(feePaidByTakerLeft);
+        // Verify log values - right order
+        expect(expectedTransferAmounts.amountBoughtByRightMaker, "Checking logged amount bought by right maker").to.be.bignumber.equal(amountBoughtByRightMaker);
+        expect(expectedTransferAmounts.amountSoldByRightMaker, "Checking logged amount sold by right maker").to.be.bignumber.equal(amountSoldByRightMaker);
+        expect(expectedTransferAmounts.feePaidByRightMaker, "Checking logged fee paid by right maker").to.be.bignumber.equal(feePaidByRightMaker);
+        expect(expectedTransferAmounts.feePaidByTakerRight, "Checking logged fee paid on right order by taker").to.be.bignumber.equal(feePaidByTakerRight);
+        // Verify deriv ed amount received by taker
+        expect(expectedTransferAmounts.amountReceivedByTaker, "Checking logged amount received by taker").to.be.bignumber.equal(amountReceivedByTaker);
         return expectedTransferAmounts;
     }
     /// @dev Calculates the expected balances of order makers, fee recipients, and the taker,
