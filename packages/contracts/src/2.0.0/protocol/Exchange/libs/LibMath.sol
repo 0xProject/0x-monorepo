@@ -107,6 +107,7 @@ contract LibMath is
         if (target == 0 || numerator == 0) {
             return false;
         }
+        
         // Otherwise, we want the relative rounding error to be strictly
         // less than 0.1%.
         // The relative error is `remainder / numerator * target`.
@@ -117,6 +118,34 @@ contract LibMath is
         // so we have a rounding error iff:
         //        1000 * remainder  >=  numerator * target
         uint256 remainder = mulmod(target, numerator, denominator);
+        isError = safeMul(1000, remainder) >= safeMul(numerator, target);
+        return isError;
+    }
+    
+    /// @dev Checks if rounding error > 0.1%.
+    /// @param numerator Numerator.
+    /// @param denominator Denominator.
+    /// @param target Value to multiply with numerator/denominator.
+    /// @return Rounding error is present.
+    function isRoundingErrorCeil(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        internal
+        pure
+        returns (bool isError)
+    {
+        require(denominator > 0, "DIVISION_BY_ZERO");
+        
+        if (target == 0 || numerator == 0) {
+            return false;
+        }
+        uint256 remainder = mulmod(target, numerator, denominator);
+        if (remainder == 0) {
+            return false;
+        }
+        remainder = safeSub(denominator, remainder);
         isError = safeMul(1000, remainder) >= safeMul(numerator, target);
         return isError;
     }
