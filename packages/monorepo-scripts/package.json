@@ -65,7 +65,7 @@
         "semver": "5.5.0",
         "semver-diff": "^2.1.0",
         "semver-sort": "0.0.4",
-        "typedoc": "0xProject/typedoc",
+        "typedoc": "0.12.0",
         "yargs": "^10.0.3"
     },
     "publishConfig": {
