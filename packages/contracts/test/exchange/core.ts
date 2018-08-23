@@ -530,7 +530,7 @@ describe('Exchange core', () => {
                 // HACK(albrow): We need to hardcode the gas estimate here because
                 // the Geth gas estimator doesn't work with the way we use
                 // delegatecall and swallow errors.
-                gas: 490000,
+                gas: 600000,
             });
 
             const newBalances = await erc20Wrapper.getBalancesAsync();
