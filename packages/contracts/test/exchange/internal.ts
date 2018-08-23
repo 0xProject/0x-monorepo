@@ -216,7 +216,7 @@ describe('Exchange core internal functions', () => {
         );
     });
 
-    describe.only('getPartialAmountCeil', async () => {
+    describe('getPartialAmountCeil', async () => {
         async function referenceGetPartialAmountCeilAsync(
             numerator: BigNumber,
             denominator: BigNumber,
