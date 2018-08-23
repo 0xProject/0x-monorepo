@@ -56,6 +56,7 @@ contract MixinExchangeCore is
     /// @param targetOrderEpoch Orders created with a salt less or equal to this value will be cancelled.
     function cancelOrdersUpTo(uint256 targetOrderEpoch)
         external
+        nonReentrant
     {
         address makerAddress = getCurrentContextAddress();
         // If this function is called via `executeTransaction`, we only update the orderEpoch for the makerAddress/msg.sender combination.
@@ -88,7 +89,7 @@ contract MixinExchangeCore is
         bytes memory signature
     )
         public
-        nonReentrant
+        lockMutex
         returns (FillResults memory fillResults)
     {
         fillResults = fillOrderInternal(
@@ -104,6 +105,7 @@ contract MixinExchangeCore is
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
     function cancelOrder(Order memory order)
         public
+        nonReentrant
     {
         // Fetch current order status
         OrderInfo memory orderInfo = getOrderInfo(order);

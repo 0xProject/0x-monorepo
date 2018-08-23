@@ -46,7 +46,7 @@ contract MixinWrapperFunctions is
         bytes memory signature
     )
         public
-        nonReentrant
+        lockMutex
         returns (FillResults memory fillResults)
     {
         fillResults = fillOrKillOrderInternal(
@@ -69,6 +69,7 @@ contract MixinWrapperFunctions is
         bytes memory signature
     )
         public
+        nonReentrant
         returns (FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
@@ -88,14 +89,7 @@ contract MixinWrapperFunctions is
                 fillOrderCalldata,                  // write output over input
                 128                                 // output size is 128 bytes
             )
-            switch success
-            case 0 {
-                mstore(fillResults, 0)
-                mstore(add(fillResults, 32), 0)
-                mstore(add(fillResults, 64), 0)
-                mstore(add(fillResults, 96), 0)
-            }
-            case 1 {
+            if success {
                 mstore(fillResults, mload(fillOrderCalldata))
                 mstore(add(fillResults, 32), mload(add(fillOrderCalldata, 32)))
                 mstore(add(fillResults, 64), mload(add(fillOrderCalldata, 64)))
@@ -117,7 +111,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        nonReentrant
+        lockMutex
         returns (FillResults memory totalFillResults)
     {
         uint256 ordersLength = orders.length;
@@ -144,7 +138,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        nonReentrant
+        lockMutex
         returns (FillResults memory totalFillResults)
     {
         uint256 ordersLength = orders.length;
@@ -172,6 +166,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        nonReentrant
         returns (FillResults memory totalFillResults)
     {
         uint256 ordersLength = orders.length;
@@ -197,7 +192,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        nonReentrant
+        lockMutex
         returns (FillResults memory totalFillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
@@ -242,6 +237,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        nonReentrant
         returns (FillResults memory totalFillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
@@ -285,7 +281,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        nonReentrant
+        lockMutex
         returns (FillResults memory totalFillResults)
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
@@ -338,6 +334,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        nonReentrant
         returns (FillResults memory totalFillResults)
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
