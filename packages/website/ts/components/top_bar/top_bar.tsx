@@ -379,7 +379,11 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     {_.map(DOC_WEBSITE_PATHS_TO_KEY, (key, websitePath) => {
                         if (!this._doesUrlInclude(websitePath)) {
                             return (
-                                <Link to={websitePath} className="text-decoration-none">
+                                <Link
+                                    key={`drawer-menu-item-${websitePath}`}
+                                    to={websitePath}
+                                    className="text-decoration-none"
+                                >
                                     <MenuItem className="py2">
                                         {this.props.translate.get(key, Deco.Cap)}{' '}
                                         {this.props.translate.get(Key.Docs, Deco.Cap)}
