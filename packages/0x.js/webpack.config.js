@@ -49,6 +49,8 @@ module.exports = {
                         loader: 'awesome-typescript-loader',
                         query: {
                             declaration: false,
+                            declarationMap: false,
+                            composite: false,
                         },
                     },
                 ],
