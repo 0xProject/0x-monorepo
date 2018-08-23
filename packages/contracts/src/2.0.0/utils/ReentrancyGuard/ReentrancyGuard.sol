@@ -31,6 +31,19 @@ contract ReentrancyGuard {
             "REENTRANCY_ILLEGAL"
         );
 
+        // Perform function call
+        _;
+    }
+
+    /// @dev Functions with this modifer cannot be reentered. The mutex will be locked
+    ///      before function execution and unlocked after.
+    modifier lockMutex() {
+        // Ensure mutex is unlocked
+        require(
+            !locked,
+            "REENTRANCY_ILLEGAL"
+        );
+
         // Lock mutex before function call
         locked = true;
 
