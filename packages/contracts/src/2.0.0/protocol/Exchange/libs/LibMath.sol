@@ -74,7 +74,7 @@ contract LibMath is
         return partialAmount;
     }
     
-    /// @dev Checks if rounding error > 0.1%.
+    /// @dev Checks if rounding error >= 0.1% when rounding down.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
@@ -121,7 +121,7 @@ contract LibMath is
         return isError;
     }
     
-    /// @dev Checks if rounding error > 0.1%.
+    /// @dev Checks if rounding error >= 0.1% when rounding up.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
@@ -137,9 +137,14 @@ contract LibMath is
     {
         require(denominator > 0, "DIVISION_BY_ZERO");
         
+        // See the comments in `isRoundingError`.
         if (target == 0 || numerator == 0) {
+            // When either is zero, the ideal value and rounded value are zero
+            // and there is no rounding error. (Although the relative error
+            // is undefined.)
             return false;
         }
+        // Compute remainder as before
         uint256 remainder = mulmod(target, numerator, denominator);
         // TODO: safeMod
         remainder = safeSub(denominator, remainder) % denominator;
