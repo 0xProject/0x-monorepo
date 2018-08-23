@@ -326,24 +326,21 @@ export interface ContractNetworkData {
 
 export interface StandardContractOutput {
     abi: ContractAbi;
-    evm: {
-        bytecode: {
-            object: string;
-            sourceMap: string;
-        };
-        deployedBytecode: {
-            object: string;
-            sourceMap: string;
-        };
-    };
+    evm: EvmOutput;
+}
+
+export interface EvmOutput {
+    bytecode: EvmBytecodeOutput;
+    deployedBytecode: EvmBytecodeOutput;
+}
+
+export interface EvmBytecodeOutput {
+    object: string;
+    sourceMap: string;
 }
 
 export interface ContractVersionData {
-    compiler: {
-        name: 'solc';
-        version: string;
-        settings: CompilerSettings;
-    };
+    compiler: CompilerOpts;
     sources: {
         [sourceName: string]: {
             id: number;
@@ -354,6 +351,12 @@ export interface ContractVersionData {
     };
     sourceTreeHashHex: string;
     compilerOutput: StandardContractOutput;
+}
+
+export interface CompilerOpts {
+    name: 'solc';
+    version: string;
+    settings: CompilerSettings;
 }
 
 /**
@@ -384,10 +387,7 @@ export interface GeneratedCompilerOptions {
 // Copied from the solc.js library types
 export interface CompilerSettings {
     remappings?: string[];
-    optimizer?: {
-        enabled: boolean;
-        runs?: number;
-    };
+    optimizer?: OptimizerSettings;
     evmVersion?: 'homestead' | 'tangerineWhistle' | 'spuriousDragon' | 'byzantium' | 'constantinople';
     metadata?: CompilerSettingsMetadata;
     libraries?: {
@@ -404,6 +404,11 @@ export interface CompilerSettings {
 
 export interface CompilerSettingsMetadata {
     useLiteralContent: true;
+}
+
+export interface OptimizerSettings {
+    enabled: boolean;
+    runs?: number;
 }
 
 export interface Source {
