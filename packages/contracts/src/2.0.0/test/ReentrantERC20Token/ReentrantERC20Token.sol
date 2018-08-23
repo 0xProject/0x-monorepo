@@ -40,17 +40,14 @@ contract ReentrantERC20Token is
     );
 
     // All of these functions are potentially vulnerable to reentrancy
+    // We do not test any "noThrow" functions because `fillOrderNoThrow` makes a delegatecall to `fillOrder`
     enum ExchangeFunction {
         FILL_ORDER,
         FILL_OR_KILL_ORDER,
-        FILL_ORDER_NO_THROW,
         BATCH_FILL_ORDERS,
         BATCH_FILL_OR_KILL_ORDERS,
-        BATCH_FILL_ORDERS_NO_THROW,
         MARKET_BUY_ORDERS,
-        MARKET_BUY_ORDERS_NO_THROW,
         MARKET_SELL_ORDERS,
-        MARKET_SELL_ORDERS_NO_THROW,
         MATCH_ORDERS,
         CANCEL_ORDER,
         CANCEL_ORDERS_UP_TO,
@@ -111,13 +108,6 @@ contract ReentrantERC20Token is
                 0,
                 signature
             );
-        } else if (currentFunctionId == uint8(ExchangeFunction.FILL_ORDER_NO_THROW)) {
-            calldata = abi.encodeWithSelector(
-                EXCHANGE.fillOrderNoThrow.selector,
-                order,
-                0,
-                signature
-            );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_ORDERS)) {
             calldata = abi.encodeWithSelector(
                 EXCHANGE.batchFillOrders.selector,
@@ -132,13 +122,6 @@ contract ReentrantERC20Token is
                 takerAssetFillAmounts,
                 signatures
             );
-        } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_ORDERS_NO_THROW)) {
-            calldata = abi.encodeWithSelector(
-                EXCHANGE.batchFillOrdersNoThrow.selector,
-                orders,
-                takerAssetFillAmounts,
-                signatures
-            );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_BUY_ORDERS)) {
             calldata = abi.encodeWithSelector(
                 EXCHANGE.marketBuyOrders.selector,
@@ -146,23 +129,9 @@ contract ReentrantERC20Token is
                 0,
                 signatures
             );
-        } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_BUY_ORDERS_NO_THROW)) {
-            calldata = abi.encodeWithSelector(
-                EXCHANGE.marketBuyOrdersNoThrow.selector,
-                orders,
-                0,
-                signatures
-            );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_SELL_ORDERS)) {
             calldata = abi.encodeWithSelector(
                 EXCHANGE.marketSellOrders.selector,
-                orders,
-                0,
-                signatures
-            );
-        } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_SELL_ORDERS_NO_THROW)) {
-            calldata = abi.encodeWithSelector(
-                EXCHANGE.marketSellOrdersNoThrow.selector,
                 orders,
                 0,
                 signatures

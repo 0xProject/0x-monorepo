@@ -50,7 +50,7 @@ contract MixinMatchOrders is
         bytes memory rightSignature
     )
         public
-        lockMutex
+        nonReentrant
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         // We assume that rightOrder.takerAssetData == leftOrder.makerAssetData and rightOrder.makerAssetData == leftOrder.takerAssetData.

@@ -89,7 +89,7 @@ contract MixinExchangeCore is
         bytes memory signature
     )
         public
-        lockMutex
+        nonReentrant
         returns (FillResults memory fillResults)
     {
         fillResults = fillOrderInternal(

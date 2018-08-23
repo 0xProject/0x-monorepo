@@ -23,21 +23,9 @@ contract ReentrancyGuard {
     // Locked state of mutex
     bool private locked = false;
 
-    /// @dev Functions with this modifier cannot be reentered.
-    modifier nonReentrant() {
-        // Ensure mutex is unlocked
-        require(
-            !locked,
-            "REENTRANCY_ILLEGAL"
-        );
-
-        // Perform function call
-        _;
-    }
-
     /// @dev Functions with this modifer cannot be reentered. The mutex will be locked
     ///      before function execution and unlocked after.
-    modifier lockMutex() {
+    modifier nonReentrant() {
         // Ensure mutex is unlocked
         require(
             !locked,
