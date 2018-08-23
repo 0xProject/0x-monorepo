@@ -4,5 +4,5 @@
         "typeRoots": ["../../node_modules/@types", "node_modules/@types"],
         "outDir": "lib"
     },
-    "include": ["./rules/**/*", "./monorepo_scripts/**/*"]
+    "include": ["./rules/**/*"]
 }

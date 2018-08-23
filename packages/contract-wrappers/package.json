@@ -12,7 +12,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "build": "yarn pre_build && tsc",
         "pre_build": "run-s update_artifacts_v2_beta update_artifacts_v2 generate_contract_wrappers copy_artifacts",
         "generate_contract_wrappers": "abi-gen --abis 'src/artifacts/@(Exchange|DummyERC20Token|DummyERC721Token|ZRXToken|ERC20Token|ERC721Token|WETH9|ERC20Proxy|ERC721Proxy|Forwarder).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers",
         "lint": "tslint --project . --exclude **/src/contract_wrappers/**/* --exclude **/lib/**/*",
@@ -24,13 +24,16 @@
         "update_artifacts_v2_beta": "for i in ${npm_package_config_contracts_v2_beta}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-beta-testnet/$i.json src/artifacts; done;",
         "update_artifacts_v2": "for i in ${npm_package_config_contracts_v2}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json src/artifacts; done;",
         "copy_artifacts": "copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts",
-        "clean": "shx rm -rf _bundles lib test_temp scripts test/artifacts src/contract_wrappers/generated src/artifacts",
+        "clean": "shx rm -rf _bundles lib test_temp test/artifacts src/contract_wrappers/generated src/artifacts generated_docs",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "contracts_v2_beta": "AssetProxyOwner Exchange ERC20Proxy ERC20Token ERC721Proxy ERC721Token WETH9 ZRXToken Forwarder OrderValidator",
-        "contracts_v2": "DummyERC20Token DummyERC721Token"
+        "contracts_v2": "DummyERC20Token DummyERC721Token",
+        "postpublish": {
+            "assets": []
+        }
     },
     "repository": {
         "type": "git",
@@ -44,8 +47,6 @@
         "@0xproject/abi-gen": "^1.0.5",
         "@0xproject/dev-utils": "^1.0.4",
         "@0xproject/migrations": "^1.0.4",
-        "@0xproject/monorepo-scripts": "^1.0.5",
-        "@0xproject/sol-compiler": "^1.0.5",
         "@0xproject/subproviders": "^1.0.5",
         "@0xproject/tslint-config": "^1.0.5",
         "@types/lodash": "4.14.104",
@@ -68,6 +69,7 @@
         "sinon": "^4.0.0",
         "source-map-support": "^0.5.0",
         "tslint": "5.11.0",
+        "typedoc": "0.12.0",
         "typescript": "3.0.1",
         "web3-provider-engine": "14.0.6"
     },

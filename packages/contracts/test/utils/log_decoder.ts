@@ -1,8 +1,8 @@
-import { ContractArtifact } from '@0xproject/sol-compiler';
 import { AbiDecoder, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import {
     AbiDefinition,
+    ContractArtifact,
     DecodedLogArgs,
     LogEntry,
     LogWithDecodedArgs,

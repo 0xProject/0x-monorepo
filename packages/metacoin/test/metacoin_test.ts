@@ -1,8 +1,7 @@
 import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
-import { ContractArtifact } from '@0xproject/sol-compiler';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import { LogWithDecodedArgs } from 'ethereum-types';
+import { ContractArtifact, LogWithDecodedArgs } from 'ethereum-types';
 
 import * as MetacoinArtifact from '../artifacts/Metacoin.json';
 import { MetacoinContract, MetacoinTransferEventArgs } from '../src/contract_wrappers/metacoin';

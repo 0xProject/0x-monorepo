@@ -1,5 +1,5 @@
-import { CompilerOptions, ContractArtifact } from '@0xproject/sol-compiler';
 import { logUtils } from '@0xproject/utils';
+import { CompilerOptions, ContractArtifact } from 'ethereum-types';
 import * as fs from 'fs';
 import * as glob from 'glob';
 import * as _ from 'lodash';
@@ -14,6 +14,11 @@ const CONFIG_FILE = 'compiler.json';
 export class SolCompilerArtifactAdapter extends AbstractArtifactAdapter {
     private readonly _artifactsPath: string;
     private readonly _sourcesPath: string;
+    /**
+     * Instantiates a SolCompilerArtifactAdapter
+     * @param artifactsPath Path to your artifacts directory
+     * @param sourcesPath Path to your contract sources directory
+     */
     constructor(artifactsPath?: string, sourcesPath?: string) {
         super();
         const config: CompilerOptions = fs.existsSync(CONFIG_FILE)

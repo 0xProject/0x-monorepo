@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { CustomType, CustomTypeChild, KindString, TypeDocTypes } from '../types';
+import { CustomType, CustomTypeChild, KindString, TypeDefinitionByName, TypeDocTypes } from '../types';
 import { constants } from '../utils/constants';
 
 import { Comment } from './comment';
@@ -19,6 +19,8 @@ export interface TypeDefinitionProps {
     customType: CustomType;
     shouldAddId?: boolean;
     docsInfo: DocsInfo;
+    typeDefinitionByName?: TypeDefinitionByName;
+    isInPopover?: boolean;
 }
 
 export interface TypeDefinitionState {
@@ -28,6 +30,7 @@ export interface TypeDefinitionState {
 export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDefinitionState> {
     public static defaultProps: Partial<TypeDefinitionProps> = {
         shouldAddId: true,
+        isInPopover: false,
     };
     constructor(props: TypeDefinitionProps) {
         super(props);
@@ -37,9 +40,6 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
     }
     public render(): React.ReactNode {
         const customType = this.props.customType;
-        if (!this.props.docsInfo.isPublicType(customType.name)) {
-            return null; // no-op
-        }
 
         let typePrefix: string;
         let codeSnippet: React.ReactNode;
@@ -47,7 +47,13 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
             case KindString.Interface:
                 typePrefix = 'Interface';
                 codeSnippet = (
-                    <Interface type={customType} sectionName={this.props.sectionName} docsInfo={this.props.docsInfo} />
+                    <Interface
+                        type={customType}
+                        sectionName={this.props.sectionName}
+                        docsInfo={this.props.docsInfo}
+                        typeDefinitionByName={this.props.typeDefinitionByName}
+                        isInPopover={this.props.isInPopover}
+                    />
                 );
                 break;
 
@@ -77,6 +83,8 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                                 type={customType.type}
                                 sectionName={this.props.sectionName}
                                 docsInfo={this.props.docsInfo}
+                                typeDefinitionByName={this.props.typeDefinitionByName}
+                                isInPopover={this.props.isInPopover}
                             />
                         ) : (
                             <Signature
@@ -89,6 +97,8 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                                 shouldHideMethodName={true}
                                 shouldUseArrowSyntax={true}
                                 docsInfo={this.props.docsInfo}
+                                typeDefinitionByName={this.props.typeDefinitionByName}
+                                isInPopover={this.props.isInPopover}
                             />
                         )}
                     </span>
@@ -103,7 +113,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
         return (
             <div
                 id={this.props.shouldAddId ? typeDefinitionAnchorId : ''}
-                className="pb2"
+                className="pb2 pt2"
                 style={{ overflow: 'hidden', width: '100%' }}
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}

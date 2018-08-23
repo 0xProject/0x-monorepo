@@ -7,9 +7,8 @@
     "description": "0x project typescript type definitions",
     "scripts": {
         "watch_without_deps": "tsc -w",
-        "build": "tsc && copyfiles -u 1 './lib/**/*' ./scripts",
-        "clean": "shx rm -rf scripts",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+        "build": "tsc",
+        "clean": "shx rm -rf lib"
     },
     "repository": {
         "type": "git",
@@ -32,7 +31,6 @@
         "popper.js": "1.14.3"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.5",
         "copyfiles": "^2.0.0",
         "shx": "^0.2.2"
     },

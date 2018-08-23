@@ -371,6 +371,8 @@ export enum WebsitePaths {
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
     Web3Wrapper = '/docs/web3-wrapper',
+    ContractWrappers = '/docs/contract-wrappers',
+    OrderWatcher = '/docs/order-watcher',
     SolCompiler = '/docs/sol-compiler',
     JSONSchemas = '/docs/json-schemas',
     SolCov = '/docs/sol-cov',
@@ -391,6 +393,8 @@ export enum DocPackages {
     Subproviders = 'SUBPROVIDERS',
     OrderUtils = 'ORDER_UTILS',
     EthereumTypes = 'ETHEREUM_TYPES',
+    ContractWrappers = 'CONTRACT_WRAPPERS',
+    OrderWatcher = 'ORDER_WATCHER',
 }
 
 export enum Key {
@@ -407,7 +411,7 @@ export enum Key {
     TraditionalAssets = 'TRADITIONAL_ASSETS',
     DigitalGoods = 'DIGITAL_GOODS',
     OffChainOrderRelay = 'OFFCHAIN_ORDER_RELAY',
-    OonChainSettlement = 'OONCHAIN_SETTLEMENT',
+    OnChainSettlement = 'ONCHAIN_SETTLEMENT',
     OffChainOnChainDescription = 'OFFCHAIN_ONCHAIN_DESCRIPTION',
     RelayersHeader = 'RELAYERS_HEADER',
     BenefitsHeader = 'BENEFITS_HEADER',
@@ -444,6 +448,9 @@ export enum Key {
     SolCov = 'SOL_COV',
     EthereumTypes = 'ETHEREUM_TYPES',
     Subproviders = 'SUBPROVIDERS',
+    ZeroExJs = '0X_JS',
+    ContractWrappers = 'CONTRACT_WRAPPERS',
+    OrderWatcher = 'ORDER_WATCHER',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',

@@ -10,13 +10,14 @@ import {
     BlockRange,
     ContractWrappers,
     ContractWrappersError,
-    DecodedLogEvent,
     WETH9ApprovalEventArgs,
     WETH9DepositEventArgs,
     WETH9Events,
     WETH9TransferEventArgs,
     WETH9WithdrawalEventArgs,
 } from '../src';
+
+import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';

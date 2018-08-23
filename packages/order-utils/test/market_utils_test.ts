@@ -2,7 +2,8 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { constants, marketUtils } from '../src';
+import { marketUtils } from '../src';
+import { constants } from '../src/constants';
 
 import { chaiSetup } from './utils/chai_setup';
 import { testOrderFactory } from './utils/test_order_factory';

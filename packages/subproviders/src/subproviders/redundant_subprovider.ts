@@ -34,7 +34,7 @@ export class RedundantSubprovider extends Subprovider {
     }
     /**
      * Instantiates a new RedundantSubprovider
-     * @param endpoints JSON RPC endpoints to attempt. Attempts are made in the order of the endpoints.
+     * @param subproviders Subproviders to attempt the request with
      */
     constructor(subproviders: Subprovider[]) {
         super();

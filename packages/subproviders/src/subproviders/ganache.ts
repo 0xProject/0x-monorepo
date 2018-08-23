@@ -24,7 +24,7 @@ export class GanacheSubprovider extends Subprovider {
      * It is called internally by the ProviderEngine when it is this subproviders
      * turn to handle a JSON RPC request.
      * @param payload JSON RPC payload
-     * @param next Callback to call if this subprovider decides not to handle the request
+     * @param _next Callback to call if this subprovider decides not to handle the request
      * @param end Callback to call if subprovider handled the request and wants to pass back the request.
      */
     // tslint:disable-next-line:prefer-function-over-method async-suffix

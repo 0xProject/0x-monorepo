@@ -38,6 +38,12 @@ const LazyPortal = createLazyComponent('Portal', async () =>
 const LazyZeroExJSDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "zeroExDocs" */ 'ts/containers/zero_ex_js_documentation'),
 );
+const LazyContractWrappersDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "contractWrapperDocs" */ 'ts/containers/contract_wrappers_documentation'),
+);
+const LazyOrderWatcherDocumentation = createLazyComponent('Documentation', async () =>
+    System.import<any>(/* webpackChunkName: "orderWatcherDocs" */ 'ts/containers/order_watcher_documentation'),
+);
 const LazySmartContractsDocumentation = createLazyComponent('Documentation', async () =>
     System.import<any>(/* webpackChunkName: "smartContractDocs" */ 'ts/containers/smart_contracts_documentation'),
 );
@@ -90,6 +96,14 @@ render(
                                     component={LazyZeroExJSDocumentation}
                                 />
                                 <Route
+                                    path={`${WebsitePaths.ContractWrappers}/:version?`}
+                                    component={LazyContractWrappersDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.OrderWatcher}/:version?`}
+                                    component={LazyOrderWatcherDocumentation}
+                                />
+                                <Route
                                     path={`${WebsitePaths.Connect}/:version?`}
                                     component={LazyConnectDocumentation}
                                 />
@@ -137,7 +151,6 @@ render(
                                     component={LazySolCompilerDocumentation}
                                 />
                                 <Route path={WebsiteLegacyPaths.Jobs} component={Jobs as any} />
-                                <Route path={`${WebsitePaths.Docs}`} component={LazyZeroExJSDocumentation} />
                                 <Route component={NotFound as any} />
                             </Switch>
                         </div>

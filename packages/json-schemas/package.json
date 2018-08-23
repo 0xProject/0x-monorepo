@@ -16,24 +16,14 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
-        "clean": "shx rm -rf lib test_temp scripts",
-        "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
-        "docs:stage": "node scripts/stage_docs.js",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
-        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+        "clean": "shx rm -rf lib test_temp generated_docs",
+        "build": "tsc",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {
             "assets": [],
-            "docPublishConfigs": {
-                "extraFileIncludes": [
-                    "../types/src/index.ts",
-                    "../ethereum-types/src/index.ts"
-                ],
-                "s3BucketPath": "s3://doc-jsons/json-schemas/",
-                "s3StagingBucketPath": "s3://staging-doc-jsons/json-schemas/"
-            }
+            "docOmitExports": ["schemas"]
         }
     },
     "repository": {
@@ -53,7 +43,6 @@
         "lodash.values": "^4.3.0"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.5",
         "@0xproject/tslint-config": "^1.0.5",
         "@0xproject/utils": "^1.0.5",
         "@types/lodash.foreach": "^4.5.3",
@@ -69,7 +58,7 @@
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
-        "typedoc": "0xProject/typedoc",
+        "typedoc": "0.12.0",
         "typescript": "3.0.1"
     },
     "publishConfig": {

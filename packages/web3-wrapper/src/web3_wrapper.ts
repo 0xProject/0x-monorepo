@@ -237,6 +237,7 @@ export class Web3Wrapper {
     /**
      * Retrieves an accounts Ether balance in wei
      * @param owner Account whose balance you wish to check
+     * @param defaultBlock The block depth at which to fetch the balance (default=latest)
      * @returns Balance in wei
      */
     public async getBalanceInWeiAsync(owner: string, defaultBlock?: BlockParam): Promise<BigNumber> {

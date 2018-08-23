@@ -9,10 +9,9 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "watch_without_deps": "tsc -w",
-        "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
-        "clean": "shx rm -rf lib scripts",
-        "lint": "tslint --project .",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+        "build": "tsc",
+        "clean": "shx rm -rf lib",
+        "lint": "tslint --project ."
     },
     "license": "Apache-2.0",
     "repository": {
@@ -24,7 +23,6 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/types/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.5",
         "@0xproject/tslint-config": "^1.0.5",
         "copyfiles": "^2.0.0",
         "make-promises-safe": "^1.1.0",

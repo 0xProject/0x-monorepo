@@ -15,10 +15,11 @@ const IntroMarkdownV1 = require('md/docs/smart_contracts/1.0.0/introduction');
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.SmartContracts,
+    packageName: 'contracts',
     type: SupportedDocJson.Doxity,
     displayName: '0x Smart Contracts',
     packageUrl: 'https://github.com/0xProject/contracts',
-    menu: {
+    markdownMenu: {
         introduction: [Sections.Introduction],
         contracts: [Sections.Exchange, Sections.TokenRegistry, Sections.ZRXToken, Sections.TokenTransferProxy],
     },
@@ -27,14 +28,13 @@ const docsInfoConfig: DocsInfoConfig = {
             [Sections.Introduction]: IntroMarkdownV1,
         },
     },
-    sections: {
+    markdownSections: {
         Introduction: Sections.Introduction,
         Exchange: Sections.Exchange,
         TokenTransferProxy: Sections.TokenTransferProxy,
         TokenRegistry: Sections.TokenRegistry,
         ZRXToken: Sections.ZRXToken,
     },
-    visibleConstructors: [Sections.Exchange, Sections.TokenRegistry, Sections.ZRXToken, Sections.TokenTransferProxy],
     contractsByVersionByNetworkId: {
         '1.0.0': {
             [Networks.Mainnet]: {

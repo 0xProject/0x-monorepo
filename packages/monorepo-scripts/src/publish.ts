@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import * as promisify from 'es6-promisify';
+import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import opn = require('opn');
@@ -13,23 +14,13 @@ import { constants } from './constants';
 import { Package, PackageToNextVersion, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { configs } from './utils/configs';
+import { DocGenerateAndUploadUtils } from './utils/doc_generate_and_upload_utils';
+import { publishReleaseNotesAsync } from './utils/github_release_utils';
 import { utils } from './utils/utils';
 
 const DOC_GEN_COMMAND = 'docs:json';
 const NPM_NAMESPACE = '@0xproject/';
 const TODAYS_TIMESTAMP = moment().unix();
-const packageNameToWebsitePath: { [name: string]: string } = {
-    '0x.js': '0xjs',
-    'web3-wrapper': 'web3_wrapper',
-    contracts: 'contracts',
-    connect: 'connect',
-    'json-schemas': 'json-schemas',
-    'sol-compiler': 'sol-compiler',
-    'sol-cov': 'sol-cov',
-    subproviders: 'subproviders',
-    'order-utils': 'order-utils',
-    'ethereum-types': 'ethereum-types',
-};
 
 async function confirmAsync(message: string): Promise<void> {
     prompt.start();
@@ -45,12 +36,13 @@ async function confirmAsync(message: string): Promise<void> {
     // Fetch public, updated Lerna packages
     const shouldIncludePrivate = true;
     const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
+    const packagesWithDocs = getPackagesWithDocs(allUpdatedPackages);
 
     if (!configs.IS_LOCAL_PUBLISH) {
         await confirmAsync(
             'THIS IS NOT A TEST PUBLISH! You are about to publish one or more packages to npm. Are you sure you want to continue? (y/n)',
         );
-        await confirmDocPagesRenderAsync(allUpdatedPackages);
+        await confirmDocPagesRenderAsync(packagesWithDocs);
     }
 
     // Update CHANGELOGs
@@ -83,44 +75,67 @@ async function confirmAsync(message: string): Promise<void> {
     });
     utils.log(`Calling 'lerna publish'...`);
     await lernaPublishAsync(packageToNextVersion);
+    const isStaging = false;
+    const shouldUploadDocs = !configs.IS_LOCAL_PUBLISH;
+    await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging, shouldUploadDocs);
+    const isDryRun = configs.IS_LOCAL_PUBLISH;
+    await publishReleaseNotesAsync(updatedPublicPackages, isDryRun);
 })().catch(err => {
     utils.log(err);
     process.exit(1);
 });
 
-async function confirmDocPagesRenderAsync(packages: Package[]): Promise<void> {
+function getPackagesWithDocs(allUpdatedPackages: Package[]): Package[] {
+    const rootPackageJsonPath = `${constants.monorepoRootPath}/package.json`;
+    const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath).toString());
+    const packagesWithDocPagesStringIfExist = _.get(rootPackageJson, 'configs.packagesWithDocPages', undefined);
+    if (_.isUndefined(packagesWithDocPagesStringIfExist)) {
+        return []; // None to generate & publish
+    }
+    const packagesWithDocPages = packagesWithDocPagesStringIfExist.split(' ');
+    const updatedPackagesWithDocPages: Package[] = [];
+    _.each(allUpdatedPackages, pkg => {
+        const nameWithoutPrefix = pkg.packageJson.name.replace('@0xproject/', '');
+        if (_.includes(packagesWithDocPages, nameWithoutPrefix)) {
+            updatedPackagesWithDocPages.push(pkg);
+        }
+    });
+    return updatedPackagesWithDocPages;
+}
+
+async function generateAndUploadDocJsonsAsync(
+    packagesWithDocs: Package[],
+    isStaging: boolean,
+    shouldUploadDocs: boolean,
+): Promise<void> {
+    for (const pkg of packagesWithDocs) {
+        const nameWithoutPrefix = pkg.packageJson.name.replace('@0xproject/', '');
+        const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(nameWithoutPrefix, isStaging, shouldUploadDocs);
+        await docGenerateAndUploadUtils.generateAndUploadDocsAsync();
+    }
+}
+
+async function confirmDocPagesRenderAsync(packagesWithDocs: Package[]): Promise<void> {
     // push docs to staging
     utils.log("Upload all docJson's to S3 staging...");
-    await execAsync(`yarn stage_docs`, { cwd: constants.monorepoRootPath });
+    const isStaging = true;
+    const shouldUploadDocs = true;
+    await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging, shouldUploadDocs);
 
     // deploy website to staging
     utils.log('Deploy website to staging...');
     const pathToWebsite = `${constants.monorepoRootPath}/packages/website`;
     await execAsync(`yarn deploy_staging`, { cwd: pathToWebsite });
 
-    const packagesWithDocs = _.filter(packages, pkg => {
-        const scriptsIfExists = pkg.packageJson.scripts;
-        if (_.isUndefined(scriptsIfExists)) {
-            throw new Error('Found a public package without any scripts in package.json');
-        }
-        return !_.isUndefined(scriptsIfExists[DOC_GEN_COMMAND]);
-    });
     _.each(packagesWithDocs, pkg => {
         const name = pkg.packageJson.name;
         const nameWithoutPrefix = _.startsWith(name, NPM_NAMESPACE) ? name.split('@0xproject/')[1] : name;
-        const docSegmentIfExists = packageNameToWebsitePath[nameWithoutPrefix];
-        if (_.isUndefined(docSegmentIfExists)) {
-            throw new Error(
-                `Found package '${name}' with doc commands but no corresponding docSegment in monorepo_scripts
-package.ts. Please add an entry for it and try again.`,
-            );
-        }
-        const link = `${constants.stagingWebsite}/docs/${docSegmentIfExists}`;
+        const link = `${constants.stagingWebsite}/docs/${nameWithoutPrefix}`;
         // tslint:disable-next-line:no-floating-promises
         opn(link);
     });
 
-    await confirmAsync('Do all the doc pages render properly? (y/n)');
+    await confirmAsync('Do all the doc pages render? (y/n)');
 }
 
 async function pushChangelogsToGithubAsync(): Promise<void> {
@@ -153,7 +168,7 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
                 version: nextPatchVersionIfValid,
                 changes: [
                     {
-                        note: 'Dependencies updated',
+                        note: constants.dependenciesUpdatedMessage,
                     },
                 ],
             };

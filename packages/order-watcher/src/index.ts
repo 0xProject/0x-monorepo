@@ -1,8 +1,14 @@
 export { OrderWatcher } from './order_watcher/order_watcher';
 
-export { OrderStateValid, OrderStateInvalid, OrderState } from '@0xproject/types';
+export {
+    OrderStateValid,
+    OrderStateInvalid,
+    OrderState,
+    ExchangeContractErrs,
+    OrderRelevantState,
+} from '@0xproject/types';
 
 export { OnOrderStateChangeCallback, OrderWatcherConfig } from './types';
 
-export { Order, SignedOrder } from '@0xproject/types';
-export { BlockParamLiteral, BlockParam, Provider } from 'ethereum-types';
+export { SignedOrder } from '@0xproject/types';
+export { JSONRPCRequestPayload, JSONRPCErrorCallback, Provider, JSONRPCResponsePayload } from 'ethereum-types';

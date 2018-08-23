@@ -14,61 +14,28 @@ const IntroMarkdownV1 = require('md/docs/order_utils/1.0.0/introduction');
 const InstallationMarkdownV1 = require('md/docs/order_utils/1.0.0/installation');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
-    usage: 'usage',
-    types: 'types',
 };
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.OrderUtils,
+    packageName: '@0xproject/order-utils',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Order utils',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        usage: [docSections.usage],
-        types: [docSections.types],
+    markdownMenu: {
+        introduction: [markdownSections.introduction],
+        install: [markdownSections.installation],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
         },
     },
-    sectionNameToModulePath: {
-        [docSections.usage]: [
-            '"order-utils/src/order_hash"',
-            '"order-utils/src/signature_utils"',
-            '"order-utils/src/order_factory"',
-            '"order-utils/src/salt"',
-            '"order-utils/src/assert"',
-            '"order-utils/src/constants"',
-        ],
-        [docSections.types]: ['"order-utils/src/types"', '"types/src/index"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
-    sections: docSections,
-    visibleConstructors: [],
-    typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [
-            'OrderError',
-            'Order',
-            'SignedOrder',
-            'ECSignature',
-            'Provider',
-            'JSONRPCRequestPayload',
-            'JSONRPCResponsePayload',
-            'JSONRPCErrorCallback',
-        ],
-        typeNameToExternalLink: {
-            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
-        },
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 

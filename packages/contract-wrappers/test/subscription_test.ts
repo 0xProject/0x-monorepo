@@ -5,7 +5,8 @@ import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
 
-import { ContractWrappers, DecodedLogEvent, ERC20TokenApprovalEventArgs, ERC20TokenEvents, Token } from '../src';
+import { ContractWrappers, ERC20TokenApprovalEventArgs, ERC20TokenEvents } from '../src';
+import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
