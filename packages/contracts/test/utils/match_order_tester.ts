@@ -67,44 +67,35 @@ export class MatchOrderTester {
         // Derive amount received by taker
         const amountReceivedByTaker = amountSoldByLeftMaker.sub(amountBoughtByRightMaker);
         // Assert log values - left order
-        expect(
+        expect(amountBoughtByLeftMaker, 'Checking logged amount bought by left maker').to.be.bignumber.equal(
             expectedTransferAmounts.amountBoughtByLeftMaker,
-            'Checking logged amount bought by left maker',
-        ).to.be.bignumber.equal(amountBoughtByLeftMaker);
-        expect(
+        );
+        expect(amountSoldByLeftMaker, 'Checking logged amount sold by left maker').to.be.bignumber.equal(
             expectedTransferAmounts.amountSoldByLeftMaker,
-            'Checking logged amount sold by left maker',
-        ).to.be.bignumber.equal(amountSoldByLeftMaker);
-        expect(
+        );
+        expect(feePaidByLeftMaker, 'Checking logged fee paid by left maker').to.be.bignumber.equal(
             expectedTransferAmounts.feePaidByLeftMaker,
-            'Checking logged fee paid by left maker',
-        ).to.be.bignumber.equal(feePaidByLeftMaker);
-        expect(
+        );
+        expect(feePaidByTakerLeft, 'Checking logged fee paid on left order by taker').to.be.bignumber.equal(
             expectedTransferAmounts.feePaidByTakerLeft,
-            'Checking logged fee paid on left order by taker',
-        ).to.be.bignumber.equal(feePaidByTakerLeft);
+        );
         // Assert log values - right order
-        expect(
+        expect(amountBoughtByRightMaker, 'Checking logged amount bought by right maker').to.be.bignumber.equal(
             expectedTransferAmounts.amountBoughtByRightMaker,
-            'Checking logged amount bought by right maker',
-        ).to.be.bignumber.equal(amountBoughtByRightMaker);
-        expect(
+        );
+        expect(amountSoldByRightMaker, 'Checking logged amount sold by right maker').to.be.bignumber.equal(
             expectedTransferAmounts.amountSoldByRightMaker,
-            'Checking logged amount sold by right maker',
-        ).to.be.bignumber.equal(amountSoldByRightMaker);
-        expect(
+        );
+        expect(feePaidByRightMaker, 'Checking logged fee paid by right maker').to.be.bignumber.equal(
             expectedTransferAmounts.feePaidByRightMaker,
-            'Checking logged fee paid by right maker',
-        ).to.be.bignumber.equal(feePaidByRightMaker);
-        expect(
+        );
+        expect(feePaidByTakerRight, 'Checking logged fee paid on right order by taker').to.be.bignumber.equal(
             expectedTransferAmounts.feePaidByTakerRight,
-            'Checking logged fee paid on right order by taker',
-        ).to.be.bignumber.equal(feePaidByTakerRight);
+        );
         // Assert derived amount received by taker
-        expect(
+        expect(amountReceivedByTaker, 'Checking logged amount received by taker').to.be.bignumber.equal(
             expectedTransferAmounts.amountReceivedByTaker,
-            'Checking logged amount received by taker',
-        ).to.be.bignumber.equal(amountReceivedByTaker);
+        );
     }
     /// @dev Asserts all expected ERC20 and ERC721 account holdings match the real holdings.
     /// @param expectedERC20BalancesByOwner Expected ERC20 balances.
@@ -239,15 +230,15 @@ export class MatchOrderTester {
         const orderTakerAssetFilledAmountLeft = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderHashUtils.getOrderHashHex(signedOrderLeft),
         );
-        expect(expectedOrderFilledAmountLeft, 'Checking inital state of left order').to.be.bignumber.equal(
-            orderTakerAssetFilledAmountLeft,
+        expect(orderTakerAssetFilledAmountLeft, 'Checking inital state of left order').to.be.bignumber.equal(
+            expectedOrderFilledAmountLeft,
         );
         // Assert right order initial state
         const orderTakerAssetFilledAmountRight = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderHashUtils.getOrderHashHex(signedOrderRight),
         );
-        expect(expectedOrderFilledAmountRight, 'Checking inital state of right order').to.be.bignumber.equal(
-            orderTakerAssetFilledAmountRight,
+        expect(orderTakerAssetFilledAmountRight, 'Checking inital state of right order').to.be.bignumber.equal(
+            expectedOrderFilledAmountRight,
         );
     }
     /// @dev Asserts the exchange state against the expected amounts transferred by from matching orders.
@@ -268,19 +259,17 @@ export class MatchOrderTester {
             orderHashUtils.getOrderHashHex(signedOrderLeft),
         );
         amountBoughtByLeftMaker = amountBoughtByLeftMaker.minus(initialLeftOrderFilledAmount);
-        expect(
+        expect(amountBoughtByLeftMaker, 'Checking exchange state for left order').to.be.bignumber.equal(
             expectedTransferAmounts.amountBoughtByLeftMaker,
-            'Checking exchange state for left order',
-        ).to.be.bignumber.equal(amountBoughtByLeftMaker);
+        );
         // Assert state for right order: amount bought by right maker
         let amountBoughtByRightMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderHashUtils.getOrderHashHex(signedOrderRight),
         );
         amountBoughtByRightMaker = amountBoughtByRightMaker.minus(initialRightOrderFilledAmount);
-        expect(
+        expect(amountBoughtByRightMaker, 'Checking exchange state for right order').to.be.bignumber.equal(
             expectedTransferAmounts.amountBoughtByRightMaker,
-            'Checking exchange state for right order',
-        ).to.be.bignumber.equal(amountBoughtByRightMaker);
+        );
         // Assert left order status
         const maxAmountBoughtByLeftMaker = signedOrderLeft.takerAssetAmount.minus(initialLeftOrderFilledAmount);
         const leftOrderInfo: OrderInfo = await this._exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
