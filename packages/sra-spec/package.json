@@ -1,5 +1,5 @@
 {
-    "name": "@0xproject/sra-api",
+    "name": "@0xproject/sra-spec",
     "version": "1.0.1-rc.4",
     "engines": {
         "node": ">=6.12"
@@ -31,7 +31,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-api/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-spec/README.md",
     "dependencies": {
         "@0xproject/json-schemas": "^1.0.1-rc.4"
     },
