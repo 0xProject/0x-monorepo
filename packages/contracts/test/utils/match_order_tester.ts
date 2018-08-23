@@ -161,16 +161,9 @@ export class MatchOrderTester {
         erc20BalancesByOwner: ERC20BalancesByOwner,
         erc721TokenIdsByOwner: ERC721TokenIdsByOwner,
         expectedTransferAmounts: TransferAmounts,
-        initialLeftOrderFilledAmount?: BigNumber,
-        initialRightOrderFilledAmount?: BigNumber,
+        initialLeftOrderFilledAmount: BigNumber = new BigNumber(0),
+        initialRightOrderFilledAmount: BigNumber = new BigNumber(0),
     ): Promise<[ERC20BalancesByOwner, ERC721TokenIdsByOwner]> {
-        // Assign default values to optional parameters if undefined
-        if (initialLeftOrderFilledAmount === undefined) {
-            initialLeftOrderFilledAmount = new BigNumber(0);
-        }
-        if (initialRightOrderFilledAmount === undefined) {
-            initialRightOrderFilledAmount = new BigNumber(0);
-        }
         // Assert initial order states
         await this._assertInitialOrderStatesAsync(
             signedOrderLeft,
