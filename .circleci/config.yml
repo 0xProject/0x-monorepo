@@ -18,8 +18,8 @@ jobs:
             - yarn-packages-master
             - yarn-packages-
       - run:
-          name: yarn
-          command: yarn --frozen-lockfile install || true
+          name: update-yarn
+          command: sudo npm install --global yarn@1.6
       - run:
           name: yarn
           command: yarn --frozen-lockfile install

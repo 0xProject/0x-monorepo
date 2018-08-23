@@ -83,7 +83,7 @@ We strongly recommend that the community help us make improvements and determine
 
 ### Install dependencies
 
-Make sure you are using Yarn v1.9.4. To install using brew:
+Make sure you are using Yarn v1.6. To install using brew:
 
 Then install dependencies
 
