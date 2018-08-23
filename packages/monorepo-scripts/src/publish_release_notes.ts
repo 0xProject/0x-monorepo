@@ -11,11 +11,13 @@ const args = yargs
     })
     .example('$0 --isDryRun true', 'Full usage example').argv;
 
-// tslint:disable-next-line:no-floating-promises
 (async () => {
     const isDryRun = args.isDryRun;
     const shouldIncludePrivate = false;
     const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
 
     await publishReleaseNotesAsync(allUpdatedPackages, isDryRun);
-})();
+})().catch(err => {
+    utils.log(err);
+    process.exit(1);
+});
