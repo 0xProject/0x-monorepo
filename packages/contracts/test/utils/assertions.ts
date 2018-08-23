@@ -57,7 +57,7 @@ async function _getContractCallFailedErrorMessageAsync(): Promise<string> {
 export async function getInvalidOpcodeErrorMessageForCallAsync(): Promise<string> {
     return _getGanacheOrGethError(
         'VM Exception while processing transaction: invalid opcode',
-        'Contract call failed',
+        'Contract call failed (returned null)',
     );
 }
 
@@ -69,7 +69,7 @@ export async function getInvalidOpcodeErrorMessageForCallAsync(): Promise<string
 export async function getInvalidOpcodeErrorMessageForSendTransactionAsync(): Promise<string> {
     return _getGanacheOrGethError(
         'VM Exception while processing transaction: invalid opcode',
-        'Contract call failed',
+        'Contract call failed (returned null)',
     );
 }
 
