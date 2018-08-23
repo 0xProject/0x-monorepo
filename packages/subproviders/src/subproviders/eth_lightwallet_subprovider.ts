@@ -15,9 +15,10 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
     private readonly _keystore: lightwallet.keystore;
     private readonly _pwDerivedKey: Uint8Array;
     /**
-     *
+     * Instantiate an EthLightwalletSubprovider
      * @param keystore The EthLightWallet keystore you wish to use
      * @param pwDerivedKey The password derived key to use
+     * @return EthLightwalletSubprovider instance
      */
     constructor(keystore: lightwallet.keystore, pwDerivedKey: Uint8Array) {
         super();
