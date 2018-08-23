@@ -66,6 +66,23 @@ contract TestLibs is
         return partialAmount;
     }
 
+    function publicGetPartialAmountCeil(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        public
+        pure
+        returns (uint256 partialAmount)
+    {
+        partialAmount = getPartialAmountCeil(
+            numerator,
+            denominator,
+            target
+        );
+        return partialAmount;
+    }
+
     function publicIsRoundingError(
         uint256 numerator,
         uint256 denominator,
@@ -76,6 +93,23 @@ contract TestLibs is
         returns (bool isError)
     {
         isError = isRoundingError(
+            numerator,
+            denominator,
+            target
+        );
+        return isError;
+    }
+
+    function publicIsRoundingErrorCeil(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        public
+        pure
+        returns (bool isError)
+    {
+        isError = isRoundingErrorCeil(
             numerator,
             denominator,
             target

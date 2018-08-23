@@ -294,6 +294,49 @@ describe('Exchange core internal functions', () => {
         );
     });
 
+    describe('isRoundingErrorCeil', async () => {
+        async function referenceIsRoundingErrorAsync(
+            numerator: BigNumber,
+            denominator: BigNumber,
+            target: BigNumber,
+        ): Promise<boolean> {
+            if (denominator.eq(0)) {
+                throw divisionByZeroErrorForCall;
+            }
+            if (numerator.eq(0)) {
+                return false;
+            }
+            if (target.eq(0)) {
+                return false;
+            }
+            const product = numerator.mul(target);
+            const remainder = product.mod(denominator);
+            const error = denominator.sub(remainder).mod(denominator);
+            const errorTimes1000 = error.mul('1000');
+            const isError = errorTimes1000.gt(product);
+            if (product.greaterThan(MAX_UINT256)) {
+                throw overflowErrorForCall;
+            }
+            if (errorTimes1000.greaterThan(MAX_UINT256)) {
+                throw overflowErrorForCall;
+            }
+            return isError;
+        }
+        async function testIsRoundingErrorCeilAsync(
+            numerator: BigNumber,
+            denominator: BigNumber,
+            target: BigNumber,
+        ): Promise<boolean> {
+            return testExchange.publicIsRoundingErrorCeil.callAsync(numerator, denominator, target);
+        }
+        await testCombinatoriallyWithReferenceFuncAsync(
+            'isRoundingErrorCeil',
+            referenceIsRoundingErrorAsync,
+            testIsRoundingErrorCeilAsync,
+            [uint256Values, uint256Values, uint256Values],
+        );
+    });
+
     describe('updateFilledState', async () => {
         // Note(albrow): Since updateFilledState modifies the state by calling
         // sendTransaction, we must reset the state after each test.
