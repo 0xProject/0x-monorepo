@@ -151,7 +151,6 @@ render(
                                     component={LazySolCompilerDocumentation}
                                 />
                                 <Route path={WebsiteLegacyPaths.Jobs} component={Jobs as any} />
-                                <Route path={`${WebsitePaths.Docs}`} component={LazyZeroExJSDocumentation} />
                                 <Route component={NotFound as any} />
                             </Switch>
                         </div>
