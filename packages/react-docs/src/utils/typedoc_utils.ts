@@ -40,7 +40,6 @@ export class TypeDocUtils {
         this._externalExportToLink = generatedDocJson.metadata.externalExportToLink;
         this._typeDocJson = generatedDocJson.typedocJson;
 
-        // TODO: Extract the non typeDoc exports, and render them somehow
         this._typeDocNameOrder = _.compact(
             _.flatten(
                 _.map(exportPathOrder, exportPath => {

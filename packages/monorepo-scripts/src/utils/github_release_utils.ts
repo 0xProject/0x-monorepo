@@ -65,6 +65,9 @@ export async function publishReleaseNotesAsync(updatedPublishPackages: Package[]
         prerelease: false,
         reuseRelease: true,
         reuseDraftOnly: false,
+        // TODO: Currently publish-release doesn't let you specify the labels for each asset uploaded
+        // Ideally we would like to name the assets after the package they are from
+        // Source: https://github.com/remixz/publish-release/issues/39
         assets: finalAssets,
     };
 
@@ -75,9 +78,6 @@ export async function publishReleaseNotesAsync(updatedPublishPackages: Package[]
     }
 
     utils.log('Publishing release notes ', releaseName, '...');
-    // TODO: Currently publish-release doesn't let you specify the labels for each asset uploaded
-    // Ideally we would like to name the assets after the package they are from
-    // Source: https://github.com/remixz/publish-release/issues/39
     await publishReleaseAsync(publishReleaseConfigs);
 }
 
@@ -107,11 +107,6 @@ function getReleaseNotesForPackage(packageName: string, version: string): string
     if (latestLog.changes.length === 1 && latestLog.changes[0].note === constants.dependenciesUpdatedMessage) {
         return '';
     }
-    // We sanity check that the version for the changelog notes we are about to publish to Github
-    // correspond to the new version of the package.
-    // if (version !== latestLog.version) {
-    //     throw new Error('Expected CHANGELOG.json latest entry version to coincide with published version.');
-    // }
     let notes = '';
     _.each(latestLog.changes, change => {
         notes += `* ${change.note}`;
