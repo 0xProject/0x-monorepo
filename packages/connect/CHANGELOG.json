@@ -5,13 +5,7 @@
             {
                 "note": "Updated for SRA v2",
                 "pr": 974
-            }
-        ]
-    },
-    {
-        "timestamp": 1534210131,
-        "version": "2.0.0",
-        "changes": [
+            },
             {
                 "note": "Stopped exporting `Order` type",
                 "pr": 924
