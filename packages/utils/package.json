@@ -9,15 +9,14 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "watch_without_deps": "tsc -w",
-        "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
-        "clean": "shx rm -rf lib scripts",
+        "build": "tsc",
+        "clean": "shx rm -rf lib",
+        "lint": "tslint --project .",
         "test": "yarn run_mocha",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
-        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "lint": "tslint --project .",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info"
     },
     "license": "Apache-2.0",
     "repository": {
@@ -29,7 +28,6 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/utils/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.5",
         "@0xproject/tslint-config": "^1.0.5",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",

@@ -6,6 +6,14 @@
                 "note":
                     "Quicken compilation by sending multiple contracts to the same solcjs invocation, batching them together based on compiler version requirements.",
                 "pr": 965
+            },
+            {
+                "note": "Stop exporting types: `ContractArtifact`, `ContractNetworks`",
+                "pr": 924
+            },
+            {
+                "note": "Export types: `CompilerSettings`, `OutputField`",
+                "pr": 924
             }
         ]
     },

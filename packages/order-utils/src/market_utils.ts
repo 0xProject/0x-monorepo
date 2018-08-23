@@ -5,7 +5,12 @@ import * as _ from 'lodash';
 
 import { assert } from './assert';
 import { constants } from './constants';
-import { FindFeeOrdersThatCoverFeesForTargetOrdersOpts, FindOrdersThatCoverMakerAssetFillAmountOpts } from './types';
+import {
+    FeeOrdersAndRemainingFeeAmount,
+    FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
+    FindOrdersThatCoverMakerAssetFillAmountOpts,
+    OrdersAndRemainingFillAmount,
+} from './types';
 
 export const marketUtils = {
     /**
@@ -22,7 +27,7 @@ export const marketUtils = {
         orders: T[],
         makerAssetFillAmount: BigNumber,
         opts?: FindOrdersThatCoverMakerAssetFillAmountOpts,
-    ): { resultOrders: T[]; remainingFillAmount: BigNumber } {
+    ): OrdersAndRemainingFillAmount<T> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         assert.isValidBaseUnitAmount('makerAssetFillAmount', makerAssetFillAmount);
         // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from orders
@@ -84,7 +89,7 @@ export const marketUtils = {
         orders: T[],
         feeOrders: T[],
         opts?: FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
-    ): { resultFeeOrders: T[]; remainingFeeAmount: BigNumber } {
+    ): FeeOrdersAndRemainingFeeAmount<T> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         assert.doesConformToSchema('feeOrders', feeOrders, schemas.ordersSchema);
         // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from orders

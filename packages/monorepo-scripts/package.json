@@ -1,4 +1,5 @@
 {
+    "private": true,
     "name": "@0xproject/monorepo-scripts",
     "version": "1.0.5",
     "engines": {
@@ -17,7 +18,9 @@
         "script:deps_versions": "node ./lib/deps_versions.js",
         "script:prepublish_checks": "node ./lib/prepublish_checks.js",
         "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
-        "script:find_unused_deps": "node ./lib/find_unused_dependencies.js"
+        "script:find_unused_deps": "node ./lib/find_unused_dependencies.js",
+        "script:doc_generate_and_upload": "node ./lib/doc_generate_and_upload.js",
+        "script:publish_release_notes": "node ./lib/publish_release_notes.js"
     },
     "repository": {
         "type": "git",
@@ -35,6 +38,7 @@
         "@types/opn": "^5.1.0",
         "@types/rimraf": "^2.0.2",
         "@types/semver": "5.5.0",
+        "@types/yargs": "^10.0.0",
         "depcheck": "^0.6.9",
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
@@ -60,7 +64,9 @@
         "rimraf": "^2.6.2",
         "semver": "5.5.0",
         "semver-diff": "^2.1.0",
-        "semver-sort": "0.0.4"
+        "semver-sort": "0.0.4",
+        "typedoc": "0.12.0",
+        "yargs": "^10.0.3"
     },
     "publishConfig": {
         "access": "public"

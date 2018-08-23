@@ -33,6 +33,13 @@ export class ERC721TokenWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.ERC721Token.compilerOutput.abi;
     private _tokenContractsByAddress: { [address: string]: ERC721TokenContract };
     private _erc721ProxyWrapper: ERC721ProxyWrapper;
+    /**
+     * Instantiate ERC721TokenWrapper
+     * @param web3Wrapper Web3Wrapper instance to use
+     * @param networkId Desired networkId
+     * @param erc721ProxyWrapper The ERC721ProxyWrapper instance to use
+     * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
+     */
     constructor(
         web3Wrapper: Web3Wrapper,
         networkId: number,

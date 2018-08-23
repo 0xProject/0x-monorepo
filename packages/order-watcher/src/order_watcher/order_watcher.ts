@@ -87,6 +87,12 @@ export class OrderWatcher {
     private readonly _cleanupJobInterval: number;
     private _cleanupJobIntervalIdIfExists?: NodeJS.Timer;
     private _callbackIfExists?: OnOrderStateChangeCallback;
+    /**
+     * Instantiate a new OrderWatcher
+     * @param provider Web3 provider to use for JSON RPC calls
+     * @param networkId NetworkId to watch orders on
+     * @param partialConfig Optional configurations
+     */
     constructor(
         provider: Provider,
         networkId: number,

@@ -9,8 +9,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
+        "build": "yarn pre_build && tsc",
         "pre_build": "run-s compile:v2 copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles 'artifacts/**/*' ./lib",
         "clean": "shx rm -rf lib src/1.0.0/contract_wrappers src/2.0.0/contract_wrappers src/2.0.0-beta-testnet/contract_wrappers artifacts/2.0.0",
@@ -38,7 +37,6 @@
     "devDependencies": {
         "@0xproject/abi-gen": "^1.0.5",
         "@0xproject/dev-utils": "^1.0.4",
-        "@0xproject/monorepo-scripts": "^1.0.5",
         "@0xproject/tslint-config": "^1.0.5",
         "@0xproject/types": "^1.0.1-rc.4",
         "@types/yargs": "^10.0.0",

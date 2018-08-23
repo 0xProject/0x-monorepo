@@ -3,8 +3,18 @@
         "version": "1.0.1-rc.4",
         "changes": [
             {
-                "pr": 975,
-                "note": "Added Transaction Encoder for use with 0x Exchange executeTransaction"
+                "note":
+                    "Export missing types: `TransactionEncoder`, `ContractAbi`, `JSONRPCRequestPayload`, `JSONRPCResponsePayload`, `JSONRPCErrorCallback`, `AbiDefinition`, `FunctionAbi`, `EventAbi`, `EventParameter`, `DecodedLogArgs`, `MethodAbi`, `ConstructorAbi`, `FallbackAbi`, `DataItem`, `ConstructorStateMutability`, `StateMutability` & `ExchangeSignatureValidatorApprovalEventArgs`",
+                "pr": 924
+            },
+            {
+                "note":
+                    "Remove superfluous exported types: `ContractEvent`, `Token`, `OrderFillRequest`, `ContractEventArgs`, `LogEvent`, `OnOrderStateChangeCallback`,     `ECSignature`, `OrderStateValid`, `OrderStateInvalid`, `OrderState`, `FilterObject`, `TransactionReceipt` & `TransactionReceiptWithDecodedLogs`",
+                "pr": 924
+            },
+            {
+                "note": "Added Transaction Encoder for use with 0x Exchange executeTransaction",
+                "pr": 975
             }
         ]
     },

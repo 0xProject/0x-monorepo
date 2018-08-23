@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { addSignedMessagePrefix, assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils, signatureUtils } from '@0xproject/order-utils';
 import { RevertReason, SignatureType, SignedOrder, SignerType } from '@0xproject/types';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -213,7 +213,10 @@ describe('MixinSignatureValidator', () => {
         it('should return true when SignatureType=EthSign and signature is valid', async () => {
             // Create EthSign signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithEthSignPrefixHex = addSignedMessagePrefix(orderHashHex, SignerType.Default);
+            const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(
+                orderHashHex,
+                SignerType.Default,
+            );
             const orderHashWithEthSignPrefixBuffer = ethUtil.toBuffer(orderHashWithEthSignPrefixHex);
             const ecSignature = ethUtil.ecsign(orderHashWithEthSignPrefixBuffer, signerPrivateKey);
             // Create 0x signature from EthSign signature
@@ -236,7 +239,10 @@ describe('MixinSignatureValidator', () => {
         it('should return false when SignatureType=EthSign and signature is invalid', async () => {
             // Create EthSign signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithEthSignPrefixHex = addSignedMessagePrefix(orderHashHex, SignerType.Default);
+            const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(
+                orderHashHex,
+                SignerType.Default,
+            );
             const orderHashWithEthSignPrefixBuffer = ethUtil.toBuffer(orderHashWithEthSignPrefixHex);
             const ecSignature = ethUtil.ecsign(orderHashWithEthSignPrefixBuffer, signerPrivateKey);
             // Create 0x signature from EthSign signature
@@ -385,7 +391,7 @@ describe('MixinSignatureValidator', () => {
         it('should return true when SignatureType=Trezor and signature is valid', async () => {
             // Create Trezor signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithTrezorPrefixHex = addSignedMessagePrefix(orderHashHex, SignerType.Trezor);
+            const orderHashWithTrezorPrefixHex = signatureUtils.addSignedMessagePrefix(orderHashHex, SignerType.Trezor);
             const orderHashWithTrezorPrefixBuffer = ethUtil.toBuffer(orderHashWithTrezorPrefixHex);
             const ecSignature = ethUtil.ecsign(orderHashWithTrezorPrefixBuffer, signerPrivateKey);
             // Create 0x signature from Trezor signature
@@ -408,7 +414,7 @@ describe('MixinSignatureValidator', () => {
         it('should return false when SignatureType=Trezor and signature is invalid', async () => {
             // Create Trezor signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithTrezorPrefixHex = addSignedMessagePrefix(orderHashHex, SignerType.Trezor);
+            const orderHashWithTrezorPrefixHex = signatureUtils.addSignedMessagePrefix(orderHashHex, SignerType.Trezor);
             const orderHashWithTrezorPrefixBuffer = ethUtil.toBuffer(orderHashWithTrezorPrefixHex);
             const ecSignature = ethUtil.ecsign(orderHashWithTrezorPrefixBuffer, signerPrivateKey);
             // Create 0x signature from Trezor signature

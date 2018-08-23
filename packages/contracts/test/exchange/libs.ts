@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetDataUtils, EIP712Utils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, eip712Utils, orderHashUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -109,7 +109,7 @@ describe('Exchange libs', () => {
         describe('getDomainSeparatorSchema', () => {
             it('should output the correct domain separator schema hash', async () => {
                 const domainSeparatorSchema = await libs.getDomainSeparatorSchemaHash.callAsync();
-                const domainSchemaBuffer = EIP712Utils._getDomainSeparatorSchemaBuffer();
+                const domainSchemaBuffer = eip712Utils._getDomainSeparatorSchemaBuffer();
                 const schemaHashHex = `0x${domainSchemaBuffer.toString('hex')}`;
                 expect(schemaHashHex).to.be.equal(domainSeparatorSchema);
             });

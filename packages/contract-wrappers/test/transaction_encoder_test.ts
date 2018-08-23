@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { assetDataUtils, ecSignOrderHashAsync, generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, signatureUtils, generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils';
 import { SignedOrder, SignerType } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import 'mocha';
@@ -80,7 +80,7 @@ describe('TransactionEncoder', () => {
         ): Promise<void> => {
             const salt = generatePseudoRandomSalt();
             const encodedTransaction = encoder.getTransactionHex(data, salt, signerAddress);
-            const signature = await ecSignOrderHashAsync(
+            const signature = await signatureUtils.ecSignOrderHashAsync(
                 provider,
                 encodedTransaction,
                 signerAddress,

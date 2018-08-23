@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import { constants } from './constants';
 import { orderHashUtils } from './order_hash';
 import { generatePseudoRandomSalt } from './salt';
-import { ecSignOrderHashAsync } from './signature_utils';
+import { signatureUtils } from './signature_utils';
 import { CreateOrderOpts } from './types';
 
 export const orderFactory = {
@@ -58,7 +58,12 @@ export const orderFactory = {
             createOrderOpts,
         );
         const orderHash = orderHashUtils.getOrderHashHex(order);
-        const signature = await ecSignOrderHashAsync(provider, orderHash, makerAddress, SignerType.Default);
+        const signature = await signatureUtils.ecSignOrderHashAsync(
+            provider,
+            orderHash,
+            makerAddress,
+            SignerType.Default,
+        );
         const signedOrder: SignedOrder = _.assign(order, { signature });
         return signedOrder;
     },

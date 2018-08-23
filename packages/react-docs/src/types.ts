@@ -4,24 +4,14 @@ export interface SectionNameToMarkdownByVersion {
 
 export interface DocsInfoConfig {
     id: string;
+    packageName: string;
     type: SupportedDocJson;
     displayName: string;
     packageUrl: string;
-    menu: DocsMenu;
-    sections: SectionsMap;
+    markdownMenu: DocsMenu;
+    markdownSections: SectionsMap;
     sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
-    visibleConstructors: string[];
-    sectionNameToModulePath?: { [sectionName: string]: string[] };
-    menuSubsectionToVersionWhenIntroduced?: { [sectionName: string]: string };
     contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
-    typeConfigs?: DocsInfoTypeConfigs;
-}
-
-export interface DocsInfoTypeConfigs {
-    typeNameToExternalLink?: { [typeName: string]: string };
-    publicTypes?: string[];
-    typeNameToPrefix?: { [typeName: string]: string };
-    typeNameToDocSection?: { [typeName: string]: string };
 }
 
 export interface DocsMenu {
@@ -40,6 +30,13 @@ export interface TypeDocType {
     typeArguments?: TypeDocType[];
     declaration: TypeDocNode;
     elementType?: TypeDocType;
+    indexSignature?: TypeDocNode;
+    elements?: TupleElement[];
+}
+
+export interface TupleElement {
+    type: string;
+    name: string;
 }
 
 export interface TypeDocFlags {
@@ -69,7 +66,7 @@ export interface TypeDocNode {
     returns?: string;
     declaration: TypeDocNode;
     flags?: TypeDocFlags;
-    indexSignature?: TypeDocNode | TypeDocNode[]; // TypeDocNode in TypeDoc <V0.9.0, TypeDocNode[] in >V0.9.0
+    indexSignature?: TypeDocNode;
     signatures?: TypeDocNode[];
     parameters?: TypeDocNode[];
     typeParameter?: TypeDocNode[];
@@ -87,6 +84,7 @@ export enum TypeDocTypes {
     Union = 'union',
     TypeParameter = 'typeParameter',
     Intersection = 'intersection',
+    Tuple = 'tuple',
     Unknown = 'unknown',
 }
 
@@ -115,8 +113,9 @@ export interface DocSection {
     methods: Array<TypescriptMethod | SolidityMethod>;
     properties: Property[];
     types: CustomType[];
-    functions?: TypescriptFunction[];
+    functions: TypescriptFunction[];
     events?: Event[];
+    externalExportToLink?: ExternalExportToLink;
 }
 
 export interface TypescriptMethod extends BaseMethod {
@@ -128,6 +127,7 @@ export interface TypescriptMethod extends BaseMethod {
 export interface TypescriptFunction extends BaseFunction {
     source?: Source;
     typeParameter?: TypeParameter;
+    callPath: string;
 }
 
 export interface SolidityMethod extends BaseMethod {
@@ -157,10 +157,14 @@ export interface Type {
     name: string;
     typeDocType: TypeDocTypes;
     value?: string;
+    isExportedClassReference?: boolean;
     typeArguments?: Type[];
     elementType?: ElementType;
     types?: Type[];
     method?: TypescriptMethod;
+    indexSignature?: IndexSignature;
+    externalLink?: string;
+    tupleElements?: Type[];
 }
 
 export interface ElementType {
@@ -207,6 +211,7 @@ export interface Property {
     type: Type;
     source?: Source;
     comment?: string;
+    callPath?: string;
 }
 
 export interface BaseMethod {
@@ -291,4 +296,29 @@ export enum AbiTypes {
     Constructor = 'constructor',
     Function = 'function',
     Event = 'event',
+}
+
+export interface ExportNameToTypedocNames {
+    [exportName: string]: string[];
+}
+
+export interface ExternalTypeToLink {
+    [externalTypeName: string]: string;
+}
+
+export interface ExternalExportToLink {
+    [externalExport: string]: string;
+}
+
+export interface Metadata {
+    exportPathToTypedocNames: ExportNameToTypedocNames;
+    exportPathOrder: string[];
+    externalTypeToLink: ExternalTypeToLink;
+    externalExportToLink: ExternalExportToLink;
+}
+
+export interface GeneratedDocJson {
+    version: string;
+    metadata: Metadata;
+    typedocJson: TypeDocNode;
 }

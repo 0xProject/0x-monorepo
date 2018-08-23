@@ -14,47 +14,31 @@ const InstallationMarkdownV1 = require('md/docs/sol-compiler/installation');
 const UsageMarkdown = require('md/docs/sol-compiler/usage');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     usage: 'usage',
-    compiler: 'compiler',
-    types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.SolCompiler,
+    packageName: '@0xproject/sol-compiler',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Solidity Compiler',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        usage: [docSections.usage],
-        compiler: [docSections.compiler],
-        types: [docSections.types],
+    markdownMenu: {
+        introduction: [markdownSections.introduction],
+        install: [markdownSections.installation],
+        usage: [markdownSections.usage],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
-            [docSections.usage]: UsageMarkdown,
+            [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.usage]: UsageMarkdown,
         },
     },
-    sectionNameToModulePath: {
-        [docSections.compiler]: ['"sol-compiler/src/compiler"'],
-        [docSections.types]: ['"sol-compiler/src/utils/types"', '"types/src/index"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
-    sections: docSections,
-    visibleConstructors: [docSections.compiler],
-    typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: ['CompilerOptions'],
-        typeNameToExternalLink: {},
-        typeNameToPrefix: {},
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 

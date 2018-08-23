@@ -17,6 +17,16 @@
             },
             {
                 "note":
+                    "Instead of exporting signature util methods individually, they are now exported as `signatureUtils`",
+                "pr": 924
+            },
+            {
+                "note":
+                    "Export types: `SignedOrder`, `Order`, `OrderRelevantState`, `OrderState`, `ECSignature`, `ERC20AssetData`, `ERC721AssetData`, `AssetProxyId`, `SignerType`, `SignatureType`, `OrderStateValid`, `OrderStateInvalid`, `ExchangeContractErrs`, `TradeSide`, `TransferType`, `FindFeeOrdersThatCoverFeesForTargetOrdersOpts`, `FindOrdersThatCoverMakerAssetFillAmountOpts`, `FeeOrdersAndRemainingFeeAmount`, `OrdersAndRemainingFillAmount`, `Provider`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
+                "pr": 924
+            },
+            {
+                "note":
                     "Rename `resultOrders` to `resultFeeOrders` for object returned by `findFeeOrdersThatCoverFeesForTargetOrders` in `marketUtils` api",
                 "pr": 997
             },

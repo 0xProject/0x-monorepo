@@ -28,11 +28,13 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.Connect]: 'connect',
     [DocPackages.SmartContracts]: 'contracts',
     [DocPackages.Web3Wrapper]: 'web3-wrapper',
+    [DocPackages.ContractWrappers]: 'contract-wrappers',
     [DocPackages.SolCompiler]: 'sol-compiler',
     [DocPackages.JSONSchemas]: 'json-schemas',
     [DocPackages.SolCov]: 'sol-cov',
     [DocPackages.Subproviders]: 'subproviders',
     [DocPackages.OrderUtils]: 'order-utils',
+    [DocPackages.OrderWatcher]: 'order-watcher',
     [DocPackages.EthereumTypes]: 'ethereum-types',
 };
 
@@ -84,7 +86,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     location={this.props.location}
                     docsVersion={this.props.docsVersion}
                     availableDocVersions={this.props.availableDocVersions}
-                    menu={this.props.docsInfo.getMenu(this.props.docsVersion)}
+                    menu={this.props.docsInfo.menu}
                     menuSubsectionsBySection={menuSubsectionsBySection}
                     docsInfo={this.props.docsInfo}
                     translate={this.props.translate}

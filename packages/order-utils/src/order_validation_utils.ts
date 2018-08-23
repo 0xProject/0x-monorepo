@@ -9,11 +9,21 @@ import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_f
 import { constants } from './constants';
 import { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 import { orderHashUtils } from './order_hash';
-import { isValidSignatureAsync } from './signature_utils';
+import { signatureUtils } from './signature_utils';
 import { utils } from './utils';
 
+/**
+ * A utility class for validating orders
+ */
 export class OrderValidationUtils {
     private readonly _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
+    /**
+     * A Typescript implementation mirroring the implementation of isRoundingError in the
+     * Exchange smart contract
+     * @param numerator Numerator value. When used to check an order, pass in `takerAssetFilledAmount`
+     * @param denominator Denominator value.  When used to check an order, pass in `order.takerAssetAmount`
+     * @param target Target value. When used to check an order, pass in `order.makerAssetAmount`
+     */
     public static isRoundingError(numerator: BigNumber, denominator: BigNumber, target: BigNumber): boolean {
         // Solidity's mulmod() in JS
         // Source: https://solidity.readthedocs.io/en/latest/units-and-global-variables.html#mathematical-and-cryptographic-functions
@@ -31,6 +41,15 @@ export class OrderValidationUtils {
         const isError = errPercentageTimes1000000.gt(1000);
         return isError;
     }
+    /**
+     * Validate that the maker & taker have sufficient balances/allowances
+     * to fill the supplied order to the fillTakerAssetAmount amount
+     * @param exchangeTradeEmulator ExchangeTradeEmulator to use
+     * @param signedOrder SignedOrder to test
+     * @param fillTakerAssetAmount Amount of takerAsset to fill the signedOrder
+     * @param senderAddress Sender of the fillOrder tx
+     * @param zrxAssetData AssetData for the ZRX token
+     */
     public static async validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
         signedOrder: SignedOrder,
@@ -104,9 +123,22 @@ export class OrderValidationUtils {
             throw new Error(RevertReason.OrderUnfillable);
         }
     }
+    /**
+     * Instantiate OrderValidationUtils
+     * @param orderFilledCancelledFetcher A module that implements the AbstractOrderFilledCancelledFetcher
+     * @return An instance of OrderValidationUtils
+     */
     constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher) {
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
     }
+    /**
+     * Validate if the supplied order is fillable, and throw if it isn't
+     * @param exchangeTradeEmulator ExchangeTradeEmulator instance
+     * @param signedOrder SignedOrder of interest
+     * @param zrxAssetData ZRX assetData
+     * @param expectedFillTakerTokenAmount If supplied, this call will make sure this amount is fillable.
+     * If it isn't supplied, we check if the order is fillable for a non-zero amount
+     */
     public async validateOrderFillableOrThrowAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
         signedOrder: SignedOrder,
@@ -132,6 +164,15 @@ export class OrderValidationUtils {
             zrxAssetData,
         );
     }
+    /**
+     * Validate a call to FillOrder and throw if it wouldn't succeed
+     * @param exchangeTradeEmulator ExchangeTradeEmulator to use
+     * @param provider Web3 provider to use for JSON RPC requests
+     * @param signedOrder SignedOrder of interest
+     * @param fillTakerAssetAmount Amount we'd like to fill the order for
+     * @param takerAddress The taker of the order
+     * @param zrxAssetData ZRX asset data
+     */
     public async validateFillOrderThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
         provider: Provider,
@@ -147,7 +188,7 @@ export class OrderValidationUtils {
             throw new Error(RevertReason.InvalidTakerAmount);
         }
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        const isValid = await isValidSignatureAsync(
+        const isValid = await signatureUtils.isValidSignatureAsync(
             provider,
             orderHash,
             signedOrder.signature,
@@ -187,6 +228,15 @@ export class OrderValidationUtils {
         }
         return filledTakerTokenAmount;
     }
+    /**
+     * Validate a call to fillOrKillOrder and throw if it would fail
+     * @param exchangeTradeEmulator ExchangeTradeEmulator to use
+     * @param provider Web3 provider to use for JSON RPC requests
+     * @param signedOrder SignedOrder of interest
+     * @param fillTakerAssetAmount Amount we'd like to fill the order for
+     * @param takerAddress The taker of the order
+     * @param zrxAssetData ZRX asset data
+     */
     public async validateFillOrKillOrderThrowIfInvalidAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
         provider: Provider,

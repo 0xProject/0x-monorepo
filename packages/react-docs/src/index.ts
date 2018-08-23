@@ -15,6 +15,14 @@ export { Type } from './components/type';
 
 export { DocsInfo } from './docs_info';
 
-export { DocsInfoConfig, DocAgnosticFormat, DoxityDocObj, DocsMenu, SupportedDocJson, TypeDocNode } from './types';
+export {
+    DocsInfoConfig,
+    DocAgnosticFormat,
+    DoxityDocObj,
+    DocsMenu,
+    SupportedDocJson,
+    TypeDocNode,
+    GeneratedDocJson,
+} from './types';
 
 export { constants } from './utils/constants';

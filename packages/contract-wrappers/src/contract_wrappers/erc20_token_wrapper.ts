@@ -34,6 +34,13 @@ export class ERC20TokenWrapper extends ContractWrapper {
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     private _tokenContractsByAddress: { [address: string]: ERC20TokenContract };
     private _erc20ProxyWrapper: ERC20ProxyWrapper;
+    /**
+     * Instantiate ERC20TokenWrapper
+     * @param web3Wrapper Web3Wrapper instance to use
+     * @param networkId Desired networkId
+     * @param erc20ProxyWrapper The ERC20ProxyWrapper instance to use
+     * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
+     */
     constructor(
         web3Wrapper: Web3Wrapper,
         networkId: number,

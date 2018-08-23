@@ -10,14 +10,13 @@
     "scripts": {
         "watch_without_deps": "tsc -w",
         "lint": "tslint --project .",
-        "clean": "shx rm -rf lib scripts",
-        "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
+        "clean": "shx rm -rf lib",
+        "build": "tsc",
         "test": "yarn run_mocha",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "test:circleci": "yarn test:coverage",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
-        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info"
     },
     "bin": {
         "abi-gen": "bin/abi-gen.js"
@@ -46,7 +45,6 @@
         "yargs": "^10.0.3"
     },
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.5",
         "@0xproject/tslint-config": "^1.0.5",
         "@types/glob": "5.0.35",
         "@types/handlebars": "^4.0.36",

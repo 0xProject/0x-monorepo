@@ -45,7 +45,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
     };
     public render(): React.ReactNode {
         const navigation = _.map(this.props.topLevelMenu, (menuItems: string[], sectionName: string) => {
-            const finalSectionName = utils.convertDashesToSpaces(sectionName);
+            const finalSectionName = utils.convertCamelCaseToSpaces(sectionName);
             if (this.props.shouldDisplaySectionHeaders) {
                 // tslint:disable-next-line:no-unused-variable
                 const id = utils.getIdFromName(sectionName);
@@ -93,15 +93,12 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                     <ScrollLink
                         key={`menuItem-${menuItemName}`}
                         to={id}
-                        offset={-10}
+                        offset={0}
+                        hashSpy={true}
                         duration={constants.DOCS_SCROLL_DURATION_MS}
                         containerId={constants.DOCS_CONTAINER_ID}
                     >
-                        <MenuItem
-                            onTouchTap={this._onMenuItemClick.bind(this, finalMenuItemName)}
-                            style={menuItemStyles}
-                            innerDivStyle={menuItemInnerDivStyles}
-                        >
+                        <MenuItem style={menuItemStyles} innerDivStyle={menuItemInnerDivStyles}>
                             <span style={{ textTransform: 'capitalize' }}>{finalMenuItemName}</span>
                         </MenuItem>
                     </ScrollLink>
@@ -128,12 +125,11 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                             <ScrollLink
                                 to={id}
                                 offset={0}
+                                hashSpy={true}
                                 duration={constants.DOCS_SCROLL_DURATION_MS}
                                 containerId={constants.DOCS_CONTAINER_ID}
-                                onTouchTap={this._onMenuItemClick.bind(this, name)}
                             >
                                 <MenuItem
-                                    onTouchTap={this._onMenuItemClick.bind(this, name)}
                                     style={{ minHeight: 35 }}
                                     innerDivStyle={{
                                         paddingLeft: 16,
@@ -149,12 +145,5 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                 })}
             </ul>
         );
-    }
-    private _onMenuItemClick(name: string): void {
-        const id = utils.getIdFromName(name);
-        utils.setUrlHash(id);
-        if (!_.isUndefined(this.props.onMenuItemClick)) {
-            this.props.onMenuItemClick();
-        }
     }
 }

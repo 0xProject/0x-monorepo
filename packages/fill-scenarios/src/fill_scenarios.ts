@@ -1,4 +1,5 @@
-import { assetDataUtils, orderFactory } from '@0xproject/order-utils';
+import { assetDataUtils } from '@0xproject/order-utils';
+import { orderFactory } from '@0xproject/order-utils/lib/src/order_factory';
 import { AssetProxyId, ERC721AssetData, OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';

@@ -13,7 +13,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "build": "yarn pre_build && tsc",
         "pre_build": "run-s update_artifacts copy_artifacts generate_contract_wrappers",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
         "generate_contract_wrappers": "abi-gen --abis 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
@@ -24,12 +24,15 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "copy_artifacts": "copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts",
         "update_artifacts": "for i in ${npm_package_config_contracts_v2_beta}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-beta-testnet/$i.json src/artifacts; done;",
-        "clean": "shx rm -rf _bundles lib test_temp scripts test/artifacts src/generated_contract_wrappers",
+        "clean": "shx rm -rf _bundles lib test_temp test/artifacts src/generated_contract_wrappers generated_docs",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
-        "contracts_v2_beta": "AssetProxyOwner ERC20Proxy ERC20Token ERC721Proxy ERC721Token Exchange Forwarder OrderValidator WETH9 ZRXToken"
+        "contracts_v2_beta": "AssetProxyOwner ERC20Proxy ERC20Token ERC721Proxy ERC721Token Exchange Forwarder OrderValidator WETH9 ZRXToken",
+        "postpublish": {
+            "assets": []
+        }
     },
     "repository": {
         "type": "git",
@@ -43,8 +46,6 @@
         "@0xproject/abi-gen": "^1.0.5",
         "@0xproject/dev-utils": "^1.0.4",
         "@0xproject/migrations": "^1.0.4",
-        "@0xproject/monorepo-scripts": "^1.0.5",
-        "@0xproject/sol-compiler": "^1.0.5",
         "@0xproject/tslint-config": "^1.0.5",
         "@types/bintrees": "^1.0.2",
         "@types/lodash": "4.14.104",

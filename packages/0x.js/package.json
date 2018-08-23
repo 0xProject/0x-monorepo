@@ -15,51 +15,26 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && yarn build:all && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "watch_without_deps": "tsc -w",
+        "build": "yarn build:all",
         "build:all": "run-p build:umd:prod build:commonjs; exit 0;",
-        "pre_build": "run-s update_artifacts generate_contract_wrappers",
-        "copy_artifacts": "copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts",
-        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-beta-testnet/$i.json src/artifacts; done;",
-        "generate_contract_wrappers": "abi-gen --abis 'src/artifacts/@(ZRXToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
         "test:circleci": "run-s test:coverage",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "clean": "shx rm -rf _bundles lib test_temp scripts src/generated_contract_wrappers",
+        "clean": "shx rm -rf _bundles lib test_temp src/generated_contract_wrappers generated_docs",
         "build:umd:prod": "NODE_ENV=production webpack",
-        "build:commonjs": "tsc && yarn copy_artifacts && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
-        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js",
-        "docs:stage": "node scripts/stage_docs.js",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES",
-        "upload_docs_json": "aws s3 cp generated_docs/index.json $S3_URL --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json"
+        "build:commonjs": "tsc",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
-        "contracts": "ZRXToken AssetProxyOwner DummyERC20Token DummyERC721Token ERC20Proxy ERC721Proxy Exchange Forwarder OrderValidator WETH9",
         "postpublish": {
             "assets": [
                 "packages/0x.js/_bundles/index.js",
                 "packages/0x.js/_bundles/index.min.js"
-            ],
-            "docPublishConfigs": {
-                "extraFileIncludes": [
-                    "../types/src/index.ts",
-                    "../ethereum-types/src/index.ts",
-                    "../contract-wrappers/src/types.ts",
-                    "../contract-wrappers/src/contract_wrappers/ether_token_wrapper.ts",
-                    "../contract-wrappers/src/contract_wrappers/exchange_wrapper.ts",
-                    "../contract-wrappers/src/contract_wrappers/erc20_proxy_wrapper.ts",
-                    "../contract-wrappers/src/contract_wrappers/erc721_proxy_wrapper.ts",
-                    "../contract-wrappers/src/contract_wrappers/erc20_token_wrapper.ts",
-                    "../contract-wrappers/src/contract_wrappers/erc721_token_wrapper.ts",
-                    "../order-watcher/src/order_watcher/order_watcher.ts"
-                ],
-                "s3BucketPath": "s3://doc-jsons/0x.js/",
-                "s3StagingBucketPath": "s3://staging-doc-jsons/0x.js/"
-            }
+            ]
         }
     },
     "repository": {
@@ -93,7 +68,7 @@
         "sinon": "^4.0.0",
         "source-map-support": "^0.5.0",
         "tslint": "5.11.0",
-        "typedoc": "0xProject/typedoc",
+        "typedoc": "0.12.0",
         "typescript": "3.0.1",
         "webpack": "^3.1.0"
     },
@@ -102,7 +77,7 @@
         "@0xproject/base-contract": "^2.0.0-rc.1",
         "@0xproject/contract-wrappers": "^1.0.1-rc.3",
         "@0xproject/order-utils": "^1.0.1-rc.3",
-        "@0xproject/sol-compiler": "^1.0.5",
+        "@0xproject/order-watcher": "1.0.1-rc.3",
         "@0xproject/subproviders": "^1.0.5",
         "@0xproject/types": "^1.0.1-rc.4",
         "@0xproject/typescript-typings": "^1.0.4",
@@ -110,7 +85,8 @@
         "@0xproject/web3-wrapper": "^1.2.0",
         "ethereum-types": "^1.0.4",
         "ethers": "3.0.22",
-        "lodash": "^4.17.5"
+        "lodash": "^4.17.5",
+        "web3-provider-engine": "14.0.6"
     },
     "publishConfig": {
         "access": "public"

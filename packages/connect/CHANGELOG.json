@@ -5,6 +5,10 @@
             {
                 "note": "Updated for SRA v2",
                 "pr": 974
+            },
+            {
+                "note": "Stopped exporting `Order` type",
+                "pr": 924
             }
         ]
     },

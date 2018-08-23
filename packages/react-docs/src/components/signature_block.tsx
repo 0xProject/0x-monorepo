@@ -5,7 +5,6 @@ import * as React from 'react';
 import { DocsInfo } from '../docs_info';
 import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptFunction, TypescriptMethod } from '../types';
 import { constants } from '../utils/constants';
-import { typeDocUtils } from '../utils/typedoc_utils';
 
 import { Comment } from './comment';
 import { Signature } from './signature';
@@ -44,9 +43,6 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
     }
     public render(): React.ReactNode {
         const method = this.props.method;
-        if (typeDocUtils.isPrivateOrProtectedProperty(method.name)) {
-            return null;
-        }
 
         return (
             <div
@@ -81,6 +77,7 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
                         sectionName={this.props.sectionName}
                         typeDefinitionByName={this.props.typeDefinitionByName}
                         docsInfo={this.props.docsInfo}
+                        isInPopover={false}
                     />
                 </code>
                 {(method as TypescriptMethod).source && (

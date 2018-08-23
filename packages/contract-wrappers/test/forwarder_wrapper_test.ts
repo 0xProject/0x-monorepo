@@ -7,14 +7,8 @@ import * as chai from 'chai';
 import { BlockParamLiteral } from 'ethereum-types';
 import 'mocha';
 
-import {
-    ContractWrappers,
-    DecodedLogEvent,
-    ExchangeCancelEventArgs,
-    ExchangeEvents,
-    ExchangeFillEventArgs,
-    OrderStatus,
-} from '../src';
+import { ContractWrappers, ExchangeCancelEventArgs, ExchangeEvents, ExchangeFillEventArgs, OrderStatus } from '../src';
+import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';

@@ -1,4 +1,4 @@
-import { constants, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
@@ -14,6 +14,7 @@ import {
     SideToAssetToken,
     TokenByAddress,
 } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 

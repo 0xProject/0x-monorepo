@@ -6,14 +6,13 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
+        "build": "yarn pre_build && tsc",
         "pre_build": "run-s update_artifacts generate_contract_wrappers",
         "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-beta-testnet/$i.json lib/artifacts; done;",
         "generate_contract_wrappers": "abi-gen --abis 'lib/artifacts/@(Exchange|DummyERC20Token|DummyERC721Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
         "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
-        "clean": "shx rm -rf lib scripts src/generated_contract_wrappers",
-        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+        "clean": "shx rm -rf lib src/generated_contract_wrappers",
+        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*"
     },
     "config": {
         "contracts": "Exchange DummyERC20Token DummyERC721Token"
@@ -29,8 +28,6 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/fill-scenarios/README.md",
     "devDependencies": {
         "@0xproject/abi-gen": "^1.0.5",
-        "@0xproject/monorepo-scripts": "^1.0.5",
-        "@0xproject/sol-compiler": "^1.0.5",
         "@0xproject/tslint-config": "^1.0.5",
         "@types/lodash": "4.14.104",
         "copyfiles": "^2.0.0",

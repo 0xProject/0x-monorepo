@@ -19,6 +19,7 @@ import {
     AddressByContractName,
     DocAgnosticFormat,
     Event,
+    ExternalExportToLink,
     Property,
     SolidityMethod,
     SupportedDocJson,
@@ -31,9 +32,8 @@ import { constants } from '../utils/constants';
 import { Badge } from './badge';
 import { Comment } from './comment';
 import { EventDefinition } from './event_definition';
+import { PropertyBlock } from './property_block';
 import { SignatureBlock } from './signature_block';
-import { SourceLink } from './source_link';
-import { Type } from './type';
 import { TypeDefinition } from './type_definition';
 
 const networkNameToColor: { [network: string]: string } = {
@@ -129,7 +129,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                                         selectedVersion={this.props.selectedVersion}
                                         versions={this.props.availableVersions}
                                         sidebarHeader={this.props.sidebarHeader}
-                                        topLevelMenu={this.props.docsInfo.getMenu(this.props.selectedVersion)}
+                                        topLevelMenu={this.props.docsInfo.menu}
                                         menuSubsectionsBySection={menuSubsectionsBySection}
                                         onVersionSelected={this.props.onVersionSelected}
                                     />
@@ -172,7 +172,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         );
     }
     private _renderDocumentation(): React.ReactNode {
-        const subMenus = _.values(this.props.docsInfo.getMenu());
+        const subMenus = _.values(this.props.docsInfo.menu);
         const orderedSectionNames = _.flatten(subMenus);
 
         const typeDefinitionByName = this.props.docsInfo.getTypeDefinitionsByName(this.props.docAgnosticFormat);
@@ -210,6 +210,14 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             return null;
         }
 
+        const isExportedFunctionSection =
+            docSection.functions.length === 1 &&
+            _.isEmpty(docSection.types) &&
+            _.isEmpty(docSection.methods) &&
+            _.isEmpty(docSection.constructors) &&
+            _.isEmpty(docSection.properties) &&
+            _.isEmpty(docSection.events);
+
         const sortedTypes = _.sortBy(docSection.types, 'name');
         const typeDefs = _.map(sortedTypes, customType => {
             return (
@@ -218,12 +226,17 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     key={`type-${customType.name}`}
                     customType={customType}
                     docsInfo={this.props.docsInfo}
+                    typeDefinitionByName={typeDefinitionByName}
+                    isInPopover={false}
                 />
             );
         });
 
         const sortedProperties = _.sortBy(docSection.properties, 'name');
-        const propertyDefs = _.map(sortedProperties, this._renderProperty.bind(this, sectionName));
+        const propertyDefs = _.map(
+            sortedProperties,
+            this._renderProperty.bind(this, sectionName, typeDefinitionByName),
+        );
 
         const sortedMethods = _.sortBy(docSection.methods, 'name');
         const methodDefs = _.map(sortedMethods, method => {
@@ -258,13 +271,12 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     {this._renderNetworkBadgesIfExists(sectionName)}
                 </div>
                 {docSection.comment && <Comment comment={docSection.comment} />}
-                {!_.isEmpty(docSection.constructors) &&
-                    this.props.docsInfo.isVisibleConstructor(sectionName) && (
-                        <div>
-                            <h2 style={headerStyle}>Constructor</h2>
-                            {this._renderConstructors(docSection.constructors, sectionName, typeDefinitionByName)}
-                        </div>
-                    )}
+                {!_.isEmpty(docSection.constructors) && (
+                    <div>
+                        <h2 style={headerStyle}>Constructor</h2>
+                        {this._renderConstructors(docSection.constructors, sectionName, typeDefinitionByName)}
+                    </div>
+                )}
                 {!_.isEmpty(docSection.properties) && (
                     <div>
                         <h2 style={headerStyle}>Properties</h2>
@@ -279,7 +291,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 )}
                 {!_.isEmpty(docSection.functions) && (
                     <div>
-                        <h2 style={headerStyle}>Functions</h2>
+                        {!isExportedFunctionSection && <h2 style={headerStyle}>Functions</h2>}
                         <div>{functionDefs}</div>
                     </div>
                 )}
@@ -290,6 +302,8 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                             <div>{eventDefs}</div>
                         </div>
                     )}
+                {!_.isUndefined(docSection.externalExportToLink) &&
+                    this._renderExternalExports(docSection.externalExportToLink)}
                 {!_.isUndefined(typeDefs) &&
                     typeDefs.length > 0 && (
                         <div>
@@ -298,6 +312,22 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     )}
             </div>
         );
+    }
+    private _renderExternalExports(externalExportToLink: ExternalExportToLink): React.ReactNode {
+        const externalExports = _.map(externalExportToLink, (link: string, exportName: string) => {
+            return (
+                <div className="pt2" key={`external-export-${exportName}`}>
+                    <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
+                        {`import { `}
+                        <a href={link} target="_blank" style={{ color: colors.lightBlueA700, textDecoration: 'none' }}>
+                            {exportName}
+                        </a>
+                        {` } from '${this.props.docsInfo.packageName}'`}
+                    </code>
+                </div>
+            );
+        });
+        return <div>{externalExports}</div>;
     }
     private _renderNetworkBadgesIfExists(sectionName: string): React.ReactNode {
         if (this.props.docsInfo.type !== SupportedDocJson.Doxity) {
@@ -343,22 +373,21 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         });
         return <div>{constructorDefs}</div>;
     }
-    private _renderProperty(sectionName: string, property: Property): React.ReactNode {
+    private _renderProperty(
+        sectionName: string,
+        typeDefinitionByName: TypeDefinitionByName,
+        property: Property,
+    ): React.ReactNode {
         return (
-            <div key={`property-${property.name}-${property.type.name}`} className="pb3">
-                <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
-                    {property.name}:{' '}
-                    <Type type={property.type} sectionName={sectionName} docsInfo={this.props.docsInfo} />
-                </code>
-                {property.source && (
-                    <SourceLink
-                        version={this.props.selectedVersion}
-                        source={property.source}
-                        sourceUrl={this.props.sourceUrl}
-                    />
-                )}
-                {property.comment && <Comment comment={property.comment} className="py2" />}
-            </div>
+            <PropertyBlock
+                key={`property-${property.name}-${property.type.name}`}
+                property={property}
+                sectionName={sectionName}
+                docsInfo={this.props.docsInfo}
+                sourceUrl={this.props.sourceUrl}
+                selectedVersion={this.props.selectedVersion}
+                typeDefinitionByName={typeDefinitionByName}
+            />
         );
     }
     private _renderSignatureBlocks(

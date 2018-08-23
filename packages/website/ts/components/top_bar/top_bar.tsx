@@ -1,5 +1,11 @@
 import { DocsInfo, DocsMenu } from '@0xproject/react-docs';
-import { colors, MenuSubsectionsBySection, NestedSidebarMenu, Styles } from '@0xproject/react-shared';
+import {
+    colors,
+    constants as sharedConstants,
+    MenuSubsectionsBySection,
+    NestedSidebarMenu,
+    Styles,
+} from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import Menu from 'material-ui/Menu';
@@ -72,6 +78,20 @@ const styles: Styles = {
         cursor: 'pointer',
         fontWeight: 400,
     },
+};
+
+const DOC_WEBSITE_PATHS_TO_KEY = {
+    [WebsitePaths.SolCov]: Key.SolCov,
+    [WebsitePaths.SmartContracts]: Key.SmartContracts,
+    [WebsitePaths.Web3Wrapper]: Key.Web3Wrapper,
+    [WebsitePaths.SolCompiler]: Key.SolCompiler,
+    [WebsitePaths.JSONSchemas]: Key.JsonSchemas,
+    [WebsitePaths.Subproviders]: Key.Subproviders,
+    [WebsitePaths.ContractWrappers]: Key.ContractWrappers,
+    [WebsitePaths.Connect]: Key.Connect,
+    [WebsitePaths.ZeroExJs]: Key.ZeroExJs,
+    [WebsitePaths.OrderUtils]: Key.OrderUtils,
+    [WebsitePaths.OrderWatcher]: Key.OrderWatcher,
 };
 
 const DEFAULT_HEIGHT = 68;
@@ -152,6 +172,28 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
                     primaryText={this.props.translate.get(Key.Web3Wrapper, Deco.CapWords)}
+                />
+            </Link>,
+            <Link
+                key="subMenuItem-contractWrappers"
+                to={WebsitePaths.ContractWrappers}
+                className="text-decoration-none"
+            >
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.ContractWrappers, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-orderUtils" to={WebsitePaths.OrderUtils} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.OrderUtils, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-orderWatcher" to={WebsitePaths.OrderWatcher} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.OrderWatcher, Deco.CapWords)}
                 />
             </Link>,
             <Link key="subMenuItem-sol-compiler" to={WebsitePaths.SolCompiler} className="text-decoration-none">
@@ -334,75 +376,23 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     <Link to={`${WebsitePaths.Wiki}`} className="text-decoration-none">
                         <MenuItem className="py2">{this.props.translate.get(Key.Wiki, Deco.Cap)}</MenuItem>
                     </Link>
-                    {!this._isViewing0xjsDocs() && (
-                        <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
-                            <MenuItem className="py2">0x.js {this.props.translate.get(Key.Docs, Deco.Cap)}</MenuItem>
-                        </Link>
-                    )}
-                    {!this._isViewingConnectDocs() && (
-                        <Link to={WebsitePaths.Connect} className="text-decoration-none">
-                            <MenuItem className="py2">
-                                {this.props.translate.get(Key.Connect, Deco.Cap)}{' '}
-                                {this.props.translate.get(Key.Docs, Deco.Cap)}
-                            </MenuItem>
-                        </Link>
-                    )}
-                    {!this._isViewingSmartContractsDocs() && (
-                        <Link to={WebsitePaths.SmartContracts} className="text-decoration-none">
-                            <MenuItem className="py2">
-                                {this.props.translate.get(Key.SmartContract, Deco.Cap)}{' '}
-                                {this.props.translate.get(Key.Docs, Deco.Cap)}
-                            </MenuItem>
-                        </Link>
-                    )}
-                    {!this._isViewingWeb3WrapperDocs() && (
-                        <Link to={WebsitePaths.Web3Wrapper} className="text-decoration-none">
-                            <MenuItem className="py2">
-                                {this.props.translate.get(Key.Web3Wrapper, Deco.Cap)}{' '}
-                                {this.props.translate.get(Key.Docs, Deco.Cap)}
-                            </MenuItem>
-                        </Link>
-                    )}
-                    {!this._isViewingSolCompilerDocs() && (
-                        <Link to={WebsitePaths.SolCompiler} className="text-decoration-none">
-                            <MenuItem className="py2">
-                                {this.props.translate.get(Key.SolCompiler, Deco.Cap)}{' '}
-                                {this.props.translate.get(Key.Docs, Deco.Cap)}
-                            </MenuItem>
-                        </Link>
-                    )}
-                    {!this._isViewingJsonSchemasDocs() && (
-                        <Link to={WebsitePaths.JSONSchemas} className="text-decoration-none">
-                            <MenuItem className="py2">
-                                {this.props.translate.get(Key.JsonSchemas, Deco.Cap)}{' '}
-                                {this.props.translate.get(Key.Docs, Deco.Cap)}
-                            </MenuItem>
-                        </Link>
-                    )}
-                    {!this._isViewingSolCovDocs() && (
-                        <Link to={WebsitePaths.SolCov} className="text-decoration-none">
-                            <MenuItem className="py2">
-                                {this.props.translate.get(Key.SolCov, Deco.Cap)}{' '}
-                                {this.props.translate.get(Key.Docs, Deco.Cap)}
-                            </MenuItem>
-                        </Link>
-                    )}
-                    {!this._isViewingSubprovidersDocs() && (
-                        <Link to={WebsitePaths.Subproviders} className="text-decoration-none">
-                            <MenuItem className="py2">
-                                {this.props.translate.get(Key.Subproviders, Deco.Cap)}{' '}
-                                {this.props.translate.get(Key.Docs, Deco.Cap)}
-                            </MenuItem>
-                        </Link>
-                    )}
-                    {!this._isViewingEthereumTypesDocs() && (
-                        <Link to={WebsitePaths.EthereumTypes} className="text-decoration-none">
-                            <MenuItem className="py2">
-                                {this.props.translate.get(Key.EthereumTypes, Deco.Cap)}{' '}
-                                {this.props.translate.get(Key.Docs, Deco.Cap)}
-                            </MenuItem>
-                        </Link>
-                    )}
+                    {_.map(DOC_WEBSITE_PATHS_TO_KEY, (key, websitePath) => {
+                        if (!this._doesUrlInclude(websitePath)) {
+                            return (
+                                <Link
+                                    key={`drawer-menu-item-${websitePath}`}
+                                    to={websitePath}
+                                    className="text-decoration-none"
+                                >
+                                    <MenuItem className="py2">
+                                        {this.props.translate.get(key, Deco.Cap)}{' '}
+                                        {this.props.translate.get(Key.Docs, Deco.Cap)}
+                                    </MenuItem>
+                                </Link>
+                            );
+                        }
+                        return null;
+                    })}
                     {!this._isViewingPortal() && (
                         <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">
                             <MenuItem className="py2">
@@ -429,17 +419,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         );
     }
     private _renderDocsMenu(): React.ReactNode {
-        if (
-            (!this._isViewing0xjsDocs() &&
-                !this._isViewingSmartContractsDocs() &&
-                !this._isViewingWeb3WrapperDocs() &&
-                !this._isViewingSolCompilerDocs() &&
-                !this._isViewingJsonSchemasDocs() &&
-                !this._isViewingSolCovDocs() &&
-                !this._isViewingSubprovidersDocs() &&
-                !this._isViewingConnectDocs()) ||
-            _.isUndefined(this.props.menu)
-        ) {
+        const isViewingDocsPage = _.some(DOC_WEBSITE_PATHS_TO_KEY, (_key, websitePath) => {
+            return this._doesUrlInclude(websitePath);
+        });
+        // HACK: We need to make sure the SCROLL_CONTAINER is loaded before rendering the Sidebar
+        // because the sidebar renders `react-scroll` links which depend on the scroll container already
+        // being rendered.
+        const documentationContainer = document.getElementById(sharedConstants.SCROLL_CONTAINER_ID);
+        if (!isViewingDocsPage || _.isUndefined(this.props.menu) || _.isNull(documentationContainer)) {
             return undefined;
         }
         return (
@@ -488,55 +475,21 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private _isViewingFAQ(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.FAQ);
     }
-    private _isViewing0xjsDocs(): boolean {
-        return (
-            _.includes(this.props.location.pathname, WebsitePaths.ZeroExJs) ||
-            _.includes(this.props.location.pathname, WebsiteLegacyPaths.ZeroExJs)
-        );
-    }
-    private _isViewingConnectDocs(): boolean {
-        return _.includes(this.props.location.pathname, WebsitePaths.Connect);
-    }
-    private _isViewingSmartContractsDocs(): boolean {
-        return _.includes(this.props.location.pathname, WebsitePaths.SmartContracts);
-    }
-    private _isViewingWeb3WrapperDocs(): boolean {
-        return (
-            _.includes(this.props.location.pathname, WebsitePaths.Web3Wrapper) ||
-            _.includes(this.props.location.pathname, WebsiteLegacyPaths.Web3Wrapper)
-        );
-    }
-    private _isViewingSolCompilerDocs(): boolean {
-        return _.includes(this.props.location.pathname, WebsitePaths.SolCompiler);
-    }
-    private _isViewingJsonSchemasDocs(): boolean {
-        return _.includes(this.props.location.pathname, WebsitePaths.JSONSchemas);
-    }
-    private _isViewingSolCovDocs(): boolean {
-        return _.includes(this.props.location.pathname, WebsitePaths.SolCov);
-    }
-    private _isViewingSubprovidersDocs(): boolean {
-        return _.includes(this.props.location.pathname, WebsitePaths.Subproviders);
-    }
-    private _isViewingEthereumTypesDocs(): boolean {
-        return _.includes(this.props.location.pathname, WebsitePaths.EthereumTypes);
+    private _doesUrlInclude(aPath: string): boolean {
+        return _.includes(this.props.location.pathname, aPath);
     }
     private _isViewingWiki(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Wiki);
     }
     private _shouldDisplayBottomBar(): boolean {
+        const isViewingDocsPage = _.some(DOC_WEBSITE_PATHS_TO_KEY, (_key, websitePath) => {
+            return this._doesUrlInclude(websitePath);
+        });
         return (
+            isViewingDocsPage ||
             this._isViewingWiki() ||
             this._isViewingFAQ() ||
             this._isViewingDocs() ||
-            this._isViewing0xjsDocs() ||
-            this._isViewingSmartContractsDocs() ||
-            this._isViewingWeb3WrapperDocs() ||
-            this._isViewingSolCompilerDocs() ||
-            this._isViewingJsonSchemasDocs() ||
-            this._isViewingSolCovDocs() ||
-            this._isViewingSubprovidersDocs() ||
-            this._isViewingConnectDocs() ||
             this._isViewingPortal()
         );
     }
