@@ -497,4 +497,4 @@ export class TypeDocUtils {
         }
         return type;
     }
-}
+} // tslint:disable:max-file-line-count
