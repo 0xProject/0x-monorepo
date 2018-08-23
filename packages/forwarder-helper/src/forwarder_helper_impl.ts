@@ -50,8 +50,8 @@ export class ForwarderHelperImpl implements ForwarderHelper {
             amounts: compactAmounts.length > 0 ? compactAmounts : undefined,
         };
     }
-    private static _sortConfig(opts: ForwarderHelperImplConfig): ForwarderHelperImplConfig {
-        const { orders, feeOrders, remainingFillableMakerAssetAmounts, remainingFillableFeeAmounts } = opts;
+    private static _sortedConfig(config: ForwarderHelperImplConfig): ForwarderHelperImplConfig {
+        const { orders, feeOrders, remainingFillableMakerAssetAmounts, remainingFillableFeeAmounts } = config;
         // Bundle orders together with their remainingFillAmounts so that we can sort them together
         const orderWithAmounts = ForwarderHelperImpl._createSignedOrderWithAmounts(
             orders,
@@ -79,8 +79,8 @@ export class ForwarderHelperImpl implements ForwarderHelper {
             remainingFillableFeeAmounts: unbundledSortedFeeOrderWithAmounts.amounts,
         };
     }
-    constructor(opts: ForwarderHelperImplConfig) {
-        this.config = ForwarderHelperImpl._sortConfig(opts);
+    constructor(config: ForwarderHelperImplConfig) {
+        this.config = ForwarderHelperImpl._sortedConfig(config);
     }
     public getMarketBuyOrdersInfo(request: MarketBuyOrdersInfoRequest): MarketBuyOrdersInfo {
         const { makerAssetFillAmount, feePercentage } = request;
