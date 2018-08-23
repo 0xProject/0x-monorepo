@@ -202,8 +202,6 @@ export class MatchOrderTester {
         erc20BalancesByOwner: ERC20BalancesByOwner,
         erc721TokenIdsByOwner: ERC721TokenIdsByOwner,
         expectedTransferAmounts: TransferAmounts,
-        leftOrderEndState: OrderStatus,
-        rightOrderEndState: OrderStatus,
         initialTakerAssetFilledAmountLeft?: BigNumber,
         initialTakerAssetFilledAmountRight?: BigNumber,
     ): Promise<[ERC20BalancesByOwner, ERC721TokenIdsByOwner]> {
@@ -234,7 +232,9 @@ export class MatchOrderTester {
             signedOrderRight,
             orderTakerAssetFilledAmountLeft,
             orderTakerAssetFilledAmountRight,
-            expectedTransferAmounts
+            expectedTransferAmounts,
+            initialTakerAssetFilledAmountLeft,
+            initialTakerAssetFilledAmountRight
         );
         // Verify balances of makers, taker, and fee recipients
         await this._verifyBalancesAsync(
@@ -308,7 +308,9 @@ export class MatchOrderTester {
         signedOrderRight: SignedOrder,
         orderTakerAssetFilledAmountLeft: BigNumber,
         orderTakerAssetFilledAmountRight: BigNumber,
-        expectedTransferAmounts: TransferAmounts
+        expectedTransferAmounts: TransferAmounts,
+        initialTakerAssetFilledAmountLeft?: BigNumber,
+        initialTakerAssetFilledAmountRight?: BigNumber
     ) {
         // Verify state for left order: amount bought by left maker
         let amountBoughtByLeftMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
@@ -323,12 +325,18 @@ export class MatchOrderTester {
         amountBoughtByRightMaker = amountBoughtByRightMaker.minus(orderTakerAssetFilledAmountRight);
         expect(expectedTransferAmounts.amountBoughtByRightMaker, "Checking exchange state for right order").to.be.bignumber.equal(amountBoughtByRightMaker);
         // Verify left order status
+        const maxAmountBoughtByLeftMaker = initialTakerAssetFilledAmountLeft
+            ? signedOrderLeft.takerAssetAmount.sub(initialTakerAssetFilledAmountLeft)
+            : signedOrderLeft.takerAssetAmount;
         const leftOrderInfo: OrderInfo = await this._exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
-        const leftExpectedStatus = (expectedTransferAmounts.amountBoughtByLeftMaker.equals(signedOrderLeft.takerAssetAmount)) ? OrderStatus.FULLY_FILLED : OrderStatus.FILLABLE;
+        const leftExpectedStatus = (expectedTransferAmounts.amountBoughtByLeftMaker.equals(maxAmountBoughtByLeftMaker)) ? OrderStatus.FULLY_FILLED : OrderStatus.FILLABLE;
         expect(leftOrderInfo.orderStatus as OrderStatus, "Checking exchange status for left order").to.be.equal(leftExpectedStatus);
         // Verify right order status
+        const maxAmountBoughtByRightMaker = initialTakerAssetFilledAmountRight
+            ? signedOrderRight.takerAssetAmount.sub(initialTakerAssetFilledAmountRight)
+            : signedOrderRight.takerAssetAmount;
         const rightOrderInfo: OrderInfo = await this._exchangeWrapper.getOrderInfoAsync(signedOrderRight);
-        const rightExpectedStatus = (expectedTransferAmounts.amountBoughtByRightMaker.equals(signedOrderRight.takerAssetAmount)) ? OrderStatus.FULLY_FILLED : OrderStatus.FILLABLE;
+        const rightExpectedStatus = (expectedTransferAmounts.amountBoughtByRightMaker.equals(maxAmountBoughtByRightMaker)) ? OrderStatus.FULLY_FILLED : OrderStatus.FILLABLE;
         expect(rightOrderInfo.orderStatus as OrderStatus, "Checking exchange status for right order").to.be.equal(rightExpectedStatus);
     }
     /// @dev Calculates the expected balances of order makers, fee recipients, and the taker,
