@@ -168,6 +168,7 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
 }
 
+// TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {
     OrderUnfillable = 'ORDER_UNFILLABLE',
     InvalidMaker = 'INVALID_MAKER',
@@ -179,6 +180,10 @@ export enum RevertReason {
     InvalidSignature = 'INVALID_SIGNATURE',
     SignatureIllegal = 'SIGNATURE_ILLEGAL',
     SignatureUnsupported = 'SIGNATURE_UNSUPPORTED',
+    InvalidOrderSignature = 'INVALID_ORDER_SIGNATURE',
+    TakerOverpay = 'TAKER_OVERPAY',
+    OrderOverfill = 'ORDER_OVERFILL',
+    InvalidFillPrice = 'INVALID_FILL_PRICE',
     InvalidNewOrderEpoch = 'INVALID_NEW_ORDER_EPOCH',
     CompleteFillFailed = 'COMPLETE_FILL_FAILED',
     NegativeSpreadRequired = 'NEGATIVE_SPREAD_REQUIRED',
