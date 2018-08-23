@@ -331,7 +331,7 @@ contract MixinExchangeCore is
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
         require(
-            takerAssetFilledAmount <= takerAssetFilledAmount,
+            takerAssetFilledAmount <= takerAssetFillAmount,
             "BUG_TAKER_OVERPAY"
         );
         
