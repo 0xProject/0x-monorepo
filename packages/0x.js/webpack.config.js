@@ -3,6 +3,7 @@
  */
 const _ = require('lodash');
 const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const path = require('path');
 const production = process.env.NODE_ENV === 'production';
 
@@ -27,10 +28,16 @@ module.exports = {
     },
     devtool: 'source-map',
     plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-            minimize: true,
+        // TODO: Revert to webpack bundled version with webpack v4.
+        // The v3 series bundled version does not support ES6 and
+        // fails to build.
+        new UglifyJsPlugin({
             sourceMap: true,
-            include: /\.min\.js$/,
+            uglifyOptions: {
+                mangle: {
+                    reserved: ['BigNumber'],
+                },
+            },
         }),
     ],
     module: {
