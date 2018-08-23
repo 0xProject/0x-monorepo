@@ -343,13 +343,27 @@ contract MixinExchangeCore is
             "BUG_ORDER_OVERFILL"
         );
         
-        // Make sure order is filled at acceptable price
+        // Make sure order is filled at acceptable price.
+        // The order has an implied price from the makers perspective:
+        //    order price = order.makerAssetAmount / order.takerAssetAmount
+        // i.e. the number of makerAsset maker is paying per takerAsset. The
+        // maker is guaranteed to get this price or a better (lower) one. The
+        // actual price maker is getting in this fill is:
+        //    fill price = makerAssetFilledAmount / takerAssetFilledAmount
+        // We need `fill price <= order price` for the fill to be fair to maker.
+        // This amounts to:
+        //     makerAssetFilledAmount        order.makerAssetAmount
+        //    ------------------------  <=  -----------------------
+        //     takerAssetFilledAmount        order.takerAssetAmount
+        // or, equivalently:
+        //     makerAssetFilledAmount * order.takerAssetAmount <=
+        //     order.makerAssetAmount * takerAssetFilledAmount
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
         require(
             safeMul(makerAssetFilledAmount, order.takerAssetAmount)
             <= 
-            safeMul(takerAssetFilledAmount, order.makerAssetAmount),
+            safeMul(order.makerAssetAmount, takerAssetFilledAmount),
             "BUG_ORDER_FILL_PRICING"
         );
         
