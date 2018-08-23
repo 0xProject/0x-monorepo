@@ -191,7 +191,7 @@ describe.only('matchOrders', () => {
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Match signedOrderLeft with signedOrderRight
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -239,7 +239,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 16), // 50%
             };
             // Match signedOrderLeft with signedOrderRight
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -303,7 +303,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -339,7 +339,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             // Match signedOrderLeft with signedOrderRight
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -375,7 +375,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 16), // 50%
             };
             // Match signedOrderLeft with signedOrderRight
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -411,7 +411,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             // Match signedOrderLeft with signedOrderRight
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -453,7 +453,7 @@ describe.only('matchOrders', () => {
                 newERC20BalancesByOwner,
                 // tslint:disable-next-line:trailing-comma
                 newERC721TokenIdsByOwner
-            ] = await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            ] = await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -486,7 +486,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 16), // 90% (10% paid earlier)
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 16), // 90%
             };
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight2,
                 takerAddress,
@@ -531,7 +531,7 @@ describe.only('matchOrders', () => {
                 newERC20BalancesByOwner,
                 // tslint:disable-next-line:trailing-comma
                 newERC721TokenIdsByOwner
-            ] = await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            ] = await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -568,7 +568,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(96), 16), // 96%
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(96), 16), // 96%
             };
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft2,
                 signedOrderRight,
                 takerAddress,
@@ -607,7 +607,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -643,7 +643,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -679,7 +679,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -715,7 +715,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -751,7 +751,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -786,7 +786,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -919,7 +919,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 50%
             };
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,
@@ -957,7 +957,7 @@ describe.only('matchOrders', () => {
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
-            await matchOrderTester.matchOrdersAndVerifyBalancesAsync(
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
                 signedOrderRight,
                 takerAddress,

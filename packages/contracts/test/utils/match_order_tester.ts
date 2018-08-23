@@ -35,7 +35,7 @@ export class MatchOrderTester {
     /// @param transactionReceipt Transaction receipt and logs produced by Exchange.matchOrders.
     /// @param takerAddress Address of taker (account that called Exchange.matchOrders)
     /// @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
-    private static async _verifyLogsAsync(
+    private static async _assertLogsAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
         transactionReceipt: TransactionReceiptWithDecodedLogs,
@@ -66,7 +66,7 @@ export class MatchOrderTester {
         const feePaidByTakerRight = new BigNumber(rightLog.takerFeePaid);
         // Derive amount received by taker
         const amountReceivedByTaker = amountSoldByLeftMaker.sub(amountBoughtByRightMaker);
-        // Verify log values - left order
+        // Assert log values - left order
         expect(
             expectedTransferAmounts.amountBoughtByLeftMaker,
             'Checking logged amount bought by left maker',
@@ -83,7 +83,7 @@ export class MatchOrderTester {
             expectedTransferAmounts.feePaidByTakerLeft,
             'Checking logged fee paid on left order by taker',
         ).to.be.bignumber.equal(feePaidByTakerLeft);
-        // Verify log values - right order
+        // Assert log values - right order
         expect(
             expectedTransferAmounts.amountBoughtByRightMaker,
             'Checking logged amount bought by right maker',
@@ -100,18 +100,18 @@ export class MatchOrderTester {
             expectedTransferAmounts.feePaidByTakerRight,
             'Checking logged fee paid on right order by taker',
         ).to.be.bignumber.equal(feePaidByTakerRight);
-        // Verify derived amount received by taker
+        // Assert derived amount received by taker
         expect(
             expectedTransferAmounts.amountReceivedByTaker,
             'Checking logged amount received by taker',
         ).to.be.bignumber.equal(amountReceivedByTaker);
     }
-    /// @dev Verifies all expected ERC20 and ERC721 account holdings match the real holdings.
+    /// @dev Asserts all expected ERC20 and ERC721 account holdings match the real holdings.
     /// @param expectedERC20BalancesByOwner Expected ERC20 balances.
     /// @param realERC20BalancesByOwner Real ERC20 balances.
     /// @param expectedERC721TokenIdsByOwner Expected ERC721 token owners.
     /// @param realERC721TokenIdsByOwner Real ERC20 token owners.
-    private static async _verifyAllKnownBalancesAsync(
+    private static async _assertAllKnownBalancesAsync(
         expectedERC20BalancesByOwner: ERC20BalancesByOwner,
         realERC20BalancesByOwner: ERC20BalancesByOwner,
         expectedERC721TokenIdsByOwner: ERC721TokenIdsByOwner,
@@ -153,8 +153,7 @@ export class MatchOrderTester {
         this._erc721Wrapper = erc721Wrapper;
         this._feeTokenAddress = feeTokenAddress;
     }
-    /// @dev Matches two complementary orders and verifies results.
-    ///      Validation either succeeds or throws.
+    /// @dev Matches two complementary orders and asserts results.
     /// @param signedOrderLeft First matched order.
     /// @param signedOrderRight Second matched order.
     /// @param takerAddress Address of taker (the address who matched the two orders)
@@ -164,7 +163,7 @@ export class MatchOrderTester {
     /// @param initialLeftOrderFilledAmount How much left order has been filled, prior to matching orders.
     /// @param initialRightOrderFilledAmount How much the right order has been filled, prior to matching orders.
     /// @return New ERC20 balances & ERC721 token owners.
-    public async matchOrdersAndVerifyBalancesAsync(
+    public async matchOrdersAndAssertEffectsAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
         takerAddress: string,
@@ -181,8 +180,8 @@ export class MatchOrderTester {
         if (initialRightOrderFilledAmount === undefined) {
             initialRightOrderFilledAmount = new BigNumber(0);
         }
-        // Verify initial order states
-        await this._verifyInitialOrderStatesAsync(
+        // Assert initial order states
+        await this._assertInitialOrderStatesAsync(
             signedOrderLeft,
             signedOrderRight,
             initialLeftOrderFilledAmount,
@@ -196,24 +195,24 @@ export class MatchOrderTester {
         );
         const newERC20BalancesByOwner = await this._erc20Wrapper.getBalancesAsync();
         const newERC721TokenIdsByOwner = await this._erc721Wrapper.getBalancesAsync();
-        // Verify logs
-        await MatchOrderTester._verifyLogsAsync(
+        // Assert logs
+        await MatchOrderTester._assertLogsAsync(
             signedOrderLeft,
             signedOrderRight,
             transactionReceipt,
             takerAddress,
             expectedTransferAmounts,
         );
-        // Verify exchange state
-        await this._verifyExchangeStateAsync(
+        // Assert exchange state
+        await this._assertExchangeStateAsync(
             signedOrderLeft,
             signedOrderRight,
             initialLeftOrderFilledAmount,
             initialRightOrderFilledAmount,
             expectedTransferAmounts,
         );
-        // Verify balances of makers, taker, and fee recipients
-        await this._verifyBalancesAsync(
+        // Assert balances of makers, taker, and fee recipients
+        await this._assertBalancesAsync(
             signedOrderLeft,
             signedOrderRight,
             erc20BalancesByOwner,
@@ -225,25 +224,25 @@ export class MatchOrderTester {
         );
         return [newERC20BalancesByOwner, newERC721TokenIdsByOwner];
     }
-    /// @dev Verifies initial exchange state for the left and right orders.
+    /// @dev Asserts initial exchange state for the left and right orders.
     /// @param signedOrderLeft First matched order.
     /// @param signedOrderRight Second matched order.
     /// @param expectedOrderFilledAmountLeft How much left order has been filled, prior to matching orders.
     /// @param expectedOrderFilledAmountRight How much the right order has been filled, prior to matching orders.
-    private async _verifyInitialOrderStatesAsync(
+    private async _assertInitialOrderStatesAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
         expectedOrderFilledAmountLeft: BigNumber,
         expectedOrderFilledAmountRight: BigNumber,
     ): Promise<void> {
-        // Verify left order initial state
+        // Assert left order initial state
         const orderTakerAssetFilledAmountLeft = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderHashUtils.getOrderHashHex(signedOrderLeft),
         );
         expect(expectedOrderFilledAmountLeft, 'Checking inital state of left order').to.be.bignumber.equal(
             orderTakerAssetFilledAmountLeft,
         );
-        // Verify right order initial state
+        // Assert right order initial state
         const orderTakerAssetFilledAmountRight = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderHashUtils.getOrderHashHex(signedOrderRight),
         );
@@ -251,20 +250,20 @@ export class MatchOrderTester {
             orderTakerAssetFilledAmountRight,
         );
     }
-    /// @dev Verifies the exchange state against the expected amounts transferred by from matching orders.
+    /// @dev Asserts the exchange state against the expected amounts transferred by from matching orders.
     /// @param signedOrderLeft First matched order.
     /// @param signedOrderRight Second matched order.
     /// @param initialLeftOrderFilledAmount How much left order has been filled, prior to matching orders.
     /// @param initialRightOrderFilledAmount How much the right order has been filled, prior to matching orders.
     /// @return TransferAmounts A struct containing the expected transfer amounts.
-    private async _verifyExchangeStateAsync(
+    private async _assertExchangeStateAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
         initialLeftOrderFilledAmount: BigNumber,
         initialRightOrderFilledAmount: BigNumber,
         expectedTransferAmounts: TransferAmounts,
     ): Promise<void> {
-        // Verify state for left order: amount bought by left maker
+        // Assert state for left order: amount bought by left maker
         let amountBoughtByLeftMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderHashUtils.getOrderHashHex(signedOrderLeft),
         );
@@ -273,7 +272,7 @@ export class MatchOrderTester {
             expectedTransferAmounts.amountBoughtByLeftMaker,
             'Checking exchange state for left order',
         ).to.be.bignumber.equal(amountBoughtByLeftMaker);
-        // Verify state for right order: amount bought by right maker
+        // Assert state for right order: amount bought by right maker
         let amountBoughtByRightMaker = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderHashUtils.getOrderHashHex(signedOrderRight),
         );
@@ -282,7 +281,7 @@ export class MatchOrderTester {
             expectedTransferAmounts.amountBoughtByRightMaker,
             'Checking exchange state for right order',
         ).to.be.bignumber.equal(amountBoughtByRightMaker);
-        // Verify left order status
+        // Assert left order status
         const maxAmountBoughtByLeftMaker = signedOrderLeft.takerAssetAmount.minus(initialLeftOrderFilledAmount);
         const leftOrderInfo: OrderInfo = await this._exchangeWrapper.getOrderInfoAsync(signedOrderLeft);
         const leftExpectedStatus = expectedTransferAmounts.amountBoughtByLeftMaker.equals(maxAmountBoughtByLeftMaker)
@@ -291,7 +290,7 @@ export class MatchOrderTester {
         expect(leftOrderInfo.orderStatus as OrderStatus, 'Checking exchange status for left order').to.be.equal(
             leftExpectedStatus,
         );
-        // Verify right order status
+        // Assert right order status
         const maxAmountBoughtByRightMaker = signedOrderRight.takerAssetAmount.minus(initialRightOrderFilledAmount);
         const rightOrderInfo: OrderInfo = await this._exchangeWrapper.getOrderInfoAsync(signedOrderRight);
         const rightExpectedStatus = expectedTransferAmounts.amountBoughtByRightMaker.equals(maxAmountBoughtByRightMaker)
@@ -301,7 +300,7 @@ export class MatchOrderTester {
             rightExpectedStatus,
         );
     }
-    /// @dev Verifies account balances after matching orders.
+    /// @dev Asserts account balances after matching orders.
     /// @param signedOrderLeft First matched order.
     /// @param signedOrderRight Second matched order.
     /// @param initialERC20BalancesByOwner ERC20 balances prior to order matching.
@@ -310,7 +309,7 @@ export class MatchOrderTester {
     /// @param finalERC721TokenIdsByOwner ERC721 token owners after order matching.
     /// @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
     /// @param takerAddress Address of taker (account that called Exchange.matchOrders).
-    private async _verifyBalancesAsync(
+    private async _assertBalancesAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
         initialERC20BalancesByOwner: ERC20BalancesByOwner,
@@ -330,8 +329,8 @@ export class MatchOrderTester {
             initialERC721TokenIdsByOwner,
             expectedTransferAmounts,
         );
-        // Verify balances of makers, taker, and fee recipients
-        await this._verifyMakerTakerAndFeeRecipientBalancesAsync(
+        // Assert balances of makers, taker, and fee recipients
+        await this._assertMakerTakerAndFeeRecipientBalancesAsync(
             signedOrderLeft,
             signedOrderRight,
             expectedERC20BalancesByOwner,
@@ -340,8 +339,8 @@ export class MatchOrderTester {
             finalERC721TokenIdsByOwner,
             takerAddress,
         );
-        // Verify balances for all known accounts
-        await MatchOrderTester._verifyAllKnownBalancesAsync(
+        // Assert balances for all known accounts
+        await MatchOrderTester._assertAllKnownBalancesAsync(
             expectedERC20BalancesByOwner,
             finalERC20BalancesByOwner,
             expectedERC721TokenIdsByOwner,
@@ -465,7 +464,7 @@ export class MatchOrderTester {
 
         return [expectedNewERC20BalancesByOwner, expectedNewERC721TokenIdsByOwner];
     }
-    /// @dev Verifies ERC20 account balances and ERC721 token holdings that result from order matching.
+    /// @dev Asserts ERC20 account balances and ERC721 token holdings that result from order matching.
     ///      Specifically checks balances of makers, taker and fee recipients.
     /// @param signedOrderLeft First matched order.
     /// @param signedOrderRight Second matched order.
@@ -474,7 +473,7 @@ export class MatchOrderTester {
     /// @param expectedERC721TokenIdsByOwner Expected ERC721 token owners.
     /// @param realERC721TokenIdsByOwner Real ERC20 token owners.
     /// @param takerAddress Address of taker (account that called Exchange.matchOrders).
-    private async _verifyMakerTakerAndFeeRecipientBalancesAsync(
+    private async _assertMakerTakerAndFeeRecipientBalancesAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
         expectedERC20BalancesByOwner: ERC20BalancesByOwner,
