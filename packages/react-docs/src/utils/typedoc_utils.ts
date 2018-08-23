@@ -457,6 +457,7 @@ export class TypeDocUtils {
 
         let indexSignatureIfExists;
         let methodIfExists;
+        let tupleElementsIfExists;
         const doesIndexSignatureExist =
             !_.isUndefined(entity.declaration) && !_.isUndefined(entity.declaration.indexSignature);
         if (doesIndexSignatureExist) {
@@ -465,6 +466,10 @@ export class TypeDocUtils {
         } else if (!_.isUndefined(entity.declaration)) {
             const isConstructor = false;
             methodIfExists = this._convertMethod(entity.declaration, isConstructor, sectionName);
+        } else if (entity.type === TypeDocTypes.Tuple) {
+            tupleElementsIfExists = _.map(entity.elements, el => {
+                return { name: el.name, typeDocType: el.type as TypeDocTypes };
+            });
         }
 
         const elementTypeIfExists = !_.isUndefined(entity.elementType)
@@ -484,6 +489,7 @@ export class TypeDocUtils {
             types,
             method: methodIfExists,
             indexSignature: indexSignatureIfExists,
+            tupleElements: tupleElementsIfExists,
         };
         const externalLinkIfExists = this._externalTypeToLink[entity.name];
         if (!_.isUndefined(externalLinkIfExists)) {

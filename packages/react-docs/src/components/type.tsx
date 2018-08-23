@@ -167,6 +167,28 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
             });
             break;
 
+        case TypeDocTypes.Tuple:
+            const tupleTypes = _.map(type.tupleElements, t => {
+                return (
+                    <Type
+                        key={`type-tuple-${t.name}-${t.typeDocType}`}
+                        type={t}
+                        sectionName={props.sectionName}
+                        typeDefinitionByName={props.typeDefinitionByName}
+                        docsInfo={props.docsInfo}
+                        isInPopover={props.isInPopover}
+                    />
+                );
+            });
+            typeName = (
+                <div>
+                    [{_.reduce(tupleTypes, (prev: React.ReactNode, curr: React.ReactNode) => {
+                        return [prev, ', ', curr];
+                    })}]
+                </div>
+            );
+            break;
+
         default:
             throw errorUtils.spawnSwitchErr('type.typeDocType', type.typeDocType);
     }

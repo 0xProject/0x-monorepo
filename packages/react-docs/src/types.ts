@@ -31,6 +31,12 @@ export interface TypeDocType {
     declaration: TypeDocNode;
     elementType?: TypeDocType;
     indexSignature?: TypeDocNode;
+    elements?: TupleElement[];
+}
+
+export interface TupleElement {
+    type: string;
+    name: string;
 }
 
 export interface TypeDocFlags {
@@ -78,6 +84,7 @@ export enum TypeDocTypes {
     Union = 'union',
     TypeParameter = 'typeParameter',
     Intersection = 'intersection',
+    Tuple = 'tuple',
     Unknown = 'unknown',
 }
 
@@ -157,6 +164,7 @@ export interface Type {
     method?: TypescriptMethod;
     indexSignature?: IndexSignature;
     externalLink?: string;
+    tupleElements?: Type[];
 }
 
 export interface ElementType {
