@@ -209,24 +209,24 @@ contract MixinMatchOrders is
         );
 
         // Compute fees for left order
-        matchedFillResults.left.makerFeePaid = getPartialAmount(
+        matchedFillResults.left.makerFeePaid = getPartialAmountFloor(
             matchedFillResults.left.makerAssetFilledAmount,
             leftOrder.makerAssetAmount,
             leftOrder.makerFee
         );
-        matchedFillResults.left.takerFeePaid = getPartialAmount(
+        matchedFillResults.left.takerFeePaid = getPartialAmountFloor(
             matchedFillResults.left.takerAssetFilledAmount,
             leftOrder.takerAssetAmount,
             leftOrder.takerFee
         );
 
         // Compute fees for right order
-        matchedFillResults.right.makerFeePaid = getPartialAmount(
+        matchedFillResults.right.makerFeePaid = getPartialAmountFloor(
             matchedFillResults.right.makerAssetFilledAmount,
             rightOrder.makerAssetAmount,
             rightOrder.makerFee
         );
-        matchedFillResults.right.takerFeePaid = getPartialAmount(
+        matchedFillResults.right.takerFeePaid = getPartialAmountFloor(
             matchedFillResults.right.takerAssetFilledAmount,
             rightOrder.takerAssetAmount,
             rightOrder.takerFee
