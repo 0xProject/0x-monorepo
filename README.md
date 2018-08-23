@@ -8,7 +8,7 @@ This repository is a monorepo including the 0x protocol smart contracts and nume
 
 If you're developing on 0x now or are interested in using 0x infrastructure in the future, please join our [developer mailing list][dev-mailing-list-url] for updates.
 
-[website-url]: https://0xproject.com/
+[website-url]: https://0xproject.com
 [whitepaper-url]: https://0xproject.com/pdfs/0x_white_paper.pdf
 [dev-mailing-list-url]: http://eepurl.com/dx4cPf
 
