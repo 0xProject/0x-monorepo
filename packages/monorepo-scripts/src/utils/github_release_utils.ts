@@ -24,13 +24,13 @@ export async function publishReleaseNotesAsync(updatedPublishPackages: Package[]
         try {
             await execAsync(`git tag ${tagName}`);
         } catch (err) {
-            if (_.includes(err.message, 'already exists'))  {
+            if (_.includes(err.message, 'already exists')) {
                 // Noop tag creation since already exists
             } else {
                 throw err;
             }
         }
-        const {stdout} = await execAsync(`git ls-remote --tags origin refs/tags/${tagName}`);
+        const { stdout } = await execAsync(`git ls-remote --tags origin refs/tags/${tagName}`);
         if (_.isEmpty(stdout)) {
             await execAsync(`git push origin ${tagName}`);
         }

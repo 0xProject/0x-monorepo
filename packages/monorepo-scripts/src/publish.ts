@@ -103,7 +103,11 @@ function getPackagesWithDocs(allUpdatedPackages: Package[]): Package[] {
     return updatedPackagesWithDocPages;
 }
 
-async function generateAndUploadDocJsonsAsync(packagesWithDocs: Package[], isStaging: boolean, shouldUploadDocs: boolean): Promise<void> {
+async function generateAndUploadDocJsonsAsync(
+    packagesWithDocs: Package[],
+    isStaging: boolean,
+    shouldUploadDocs: boolean,
+): Promise<void> {
     for (const pkg of packagesWithDocs) {
         const nameWithoutPrefix = pkg.packageJson.name.replace('@0xproject/', '');
         const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(nameWithoutPrefix, isStaging, shouldUploadDocs);
