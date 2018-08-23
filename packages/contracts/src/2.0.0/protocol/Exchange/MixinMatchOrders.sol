@@ -165,11 +165,6 @@ contract MixinMatchOrders is
         pure
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
-        // We settle orders at the exchange rate of the right order.
-        // The amount saved by the left maker goes to the taker.
-        // Either the left or right order will be fully filled; possibly both.
-        // The left order is fully filled iff the right order can sell more than left can buy.
-
         // Derive maker asset amounts for left & right orders, given store taker assert amounts
         uint256 leftTakerAssetAmountRemaining = safeSub(leftOrder.takerAssetAmount, leftOrderTakerAssetFilledAmount);
         uint256 leftMakerAssetAmountRemaining = getPartialAmountFloor(
@@ -184,6 +179,7 @@ contract MixinMatchOrders is
             rightTakerAssetAmountRemaining
         );
 
+        // Calculate fill results for maker and taker assets
         if (leftTakerAssetAmountRemaining >= rightMakerAssetAmountRemaining) {
             // Case 1: Right order is fully filled: maximally fill right
             matchedFillResults.right.makerAssetFilledAmount = rightMakerAssetAmountRemaining;
