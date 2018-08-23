@@ -110,17 +110,17 @@ export class Compiler {
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
         return { solcInstance, fullSolcVersion };
     }
-    private static _addHexPrefixes(compiledData: solc.StandardContractOutput): void {
-        if (!_.isUndefined(compiledData.evm)) {
-            if (!_.isUndefined(compiledData.evm.bytecode) && !_.isUndefined(compiledData.evm.bytecode.object)) {
-                compiledData.evm.bytecode.object = ethUtil.addHexPrefix(compiledData.evm.bytecode.object);
+    private static _addHexPrefixes(compiledContract: solc.StandardContractOutput): void {
+        if (!_.isUndefined(compiledContract.evm)) {
+            if (!_.isUndefined(compiledContract.evm.bytecode) && !_.isUndefined(compiledContract.evm.bytecode.object)) {
+                compiledContract.evm.bytecode.object = ethUtil.addHexPrefix(compiledContract.evm.bytecode.object);
             }
             if (
-                !_.isUndefined(compiledData.evm.deployedBytecode) &&
-                !_.isUndefined(compiledData.evm.deployedBytecode.object)
+                !_.isUndefined(compiledContract.evm.deployedBytecode) &&
+                !_.isUndefined(compiledContract.evm.deployedBytecode.object)
             ) {
-                compiledData.evm.deployedBytecode.object = ethUtil.addHexPrefix(
-                    compiledData.evm.deployedBytecode.object,
+                compiledContract.evm.deployedBytecode.object = ethUtil.addHexPrefix(
+                    compiledContract.evm.deployedBytecode.object,
                 );
             }
         }
@@ -232,14 +232,14 @@ export class Compiler {
             for (const contractPath of input.contractsToCompile) {
                 const contractName = contractPathToData[contractPath].contractName;
 
-                const compiledData = compilerOutput.contracts[contractPath][contractName];
-                if (_.isUndefined(compiledData)) {
+                const compiledContract = compilerOutput.contracts[contractPath][contractName];
+                if (_.isUndefined(compiledContract)) {
                     throw new Error(
                         `Contract ${contractName} not found in ${contractPath}. Please make sure your contract has the same name as it's file name`,
                     );
                 }
 
-                Compiler._addHexPrefixes(compiledData);
+                Compiler._addHexPrefixes(compiledContract);
 
                 await this._persistCompiledContractAsync(
                     contractPath,
@@ -271,13 +271,13 @@ export class Compiler {
         fullSolcVersion: string,
         compilerOutput: solc.StandardOutput,
     ): Promise<void> {
-        const compiledData = compilerOutput.contracts[contractPath][contractName];
+        const compiledContract = compilerOutput.contracts[contractPath][contractName];
         const sourceCodes = _.mapValues(
             compilerOutput.sources,
             (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,
         );
         const contractVersion: ContractVersionData = {
-            compilerOutput: compiledData,
+            compilerOutput: compiledContract,
             sources: compilerOutput.sources,
             sourceCodes,
             sourceTreeHashHex,
