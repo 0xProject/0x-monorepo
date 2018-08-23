@@ -141,10 +141,8 @@ contract LibMath is
             return false;
         }
         uint256 remainder = mulmod(target, numerator, denominator);
-        if (remainder == 0) {
-            return false;
-        }
-        remainder = safeSub(denominator, remainder);
+        // TODO: safeMod
+        remainder = safeSub(denominator, remainder) % denominator;
         isError = safeMul(1000, remainder) >= safeMul(numerator, target);
         return isError;
     }
