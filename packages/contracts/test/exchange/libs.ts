@@ -71,13 +71,13 @@ describe('Exchange libs', () => {
     // combinatorial tests in test/exchange/internal. They test specific edge
     // cases that are not covered by the combinatorial tests.
     describe('LibMath', () => {
-        it('should return false if there is a rounding error of 0.1%', async () => {
+        it('should return true if there is a rounding error of 0.1%', async () => {
             const numerator = new BigNumber(20);
             const denominator = new BigNumber(999);
             const target = new BigNumber(50);
             // rounding error = ((20*50/999) - floor(20*50/999)) / (20*50/999) = 0.1%
             const isRoundingError = await libs.publicIsRoundingError.callAsync(numerator, denominator, target);
-            expect(isRoundingError).to.be.false();
+            expect(isRoundingError).to.be.true();
         });
         it('should return false if there is a rounding of 0.09%', async () => {
             const numerator = new BigNumber(20);

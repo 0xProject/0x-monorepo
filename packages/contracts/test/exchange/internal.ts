@@ -63,6 +63,7 @@ describe('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
     let invalidOpcodeErrorForCall: Error | undefined;
     let overflowErrorForSendTransaction: Error | undefined;
+    let divisionByZeroErrorForCall: Error | undefined;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -78,6 +79,9 @@ describe('Exchange core internal functions', () => {
         );
         overflowErrorForSendTransaction = new Error(
             await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.Uint256Overflow),
+        );
+        divisionByZeroErrorForCall = new Error(
+            await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.DivisionByZero),
         );
         invalidOpcodeErrorForCall = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
     });
@@ -215,26 +219,26 @@ describe('Exchange core internal functions', () => {
             denominator: BigNumber,
             target: BigNumber,
         ): Promise<boolean> {
-            const product = numerator.mul(target);
             if (denominator.eq(0)) {
-                throw invalidOpcodeErrorForCall;
+                throw divisionByZeroErrorForCall;
             }
-            const remainder = product.mod(denominator);
-            if (remainder.eq(0)) {
+            if (numerator.eq(0)) {
                 return false;
             }
+            if (target.eq(0)) {
+                return false;
+            }
+            const product = numerator.mul(target);
+            const remainder = product.mod(denominator);
+            const remainderTimes1000 = remainder.mul('1000');
+            const isError = remainderTimes1000.gt(product);
             if (product.greaterThan(MAX_UINT256)) {
                 throw overflowErrorForCall;
             }
-            if (product.eq(0)) {
-                throw invalidOpcodeErrorForCall;
-            }
-            const remainderTimes1000000 = remainder.mul('1000000');
-            if (remainderTimes1000000.greaterThan(MAX_UINT256)) {
+            if (remainderTimes1000.greaterThan(MAX_UINT256)) {
                 throw overflowErrorForCall;
             }
-            const errPercentageTimes1000000 = remainderTimes1000000.dividedToIntegerBy(product);
-            return errPercentageTimes1000000.greaterThan('1000');
+            return isError;
         }
         async function testIsRoundingErrorAsync(
             numerator: BigNumber,
