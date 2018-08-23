@@ -56,12 +56,12 @@ export class DocGenerateAndUploadUtils {
         // Some nodes of type reference are for subtypes, which we don't want to return.
         // We therefore filter them out.
         const SUB_TYPE_PROPERTY_NAMES = ['inheritedFrom', 'overwrites', 'extendedTypes', 'implementationOf'];
+        const TS_MAPPED_TYPES = ['Partial', 'Promise', 'Readonly', 'Pick', 'Record'];
         if (
             !_.isUndefined(node.type) &&
             _.isString(node.type) &&
             node.type === 'reference' &&
-            node.name !== 'Partial' &&
-            node.name !== 'Promise' &&
+            !_.includes(TS_MAPPED_TYPES, node.name) &&
             !_.includes(SUB_TYPE_PROPERTY_NAMES, propertyName)
         ) {
             updatedReferenceNames = _.uniq([...referenceNames, node.name]);
