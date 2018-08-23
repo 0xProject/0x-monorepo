@@ -83,7 +83,7 @@ export async function getInvalidOpcodeErrorMessageForSendTransactionAsync(): Pro
 export async function getRevertReasonOrErrorMessageForSendTransactionAsync(reason: RevertReason): Promise<string> {
     return _getGanacheOrGethError(
         `VM Exception while processing transaction: revert ${reason}`,
-        `invalid data for function output (arg="data", errorArg=undefined, errorValue=undefined, value="${abi.simpleEncode('Error(string)', reason).toString('hex')}", reason="${reason}")]`,
+        `invalid data for function output (arg="data", errorArg=undefined, errorValue=undefined, value="0x${abi.simpleEncode('Error(string)', reason).toString('hex')}", reason="${reason}")`,
     );
 }
 
@@ -97,7 +97,7 @@ export async function getRevertReasonOrErrorMessageForSendTransactionAsync(reaso
 export async function getRevertReasonOrErrorMessageForCallAsync(reason: RevertReason): Promise<string> {
     return _getGanacheOrGethError(
         `VM Exception while processing transaction: revert ${reason}`,
-        `invalid data for function output (arg="data", errorArg=undefined, errorValue=undefined, value="${abi.simpleEncode('Error(string)', reason).toString('hex')}", reason="${reason}")]`,
+        `invalid data for function output (arg="data", errorArg=undefined, errorValue=undefined, value="0x${abi.simpleEncode('Error(string)', reason).toString('hex')}", reason="${reason}")`,
     );
 }
 
