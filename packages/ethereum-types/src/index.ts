@@ -312,28 +312,6 @@ export type OutputField =
     | 'ewasm.wast'
     | 'ewasm.wasm';
 
-export interface CompilerSettings {
-    remappings?: string[];
-    optimizer?: {
-        enabled: boolean;
-        runs?: number;
-    };
-    evmVersion?: 'homestead' | 'tangerineWhistle' | 'spuriousDragon' | 'byzantium' | 'constantinople';
-    metadata?: {
-        useLiteralContent: true;
-    };
-    libraries?: {
-        [fileName: string]: {
-            [libName: string]: string;
-        };
-    };
-    outputSelection: {
-        [fileName: string]: {
-            [contractName: string]: OutputField[];
-        };
-    };
-}
-
 export interface ContractNetworks {
     [networkId: number]: ContractNetworkData;
 }
@@ -411,9 +389,7 @@ export interface CompilerSettings {
         runs?: number;
     };
     evmVersion?: 'homestead' | 'tangerineWhistle' | 'spuriousDragon' | 'byzantium' | 'constantinople';
-    metadata?: {
-        useLiteralContent: true;
-    };
+    metadata?: CompilerSettingsMetadata;
     libraries?: {
         [fileName: string]: {
             [libName: string]: string;
@@ -424,6 +400,10 @@ export interface CompilerSettings {
             [contractName: string]: OutputField[];
         };
     };
+}
+
+export interface CompilerSettingsMetadata {
+    useLiteralContent: true;
 }
 
 export interface Source {
