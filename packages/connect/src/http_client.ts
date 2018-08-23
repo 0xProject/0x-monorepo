@@ -7,31 +7,25 @@ import * as queryString from 'query-string';
 
 import { schemas as clientSchemas } from './schemas/schemas';
 import {
+    APIOrder,
+    AssetPairsRequestOpts,
+    AssetPairsResponse,
     Client,
-    FeesRequest,
-    FeesResponse,
+    FeeRecipientsResponse,
     HttpRequestOptions,
     HttpRequestType,
     OrderbookRequest,
     OrderbookResponse,
+    OrderConfigRequest,
+    OrderConfigResponse,
     OrdersRequestOpts,
+    OrdersResponse,
     PagedRequestOpts,
-    TokenPairsItem,
-    TokenPairsRequestOpts,
+    RequestOpts,
 } from './types';
 import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 
 const TRAILING_SLASHES_REGEX = /\/+$/;
-const DEFAULT_PAGED_REQUEST_OPTS: PagedRequestOpts = {
-    page: 1,
-    perPage: 100,
-};
-/**
- * This mapping defines how an option property name gets converted into an HTTP request query field
- */
-const OPTS_TO_QUERY_FIELD_MAP = {
-    perPage: 'per_page',
-};
 
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
@@ -47,12 +41,8 @@ export class HttpClient implements Client {
         if (_.isUndefined(params) || _.isEmpty(params)) {
             return '';
         }
-        // format params into a form the api expects
-        const formattedParams = _.mapKeys(params, (_value: any, key: string) => {
-            return _.get(OPTS_TO_QUERY_FIELD_MAP, key, key);
-        });
         // stringify the formatted object
-        const stringifiedParams = queryString.stringify(formattedParams);
+        const stringifiedParams = queryString.stringify(params);
         return `?${stringifiedParams}`;
     }
     /**
@@ -65,34 +55,40 @@ export class HttpClient implements Client {
         this._apiEndpointUrl = url.replace(TRAILING_SLASHES_REGEX, ''); // remove trailing slashes
     }
     /**
-     * Retrieve token pair info from the API
-     * @param   requestOpts     Options specifying token information to retrieve and page information, defaults to { page: 1, perPage: 100 }
-     * @return  The resulting TokenPairsItems that match the request
+     * Retrieve assetData pair info from the API
+     * @param   requestOpts     Options specifying assetData information to retrieve, page information, and network id.
+     * @return  The resulting AssetPairsResponse that match the request
      */
-    public async getTokenPairsAsync(requestOpts?: TokenPairsRequestOpts & PagedRequestOpts): Promise<TokenPairsItem[]> {
+    public async getAssetPairsAsync(
+        requestOpts?: RequestOpts & AssetPairsRequestOpts & PagedRequestOpts,
+    ): Promise<AssetPairsResponse> {
         if (!_.isUndefined(requestOpts)) {
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.tokenPairsRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.assetPairsRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
         }
         const httpRequestOpts = {
-            params: _.defaults({}, requestOpts, DEFAULT_PAGED_REQUEST_OPTS),
+            params: requestOpts,
         };
-        const responseJson = await this._requestAsync('/token_pairs', HttpRequestType.Get, httpRequestOpts);
-        const tokenPairs = relayerResponseJsonParsers.parseTokenPairsJson(responseJson);
-        return tokenPairs;
+        const responseJson = await this._requestAsync('/asset_pairs', HttpRequestType.Get, httpRequestOpts);
+        const assetDataPairs = relayerResponseJsonParsers.parseAssetDataPairsJson(responseJson);
+        return assetDataPairs;
     }
     /**
      * Retrieve orders from the API
-     * @param   requestOpts     Options specifying orders to retrieve and page information, defaults to { page: 1, perPage: 100 }
-     * @return  The resulting SignedOrders that match the request
+     * @param   requestOpts     Options specifying orders to retrieve and page information, page information, and network id.
+     * @return  The resulting OrdersResponse that match the request
      */
-    public async getOrdersAsync(requestOpts?: OrdersRequestOpts & PagedRequestOpts): Promise<SignedOrder[]> {
+    public async getOrdersAsync(
+        requestOpts?: RequestOpts & OrdersRequestOpts & PagedRequestOpts,
+    ): Promise<OrdersResponse> {
         if (!_.isUndefined(requestOpts)) {
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.ordersRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
         }
         const httpRequestOpts = {
-            params: _.defaults({}, requestOpts, DEFAULT_PAGED_REQUEST_OPTS),
+            params: requestOpts,
         };
         const responseJson = await this._requestAsync(`/orders`, HttpRequestType.Get, httpRequestOpts);
         const orders = relayerResponseJsonParsers.parseOrdersJson(responseJson);
@@ -101,30 +97,37 @@ export class HttpClient implements Client {
     /**
      * Retrieve a specific order from the API
      * @param   orderHash     An orderHash generated from the desired order
-     * @return  The SignedOrder that matches the supplied orderHash
+     * @return  The APIOrder that matches the supplied orderHash
      */
-    public async getOrderAsync(orderHash: string): Promise<SignedOrder> {
+    public async getOrderAsync(orderHash: string, requestOpts?: RequestOpts): Promise<APIOrder> {
+        if (!_.isUndefined(requestOpts)) {
+            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
+        }
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
-        const responseJson = await this._requestAsync(`/order/${orderHash}`, HttpRequestType.Get);
-        const order = relayerResponseJsonParsers.parseOrderJson(responseJson);
+        const httpRequestOpts = {
+            params: requestOpts,
+        };
+        const responseJson = await this._requestAsync(`/order/${orderHash}`, HttpRequestType.Get, httpRequestOpts);
+        const order = relayerResponseJsonParsers.parseAPIOrderJson(responseJson);
         return order;
     }
     /**
      * Retrieve an orderbook from the API
      * @param   request         An OrderbookRequest instance describing the specific orderbook to retrieve
-     * @param   requestOpts     Options specifying page information, defaults to { page: 1, perPage: 100 }
+     * @param   requestOpts     Options specifying page information, and network id.
      * @return  The resulting OrderbookResponse that matches the request
      */
     public async getOrderbookAsync(
         request: OrderbookRequest,
-        requestOpts?: PagedRequestOpts,
+        requestOpts?: RequestOpts & PagedRequestOpts,
     ): Promise<OrderbookResponse> {
         assert.doesConformToSchema('request', request, clientSchemas.orderBookRequestSchema);
         if (!_.isUndefined(requestOpts)) {
             assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
         }
         const httpRequestOpts = {
-            params: _.defaults({}, request, requestOpts, DEFAULT_PAGED_REQUEST_OPTS),
+            params: _.defaults({}, request, requestOpts),
         };
         const responseJson = await this._requestAsync('/orderbook', HttpRequestType.Get, httpRequestOpts);
         const orderbook = relayerResponseJsonParsers.parseOrderbookResponseJson(responseJson);
@@ -132,28 +135,55 @@ export class HttpClient implements Client {
     }
     /**
      * Retrieve fee information from the API
-     * @param   request     A FeesRequest instance describing the specific fees to retrieve
-     * @return  The resulting FeesResponse that matches the request
+     * @param   request         A OrderConfigRequest instance describing the specific fees to retrieve
+     * @param   requestOpts     Options specifying network id.
+     * @return  The resulting OrderConfigResponse that matches the request
      */
-    public async getFeesAsync(request: FeesRequest): Promise<FeesResponse> {
-        assert.doesConformToSchema('request', request, clientSchemas.feesRequestSchema);
+    public async getOrderConfigAsync(
+        request: OrderConfigRequest,
+        requestOpts?: RequestOpts,
+    ): Promise<OrderConfigResponse> {
+        if (!_.isUndefined(requestOpts)) {
+            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
+        }
+        assert.doesConformToSchema('request', request, clientSchemas.orderConfigRequestSchema);
         const httpRequestOpts = {
+            params: requestOpts,
             payload: request,
         };
-        const responseJson = await this._requestAsync('/fees', HttpRequestType.Post, httpRequestOpts);
-        const fees = relayerResponseJsonParsers.parseFeesResponseJson(responseJson);
+        const responseJson = await this._requestAsync('/order_config', HttpRequestType.Post, httpRequestOpts);
+        const fees = relayerResponseJsonParsers.parseOrderConfigResponseJson(responseJson);
         return fees;
+    }
+    /**
+     * Retrieve the list of fee recipient addresses used by the relayer.
+     * @param   requestOpts     Options specifying page information, and network id.
+     * @return  The resulting FeeRecipientsResponse
+     */
+    public async getFeeRecipientsAsync(requestOpts?: RequestOpts & PagedRequestOpts): Promise<FeeRecipientsResponse> {
+        if (!_.isUndefined(requestOpts)) {
+            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
+        }
+        const httpRequestOpts = {
+            params: requestOpts,
+        };
+        const feeRecipients = await this._requestAsync('/fee_recipients', HttpRequestType.Get, httpRequestOpts);
+        assert.doesConformToSchema('feeRecipients', feeRecipients, schemas.relayerApiFeeRecipientsResponseSchema);
+        return feeRecipients;
     }
     /**
      * Submit a signed order to the API
      * @param   signedOrder     A SignedOrder instance to submit
+     * @param   requestOpts     Options specifying network id.
      */
-    public async submitOrderAsync(signedOrder: SignedOrder): Promise<void> {
+    public async submitOrderAsync(signedOrder: SignedOrder, requestOpts?: RequestOpts): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
-        const requestOpts = {
+        const httpRequestOpts = {
+            params: requestOpts,
             payload: signedOrder,
         };
-        await this._requestAsync('/order', HttpRequestType.Post, requestOpts);
+        await this._requestAsync('/order', HttpRequestType.Post, httpRequestOpts);
     }
     private async _requestAsync(
         path: string,
