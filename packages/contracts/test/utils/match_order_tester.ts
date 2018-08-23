@@ -254,7 +254,9 @@ export class MatchOrderTester {
         const expectedOrderFilledAmountLeft = initialTakerAssetFilledAmountLeft
             ? initialTakerAssetFilledAmountLeft
             : new BigNumber(0);
-        expect(expectedOrderFilledAmountLeft).to.be.bignumber.equal(orderTakerAssetFilledAmountLeft);
+        expect(expectedOrderFilledAmountLeft, 'Checking inital state of left order').to.be.bignumber.equal(
+            orderTakerAssetFilledAmountLeft,
+        );
         // Verify Right order preconditions
         const orderTakerAssetFilledAmountRight = await this._exchangeWrapper.getTakerAssetFilledAmountAsync(
             orderHashUtils.getOrderHashHex(signedOrderRight),
@@ -262,7 +264,9 @@ export class MatchOrderTester {
         const expectedOrderFilledAmountRight = initialTakerAssetFilledAmountRight
             ? initialTakerAssetFilledAmountRight
             : new BigNumber(0);
-        expect(expectedOrderFilledAmountRight).to.be.bignumber.equal(orderTakerAssetFilledAmountRight);
+        expect(expectedOrderFilledAmountRight, 'Checking inital state of right order').to.be.bignumber.equal(
+            orderTakerAssetFilledAmountRight,
+        );
         return [orderTakerAssetFilledAmountLeft, orderTakerAssetFilledAmountRight];
     }
 
