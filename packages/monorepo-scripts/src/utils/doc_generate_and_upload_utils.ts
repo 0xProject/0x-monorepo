@@ -77,7 +77,7 @@ export class DocGenerateAndUploadUtils {
                     );
                 });
             } else if (_.isObject(nodeValue)) {
-                updatedReferenceNames = updatedReferenceNames = DocGenerateAndUploadUtils._getAllReferenceNames(
+                updatedReferenceNames = DocGenerateAndUploadUtils._getAllReferenceNames(
                     innerPropertyName,
                     nodeValue,
                     updatedReferenceNames,
