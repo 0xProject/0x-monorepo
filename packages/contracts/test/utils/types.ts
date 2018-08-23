@@ -117,21 +117,21 @@ export interface TransferAmountsByMatchOrders {
     // Left Maker
     amountBoughtByLeftMaker: BigNumber;
     amountSoldByLeftMaker: BigNumber;
-    amountReceivedByLeftMaker: BigNumber;
+    //   amountReceivedByLeftMaker: BigNumber;
     feePaidByLeftMaker: BigNumber;
     // Right Maker
     amountBoughtByRightMaker: BigNumber;
     amountSoldByRightMaker: BigNumber;
-    amountReceivedByRightMaker: BigNumber;
+    // amountReceivedByRightMaker: BigNumber;
     feePaidByRightMaker: BigNumber;
     // Taker
     amountReceivedByTaker: BigNumber;
     feePaidByTakerLeft: BigNumber;
     feePaidByTakerRight: BigNumber;
-    totalFeePaidByTaker: BigNumber;
+    // totalFeePaidByTaker: BigNumber;
     // Fee Recipients
-    feeReceivedLeft: BigNumber;
-    feeReceivedRight: BigNumber;
+    //  feeReceivedLeft: BigNumber;
+    //  feeReceivedRight: BigNumber;
 }
 
 export interface OrderInfo {
