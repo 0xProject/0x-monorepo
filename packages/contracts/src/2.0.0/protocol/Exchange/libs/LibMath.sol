@@ -39,6 +39,8 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
+        require(denominator > 0, "DIVISION_BY_ZERO");
+        
         partialAmount = safeDiv(
             safeMul(numerator, target),
             denominator
@@ -60,10 +62,7 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
+        require(denominator > 0, "DIVISION_BY_ZERO");
         
         // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)

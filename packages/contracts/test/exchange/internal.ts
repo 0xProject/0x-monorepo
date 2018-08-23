@@ -46,22 +46,6 @@ const emptySignedOrder: SignedOrder = {
 
 const overflowErrorForCall = new Error(RevertReason.Uint256Overflow);
 
-async function referenceGetPartialAmountAsync(
-    numerator: BigNumber,
-    denominator: BigNumber,
-    target: BigNumber,
-): Promise<BigNumber> {
-    const invalidOpcodeErrorForCall = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
-    const product = numerator.mul(target);
-    if (product.greaterThan(MAX_UINT256)) {
-        throw overflowErrorForCall;
-    }
-    if (denominator.eq(0)) {
-        throw invalidOpcodeErrorForCall;
-    }
-    return product.dividedToIntegerBy(denominator);
-}
-
 describe('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
     let invalidOpcodeErrorForCall: Error | undefined;
@@ -90,6 +74,21 @@ describe('Exchange core internal functions', () => {
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
     // the blockchain state for any tests which modify it!
+
+    async function referenceGetPartialAmountAsync(
+        numerator: BigNumber,
+        denominator: BigNumber,
+        target: BigNumber,
+    ): Promise<BigNumber> {
+        if (denominator.eq(0)) {
+            throw divisionByZeroErrorForCall;
+        }
+        const product = numerator.mul(target);
+        if (product.greaterThan(MAX_UINT256)) {
+            throw overflowErrorForCall;
+        }
+        return product.dividedToIntegerBy(denominator);
+    }
 
     describe('addFillResults', async () => {
         function makeFillResults(value: BigNumber): FillResults {
