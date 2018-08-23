@@ -1,0 +1,35 @@
+{
+    "name": "@0xproject/sol-doc",
+    "version": "1.0.0",
+    "description": "Solidity documentation generator",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.js",
+    "scripts": {
+        "build": "tsc",
+        "test": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --timeout 5000 --exit",
+        "lint": "tslint --project . --format stylish",
+        "clean": "shx rm -rf lib"
+    },
+    "repository": "https://github.com/0xProject/0x-monorepo.git",
+    "author": "F. Eugene Aumson",
+    "license": "Apache-2.0",
+    "private": false,
+    "dependencies": {
+        "@0xproject/react-docs": "^1.0.5",
+        "@0xproject/sol-compiler": "^1.0.5",
+        "@0xproject/utils": "^1.0.5",
+        "ethereum-types": "^1.0.4",
+        "lodash": "^4.17.10"
+    },
+    "devDependencies": {
+        "chai": "^4.1.2",
+        "chai-as-promised": "^7.1.0",
+        "chai-bignumber": "^2.0.2",
+        "dirty-chai": "^2.0.1",
+        "make-promises-safe": "^1.1.0",
+        "mocha": "^5.2.0",
+        "shx": "^0.2.2",
+        "source-map-support": "^0.5.0",
+        "tslint": "5.11.0"
+    }
+}

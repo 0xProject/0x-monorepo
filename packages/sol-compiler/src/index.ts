@@ -6,3 +6,4 @@ export {
     CompilerSettingsMetadata,
     OptimizerSettings,
 } from 'ethereum-types';
+export { StandardOutput } from 'solc';

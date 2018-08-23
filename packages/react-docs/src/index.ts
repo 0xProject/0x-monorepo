@@ -18,6 +18,7 @@ export { DocsInfo } from './docs_info';
 export {
     DocsInfoConfig,
     DocAgnosticFormat,
+    DocSection,
     DoxityDocObj,
     DocsMenu,
     SupportedDocJson,
