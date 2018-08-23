@@ -1,6 +1,6 @@
 [
     {
-        "version": "1.0.0-rc.1",
+        "version": "1.0.1-rc.1",
         "changes": [
             {
                 "note": "Add initial forwarderHelperFactory",
