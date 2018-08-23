@@ -181,7 +181,7 @@ contract MixinMatchOrders is
 
         // Calculate fill results for maker and taker assets
         if (leftTakerAssetAmountRemaining >= rightMakerAssetAmountRemaining) {
-            // Case 1: Right order is fully filled: maximally fill right
+            // Case 1: Right order is fully filled
             matchedFillResults.right.makerAssetFilledAmount = rightMakerAssetAmountRemaining;
             matchedFillResults.right.takerAssetFilledAmount = rightTakerAssetAmountRemaining;
             matchedFillResults.left.makerAssetFilledAmount = getPartialAmountFloor(
@@ -191,7 +191,7 @@ contract MixinMatchOrders is
             );
             matchedFillResults.left.takerAssetFilledAmount = matchedFillResults.right.makerAssetFilledAmount;
         } else {
-            // Case 2: Left order is fully filled: maximall fill left
+            // Case 2: Left order is fully filled
             matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
             matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
             matchedFillResults.right.makerAssetFilledAmount = matchedFillResults.left.takerAssetFilledAmount;
