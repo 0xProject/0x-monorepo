@@ -332,7 +332,7 @@ contract MixinExchangeCore is
         //       as an extra defence against potential bugs.
         require(
             takerAssetFilledAmount <= takerAssetFillAmount,
-            "BUG_TAKER_OVERPAY"
+            "TAKER_OVERPAY"
         );
         
         // Make sure order is not overfilled
@@ -340,7 +340,7 @@ contract MixinExchangeCore is
         //       as an extra defence against potential bugs.
         require(
             safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount) <= order.takerAssetAmount,
-            "BUG_ORDER_OVERFILL"
+            "ORDER_OVERFILL"
         );
         
         // Make sure order is filled at acceptable price.
@@ -364,7 +364,7 @@ contract MixinExchangeCore is
             safeMul(makerAssetFilledAmount, order.takerAssetAmount)
             <= 
             safeMul(order.makerAssetAmount, takerAssetFilledAmount),
-            "BUG_ORDER_FILL_PRICING"
+            "INVALID_FILL_PRICE"
         );
         
         // Validate fill order rounding
