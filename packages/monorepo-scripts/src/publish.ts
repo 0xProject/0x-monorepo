@@ -76,8 +76,10 @@ async function confirmAsync(message: string): Promise<void> {
     utils.log(`Calling 'lerna publish'...`);
     await lernaPublishAsync(packageToNextVersion);
     const isStaging = false;
-    await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging);
-    await publishReleaseNotesAsync(updatedPublicPackages);
+    const shouldUploadDocs = !configs.IS_LOCAL_PUBLISH;
+    await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging, shouldUploadDocs);
+    const isDryRun = configs.IS_LOCAL_PUBLISH;
+    await publishReleaseNotesAsync(updatedPublicPackages, isDryRun);
 })().catch(err => {
     utils.log(err);
     process.exit(1);
@@ -101,10 +103,9 @@ function getPackagesWithDocs(allUpdatedPackages: Package[]): Package[] {
     return updatedPackagesWithDocPages;
 }
 
-async function generateAndUploadDocJsonsAsync(packagesWithDocs: Package[], isStaging: boolean): Promise<void> {
+async function generateAndUploadDocJsonsAsync(packagesWithDocs: Package[], isStaging: boolean, shouldUploadDocs: boolean): Promise<void> {
     for (const pkg of packagesWithDocs) {
         const nameWithoutPrefix = pkg.packageJson.name.replace('@0xproject/', '');
-        const shouldUploadDocs = true;
         const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(nameWithoutPrefix, isStaging, shouldUploadDocs);
         await docGenerateAndUploadUtils.generateAndUploadDocsAsync();
     }
@@ -114,7 +115,8 @@ async function confirmDocPagesRenderAsync(packagesWithDocs: Package[]): Promise<
     // push docs to staging
     utils.log("Upload all docJson's to S3 staging...");
     const isStaging = true;
-    await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging);
+    const shouldUploadDocs = true;
+    await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging, shouldUploadDocs);
 
     // deploy website to staging
     utils.log('Deploy website to staging...');

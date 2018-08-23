@@ -12,7 +12,7 @@ import { utils } from './utils';
 
 const publishReleaseAsync = promisify(publishRelease);
 // tslint:disable-next-line:completed-docs
-export async function publishReleaseNotesAsync(updatedPublishPackages: Package[]): Promise<void> {
+export async function publishReleaseNotesAsync(updatedPublishPackages: Package[], isDryRun: boolean): Promise<void> {
     // Git push a tag representing this publish (publish-{commit-hash}) (truncate hash)
     const result = await execAsync('git log -n 1 --pretty=format:"%H"', { cwd: constants.monorepoRootPath });
     const latestGitCommit = result.stdout;
@@ -20,10 +20,22 @@ export async function publishReleaseNotesAsync(updatedPublishPackages: Package[]
     const shortenedGitCommit = latestGitCommit.slice(0, prefixLength);
     const tagName = `monorepo@${shortenedGitCommit}`;
 
-    await execAsync(`git rev-parse ${tagName}`);
-    await execAsync(`git tag ${tagName}`);
+    if (!isDryRun) {
+        try {
+            await execAsync(`git tag ${tagName}`);
+        } catch (err) {
+            if (_.includes(err.message, 'already exists'))  {
+                // Noop tag creation since already exists
+            } else {
+                throw err;
+            }
+        }
+        const {stdout} = await execAsync(`git ls-remote --tags origin refs/tags/${tagName}`);
+        if (_.isEmpty(stdout)) {
+            await execAsync(`git push origin ${tagName}`);
+        }
+    }
 
-    await execAsync(`git push origin ${tagName}`);
     const releaseName = `0x monorepo - ${shortenedGitCommit}`;
 
     let assets: string[] = [];
@@ -42,11 +54,7 @@ export async function publishReleaseNotesAsync(updatedPublishPackages: Package[]
     });
     const finalAssets = adjustAssetPaths(assets);
 
-    utils.log('Publishing release notes ', releaseName, '...');
-    // TODO: Currently publish-release doesn't let you specify the labels for each asset uploaded
-    // Ideally we would like to name the assets after the package they are from
-    // Source: https://github.com/remixz/publish-release/issues/39
-    await publishReleaseAsync({
+    const publishReleaseConfigs = {
         token: constants.githubPersonalAccessToken,
         owner: '0xProject',
         tag: tagName,
@@ -58,7 +66,19 @@ export async function publishReleaseNotesAsync(updatedPublishPackages: Package[]
         reuseRelease: true,
         reuseDraftOnly: false,
         assets: finalAssets,
-    });
+    };
+
+    if (isDryRun) {
+        utils.log(`Dry run: stopping short of publishing release notes to github`);
+        utils.log(`Would publish with configs:\n${JSON.stringify(publishReleaseConfigs, null, '\t')}`);
+        return;
+    }
+
+    utils.log('Publishing release notes ', releaseName, '...');
+    // TODO: Currently publish-release doesn't let you specify the labels for each asset uploaded
+    // Ideally we would like to name the assets after the package they are from
+    // Source: https://github.com/remixz/publish-release/issues/39
+    await publishReleaseAsync(publishReleaseConfigs);
 }
 
 // Asset paths should described from the monorepo root. This method prefixes
