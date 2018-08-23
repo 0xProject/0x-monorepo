@@ -465,7 +465,8 @@ export class MatchOrderTester {
 
         return [expectedNewERC20BalancesByOwner, expectedNewERC721TokenIdsByOwner];
     }
-    /// @dev
+    /// @dev Verifies ERC20 account balances and ERC721 token holdings that result from order matching.
+    ///      Specifically checks balances of makers, taker and fee recipients.
     /// @param signedOrderLeft First matched order.
     /// @param signedOrderRight Second matched order.
     /// @param expectedERC20BalancesByOwner Expected ERC20 balances.
