@@ -9,6 +9,8 @@
         "strictNullChecks": false,
         "noImplicitThis": false,
         "declaration": false,
+        "declarationMap": false,
+        "composite": false,
         "paths": {
             "*": ["node_modules/@types/*", "*"]
         }

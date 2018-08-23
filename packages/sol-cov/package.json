@@ -8,8 +8,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && tsc",
+        "build": "yarn pre_build && tsc -b",
         "pre_build": "run-s copy_test_fixtures",
         "lint": "tslint --project .",
         "test": "run-s compile_test run_mocha",

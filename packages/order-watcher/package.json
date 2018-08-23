@@ -12,8 +12,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && tsc",
+        "build": "yarn pre_build && tsc -b",
         "pre_build": "run-s update_artifacts copy_artifacts generate_contract_wrappers",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
         "generate_contract_wrappers": "abi-gen --abis 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",

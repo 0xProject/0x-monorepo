@@ -3,14 +3,56 @@
         "module": "commonjs",
         "target": "es5",
         "lib": ["es2017", "dom"],
-        "sourceMap": true,
-        "declaration": true,
         "experimentalDecorators": true,
         "downlevelIteration": true,
         "noImplicitReturns": true,
         "pretty": true,
         "skipLibCheck": true,
         "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
-        "strict": true
-    }
+        "strict": true,
+        // These settings are required for TypeScript project references
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true
+    },
+    // The root of the project is just a list of references and does not contain
+    // any top-level TypeScript code.
+    "include": [],
+    "references": [
+        { "path": "./packages/monorepo-scripts" },
+        { "path": "./packages/tslint-config" },
+        { "path": "./packages/ethereum-types" },
+        { "path": "./packages/types" },
+        { "path": "./packages/typescript-typings" },
+        { "path": "./packages/sol-resolver" },
+        { "path": "./packages/utils" },
+        { "path": "./packages/abi-gen" },
+        { "path": "./packages/connect" },
+        { "path": "./packages/json-schemas" },
+        { "path": "./packages/assert" },
+        { "path": "./packages/sra-api" },
+        { "path": "./packages/sra-report" },
+        { "path": "./packages/web3-wrapper" },
+        { "path": "./packages/base-contract" },
+        { "path": "./packages/subproviders" },
+        { "path": "./packages/dev-utils" },
+        { "path": "./packages/testnet-faucets" },
+        { "path": "./packages/react-shared" },
+        { "path": "./packages/sol-compiler" },
+        { "path": "./packages/order-utils" },
+        { "path": "./packages/react-docs" },
+        { "path": "./packages/sol-cov" },
+        { "path": "./packages/contracts" },
+        { "path": "./packages/fill-scenarios" },
+        { "path": "./packages/metacoin" },
+        { "path": "./packages/migrations" },
+        { "path": "./packages/react-docs-example" },
+        // Skipping website because it requires allowJs: false and this is
+        // incompatible with project references.
+        // { "path": "./packages/website" }
+        { "path": "./packages/contract-wrappers" },
+        { "path": "./packages/0x.js" },
+        { "path": "./packages/order-watcher" }
+    ]
 }

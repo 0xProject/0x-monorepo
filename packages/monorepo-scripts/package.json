@@ -9,8 +9,7 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "watch_without_deps": "tsc -w",
-        "build": "tsc",
+        "build": "tsc -b",
         "lint": "tslint --project .",
         "clean": "shx rm -rf lib",
         "test:publish": "run-s build script:publish",

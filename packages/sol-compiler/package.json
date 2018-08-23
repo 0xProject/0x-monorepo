@@ -8,8 +8,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && tsc",
+        "build": "yarn pre_build && tsc -b",
         "pre_build": "run-s update_contract_fixtures",
         "update_contract_fixtures": "copyfiles 'test/fixtures/contracts/**/*' ./lib",
         "test": "yarn run_mocha",

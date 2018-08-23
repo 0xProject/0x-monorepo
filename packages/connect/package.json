@@ -15,8 +15,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "tsc -w",
-        "build": "tsc",
+        "build": "tsc -b",
         "clean": "shx rm -rf lib test_temp generated_docs",
         "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
         "lint": "tslint --project .",
