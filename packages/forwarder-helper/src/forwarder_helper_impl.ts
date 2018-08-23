@@ -1,16 +1,13 @@
-import { marketUtils, sortingUtils } from '@0xproject/order-utils';
+import { marketUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
 import { ForwarderHelper, ForwarderHelperError, MarketBuyOrdersInfo, MarketBuyOrdersInfoRequest } from './types';
+import { forwarderHelperImplConfigUtils } from './utils/forwarder_helper_impl_config_utils';
 
 const SLIPPAGE_PERCENTAGE = new BigNumber(0.2); // 20% slippage protection, possibly move this into request interface
-
-interface SignedOrderWithAmount extends SignedOrder {
-    remainingFillAmount?: BigNumber;
-}
 
 export interface ForwarderHelperImplConfig {
     orders: SignedOrder[];
@@ -21,66 +18,8 @@ export interface ForwarderHelperImplConfig {
 
 export class ForwarderHelperImpl implements ForwarderHelper {
     public readonly config: ForwarderHelperImplConfig;
-    private static _createSignedOrderWithAmounts(
-        orders: SignedOrder[],
-        amounts?: BigNumber[],
-    ): SignedOrderWithAmount[] {
-        const ordersAndAmounts = _.map(orders, (order, index) => {
-            return {
-                ...order,
-                remainingFillAmount: _.nth(amounts, index),
-            };
-        });
-        return ordersAndAmounts;
-    }
-    private static _unbundleSignedOrderWithAmounts(
-        signedOrderWithAmounts: SignedOrderWithAmount[],
-    ): { orders: SignedOrder[]; amounts?: BigNumber[] } {
-        const orders = _.map(signedOrderWithAmounts, order => {
-            const { remainingFillAmount, ...rest } = order;
-            return rest;
-        });
-        const amounts = _.map(signedOrderWithAmounts, order => {
-            const { remainingFillAmount } = order;
-            return remainingFillAmount;
-        });
-        const compactAmounts = _.compact(amounts);
-        return {
-            orders,
-            amounts: compactAmounts.length > 0 ? compactAmounts : undefined,
-        };
-    }
-    private static _sortedConfig(config: ForwarderHelperImplConfig): ForwarderHelperImplConfig {
-        const { orders, feeOrders, remainingFillableMakerAssetAmounts, remainingFillableFeeAmounts } = config;
-        // Bundle orders together with their remainingFillAmounts so that we can sort them together
-        const orderWithAmounts = ForwarderHelperImpl._createSignedOrderWithAmounts(
-            orders,
-            remainingFillableMakerAssetAmounts,
-        );
-        // TODO: provide a feeRate to the sorting function to more accurately sort based on the current market for ZRX tokens
-        const sortedOrderWithAmounts = sortingUtils.sortOrdersByFeeAdjustedRate(orderWithAmounts);
-        // Unbundle after sorting
-        const unbundledSortedOrderWithAmounts = ForwarderHelperImpl._unbundleSignedOrderWithAmounts(
-            sortedOrderWithAmounts,
-        );
-        // Do the same bundling + unbundling for feeOrder sorting
-        const feeOrderWithAmounts = ForwarderHelperImpl._createSignedOrderWithAmounts(
-            feeOrders,
-            remainingFillableFeeAmounts,
-        );
-        const sortedFeeOrderWithAmounts = sortingUtils.sortFeeOrdersByFeeAdjustedRate(feeOrderWithAmounts);
-        const unbundledSortedFeeOrderWithAmounts = ForwarderHelperImpl._unbundleSignedOrderWithAmounts(
-            sortedFeeOrderWithAmounts,
-        );
-        return {
-            orders: unbundledSortedOrderWithAmounts.orders,
-            feeOrders: unbundledSortedFeeOrderWithAmounts.orders,
-            remainingFillableMakerAssetAmounts: unbundledSortedOrderWithAmounts.amounts,
-            remainingFillableFeeAmounts: unbundledSortedFeeOrderWithAmounts.amounts,
-        };
-    }
     constructor(config: ForwarderHelperImplConfig) {
-        this.config = ForwarderHelperImpl._sortedConfig(config);
+        this.config = forwarderHelperImplConfigUtils.sortedConfig(config);
     }
     public getMarketBuyOrdersInfo(request: MarketBuyOrdersInfoRequest): MarketBuyOrdersInfo {
         const { makerAssetFillAmount, feePercentage } = request;
