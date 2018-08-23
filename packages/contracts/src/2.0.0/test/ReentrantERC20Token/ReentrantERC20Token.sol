@@ -19,6 +19,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "../../utils/LibBytes/LibBytes.sol";
 import "../../tokens/ERC20Token/ERC20Token.sol";
 import "../../protocol/Exchange/interfaces/IExchange.sol";
 import "../../protocol/Exchange/libs/LibOrder.sol";
@@ -27,8 +28,16 @@ import "../../protocol/Exchange/libs/LibOrder.sol";
 contract ReentrantERC20Token is
     ERC20Token
 {
+
+    using LibBytes for bytes;
+
     // solhint-disable-next-line var-name-mixedcase
     IExchange internal EXCHANGE;
+
+    bytes internal constant REENTRANCY_ILLEGAL_REVERT_REASON = abi.encodeWithSelector(
+        bytes4(keccak256("Error(string)")),
+        "REENTRANCY_ILLEGAL"
+    );
 
     // All of these functions are potentially vulnerable to reentrancy
     enum ExchangeFunction {
@@ -42,7 +51,10 @@ contract ReentrantERC20Token is
         MARKET_BUY_ORDERS_NO_THROW,
         MARKET_SELL_ORDERS,
         MARKET_SELL_ORDERS_NO_THROW,
-        MATCH_ORDERS
+        MATCH_ORDERS,
+        CANCEL_ORDER,
+        CANCEL_ORDERS_UP_TO,
+        SET_SIGNATURE_VALIDATOR_APPROVAL
     }
 
     uint8 internal currentFunctionId = 0;
@@ -75,99 +87,127 @@ contract ReentrantERC20Token is
     {
         // This order would normally be invalid, but it will be used strictly for testing reentrnacy.
         // Any reentrancy checks will happen before any other checks that invalidate the order.
-        LibOrder.Order memory order = LibOrder.Order({
-            makerAddress: address(0),
-            takerAddress: address(0),
-            feeRecipientAddress: address(0),
-            senderAddress: address(0),
-            makerAssetAmount: 0,
-            takerAssetAmount: 0,
-            makerFee: 0,
-            takerFee: 0,
-            expirationTimeSeconds: 0,
-            salt: 0,
-            makerAssetData: "",
-            takerAssetData: ""
-        });
+        LibOrder.Order memory order;
 
         // Initialize remaining null parameters
-        bytes memory signature = "";
-        LibOrder.Order[] memory orders = new LibOrder.Order[](1);
-        orders[0] = order;
-        uint256[] memory takerAssetFillAmounts = new uint256[](1);
-        takerAssetFillAmounts[0] = 0;
-        bytes[] memory signatures = new bytes[](1);
-        signatures[0] = signature;
-    
-        // Attempt to reenter Exchange by calling function with currentFunctionId
+        bytes memory signature;
+        LibOrder.Order[] memory orders;
+        uint256[] memory takerAssetFillAmounts;
+        bytes[] memory signatures;
+        bytes memory calldata;
+
+        // Create calldata for function that corresponds to currentFunctionId
         if (currentFunctionId == uint8(ExchangeFunction.FILL_ORDER)) {
-            EXCHANGE.fillOrder(
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.fillOrder.selector,
                 order,
                 0,
                 signature
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.FILL_OR_KILL_ORDER)) {
-            EXCHANGE.fillOrKillOrder(
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.fillOrKillOrder.selector,
                 order,
                 0,
                 signature
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.FILL_ORDER_NO_THROW)) {
-            EXCHANGE.fillOrderNoThrow(
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.fillOrderNoThrow.selector,
                 order,
                 0,
                 signature
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_ORDERS)) {
-            EXCHANGE.batchFillOrders(
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.batchFillOrders.selector,
                 orders,
                 takerAssetFillAmounts,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_OR_KILL_ORDERS)) {
-            EXCHANGE.batchFillOrKillOrders(
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.batchFillOrKillOrders.selector,
                 orders,
                 takerAssetFillAmounts,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_ORDERS_NO_THROW)) {
-            EXCHANGE.batchFillOrdersNoThrow(
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.batchFillOrdersNoThrow.selector,
                 orders,
                 takerAssetFillAmounts,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_BUY_ORDERS)) {
-            EXCHANGE.marketBuyOrders(
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.marketBuyOrders.selector,
                 orders,
                 0,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_BUY_ORDERS_NO_THROW)) {
-            EXCHANGE.marketBuyOrdersNoThrow(
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.marketBuyOrdersNoThrow.selector,
                 orders,
                 0,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_SELL_ORDERS)) {
-            EXCHANGE.marketSellOrders(
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.marketSellOrders.selector,
                 orders,
                 0,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_SELL_ORDERS_NO_THROW)) {
-            EXCHANGE.marketSellOrdersNoThrow(
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.marketSellOrdersNoThrow.selector,
                 orders,
                 0,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MATCH_ORDERS)) {
-            EXCHANGE.matchOrders(
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.matchOrders.selector,
                 order,
                 order,
                 signature,
                 signature
             );
+        } else if (currentFunctionId == uint8(ExchangeFunction.CANCEL_ORDER)) {
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.cancelOrder.selector,
+                order
+            );
+        } else if (currentFunctionId == uint8(ExchangeFunction.CANCEL_ORDERS_UP_TO)) {
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.cancelOrdersUpTo.selector,
+                0
+            );
+        } else if (currentFunctionId == uint8(ExchangeFunction.SET_SIGNATURE_VALIDATOR_APPROVAL)) {
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.setSignatureValidatorApproval.selector,
+                address(0),
+                false
+            );
         }
+
+        // Call Exchange function, swallow error
+        address(EXCHANGE).call(calldata);
+
+        // Revert reason is 100 bytes
+        bytes memory returnData = new bytes(100);
+
+        // Copy return data
+        assembly {
+            returndatacopy(add(returnData, 32), 0, 100)
+        }
+
+        // Revert if function reverted with REENTRANCY_ILLEGAL error
+        require(!REENTRANCY_ILLEGAL_REVERT_REASON.equals(returnData));
+
+        // Transfer will return true if function failed for any other reason
         return true;
     }
 }
