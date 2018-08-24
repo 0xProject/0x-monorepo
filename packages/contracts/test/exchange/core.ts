@@ -14,7 +14,7 @@ import { DummyNoReturnERC20TokenContract } from '../../generated_contract_wrappe
 import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
 import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated_contract_wrappers/exchange';
-import { TestStaticCallContract } from '../../generated_contract_wrappers/test_static_call';
+import { TestStaticCallReceiverContract } from '../../generated_contract_wrappers/test_static_call_receiver';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
 import { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
@@ -45,8 +45,8 @@ describe('Exchange core', () => {
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
-    let maliciousWallet: TestStaticCallContract;
-    let maliciousValidator: TestStaticCallContract;
+    let maliciousWallet: TestStaticCallReceiverContract;
+    let maliciousValidator: TestStaticCallReceiverContract;
 
     let signedOrder: SignedOrder;
     let erc20Balances: ERC20BalancesByOwner;
@@ -112,8 +112,8 @@ describe('Exchange core', () => {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
-        maliciousWallet = maliciousValidator = await TestStaticCallContract.deployFrom0xArtifactAsync(
-            artifacts.TestStaticCall,
+        maliciousWallet = maliciousValidator = await TestStaticCallReceiverContract.deployFrom0xArtifactAsync(
+            artifacts.TestStaticCallReceiver,
             provider,
             txDefaults,
         );

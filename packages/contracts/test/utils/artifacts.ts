@@ -23,7 +23,7 @@ import * as TestExchangeInternals from '../../artifacts/TestExchangeInternals.js
 import * as TestLibBytes from '../../artifacts/TestLibBytes.json';
 import * as TestLibs from '../../artifacts/TestLibs.json';
 import * as TestSignatureValidator from '../../artifacts/TestSignatureValidator.json';
-import * as TestStaticCall from '../../artifacts/TestStaticCall.json';
+import * as TestStaticCallReceiver from '../../artifacts/TestStaticCallReceiver.json';
 import * as TokenRegistry from '../../artifacts/TokenRegistry.json';
 import * as Validator from '../../artifacts/Validator.json';
 import * as Wallet from '../../artifacts/Wallet.json';
@@ -56,7 +56,7 @@ export const artifacts = {
     TestLibs: (TestLibs as any) as ContractArtifact,
     TestExchangeInternals: (TestExchangeInternals as any) as ContractArtifact,
     TestSignatureValidator: (TestSignatureValidator as any) as ContractArtifact,
-    TestStaticCall: (TestStaticCall as any) as ContractArtifact,
+    TestStaticCallReceiver: (TestStaticCallReceiver as any) as ContractArtifact,
     Validator: (Validator as any) as ContractArtifact,
     Wallet: (Wallet as any) as ContractArtifact,
     TokenRegistry: (TokenRegistry as any) as ContractArtifact,

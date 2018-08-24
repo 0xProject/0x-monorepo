@@ -21,7 +21,8 @@ pragma solidity 0.4.24;
 import "../../tokens/ERC20Token/IERC20Token.sol";
 
 
-contract TestStaticCall {
+// solhint-disable no-unused-vars
+contract TestStaticCallReceiver {
 
     uint256 internal state = 1;
 

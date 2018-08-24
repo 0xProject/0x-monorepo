@@ -9,7 +9,7 @@ import {
     TestSignatureValidatorContract,
     TestSignatureValidatorSignatureValidatorApprovalEventArgs,
 } from '../../generated_contract_wrappers/test_signature_validator';
-import { TestStaticCallContract } from '../../generated_contract_wrappers/test_static_call';
+import { TestStaticCallReceiverContract } from '../../generated_contract_wrappers/test_static_call_receiver';
 import { ValidatorContract } from '../../generated_contract_wrappers/validator';
 import { WalletContract } from '../../generated_contract_wrappers/wallet';
 import { addressUtils } from '../utils/address_utils';
@@ -32,8 +32,8 @@ describe('MixinSignatureValidator', () => {
     let signatureValidator: TestSignatureValidatorContract;
     let testWallet: WalletContract;
     let testValidator: ValidatorContract;
-    let maliciousWallet: TestStaticCallContract;
-    let maliciousValidator: TestStaticCallContract;
+    let maliciousWallet: TestStaticCallReceiverContract;
+    let maliciousValidator: TestStaticCallReceiverContract;
     let signerAddress: string;
     let signerPrivateKey: Buffer;
     let notSignerAddress: string;
@@ -68,8 +68,8 @@ describe('MixinSignatureValidator', () => {
             txDefaults,
             signerAddress,
         );
-        maliciousWallet = maliciousValidator = await TestStaticCallContract.deployFrom0xArtifactAsync(
-            artifacts.TestStaticCall,
+        maliciousWallet = maliciousValidator = await TestStaticCallReceiverContract.deployFrom0xArtifactAsync(
+            artifacts.TestStaticCallReceiver,
             provider,
             txDefaults,
         );
