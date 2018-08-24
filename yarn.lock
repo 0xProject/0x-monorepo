@@ -11202,14 +11202,14 @@ react-helmet@^5.2.0:
     prop-types "^15.5.4"
     react-side-effect "^1.1.0"
 
-react-highlight@0xproject/react-highlight#e5201e6a6bf276d3a6bf4828252c886c386d3666:
-  version "0.10.0"
-  resolved "https://codeload.github.com/0xproject/react-highlight/tar.gz/e5201e6a6bf276d3a6bf4828252c886c386d3666"
+react-highlight@0xproject/react-highlight#2f40a42e0a3f0ad126f9f42d505b97b603fc7162:
+  version "1.0.0"
+  resolved "https://codeload.github.com/0xproject/react-highlight/tar.gz/2f40a42e0a3f0ad126f9f42d505b97b603fc7162"
   dependencies:
     highlight.js "^9.11.0"
     highlightjs-solidity "^1.0.5"
-    react "^15.5.4"
-    react-dom "^15.5.4"
+    react "^16.4.2"
+    react-dom "^16.4.2"
 
 react-hot-loader@^4.3.3:
   version "4.3.4"
