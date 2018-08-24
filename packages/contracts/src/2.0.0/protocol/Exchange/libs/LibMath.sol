@@ -46,7 +46,7 @@ contract LibMath is
         return partialAmount;
     }
 
-    /// @dev Checks if rounding error > 0.1%.
+    /// @dev Checks if rounding error >= 0.1%.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
@@ -60,16 +60,35 @@ contract LibMath is
         pure
         returns (bool isError)
     {
-        uint256 remainder = mulmod(target, numerator, denominator);
-        if (remainder == 0) {
-            return false; // No rounding error.
+        require(denominator > 0, "DIVISION_BY_ZERO");
+        
+        // The absolute rounding error is the difference between the rounded
+        // value and the ideal value. The relative rounding error is the
+        // absolute rounding error divided by the absolute value of the
+        // ideal value. This is undefined when the ideal value is zero.
+        //
+        // The ideal value is `numerator * target / denominator`.
+        // Let's call `numerator * target % denominator` the remainder.
+        // The absolute error is `remainder / denominator`.
+        //
+        // When the ideal value is zero, we require the absolute error to
+        // be zero. Fortunately, this is always the case. The ideal value is
+        // zero iff `numerator == 0` and/or `target == 0`. In this case the
+        // remainder and absolute error are also zero. 
+        if (target == 0 || numerator == 0) {
+            return false;
         }
-
-        uint256 errPercentageTimes1000000 = safeDiv(
-            safeMul(remainder, 1000000),
-            safeMul(numerator, target)
-        );
-        isError = errPercentageTimes1000000 > 1000;
+        // Otherwise, we want the relative rounding error to be strictly
+        // less than 0.1%.
+        // The relative error is `remainder / numerator * target`.
+        // We want the relative error less than 1 / 1000:
+        //        remainder / numerator * denominator  <  1 / 1000
+        // or equivalently:
+        //        1000 * remainder  <  numerator * target
+        // so we have a rounding error iff:
+        //        1000 * remainder  >=  numerator * target
+        uint256 remainder = mulmod(target, numerator, denominator);
+        isError = safeMul(1000, remainder) >= safeMul(numerator, target);
         return isError;
     }
 }
