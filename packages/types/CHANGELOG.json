@@ -5,6 +5,10 @@
             {
                 "note": "Add WalletError and ValidatorError revert reasons",
                 "pr": 1012
+            },
+            {
+                "note": "Remove Caller and Trezor SignatureTypes",
+                "pr": 1015
             }
         ]
     },

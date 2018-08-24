@@ -414,53 +414,6 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.false();
         });
 
-        it('should return true when SignatureType=Trezor and signature is valid', async () => {
-            // Create Trezor signature
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithTrezorPrefixHex = signatureUtils.addSignedMessagePrefix(orderHashHex, SignerType.Trezor);
-            const orderHashWithTrezorPrefixBuffer = ethUtil.toBuffer(orderHashWithTrezorPrefixHex);
-            const ecSignature = ethUtil.ecsign(orderHashWithTrezorPrefixBuffer, signerPrivateKey);
-            // Create 0x signature from Trezor signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.Trezor}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            // Validate signature
-            const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                signerAddress,
-                signatureHex,
-            );
-            expect(isValidSignature).to.be.true();
-        });
-
-        it('should return false when SignatureType=Trezor and signature is invalid', async () => {
-            // Create Trezor signature
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithTrezorPrefixHex = signatureUtils.addSignedMessagePrefix(orderHashHex, SignerType.Trezor);
-            const orderHashWithTrezorPrefixBuffer = ethUtil.toBuffer(orderHashWithTrezorPrefixHex);
-            const ecSignature = ethUtil.ecsign(orderHashWithTrezorPrefixBuffer, signerPrivateKey);
-            // Create 0x signature from Trezor signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.Trezor}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            // Validate signature.
-            // This will fail because `signerAddress` signed the message, but we're passing in `notSignerAddress`
-            const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                notSignerAddress,
-                signatureHex,
-            );
-            expect(isValidSignature).to.be.false();
-        });
-
         it('should return true when SignatureType=Presigned and signer has presigned hash', async () => {
             // Presign hash
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
