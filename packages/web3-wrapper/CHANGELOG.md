@@ -5,7 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.2.0 - _August 13, 2018_
+## v2.0.0 - _August 24, 2018_
+
+    * Export types:  `BlockParam`, `TxData`, `Provider`, `TransactionReceipt`, `Transaction`, `TraceParams`, `TransactionTrace``, BlockWithoutTransactionDat`a, `LogEntry`, `FilterObject`, `CallData`, `TransactionReceiptWithDecodedLogs`, `BlockWithTransactionData``, LogTopi`c, `JSONRPCRequestPayload`, `TransactionReceiptStatus`, `DecodedLogArgs`, `StructLog`, `JSONRPCErrorCallback``, BlockParamLitera`l, `ContractEventArg`, `DecodedLogEntry`, `LogEntryEvent`, `OpCode`, `TxDataPayable`, `JSONRPCResponsePayload``, RawLogEntr`y, `DecodedLogEntryEvent`, `LogWithDecodedArgs`, `AbiDefinition`, `RawLog`, `FunctionAbi`, `EventAbi`, `EventParameter``, MethodAb`i, `ConstructorAbi`, `FallbackAbi`, `DataItem`, `ConstructorStateMutability` and `StateMutability` (#924)
+    * Stop exporting types: `CallTxDataBaseRPC` and `AbstractBlockRPC` (#924)
+    * Export `AbiDecoder` class (#924)
+
+## v1.2.0 - _August 14, 2018_
 
     * Export marshaller to convert between RPC and user-space data formats (#938)
     * Export RPC types (#938)
@@ -26,7 +32,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 19, 2018_
+## v1.0.0 - _July 20, 2018_
 
     * Stop exporting `marshaller` utility file. (#902)
     * Export `marshaller` utility file. (#829)
@@ -45,7 +51,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.7.0 - _June 3, 2018_
+## v0.7.0 - _June 4, 2018_
 
     * Add `web3Wrapper.getContractCodeAsync` (#675)
     * Add `web3Wrapper.getTransactionTraceAsync` (#675)
@@ -60,7 +66,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.6.3 - _May 4, 2018_
+## v0.6.3 - _May 5, 2018_
 
     * Dependencies updated
 

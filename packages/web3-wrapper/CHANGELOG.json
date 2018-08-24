@@ -15,7 +15,8 @@
                 "note": "Export `AbiDecoder` class",
                 "pr": 924
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "1.2.0",

@@ -6,7 +6,8 @@
                 "note": "Add takerAddress to /orders parameters",
                 "pr": 974
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "1.0.1-rc.4",
