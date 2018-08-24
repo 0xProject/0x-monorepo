@@ -29,7 +29,7 @@ const TRAILING_SLASHES_REGEX = /\/+$/;
 
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
- * that implement the standard relayer API v0
+ * that implement the standard relayer API v2
  */
 export class HttpClient implements Client {
     private readonly _apiEndpointUrl: string;

@@ -1,6 +1,11 @@
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
+export enum ForwarderHelperFactoryError {
+    NoEtherTokenContractFound = 'NO_ETHER_TOKEN_CONTRACT_FOUND',
+    NoZrxTokenContractFound = 'NO_ZRX_TOKEN_CONTRACT_FOUND',
+}
+
 export interface ForwarderHelper {
     /**
      * Given a MarketBuyOrdersInfoRequest, returns a MarketBuyOrdersInfo containing all information relevant to fulfilling the request

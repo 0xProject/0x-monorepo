@@ -40,18 +40,21 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/forwarder-helper/README.md",
     "dependencies": {
         "@0xproject/assert": "^1.0.8",
+        "@0xproject/connect": "^2.0.0",
+        "@0xproject/contract-wrappers": "^1.0.1",
         "@0xproject/json-schemas": "^1.0.1",
         "@0xproject/order-utils": "^1.0.1",
+        "@0xproject/subproviders": "^2.0.2",
         "@0xproject/types": "^1.0.1",
         "@0xproject/typescript-typings": "^2.0.0",
         "@0xproject/utils": "^1.0.8",
-        "@types/node": "^8.0.53",
         "lodash": "^4.17.10"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.7",
         "@types/lodash": "^4.14.116",
         "@types/mocha": "^2.2.42",
+        "@types/node": "^8.0.53",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^2.0.1",
