@@ -347,7 +347,7 @@ export const signatureUtils = {
 };
 
 function hashTrezorPersonalMessage(message: Buffer): Buffer {
-    const prefix = ethUtil.toBuffer('\x19Ethereum Signed Message:\n' + message.byteLength);
+    const prefix = ethUtil.toBuffer(`\x19Ethereum Signed Message:\n${message.byteLength}`);
     return ethUtil.sha3(Buffer.concat([prefix, message]));
 }
 
