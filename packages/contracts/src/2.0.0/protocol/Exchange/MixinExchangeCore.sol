@@ -95,7 +95,12 @@ contract MixinExchangeCore is
         address takerAddress = getCurrentContextAddress();
         
         // Assert that the order is fillable by taker
-        assertFillableOrder(order, orderInfo, taker, signature);
+        assertFillableOrder(
+            order,
+            orderInfo,
+            takerAddress,
+            signature
+        );
 
         // Get amount of takerAsset to fill
         uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
@@ -107,10 +112,10 @@ contract MixinExchangeCore is
         // Validate context
         assertValidFill(
             order,
+            orderInfo,
             takerAssetFillAmount,
             takerAssetFilledAmount,
-            fillResults.makerAssetFilledAmount,
-            signature
+            fillResults.makerAssetFilledAmount
         );
         
         // Update exchange internal state
@@ -270,7 +275,7 @@ contract MixinExchangeCore is
     function assertFillableOrder(
         Order memory order,
         OrderInfo memory orderInfo,
-        address taker,
+        address takerAddress,
         bytes memory signature
     )
         internal
@@ -319,16 +324,16 @@ contract MixinExchangeCore is
     
     /// @dev Validates context for fillOrder. Succeeds or throws.
     /// @param order to be filled.
+    /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
     /// @param takerAssetFillAmount Desired amount of order to fill by taker.
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
     /// @param makerAssetFilledAmount Amount of makerAsset that will be transfered.
-    /// @param signature Proof that the orders was created by its maker.
     function assertValidFill(
         Order memory order,
-        uint256 takerAssetFillAmount,
+        OrderInfo memory orderInfo,
+        uint256 takerAssetFillAmount,  // TODO: use FillResults
         uint256 takerAssetFilledAmount,
-        uint256 makerAssetFilledAmount,
-        bytes memory signature
+        uint256 makerAssetFilledAmount
     )
         internal
         view
