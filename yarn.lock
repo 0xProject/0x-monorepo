@@ -704,27 +704,6 @@
     ethers "3.0.22"
     lodash "4.17.10"
 
-"@0xproject/react-shared@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@0xproject/react-shared/-/react-shared-0.2.3.tgz#f0403b9b7f1cfbe2853b53cc983ebb13ee8753a5"
-  dependencies:
-    "@types/lodash" "4.14.104"
-    "@types/material-ui" "0.18.0"
-    "@types/node" "9.6.0"
-    "@types/react" "16.3.13"
-    "@types/react-dom" "16.0.4"
-    "@types/react-scroll" "0.0.31"
-    basscss "8.0.4"
-    is-mobile "0.2.2"
-    lodash "4.17.10"
-    material-ui "0.17.4"
-    react "15.6.1"
-    react-dom "15.6.1"
-    react-highlight "0xproject/react-highlight"
-    react-markdown "3.2.2"
-    react-scroll "1.7.7"
-    react-tap-event-plugin "2.0.1"
-
 "@0xproject/sol-compiler@^0.5.3", "@0xproject/sol-compiler@^0.5.4":
   version "0.5.4"
   resolved "https://registry.yarnpkg.com/@0xproject/sol-compiler/-/sol-compiler-0.5.4.tgz#3e0b04b0c02c5ec046ebb962b5ed20978c6b4cdd"
@@ -1164,13 +1143,6 @@
     "@types/node" "*"
     "@types/react" "*"
 
-"@types/react-dom@16.0.4":
-  version "16.0.4"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.4.tgz#2e8fd45f5443780ed49bf2cdd9809e6091177a7d"
-  dependencies:
-    "@types/node" "*"
-    "@types/react" "*"
-
 "@types/react-dom@^16.0.7":
   version "16.0.7"
   resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-16.0.7.tgz#54d0f867a76b90597e8432030d297982f25c20ba"
@@ -1206,12 +1178,6 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react-scroll@0.0.31":
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@types/react-scroll/-/react-scroll-0.0.31.tgz#1bb26bfd9f595da6403c2f13c2f9a3ed4d2929fa"
-  dependencies:
-    "@types/react" "*"
-
 "@types/react-scroll@1.5.3":
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/@types/react-scroll/-/react-scroll-1.5.3.tgz#cc4e94db3d7d5b1cd244bfee24091c335d3e2598"
@@ -1222,7 +1188,7 @@
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/react-tap-event-plugin/-/react-tap-event-plugin-0.0.30.tgz#123f35080412f489b6770c5a65c159ff96654cb5"
 
-"@types/react@*", "@types/react@16.3.13":
+"@types/react@*":
   version "16.3.13"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.3.13.tgz#47d466462b774556c1174ea0eda22c0578643362"
   dependencies:
@@ -2548,7 +2514,7 @@ basscss-typography@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/basscss-typography/-/basscss-typography-3.0.4.tgz#ec946a2bad8dd1af97be9ea108ad4bb7be932464"
 
-basscss@8.0.4, basscss@^8.0.3:
+basscss@^8.0.3:
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/basscss/-/basscss-8.0.4.tgz#b371a2ce25aeb9b322302f37f4e425753dd29ae1"
   dependencies:
@@ -3940,7 +3906,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-create-react-class@^15.5.2, create-react-class@^15.6.0:
+create-react-class@^15.5.2:
   version "15.6.3"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.3.tgz#2d73237fb3f970ae6ebe011a9e66f46dbca80036"
   dependencies:
@@ -7451,7 +7417,7 @@ is-lower-case@^1.1.0:
   dependencies:
     lower-case "^1.1.0"
 
-is-mobile@0.2.2, is-mobile@^0.2.2:
+is-mobile@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/is-mobile/-/is-mobile-0.2.2.tgz#0e2e006d99ed2c2155b761df80f2a3619ae2ad9f"
 
@@ -8772,7 +8738,7 @@ marked@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.4.0.tgz#9ad2c2a7a1791f10a852e0112f77b571dce10c66"
 
-material-ui@0.17.4, material-ui@^0.17.1:
+material-ui@^0.17.1:
   version "0.17.4"
   resolved "https://registry.yarnpkg.com/material-ui/-/material-ui-0.17.4.tgz#193999ecb49c3ec15ae0abb4e90fdf9a7bd343e0"
   dependencies:
@@ -10123,17 +10089,6 @@ parse-asn1@^5.0.0:
     evp_bytestokey "^1.0.0"
     pbkdf2 "^3.0.3"
 
-parse-entities@^1.0.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/parse-entities/-/parse-entities-1.1.2.tgz#9eaf719b29dc3bd62246b4332009072e01527777"
-  dependencies:
-    character-entities "^1.0.0"
-    character-entities-legacy "^1.0.0"
-    character-reference-invalid "^1.0.0"
-    is-alphanumerical "^1.0.0"
-    is-decimal "^1.0.0"
-    is-hexadecimal "^1.0.0"
-
 parse-entities@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/parse-entities/-/parse-entities-1.1.1.tgz#8112d88471319f27abae4d64964b122fe4e1b890"
@@ -10910,7 +10865,7 @@ prop-types@^15.5.0, prop-types@^15.6.2:
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
-prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1:
+prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1:
   version "15.6.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
   dependencies:
@@ -11214,24 +11169,6 @@ react-document-title@^2.0.3:
     prop-types "^15.5.6"
     react-side-effect "^1.0.2"
 
-react-dom@15.6.1:
-  version "15.6.1"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.6.1.tgz#2cb0ed4191038e53c209eb3a79a23e2a4cf99470"
-  dependencies:
-    fbjs "^0.8.9"
-    loose-envify "^1.1.0"
-    object-assign "^4.1.0"
-    prop-types "^15.5.10"
-
-react-dom@^15.5.4:
-  version "15.6.2"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.6.2.tgz#41cfadf693b757faf2708443a1d1fd5a02bef730"
-  dependencies:
-    fbjs "^0.8.9"
-    loose-envify "^1.1.0"
-    object-assign "^4.1.0"
-    prop-types "^15.5.10"
-
 react-dom@^16.3.2, react-dom@^16.4.2:
   version "16.4.2"
   resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.4.2.tgz#4afed569689f2c561d2b8da0b819669c38a0bda4"
@@ -11265,23 +11202,14 @@ react-helmet@^5.2.0:
     prop-types "^15.5.4"
     react-side-effect "^1.1.0"
 
-react-highlight@0xproject/react-highlight:
-  version "0.10.0"
-  resolved "https://codeload.github.com/0xproject/react-highlight/tar.gz/83bbb4a09801abd341e2b9041cd884885a4a2098"
-  dependencies:
-    highlight.js "^9.11.0"
-    highlightjs-solidity "^1.0.5"
-    react "^15.5.4"
-    react-dom "^15.5.4"
-
 react-highlight@0xproject/react-highlight#e5201e6a6bf276d3a6bf4828252c886c386d3666:
   version "0.10.0"
   resolved "https://codeload.github.com/0xproject/react-highlight/tar.gz/e5201e6a6bf276d3a6bf4828252c886c386d3666"
   dependencies:
     highlight.js "^9.11.0"
     highlightjs-solidity "^1.0.5"
-    react "^16.4.2"
-    react-dom "^16.4.2"
+    react "^15.5.4"
+    react-dom "^15.5.4"
 
 react-hot-loader@^4.3.3:
   version "4.3.4"
@@ -11301,16 +11229,6 @@ react-is@^16.3.1:
 react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
-
-react-markdown@3.2.2:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/react-markdown/-/react-markdown-3.2.2.tgz#439774c14f25eb25d1b96c126f28ca1486fb0a24"
-  dependencies:
-    prop-types "^15.6.0"
-    remark-parse "^4.0.0"
-    unified "^6.1.5"
-    unist-util-visit "^1.1.3"
-    xtend "^4.0.1"
 
 react-markdown@^3.2.2:
   version "3.3.0"
@@ -11374,13 +11292,6 @@ react-scroll@0xproject/react-scroll#similar-to-pr-330:
     lodash.throttle "^4.1.1"
     prop-types "^15.5.8"
 
-react-scroll@1.7.7:
-  version "1.7.7"
-  resolved "https://registry.yarnpkg.com/react-scroll/-/react-scroll-1.7.7.tgz#948c40c9a189b62bf4a53ee0fd50e5d89d37260a"
-  dependencies:
-    lodash.throttle "^4.1.1"
-    prop-types "^15.5.8"
-
 react-side-effect@^1.0.2, react-side-effect@^1.1.0:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/react-side-effect/-/react-side-effect-1.1.5.tgz#f26059e50ed9c626d91d661b9f3c8bb38cd0ff2d"
@@ -11395,7 +11306,7 @@ react-tabs@^2.0.0:
     classnames "^2.2.0"
     prop-types "^15.5.0"
 
-react-tap-event-plugin@2.0.1, react-tap-event-plugin@^2.0.1:
+react-tap-event-plugin@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/react-tap-event-plugin/-/react-tap-event-plugin-2.0.1.tgz#316beb3bc6556e29ec869a7293e89c826a9074d2"
   dependencies:
@@ -11417,26 +11328,6 @@ react-transition-group@^1.2.0:
     loose-envify "^1.3.1"
     prop-types "^15.5.6"
     warning "^3.0.0"
-
-react@15.6.1:
-  version "15.6.1"
-  resolved "https://registry.yarnpkg.com/react/-/react-15.6.1.tgz#baa8434ec6780bde997cdc380b79cd33b96393df"
-  dependencies:
-    create-react-class "^15.6.0"
-    fbjs "^0.8.9"
-    loose-envify "^1.1.0"
-    object-assign "^4.1.0"
-    prop-types "^15.5.10"
-
-react@^15.5.4:
-  version "15.6.2"
-  resolved "https://registry.yarnpkg.com/react/-/react-15.6.2.tgz#dba0434ab439cfe82f108f0f511663908179aa72"
-  dependencies:
-    create-react-class "^15.6.0"
-    fbjs "^0.8.9"
-    loose-envify "^1.1.0"
-    object-assign "^4.1.0"
-    prop-types "^15.5.10"
 
 react@^16.3.2, react@^16.4.2:
   version "16.4.2"
@@ -11782,26 +11673,6 @@ regjsparser@^0.1.4:
   resolved "https://registry.yarnpkg.com/regjsparser/-/regjsparser-0.1.5.tgz#7ee8f84dc6fa792d3fd0ae228d24bd949ead205c"
   dependencies:
     jsesc "~0.5.0"
-
-remark-parse@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/remark-parse/-/remark-parse-4.0.0.tgz#99f1f049afac80382366e2e0d0bd55429dd45d8b"
-  dependencies:
-    collapse-white-space "^1.0.2"
-    is-alphabetical "^1.0.0"
-    is-decimal "^1.0.0"
-    is-whitespace-character "^1.0.0"
-    is-word-character "^1.0.0"
-    markdown-escapes "^1.0.0"
-    parse-entities "^1.0.2"
-    repeat-string "^1.5.4"
-    state-toggle "^1.0.0"
-    trim "0.0.1"
-    trim-trailing-lines "^1.0.0"
-    unherit "^1.0.4"
-    unist-util-remove-position "^1.0.0"
-    vfile-location "^2.0.0"
-    xtend "^4.0.1"
 
 remark-parse@^5.0.0:
   version "5.0.0"
@@ -14150,10 +14021,6 @@ unist-util-is@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/unist-util-is/-/unist-util-is-2.1.1.tgz#0c312629e3f960c66e931e812d3d80e77010947b"
 
-unist-util-is@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/unist-util-is/-/unist-util-is-2.1.2.tgz#1193fa8f2bfbbb82150633f3a8d2eb9a1c1d55db"
-
 unist-util-remove-position@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/unist-util-remove-position/-/unist-util-remove-position-1.1.1.tgz#5a85c1555fc1ba0c101b86707d15e50fa4c871bb"
@@ -14164,23 +14031,11 @@ unist-util-stringify-position@^1.0.0, unist-util-stringify-position@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/unist-util-stringify-position/-/unist-util-stringify-position-1.1.1.tgz#3ccbdc53679eed6ecf3777dd7f5e3229c1b6aa3c"
 
-unist-util-visit-parents@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/unist-util-visit-parents/-/unist-util-visit-parents-2.0.1.tgz#63fffc8929027bee04bfef7d2cce474f71cb6217"
-  dependencies:
-    unist-util-is "^2.1.2"
-
 unist-util-visit@^1.1.0, unist-util-visit@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/unist-util-visit/-/unist-util-visit-1.3.0.tgz#41ca7c82981fd1ce6c762aac397fc24e35711444"
   dependencies:
     unist-util-is "^2.1.1"
-
-unist-util-visit@^1.1.3:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/unist-util-visit/-/unist-util-visit-1.4.0.tgz#1cb763647186dc26f5e1df5db6bd1e48b3cc2fb1"
-  dependencies:
-    unist-util-visit-parents "^2.0.0"
 
 universalify@^0.1.0:
   version "0.1.1"
