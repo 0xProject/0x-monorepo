@@ -51,6 +51,7 @@ describe('Exchange core internal functions', () => {
     let invalidOpcodeErrorForCall: Error | undefined;
     let overflowErrorForSendTransaction: Error | undefined;
     let divisionByZeroErrorForCall: Error | undefined;
+    let improperFractionErrorForCall: Error | undefined;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -70,6 +71,9 @@ describe('Exchange core internal functions', () => {
         divisionByZeroErrorForCall = new Error(
             await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.DivisionByZero),
         );
+        improperFractionErrorForCall = new Error(
+            await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.ImproperFraction),
+        );
         invalidOpcodeErrorForCall = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
@@ -82,6 +86,9 @@ describe('Exchange core internal functions', () => {
     ): Promise<BigNumber> {
         if (denominator.eq(0)) {
             throw divisionByZeroErrorForCall;
+        }
+        if (numerator.gt(denominator)) {
+            throw improperFractionErrorForCall;
         }
         const product = numerator.mul(target);
         if (product.greaterThan(MAX_UINT256)) {
@@ -224,6 +231,9 @@ describe('Exchange core internal functions', () => {
             if (denominator.eq(0)) {
                 throw new Error('revert DIVISION_BY_ZERO');
             }
+            if (numerator.gt(denominator)) {
+                throw improperFractionErrorForCall;
+            }
             const product = numerator.mul(target);
             const offset = product.add(denominator.sub(1));
             if (offset.greaterThan(MAX_UINT256)) {
@@ -260,6 +270,9 @@ describe('Exchange core internal functions', () => {
         ): Promise<boolean> {
             if (denominator.eq(0)) {
                 throw divisionByZeroErrorForCall;
+            }
+            if (numerator.gt(denominator)) {
+                throw improperFractionErrorForCall;
             }
             if (numerator.eq(0)) {
                 return false;
@@ -302,6 +315,9 @@ describe('Exchange core internal functions', () => {
         ): Promise<boolean> {
             if (denominator.eq(0)) {
                 throw divisionByZeroErrorForCall;
+            }
+            if (numerator.gt(denominator)) {
+                throw improperFractionErrorForCall;
             }
             if (numerator.eq(0)) {
                 return false;
