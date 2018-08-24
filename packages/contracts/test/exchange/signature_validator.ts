@@ -9,11 +9,12 @@ import {
     TestSignatureValidatorContract,
     TestSignatureValidatorSignatureValidatorApprovalEventArgs,
 } from '../../generated_contract_wrappers/test_signature_validator';
+import { TestStaticCallReceiverContract } from '../../generated_contract_wrappers/test_static_call_receiver';
 import { ValidatorContract } from '../../generated_contract_wrappers/validator';
 import { WalletContract } from '../../generated_contract_wrappers/wallet';
 import { addressUtils } from '../utils/address_utils';
 import { artifacts } from '../utils/artifacts';
-import { expectContractCallFailed } from '../utils/assertions';
+import { expectContractCallFailed, expectContractCallFailedWithoutReasonAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { LogDecoder } from '../utils/log_decoder';
@@ -31,6 +32,8 @@ describe('MixinSignatureValidator', () => {
     let signatureValidator: TestSignatureValidatorContract;
     let testWallet: WalletContract;
     let testValidator: ValidatorContract;
+    let maliciousWallet: TestStaticCallReceiverContract;
+    let maliciousValidator: TestStaticCallReceiverContract;
     let signerAddress: string;
     let signerPrivateKey: Buffer;
     let notSignerAddress: string;
@@ -65,11 +68,26 @@ describe('MixinSignatureValidator', () => {
             txDefaults,
             signerAddress,
         );
+        maliciousWallet = maliciousValidator = await TestStaticCallReceiverContract.deployFrom0xArtifactAsync(
+            artifacts.TestStaticCallReceiver,
+            provider,
+            txDefaults,
+        );
         signatureValidatorLogDecoder = new LogDecoder(web3Wrapper);
         await web3Wrapper.awaitTransactionSuccessAsync(
             await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
                 from: signerAddress,
             }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
+                maliciousValidator.address,
+                true,
+                {
+                    from: signerAddress,
+                },
+            ),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
@@ -334,6 +352,29 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.false();
         });
 
+        it('should revert when `isValidSignature` attempts to update state and SignatureType=Wallet', async () => {
+            // Create EIP712 signature
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
+            const ecSignature = ethUtil.ecsign(orderHashBuffer, signerPrivateKey);
+            // Create 0x signature from EIP712 signature
+            const signature = Buffer.concat([
+                ethUtil.toBuffer(ecSignature.v),
+                ecSignature.r,
+                ecSignature.s,
+                ethUtil.toBuffer(`0x${SignatureType.Wallet}`),
+            ]);
+            const signatureHex = ethUtil.bufferToHex(signature);
+            await expectContractCallFailed(
+                signatureValidator.publicIsValidSignature.callAsync(
+                    orderHashHex,
+                    maliciousWallet.address,
+                    signatureHex,
+                ),
+                RevertReason.WalletError,
+            );
+        });
+
         it('should return true when SignatureType=Validator, signature is valid and validator is approved', async () => {
             const validatorAddress = ethUtil.toBuffer(`${testValidator.address}`);
             const signatureType = ethUtil.toBuffer(`0x${SignatureType.Validator}`);
@@ -364,6 +405,17 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.false();
         });
 
+        it('should revert when `isValidSignature` attempts to update state and SignatureType=Validator', async () => {
+            const validatorAddress = ethUtil.toBuffer(`${maliciousValidator.address}`);
+            const signatureType = ethUtil.toBuffer(`0x${SignatureType.Validator}`);
+            const signature = Buffer.concat([validatorAddress, signatureType]);
+            const signatureHex = ethUtil.bufferToHex(signature);
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            await expectContractCallFailed(
+                signatureValidator.publicIsValidSignature.callAsync(orderHashHex, signerAddress, signatureHex),
+                RevertReason.ValidatorError,
+            );
+        });
         it('should return false when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
             await web3Wrapper.awaitTransactionSuccessAsync(

@@ -118,6 +118,9 @@ contract ERC20Proxy is
                 mstore(96, 0)
                 revert(0, 100)
             }
+
+            // Revert if undefined function is called
+            revert(0, 0)
         }
     }
 

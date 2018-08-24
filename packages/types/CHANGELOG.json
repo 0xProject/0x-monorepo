@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1-rc.6",
+        "changes": [
+            {
+                "note": "Add WalletError and ValidatorError revert reasons",
+                "pr": 1012
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.5",
         "changes": [
             {
