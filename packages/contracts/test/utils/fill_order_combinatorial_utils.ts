@@ -467,17 +467,17 @@ export class FillOrderCombinatorialUtils {
             ? remainingTakerAmountToFill
             : alreadyFilledTakerAmount.add(takerAssetFillAmount);
 
-        const expFilledMakerAmount = orderUtils.getPartialAmount(
+        const expFilledMakerAmount = orderUtils.getPartialAmountFloor(
             expFilledTakerAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
         );
-        const expMakerFeePaid = orderUtils.getPartialAmount(
+        const expMakerFeePaid = orderUtils.getPartialAmountFloor(
             expFilledTakerAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerFee,
         );
-        const expTakerFeePaid = orderUtils.getPartialAmount(
+        const expTakerFeePaid = orderUtils.getPartialAmountFloor(
             expFilledTakerAmount,
             signedOrder.takerAssetAmount,
             signedOrder.takerFee,
@@ -668,7 +668,7 @@ export class FillOrderCombinatorialUtils {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
     ): Promise<void> {
-        const makerAssetFillAmount = orderUtils.getPartialAmount(
+        const makerAssetFillAmount = orderUtils.getPartialAmountFloor(
             takerAssetFillAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
@@ -705,7 +705,7 @@ export class FillOrderCombinatorialUtils {
                 );
         }
 
-        const makerFee = orderUtils.getPartialAmount(
+        const makerFee = orderUtils.getPartialAmountFloor(
             takerAssetFillAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerFee,
@@ -829,7 +829,7 @@ export class FillOrderCombinatorialUtils {
                 );
         }
 
-        const takerFee = orderUtils.getPartialAmount(
+        const takerFee = orderUtils.getPartialAmountFloor(
             takerAssetFillAmount,
             signedOrder.takerAssetAmount,
             signedOrder.takerFee,

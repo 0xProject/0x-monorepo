@@ -49,7 +49,7 @@ contract TestLibs is
         return fillOrderCalldata;
     }
 
-    function publicGetPartialAmount(
+    function publicGetPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -58,7 +58,7 @@ contract TestLibs is
         pure
         returns (uint256 partialAmount)
     {
-        partialAmount = getPartialAmount(
+        partialAmount = getPartialAmountFloor(
             numerator,
             denominator,
             target
@@ -83,7 +83,7 @@ contract TestLibs is
         return partialAmount;
     }
 
-    function publicIsRoundingError(
+    function publicIsRoundingErrorFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -92,7 +92,7 @@ contract TestLibs is
         pure
         returns (bool isError)
     {
-        isError = isRoundingError(
+        isError = isRoundingErrorFloor(
             numerator,
             denominator,
             target

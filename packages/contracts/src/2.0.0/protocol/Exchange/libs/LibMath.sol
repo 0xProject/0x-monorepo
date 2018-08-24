@@ -25,12 +25,12 @@ contract LibMath is
     SafeMath
 {
 
-    /// @dev Calculates partial value given a numerator and denominator.
+    /// @dev Calculates partial value given a numerator and denominator rounded down.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target rounded down.
-    function getPartialAmount(
+    function getPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -48,7 +48,7 @@ contract LibMath is
         return partialAmount;
     }
     
-    /// @dev Calculates partial value given a numerator and denominator.
+    /// @dev Calculates partial value given a numerator and denominator rounded down.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
@@ -79,7 +79,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
     /// @return Rounding error is present.
-    function isRoundingError(
+    function isRoundingErrorFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target

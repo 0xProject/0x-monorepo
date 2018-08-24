@@ -75,7 +75,7 @@ describe('Exchange core internal functions', () => {
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
     // the blockchain state for any tests which modify it!
 
-    async function referenceGetPartialAmountAsync(
+    async function referenceGetPartialAmountFloorAsync(
         numerator: BigNumber,
         denominator: BigNumber,
         target: BigNumber,
@@ -165,18 +165,18 @@ describe('Exchange core internal functions', () => {
             // implementation or the Solidity implementation of
             // calculateFillResults.
             return {
-                makerAssetFilledAmount: await referenceGetPartialAmountAsync(
+                makerAssetFilledAmount: await referenceGetPartialAmountFloorAsync(
                     takerAssetFilledAmount,
                     orderTakerAssetAmount,
                     otherAmount,
                 ),
                 takerAssetFilledAmount,
-                makerFeePaid: await referenceGetPartialAmountAsync(
+                makerFeePaid: await referenceGetPartialAmountFloorAsync(
                     takerAssetFilledAmount,
                     orderTakerAssetAmount,
                     otherAmount,
                 ),
-                takerFeePaid: await referenceGetPartialAmountAsync(
+                takerFeePaid: await referenceGetPartialAmountFloorAsync(
                     takerAssetFilledAmount,
                     orderTakerAssetAmount,
                     otherAmount,
@@ -199,18 +199,18 @@ describe('Exchange core internal functions', () => {
         );
     });
 
-    describe('getPartialAmount', async () => {
-        async function testGetPartialAmountAsync(
+    describe('getPartialAmountFloor', async () => {
+        async function testGetPartialAmountFloorAsync(
             numerator: BigNumber,
             denominator: BigNumber,
             target: BigNumber,
         ): Promise<BigNumber> {
-            return testExchange.publicGetPartialAmount.callAsync(numerator, denominator, target);
+            return testExchange.publicGetPartialAmountFloor.callAsync(numerator, denominator, target);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
             'getPartialAmount',
-            referenceGetPartialAmountAsync,
-            testGetPartialAmountAsync,
+            referenceGetPartialAmountFloorAsync,
+            testGetPartialAmountFloorAsync,
             [uint256Values, uint256Values, uint256Values],
         );
     });
@@ -284,7 +284,7 @@ describe('Exchange core internal functions', () => {
             denominator: BigNumber,
             target: BigNumber,
         ): Promise<boolean> {
-            return testExchange.publicIsRoundingError.callAsync(numerator, denominator, target);
+            return testExchange.publicIsRoundingErrorFloor.callAsync(numerator, denominator, target);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
             'isRoundingError',

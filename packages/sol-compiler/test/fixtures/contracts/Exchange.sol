@@ -151,7 +151,7 @@ contract Exchange is SafeMath {
             return 0;
         }
 
-        if (isRoundingError(filledTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount)) {
+        if (isRoundingErrorFloor(filledTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount)) {
             LogError(uint8(Errors.ROUNDING_ERROR_TOO_LARGE), order.orderHash);
             return 0;
         }
@@ -161,7 +161,7 @@ contract Exchange is SafeMath {
             return 0;
         }
 
-        uint filledMakerTokenAmount = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount);
+        uint filledMakerTokenAmount = getPartialAmountFloor(filledTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount);
         uint paidMakerFee;
         uint paidTakerFee;
         filled[order.orderHash] = safeAdd(filled[order.orderHash], filledTakerTokenAmount);
@@ -179,7 +179,7 @@ contract Exchange is SafeMath {
         ));
         if (order.feeRecipient != address(0)) {
             if (order.makerFee > 0) {
-                paidMakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.makerFee);
+                paidMakerFee = getPartialAmountFloor(filledTakerTokenAmount, order.takerTokenAmount, order.makerFee);
                 require(transferViaTokenTransferProxy(
                     ZRX_TOKEN_CONTRACT,
                     order.maker,
@@ -188,7 +188,7 @@ contract Exchange is SafeMath {
                 ));
             }
             if (order.takerFee > 0) {
-                paidTakerFee = getPartialAmount(filledTakerTokenAmount, order.takerTokenAmount, order.takerFee);
+                paidTakerFee = getPartialAmountFloor(filledTakerTokenAmount, order.takerTokenAmount, order.takerFee);
                 require(transferViaTokenTransferProxy(
                     ZRX_TOKEN_CONTRACT,
                     msg.sender,
@@ -262,7 +262,7 @@ contract Exchange is SafeMath {
             order.feeRecipient,
             order.makerToken,
             order.takerToken,
-            getPartialAmount(cancelledTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount),
+            getPartialAmountFloor(cancelledTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount),
             cancelledTakerTokenAmount,
             keccak256(order.makerToken, order.takerToken),
             order.orderHash
@@ -475,7 +475,7 @@ contract Exchange is SafeMath {
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
     /// @return Rounding error is present.
-    function isRoundingError(uint numerator, uint denominator, uint target)
+    function isRoundingErrorFloor(uint numerator, uint denominator, uint target)
         public
         constant
         returns (bool)
@@ -495,7 +495,7 @@ contract Exchange is SafeMath {
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target.
-    function getPartialAmount(uint numerator, uint denominator, uint target)
+    function getPartialAmountFloor(uint numerator, uint denominator, uint target)
         public
         constant
         returns (uint)
@@ -546,13 +546,13 @@ contract Exchange is SafeMath {
         returns (bool)
     {
         address taker = msg.sender;
-        uint fillMakerTokenAmount = getPartialAmount(fillTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount);
+        uint fillMakerTokenAmount = getPartialAmountFloor(fillTakerTokenAmount, order.takerTokenAmount, order.makerTokenAmount);
 
         if (order.feeRecipient != address(0)) {
             bool isMakerTokenZRX = order.makerToken == ZRX_TOKEN_CONTRACT;
             bool isTakerTokenZRX = order.takerToken == ZRX_TOKEN_CONTRACT;
-            uint paidMakerFee = getPartialAmount(fillTakerTokenAmount, order.takerTokenAmount, order.makerFee);
-            uint paidTakerFee = getPartialAmount(fillTakerTokenAmount, order.takerTokenAmount, order.takerFee);
+            uint paidMakerFee = getPartialAmountFloor(fillTakerTokenAmount, order.takerTokenAmount, order.makerFee);
+            uint paidTakerFee = getPartialAmountFloor(fillTakerTokenAmount, order.takerTokenAmount, order.takerFee);
             uint requiredMakerZRX = isMakerTokenZRX ? safeAdd(fillMakerTokenAmount, paidMakerFee) : paidMakerFee;
             uint requiredTakerZRX = isTakerTokenZRX ? safeAdd(fillTakerTokenAmount, paidTakerFee) : paidTakerFee;
 

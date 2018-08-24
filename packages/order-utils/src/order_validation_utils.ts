@@ -24,7 +24,7 @@ export class OrderValidationUtils {
      * @param denominator Denominator value.  When used to check an order, pass in `order.takerAssetAmount`
      * @param target Target value. When used to check an order, pass in `order.makerAssetAmount`
      */
-    public static isRoundingError(numerator: BigNumber, denominator: BigNumber, target: BigNumber): boolean {
+    public static isRoundingErrorFloor(numerator: BigNumber, denominator: BigNumber, target: BigNumber): boolean {
         // Solidity's mulmod() in JS
         // Source: https://solidity.readthedocs.io/en/latest/units-and-global-variables.html#mathematical-and-cryptographic-functions
         if (denominator.eq(0)) {
@@ -58,7 +58,7 @@ export class OrderValidationUtils {
         zrxAssetData: string,
     ): Promise<void> {
         try {
-            const fillMakerTokenAmount = utils.getPartialAmount(
+            const fillMakerTokenAmount = utils.getPartialAmountFloor(
                 fillTakerAssetAmount,
                 signedOrder.takerAssetAmount,
                 signedOrder.makerAssetAmount,
@@ -79,7 +79,7 @@ export class OrderValidationUtils {
                 TradeSide.Taker,
                 TransferType.Trade,
             );
-            const makerFeeAmount = utils.getPartialAmount(
+            const makerFeeAmount = utils.getPartialAmountFloor(
                 fillTakerAssetAmount,
                 signedOrder.takerAssetAmount,
                 signedOrder.makerFee,
@@ -92,7 +92,7 @@ export class OrderValidationUtils {
                 TradeSide.Maker,
                 TransferType.Fee,
             );
-            const takerFeeAmount = utils.getPartialAmount(
+            const takerFeeAmount = utils.getPartialAmountFloor(
                 fillTakerAssetAmount,
                 signedOrder.takerAssetAmount,
                 signedOrder.takerFee,
@@ -218,7 +218,7 @@ export class OrderValidationUtils {
             zrxAssetData,
         );
 
-        const wouldRoundingErrorOccur = OrderValidationUtils.isRoundingError(
+        const wouldRoundingErrorOccur = OrderValidationUtils.isRoundingErrorFloor(
             desiredFillTakerTokenAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
