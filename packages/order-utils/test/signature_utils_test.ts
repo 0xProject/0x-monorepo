@@ -256,15 +256,6 @@ describe('Signature utils', () => {
             r: '0xaca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d64393',
             s: '0x46b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf2',
         };
-        it('should concatenate v,r,s and append the Trezor signature type', async () => {
-            const expectedSignatureWithSignatureType =
-                '0x1baca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d6439346b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf208';
-            const signatureWithSignatureType = signatureUtils.convertECSignatureToSignatureHex(
-                ecSignature,
-                SignerType.Trezor,
-            );
-            expect(signatureWithSignatureType).to.equal(expectedSignatureWithSignatureType);
-        });
         it('should concatenate v,r,s and append the EthSign signature type when SignerType is Default', async () => {
             const expectedSignatureWithSignatureType =
                 '0x1baca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d6439346b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf203';
