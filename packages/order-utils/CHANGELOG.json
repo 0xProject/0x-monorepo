@@ -24,8 +24,23 @@
                 "note":
                     "Export types: `SignedOrder`, `Order`, `OrderRelevantState`, `OrderState`, `ECSignature`, `ERC20AssetData`, `ERC721AssetData`, `AssetProxyId`, `SignerType`, `SignatureType`, `OrderStateValid`, `OrderStateInvalid`, `ExchangeContractErrs`, `TradeSide`, `TransferType`, `FindFeeOrdersThatCoverFeesForTargetOrdersOpts`, `FindOrdersThatCoverMakerAssetFillAmountOpts`, `FeeOrdersAndRemainingFeeAmount`, `OrdersAndRemainingFillAmount`, `Provider`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
                 "pr": 924
+            },
+            {
+                "note":
+                    "Rename `resultOrders` to `resultFeeOrders` for object returned by `findFeeOrdersThatCoverFeesForTargetOrders` in `marketUtils` api",
+                "pr": 997
+            },
+            {
+                "note": "Make `sortFeeOrdersByFeeAdjustedRate` in `sortingUtils` generic",
+                "pr": 997
+            },
+            {
+                "note":
+                    "Update `findFeeOrdersThatCoverFeesForTargetOrders` to round the the nearest integer when calculating required fees",
+                "pr": 997
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "1.0.1-rc.3",

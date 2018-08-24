@@ -1,15 +1,15 @@
-## @0xproject/sra-api
+## @0xproject/sra-spec
 
 Contains the Standard Relayer API [OpenAPI Spec](https://github.com/OAI/OpenAPI-Specification).
 
 The package distributes both a javascript object version and a json version.
 
-A deployed [ReDoc](https://github.com/Rebilly/ReDoc) static site with the API can be found here http://sra-api.s3-website-us-east-1.amazonaws.com/.
+A deployed [ReDoc](https://github.com/Rebilly/ReDoc) static site with the API can be found here http://sra-spec.s3-website-us-east-1.amazonaws.com/.
 
 ## Usage
 
 ```
-import { api } from '@0xproject/sra-api';
+import { api } from '@0xproject/sra-spec';
 ```
 
 ## Installation
@@ -53,18 +53,18 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/sra-api yarn build
+PKG=@0xproject/sra-spec yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/sra-api yarn watch
+PKG=@0xproject/sra-spec yarn watch
 ```
 
 ### Static Site
 
-We also [host a static HTML version of the docs on S3](http://sra-api.s3-website-us-east-1.amazonaws.com/) for easy sharing.
+We also [host a static HTML version of the docs on S3](http://sra-spec.s3-website-us-east-1.amazonaws.com/) for easy sharing.
 
 To build and deploy the site run
 

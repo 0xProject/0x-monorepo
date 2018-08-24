@@ -32,7 +32,7 @@ export const sortingUtils = {
      *                          the makerAsset and WETH as the takerAsset.
      * @return  The input orders sorted by rate in ascending order
      */
-    sortFeeOrdersByFeeAdjustedRate(feeOrders: Order[]): Order[] {
+    sortFeeOrdersByFeeAdjustedRate<T extends Order>(feeOrders: T[]): T[] {
         assert.doesConformToSchema('feeOrders', feeOrders, schemas.ordersSchema);
         const rateCalculator = rateUtils.getFeeAdjustedRateOfFeeOrder.bind(rateUtils);
         const sortedOrders = sortOrders(feeOrders, rateCalculator);

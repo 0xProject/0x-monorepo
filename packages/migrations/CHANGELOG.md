@@ -5,7 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.4 - _August 13, 2018_
+## v1.0.5 - _August 24, 2018_
+
+    * Dependencies updated
+
+## v1.0.4 - _August 14, 2018_
 
     * Dependencies updated
 
@@ -21,7 +25,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 19, 2018_
+## v1.0.0 - _July 20, 2018_
 
     * Added migrations for 0x Protocol v2
 
@@ -45,7 +49,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.0.5 - _May 4, 2018_
+## v0.0.5 - _May 5, 2018_
 
     * Dependencies updated
 

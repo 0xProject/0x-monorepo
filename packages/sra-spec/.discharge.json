@@ -1,5 +1,5 @@
 {
-    "domain": "sra-api",
+    "domain": "sra-spec",
     "build_command": "yarn build-json",
     "upload_directory": "public",
     "index_key": "index.html",

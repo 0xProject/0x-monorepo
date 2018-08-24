@@ -6,7 +6,8 @@
                 "note": "Update incorrect relayer api fee recipients response schema",
                 "pr": 974
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "1.0.1-rc.4",

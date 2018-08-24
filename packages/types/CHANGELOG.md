@@ -5,7 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.1-rc.4 - _August 13, 2018_
+## v1.0.1-rc.5 - _August 24, 2018_
+
+    * Add revert reasons for ERC721Token (#933)
+
+## v1.0.1-rc.4 - _August 14, 2018_
 
     * Added SignerType to handle different signing prefix scenarios (#914)
 
@@ -25,7 +29,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0-rc.1 - _July 19, 2018_
+## v1.0.0-rc.1 - _July 20, 2018_
 
     * Updated types for V2 of 0x protocol
     * Add `ECSignatureBuffer`
@@ -48,7 +52,7 @@ CHANGELOG
     * Make OpCode type an enum (#589)
     * Moved ExchangeContractErrs, DoneCallback, Token, OrderRelevantState, OrderStateValid, OrderStateInvalid, OrderState, OrderAddresses and OrderValues types from 0x.js (#579)
 
-## v0.6.3 - _May 4, 2018_
+## v0.6.3 - _May 5, 2018_
 
     * Dependencies updated
 

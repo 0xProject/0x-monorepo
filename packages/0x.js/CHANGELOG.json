@@ -7,7 +7,8 @@
                     "Re-organize the exported interface of 0x.js. Remove the `ZeroEx` class, and instead export the same exports as `0x.js`'s sub-packages: `@0xproject/contract-wrappers`, `@0xproject/order-utils` and `@0xproject/order-watcher`",
                 "pr": 963
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "1.0.1-rc.3",
