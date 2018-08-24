@@ -177,7 +177,6 @@ export enum RevertReason {
     InvalidSignature = 'INVALID_SIGNATURE',
     SignatureIllegal = 'SIGNATURE_ILLEGAL',
     SignatureUnsupported = 'SIGNATURE_UNSUPPORTED',
-    InvalidOrderSignature = 'INVALID_ORDER_SIGNATURE',
     TakerOverpay = 'TAKER_OVERPAY',
     OrderOverfill = 'ORDER_OVERFILL',
     InvalidFillPrice = 'INVALID_FILL_PRICE',
