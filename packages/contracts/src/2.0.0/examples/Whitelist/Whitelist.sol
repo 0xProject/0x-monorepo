@@ -37,7 +37,7 @@ contract Whitelist is
     bytes internal TX_ORIGIN_SIGNATURE;
     // solhint-enable var-name-mixedcase
 
-    byte constant internal VALIDATOR_SIGNATURE_BYTE = "\x06";
+    byte constant internal VALIDATOR_SIGNATURE_BYTE = "\x05";
 
     constructor (address _exchange)
         public

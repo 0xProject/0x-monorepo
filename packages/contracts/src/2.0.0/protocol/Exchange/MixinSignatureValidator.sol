@@ -48,14 +48,16 @@ contract MixinSignatureValidator is
     )
         external
     {
-        require(
-            isValidSignature(
-                hash,
-                signerAddress,
-                signature
-            ),
-            "INVALID_SIGNATURE"
-        );
+        if (signerAddress != msg.sender) {
+            require(
+                isValidSignature(
+                    hash,
+                    signerAddress,
+                    signature
+                ),
+                "INVALID_SIGNATURE"
+            );
+        }
         preSigned[hash][signerAddress] = true;
     }
 
@@ -170,22 +172,6 @@ contract MixinSignatureValidator is
                 s
             );
             isValid = signerAddress == recovered;
-            return isValid;
-
-        // Implicitly signed by caller.
-        // The signer has initiated the call. In the case of non-contract
-        // accounts it means the transaction itself was signed.
-        // Example: let's say for a particular operation three signatures
-        // A, B and C are required. To submit the transaction, A and B can
-        // give a signature to C, who can then submit the transaction using
-        // `Caller` for his own signature. Or A and C can sign and B can
-        // submit using `Caller`. Having `Caller` allows this flexibility.
-        } else if (signatureType == SignatureType.Caller) {
-            require(
-                signature.length == 0,
-                "LENGTH_0_REQUIRED"
-            );
-            isValid = signerAddress == msg.sender;
             return isValid;
 
         // Signature verified by wallet contract.

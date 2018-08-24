@@ -263,32 +263,6 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.false();
         });
 
-        it('should return true when SignatureType=Caller and signer is caller', async () => {
-            const signature = ethUtil.toBuffer(`0x${SignatureType.Caller}`);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                signerAddress,
-                signatureHex,
-                { from: signerAddress },
-            );
-            expect(isValidSignature).to.be.true();
-        });
-
-        it('should return false when SignatureType=Caller and signer is not caller', async () => {
-            const signature = ethUtil.toBuffer(`0x${SignatureType.Caller}`);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                signerAddress,
-                signatureHex,
-                { from: notSignerAddress },
-            );
-            expect(isValidSignature).to.be.false();
-        });
-
         it('should return true when SignatureType=Wallet and signature is valid', async () => {
             // Create EIP712 signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);

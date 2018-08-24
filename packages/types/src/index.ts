@@ -133,7 +133,6 @@ export enum SignatureType {
     Invalid,
     EIP712,
     EthSign,
-    Caller,
     Wallet,
     Validator,
     PreSigned,
