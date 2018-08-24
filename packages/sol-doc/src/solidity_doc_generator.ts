@@ -43,13 +43,19 @@ export class SolidityDocGenerator {
                 const contracts = _.keys(compiledSolidityModule);
                 for (const contract of contracts) {
                     const compiledContract = compiledSolidityModule[contract];
+                    if (_.isUndefined(compiledContract.abi)) {
+                        throw new Error('compiled contract did not contain ABI output.');
+                    }
+                    if (_.isUndefined(compiledContract.devdoc)) {
+                        throw new Error('compiled contract did not contain devdoc output.');
+                    }
 
-                    // TODO: modify typescript-typings/types/solc/index.d.ts... it doesn't currently support devdoc!
-                    // tslint:disable-next-line:no-unnecessary-type-assertion tsc says abi[0] has no property `name` and won't compile without the `as`, but tslint says the `as` is unnecssary.
                     logUtils.log(
-                        `TODO: extract data from ${contract}'s abi (eg ${
+                        `TODO: extract data from ${contract}'s abi (eg name, which is "${
                             (compiledContract.abi[0] as MethodAbi).name
-                        }, etc) and devdoc outputs, and insert it into \`doc\``,
+                        }", etc) and devdoc (eg title, which is "${
+                            compiledContract.devdoc.title
+                        }") outputs, and insert it into \`doc\``,
                     );
                 }
             }

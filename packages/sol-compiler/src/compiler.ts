@@ -10,7 +10,7 @@ import {
 } from '@0xproject/sol-resolver';
 import { fetchAsync, logUtils } from '@0xproject/utils';
 import chalk from 'chalk';
-import { CompilerOptions, ContractArtifact, ContractVersionData } from 'ethereum-types';
+import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
 import * as _ from 'lodash';
@@ -169,7 +169,7 @@ export class Compiler {
      * each element contains the output for all of the modules compiled with
      * that version.
      */
-    public async getCompilerOutputsAsync(): Promise<solc.StandardOutput[]> {
+    public async getCompilerOutputsAsync(): Promise<StandardOutput[]> {
         return this._compileContractsAsync(this._getContractNamesToCompile(), false);
     }
     private _getContractNamesToCompile(): string[] {
@@ -187,10 +187,7 @@ export class Compiler {
      * @param fileName Name of contract with '.sol' extension.
      * @return an array of compiler outputs, where each element corresponds to a different version of solc-js.
      */
-    private async _compileContractsAsync(
-        contractNames: string[],
-        shouldPersist: boolean,
-    ): Promise<solc.StandardOutput[]> {
+    private async _compileContractsAsync(contractNames: string[], shouldPersist: boolean): Promise<StandardOutput[]> {
         // batch input contracts together based on the version of the compiler that they require.
         const versionToInputs: VersionToInputs = {};
 
@@ -231,7 +228,7 @@ export class Compiler {
             versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
         }
 
-        const compilerOutputs: solc.StandardOutput[] = [];
+        const compilerOutputs: StandardOutput[] = [];
 
         const solcVersions = _.keys(versionToInputs);
         for (const solcVersion of solcVersions) {

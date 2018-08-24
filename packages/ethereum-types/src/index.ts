@@ -324,9 +324,56 @@ export interface ContractNetworkData {
     constructorArgs: string;
 }
 
+export type ParamDescription = string;
+
 export interface StandardContractOutput {
     abi: ContractAbi;
     evm: EvmOutput;
+    devdoc?: DevdocOutput;
+}
+
+export interface StandardOutput {
+    errors: SolcError[];
+    sources: {
+        [fileName: string]: {
+            id: number;
+            ast?: object;
+            legacyAST?: object;
+        };
+    };
+    contracts: {
+        [fileName: string]: {
+            [contractName: string]: StandardContractOutput;
+        };
+    };
+}
+
+export type ErrorType =
+    | 'JSONError'
+    | 'IOError'
+    | 'ParserError'
+    | 'DocstringParsingError'
+    | 'SyntaxError'
+    | 'DeclarationError'
+    | 'TypeError'
+    | 'UnimplementedFeatureError'
+    | 'InternalCompilerError'
+    | 'Exception'
+    | 'CompilerError'
+    | 'FatalError'
+    | 'Warning';
+export type ErrorSeverity = 'error' | 'warning';
+export interface SolcError {
+    sourceLocation?: {
+        file: string;
+        start: number;
+        end: number;
+    };
+    type: ErrorType;
+    component: 'general' | 'ewasm';
+    severity: ErrorSeverity;
+    message: string;
+    formattedMessage?: string;
 }
 
 export interface EvmOutput {
@@ -337,6 +384,20 @@ export interface EvmOutput {
 export interface EvmBytecodeOutput {
     object: string;
     sourceMap: string;
+}
+
+export interface DevdocOutput {
+    title: string;
+    author: string;
+    methods: {
+        [signature: string]: {
+            details: string;
+            params: {
+                [name: string]: ParamDescription;
+            };
+            return?: string;
+        };
+    };
 }
 
 export interface ContractVersionData {
@@ -415,6 +476,7 @@ export interface Source {
     id: number;
 }
 
+// TODO: move the following into the sol-compiler package.
 /**
  * Options you can specify (as flags or in a compiler.json file) when invoking sol-compiler
  * contractsDir: Directory containing your project's Solidity contracts. Can contain nested directories.
