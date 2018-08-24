@@ -48,14 +48,16 @@ contract MixinSignatureValidator is
     )
         external
     {
-        require(
-            isValidSignature(
-                hash,
-                signerAddress,
-                signature
-            ),
-            "INVALID_SIGNATURE"
-        );
+        if (signerAddress != msg.sender) {
+            require(
+                isValidSignature(
+                    hash,
+                    signerAddress,
+                    signature
+                ),
+                "INVALID_SIGNATURE"
+            );
+        }
         preSigned[hash][signerAddress] = true;
     }
 
@@ -172,22 +174,6 @@ contract MixinSignatureValidator is
             isValid = signerAddress == recovered;
             return isValid;
 
-        // Implicitly signed by caller.
-        // The signer has initiated the call. In the case of non-contract
-        // accounts it means the transaction itself was signed.
-        // Example: let's say for a particular operation three signatures
-        // A, B and C are required. To submit the transaction, A and B can
-        // give a signature to C, who can then submit the transaction using
-        // `Caller` for his own signature. Or A and C can sign and B can
-        // submit using `Caller`. Having `Caller` allows this flexibility.
-        } else if (signatureType == SignatureType.Caller) {
-            require(
-                signature.length == 0,
-                "LENGTH_0_REQUIRED"
-            );
-            isValid = signerAddress == msg.sender;
-            return isValid;
-
         // Signature verified by wallet contract.
         // If used with an order, the maker of the order is the wallet contract.
         } else if (signatureType == SignatureType.Wallet) {
@@ -224,34 +210,6 @@ contract MixinSignatureValidator is
         // Signer signed hash previously using the preSign function.
         } else if (signatureType == SignatureType.PreSigned) {
             isValid = preSigned[hash][signerAddress];
-            return isValid;
-
-        // Signature from Trezor hardware wallet.
-        // It differs from web3.eth_sign in the encoding of message length
-        // (Bitcoin varint encoding vs ascii-decimal, the latter is not
-        // self-terminating which leads to ambiguities).
-        // See also:
-        // https://en.bitcoin.it/wiki/Protocol_documentation#Variable_length_integer
-        // https://github.com/trezor/trezor-mcu/blob/master/firmware/ethereum.c#L602
-        // https://github.com/trezor/trezor-mcu/blob/master/firmware/crypto.c#L36
-        } else if (signatureType == SignatureType.Trezor) {
-            require(
-                signature.length == 65,
-                "LENGTH_65_REQUIRED"
-            );
-            v = uint8(signature[0]);
-            r = signature.readBytes32(1);
-            s = signature.readBytes32(33);
-            recovered = ecrecover(
-                keccak256(abi.encodePacked(
-                    "\x19Ethereum Signed Message:\n\x20",
-                    hash
-                )),
-                v,
-                r,
-                s
-            );
-            isValid = signerAddress == recovered;
             return isValid;
         }
 

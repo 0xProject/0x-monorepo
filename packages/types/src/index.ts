@@ -133,23 +133,20 @@ export enum SignatureType {
     Invalid,
     EIP712,
     EthSign,
-    Caller,
     Wallet,
     Validator,
     PreSigned,
-    Trezor,
     NSignatureTypes,
 }
 
 /**
- * The type of the Signer implementation. Some signer implementations use different message prefixes (e.g Trezor) or implement different
+ * The type of the Signer implementation. Some signer implementations use different message prefixes or implement different
  * eth_sign behaviour (e.g Metamask). Default assumes a spec compliant `eth_sign`.
  */
 export enum SignerType {
     Default = 'DEFAULT',
     Ledger = 'LEDGER',
     Metamask = 'METAMASK',
-    Trezor = 'TREZOR',
 }
 
 export enum AssetProxyId {
