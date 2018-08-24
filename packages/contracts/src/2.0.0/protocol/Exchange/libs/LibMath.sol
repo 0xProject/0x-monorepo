@@ -109,9 +109,9 @@ contract LibMath is
         
         // Otherwise, we want the relative rounding error to be strictly
         // less than 0.1%.
-        // The relative error is `remainder / numerator * target`.
+        // The relative error is `remainder / (numerator * target)`.
         // We want the relative error less than 1 / 1000:
-        //        remainder / numerator * denominator  <  1 / 1000
+        //        remainder / (numerator * denominator)  <  1 / 1000
         // or equivalently:
         //        1000 * remainder  <  numerator * target
         // so we have a rounding error iff:
