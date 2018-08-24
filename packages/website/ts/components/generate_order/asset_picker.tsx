@@ -73,12 +73,12 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
                     <FlatButton
                         key="noTracking"
                         label="No"
-                        onTouchTap={this._onTrackConfirmationRespondedAsync.bind(this, false)}
+                        onClick={this._onTrackConfirmationRespondedAsync.bind(this, false)}
                     />,
                     <FlatButton
                         key="yesTrack"
                         label="Yes"
-                        onTouchTap={this._onTrackConfirmationRespondedAsync.bind(this, true)}
+                        onClick={this._onTrackConfirmationRespondedAsync.bind(this, true)}
                     />,
                 ],
             },
