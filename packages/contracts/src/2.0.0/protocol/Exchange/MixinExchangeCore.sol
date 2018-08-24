@@ -91,14 +91,11 @@ contract MixinExchangeCore is
         // Fetch order info
         OrderInfo memory orderInfo = getOrderInfo(order);
         
-        // An order can only be filled if its status is FILLABLE.
-        require(
-            orderInfo.orderStatus == uint8(OrderStatus.FILLABLE),
-            "ORDER_UNFILLABLE"
-        );
-
         // Fetch taker address
         address takerAddress = getCurrentContextAddress();
+        
+        // Assert that the order is fillable by taker
+        assertFillableOrder(order, orderInfo, taker, signature);
 
         // Get amount of takerAsset to fill
         uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
@@ -110,8 +107,6 @@ contract MixinExchangeCore is
         // Validate context
         assertValidFill(
             order,
-            orderInfo,
-            takerAddress,
             takerAssetFillAmount,
             takerAssetFilledAmount,
             fillResults.makerAssetFilledAmount,
@@ -266,22 +261,16 @@ contract MixinExchangeCore is
             order.takerAssetData
         );
     }
-
+    
     /// @dev Validates context for fillOrder. Succeeds or throws.
     /// @param order to be filled.
     /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
     /// @param takerAddress Address of order taker.
-    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
-    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
-    /// @param makerAssetFilledAmount Amount of makerAsset that will be transfered.
     /// @param signature Proof that the orders was created by its maker.
-    function assertValidFill(
+    function assertFillableOrder(
         Order memory order,
         OrderInfo memory orderInfo,
-        address takerAddress,
-        uint256 takerAssetFillAmount,
-        uint256 takerAssetFilledAmount,
-        uint256 makerAssetFilledAmount,
+        address taker,
         bytes memory signature
     )
         internal
@@ -292,13 +281,7 @@ contract MixinExchangeCore is
             orderInfo.orderStatus == uint8(OrderStatus.FILLABLE),
             "ORDER_UNFILLABLE"
         );
-
-        // Revert if fill amount is invalid
-        require(
-            takerAssetFillAmount != 0,
-            "INVALID_TAKER_AMOUNT"
-        );
-
+        
         // Validate sender is allowed to fill this order
         if (order.senderAddress != address(0)) {
             require(
@@ -332,6 +315,29 @@ contract MixinExchangeCore is
                 "INVALID_ORDER_SIGNATURE"
             );
         }
+    }
+    
+    /// @dev Validates context for fillOrder. Succeeds or throws.
+    /// @param order to be filled.
+    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
+    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
+    /// @param makerAssetFilledAmount Amount of makerAsset that will be transfered.
+    /// @param signature Proof that the orders was created by its maker.
+    function assertValidFill(
+        Order memory order,
+        uint256 takerAssetFillAmount,
+        uint256 takerAssetFilledAmount,
+        uint256 makerAssetFilledAmount,
+        bytes memory signature
+    )
+        internal
+        view
+    {
+        // Revert if fill amount is invalid
+        require(
+            takerAssetFillAmount != 0,
+            "INVALID_TAKER_AMOUNT"
+        );
         
         // Make sure taker does not pay more than desired amount
         // NOTE: This assertion should never fail, it is here
