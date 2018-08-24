@@ -314,7 +314,13 @@ contract MixinExchangeCore is
                 "INVALID_TAKER"
             );
         }
-
+        
+        // Orders can not be self-filled (use cancel instead)
+        require(
+            order.makerAddress != takerAddress,
+            "INVALID_TAKER"
+        );
+        
         // Validate Maker signature (check only if first time seen)
         if (orderInfo.orderTakerAssetFilledAmount == 0) {
             require(
