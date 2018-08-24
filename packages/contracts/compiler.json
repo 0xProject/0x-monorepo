@@ -47,6 +47,7 @@
         "TestLibs",
         "TestExchangeInternals",
         "TestSignatureValidator",
+        "TestStaticCall",
         "TokenRegistry",
         "Validator",
         "Wallet",
