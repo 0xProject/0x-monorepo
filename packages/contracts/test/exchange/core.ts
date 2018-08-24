@@ -195,7 +195,7 @@ describe('Exchange core', () => {
             signedOrder.signature = `0x0${SignatureType.Wallet}`;
             await expectTransactionFailedAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReason.InvalidOrderSignature,
+                RevertReason.WalletError,
             );
         });
 
@@ -209,13 +209,10 @@ describe('Exchange core', () => {
                 ),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAddress: maliciousValidator.address,
-            });
             signedOrder.signature = `${maliciousValidator.address}0${SignatureType.Validator}`;
             await expectTransactionFailedAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReason.InvalidOrderSignature,
+                RevertReason.ValidatorError,
             );
         });
     });

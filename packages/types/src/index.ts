@@ -220,6 +220,8 @@ export enum RevertReason {
     Erc721InvalidSpender = 'ERC721_INVALID_SPENDER',
     Erc721ZeroOwner = 'ERC721_ZERO_OWNER',
     Erc721InvalidSelector = 'ERC721_INVALID_SELECTOR',
+    WalletError = 'WALLET_ERROR',
+    ValidatorError = 'VALIDATOR_ERROR',
 }
 
 export enum StatusCodes {

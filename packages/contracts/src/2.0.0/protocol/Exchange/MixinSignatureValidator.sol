@@ -293,8 +293,20 @@ contract MixinSignatureValidator is
                 cdStart,          // write input over output
                 32                // output size is 32 bytes
             )
-            // Signature is valid if call did not revert and returned true
-            isValid := and(success, mload(cdStart))
+
+            switch success
+            case 0 {
+                // Revert with `Error("WALLET_ERROR")`
+                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                mstore(64, 0x0000000c57414c4c45545f4552524f5200000000000000000000000000000000)
+                mstore(96, 0)
+                revert(0, 100)
+            }
+            case 1 {
+                // Signature is valid if call did not revert and returned true
+                isValid := mload(cdStart)
+            }
         }
         return isValid;
     }
@@ -331,8 +343,20 @@ contract MixinSignatureValidator is
                 cdStart,           // write input over output
                 32                 // output size is 32 bytes
             )
-            // Signature is valid if call did not revert and returned true
-            isValid := and(success, mload(cdStart))
+
+            switch success
+            case 0 {
+                // Revert with `Error("VALIDATOR_ERROR")`
+                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                mstore(64, 0x0000000f56414c494441544f525f4552524f5200000000000000000000000000)
+                mstore(96, 0)
+                revert(0, 100)
+            }
+            case 1 {
+                // Signature is valid if call did not revert and returned true
+                isValid := mload(cdStart)
+            }
         }
         return isValid;
     }
