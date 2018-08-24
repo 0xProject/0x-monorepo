@@ -53,11 +53,6 @@ export const signatureUtils = {
                 return signatureUtils.isValidECSignature(prefixedMessageHex, ecSignature, signerAddress);
             }
 
-            case SignatureType.Caller:
-                // HACK: We currently do not "validate" the caller signature type.
-                // It can only be validated during Exchange contract execution.
-                throw new Error('Caller signature type cannot be validated off-chain');
-
             case SignatureType.Wallet: {
                 const isValid = await signatureUtils.isValidWalletSignatureAsync(
                     provider,
