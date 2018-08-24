@@ -39,7 +39,6 @@ contract MSignatureValidator is
         Wallet,          // 0x04
         Validator,       // 0x05
         PreSigned,       // 0x06
-        Trezor,          // 0x07
-        NSignatureTypes  // 0x08, number of signature types. Always leave at end.
+        NSignatureTypes  // 0x07, number of signature types. Always leave at end.
     }
 }

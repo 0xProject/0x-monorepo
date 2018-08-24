@@ -77,12 +77,6 @@ export const signatureUtils = {
                 return signatureUtils.isValidPresignedSignatureAsync(provider, data, signerAddress);
             }
 
-            case SignatureType.Trezor: {
-                const prefixedMessageHex = signatureUtils.addSignedMessagePrefix(data, SignerType.Trezor);
-                const ecSignature = signatureUtils.parseECSignature(signature);
-                return signatureUtils.isValidECSignature(prefixedMessageHex, ecSignature, signerAddress);
-            }
-
             default:
                 throw new Error(`Unhandled SignatureType: ${signatureTypeIndexIfExists}`);
         }
@@ -288,10 +282,6 @@ export const signatureUtils = {
                 signatureType = SignatureType.EthSign;
                 break;
             }
-            case SignerType.Trezor: {
-                signatureType = SignatureType.Trezor;
-                break;
-            }
             default:
                 throw new Error(`Unrecognized SignerType: ${signerType}`);
         }
@@ -345,7 +335,7 @@ export const signatureUtils = {
      */
     parseECSignature(signature: string): ECSignature {
         assert.isHexString('signature', signature);
-        const ecSignatureTypes = [SignatureType.EthSign, SignatureType.EIP712, SignatureType.Trezor];
+        const ecSignatureTypes = [SignatureType.EthSign, SignatureType.EIP712];
         assert.isOneOfExpectedSignatureTypes(signature, ecSignatureTypes);
 
         // tslint:disable-next-line:custom-no-magic-numbers

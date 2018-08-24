@@ -206,34 +206,6 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.PreSigned) {
             isValid = preSigned[hash][signerAddress];
             return isValid;
-
-        // Signature from Trezor hardware wallet.
-        // It differs from web3.eth_sign in the encoding of message length
-        // (Bitcoin varint encoding vs ascii-decimal, the latter is not
-        // self-terminating which leads to ambiguities).
-        // See also:
-        // https://en.bitcoin.it/wiki/Protocol_documentation#Variable_length_integer
-        // https://github.com/trezor/trezor-mcu/blob/master/firmware/ethereum.c#L602
-        // https://github.com/trezor/trezor-mcu/blob/master/firmware/crypto.c#L36
-        } else if (signatureType == SignatureType.Trezor) {
-            require(
-                signature.length == 65,
-                "LENGTH_65_REQUIRED"
-            );
-            v = uint8(signature[0]);
-            r = signature.readBytes32(1);
-            s = signature.readBytes32(33);
-            recovered = ecrecover(
-                keccak256(abi.encodePacked(
-                    "\x19Ethereum Signed Message:\n\x20",
-                    hash
-                )),
-                v,
-                r,
-                s
-            );
-            isValid = signerAddress == recovered;
-            return isValid;
         }
 
         // Anything else is illegal (We do not return false because
