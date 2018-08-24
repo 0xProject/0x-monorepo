@@ -43,6 +43,10 @@ contract LibMath is
             denominator > 0,
             "DIVISION_BY_ZERO"
         );
+        require(
+            numerator <= denominator,
+            "IMPROPER_FRACTION"
+        );
         
         partialAmount = safeDiv(
             safeMul(numerator, target),
@@ -68,6 +72,10 @@ contract LibMath is
         require(
             denominator > 0,
             "DIVISION_BY_ZERO"
+        );
+        require(
+            numerator <= denominator,
+            "IMPROPER_FRACTION"
         );
         
         // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
@@ -100,6 +108,10 @@ contract LibMath is
         require(
             denominator > 0,
             "DIVISION_BY_ZERO"
+        );
+        require(
+            numerator <= denominator,
+            "IMPROPER_FRACTION"
         );
         
         // The absolute rounding error is the difference between the rounded
@@ -150,6 +162,10 @@ contract LibMath is
         require(
             denominator > 0,
             "DIVISION_BY_ZERO"
+        );
+        require(
+            numerator <= denominator,
+            "IMPROPER_FRACTION"
         );
         
         // See the comments in `isRoundingError`.
