@@ -18,6 +18,8 @@
 
 pragma solidity 0.4.24;
 
+import "../../tokens/ERC20Token/IERC20Token.sol";
+
 
 contract TestStaticCall {
 
@@ -53,6 +55,20 @@ contract TestStaticCall {
     {
         updateState();
         return true;
+    }
+
+    /// @dev Approves an ERC20 token to spend tokens from this address.
+    /// @param token Address of ERC20 token.
+    /// @param spender Address that will spend tokens.
+    /// @param value Amount of tokens spender is approved to spend.
+    function approveERC20(
+        address token,
+        address spender,
+        uint256 value
+    )
+        external
+    {
+        IERC20Token(token).approve(spender, value);
     }
 
     /// @dev Increments state variable.

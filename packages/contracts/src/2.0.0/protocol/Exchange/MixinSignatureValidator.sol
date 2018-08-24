@@ -17,7 +17,6 @@
 */
 
 pragma solidity 0.4.24;
-pragma experimental "v0.5.0";
 
 import "../../utils/LibBytes/LibBytes.sol";
 import "./mixins/MSignatureValidator.sol";
@@ -192,7 +191,11 @@ contract MixinSignatureValidator is
         // Signature verified by wallet contract.
         // If used with an order, the maker of the order is the wallet contract.
         } else if (signatureType == SignatureType.Wallet) {
-            isValid = IWallet(signerAddress).isValidSignature(hash, signature);
+            isValid = isValidWalletSignature(
+                hash,
+                signerAddress,
+                signature
+            );
             return isValid;
 
         // Signature verified by validator contract.
@@ -210,7 +213,8 @@ contract MixinSignatureValidator is
             if (!allowedValidators[signerAddress][validatorAddress]) {
                 return false;
             }
-            isValid = IValidator(validatorAddress).isValidSignature(
+            isValid = isValidValidatorSignature(
+                validatorAddress,
                 hash,
                 signerAddress,
                 signature
@@ -257,5 +261,79 @@ contract MixinSignatureValidator is
         // may lead the caller to incorrectly believe that the
         // signature was invalid.)
         revert("SIGNATURE_UNSUPPORTED");
+    }
+
+    /// @dev Verifies signature using logic defined by Wallet contract.
+    /// @param hash Any 32 byte hash.
+    /// @param walletAddress Address that should have signed the given hash
+    ///                      and defines its own signature verification method.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return True if signature is valid for given wallet..
+    function isValidWalletSignature(
+        bytes32 hash,
+        address walletAddress,
+        bytes signature
+    )
+        internal
+        view
+        returns (bool isValid)
+    {
+        bytes memory calldata = abi.encodeWithSelector(
+            IWallet(walletAddress).isValidSignature.selector,
+            hash,
+            signature
+        );
+        assembly {
+            let cdStart := add(calldata, 32)
+            let success := staticcall(
+                gas,              // forward all gas
+                walletAddress,    // address of Wallet contract
+                cdStart,          // pointer to start of input
+                mload(calldata),  // length of input
+                cdStart,          // write input over output
+                32                // output size is 32 bytes
+            )
+            // Signature is valid if call did not revert and returned true
+            isValid := and(success, mload(cdStart))
+        }
+        return isValid;
+    }
+
+    /// @dev Verifies signature using logic defined by Validator contract.
+    /// @param validatorAddress Address of validator contract.
+    /// @param hash Any 32 byte hash.
+    /// @param signerAddress Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return True if the address recovered from the provided signature matches the input signer address.
+    function isValidValidatorSignature(
+        address validatorAddress,
+        bytes32 hash,
+        address signerAddress,
+        bytes signature
+    )
+        internal
+        view
+        returns (bool isValid)
+    {
+        bytes memory calldata = abi.encodeWithSelector(
+            IValidator(signerAddress).isValidSignature.selector,
+            hash,
+            signerAddress,
+            signature
+        );
+        assembly {
+            let cdStart := add(calldata, 32)
+            let success := staticcall(
+                gas,               // forward all gas
+                validatorAddress,  // address of Validator contract
+                cdStart,           // pointer to start of input
+                mload(calldata),   // length of input
+                cdStart,           // write input over output
+                32                 // output size is 32 bytes
+            )
+            // Signature is valid if call did not revert and returned true
+            isValid := and(success, mload(cdStart))
+        }
+        return isValid;
     }
 }

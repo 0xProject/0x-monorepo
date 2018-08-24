@@ -352,7 +352,7 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.false();
         });
 
-        it('should not allow `isValidSignature` to update state when SignatureType=Wallet', async () => {
+        it('should return false when `isValidSignature` attempts to update state and not allow state to be updated when SignatureType=Wallet', async () => {
             // Create EIP712 signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
@@ -366,13 +366,12 @@ describe('MixinSignatureValidator', () => {
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
-            await expectContractCallFailedWithoutReasonAsync(
-                signatureValidator.publicIsValidSignature.callAsync(
-                    orderHashHex,
-                    maliciousWallet.address,
-                    signatureHex,
-                ),
+            const isValid = await signatureValidator.publicIsValidSignature.callAsync(
+                orderHashHex,
+                maliciousWallet.address,
+                signatureHex,
             );
+            expect(isValid).to.be.equal(false);
         });
 
         it('should return true when SignatureType=Validator, signature is valid and validator is approved', async () => {
@@ -405,15 +404,18 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.false();
         });
 
-        it('should not allow `isValidSignature` to update state when SignatureType=Validator', async () => {
+        it('should return false when `isValidSignature` attempts to update state and not allow state to be updated when SignatureType=Validator', async () => {
             const validatorAddress = ethUtil.toBuffer(`${maliciousValidator.address}`);
             const signatureType = ethUtil.toBuffer(`0x${SignatureType.Validator}`);
             const signature = Buffer.concat([validatorAddress, signatureType]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            await expectContractCallFailedWithoutReasonAsync(
-                signatureValidator.publicIsValidSignature.callAsync(orderHashHex, signerAddress, signatureHex),
+            const isValid = await signatureValidator.publicIsValidSignature.callAsync(
+                orderHashHex,
+                maliciousValidator.address,
+                signatureHex,
             );
+            expect(isValid).to.be.equal(false);
         });
         it('should return false when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false

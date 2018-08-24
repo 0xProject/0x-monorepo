@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { RevertReason, SignedOrder } from '@0xproject/types';
+import { RevertReason, SignatureType, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -14,6 +14,7 @@ import { DummyNoReturnERC20TokenContract } from '../../generated_contract_wrappe
 import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
 import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated_contract_wrappers/exchange';
+import { TestStaticCallContract } from '../../generated_contract_wrappers/test_static_call';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
 import { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
@@ -44,6 +45,8 @@ describe('Exchange core', () => {
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
+    let maliciousWallet: TestStaticCallContract;
+    let maliciousValidator: TestStaticCallContract;
 
     let signedOrder: SignedOrder;
     let erc20Balances: ERC20BalancesByOwner;
@@ -109,6 +112,12 @@ describe('Exchange core', () => {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
+        maliciousWallet = maliciousValidator = await TestStaticCallContract.deployFrom0xArtifactAsync(
+            artifacts.TestStaticCall,
+            provider,
+            txDefaults,
+        );
+
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
 
@@ -159,6 +168,54 @@ describe('Exchange core', () => {
             return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
                 RevertReason.OrderUnfillable,
+            );
+        });
+
+        it('should revert if `isValidSignature` tries to update state when SignatureType=Wallet', async () => {
+            const maliciousMakerAddress = maliciousWallet.address;
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await erc20TokenA.setBalance.sendTransactionAsync(
+                    maliciousMakerAddress,
+                    constants.INITIAL_ERC20_BALANCE,
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await maliciousWallet.approveERC20.sendTransactionAsync(
+                    erc20TokenA.address,
+                    erc20Proxy.address,
+                    constants.INITIAL_ERC20_ALLOWANCE,
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAddress: maliciousMakerAddress,
+                makerFee: constants.ZERO_AMOUNT,
+            });
+            signedOrder.signature = `0x0${SignatureType.Wallet}`;
+            await expectTransactionFailedAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+                RevertReason.InvalidOrderSignature,
+            );
+        });
+
+        it('should revert if `isValidSignature` tries to update state when SignatureType=Validator', async () => {
+            const isApproved = true;
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await exchange.setSignatureValidatorApproval.sendTransactionAsync(
+                    maliciousValidator.address,
+                    isApproved,
+                    { from: makerAddress },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAddress: maliciousValidator.address,
+            });
+            signedOrder.signature = `${maliciousValidator.address}0${SignatureType.Validator}`;
+            await expectTransactionFailedAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+                RevertReason.InvalidOrderSignature,
             );
         });
     });
