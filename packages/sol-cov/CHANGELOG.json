@@ -7,7 +7,8 @@
                     "Export types: `JSONRPCRequestPayload`, `Provider`, `JSONRPCErrorCallback`, `JSONRPCResponsePayload`, `JSONRPCRequestPayloadWithMethod`, `NextCallback`, `ErrorCallback`, `OnNextCompleted` and `Callback`",
                 "pr": 924
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "2.0.0",

@@ -20,7 +20,6 @@
         "build:all": "run-p build:umd:prod build:commonjs",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
         "test:circleci": "run-s test:coverage",
-        "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",

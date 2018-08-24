@@ -5,7 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.5 - _August 13, 2018_
+## v2.0.0 - _August 24, 2018_
+
+    * Export types: `PartialTxParams`, `JSONRPCRequestPayloadWithMethod`, `ECSignatureString`, `AccountFetchingConfigs`, `LedgerEthereumClientFactoryAsync`, `OnNextCompleted`, `MnemonicWalletSubproviderConfigs`, LedgerGetAddressResult, `JSONRPCRequestPayload`, `Provider`, `JSONRPCResponsePayload` and `JSONRPCErrorCallback` (#924)
+
+## v1.0.5 - _August 14, 2018_
 
     * Dependencies updated
 
@@ -25,7 +29,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 19, 2018_
+## v1.0.0 - _July 20, 2018_
 
     * Add `RpcSubprovider` with timeout (#874)
     * Add `EthLightwalletSubprovider` (#775)
@@ -46,7 +50,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.10.1 - _May 4, 2018_
+## v0.10.1 - _May 5, 2018_
 
     * Dependencies updated
 

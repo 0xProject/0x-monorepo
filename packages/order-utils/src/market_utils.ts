@@ -128,7 +128,7 @@ export const marketUtils = {
                 const makerAssetAmountAvailable = remainingFillableMakerAssetAmounts[index];
                 const feeToFillMakerAssetAmountAvailable = makerAssetAmountAvailable
                     .mul(order.takerFee)
-                    .div(order.makerAssetAmount);
+                    .dividedToIntegerBy(order.makerAssetAmount);
                 return accFees.plus(feeToFillMakerAssetAmountAvailable);
             },
             constants.ZERO_AMOUNT,
@@ -142,7 +142,7 @@ export const marketUtils = {
             },
         );
         return {
-            resultOrders,
+            resultFeeOrders: resultOrders,
             remainingFeeAmount: remainingFillAmount,
         };
         // TODO: add more orders here to cover rounding

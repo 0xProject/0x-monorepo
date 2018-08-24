@@ -7,7 +7,8 @@
                     "Export types: `PartialTxParams`, `JSONRPCRequestPayloadWithMethod`, `ECSignatureString`, `AccountFetchingConfigs`, `LedgerEthereumClientFactoryAsync`, `OnNextCompleted`, `MnemonicWalletSubproviderConfigs`, LedgerGetAddressResult, `JSONRPCRequestPayload`, `Provider`, `JSONRPCResponsePayload` and `JSONRPCErrorCallback`",
                 "pr": 924
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "timestamp": 1534210131,

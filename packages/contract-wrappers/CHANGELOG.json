@@ -16,7 +16,8 @@
                 "note": "Added Transaction Encoder for use with 0x Exchange executeTransaction",
                 "pr": 975
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "1.0.1-rc.3",

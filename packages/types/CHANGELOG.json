@@ -6,7 +6,8 @@
                 "note": "Add revert reasons for ERC721Token",
                 "pr": 933
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "1.0.1-rc.4",

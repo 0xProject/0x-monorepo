@@ -1,0 +1,12 @@
+[
+    {
+        "version": "1.0.1-rc.1",
+        "changes": [
+            {
+                "note": "Add initial forwarderHelperFactory",
+                "pr": 997
+            }
+        ],
+        "timestamp": 1535133899
+    }
+]
