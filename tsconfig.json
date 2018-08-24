@@ -47,7 +47,6 @@
         { "path": "./packages/fill-scenarios" },
         { "path": "./packages/metacoin" },
         { "path": "./packages/migrations" },
-        { "path": "./packages/react-docs-example" },
         // Skipping website because it requires allowJs: false and this is
         // incompatible with project references.
         // { "path": "./packages/website" }
