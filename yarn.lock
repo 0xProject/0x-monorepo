@@ -11274,6 +11274,15 @@ react-highlight@0xproject/react-highlight:
     react "^15.5.4"
     react-dom "^15.5.4"
 
+react-highlight@0xproject/react-highlight#e5201e6a6bf276d3a6bf4828252c886c386d3666:
+  version "0.10.0"
+  resolved "https://codeload.github.com/0xproject/react-highlight/tar.gz/e5201e6a6bf276d3a6bf4828252c886c386d3666"
+  dependencies:
+    highlight.js "^9.11.0"
+    highlightjs-solidity "^1.0.5"
+    react "^16.4.2"
+    react-dom "^16.4.2"
+
 react-hot-loader@^4.3.3:
   version "4.3.4"
   resolved "https://registry.npmjs.org/react-hot-loader/-/react-hot-loader-4.3.4.tgz#4f9bdd55bb20d77a6ae8931fa1c187e5f0ce6279"

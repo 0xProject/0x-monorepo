@@ -47,7 +47,7 @@
         "material-ui": "^0.17.1",
         "react": "^16.4.2",
         "react-dom": "^16.4.2",
-        "react-highlight": "0xproject/react-highlight",
+        "react-highlight": "0xproject/react-highlight#e5201e6a6bf276d3a6bf4828252c886c386d3666",
         "react-markdown": "^3.2.2",
         "react-scroll": "0xproject/react-scroll#similar-to-pr-330",
         "react-tap-event-plugin": "^2.0.1"
