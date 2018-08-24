@@ -70,10 +70,10 @@ contract MixinMatchOrders is
             leftSignature
         );
         assertFillableOrder(
-            righttOrder,
-            righttOrderInfo,
+            rightOrder,
+            rightOrderInfo,
             takerAddress,
-            leftSignature
+            rightSignature
         );
         assertValidMatch(leftOrder, rightOrder);
 
@@ -88,17 +88,17 @@ contract MixinMatchOrders is
         // Validate fill contexts
         assertValidFill(
             leftOrder,
+            leftOrderInfo,
             matchedFillResults.left.takerAssetFilledAmount,
             matchedFillResults.left.takerAssetFilledAmount,
-            matchedFillResults.left.makerAssetFilledAmount,
-            leftSignature
+            matchedFillResults.left.makerAssetFilledAmount
         );
         assertValidFill(
             rightOrder,
+            rightOrderInfo,
             matchedFillResults.right.takerAssetFilledAmount,
             matchedFillResults.right.takerAssetFilledAmount,
-            matchedFillResults.right.makerAssetFilledAmount,
-            rightSignature
+            matchedFillResults.right.makerAssetFilledAmount
         );
         
         // Update exchange state
