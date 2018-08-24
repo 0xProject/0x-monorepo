@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/order-watcher",
-    "version": "1.0.1-rc.3",
+    "version": "1.0.1-rc.4",
     "description": "An order watcher daemon that watches for order validity",
     "keywords": [
         "0x",
@@ -43,10 +43,10 @@
         "node": ">=6.0.0"
     },
     "devDependencies": {
-        "@0xproject/abi-gen": "^1.0.5",
-        "@0xproject/dev-utils": "^1.0.4",
-        "@0xproject/migrations": "^1.0.4",
-        "@0xproject/tslint-config": "^1.0.5",
+        "@0xproject/abi-gen": "^1.0.6",
+        "@0xproject/dev-utils": "^1.0.5",
+        "@0xproject/migrations": "^1.0.5",
+        "@0xproject/tslint-config": "^1.0.6",
         "@types/bintrees": "^1.0.2",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
@@ -71,18 +71,18 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0xproject/assert": "^1.0.5",
-        "@0xproject/base-contract": "^2.0.0-rc.1",
-        "@0xproject/contract-wrappers": "^1.0.1-rc.3",
-        "@0xproject/fill-scenarios": "^1.0.1-rc.3",
-        "@0xproject/json-schemas": "^1.0.1-rc.4",
-        "@0xproject/order-utils": "^1.0.1-rc.3",
-        "@0xproject/types": "^1.0.1-rc.4",
-        "@0xproject/typescript-typings": "^1.0.4",
-        "@0xproject/utils": "^1.0.5",
-        "@0xproject/web3-wrapper": "^1.2.0",
+        "@0xproject/assert": "^1.0.6",
+        "@0xproject/base-contract": "^2.0.0",
+        "@0xproject/contract-wrappers": "^1.0.1-rc.4",
+        "@0xproject/fill-scenarios": "^1.0.1-rc.4",
+        "@0xproject/json-schemas": "^1.0.1-rc.5",
+        "@0xproject/order-utils": "^1.0.1-rc.4",
+        "@0xproject/types": "^1.0.1-rc.5",
+        "@0xproject/typescript-typings": "^1.0.5",
+        "@0xproject/utils": "^1.0.6",
+        "@0xproject/web3-wrapper": "^2.0.0",
         "bintrees": "^1.0.2",
-        "ethereum-types": "^1.0.4",
+        "ethereum-types": "^1.0.5",
         "ethereumjs-blockstream": "5.0.0",
         "ethers": "3.0.22",
         "lodash": "^4.17.5"
