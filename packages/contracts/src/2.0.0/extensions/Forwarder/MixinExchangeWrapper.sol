@@ -163,7 +163,7 @@ contract MixinExchangeWrapper is
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerAssetFillAmount = getPartialAmount(
+            uint256 remainingTakerAssetFillAmount = getPartialAmountFloor(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
@@ -231,7 +231,7 @@ contract MixinExchangeWrapper is
 
             // Convert the remaining amount of ZRX to buy into remaining amount
             // of WETH to sell, assuming entire amount can be sold in the current order.
-            uint256 remainingWethSellAmount = getPartialAmount(
+            uint256 remainingWethSellAmount = getPartialAmountFloor(
                 orders[i].takerAssetAmount,
                 safeSub(orders[i].makerAssetAmount, orders[i].takerFee),  // our exchange rate after fees 
                 remainingZrxBuyAmount

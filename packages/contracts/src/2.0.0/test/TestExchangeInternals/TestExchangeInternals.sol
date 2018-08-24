@@ -67,7 +67,7 @@ contract TestExchangeInternals is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target.
-    function publicGetPartialAmount(
+    function publicGetPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -76,7 +76,7 @@ contract TestExchangeInternals is
         pure
         returns (uint256 partialAmount)
     {
-        return getPartialAmount(numerator, denominator, target);
+        return getPartialAmountFloor(numerator, denominator, target);
     }
 
     /// @dev Calculates partial value given a numerator and denominator.
@@ -101,7 +101,7 @@ contract TestExchangeInternals is
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
     /// @return Rounding error is present.
-    function publicIsRoundingError(
+    function publicIsRoundingErrorFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -110,7 +110,7 @@ contract TestExchangeInternals is
         pure
         returns (bool isError)
     {
-        return isRoundingError(numerator, denominator, target);
+        return isRoundingErrorFloor(numerator, denominator, target);
     }
 
     /// @dev Checks if rounding error >= 0.1%.

@@ -87,7 +87,7 @@ contract MixinForwarderCore is
         uint256 makerAssetAmountPurchased;
         if (orders[0].makerAssetData.equals(ZRX_ASSET_DATA)) {
             // Calculate amount of WETH that won't be spent on ETH fees.
-            wethSellAmount = getPartialAmount(
+            wethSellAmount = getPartialAmountFloor(
                 PERCENTAGE_DENOMINATOR,
                 safeAdd(PERCENTAGE_DENOMINATOR, feePercentage),
                 msg.value
@@ -103,7 +103,7 @@ contract MixinForwarderCore is
             makerAssetAmountPurchased = safeSub(orderFillResults.makerAssetFilledAmount, orderFillResults.takerFeePaid);
         } else {
             // 5% of WETH is reserved for filling feeOrders and paying feeRecipient.
-            wethSellAmount = getPartialAmount(
+            wethSellAmount = getPartialAmountFloor(
                 MAX_WETH_FILL_PERCENTAGE,
                 PERCENTAGE_DENOMINATOR,
                 msg.value
