@@ -465,6 +465,24 @@ describe('MixinSignatureValidator', () => {
             );
             expect(isValidSignature).to.be.true();
         });
+
+        it('should return true when message was signed by a Trezor Model T (firmware version 2.0.7)', async () => {
+            // messageHash translates to 0x2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b
+            const messageHash = ethUtil.bufferToHex(ethUtil.toBuffer('++++++++++++++++++++++++++++++++'));
+            const signer = '0x98ce6d9345e8ffa7d99ee0822272fae9d2c0e895';
+            const v = ethUtil.toBuffer('0x1c');
+            const r = ethUtil.toBuffer('0x423b71062c327f0ec4fe199b8da0f34185e59b4c1cb4cc23df86cac4a601fb3f');
+            const s = ethUtil.toBuffer('0x53810d6591b5348b7ee08ee812c874b0fdfb942c9849d59512c90e295221091f');
+            const trezorSignatureType = ethUtil.toBuffer(`0x${SignatureType.Trezor}`);
+            const signature = Buffer.concat([v, r, s, trezorSignatureType]);
+            const signatureHex = ethUtil.bufferToHex(signature);
+            const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
+                messageHash,
+                signer,
+                signatureHex,
+            );
+            expect(isValidSignature).to.be.true();
+        });
     });
 
     describe('setSignatureValidatorApproval', () => {
