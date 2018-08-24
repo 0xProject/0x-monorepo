@@ -6,7 +6,6 @@ export const relayerApiFeeRecipientsResponseSchema = {
         {
             properties: {
                 records: {
-                    id: '/relayerApiFeeRecipientsSchema',
                     type: 'array',
                     items: { $ref: '/addressSchema' },
                 },
