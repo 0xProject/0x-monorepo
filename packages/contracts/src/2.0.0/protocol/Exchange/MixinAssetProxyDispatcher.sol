@@ -83,7 +83,7 @@ contract MixinAssetProxyDispatcher is
         internal
     {
         // Do nothing if no amount should be transferred.
-        if (amount > 0) {
+        if (amount > 0 && from != to) {
             // Ensure assetData length is valid
             require(
                 assetData.length > 3,
