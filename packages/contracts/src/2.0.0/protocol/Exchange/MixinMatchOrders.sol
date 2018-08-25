@@ -184,12 +184,12 @@ contract MixinMatchOrders is
             // Case 1: Right order is fully filled
             matchedFillResults.right.makerAssetFilledAmount = rightMakerAssetAmountRemaining;
             matchedFillResults.right.takerAssetFilledAmount = rightTakerAssetAmountRemaining;
+            matchedFillResults.left.takerAssetFilledAmount = matchedFillResults.right.makerAssetFilledAmount;
             matchedFillResults.left.makerAssetFilledAmount = getPartialAmountFloor(
                 leftOrder.makerAssetAmount,
                 leftOrder.takerAssetAmount,
-                matchedFillResults.right.makerAssetFilledAmount
+                matchedFillResults.left.takerAssetFilledAmount
             );
-            matchedFillResults.left.takerAssetFilledAmount = matchedFillResults.right.makerAssetFilledAmount;
         } else {
             // Case 2: Left order is fully filled
             matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
@@ -198,7 +198,7 @@ contract MixinMatchOrders is
             matchedFillResults.right.takerAssetFilledAmount = getPartialAmountCeil(
                 rightOrder.takerAssetAmount,
                 rightOrder.makerAssetAmount,
-                matchedFillResults.left.takerAssetFilledAmount
+                matchedFillResults.right.makerAssetFilledAmount
             );
         }
 
