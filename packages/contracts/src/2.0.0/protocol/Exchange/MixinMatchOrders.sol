@@ -183,20 +183,20 @@ contract MixinMatchOrders is
             leftTakerAssetFilledAmount = leftTakerAssetAmountRemaining;
 
             // The right order receives an amount proportional to how much was spent.
-            rightTakerAssetFilledAmount = getPartialAmount(
-                rightOrder.takerAssetAmount,
+            rightTakerAssetFilledAmount = getPartialAmountFloor(
+                leftTakerAssetFilledAmount,
                 rightOrder.makerAssetAmount,
-                leftTakerAssetFilledAmount
+                rightOrder.takerAssetAmount
             );
         } else {
             // Right order will be fully filled: maximally fill right
             rightTakerAssetFilledAmount = rightTakerAssetAmountRemaining;
 
             // The left order receives an amount proportional to how much was spent.
-            leftTakerAssetFilledAmount = getPartialAmount(
-                rightOrder.makerAssetAmount,
+            leftTakerAssetFilledAmount = getPartialAmountFloor(
+                leftTakerAssetFilledAmount,
                 rightOrder.takerAssetAmount,
-                rightTakerAssetFilledAmount
+                rightOrder.makerAssetAmount
             );
         }
 

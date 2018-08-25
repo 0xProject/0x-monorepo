@@ -172,6 +172,8 @@ export enum RevertReason {
     InvalidSender = 'INVALID_SENDER',
     InvalidOrderSignature = 'INVALID_ORDER_SIGNATURE',
     InvalidTakerAmount = 'INVALID_TAKER_AMOUNT',
+    DivisionByZero = 'DIVISION_BY_ZERO',
+    ImproperFraction = 'IMPROPER_FRACTION',
     RoundingError = 'ROUNDING_ERROR',
     InvalidSignature = 'INVALID_SIGNATURE',
     SignatureIllegal = 'SIGNATURE_ILLEGAL',
