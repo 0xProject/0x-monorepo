@@ -24,7 +24,7 @@ import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('matchOrders', () => {
+describe('matchOrders', () => {
     let makerAddressLeft: string;
     let makerAddressRight: string;
     let owner: string;
