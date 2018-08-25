@@ -320,7 +320,7 @@ contract MixinExchangeCore is
 
         // Validate fill order rounding
         require(
-            !isRoundingError(
+            !isRoundingErrorFloor(
                 takerAssetFilledAmount,
                 order.takerAssetAmount,
                 order.makerAssetAmount
@@ -376,17 +376,17 @@ contract MixinExchangeCore is
     {
         // Compute proportional transfer amounts
         fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
-        fillResults.makerAssetFilledAmount = getPartialAmount(
+        fillResults.makerAssetFilledAmount = getPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.makerAssetAmount
         );
-        fillResults.makerFeePaid = getPartialAmount(
+        fillResults.makerFeePaid = getPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.makerFee
         );
-        fillResults.takerFeePaid = getPartialAmount(
+        fillResults.takerFeePaid = getPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.takerFee

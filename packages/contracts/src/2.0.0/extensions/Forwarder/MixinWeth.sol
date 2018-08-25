@@ -82,7 +82,7 @@ contract MixinWeth is
         uint256 wethRemaining = safeSub(msg.value, wethSold);
 
         // Calculate ETH fee to pay to feeRecipient.
-        uint256 ethFee = getPartialAmount(
+        uint256 ethFee = getPartialAmountFloor(
             feePercentage,
             PERCENTAGE_DENOMINATOR,
             wethSoldExcludingFeeOrders

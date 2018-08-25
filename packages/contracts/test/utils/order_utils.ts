@@ -5,7 +5,7 @@ import { constants } from './constants';
 import { CancelOrder, MatchOrder } from './types';
 
 export const orderUtils = {
-    getPartialAmount(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
+    getPartialAmountFloor(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
         const partialAmount = numerator
             .mul(target)
             .div(denominator)
