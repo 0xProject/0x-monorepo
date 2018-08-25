@@ -96,21 +96,33 @@ contract MExchangeCore is
         bytes32 orderHash
     )
         internal;
-
+    
     /// @dev Validates context for fillOrder. Succeeds or throws.
     /// @param order to be filled.
-    /// @param orderInfo Status, orderHash, and amount already filled of order.
+    /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
     /// @param takerAddress Address of order taker.
-    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
-    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
     /// @param signature Proof that the orders was created by its maker.
-    function assertValidFill(
+    function assertFillableOrder(
         LibOrder.Order memory order,
         LibOrder.OrderInfo memory orderInfo,
         address takerAddress,
+        bytes memory signature
+    )
+        internal
+        view;
+    
+    /// @dev Validates context for fillOrder. Succeeds or throws.
+    /// @param order to be filled.
+    /// @param orderInfo Status, orderHash, and amount already filled of order.
+    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
+    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
+    /// @param makerAssetFilledAmount Amount of makerAsset that will be transfered.
+    function assertValidFill(
+        LibOrder.Order memory order,
+        LibOrder.OrderInfo memory orderInfo,
         uint256 takerAssetFillAmount,
         uint256 takerAssetFilledAmount,
-        bytes memory signature
+        uint256 makerAssetFilledAmount
     )
         internal
         view;

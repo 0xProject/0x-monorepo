@@ -64,8 +64,20 @@ contract MixinMatchOrders is
 
         // Fetch taker address
         address takerAddress = getCurrentContextAddress();
-
+        
         // Either our context is valid or we revert
+        assertFillableOrder(
+            leftOrder,
+            leftOrderInfo,
+            takerAddress,
+            leftSignature
+        );
+        assertFillableOrder(
+            rightOrder,
+            rightOrderInfo,
+            takerAddress,
+            rightSignature
+        );
         assertValidMatch(leftOrder, rightOrder);
 
         // Compute proportional fill amounts
@@ -80,20 +92,18 @@ contract MixinMatchOrders is
         assertValidFill(
             leftOrder,
             leftOrderInfo,
-            takerAddress,
             matchedFillResults.left.takerAssetFilledAmount,
             matchedFillResults.left.takerAssetFilledAmount,
-            leftSignature
+            matchedFillResults.left.makerAssetFilledAmount
         );
         assertValidFill(
             rightOrder,
             rightOrderInfo,
-            takerAddress,
             matchedFillResults.right.takerAssetFilledAmount,
             matchedFillResults.right.takerAssetFilledAmount,
-            rightSignature
+            matchedFillResults.right.makerAssetFilledAmount
         );
-
+        
         // Update exchange state
         updateFilledState(
             leftOrder,
