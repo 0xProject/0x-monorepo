@@ -191,7 +191,8 @@ describe.only('matchOrders', () => {
             });
             // Note:
             //  The maker/taker fee percentage paid on the right order differs because
-            //  they received different sale prices.
+            //  they received different sale prices. Similarly, the right maker pays a
+            //  slightly higher lower than the right taker.
             const expectedTransferAmounts = {
                 // Left Maker
                 amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2000), 0),
@@ -199,12 +200,12 @@ describe.only('matchOrders', () => {
                 feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
                 amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1001), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(300), 0), // @TODO: Update once rounding up is implemented
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10.01), 16), // @TODO: Update once rounding up is implemented
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(301), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10.01), 16), // 10.01%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1700), 0),
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1699), 0),
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 16), // @TODO: Update once rounding up is implemented
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('10.0333333333333333'), 16), // 10.03%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -217,7 +218,7 @@ describe.only('matchOrders', () => {
             );
         });
 
-        it('Should give left maker a better price when correct price is non-integral', async () => {
+        it('Should give left maker a better price when correct price is not integral', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
@@ -288,13 +289,16 @@ describe.only('matchOrders', () => {
                 //  For order [4,2] valid fill amounts through `Exchange.fillOrder` would be [2, 1] or [4, 2]
                 //  In this case we have fill amounts of [3, 1] which is attainable through
                 // `Exchange.matchOrders` but not `Exchange.fillOrder`
+                // Note:
+                //  The right maker fee differs from the right taker fee because their exchange rate differs.
+                //  The right maker always receives the better exchange and fee price.
                 amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0), // @TODO: Update once rounding up is implemented
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 16), // 75% (@TODO: Update once rounding up is implemented)
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 16), // 75%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 0),
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(8), 0),
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 16), // 50% (@TODO: Update once rounding up is implemented)
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
