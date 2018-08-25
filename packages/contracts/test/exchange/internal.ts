@@ -220,9 +220,9 @@ describe('Exchange core internal functions', () => {
             numerator: BigNumber,
             denominator: BigNumber,
             target: BigNumber,
-        ) {
+        ): Promise<BigNumber> {
             if (denominator.eq(0)) {
-                throw new Error('revert DIVISION_BY_ZERO');
+                throw divisionByZeroErrorForCall;
             }
             const product = numerator.mul(target);
             const offset = product.add(denominator.sub(1));
