@@ -19,6 +19,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "../../utils/ReentrancyGuard/ReentrancyGuard.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibFillResults.sol";
 import "./libs/LibOrder.sol";
@@ -30,6 +31,7 @@ import "./mixins/MAssetProxyDispatcher.sol";
 
 
 contract MixinExchangeCore is
+    ReentrancyGuard,
     LibConstants,
     LibMath,
     LibOrder,
@@ -54,6 +56,7 @@ contract MixinExchangeCore is
     /// @param targetOrderEpoch Orders created with a salt less or equal to this value will be cancelled.
     function cancelOrdersUpTo(uint256 targetOrderEpoch)
         external
+        nonReentrant
     {
         address makerAddress = getCurrentContextAddress();
         // If this function is called via `executeTransaction`, we only update the orderEpoch for the makerAddress/msg.sender combination.
@@ -86,50 +89,14 @@ contract MixinExchangeCore is
         bytes memory signature
     )
         public
+        nonReentrant
         returns (FillResults memory fillResults)
     {
-        // Fetch order info
-        OrderInfo memory orderInfo = getOrderInfo(order);
-        
-        // Fetch taker address
-        address takerAddress = getCurrentContextAddress();
-        
-        // Assert that the order is fillable by taker
-        assertFillableOrder(
+        fillResults = fillOrderInternal(
             order,
-            orderInfo,
-            takerAddress,
+            takerAssetFillAmount,
             signature
         );
-
-        // Get amount of takerAsset to fill
-        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
-        uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
-
-        // Compute proportional fill amounts
-        fillResults = calculateFillResults(order, takerAssetFilledAmount);
-        
-        // Validate context
-        assertValidFill(
-            order,
-            orderInfo,
-            takerAssetFillAmount,
-            takerAssetFilledAmount,
-            fillResults.makerAssetFilledAmount
-        );
-        
-        // Update exchange internal state
-        updateFilledState(
-            order,
-            takerAddress,
-            orderInfo.orderHash,
-            orderInfo.orderTakerAssetFilledAmount,
-            fillResults
-        );
-    
-        // Settle order
-        settleOrder(order, takerAddress, fillResults);
-
         return fillResults;
     }
 
@@ -138,6 +105,7 @@ contract MixinExchangeCore is
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
     function cancelOrder(Order memory order)
         public
+        nonReentrant
     {
         // Fetch current order status
         OrderInfo memory orderInfo = getOrderInfo(order);
@@ -208,6 +176,64 @@ contract MixinExchangeCore is
         // All other statuses are ruled out: order is Fillable
         orderInfo.orderStatus = uint8(OrderStatus.FILLABLE);
         return orderInfo;
+    }
+
+    /// @dev Fills the input order.
+    /// @param order Order struct containing order specifications.
+    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
+    /// @param signature Proof that order has been created by maker.
+    /// @return Amounts filled and fees paid by maker and taker.
+    function fillOrderInternal(
+        Order memory order,
+        uint256 takerAssetFillAmount,
+        bytes memory signature
+    )
+        internal
+        returns (FillResults memory fillResults)
+    {
+        // Fetch order info
+        OrderInfo memory orderInfo = getOrderInfo(order);
+
+        // Fetch taker address
+        address takerAddress = getCurrentContextAddress();
+        
+        // Assert that the order is fillable by taker
+        assertFillableOrder(
+            order,
+            orderInfo,
+            takerAddress,
+            signature
+        );
+        
+        // Get amount of takerAsset to fill
+        uint256 remainingTakerAssetAmount = safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
+        uint256 takerAssetFilledAmount = min256(takerAssetFillAmount, remainingTakerAssetAmount);
+
+        // Validate context
+        assertValidFill(
+            order,
+            orderInfo,
+            takerAssetFillAmount,
+            takerAssetFilledAmount,
+            fillResults.makerAssetFilledAmount
+        );
+
+        // Compute proportional fill amounts
+        fillResults = calculateFillResults(order, takerAssetFilledAmount);
+
+        // Update exchange internal state
+        updateFilledState(
+            order,
+            takerAddress,
+            orderInfo.orderHash,
+            orderInfo.orderTakerAssetFilledAmount,
+            fillResults
+        );
+    
+        // Settle order
+        settleOrder(order, takerAddress, fillResults);
+
+        return fillResults;
     }
 
     /// @dev Updates state with results of a fill order.
@@ -381,7 +407,7 @@ contract MixinExchangeCore is
         
         // Validate fill order rounding
         require(
-            !isRoundingError(
+            !isRoundingErrorFloor(
                 takerAssetFilledAmount,
                 order.takerAssetAmount,
                 order.makerAssetAmount
@@ -437,17 +463,17 @@ contract MixinExchangeCore is
     {
         // Compute proportional transfer amounts
         fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
-        fillResults.makerAssetFilledAmount = getPartialAmount(
+        fillResults.makerAssetFilledAmount = getPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.makerAssetAmount
         );
-        fillResults.makerFeePaid = getPartialAmount(
+        fillResults.makerFeePaid = getPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.makerFee
         );
-        fillResults.takerFeePaid = getPartialAmount(
+        fillResults.takerFeePaid = getPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.takerFee

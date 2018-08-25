@@ -19,6 +19,7 @@
 pragma solidity 0.4.24;
 
 import "../../utils/LibBytes/LibBytes.sol";
+import "../../utils/ReentrancyGuard/ReentrancyGuard.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
 import "./interfaces/IWallet.sol";
@@ -26,6 +27,7 @@ import "./interfaces/IValidator.sol";
 
 
 contract MixinSignatureValidator is
+    ReentrancyGuard,
     MSignatureValidator,
     MTransactions
 {
@@ -69,6 +71,7 @@ contract MixinSignatureValidator is
         bool approval
     )
         external
+        nonReentrant
     {
         address signerAddress = getCurrentContextAddress();
         allowedValidators[signerAddress][validatorAddress] = approval;
