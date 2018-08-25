@@ -42,10 +42,11 @@ export class MatchOrderTester {
         takerAddress: string,
         expectedTransferAmounts: TransferAmounts,
     ): Promise<void> {
-        // Should have two logs -- one for each order.
-        expect(transactionReceipt.logs.length, 'Checking number of logs').to.be.equal(2);
+        // Should have two fill event logs -- one for each order.
+        const transactionFillLogs = _.filter(transactionReceipt.logs, ['event', 'Fill']);
+        expect(transactionFillLogs.length, 'Checking number of logs').to.be.equal(2);
         // First log is for left fill
-        const leftLog = (transactionReceipt.logs[0] as any).args as LoggedTransferAmounts;
+        const leftLog = (transactionFillLogs[0] as any).args as LoggedTransferAmounts;
         expect(leftLog.makerAddress, 'Checking logged maker address of left order').to.be.equal(
             signedOrderLeft.makerAddress,
         );
@@ -55,7 +56,7 @@ export class MatchOrderTester {
         const feePaidByLeftMaker = new BigNumber(leftLog.makerFeePaid);
         const feePaidByTakerLeft = new BigNumber(leftLog.takerFeePaid);
         // Second log is for right fill
-        const rightLog = (transactionReceipt.logs[1] as any).args as LoggedTransferAmounts;
+        const rightLog = (transactionFillLogs[1] as any).args as LoggedTransferAmounts;
         expect(rightLog.makerAddress, 'Checking logged maker address of right order').to.be.equal(
             signedOrderRight.makerAddress,
         );
