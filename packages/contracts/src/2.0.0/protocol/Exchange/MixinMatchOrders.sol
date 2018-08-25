@@ -179,12 +179,22 @@ contract MixinMatchOrders is
             rightTakerAssetAmountRemaining
         );
 
-        // Calculate fill results for maker and taker assets
+        // Calculate fill results for maker and taker assets: at least one order will be fully filled.
+        // The maximum amount the left maker can buy is `leftTakerAssetAmountRemaining`
+        // The maximum amount the right maker can sell is `rightMakerAssetAmountRemaining`
+        // We have two distinct cases for calculating the fill results:
+        // Case 1.
+        //   If the left maker can buy more than the right maker can sell, then only the right order is fully filled.
+        //   If the left maker can buy exactly what the right maker can sell, then both orders are fully filled.
+        // Case 2.
+        //   If the left maker cannot buy more than the right maker can sell, then only the left order is fully filled.
         if (leftTakerAssetAmountRemaining >= rightMakerAssetAmountRemaining) {
             // Case 1: Right order is fully filled
             matchedFillResults.right.makerAssetFilledAmount = rightMakerAssetAmountRemaining;
             matchedFillResults.right.takerAssetFilledAmount = rightTakerAssetAmountRemaining;
             matchedFillResults.left.takerAssetFilledAmount = matchedFillResults.right.makerAssetFilledAmount;
+            // Round down to ensure the maker's exchange rate does not exceed the price specified by the order. 
+            // We favor the maker when the exchange rate must be rounded.
             matchedFillResults.left.makerAssetFilledAmount = getPartialAmountFloor(
                 leftOrder.makerAssetAmount,
                 leftOrder.takerAssetAmount,
@@ -195,6 +205,8 @@ contract MixinMatchOrders is
             matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
             matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
             matchedFillResults.right.makerAssetFilledAmount = matchedFillResults.left.takerAssetFilledAmount;
+            // Round up to ensure the maker's exchange rate does not exceed the price specified by the order.
+            // We favor the maker when the exchange rate must be rounded.
             matchedFillResults.right.takerAssetFilledAmount = getPartialAmountCeil(
                 rightOrder.takerAssetAmount,
                 rightOrder.makerAssetAmount,
