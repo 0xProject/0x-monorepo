@@ -303,12 +303,6 @@ contract MixinExchangeCore is
             );
         }
         
-        // Orders can not be self-filled (use cancel instead)
-        require(
-            order.makerAddress != takerAddress,
-            "INVALID_TAKER"
-        );
-        
         // Validate Maker signature (check only if first time seen)
         if (orderInfo.orderTakerAssetFilledAmount == 0) {
             require(
@@ -339,6 +333,7 @@ contract MixinExchangeCore is
         view
     {
         // Revert if fill amount is invalid
+        // TODO: reconsider necessity for v2.1
         require(
             takerAssetFillAmount != 0,
             "INVALID_TAKER_AMOUNT"
