@@ -85,7 +85,7 @@ function logIfDefined(x: any): void {
             logIfDefined(packageError.error.stdout);
             logIfDefined(packageError.error.stack);
         });
-        process.exit(0);
+        process.exit(1);
     }
 })().catch(err => {
     utils.log(`Unexpected error: ${err.message}`);
