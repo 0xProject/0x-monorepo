@@ -86,10 +86,12 @@ function logIfDefined(x: any): void {
             logIfDefined(packageError.error.stack);
         });
         process.exit(1);
+    } else {
+        process.exit(0);
     }
 })().catch(err => {
     utils.log(`Unexpected error: ${err.message}`);
-    process.exit(0);
+    process.exit(1);
 });
 
 async function testInstallPackageAsync(
