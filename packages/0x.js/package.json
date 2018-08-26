@@ -12,8 +12,8 @@
         "tokens",
         "exchange"
     ],
-    "main": "lib/src/index.js",
-    "types": "lib/src/index.d.ts",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "scripts": {
         "watch_without_deps": "tsc -w",
         "build": "yarn build:all",

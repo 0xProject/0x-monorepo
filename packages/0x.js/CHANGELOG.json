@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1-rc.5",
+        "changes": [
+            {
+                "note":
+                    "Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js"
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.4",
         "changes": [
             {
