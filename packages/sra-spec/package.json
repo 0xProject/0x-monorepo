@@ -17,7 +17,7 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",
         "clean": "shx rm -rf lib",
-        "build": "tsc && copy_md_files && yarn build-json",
+        "build": "tsc && yarn copy_md_files && yarn build-json",
         "build-json": "ts-node build_scripts/buildJson.ts",
         "build-json:watch": "chokidar 'src/**/*' -c 'yarn build-json' ",
         "copy_md_files": "copyfiles -u 2 './src/md/**/*.md' ./lib/md",
