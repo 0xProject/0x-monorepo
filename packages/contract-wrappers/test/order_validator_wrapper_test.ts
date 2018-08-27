@@ -5,6 +5,7 @@ import { DoneCallback, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { BlockParamLiteral } from 'ethereum-types';
+import * as _ from 'lodash';
 import 'mocha';
 
 import { ContractWrappers, ExchangeCancelEventArgs, ExchangeEvents, ExchangeFillEventArgs, OrderStatus } from '../src';
@@ -102,8 +103,8 @@ describe('OrderValidator', () => {
                 signedOrders,
                 takerAddresses,
             );
-            ordersInfo = ordersAndTradersInfo.ordersInfo;
-            tradersInfo = ordersAndTradersInfo.tradersInfo;
+            ordersInfo = _.map(ordersAndTradersInfo, orderAndTraderInfo => orderAndTraderInfo.orderInfo);
+            tradersInfo = _.map(ordersAndTradersInfo, orderAndTraderInfo => orderAndTraderInfo.traderInfo);
         });
         it('should return the same number of order infos and trader infos as input orders', async () => {
             expect(ordersInfo.length).to.be.equal(signedOrders.length);
