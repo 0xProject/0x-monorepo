@@ -2,6 +2,7 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetDataUtils } from '@0xproject/order-utils';
 import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
+import * as chai from 'chai';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 
@@ -11,6 +12,7 @@ import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_prox
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
 import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { ReentrantERC20TokenContract } from '../../generated_contract_wrappers/reentrant_erc20_token';
+import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
 import { constants } from '../utils/constants';
@@ -21,10 +23,13 @@ import { MatchOrderTester } from '../utils/match_order_tester';
 import { OrderFactory } from '../utils/order_factory';
 import { ERC20BalancesByOwner, ERC721TokenIdsByOwner } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { chaiSetup } from '../utils/chai_setup';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+chaiSetup.configure();
+const expect = chai.expect;
 
-describe('matchOrders', () => {
+describe.only('matchOrders', () => {
     let makerAddressLeft: string;
     let makerAddressRight: string;
     let owner: string;
@@ -57,6 +62,8 @@ describe('matchOrders', () => {
     let defaultERC721AssetAddress: string;
 
     let matchOrderTester: MatchOrderTester;
+
+    let testExchange: TestExchangeInternalsContract;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -160,6 +167,11 @@ describe('matchOrders', () => {
         orderFactoryRight = new OrderFactory(privateKeyRight, defaultOrderParamsRight);
         // Set match order tester
         matchOrderTester = new MatchOrderTester(exchangeWrapper, erc20Wrapper, erc721Wrapper, zrxToken.address);
+        testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
+            artifacts.TestExchangeInternals,
+            provider,
+            txDefaults,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -171,6 +183,134 @@ describe('matchOrders', () => {
         beforeEach(async () => {
             erc20BalancesByOwner = await erc20Wrapper.getBalancesAsync();
             erc721TokenIdsByOwner = await erc721Wrapper.getBalancesAsync();
+        });
+
+        it('Should transfer correct amounts when right order is fully filled and values pass isRoundingErrorFloor but fail isRoundingErrorCeil', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(17), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(98), 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Assert is rounding error ceil & not rounding error floor
+            // These assertions are taken from MixinMatchOrders::calculateMatchedFillResults
+            // The rounding error is derived computating how much the left maker will sell.
+            const numerator = signedOrderLeft.makerAssetAmount;
+            const denominator = signedOrderLeft.takerAssetAmount;
+            const target = signedOrderRight.makerAssetAmount;
+            const isRoundingErrorCeil = await testExchange.publicIsRoundingErrorCeil.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorCeil).to.be.true();
+            const isRoundingErrorFloor = await testExchange.publicIsRoundingErrorFloor.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorFloor).to.be.false();
+            // Match signedOrderLeft with signedOrderRight
+            // Note that the left maker received a slightly better sell price.
+            // This is intentional; see note in MixinMatchOrders.calculateMatchedFillResults.
+            // Because the left maker received a slightly more favorable sell price, the fee
+            // paid by the left taker is slightly higher than that paid by the left maker.
+            // Fees can be thought of as a tax paid by the seller, derived from the sale price.
+            const expectedTransferAmounts = {
+                // Left Maker
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
+                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16), // 76.47%
+                // Right Maker
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                // Taker
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), 0),
+                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16), // 76.53%
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+            };
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+                expectedTransferAmounts,
+            );
+        });
+
+        it('Should transfer correct amounts when left order is fully filled and values pass isRoundingErrorCeil but fail isRoundingErrorFloor', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(15), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(97), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(14), 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Assert is rounding error floor & not rounding error ceil
+            // These assertions are taken from MixinMatchOrders::calculateMatchedFillResults
+            // The rounding error is derived computating how much the right maker will buy.
+            const numerator = signedOrderRight.takerAssetAmount;
+            const denominator = signedOrderRight.makerAssetAmount;
+            const target = signedOrderLeft.takerAssetAmount;
+            const isRoundingErrorFloor = await testExchange.publicIsRoundingErrorFloor.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorFloor).to.be.true();
+            const isRoundingErrorCeil = await testExchange.publicIsRoundingErrorCeil.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorCeil).to.be.false();
+            // Match signedOrderLeft with signedOrderRight
+            // Note that the right maker received a slightly better purchase price.
+            // This is intentional; see note in MixinMatchOrders.calculateMatchedFillResults.
+            // Because the right maker received a slightly more favorable buy price, the fee
+            // paid by the right taker is slightly higher than that paid by the right maker.
+            // Fees can be thought of as a tax paid by the seller, derived from the sale price.
+            const expectedTransferAmounts = {
+                // Left Maker
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(15), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 0),
+                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                // Right Maker
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.7835051546391752'), 16), // 92.78%
+                // Taker
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
+                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.8571428571428571'), 16), // 92.85%
+            };
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+                expectedTransferAmounts,
+            );
         });
 
         it('Should give right maker a better price when correct price is not integral', async () => {
