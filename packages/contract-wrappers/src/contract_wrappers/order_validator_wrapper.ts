@@ -5,7 +5,7 @@ import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import { OrderAndTraderInfo, OrdersAndTradersInfo } from '../types';
+import { OrderAndTraderInfo, OrdersAndTradersInfo, TraderInfo } from '../types';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
@@ -26,7 +26,7 @@ export class OrderValidatorWrapper extends ContractWrapper {
         super(web3Wrapper, networkId);
     }
     /**
-     * Get and object conforming to OrderAndTraderInfo containing on-chain information of the provided order and address
+     * Get an object conforming to OrderAndTraderInfo containing on-chain information of the provided order and address
      * @return  OrderAndTraderInfo
      */
     public async getOrderAndTraderInfoAsync(order: SignedOrder, takerAddress: string): Promise<OrderAndTraderInfo> {
@@ -65,6 +65,31 @@ export class OrderValidatorWrapper extends ContractWrapper {
             ordersInfo: ordersAndTradersInfo[0],
             tradersInfo: ordersAndTradersInfo[1],
         };
+        return result;
+    }
+    /**
+     * Get an object conforming to TraderInfo containing on-chain balance and allowances for maker and taker of order
+     * @return  TraderInfo
+     */
+    public async getTraderInfoAsync(order: SignedOrder, takerAddress: string): Promise<TraderInfo> {
+        assert.doesConformToSchema('order', order, schemas.signedOrderSchema);
+        assert.isETHAddressHex('takerAddress', takerAddress);
+        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
+        const result = await OrderValidatorContractInstance.getTraderInfo.callAsync(order, takerAddress);
+        return result;
+    }
+    /**
+     * Get an array of objects conforming to TraderInfo containing on-chain balance and allowances for maker and taker of order
+     * @return  array of TraderInfo
+     */
+    public async getTradersInfoAsync(orders: SignedOrder[], takerAddresses: string[]): Promise<TraderInfo[]> {
+        assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
+        _.forEach(takerAddresses, (takerAddress, index) =>
+            assert.isETHAddressHex(`takerAddresses[${index}]`, takerAddress),
+        );
+        assert.assert(orders.length === takerAddresses.length, 'Expected orders.length to equal takerAddresses.length');
+        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
+        const result = await OrderValidatorContractInstance.getTradersInfo.callAsync(orders, takerAddresses);
         return result;
     }
     // HACK: We don't want this method to be visible to the other units within that package but not to the end user.
