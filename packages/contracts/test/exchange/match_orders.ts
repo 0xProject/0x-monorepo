@@ -313,39 +313,42 @@ describe.only('matchOrders', () => {
             );
         });
 
-        it('Should give right maker a better price when correct price is not integral', async () => {
+        it('Should give right maker a better buy price when correct price is not integral', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2000), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1001), 0),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(16), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(3000), 0),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(83), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(49), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Note:
+            // The correct price buy price for the right maker would yield (49/83) * 22 = 12.988 units
+            // of the left maker asset. This gets rounded up to 13, giving the right maker a better price.
+            // Note:
             //  The maker/taker fee percentage paid on the right order differs because
             //  they received different sale prices. Similarly, the right maker pays a
-            //  slightly higher lower than the right taker.
+            //  fee slightly lower than the right taker.
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2000), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1001), 0),
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(16), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
                 feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1001), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(301), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10.01), 16), // 10.01%
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5060240963855421'), 16), // 26.506%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1699), 0),
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('10.0333333333333333'), 16), // 10.03%
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5306122448979591'), 16), // 26.531%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
