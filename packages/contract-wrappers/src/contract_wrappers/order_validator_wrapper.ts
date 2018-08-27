@@ -44,13 +44,13 @@ export class OrderValidatorWrapper extends ContractWrapper {
         return result;
     }
     /**
-     * Get an object conforming to OrdersAndTradersInfo containing on-chain information of the provided orders and addresses
-     * @return  OrdersAndTradersInfo
+     * Get an array of objects conforming to OrderAndTraderInfo containing on-chain information of the provided orders and addresses
+     * @return  array of OrderAndTraderInfo
      */
     public async getOrdersAndTradersInfoAsync(
         orders: SignedOrder[],
         takerAddresses: string[],
-    ): Promise<OrdersAndTradersInfo> {
+    ): Promise<OrderAndTraderInfo[]> {
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
         _.forEach(takerAddresses, (takerAddress, index) =>
             assert.isETHAddressHex(`takerAddresses[${index}]`, takerAddress),
@@ -61,10 +61,15 @@ export class OrderValidatorWrapper extends ContractWrapper {
             orders,
             takerAddresses,
         );
-        const result = {
-            ordersInfo: ordersAndTradersInfo[0],
-            tradersInfo: ordersAndTradersInfo[1],
-        };
+        const orderInfos = ordersAndTradersInfo[0];
+        const traderInfos = ordersAndTradersInfo[1];
+        const result = _.map(orderInfos, (orderInfo, index) => {
+            const traderInfo = traderInfos[index];
+            return {
+                orderInfo,
+                traderInfo,
+            };
+        });
         return result;
     }
     /**
