@@ -81,7 +81,7 @@ export class OrderStateUtils {
         const remainingTakerAssetAmount = signedOrder.takerAssetAmount.minus(
             sidedOrderRelevantState.filledTakerAssetAmount,
         );
-        const isRoundingError = OrderValidationUtils.isRoundingError(
+        const isRoundingError = OrderValidationUtils.isRoundingErrorFloor(
             remainingTakerAssetAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
@@ -191,7 +191,7 @@ export class OrderStateUtils {
         );
         const remainingFillableTakerAssetAmountGivenMakersStatus = signedOrder.makerAssetAmount.eq(0)
             ? new BigNumber(0)
-            : utils.getPartialAmount(
+            : utils.getPartialAmountFloor(
                   orderRelevantMakerState.remainingFillableAssetAmount,
                   signedOrder.makerAssetAmount,
                   signedOrder.takerAssetAmount,

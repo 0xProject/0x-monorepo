@@ -5,7 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.1-rc.3 - _August 13, 2018_
+## v1.0.1-rc.5 - _August 27, 2018_
+
+    * Fix missing `BlockParamLiteral` type import issue
+
+## v1.0.1-rc.4 - _August 24, 2018_
+
+    * Export types: `ExchangeContractErrs`, `OrderRelevantState`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload` (#924)
+    * Remove exporting types: `BlockParamLiteral`, `BlockParam`, `Order` (#924)
+
+## v1.0.1-rc.3 - _August 14, 2018_
 
     * Dependencies updated
 
@@ -21,7 +30,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0-rc.1 - _July 19, 2018_
+## v1.0.0-rc.1 - _July 20, 2018_
 
     * Add support for ERC721 event watching and Exchange V2 events (#887)
 

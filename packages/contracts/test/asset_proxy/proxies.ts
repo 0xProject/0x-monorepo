@@ -12,7 +12,7 @@ import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_prox
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
 import { IAssetProxyContract } from '../../generated_contract_wrappers/i_asset_proxy';
 import { artifacts } from '../utils/artifacts';
-import { expectTransactionFailedAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync, expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -99,6 +99,17 @@ describe('Asset Transfer Proxies', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('Transfer Proxy - ERC20', () => {
+        it('should revert if undefined function is called', async () => {
+            const undefinedSelector = '0x01020304';
+            await expectTransactionFailedWithoutReasonAsync(
+                web3Wrapper.sendTransactionAsync({
+                    from: owner,
+                    to: erc20Proxy.address,
+                    value: constants.ZERO_AMOUNT,
+                    data: undefinedSelector,
+                }),
+            );
+        });
         describe('transferFrom', () => {
             it('should successfully transfer tokens', async () => {
                 // Construct ERC20 asset data
@@ -219,6 +230,17 @@ describe('Asset Transfer Proxies', () => {
     });
 
     describe('Transfer Proxy - ERC721', () => {
+        it('should revert if undefined function is called', async () => {
+            const undefinedSelector = '0x01020304';
+            await expectTransactionFailedWithoutReasonAsync(
+                web3Wrapper.sendTransactionAsync({
+                    from: owner,
+                    to: erc721Proxy.address,
+                    value: constants.ZERO_AMOUNT,
+                    data: undefinedSelector,
+                }),
+            );
+        });
         describe('transferFrom', () => {
             it('should successfully transfer tokens', async () => {
                 // Construct ERC721 asset data

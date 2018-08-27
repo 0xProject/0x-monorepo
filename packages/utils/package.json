@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/utils",
-    "version": "1.0.5",
+    "version": "1.0.7",
     "engines": {
         "node": ">=6.12"
     },
@@ -28,7 +28,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/utils/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.5",
+        "@0xproject/tslint-config": "^1.0.6",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "chai": "^4.0.1",
@@ -41,13 +41,13 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0xproject/types": "^1.0.1-rc.4",
-        "@0xproject/typescript-typings": "^1.0.4",
+        "@0xproject/types": "^1.0.1-rc.6",
+        "@0xproject/typescript-typings": "^1.0.5",
         "@types/node": "^8.0.53",
         "abortcontroller-polyfill": "^1.1.9",
         "bignumber.js": "~4.1.0",
         "detect-node": "2.0.3",
-        "ethereum-types": "^1.0.4",
+        "ethereum-types": "^1.0.5",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
         "isomorphic-fetch": "^2.2.1",

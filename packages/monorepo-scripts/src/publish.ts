@@ -18,7 +18,6 @@ import { DocGenerateAndUploadUtils } from './utils/doc_generate_and_upload_utils
 import { publishReleaseNotesAsync } from './utils/github_release_utils';
 import { utils } from './utils/utils';
 
-const DOC_GEN_COMMAND = 'docs:json';
 const NPM_NAMESPACE = '@0xproject/';
 const TODAYS_TIMESTAMP = moment().unix();
 
@@ -75,9 +74,11 @@ async function confirmAsync(message: string): Promise<void> {
     });
     utils.log(`Calling 'lerna publish'...`);
     await lernaPublishAsync(packageToNextVersion);
-    const isStaging = false;
-    const shouldUploadDocs = !configs.IS_LOCAL_PUBLISH;
-    await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging, shouldUploadDocs);
+    if (!configs.IS_LOCAL_PUBLISH) {
+        const isStaging = false;
+        const shouldUploadDocs = true;
+        await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging, shouldUploadDocs);
+    }
     const isDryRun = configs.IS_LOCAL_PUBLISH;
     await publishReleaseNotesAsync(updatedPublicPackages, isDryRun);
 })().catch(err => {
@@ -88,7 +89,7 @@ async function confirmAsync(message: string): Promise<void> {
 function getPackagesWithDocs(allUpdatedPackages: Package[]): Package[] {
     const rootPackageJsonPath = `${constants.monorepoRootPath}/package.json`;
     const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath).toString());
-    const packagesWithDocPagesStringIfExist = _.get(rootPackageJson, 'configs.packagesWithDocPages', undefined);
+    const packagesWithDocPagesStringIfExist = _.get(rootPackageJson, 'config.packagesWithDocPages', undefined);
     if (_.isUndefined(packagesWithDocPagesStringIfExist)) {
         return []; // None to generate & publish
     }

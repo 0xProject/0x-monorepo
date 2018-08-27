@@ -133,23 +133,20 @@ export enum SignatureType {
     Invalid,
     EIP712,
     EthSign,
-    Caller,
     Wallet,
     Validator,
     PreSigned,
-    Trezor,
     NSignatureTypes,
 }
 
 /**
- * The type of the Signer implementation. Some signer implementations use different message prefixes (e.g Trezor) or implement different
+ * The type of the Signer implementation. Some signer implementations use different message prefixes or implement different
  * eth_sign behaviour (e.g Metamask). Default assumes a spec compliant `eth_sign`.
  */
 export enum SignerType {
     Default = 'DEFAULT',
     Ledger = 'LEDGER',
     Metamask = 'METAMASK',
-    Trezor = 'TREZOR',
 }
 
 export enum AssetProxyId {
@@ -168,6 +165,7 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
 }
 
+// TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {
     OrderUnfillable = 'ORDER_UNFILLABLE',
     InvalidMaker = 'INVALID_MAKER',
@@ -175,10 +173,14 @@ export enum RevertReason {
     InvalidSender = 'INVALID_SENDER',
     InvalidOrderSignature = 'INVALID_ORDER_SIGNATURE',
     InvalidTakerAmount = 'INVALID_TAKER_AMOUNT',
+    DivisionByZero = 'DIVISION_BY_ZERO',
     RoundingError = 'ROUNDING_ERROR',
     InvalidSignature = 'INVALID_SIGNATURE',
     SignatureIllegal = 'SIGNATURE_ILLEGAL',
     SignatureUnsupported = 'SIGNATURE_UNSUPPORTED',
+    TakerOverpay = 'TAKER_OVERPAY',
+    OrderOverfill = 'ORDER_OVERFILL',
+    InvalidFillPrice = 'INVALID_FILL_PRICE',
     InvalidNewOrderEpoch = 'INVALID_NEW_ORDER_EPOCH',
     CompleteFillFailed = 'COMPLETE_FILL_FAILED',
     NegativeSpreadRequired = 'NEGATIVE_SPREAD_REQUIRED',
@@ -220,6 +222,8 @@ export enum RevertReason {
     Erc721InvalidSpender = 'ERC721_INVALID_SPENDER',
     Erc721ZeroOwner = 'ERC721_ZERO_OWNER',
     Erc721InvalidSelector = 'ERC721_INVALID_SELECTOR',
+    WalletError = 'WALLET_ERROR',
+    ValidatorError = 'VALIDATOR_ERROR',
 }
 
 export enum StatusCodes {

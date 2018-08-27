@@ -5,7 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.5 - _August 13, 2018_
+## v1.0.7 - _August 27, 2018_
+
+    * Dependencies updated
+
+## v1.0.6 - _August 24, 2018_
+
+    * Dependencies updated
+
+## v1.0.5 - _August 14, 2018_
 
     * Dependencies updated
 
@@ -25,7 +33,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 19, 2018_
+## v1.0.0 - _July 20, 2018_
 
     * Dependencies updated
 
@@ -57,7 +65,7 @@ CHANGELOG
 
     * Properly export the executable binary (#588)
 
-## v0.0.14 - _May 4, 2018_
+## v0.0.14 - _May 5, 2018_
 
     * Dependencies updated
 

@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1-rc.5",
+        "changes": [
+            {
+                "note": "Fix missing `BlockParamLiteral` type import issue"
+            }
+        ],
+        "timestamp": 1535377027
+    },
+    {
         "version": "1.0.1-rc.4",
         "changes": [
             {
@@ -11,7 +20,8 @@
                 "note": "Remove exporting types: `BlockParamLiteral`, `BlockParam`, `Order`",
                 "pr": 924
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "1.0.1-rc.3",

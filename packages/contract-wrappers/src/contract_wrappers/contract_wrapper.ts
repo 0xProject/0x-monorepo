@@ -1,7 +1,14 @@
 import { AbiDecoder, intervalUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { ContractArtifact } from 'ethereum-types';
-import { BlockParamLiteral, ContractAbi, FilterObject, LogEntry, LogWithDecodedArgs, RawLog } from 'ethereum-types';
+import {
+    BlockParamLiteral,
+    ContractAbi,
+    ContractArtifact,
+    FilterObject,
+    LogEntry,
+    LogWithDecodedArgs,
+    RawLog,
+} from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 

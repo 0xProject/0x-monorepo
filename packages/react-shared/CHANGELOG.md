@@ -5,7 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.6 - _August 13, 2018_
+## v1.0.8 - _August 27, 2018_
+
+    * Dependencies updated
+
+## v1.0.7 - _August 24, 2018_
+
+    * Dependencies updated
+
+## v1.0.6 - _August 14, 2018_
 
     * Dependencies updated
 
@@ -29,7 +37,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 19, 2018_
+## v1.0.0 - _July 20, 2018_
 
     * Dependencies updated
 
@@ -45,11 +53,11 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.2.0 - _May 4, 2018_
+## v0.2.0 - _May 5, 2018_
 
     * Removed portal specific colors
 
-## v0.1.6 - _May 4, 2018_
+## v0.1.6 - _May 5, 2018_
 
     * Dependencies updated
 

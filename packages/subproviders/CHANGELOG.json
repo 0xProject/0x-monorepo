@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1535377027,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
@@ -7,7 +16,8 @@
                     "Export types: `PartialTxParams`, `JSONRPCRequestPayloadWithMethod`, `ECSignatureString`, `AccountFetchingConfigs`, `LedgerEthereumClientFactoryAsync`, `OnNextCompleted`, `MnemonicWalletSubproviderConfigs`, LedgerGetAddressResult, `JSONRPCRequestPayload`, `Provider`, `JSONRPCResponsePayload` and `JSONRPCErrorCallback`",
                 "pr": 924
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "timestamp": 1534210131,

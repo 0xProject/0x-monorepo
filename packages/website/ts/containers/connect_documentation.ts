@@ -10,6 +10,7 @@ import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdownV1 = require('md/docs/connect/1.0.0/introduction');
+const IntroMarkdownV2 = require('md/docs/connect/2.0.0/introduction');
 const InstallationMarkdownV1 = require('md/docs/connect/1.0.0/installation');
 /* tslint:enable:no-var-requires */
 
@@ -31,6 +32,10 @@ const docsInfoConfig: DocsInfoConfig = {
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
             [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
+        },
+        '2.0.0-rc.1': {
+            [markdownSections.introduction]: IntroMarkdownV2,
             [markdownSections.installation]: InstallationMarkdownV1,
         },
     },

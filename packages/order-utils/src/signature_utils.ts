@@ -53,11 +53,6 @@ export const signatureUtils = {
                 return signatureUtils.isValidECSignature(prefixedMessageHex, ecSignature, signerAddress);
             }
 
-            case SignatureType.Caller:
-                // HACK: We currently do not "validate" the caller signature type.
-                // It can only be validated during Exchange contract execution.
-                throw new Error('Caller signature type cannot be validated off-chain');
-
             case SignatureType.Wallet: {
                 const isValid = await signatureUtils.isValidWalletSignatureAsync(
                     provider,
@@ -80,12 +75,6 @@ export const signatureUtils = {
 
             case SignatureType.PreSigned: {
                 return signatureUtils.isValidPresignedSignatureAsync(provider, data, signerAddress);
-            }
-
-            case SignatureType.Trezor: {
-                const prefixedMessageHex = signatureUtils.addSignedMessagePrefix(data, SignerType.Trezor);
-                const ecSignature = signatureUtils.parseECSignature(signature);
-                return signatureUtils.isValidECSignature(prefixedMessageHex, ecSignature, signerAddress);
             }
 
             default:
@@ -293,10 +282,6 @@ export const signatureUtils = {
                 signatureType = SignatureType.EthSign;
                 break;
             }
-            case SignerType.Trezor: {
-                signatureType = SignatureType.Trezor;
-                break;
-            }
             default:
                 throw new Error(`Unrecognized SignerType: ${signerType}`);
         }
@@ -306,7 +291,7 @@ export const signatureUtils = {
     /**
      * Combines the signature proof and the Signature Type.
      * @param signature The hex encoded signature proof
-     * @param signatureType The signature type, i.e EthSign, Trezor, Wallet etc.
+     * @param signatureType The signature type, i.e EthSign, Wallet etc.
      * @return Hex encoded string of signature proof with Signature Type
      */
     convertToSignatureWithType(signature: string, signatureType: SignatureType): string {
@@ -333,12 +318,6 @@ export const signatureUtils = {
                 const prefixedMsgHex = ethUtil.bufferToHex(prefixedMsgBuff);
                 return prefixedMsgHex;
             }
-            case SignerType.Trezor: {
-                const msgBuff = ethUtil.toBuffer(message);
-                const prefixedMsgBuff = hashTrezorPersonalMessage(msgBuff);
-                const prefixedMsgHex = ethUtil.bufferToHex(prefixedMsgBuff);
-                return prefixedMsgHex;
-            }
             default:
                 throw new Error(`Unrecognized SignerType: ${signerType}`);
         }
@@ -350,7 +329,7 @@ export const signatureUtils = {
      */
     parseECSignature(signature: string): ECSignature {
         assert.isHexString('signature', signature);
-        const ecSignatureTypes = [SignatureType.EthSign, SignatureType.EIP712, SignatureType.Trezor];
+        const ecSignatureTypes = [SignatureType.EthSign, SignatureType.EIP712];
         assert.isOneOfExpectedSignatureTypes(signature, ecSignatureTypes);
 
         // tslint:disable-next-line:custom-no-magic-numbers
@@ -360,11 +339,6 @@ export const signatureUtils = {
         return ecSignature;
     },
 };
-
-function hashTrezorPersonalMessage(message: Buffer): Buffer {
-    const prefix = ethUtil.toBuffer('\x19Ethereum Signed Message:\n' + String.fromCharCode(message.byteLength));
-    return ethUtil.sha3(Buffer.concat([prefix, message]));
-}
 
 function parseValidatorSignature(signature: string): ValidatorSignature {
     assert.isOneOfExpectedSignatureTypes(signature, [SignatureType.Validator]);

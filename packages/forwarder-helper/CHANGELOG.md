@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.1-rc.4 - _August 13, 2018_
+## v1.0.1-rc.2 - _August 27, 2018_
 
-    * Add inital spec for SRA v2 (#916)
+    * Dependencies updated
+
+## v1.0.1-rc.1 - _August 24, 2018_
+
+    * Add initial forwarderHelperFactory (#997)

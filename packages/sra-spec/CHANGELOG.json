@@ -1,0 +1,35 @@
+[
+    {
+        "version": "1.0.1-rc.6",
+        "changes": [
+            {
+                "note":
+                    "Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js"
+            },
+            {
+                "note": "Fix relative path to introduction MD file"
+            }
+        ],
+        "timestamp": 1535377027
+    },
+    {
+        "version": "1.0.1-rc.5",
+        "changes": [
+            {
+                "note": "Add takerAddress to /orders parameters",
+                "pr": 974
+            }
+        ],
+        "timestamp": 1535133899
+    },
+    {
+        "version": "1.0.1-rc.4",
+        "changes": [
+            {
+                "note": "Add inital spec for SRA v2",
+                "pr": 916
+            }
+        ],
+        "timestamp": 1534210131
+    }
+]

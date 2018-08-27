@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "contracts",
-    "version": "2.1.40",
+    "version": "2.1.42",
     "engines": {
         "node": ">=6.12"
     },
@@ -20,14 +20,11 @@
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
         "test:profiler": "SOLIDITY_PROFILER=true run-s build run_mocha profiler:report:html",
         "test:trace": "SOLIDITY_REVERT_TRACE=true run-s build run_mocha",
-        "run_mocha":
-            "mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*.js' --timeout 100000 --bail --exit",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*.js' --timeout 100000 --bail --exit",
         "compile": "sol-compiler --contracts-dir src",
         "clean": "shx rm -rf lib generated_contract_wrappers",
-        "generate_contract_wrappers":
-            "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output generated_contract_wrappers --backend ethers",
-        "lint":
-            "tslint --project . --exclude **/src/generated_contract_wrappers/**/* --exclude **/lib/**/* && yarn lint-contracts",
+        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output generated_contract_wrappers --backend ethers",
+        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/* --exclude **/lib/**/* && yarn lint-contracts",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "profiler:report:html": "istanbul report html && open coverage/index.html",
@@ -36,8 +33,7 @@
         "lint-contracts": "solhint src/2.0.0/**/**/**/**/*.sol"
     },
     "config": {
-        "abis":
-            "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|DummyNoReturnERC20Token|ERC20Proxy|ERC721Proxy|Forwarder|Exchange|ExchangeWrapper|IAssetData|IAssetProxy|InvalidERC721Receiver|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|OrderValidator|TestAssetProxyOwner|TestAssetProxyDispatcher|TestConstants|TestExchangeInternals|TestLibBytes|TestLibs|TestSignatureValidator|Validator|Wallet|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
+        "abis": "../migrations/artifacts/2.0.0/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|DummyNoReturnERC20Token|ERC20Proxy|ERC721Proxy|Forwarder|Exchange|ExchangeWrapper|IAssetData|IAssetProxy|InvalidERC721Receiver|MixinAuthorizable|MultiSigWallet|MultiSigWalletWithTimeLock|OrderValidator|ReentrantERC20Token|TestAssetProxyOwner|TestAssetProxyDispatcher|TestConstants|TestExchangeInternals|TestLibBytes|TestLibs|TestSignatureValidator|TestStaticCallReceiver|Validator|Wallet|TokenRegistry|Whitelist|WETH9|ZRXToken).json"
     },
     "repository": {
         "type": "git",
@@ -50,12 +46,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contracts/README.md",
     "devDependencies": {
-        "@0xproject/abi-gen": "^1.0.5",
-        "@0xproject/dev-utils": "^1.0.4",
-        "@0xproject/sol-cov": "^2.0.0",
-        "@0xproject/subproviders": "^1.0.5",
-        "@0xproject/tslint-config": "^1.0.5",
-        "@0xproject/sol-compiler": "^1.0.5",
+        "@0xproject/abi-gen": "^1.0.7",
+        "@0xproject/dev-utils": "^1.0.6",
+        "@0xproject/sol-compiler": "^1.1.1",
+        "@0xproject/sol-cov": "^2.1.1",
+        "@0xproject/subproviders": "^2.0.1",
+        "@0xproject/tslint-config": "^1.0.6",
         "@types/bn.js": "^4.11.0",
         "@types/ethereumjs-abi": "^0.6.0",
         "@types/lodash": "4.14.104",
@@ -77,15 +73,15 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "@0xproject/base-contract": "^2.0.0-rc.1",
-        "@0xproject/order-utils": "^1.0.1-rc.3",
-        "@0xproject/types": "^1.0.1-rc.4",
-        "@0xproject/typescript-typings": "^1.0.4",
-        "@0xproject/utils": "^1.0.5",
-        "@0xproject/web3-wrapper": "^1.2.0",
+        "@0xproject/base-contract": "^2.0.1",
+        "@0xproject/order-utils": "^1.0.1-rc.6",
+        "@0xproject/types": "^1.0.1-rc.6",
+        "@0xproject/typescript-typings": "^1.0.5",
+        "@0xproject/utils": "^1.0.7",
+        "@0xproject/web3-wrapper": "^2.0.1",
         "@types/js-combinatorics": "^0.5.29",
         "bn.js": "^4.11.8",
-        "ethereum-types": "^1.0.4",
+        "ethereum-types": "^1.0.5",
         "ethereumjs-abi": "0.6.5",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",

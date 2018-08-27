@@ -1,5 +1,23 @@
 [
     {
+        "version": "1.0.1-rc.6",
+        "changes": [
+            {
+                "note": "Fix missing `BlockParamLiteral` type import issue"
+            }
+        ],
+        "timestamp": 1535377027
+    },
+    {
+        "version": "1.0.1-rc.5",
+        "changes": [
+            {
+                "note":
+                    "Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js"
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.4",
         "changes": [
             {
@@ -7,7 +25,8 @@
                     "Re-organize the exported interface of 0x.js. Remove the `ZeroEx` class, and instead export the same exports as `0x.js`'s sub-packages: `@0xproject/contract-wrappers`, `@0xproject/order-utils` and `@0xproject/order-watcher`",
                 "pr": 963
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "1.0.1-rc.3",
