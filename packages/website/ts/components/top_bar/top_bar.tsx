@@ -8,18 +8,17 @@ import {
 } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
-import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
+import { DevelopersDropDown } from 'ts/components/dropdowns/developers_drop_down';
 import { DrawerMenu } from 'ts/components/portal/drawer_menu';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
 import { Container } from 'ts/components/ui/container';
-import { DropDown } from 'ts/components/ui/drop_down';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
+import { Deco, Key, ProviderType, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -129,111 +128,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             ? 'flex mx-auto items-center max-width-4'
             : 'flex mx-auto items-center';
         const height = isExpandedDisplayType ? EXPANDED_HEIGHT : DEFAULT_HEIGHT;
-        const developerSectionMenuItems = [
-            <Link key="subMenuItem-zeroEx" to={WebsitePaths.ZeroExJs} className="text-decoration-none">
-                <MenuItem style={{ fontSize: styles.menuItem.fontSize }} primaryText="0x.js" />
-            </Link>,
-            <Link key="subMenuItem-smartContracts" to={WebsitePaths.SmartContracts} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.SmartContract, Deco.CapWords)}
-                />
-            </Link>,
-            <Link key="subMenuItem-0xconnect" to={WebsitePaths.Connect} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.Connect, Deco.CapWords)}
-                />
-            </Link>,
-            <a
-                key="subMenuItem-standard-relayer-api"
-                target="_blank"
-                className="text-decoration-none"
-                href={constants.URL_STANDARD_RELAYER_API_GITHUB}
-            >
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.StandardRelayerApi, Deco.CapWords)}
-                />
-            </a>,
-            <Link key="subMenuItem-jsonSchema" to={WebsitePaths.JSONSchemas} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.JsonSchemas, Deco.CapWords)}
-                />
-            </Link>,
-            <Link key="subMenuItem-subproviders" to={WebsitePaths.Subproviders} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.Subproviders, Deco.CapWords)}
-                />
-            </Link>,
-            <Link key="subMenuItem-web3Wrapper" to={WebsitePaths.Web3Wrapper} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.Web3Wrapper, Deco.CapWords)}
-                />
-            </Link>,
-            <Link
-                key="subMenuItem-contractWrappers"
-                to={WebsitePaths.ContractWrappers}
-                className="text-decoration-none"
-            >
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.ContractWrappers, Deco.CapWords)}
-                />
-            </Link>,
-            <Link key="subMenuItem-orderUtils" to={WebsitePaths.OrderUtils} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.OrderUtils, Deco.CapWords)}
-                />
-            </Link>,
-            <Link key="subMenuItem-orderWatcher" to={WebsitePaths.OrderWatcher} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.OrderWatcher, Deco.CapWords)}
-                />
-            </Link>,
-            <Link key="subMenuItem-sol-compiler" to={WebsitePaths.SolCompiler} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.SolCompiler, Deco.CapWords)}
-                />
-            </Link>,
-            <Link key="subMenuItem-sol-cov" to={WebsitePaths.SolCov} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.SolCov, Deco.CapWords)}
-                />
-            </Link>,
-            <Link key="subMenuItem-ethereum-types" to={WebsitePaths.EthereumTypes} className="text-decoration-none">
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.EthereumTypes, Deco.CapWords)}
-                />
-            </Link>,
-            <a
-                key="subMenuItem-whitePaper"
-                target="_blank"
-                className="text-decoration-none"
-                href={`${WebsitePaths.Whitepaper}`}
-            >
-                <MenuItem
-                    style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.Whitepaper, Deco.CapWords)}
-                />
-            </a>,
-            <a
-                key="subMenuItem-github"
-                target="_blank"
-                className="text-decoration-none"
-                href={constants.URL_GITHUB_ORG}
-            >
-                <MenuItem style={{ fontSize: styles.menuItem.fontSize }} primaryText="GitHub" />
-            </a>,
-        ];
         const bottomBorderStyle = this._shouldDisplayBottomBar() ? styles.bottomBar : {};
         const fullWidthClasses = isExpandedDisplayType ? 'pr4' : '';
         const logoUrl = isNightVersion ? '/images/protocol_logo_white.png' : '/images/protocol_logo_black.png';
@@ -245,15 +139,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             color: isNightVersion ? 'white' : 'black',
             cursor: 'pointer',
         };
-        const activeNode = (
-            <div className="flex relative" style={{ color: menuIconStyle.color }}>
-                <div style={{ paddingRight: 10 }}>{this.props.translate.get(Key.Developers, Deco.Cap)}</div>
-                <div className="absolute" style={{ paddingLeft: 3, right: 3, top: -2 }}>
-                    <i className="zmdi zmdi-caret-right" style={{ fontSize: 22 }} />
-                </div>
-            </div>
-        );
-        const popoverContent = <Menu style={{ color: colors.darkGrey }}>{developerSectionMenuItems}</Menu>;
         return (
             <div
                 style={{ ...styles.topBar, ...bottomBorderStyle, ...this.props.style, ...{ height } }}
@@ -273,12 +158,10 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     {!this._isViewingPortal() && (
                         <div className={menuClasses}>
                             <div className="flex items-center justify-between">
-                                <DropDown
-                                    activeNode={activeNode}
-                                    popoverContent={popoverContent}
-                                    anchorOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
-                                    targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
-                                    style={styles.menuItem}
+                                <DevelopersDropDown
+                                    menuItemStyles={styles.menuItem}
+                                    translate={this.props.translate}
+                                    menuIconStyle={menuIconStyle}
                                 />
                                 <TopBarMenuItem
                                     title={this.props.translate.get(Key.Wiki, Deco.Cap)}
