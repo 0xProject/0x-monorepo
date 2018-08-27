@@ -80,5 +80,12 @@
     "DEVELOPERS": "developers",
     "HOME": "home",
     "ROCKETCHAT": "rocket.chat",
-    "TRADE_CALL_TO_ACTION": "trade on 0x"
+    "TRADE_CALL_TO_ACTION": "trade on 0x",
+    "BUILD_A_RELAYER": "build a relayer",
+    "ETHEREUM_DEVELOPMENT": "ethereum development",
+    "INTRO_TUTORIAL": "intro tutorial",
+    "TRADING_TUTORIAL": "trading tutorial",
+    "VIEW_ALL_DOCUMENTATION": "view all documentation",
+    "SANDBOX": "0x.js sandbox",
+    "GITHUB": "github"
 }

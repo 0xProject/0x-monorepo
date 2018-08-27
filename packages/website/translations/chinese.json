@@ -78,5 +78,12 @@
     "WEBSITE": "网站",
     "DEVELOPERS": "首页",
     "HOME": "Rocket.chat",
-    "ROCKETCHAT": "开发人员"
+    "ROCKETCHAT": "开发人员",
+    "BUILD_A_RELAYER": "build a relayer",
+    "ETHEREUM_DEVELOPMENT": "ethereum development",
+    "INTRO_TUTORIAL": "intro tutorial",
+    "TRADING_TUTORIAL": "trading tutorial",
+    "VIEW_ALL_DOCUMENTATION": "view all documentation",
+    "SANDBOX": "0x.js sandbox",
+    "GITHUB": "github"
 }
