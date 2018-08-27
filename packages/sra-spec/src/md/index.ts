@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
 
 export const md = {
-    introduction: readFileSync('src/md/introduction.md').toString(),
+    introduction: readFileSync('introduction.md').toString(),
 };
