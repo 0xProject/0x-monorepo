@@ -9,6 +9,7 @@ export {
     ERC20ProxyWrapper,
     ERC721ProxyWrapper,
     ForwarderWrapper,
+    OrderValidatorWrapper,
     IndexedFilterValues,
     BlockRange,
     ContractWrappersConfig,
