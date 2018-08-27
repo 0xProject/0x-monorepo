@@ -4,5 +4,5 @@
         "outDir": "lib",
         "rootDir": "."
     },
-    "include": ["./src/**/*", "./test/*", "./build_scripts/*"]
+    "include": ["./src/**/*", "./test/*", "./build_scripts/*", "./md/*"]
 }
