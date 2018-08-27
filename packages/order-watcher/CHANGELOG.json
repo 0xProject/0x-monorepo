@@ -3,8 +3,7 @@
         "version": "1.0.1-rc.5",
         "changes": [
             {
-                "note":
-                    "Fix missing `BlockParamLiteral` type import issue"
+                "note": "Fix missing `BlockParamLiteral` type import issue"
             }
         ]
     },
