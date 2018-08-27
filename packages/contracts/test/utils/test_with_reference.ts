@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { chaiSetup } from '../utils/chai_setup';
+import { chaiSetup } from './chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -23,9 +23,9 @@ class ErrorMessage {
 
 type PromiseResult<T> = Value<T> | ErrorMessage;
 
-// TODO: This seems like a generic utility function that could exist in lodash.
-//       We should replace it by a library implementation, or move it to our
-//       own.
+// TODO(albrow): This seems like a generic utility function that could exist in
+// lodash. We should replace it by a library implementation, or move it to our
+// own.
 async function evaluatePromise<T>(promise: Promise<T>): Promise<PromiseResult<T>> {
     try {
         return new Value<T>(await promise);
