@@ -127,6 +127,31 @@ export class OrderValidatorWrapper extends ContractWrapper {
         return result;
     }
     /**
+     * Get an array of objects conforming to BalanceAndAllowance containing on-chain balance and allowance for some address and array of assetDatas
+     * @param   address     An ethereum address
+     * @param   assetDatas  An array of encoded strings that can be decoded by a specified proxy contract
+     * @return  BalanceAndAllowance
+     */
+    public async getBalancesAndAllowancesAsync(address: string, assetDatas: string[]): Promise<BalanceAndAllowance[]> {
+        assert.isETHAddressHex('address', address);
+        _.forEach(assetDatas, (assetData, index) => assert.isHexString(`assetDatas[${index}]`, assetData));
+        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
+        const balancesAndAllowances = await OrderValidatorContractInstance.getBalancesAndAllowances.callAsync(
+            address,
+            assetDatas,
+        );
+        const balances = balancesAndAllowances[0];
+        const allowances = balancesAndAllowances[1];
+        const result = _.map(balances, (balance, index) => {
+            const allowance = allowances[index];
+            return {
+                balance,
+                allowance,
+            };
+        });
+        return result;
+    }
+    /**
      * Get owner address of tokenId by calling `token.ownerOf(tokenId)`, but returns a null owner instead of reverting on an unowned token.
      * @param   tokenAddress    An ethereum address
      * @param   tokenId         An ERC721 tokenId
