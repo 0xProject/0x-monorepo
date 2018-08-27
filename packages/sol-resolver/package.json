@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-resolver",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "engines": {
         "node": ">=6.12"
     },
@@ -31,7 +31,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0xproject/types": "^1.0.1-rc.5",
+        "@0xproject/types": "^1.0.1-rc.6",
         "@0xproject/typescript-typings": "^1.0.5",
         "lodash": "^4.17.5"
     },

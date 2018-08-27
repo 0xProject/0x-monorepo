@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "1.0.1-rc.5",
+    "version": "1.0.1-rc.6",
     "engines": {
         "node": ">=6.12"
     },
@@ -42,10 +42,10 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0xproject/abi-gen": "^1.0.6",
-        "@0xproject/dev-utils": "^1.0.5",
-        "@0xproject/migrations": "^1.0.5",
-        "@0xproject/monorepo-scripts": "^1.0.6",
+        "@0xproject/abi-gen": "^1.0.7",
+        "@0xproject/dev-utils": "^1.0.6",
+        "@0xproject/migrations": "^1.0.6",
+        "@0xproject/monorepo-scripts": "^1.0.7",
         "@0xproject/tslint-config": "^1.0.6",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
@@ -73,16 +73,16 @@
         "webpack": "^3.1.0"
     },
     "dependencies": {
-        "@0xproject/assert": "^1.0.6",
-        "@0xproject/base-contract": "^2.0.0",
-        "@0xproject/contract-wrappers": "^1.0.1-rc.4",
-        "@0xproject/order-utils": "^1.0.1-rc.4",
-        "@0xproject/order-watcher": "^1.0.1-rc.4",
-        "@0xproject/subproviders": "^2.0.0",
-        "@0xproject/types": "^1.0.1-rc.5",
+        "@0xproject/assert": "^1.0.7",
+        "@0xproject/base-contract": "^2.0.1",
+        "@0xproject/contract-wrappers": "^1.0.1-rc.5",
+        "@0xproject/order-utils": "^1.0.1-rc.6",
+        "@0xproject/order-watcher": "^1.0.1-rc.5",
+        "@0xproject/subproviders": "^2.0.1",
+        "@0xproject/types": "^1.0.1-rc.6",
         "@0xproject/typescript-typings": "^1.0.5",
-        "@0xproject/utils": "^1.0.6",
-        "@0xproject/web3-wrapper": "^2.0.0",
+        "@0xproject/utils": "^1.0.7",
+        "@0xproject/web3-wrapper": "^2.0.1",
         "ethereum-types": "^1.0.5",
         "ethers": "3.0.22",
         "lodash": "^4.17.5",
