@@ -1,11 +1,12 @@
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
+import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import { BalanceAndAllowance, OrderAndTraderInfo, OrdersAndTradersInfo, TraderInfo } from '../types';
+import { BalanceAndAllowance, OrderAndTraderInfo, TraderInfo } from '../types';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
@@ -113,6 +114,17 @@ export class OrderValidatorWrapper extends ContractWrapper {
             balance: balanceAndAllowance[0],
             allowance: balanceAndAllowance[1],
         };
+        return result;
+    }
+    /**
+     * Get owner address of tokenId by calling `token.ownerOf(tokenId)`, but returns a null owner instead of reverting on an unowned token.
+     * @return  Owner of tokenId or null address if unowned
+     */
+    public async getERC721TokenOwnerAsync(tokenAddress: string, tokenId: BigNumber): Promise<string | undefined> {
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isBigNumber('tokenId', tokenId);
+        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
+        const result = await OrderValidatorContractInstance.getERC721TokenOwner.callAsync(tokenAddress, tokenId);
         return result;
     }
     // HACK: We don't want this method to be visible to the other units within that package but not to the end user.
