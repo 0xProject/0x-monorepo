@@ -22,7 +22,7 @@ jobs:
           command: sudo npm install --global yarn@1.9.4
       - run:
           name: yarn
-          command: yarn --frozen-lockfile install
+          command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
