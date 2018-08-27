@@ -76,6 +76,7 @@ contract MixinExchangeWrapper is
                 mstore(add(fillResults, 96), mload(add(fillOrderCalldata, 96)))
             }
         }
+        // fillResults values will be 0 by default if call was unsuccessful
         return fillResults;
     }
 
