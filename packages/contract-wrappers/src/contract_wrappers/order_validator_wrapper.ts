@@ -5,7 +5,7 @@ import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import { OrdersAndTradersInfo } from '../types';
+import { OrderAndTraderInfo, OrdersAndTradersInfo } from '../types';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
@@ -26,7 +26,25 @@ export class OrderValidatorWrapper extends ContractWrapper {
         super(web3Wrapper, networkId);
     }
     /**
-     * Get and object conforming to OrdersAndTradersInfo containing on-chain information of the provided orders and addresses
+     * Get and object conforming to OrderAndTraderInfo containing on-chain information of the provided order and address
+     * @return  OrderAndTraderInfo
+     */
+    public async getOrderAndTraderInfoAsync(order: SignedOrder, takerAddress: string): Promise<OrderAndTraderInfo> {
+        assert.doesConformToSchema('order', order, schemas.signedOrderSchema);
+        assert.isETHAddressHex('takerAddress', takerAddress);
+        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
+        const orderAndTraderInfo = await OrderValidatorContractInstance.getOrderAndTraderInfo.callAsync(
+            order,
+            takerAddress,
+        );
+        const result = {
+            orderInfo: orderAndTraderInfo[0],
+            traderInfo: orderAndTraderInfo[1],
+        };
+        return result;
+    }
+    /**
+     * Get an object conforming to OrdersAndTradersInfo containing on-chain information of the provided orders and addresses
      * @return  OrdersAndTradersInfo
      */
     public async getOrdersAndTradersInfoAsync(

@@ -204,3 +204,7 @@ export interface OrdersAndTradersInfo {
     ordersInfo: OrderInfo[];
     tradersInfo: TraderInfo[];
 }
+export interface OrderAndTraderInfo {
+    orderInfo: OrderInfo;
+    traderInfo: TraderInfo;
+}
