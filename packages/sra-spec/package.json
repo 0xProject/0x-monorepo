@@ -5,8 +5,8 @@
         "node": ">=6.12"
     },
     "description": "Standard Relayer API Open API Spec",
-    "main": "lib/src/index.js",
-    "types": "lib/src/index.d.ts",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "scripts": {
         "serve": "redoc-cli serve lib/api.json --watch",
         "watch_without_deps": "run-p build-json:watch serve",
@@ -17,9 +17,10 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",
         "clean": "shx rm -rf lib",
-        "build": "tsc && yarn build-json",
+        "build": "tsc && yarn copy_md_files && yarn build-json",
         "build-json": "ts-node build_scripts/buildJson.ts",
         "build-json:watch": "chokidar 'src/**/*' -c 'yarn build-json' ",
+        "copy_md_files": "copyfiles -u 2 './src/md/**/*.md' ./lib/md",
         "deploy-site": "discharge deploy"
     },
     "repository": {
@@ -42,6 +43,7 @@
         "@types/node": "^10.5.3",
         "chai": "^4.0.1",
         "chokidar-cli": "^1.2.0",
+        "copyfiles": "^2.0.0",
         "dirty-chai": "^2.0.1",
         "discharge": "^0.7.1",
         "mocha": "^4.0.1",
