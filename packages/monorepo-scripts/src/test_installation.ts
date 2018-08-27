@@ -146,7 +146,7 @@ async function testInstallPackageAsync(
         const transpiledIndexFilePath = path.join(testDirectory, 'index.js');
         utils.log(`Running test script with ${packageName} imported`);
         await execAsync(`node ${transpiledIndexFilePath}`);
-        utils.log(`Successfilly ran test script with ${packageName} imported`);
+        utils.log(`Successfully ran test script with ${packageName} imported`);
     }
     await rimrafAsync(testDirectory);
 }
