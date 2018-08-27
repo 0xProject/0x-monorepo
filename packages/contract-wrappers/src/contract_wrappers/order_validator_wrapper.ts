@@ -28,6 +28,8 @@ export class OrderValidatorWrapper extends ContractWrapper {
     }
     /**
      * Get an object conforming to OrderAndTraderInfo containing on-chain information of the provided order and address
+     * @param   order           An object conforming to SignedOrder
+     * @param   takerAddress    An ethereum address
      * @return  OrderAndTraderInfo
      */
     public async getOrderAndTraderInfoAsync(order: SignedOrder, takerAddress: string): Promise<OrderAndTraderInfo> {
@@ -46,6 +48,8 @@ export class OrderValidatorWrapper extends ContractWrapper {
     }
     /**
      * Get an array of objects conforming to OrderAndTraderInfo containing on-chain information of the provided orders and addresses
+     * @param   orders          An array of objects conforming to SignedOrder
+     * @param   takerAddresses  An array of ethereum addresses
      * @return  array of OrderAndTraderInfo
      */
     public async getOrdersAndTradersInfoAsync(
@@ -75,6 +79,8 @@ export class OrderValidatorWrapper extends ContractWrapper {
     }
     /**
      * Get an object conforming to TraderInfo containing on-chain balance and allowances for maker and taker of order
+     * @param   order           An object conforming to SignedOrder
+     * @param   takerAddress    An ethereum address
      * @return  TraderInfo
      */
     public async getTraderInfoAsync(order: SignedOrder, takerAddress: string): Promise<TraderInfo> {
@@ -86,6 +92,8 @@ export class OrderValidatorWrapper extends ContractWrapper {
     }
     /**
      * Get an array of objects conforming to TraderInfo containing on-chain balance and allowances for maker and taker of order
+     * @param   orders          An array of objects conforming to SignedOrder
+     * @param   takerAddresses  An array of ethereum addresses
      * @return  array of TraderInfo
      */
     public async getTradersInfoAsync(orders: SignedOrder[], takerAddresses: string[]): Promise<TraderInfo[]> {
@@ -100,6 +108,8 @@ export class OrderValidatorWrapper extends ContractWrapper {
     }
     /**
      * Get an object conforming to BalanceAndAllowance containing on-chain balance and allowance for some address and assetData
+     * @param   address     An ethereum address
+     * @param   assetData   An encoded string that can be decoded by a specified proxy contract
      * @return  BalanceAndAllowance
      */
     public async getBalanceAndAllowanceAsync(address: string, assetData: string): Promise<BalanceAndAllowance> {
@@ -118,6 +128,8 @@ export class OrderValidatorWrapper extends ContractWrapper {
     }
     /**
      * Get owner address of tokenId by calling `token.ownerOf(tokenId)`, but returns a null owner instead of reverting on an unowned token.
+     * @param   tokenAddress    An ethereum address
+     * @param   tokenId         An ERC721 tokenId
      * @return  Owner of tokenId or null address if unowned
      */
     public async getERC721TokenOwnerAsync(tokenAddress: string, tokenId: BigNumber): Promise<string | undefined> {
