@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0-rc.2 - _August 27, 2018_
+
+    * Dependencies updated
+
 ## v2.0.0-rc.1 - _August 24, 2018_
 
     * Updated for SRA v2 (#974)

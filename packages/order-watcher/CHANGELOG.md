@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1-rc.5 - _August 27, 2018_
+
+    * Fix missing `BlockParamLiteral` type import issue
+
 ## v1.0.1-rc.4 - _August 24, 2018_
 
     * Export types: `ExchangeContractErrs`, `OrderRelevantState`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload` (#924)

@@ -5,7 +5,8 @@
             {
                 "note": "Fix missing `BlockParamLiteral` type import issue"
             }
-        ]
+        ],
+        "timestamp": 1535377027
     },
     {
         "version": "1.0.1-rc.5",

@@ -9,7 +9,8 @@
             {
                 "note": "Fix relative path to introduction MD file"
             }
-        ]
+        ],
+        "timestamp": 1535377027
     },
     {
         "version": "1.0.1-rc.5",

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1-rc.6 - _August 27, 2018_
+
+    * Dependencies updated
+
 ## v1.0.1-rc.5 - _August 24, 2018_
 
     * Update incorrect relayer api fee recipients response schema (#974)

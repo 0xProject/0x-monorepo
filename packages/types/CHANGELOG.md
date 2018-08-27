@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1-rc.6 - _August 27, 2018_
+
+    * Add WalletError and ValidatorError revert reasons (#1012)
+    * Remove Caller and Trezor SignatureTypes (#1015)
+
 ## v1.0.1-rc.5 - _August 24, 2018_
 
     * Add revert reasons for ERC721Token (#933)
