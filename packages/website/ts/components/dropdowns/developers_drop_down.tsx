@@ -87,7 +87,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                 anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
                 targetOrigin={{ horizontal: 'left', vertical: 'top' }}
                 style={this.props.menuItemStyles}
-                popoverStyle={{ borderRadius: 4, width: 433, height: 373, marginTop: 10 }}
+                popoverStyle={{ borderRadius: 4, width: 427, height: 373, marginTop: 10 }}
             />
         );
     }
@@ -122,7 +122,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                     style={{
                         padding: '1.125rem',
                         textAlign: 'center',
-                        backgroundColor: '#EDEDED',
+                        backgroundColor: colors.lightBgGrey,
                         borderBottomLeftRadius: 4,
                         borderBottomRightRadius: 4,
                     }}
@@ -145,7 +145,15 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
     }
     private _renderTitle(title: string): React.ReactNode {
         return (
-            <div style={{ color: '#999999', fontSize: 14, paddingBottom: 12, fontWeight: 600, letterSpacing: 1 }}>
+            <div
+                style={{
+                    color: colors.linkSectionGrey,
+                    fontSize: 14,
+                    paddingBottom: 12,
+                    fontWeight: 600,
+                    letterSpacing: 1,
+                }}
+            >
                 {title.toUpperCase()}
             </div>
         );
