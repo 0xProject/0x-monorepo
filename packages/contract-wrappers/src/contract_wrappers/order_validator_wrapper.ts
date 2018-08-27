@@ -5,7 +5,7 @@ import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import { OrderAndTraderInfo, OrdersAndTradersInfo, TraderInfo } from '../types';
+import { BalanceAndAllowance, OrderAndTraderInfo, OrdersAndTradersInfo, TraderInfo } from '../types';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
@@ -90,6 +90,24 @@ export class OrderValidatorWrapper extends ContractWrapper {
         assert.assert(orders.length === takerAddresses.length, 'Expected orders.length to equal takerAddresses.length');
         const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
         const result = await OrderValidatorContractInstance.getTradersInfo.callAsync(orders, takerAddresses);
+        return result;
+    }
+    /**
+     * Get an object conforming to BalanceAndAllowance containing on-chain balance and allowance for some address and assetData
+     * @return  BalanceAndAllowance
+     */
+    public async getBalanceAndAllowanceAsync(address: string, assetData: string): Promise<BalanceAndAllowance> {
+        assert.isETHAddressHex('address', address);
+        assert.isHexString('assetData', assetData);
+        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
+        const balanceAndAllowance = await OrderValidatorContractInstance.getBalanceAndAllowance.callAsync(
+            address,
+            assetData,
+        );
+        const result = {
+            balance: balanceAndAllowance[0],
+            allowance: balanceAndAllowance[1],
+        };
         return result;
     }
     // HACK: We don't want this method to be visible to the other units within that package but not to the end user.
