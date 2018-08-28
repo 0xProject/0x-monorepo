@@ -492,6 +492,11 @@ export enum Deco {
     Upper,
 }
 
+export interface MaterialUIPosition {
+    vertical: 'bottom' | 'top' | 'center';
+    horizontal: 'left' | 'middle' | 'right';
+}
+
 export enum Providers {
     Parity = 'PARITY',
     Metamask = 'METAMASK',

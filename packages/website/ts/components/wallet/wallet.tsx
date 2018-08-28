@@ -234,6 +234,8 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                         {!isMobile && <GoToAccountManagementSimpleMenuItem />}
                     </SimpleMenu>
                 }
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                targetOrigin={{ horizontal: 'right', vertical: 'top' }}
                 zDepth={1}
                 activateEvent={DropdownMouseEvent.Click}
                 closeEvent={DropdownMouseEvent.Click}

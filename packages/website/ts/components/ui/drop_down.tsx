@@ -1,6 +1,6 @@
+import Popover from 'material-ui/Popover';
 import * as React from 'react';
-import { Placement } from 'react-popper';
-import { Popover } from 'ts/components/ui/popover';
+import { MaterialUIPosition } from 'ts/types';
 
 const CHECK_CLOSE_POPOVER_INTERVAL_MS = 300;
 const DEFAULT_STYLE = {
@@ -15,7 +15,8 @@ export enum DropdownMouseEvent {
 export interface DropDownProps {
     activeNode: React.ReactNode;
     popoverContent: React.ReactNode;
-    placement?: Placement;
+    anchorOrigin: MaterialUIPosition;
+    targetOrigin: MaterialUIPosition;
     style?: React.CSSProperties;
     zDepth?: number;
     activateEvent?: DropdownMouseEvent;
@@ -32,8 +33,8 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
     public static defaultProps: Partial<DropDownProps> = {
         style: DEFAULT_STYLE,
         zDepth: 1,
-        activateEvent: DropdownMouseEvent.Click,
-        closeEvent: DropdownMouseEvent.Click,
+        activateEvent: DropdownMouseEvent.Hover,
+        closeEvent: DropdownMouseEvent.Hover,
     };
     private _popoverCloseCheckIntervalId: number;
     public static getDerivedStateFromProps(props: DropDownProps, state: DropDownState): Partial<DropDownState> {
@@ -69,22 +70,24 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
                 onMouseLeave={this._onHoverOff.bind(this)}
             >
                 <div onClick={this._onActiveNodeClick.bind(this)}>{this.props.activeNode}</div>
-                {this.state.isDropDownOpen &&
-                    <Popover
-                        anchorEl={this.state.anchorEl}
-                        placement={this.props.placement}
-                        onRequestClose={this._closePopover.bind(this)}
-                        zIndex={this.props.zDepth}
+                <Popover
+                    open={this.state.isDropDownOpen}
+                    anchorEl={this.state.anchorEl}
+                    anchorOrigin={this.props.anchorOrigin}
+                    targetOrigin={this.props.targetOrigin}
+                    onRequestClose={this._closePopover.bind(this)}
+                    useLayerForClickAway={this.props.closeEvent === DropdownMouseEvent.Click}
+                    animated={false}
+                    zDepth={this.props.zDepth}
+                >
+                    <div
+                        onMouseEnter={this._onHover.bind(this)}
+                        onMouseLeave={this._onHoverOff.bind(this)}
+                        onClick={this._closePopover.bind(this)}
                     >
-                        <div
-                            onMouseEnter={this._onHover.bind(this)}
-                            onMouseLeave={this._onHoverOff.bind(this)}
-                            onClick={this._closePopover.bind(this)}
-                        >
-                            {this.props.popoverContent}
-                        </div>
-                    </Popover>
-                }
+                        {this.props.popoverContent}
+                    </div>
+                </Popover>
             </div>
         );
     }

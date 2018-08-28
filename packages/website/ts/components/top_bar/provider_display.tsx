@@ -61,6 +61,8 @@ export class ProviderDisplay extends React.Component<ProviderDisplayProps, Provi
                 <DropDown
                     activeNode={activeNode}
                     popoverContent={this._renderPopoverContent()}
+                    anchorOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
+                    targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
                     zDepth={1}
                 />
             </div>
