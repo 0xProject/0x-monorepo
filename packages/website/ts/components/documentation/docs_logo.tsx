@@ -6,7 +6,7 @@ export const DocsLogo = () => {
     return (
         <div style={{ paddingTop: 28 }}>
             <Link to={`${WebsitePaths.Home}`} className="text-decoration-none">
-                <img src="/images/docs_logo.svg" height="30px" />
+                <img src="/images/docs_logo.svg" height="36px" />
             </Link>
         </div>
     );
