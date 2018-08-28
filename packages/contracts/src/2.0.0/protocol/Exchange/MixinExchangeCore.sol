@@ -406,14 +406,14 @@ contract MixinExchangeCore is
         );
         
         // Validate fill order rounding
-        require(
+       /* require(
             !isRoundingErrorFloor(
                 takerAssetFilledAmount,
                 order.takerAssetAmount,
                 order.makerAssetAmount
             ),
             "ROUNDING_ERROR"
-        );
+        );*/
     }
 
     /// @dev Validates context for cancelOrder. Succeeds or throws.
