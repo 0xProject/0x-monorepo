@@ -475,6 +475,7 @@ export enum Key {
     ViewAllDocumentation = 'VIEW_ALL_DOCUMENTATION',
     Sandbox = 'SANDBOX',
     Github = 'GITHUB',
+    LiveChat = 'LIVE_CHAT',
 }
 
 export enum SmartContractDocSections {

@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-d
 import * as injectTapEventPlugin from 'react-tap-event-plugin';
 import { MetaTags } from 'ts/components/meta_tags';
 import { About } from 'ts/containers/about';
+import { DocsHome } from 'ts/containers/docs_home';
 import { FAQ } from 'ts/containers/faq';
 import { Jobs } from 'ts/containers/jobs';
 import { Landing } from 'ts/containers/landing';
@@ -91,6 +92,7 @@ render(
                                 <Route path={WebsitePaths.FAQ} component={FAQ as any} />
                                 <Route path={WebsitePaths.About} component={About as any} />
                                 <Route path={WebsitePaths.Wiki} component={Wiki as any} />
+                                <Route path={WebsitePaths.Docs} component={DocsHome as any} />
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
                                     component={LazyZeroExJSDocumentation}
