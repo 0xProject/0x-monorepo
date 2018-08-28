@@ -20,7 +20,7 @@
         "test:all": "run-s test:unit test:integration",
         "test:unit": "run-s clean build run_mocha_unit",
         "test:integration": "run-s clean build run_mocha_integration",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {

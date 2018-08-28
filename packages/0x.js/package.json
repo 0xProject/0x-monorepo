@@ -25,7 +25,7 @@
         "clean": "shx rm -rf _bundles lib test_temp src/generated_contract_wrappers generated_docs",
         "build:umd:prod": "NODE_ENV=production webpack",
         "build:commonjs": "tsc -b",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {

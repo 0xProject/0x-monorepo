@@ -20,7 +20,7 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf lib lib/src/artifacts src/generated_contract_wrappers generated_docs",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "contracts_v2_beta": "IWallet IValidator Exchange ERC20Proxy ERC20Token DummyERC20Token",

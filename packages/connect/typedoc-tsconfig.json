@@ -1,0 +1,6 @@
+{
+    "extends": "../../typedoc-tsconfig",
+    "compilerOptions": {
+        "outDir": "lib"
+    },
+    "include": ["./src/**/*", "./test/**/*"]

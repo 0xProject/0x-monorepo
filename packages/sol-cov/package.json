@@ -20,7 +20,7 @@
         "clean": "shx rm -rf lib test/fixtures/artifacts src/artifacts generated_docs",
         "copy_test_fixtures": "copyfiles 'test/fixtures/**/*' ./lib",
         "compile_test": "sol-compiler compile",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {
