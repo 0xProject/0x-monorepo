@@ -405,42 +405,48 @@ describe.only('matchOrders', () => {
             );
         });
 
-        it.skip('Should transfer correct amounts when right order fill amount deviates from amount derived by `Exchange.fillOrder`', async () => {
+        it('Should transfer correct amounts when right order fill amount deviates from amount derived by `Exchange.fillOrder`', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(4), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2126), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1063), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
                 feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
                 // Note:
-                //  For order [4,2] valid fill amounts through `Exchange.fillOrder` would be [2, 1] or [4, 2]
-                //  In this case we have fill amounts of [3, 1] which is attainable through
-                // `Exchange.matchOrders` but not `Exchange.fillOrder`
+                //  The left order is fully filled by the right order, so the right maker must buy 1005 units of the left maker's asset.
+                //  To complete this fill, the right maker would need to sell 502.5 units of their asset.
+                //  Since the transfer amount must be an integer, this value must be rounded down to 502 or up to 503.
+                //  If the right order were filled with either of these values via `Exchange.fillOrder` the fill amounts would be [1004, 502] or [1006, 503].
+                //  It follows that through `Exchange.fillOrder` we could not fill the 1005 units of the right order (we would need 502.5).
+                // Note:
+                //  For an optimal match, the algorithm must choose either [1005, 502] or [1005, 503] as fill amounts for the right order.
+                //  In this case we favor the right maker (opposed to the taker) when the exchange rate must be rounded.
+                //  So the final fill for the right order is [1005, 503].
                 // Note:
                 //  The right maker fee differs from the right taker fee because their exchange rate differs.
                 //  The right maker always receives the better exchange and fee price.
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 16), // 75%
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(503), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.2718720602069614'), 16), // 47.27%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(8), 0),
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(497), 0),
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.3189087488240827'), 16), // 47.31%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
