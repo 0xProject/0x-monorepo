@@ -128,7 +128,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                     }}
                 >
                     <Link
-                        to={WebsitePaths.ZeroExJs/* TODO: Update once we have overview page */}
+                        to={WebsitePaths.Docs}
                         className="text-decoration-none"
                         style={{
                             color: colors.lightBlueA700,
