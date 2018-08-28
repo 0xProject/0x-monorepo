@@ -221,16 +221,19 @@ describe('Exchange core internal functions', () => {
             // in any mathematical operation in either the reference TypeScript
             // implementation or the Solidity implementation of
             // calculateFillResults.
+            const makerAssetFilledAmount = await referenceSafeGetPartialAmountFloorAsync(
+                takerAssetFilledAmount,
+                orderTakerAssetAmount,
+                otherAmount,
+            );
+            const order = makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount);
+            const orderMakerAssetAmount = order.makerAssetAmount;
             return {
-                makerAssetFilledAmount: await referenceSafeGetPartialAmountFloorAsync(
-                    takerAssetFilledAmount,
-                    orderTakerAssetAmount,
-                    otherAmount,
-                ),
+                makerAssetFilledAmount,
                 takerAssetFilledAmount,
                 makerFeePaid: await referenceSafeGetPartialAmountFloorAsync(
-                    takerAssetFilledAmount,
-                    orderTakerAssetAmount,
+                    makerAssetFilledAmount,
+                    orderMakerAssetAmount,
                     otherAmount,
                 ),
                 takerFeePaid: await referenceSafeGetPartialAmountFloorAsync(
