@@ -31,7 +31,6 @@ export class Home extends React.Component<HomeProps, HomeState> {
                             paddingRight: 22,
                             backgroundColor: '#f5f5f5',
                             height: '100vh',
-                            border: '1px black dotted',
                         }}
                     >
                         <DocsLogo />
@@ -43,7 +42,6 @@ export class Home extends React.Component<HomeProps, HomeState> {
                             paddingRight: 50,
                             backgroundColor: '#ffffff',
                             height: '100vh',
-                            border: '1px black dotted',
                         }}
                     >
                         <DocsContentTopBar location={this.props.location} translate={this.props.translate} />
