@@ -313,7 +313,7 @@ describe('matchOrders', () => {
             );
         });
 
-        it('Should give right maker a better buy price when correct price is not integral', async () => {
+        it('Should give right maker a better buy price when rounding', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
@@ -334,7 +334,7 @@ describe('matchOrders', () => {
             // of the left maker asset. This gets rounded up to 13, giving the right maker a better price.
             // Note:
             //  The maker/taker fee percentage paid on the right order differs because
-            //  they received different sale prices. Similarly, the right maker pays a
+            //  they received different sale prices. The right maker pays a
             //  fee slightly lower than the right taker.
             const expectedTransferAmounts = {
                 // Left Maker
@@ -361,7 +361,7 @@ describe('matchOrders', () => {
             );
         });
 
-        it('Should give left maker a better sell price when correct price is not integral', async () => {
+        it('Should give left maker a better sell price when rounding', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
@@ -379,7 +379,8 @@ describe('matchOrders', () => {
             });
             // Note:
             //  The maker/taker fee percentage paid on the left order differs because
-            //  they received different sale prices.
+            //  they received different sale prices. The left maker pays a fee
+            //  slightly lower than the left taker.
             const expectedTransferAmounts = {
                 // Left Maker
                 amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(11), 0),
@@ -427,19 +428,20 @@ describe('matchOrders', () => {
                 amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
                 feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                // Note:
-                //  The left order is fully filled by the right order, so the right maker must buy 1005 units of the left maker's asset.
-                //  To complete this fill, the right maker would need to sell 502.5 units of their asset.
-                //  Since the transfer amount must be an integer, this value must be rounded down to 502 or up to 503.
-                //  If the right order were filled with either of these values via `Exchange.fillOrder` the fill amounts would be [1004, 502] or [1006, 503].
-                //  It follows that through `Exchange.fillOrder` we could not fill the 1005 units of the right order (we would need 502.5).
-                // Note:
-                //  For an optimal match, the algorithm must choose either [1005, 502] or [1005, 503] as fill amounts for the right order.
-                //  In this case we favor the right maker (opposed to the taker) when the exchange rate must be rounded.
-                //  So the final fill for the right order is [1005, 503].
-                // Note:
-                //  The right maker fee differs from the right taker fee because their exchange rate differs.
-                //  The right maker always receives the better exchange and fee price.
+                // Notes:
+                //  i.
+                //    The left order is fully filled by the right order, so the right maker must sell 1005 units of their asset to the left maker.
+                //    By selling 1005 units, the right maker should theoretically receive 502.5 units of the left maker's asset.
+                //    Since the transfer amount must be an integer, this value must be rounded down to 502 or up to 503.
+                //  ii.
+                //    If the right order were filled via `Exchange.fillOrder` the respective fill amounts would be [1004, 502] or [1006, 503].
+                //    It follows that we cannot trigger a sale of 1005 units of the right maker's asset through `Exchange.fillOrder`.
+                //  iii.
+                //    For an optimal match, the algorithm must choose either [1005, 502] or [1005, 503] as fill amounts for the right order.
+                //    The algorithm favors the right maker when the exchange rate must be rounded, so the final fill for the right order is [1005, 503].
+                //  iv.
+                //    The right maker fee differs from the right taker fee because their exchange rate differs.
+                //    The right maker always receives the better exchange and fee price.
                 amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
                 amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(503), 0),
                 feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.2718720602069614'), 16), // 47.27%
