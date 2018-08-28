@@ -48,10 +48,9 @@ const overflowErrorForCall = new Error(RevertReason.Uint256Overflow);
 
 describe('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
-    let invalidOpcodeErrorForCall: Error | undefined;
     let overflowErrorForSendTransaction: Error | undefined;
     let divisionByZeroErrorForCall: Error | undefined;
-    let roundingErrorForTransaction: Error | undefined;
+    let roundingErrorForCall: Error | undefined;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -69,10 +68,7 @@ describe('Exchange core internal functions', () => {
             await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.Uint256Overflow),
         );
         divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
-        invalidOpcodeErrorForCall = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
-        roundingErrorForTransaction = new Error(
-            await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.RoundingError),
-        );
+        roundingErrorForCall = new Error(RevertReason.RoundingError);
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
     // the blockchain state for any tests which modify it!
@@ -94,7 +90,7 @@ describe('Exchange core internal functions', () => {
         const product = numerator.mul(target);
         const remainder = product.mod(denominator);
         const remainderTimes1000 = remainder.mul('1000');
-        const isError = remainderTimes1000.gt(product);
+        const isError = remainderTimes1000.gte(product);
         if (product.greaterThan(MAX_UINT256)) {
             throw overflowErrorForCall;
         }
@@ -122,7 +118,7 @@ describe('Exchange core internal functions', () => {
         const remainder = product.mod(denominator);
         const error = denominator.sub(remainder).mod(denominator);
         const errorTimes1000 = error.mul('1000');
-        const isError = errorTimes1000.gt(product);
+        const isError = errorTimes1000.gte(product);
         if (product.greaterThan(MAX_UINT256)) {
             throw overflowErrorForCall;
         }
@@ -142,7 +138,7 @@ describe('Exchange core internal functions', () => {
         }
         const isRoundingError = await referenceIsRoundingErrorFloorAsync(numerator, denominator, target);
         if (isRoundingError) {
-            throw roundingErrorForTransaction;
+            throw roundingErrorForCall;
         }
         const product = numerator.mul(target);
         if (product.greaterThan(MAX_UINT256)) {
@@ -354,7 +350,7 @@ describe('Exchange core internal functions', () => {
             }
             const isRoundingError = await referenceIsRoundingErrorCeilAsync(numerator, denominator, target);
             if (isRoundingError) {
-                throw roundingErrorForTransaction;
+                throw roundingErrorForCall;
             }
             const product = numerator.mul(target);
             const offset = product.add(denominator.sub(1));
