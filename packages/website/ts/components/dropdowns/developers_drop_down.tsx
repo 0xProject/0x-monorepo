@@ -3,20 +3,16 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { DropDown } from 'ts/components/ui/drop_down';
-import { Deco, Key, WebsitePaths } from 'ts/types';
+import { Deco, Key, ObjectMap, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
-
-interface KeyToLinkInfo {
-    [key: string]: LinkInfo;
-}
 
 interface LinkInfo {
     link: string;
     shouldOpenNewTab: boolean;
 }
 
-const gettingStartedKeyToLinkInfo1: KeyToLinkInfo = {
+const gettingStartedKeyToLinkInfo1: ObjectMap<LinkInfo> = {
     [Key.BuildARelayer]: {
         link: `${WebsitePaths.Wiki}#Build-A-Relayer`,
         shouldOpenNewTab: false,
@@ -26,7 +22,7 @@ const gettingStartedKeyToLinkInfo1: KeyToLinkInfo = {
         shouldOpenNewTab: false,
     },
 };
-const gettingStartedKeyToLinkInfo2: KeyToLinkInfo = {
+const gettingStartedKeyToLinkInfo2: ObjectMap<LinkInfo> = {
     [Key.TradingTutorial]: {
         link: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
         shouldOpenNewTab: false,
@@ -36,7 +32,7 @@ const gettingStartedKeyToLinkInfo2: KeyToLinkInfo = {
         shouldOpenNewTab: false,
     },
 };
-const popularDocsToLinkInfos: KeyToLinkInfo = {
+const popularDocsToLinkInfos: ObjectMap<LinkInfo> = {
     [Key.ZeroExJs]: {
         link: WebsitePaths.ZeroExJs,
         shouldOpenNewTab: false,
@@ -50,7 +46,7 @@ const popularDocsToLinkInfos: KeyToLinkInfo = {
         shouldOpenNewTab: false,
     },
 };
-const usefulLinksToLinkInfo: KeyToLinkInfo = {
+const usefulLinksToLinkInfo: ObjectMap<LinkInfo> = {
     [Key.Github]: {
         link: constants.URL_GITHUB_ORG,
         shouldOpenNewTab: true,
@@ -76,6 +72,9 @@ interface DevelopersDropDownState {}
 export class DevelopersDropDown extends React.Component<DevelopersDropDownProps, DevelopersDropDownState> {
     public render(): React.ReactNode {
         const activeNode = (
+            <Container
+
+            />
             <div className="flex relative" style={{ color: this.props.menuIconStyle.color }}>
                 <div style={{ paddingRight: 10 }}>{this.props.translate.get(Key.Developers, Deco.Cap)}</div>
             </div>
@@ -158,7 +157,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
             </div>
         );
     }
-    private _renderLinkSection(keyToLinkInfo: KeyToLinkInfo): React.ReactNode {
+    private _renderLinkSection(keyToLinkInfo: ObjectMap<LinkInfo>): React.ReactNode {
         const linkStyle: React.CSSProperties = {
             color: colors.lightBlueA700,
             fontFamily: 'Roboto, Roboto Mono',
