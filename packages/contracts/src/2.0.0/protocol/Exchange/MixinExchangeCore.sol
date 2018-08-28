@@ -459,8 +459,8 @@ contract MixinExchangeCore is
             order.makerAssetAmount
         );
         fillResults.makerFeePaid = safeGetPartialAmountFloor(
-            takerAssetFilledAmount,
-            order.takerAssetAmount,
+            fillResults.makerAssetFilledAmount,
+            order.makerAssetAmount,
             order.makerFee
         );
         fillResults.takerFeePaid = safeGetPartialAmountFloor(
