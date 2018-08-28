@@ -404,16 +404,6 @@ contract MixinExchangeCore is
             safeMul(order.makerAssetAmount, takerAssetFilledAmount),
             "INVALID_FILL_PRICE"
         );
-        
-        // Validate fill order rounding
-       /* require(
-            !isRoundingErrorFloor(
-                takerAssetFilledAmount,
-                order.takerAssetAmount,
-                order.makerAssetAmount
-            ),
-            "ROUNDING_ERROR"
-        );*/
     }
 
     /// @dev Validates context for cancelOrder. Succeeds or throws.
@@ -463,17 +453,17 @@ contract MixinExchangeCore is
     {
         // Compute proportional transfer amounts
         fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
-        fillResults.makerAssetFilledAmount = getPartialAmountFloor(
+        fillResults.makerAssetFilledAmount = safeGetPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.makerAssetAmount
         );
-        fillResults.makerFeePaid = getPartialAmountFloor(
+        fillResults.makerFeePaid = safeGetPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.makerFee
         );
-        fillResults.takerFeePaid = getPartialAmountFloor(
+        fillResults.takerFeePaid = safeGetPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.takerFee
