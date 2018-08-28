@@ -67,9 +67,7 @@ describe('Exchange core internal functions', () => {
         overflowErrorForSendTransaction = new Error(
             await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.Uint256Overflow),
         );
-        divisionByZeroErrorForCall = new Error(
-            await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.DivisionByZero),
-        );
+        divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
         invalidOpcodeErrorForCall = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
