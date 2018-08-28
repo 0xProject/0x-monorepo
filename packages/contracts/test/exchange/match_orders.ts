@@ -29,7 +29,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
 const expect = chai.expect;
 
-describe.only('matchOrders', () => {
+describe('matchOrders', () => {
     let makerAddressLeft: string;
     let makerAddressRight: string;
     let owner: string;
