@@ -25,6 +25,7 @@ import "../../protocol/Exchange/interfaces/IExchange.sol";
 import "../../protocol/Exchange/libs/LibOrder.sol";
 
 
+// solhint-disable no-unused-vars
 contract ReentrantERC20Token is
     ERC20Token
 {
