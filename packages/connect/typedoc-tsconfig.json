@@ -4,3 +4,4 @@
         "outDir": "lib"
     },
     "include": ["./src/**/*", "./test/**/*"]
+}
