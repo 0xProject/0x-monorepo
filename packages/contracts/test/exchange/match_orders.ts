@@ -2,8 +2,8 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetDataUtils } from '@0xproject/order-utils';
 import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import * as chai from 'chai';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as chai from 'chai';
 import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
@@ -15,6 +15,7 @@ import { ReentrantERC20TokenContract } from '../../generated_contract_wrappers/r
 import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
@@ -23,7 +24,6 @@ import { MatchOrderTester } from '../utils/match_order_tester';
 import { OrderFactory } from '../utils/order_factory';
 import { ERC20BalancesByOwner, ERC721TokenIdsByOwner } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
-import { chaiSetup } from '../utils/chai_setup';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
