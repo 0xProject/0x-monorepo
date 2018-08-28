@@ -48,9 +48,9 @@ const overflowErrorForCall = new Error(RevertReason.Uint256Overflow);
 
 describe('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
-    let invalidOpcodeErrorForCall: Error | undefined;
     let overflowErrorForSendTransaction: Error | undefined;
     let divisionByZeroErrorForCall: Error | undefined;
+    let roundingErrorForCall: Error | undefined;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -68,18 +68,77 @@ describe('Exchange core internal functions', () => {
             await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.Uint256Overflow),
         );
         divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
-        invalidOpcodeErrorForCall = new Error(await getInvalidOpcodeErrorMessageForCallAsync());
+        roundingErrorForCall = new Error(RevertReason.RoundingError);
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
     // the blockchain state for any tests which modify it!
 
-    async function referenceGetPartialAmountFloorAsync(
+    async function referenceIsRoundingErrorFloorAsync(
+        numerator: BigNumber,
+        denominator: BigNumber,
+        target: BigNumber,
+    ): Promise<boolean> {
+        if (denominator.eq(0)) {
+            throw divisionByZeroErrorForCall;
+        }
+        if (numerator.eq(0)) {
+            return false;
+        }
+        if (target.eq(0)) {
+            return false;
+        }
+        const product = numerator.mul(target);
+        const remainder = product.mod(denominator);
+        const remainderTimes1000 = remainder.mul('1000');
+        const isError = remainderTimes1000.gte(product);
+        if (product.greaterThan(MAX_UINT256)) {
+            throw overflowErrorForCall;
+        }
+        if (remainderTimes1000.greaterThan(MAX_UINT256)) {
+            throw overflowErrorForCall;
+        }
+        return isError;
+    }
+
+    async function referenceIsRoundingErrorCeilAsync(
+        numerator: BigNumber,
+        denominator: BigNumber,
+        target: BigNumber,
+    ): Promise<boolean> {
+        if (denominator.eq(0)) {
+            throw divisionByZeroErrorForCall;
+        }
+        if (numerator.eq(0)) {
+            return false;
+        }
+        if (target.eq(0)) {
+            return false;
+        }
+        const product = numerator.mul(target);
+        const remainder = product.mod(denominator);
+        const error = denominator.sub(remainder).mod(denominator);
+        const errorTimes1000 = error.mul('1000');
+        const isError = errorTimes1000.gte(product);
+        if (product.greaterThan(MAX_UINT256)) {
+            throw overflowErrorForCall;
+        }
+        if (errorTimes1000.greaterThan(MAX_UINT256)) {
+            throw overflowErrorForCall;
+        }
+        return isError;
+    }
+
+    async function referenceSafeGetPartialAmountFloorAsync(
         numerator: BigNumber,
         denominator: BigNumber,
         target: BigNumber,
     ): Promise<BigNumber> {
         if (denominator.eq(0)) {
             throw divisionByZeroErrorForCall;
+        }
+        const isRoundingError = await referenceIsRoundingErrorFloorAsync(numerator, denominator, target);
+        if (isRoundingError) {
+            throw roundingErrorForCall;
         }
         const product = numerator.mul(target);
         if (product.greaterThan(MAX_UINT256)) {
@@ -163,18 +222,18 @@ describe('Exchange core internal functions', () => {
             // implementation or the Solidity implementation of
             // calculateFillResults.
             return {
-                makerAssetFilledAmount: await referenceGetPartialAmountFloorAsync(
+                makerAssetFilledAmount: await referenceSafeGetPartialAmountFloorAsync(
                     takerAssetFilledAmount,
                     orderTakerAssetAmount,
                     otherAmount,
                 ),
                 takerAssetFilledAmount,
-                makerFeePaid: await referenceGetPartialAmountFloorAsync(
+                makerFeePaid: await referenceSafeGetPartialAmountFloorAsync(
                     takerAssetFilledAmount,
                     orderTakerAssetAmount,
                     otherAmount,
                 ),
-                takerFeePaid: await referenceGetPartialAmountFloorAsync(
+                takerFeePaid: await referenceSafeGetPartialAmountFloorAsync(
                     takerAssetFilledAmount,
                     orderTakerAssetAmount,
                     otherAmount,
@@ -198,6 +257,20 @@ describe('Exchange core internal functions', () => {
     });
 
     describe('getPartialAmountFloor', async () => {
+        async function referenceGetPartialAmountFloorAsync(
+            numerator: BigNumber,
+            denominator: BigNumber,
+            target: BigNumber,
+        ): Promise<BigNumber> {
+            if (denominator.eq(0)) {
+                throw divisionByZeroErrorForCall;
+            }
+            const product = numerator.mul(target);
+            if (product.greaterThan(MAX_UINT256)) {
+                throw overflowErrorForCall;
+            }
+            return product.dividedToIntegerBy(denominator);
+        }
         async function testGetPartialAmountFloorAsync(
             numerator: BigNumber,
             denominator: BigNumber,
@@ -206,7 +279,7 @@ describe('Exchange core internal functions', () => {
             return testExchange.publicGetPartialAmountFloor.callAsync(numerator, denominator, target);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
-            'getPartialAmount',
+            'getPartialAmountFloor',
             referenceGetPartialAmountFloorAsync,
             testGetPartialAmountFloorAsync,
             [uint256Values, uint256Values, uint256Values],
@@ -250,34 +323,65 @@ describe('Exchange core internal functions', () => {
         );
     });
 
-    describe('isRoundingError', async () => {
-        async function referenceIsRoundingErrorAsync(
+    describe('safeGetPartialAmountFloor', async () => {
+        async function testSafeGetPartialAmountFloorAsync(
             numerator: BigNumber,
             denominator: BigNumber,
             target: BigNumber,
-        ): Promise<boolean> {
+        ): Promise<BigNumber> {
+            return testExchange.publicSafeGetPartialAmountFloor.callAsync(numerator, denominator, target);
+        }
+        await testCombinatoriallyWithReferenceFuncAsync(
+            'safeGetPartialAmountFloor',
+            referenceSafeGetPartialAmountFloorAsync,
+            testSafeGetPartialAmountFloorAsync,
+            [uint256Values, uint256Values, uint256Values],
+        );
+    });
+
+    describe('safeGetPartialAmountCeil', async () => {
+        async function referenceSafeGetPartialAmountCeilAsync(
+            numerator: BigNumber,
+            denominator: BigNumber,
+            target: BigNumber,
+        ): Promise<BigNumber> {
             if (denominator.eq(0)) {
                 throw divisionByZeroErrorForCall;
             }
-            if (numerator.eq(0)) {
-                return false;
-            }
-            if (target.eq(0)) {
-                return false;
+            const isRoundingError = await referenceIsRoundingErrorCeilAsync(numerator, denominator, target);
+            if (isRoundingError) {
+                throw roundingErrorForCall;
             }
             const product = numerator.mul(target);
-            const remainder = product.mod(denominator);
-            const remainderTimes1000 = remainder.mul('1000');
-            const isError = remainderTimes1000.gt(product);
-            if (product.greaterThan(MAX_UINT256)) {
+            const offset = product.add(denominator.sub(1));
+            if (offset.greaterThan(MAX_UINT256)) {
                 throw overflowErrorForCall;
             }
-            if (remainderTimes1000.greaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall;
+            const result = offset.dividedToIntegerBy(denominator);
+            if (product.mod(denominator).eq(0)) {
+                expect(result.mul(denominator)).to.be.bignumber.eq(product);
+            } else {
+                expect(result.mul(denominator)).to.be.bignumber.gt(product);
             }
-            return isError;
+            return result;
         }
-        async function testIsRoundingErrorAsync(
+        async function testSafeGetPartialAmountCeilAsync(
+            numerator: BigNumber,
+            denominator: BigNumber,
+            target: BigNumber,
+        ): Promise<BigNumber> {
+            return testExchange.publicSafeGetPartialAmountCeil.callAsync(numerator, denominator, target);
+        }
+        await testCombinatoriallyWithReferenceFuncAsync(
+            'safeGetPartialAmountCeil',
+            referenceSafeGetPartialAmountCeilAsync,
+            testSafeGetPartialAmountCeilAsync,
+            [uint256Values, uint256Values, uint256Values],
+        );
+    });
+
+    describe('isRoundingErrorFloor', async () => {
+        async function testIsRoundingErrorFloorAsync(
             numerator: BigNumber,
             denominator: BigNumber,
             target: BigNumber,
@@ -285,41 +389,14 @@ describe('Exchange core internal functions', () => {
             return testExchange.publicIsRoundingErrorFloor.callAsync(numerator, denominator, target);
         }
         await testCombinatoriallyWithReferenceFuncAsync(
-            'isRoundingError',
-            referenceIsRoundingErrorAsync,
-            testIsRoundingErrorAsync,
+            'isRoundingErrorFloor',
+            referenceIsRoundingErrorFloorAsync,
+            testIsRoundingErrorFloorAsync,
             [uint256Values, uint256Values, uint256Values],
         );
     });
 
     describe('isRoundingErrorCeil', async () => {
-        async function referenceIsRoundingErrorAsync(
-            numerator: BigNumber,
-            denominator: BigNumber,
-            target: BigNumber,
-        ): Promise<boolean> {
-            if (denominator.eq(0)) {
-                throw divisionByZeroErrorForCall;
-            }
-            if (numerator.eq(0)) {
-                return false;
-            }
-            if (target.eq(0)) {
-                return false;
-            }
-            const product = numerator.mul(target);
-            const remainder = product.mod(denominator);
-            const error = denominator.sub(remainder).mod(denominator);
-            const errorTimes1000 = error.mul('1000');
-            const isError = errorTimes1000.gt(product);
-            if (product.greaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall;
-            }
-            if (errorTimes1000.greaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall;
-            }
-            return isError;
-        }
         async function testIsRoundingErrorCeilAsync(
             numerator: BigNumber,
             denominator: BigNumber,
@@ -329,7 +406,7 @@ describe('Exchange core internal functions', () => {
         }
         await testCombinatoriallyWithReferenceFuncAsync(
             'isRoundingErrorCeil',
-            referenceIsRoundingErrorAsync,
+            referenceIsRoundingErrorCeilAsync,
             testIsRoundingErrorCeilAsync,
             [uint256Values, uint256Values, uint256Values],
         );
