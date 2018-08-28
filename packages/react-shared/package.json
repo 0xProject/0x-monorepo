@@ -44,7 +44,7 @@
         "change-case": "^3.0.2",
         "is-mobile": "^0.2.2",
         "lodash": "^4.17.5",
-        "material-ui": "^0.17.1",
+        "material-ui": "0.20.0",
         "react": "^16.4.2",
         "react-dom": "^16.4.2",
         "react-highlight": "0xproject/react-highlight#2f40a42e0a3f0ad126f9f42d505b97b603fc7162",

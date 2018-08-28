@@ -788,6 +788,13 @@
     lodash "4.17.10"
     web3 "0.20.6"
 
+"@babel/runtime@7.0.0-beta.42":
+  version "7.0.0-beta.42"
+  resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.0.0-beta.42.tgz#352e40c92e0460d3e82f49bd7e79f6cda76f919f"
+  dependencies:
+    core-js "^2.5.3"
+    regenerator-runtime "^0.11.1"
+
 "@babel/runtime@7.0.0-rc.1":
   version "7.0.0-rc.1"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.0.0-rc.1.tgz#42f36fc5817911c89ea75da2b874054922967616"
@@ -3855,6 +3862,10 @@ core-js@^2.4.0, core-js@^2.5.0:
 core-js@^2.4.1:
   version "2.5.6"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.5.6.tgz#0fe6d45bf3cac3ac364a9d72de7576f4eb221b9d"
+
+core-js@^2.5.3:
+  version "2.5.7"
+  resolved "https://registry.npmjs.org/core-js/-/core-js-2.5.7.tgz#f972608ff0cead68b841a16a932d0b183791814e"
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
@@ -8755,6 +8766,22 @@ marked@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.4.0.tgz#9ad2c2a7a1791f10a852e0112f77b571dce10c66"
 
+material-ui@0.20.0:
+  version "0.20.0"
+  resolved "https://registry.npmjs.org/material-ui/-/material-ui-0.20.0.tgz#85411bb59c916c9c7703f29dcffc44e3a67d5111"
+  dependencies:
+    babel-runtime "^6.23.0"
+    inline-style-prefixer "^3.0.8"
+    keycode "^2.1.8"
+    lodash.merge "^4.6.0"
+    lodash.throttle "^4.1.1"
+    prop-types "^15.5.7"
+    react-event-listener "^0.5.1"
+    react-transition-group "^1.2.1"
+    recompose "^0.26.0"
+    simple-assign "^0.1.0"
+    warning "^3.0.0"
+
 material-ui@^0.17.1:
   version "0.17.4"
   resolved "https://registry.yarnpkg.com/material-ui/-/material-ui-0.17.4.tgz#193999ecb49c3ec15ae0abb4e90fdf9a7bd343e0"
@@ -11226,6 +11253,15 @@ react-event-listener@^0.4.5:
     prop-types "^15.5.4"
     warning "^3.0.0"
 
+react-event-listener@^0.5.1:
+  version "0.5.10"
+  resolved "https://registry.npmjs.org/react-event-listener/-/react-event-listener-0.5.10.tgz#378403c555fe616f312891507a742ecbbe2c90de"
+  dependencies:
+    "@babel/runtime" "7.0.0-beta.42"
+    fbjs "^0.8.16"
+    prop-types "^15.6.0"
+    warning "^3.0.0"
+
 react-event-listener@^0.6.2:
   version "0.6.3"
   resolved "https://registry.npmjs.org/react-event-listener/-/react-event-listener-0.6.3.tgz#8eab88129a76e095ed8aa684c29679eded1e843d"
@@ -11656,7 +11692,7 @@ regenerate@^1.2.1:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.3.3.tgz#0c336d3980553d755c39b586ae3b20aa49c82b7f"
 
-regenerator-runtime@^0.11.0:
+regenerator-runtime@^0.11.0, regenerator-runtime@^0.11.1:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
 
