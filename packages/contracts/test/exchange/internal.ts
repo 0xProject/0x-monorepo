@@ -46,7 +46,7 @@ const emptySignedOrder: SignedOrder = {
 
 const overflowErrorForCall = new Error(RevertReason.Uint256Overflow);
 
-describe.only('Exchange core internal functions', () => {
+describe('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
     let invalidOpcodeErrorForCall: Error | undefined;
     let overflowErrorForSendTransaction: Error | undefined;
@@ -147,9 +147,6 @@ describe.only('Exchange core internal functions', () => {
         const product = numerator.mul(target);
         if (product.greaterThan(MAX_UINT256)) {
             throw overflowErrorForCall;
-        }
-        if ((await referenceIsRoundingErrorAsync(numerator, denominator, target)) === true) {
-            throw roundingErrorForTransaction;
         }
         return product.dividedToIntegerBy(denominator);
     }

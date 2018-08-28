@@ -148,11 +148,6 @@ contract LibMath is
             "DIVISION_BY_ZERO"
         );
 
-<<<<<<< HEAD
-=======
-        require(!isRoundingErrorCeil(numerator, denominator, target), "ROUNDING_ERROR");
-        
->>>>>>> WIP commit: Added rounding error checks to getPartialAmount
         // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
         // To implement `ceil(a / b)` using safeDiv.
