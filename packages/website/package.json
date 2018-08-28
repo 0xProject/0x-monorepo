@@ -43,7 +43,7 @@
         "polished": "^1.9.2",
         "query-string": "^6.0.0",
         "react": "^16.4.2",
-        "react-copy-to-clipboard": "^4.2.3",
+        "react-copy-to-clipboard": "^5.0.0",
         "react-document-title": "^2.0.3",
         "react-dom": "^16.4.2",
         "react-helmet": "^5.2.0",
