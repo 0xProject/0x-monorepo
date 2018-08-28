@@ -22,6 +22,9 @@ export {
     OrderInfo,
     EventCallback,
     DecodedLogEvent,
+    BalanceAndAllowance,
+    OrderAndTraderInfo,
+    TraderInfo,
 } from './types';
 
 export { Order, SignedOrder, AssetProxyId } from '@0xproject/types';
