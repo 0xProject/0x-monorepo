@@ -276,8 +276,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                 <DropDown
                                     activeNode={activeNode}
                                     popoverContent={popoverContent}
-                                    anchorOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
-                                    targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
                                     style={styles.menuItem}
                                 />
                                 <TopBarMenuItem

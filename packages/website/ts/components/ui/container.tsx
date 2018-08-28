@@ -26,10 +26,10 @@ export interface ContainerProps {
     className?: string;
     position?: 'absolute' | 'fixed' | 'relative' | 'unset';
     display?: 'inline-block' | 'block' | 'inline-flex' | 'inline';
-    top?: string;
-    left?: string;
-    right?: string;
-    bottom?: string;
+    top?: StringOrNum;
+    left?: StringOrNum;
+    right?: StringOrNum;
+    bottom?: StringOrNum;
     zIndex?: number;
     Tag?: ContainerTag;
     cursor?: string;
