@@ -135,7 +135,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                             fontSize: 14,
                         }}
                     >
-                        VIEW ALL DOCUMENTATION
+                        {this.props.translate.get(Key.ViewAllDocumentation, Deco.Upper)}
                     </Link>
                 </div>
             </div>
