@@ -19,18 +19,22 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "../../utils/ReentrancyGuard/ReentrancyGuard.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
 import "./libs/LibFillResults.sol";
 import "./libs/LibAbiEncoder.sol";
 import "./mixins/MExchangeCore.sol";
+import "./mixins/MWrapperFunctions.sol";
 
 
 contract MixinWrapperFunctions is
+    ReentrancyGuard,
     LibMath,
     LibFillResults,
     LibAbiEncoder,
-    MExchangeCore
+    MExchangeCore,
+    MWrapperFunctions
 {
 
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
@@ -43,16 +47,13 @@ contract MixinWrapperFunctions is
         bytes memory signature
     )
         public
+        nonReentrant
         returns (FillResults memory fillResults)
     {
-        fillResults = fillOrder(
+        fillResults = fillOrKillOrderInternal(
             order,
             takerAssetFillAmount,
             signature
-        );
-        require(
-            fillResults.takerAssetFilledAmount == takerAssetFillAmount,
-            "COMPLETE_FILL_FAILED"
         );
         return fillResults;
     }
@@ -88,20 +89,14 @@ contract MixinWrapperFunctions is
                 fillOrderCalldata,                  // write output over input
                 128                                 // output size is 128 bytes
             )
-            switch success
-            case 0 {
-                mstore(fillResults, 0)
-                mstore(add(fillResults, 32), 0)
-                mstore(add(fillResults, 64), 0)
-                mstore(add(fillResults, 96), 0)
-            }
-            case 1 {
+            if success {
                 mstore(fillResults, mload(fillOrderCalldata))
                 mstore(add(fillResults, 32), mload(add(fillOrderCalldata, 32)))
                 mstore(add(fillResults, 64), mload(add(fillOrderCalldata, 64)))
                 mstore(add(fillResults, 96), mload(add(fillOrderCalldata, 96)))
             }
         }
+        // fillResults values will be 0 by default if call was unsuccessful
         return fillResults;
     }
 
@@ -117,11 +112,12 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        nonReentrant
         returns (FillResults memory totalFillResults)
     {
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
-            FillResults memory singleFillResults = fillOrder(
+            FillResults memory singleFillResults = fillOrderInternal(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
@@ -143,11 +139,12 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        nonReentrant
         returns (FillResults memory totalFillResults)
     {
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
-            FillResults memory singleFillResults = fillOrKillOrder(
+            FillResults memory singleFillResults = fillOrKillOrderInternal(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
@@ -195,6 +192,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        nonReentrant
         returns (FillResults memory totalFillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
@@ -210,7 +208,7 @@ contract MixinWrapperFunctions is
             uint256 remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, totalFillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = fillOrder(
+            FillResults memory singleFillResults = fillOrderInternal(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
@@ -282,6 +280,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        nonReentrant
         returns (FillResults memory totalFillResults)
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
@@ -298,14 +297,14 @@ contract MixinWrapperFunctions is
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerAssetFillAmount = getPartialAmount(
+            uint256 remainingTakerAssetFillAmount = getPartialAmountFloor(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
             );
 
             // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = fillOrder(
+            FillResults memory singleFillResults = fillOrderInternal(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
@@ -350,7 +349,7 @@ contract MixinWrapperFunctions is
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerAssetFillAmount = getPartialAmount(
+            uint256 remainingTakerAssetFillAmount = getPartialAmountFloor(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
@@ -399,5 +398,29 @@ contract MixinWrapperFunctions is
             ordersInfo[i] = getOrderInfo(orders[i]);
         }
         return ordersInfo;
+    }
+
+    /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
+    /// @param order Order struct containing order specifications.
+    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
+    /// @param signature Proof that order has been created by maker.
+    function fillOrKillOrderInternal(
+        LibOrder.Order memory order,
+        uint256 takerAssetFillAmount,
+        bytes memory signature
+    )
+        internal
+        returns (FillResults memory fillResults)
+    {
+        fillResults = fillOrderInternal(
+            order,
+            takerAssetFillAmount,
+            signature
+        );
+        require(
+            fillResults.takerAssetFilledAmount == takerAssetFillAmount,
+            "COMPLETE_FILL_FAILED"
+        );
+        return fillResults;
     }
 }

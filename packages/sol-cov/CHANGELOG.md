@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.1 - _August 27, 2018_
+
+    * Dependencies updated
+
 ## v2.1.0 - _August 24, 2018_
 
     * Export types: `JSONRPCRequestPayload`, `Provider`, `JSONRPCErrorCallback`, `JSONRPCResponsePayload`, `JSONRPCRequestPayloadWithMethod`, `NextCallback`, `ErrorCallback`, `OnNextCompleted` and `Callback` (#924)

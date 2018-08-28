@@ -17,6 +17,7 @@ const args = yargs
     const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
 
     await publishReleaseNotesAsync(allUpdatedPackages, isDryRun);
+    process.exit(0);
 })().catch(err => {
     utils.log(err);
     process.exit(1);

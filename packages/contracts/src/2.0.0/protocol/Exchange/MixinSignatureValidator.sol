@@ -19,6 +19,7 @@
 pragma solidity 0.4.24;
 
 import "../../utils/LibBytes/LibBytes.sol";
+import "../../utils/ReentrancyGuard/ReentrancyGuard.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
 import "./interfaces/IWallet.sol";
@@ -26,6 +27,7 @@ import "./interfaces/IValidator.sol";
 
 
 contract MixinSignatureValidator is
+    ReentrancyGuard,
     MSignatureValidator,
     MTransactions
 {
@@ -48,14 +50,16 @@ contract MixinSignatureValidator is
     )
         external
     {
-        require(
-            isValidSignature(
-                hash,
-                signerAddress,
-                signature
-            ),
-            "INVALID_SIGNATURE"
-        );
+        if (signerAddress != msg.sender) {
+            require(
+                isValidSignature(
+                    hash,
+                    signerAddress,
+                    signature
+                ),
+                "INVALID_SIGNATURE"
+            );
+        }
         preSigned[hash][signerAddress] = true;
     }
 
@@ -67,6 +71,7 @@ contract MixinSignatureValidator is
         bool approval
     )
         external
+        nonReentrant
     {
         address signerAddress = getCurrentContextAddress();
         allowedValidators[signerAddress][validatorAddress] = approval;
@@ -172,26 +177,14 @@ contract MixinSignatureValidator is
             isValid = signerAddress == recovered;
             return isValid;
 
-        // Implicitly signed by caller.
-        // The signer has initiated the call. In the case of non-contract
-        // accounts it means the transaction itself was signed.
-        // Example: let's say for a particular operation three signatures
-        // A, B and C are required. To submit the transaction, A and B can
-        // give a signature to C, who can then submit the transaction using
-        // `Caller` for his own signature. Or A and C can sign and B can
-        // submit using `Caller`. Having `Caller` allows this flexibility.
-        } else if (signatureType == SignatureType.Caller) {
-            require(
-                signature.length == 0,
-                "LENGTH_0_REQUIRED"
-            );
-            isValid = signerAddress == msg.sender;
-            return isValid;
-
         // Signature verified by wallet contract.
         // If used with an order, the maker of the order is the wallet contract.
         } else if (signatureType == SignatureType.Wallet) {
-            isValid = IWallet(signerAddress).isValidSignature(hash, signature);
+            isValid = isValidWalletSignature(
+                hash,
+                signerAddress,
+                signature
+            );
             return isValid;
 
         // Signature verified by validator contract.
@@ -209,7 +202,8 @@ contract MixinSignatureValidator is
             if (!allowedValidators[signerAddress][validatorAddress]) {
                 return false;
             }
-            isValid = IValidator(validatorAddress).isValidSignature(
+            isValid = isValidValidatorSignature(
+                validatorAddress,
                 hash,
                 signerAddress,
                 signature
@@ -220,34 +214,6 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.PreSigned) {
             isValid = preSigned[hash][signerAddress];
             return isValid;
-
-        // Signature from Trezor hardware wallet.
-        // It differs from web3.eth_sign in the encoding of message length
-        // (Bitcoin varint encoding vs ascii-decimal, the latter is not
-        // self-terminating which leads to ambiguities).
-        // See also:
-        // https://en.bitcoin.it/wiki/Protocol_documentation#Variable_length_integer
-        // https://github.com/trezor/trezor-mcu/blob/master/firmware/ethereum.c#L602
-        // https://github.com/trezor/trezor-mcu/blob/master/firmware/crypto.c#L36
-        } else if (signatureType == SignatureType.Trezor) {
-            require(
-                signature.length == 65,
-                "LENGTH_65_REQUIRED"
-            );
-            v = uint8(signature[0]);
-            r = signature.readBytes32(1);
-            s = signature.readBytes32(33);
-            recovered = ecrecover(
-                keccak256(abi.encodePacked(
-                    "\x19Ethereum Signed Message:\n\x20",
-                    hash
-                )),
-                v,
-                r,
-                s
-            );
-            isValid = signerAddress == recovered;
-            return isValid;
         }
 
         // Anything else is illegal (We do not return false because
@@ -256,5 +222,103 @@ contract MixinSignatureValidator is
         // may lead the caller to incorrectly believe that the
         // signature was invalid.)
         revert("SIGNATURE_UNSUPPORTED");
+    }
+
+    /// @dev Verifies signature using logic defined by Wallet contract.
+    /// @param hash Any 32 byte hash.
+    /// @param walletAddress Address that should have signed the given hash
+    ///                      and defines its own signature verification method.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return True if signature is valid for given wallet..
+    function isValidWalletSignature(
+        bytes32 hash,
+        address walletAddress,
+        bytes signature
+    )
+        internal
+        view
+        returns (bool isValid)
+    {
+        bytes memory calldata = abi.encodeWithSelector(
+            IWallet(walletAddress).isValidSignature.selector,
+            hash,
+            signature
+        );
+        assembly {
+            let cdStart := add(calldata, 32)
+            let success := staticcall(
+                gas,              // forward all gas
+                walletAddress,    // address of Wallet contract
+                cdStart,          // pointer to start of input
+                mload(calldata),  // length of input
+                cdStart,          // write input over output
+                32                // output size is 32 bytes
+            )
+
+            switch success
+            case 0 {
+                // Revert with `Error("WALLET_ERROR")`
+                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                mstore(64, 0x0000000c57414c4c45545f4552524f5200000000000000000000000000000000)
+                mstore(96, 0)
+                revert(0, 100)
+            }
+            case 1 {
+                // Signature is valid if call did not revert and returned true
+                isValid := mload(cdStart)
+            }
+        }
+        return isValid;
+    }
+
+    /// @dev Verifies signature using logic defined by Validator contract.
+    /// @param validatorAddress Address of validator contract.
+    /// @param hash Any 32 byte hash.
+    /// @param signerAddress Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return True if the address recovered from the provided signature matches the input signer address.
+    function isValidValidatorSignature(
+        address validatorAddress,
+        bytes32 hash,
+        address signerAddress,
+        bytes signature
+    )
+        internal
+        view
+        returns (bool isValid)
+    {
+        bytes memory calldata = abi.encodeWithSelector(
+            IValidator(signerAddress).isValidSignature.selector,
+            hash,
+            signerAddress,
+            signature
+        );
+        assembly {
+            let cdStart := add(calldata, 32)
+            let success := staticcall(
+                gas,               // forward all gas
+                validatorAddress,  // address of Validator contract
+                cdStart,           // pointer to start of input
+                mload(calldata),   // length of input
+                cdStart,           // write input over output
+                32                 // output size is 32 bytes
+            )
+
+            switch success
+            case 0 {
+                // Revert with `Error("VALIDATOR_ERROR")`
+                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                mstore(64, 0x0000000f56414c494441544f525f4552524f5200000000000000000000000000)
+                mstore(96, 0)
+                revert(0, 100)
+            }
+            case 1 {
+                // Signature is valid if call did not revert and returned true
+                isValid := mload(cdStart)
+            }
+        }
+        return isValid;
     }
 }

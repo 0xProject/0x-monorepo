@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1-rc.6 - _August 27, 2018_
+
+    * Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js
+    * Fix relative path to introduction MD file
+
 ## v1.0.1-rc.5 - _August 24, 2018_
 
     * Add takerAddress to /orders parameters (#974)

@@ -9,6 +9,7 @@ export {
     ERC20ProxyWrapper,
     ERC721ProxyWrapper,
     ForwarderWrapper,
+    OrderValidatorWrapper,
     IndexedFilterValues,
     BlockRange,
     ContractWrappersConfig,
@@ -42,6 +43,9 @@ export {
     DecodedLogEvent,
     ExchangeEventArgs,
     TransactionEncoder,
+    BalanceAndAllowance,
+    OrderAndTraderInfo,
+    TraderInfo,
 } from '@0xproject/contract-wrappers';
 
 export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';

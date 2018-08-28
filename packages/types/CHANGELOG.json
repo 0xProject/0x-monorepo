@@ -1,5 +1,19 @@
 [
     {
+        "version": "1.0.1-rc.6",
+        "changes": [
+            {
+                "note": "Add WalletError and ValidatorError revert reasons",
+                "pr": 1012
+            },
+            {
+                "note": "Remove Caller and Trezor SignatureTypes",
+                "pr": 1015
+            }
+        ],
+        "timestamp": 1535377027
+    },
+    {
         "version": "1.0.1-rc.5",
         "changes": [
             {

@@ -1,5 +1,22 @@
 [
     {
+        "version": "1.0.1-rc.6",
+        "changes": [
+            {
+                "note": "Add `OrderValidatorWrapper`"
+            }
+        ]
+    },
+    {
+        "version": "1.0.1-rc.5",
+        "changes": [
+            {
+                "note": "Fix missing `BlockParamLiteral` type import issue"
+            }
+        ],
+        "timestamp": 1535377027
+    },
+    {
         "version": "1.0.1-rc.4",
         "changes": [
             {

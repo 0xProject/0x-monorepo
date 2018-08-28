@@ -155,7 +155,8 @@ contract MixinTransactions is
         view
         returns (address)
     {
-        address contextAddress = currentContextAddress == address(0) ? msg.sender : currentContextAddress;
+        address currentContextAddress_ = currentContextAddress;
+        address contextAddress = currentContextAddress_ == address(0) ? msg.sender : currentContextAddress_;
         return contextAddress;
     }
 }

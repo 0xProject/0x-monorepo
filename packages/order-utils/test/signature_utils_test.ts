@@ -76,20 +76,6 @@ describe('Signature utils', () => {
             );
             expect(isValidSignatureLocal).to.be.true();
         });
-
-        it('should return true for a valid Trezor signature', async () => {
-            dataHex = '0xd0d994e31c88f33fd8a572552a70ed339de579e5ba49ee1d17cc978bbe1cdd21';
-            address = '0x6ecbe1db9ef729cbe972c83fb886247691fb6beb';
-            const trezorSignature =
-                '0x1ce4760660e6495b5ae6723087bea073b3a99ce98ea81fdf00c240279c010e63d05b87bc34c4d67d4776e8d5aeb023a67484f4eaf0fd353b40893e5101e845cd9908';
-            const isValidSignatureLocal = await signatureUtils.isValidSignatureAsync(
-                provider,
-                dataHex,
-                trezorSignature,
-                address,
-            );
-            expect(isValidSignatureLocal).to.be.true();
-        });
     });
     describe('#isValidECSignature', () => {
         const signature = {
@@ -270,15 +256,6 @@ describe('Signature utils', () => {
             r: '0xaca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d64393',
             s: '0x46b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf2',
         };
-        it('should concatenate v,r,s and append the Trezor signature type', async () => {
-            const expectedSignatureWithSignatureType =
-                '0x1baca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d6439346b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf208';
-            const signatureWithSignatureType = signatureUtils.convertECSignatureToSignatureHex(
-                ecSignature,
-                SignerType.Trezor,
-            );
-            expect(signatureWithSignatureType).to.equal(expectedSignatureWithSignatureType);
-        });
         it('should concatenate v,r,s and append the EthSign signature type when SignerType is Default', async () => {
             const expectedSignatureWithSignatureType =
                 '0x1baca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d6439346b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf203';
