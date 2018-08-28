@@ -32,8 +32,8 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
     public static defaultProps: Partial<DropDownProps> = {
         style: DEFAULT_STYLE,
         zDepth: 1,
-        activateEvent: DropdownMouseEvent.Click,
-        closeEvent: DropdownMouseEvent.Click,
+        activateEvent: DropdownMouseEvent.Hover,
+        closeEvent: DropdownMouseEvent.Hover,
     };
     private _popoverCloseCheckIntervalId: number;
     public static getDerivedStateFromProps(props: DropDownProps, state: DropDownState): Partial<DropDownState> {
@@ -77,8 +77,6 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
                         zIndex={this.props.zDepth}
                     >
                         <div
-                            onMouseEnter={this._onHover.bind(this)}
-                            onMouseLeave={this._onHoverOff.bind(this)}
                             onClick={this._closePopover.bind(this)}
                         >
                             {this.props.popoverContent}
@@ -97,10 +95,13 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
         }
     }
     private _onHover(event: React.FormEvent<HTMLInputElement>): void {
-        this.setState({ isHovering: true });
+        this.setState({
+            isHovering: true,
+            anchorEl: event.currentTarget,
+        });
     }
     private _onHoverOff(): void {
-        this.setState({ isHovering: false });
+        this.setState({ isHovering: false, anchorEl: undefined });
     }
     private _checkIfShouldClosePopover(): void {
         if (!this.state.isDropDownOpen) {
