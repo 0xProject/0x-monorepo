@@ -43,6 +43,8 @@ contract LibMath is
             denominator > 0,
             "DIVISION_BY_ZERO"
         );
+
+        require(!isRoundingErrorFloor(numerator, denominator, target), "ROUNDING_ERROR");
         
         partialAmount = safeDiv(
             safeMul(numerator, target),
@@ -69,6 +71,8 @@ contract LibMath is
             denominator > 0,
             "DIVISION_BY_ZERO"
         );
+
+        require(!isRoundingErrorCeil(numerator, denominator, target), "ROUNDING_ERROR");
         
         // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
