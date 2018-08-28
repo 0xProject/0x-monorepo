@@ -235,7 +235,6 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
                     </SimpleMenu>
                 }
                 zDepth={1}
-                placement="right-end"
                 activateEvent={DropdownMouseEvent.Click}
                 closeEvent={DropdownMouseEvent.Click}
             />

@@ -20,7 +20,6 @@ const PopoverContainer = styled.div`
     max-height: 679px;
     overflow-y: auto;
     border-radius: 2px;
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
 `;
 
 const defaultPlacement: Placement = 'bottom';
@@ -38,7 +37,7 @@ export class Popover extends React.Component<PopoverProps> {
         };
         return (
             <div>
-                {/* <Overlay onClick={onRequestClose} style={overlayStyleOverrides}/> */}
+                <Overlay onClick={onRequestClose} style={overlayStyleOverrides}/>
                 <Popper referenceElement={anchorEl} placement="bottom" eventsEnabled={true}>
                     {this._renderPopperChildren.bind(this)}
                 </Popper>
