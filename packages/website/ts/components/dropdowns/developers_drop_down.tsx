@@ -72,9 +72,6 @@ interface DevelopersDropDownState {}
 export class DevelopersDropDown extends React.Component<DevelopersDropDownProps, DevelopersDropDownState> {
     public render(): React.ReactNode {
         const activeNode = (
-            <Container
-
-            />
             <div className="flex relative" style={{ color: this.props.menuIconStyle.color }}>
                 <div style={{ paddingRight: 10 }}>{this.props.translate.get(Key.Developers, Deco.Cap)}</div>
             </div>
