@@ -8,10 +8,9 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "tsc -w",
         "lint": "tslint --project .",
         "clean": "shx rm -rf lib",
-        "build": "tsc",
+        "build": "tsc -b",
         "test": "yarn run_mocha",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "test:circleci": "yarn test:coverage",

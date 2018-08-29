@@ -1,8 +1,7 @@
 {
-    "extends": "../../tsconfig",
+    "extends": "../../typedoc-tsconfig",
     "compilerOptions": {
-        "outDir": "lib",
-        "rootDir": "."
+        "outDir": "lib"
     },
     "include": ["./src/**/*", "./test/**/*"]
 }

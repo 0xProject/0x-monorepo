@@ -8,8 +8,7 @@
     "types": "lib/src/index.d.ts",
     "license": "Apache-2.0",
     "scripts": {
-        "watch_without_deps": "tsc -w",
-        "build": "tsc",
+        "build": "tsc -b",
         "clean": "shx rm -rf lib generated_docs",
         "lint": "tslint --project .",
         "run_mocha_unit": "mocha --require source-map-support/register --require make-promises-safe lib/test/unit/**/*_test.js --timeout 10000 --bail --exit",
@@ -21,7 +20,7 @@
         "test:all": "run-s test:unit test:integration",
         "test:unit": "run-s clean build run_mocha_unit",
         "test:integration": "run-s clean build run_mocha_integration",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {

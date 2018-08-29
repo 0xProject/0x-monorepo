@@ -11,8 +11,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && tsc",
+        "build": "yarn pre_build && tsc -b",
         "pre_build": "run-s update_artifacts_v2_beta update_artifacts_v2 generate_contract_wrappers copy_artifacts",
         "generate_contract_wrappers": "abi-gen --abis 'src/artifacts/@(Exchange|DummyERC20Token|DummyERC721Token|ZRXToken|ERC20Token|ERC721Token|WETH9|ERC20Proxy|ERC721Proxy|Forwarder|OrderValidator).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers",
         "lint": "tslint --project . --exclude **/src/contract_wrappers/**/* --exclude **/lib/**/*",
@@ -26,7 +25,7 @@
         "copy_artifacts": "copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts",
         "clean": "shx rm -rf _bundles lib test_temp test/artifacts src/contract_wrappers/generated src/artifacts generated_docs",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "contracts_v2_beta": "AssetProxyOwner Exchange ERC20Proxy ERC20Token ERC721Proxy ERC721Token WETH9 ZRXToken Forwarder OrderValidator",
