@@ -47,6 +47,9 @@ module.exports = {
                 use: [
                     {
                         loader: 'awesome-typescript-loader',
+                        // tsconfig.json contains some options required for
+                        // project references which do not work with webback.
+                        // We override those options here.
                         query: {
                             declaration: false,
                             declarationMap: false,
