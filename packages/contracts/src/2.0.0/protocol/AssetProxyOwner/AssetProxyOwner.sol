@@ -105,13 +105,9 @@ contract AssetProxyOwner is
         uint256 index
     )
         internal
-        pure
         returns (bytes4 result)
     {
-        require(
-            b.length >= index + 4,
-            "GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED"
-        );
+        require(b.length >= index + 4);
 
         // Arrays are prefixed by a 32 byte length field
         index += 32;
