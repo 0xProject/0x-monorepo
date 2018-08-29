@@ -23,7 +23,6 @@ trackedTokenStorage.clearIfRequired();
 
 import 'basscss/css/basscss.css';
 import 'less/all.less';
-import 'react-typist/dist/Typist.css';
 
 // We pass modulePromise returning lambda instead of module promise,
 // cause we only want to import the module when the user navigates to the page.
