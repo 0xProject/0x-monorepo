@@ -8,6 +8,7 @@ import { SubscribeForm } from 'ts/components/forms/subscribe_form';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { CallToAction } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
+import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
@@ -39,7 +40,7 @@ interface Project {
 }
 
 const THROTTLE_TIMEOUT = 100;
-const WHATS_NEW_TITLE = '18 ideas for 0x relayers in 2018';
+const WHATS_NEW_TITLE = 'V2 of the 0x Protocol is now live!';
 const WHATS_NEW_URL = 'https://blog.0xproject.com/18-ideas-for-0x-relayers-in-2018-80a1498b955f';
 
 const relayerProjects: Project[] = [
@@ -216,19 +217,24 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         return (
             <div className="sm-center sm-px1">
                 <a href={WHATS_NEW_URL} target="_blank" className="inline-block text-decoration-none">
-                    <div className="flex sm-pl0 md-pl2 lg-pl0" style={{ fontFamily: 'Roboto Mono', fontWeight: 600 }}>
-                        <div
-                            className="mr1 px1"
-                            style={{
-                                backgroundColor: colors.white,
-                                borderRadius: 3,
-                                color: colors.heroGrey,
-                                height: 23,
-                            }}
+                    <div className="flex items-center sm-pl0 md-pl2 lg-pl0">
+                        <Container
+                            paddingTop="5px"
+                            paddingLeft="8px"
+                            paddingBottom="5px"
+                            paddingRight="8px"
+                            backgroundColor={colors.white}
+                            borderRadius={6}
                         >
-                            New
-                        </div>
-                        <div style={{ color: colors.darkGrey }}>{WHATS_NEW_TITLE}</div>
+                            <Text fontSize="16px" fontWeight={500} fontColor={colors.heroGrey}>
+                                New
+                            </Text>
+                        </Container>
+                        <Container marginLeft="12px">
+                            <Text fontSize="18px" fontWeight={500} fontColor={colors.white}>
+                                {WHATS_NEW_TITLE}
+                            </Text>
+                        </Container>
                     </div>
                 </a>
             </div>
