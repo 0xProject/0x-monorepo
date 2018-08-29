@@ -115,7 +115,7 @@ describe('LibBytes', () => {
             expect(newBytes).to.equal(expectedNewBytes);
             expect(poppedByte).to.equal(expectedPoppedByte);
         });
-        it('should pop the last byte from the input and return it when array is exactly one', async () => {
+        it('should pop the last byte from the input and return it when array is exactly 1 byte', async () => {
             const [newBytes, poppedByte] = await libBytes.publicPopLastByte.callAsync(testByte);
             const expectedNewBytes = '0x';
             expect(newBytes).to.equal(expectedNewBytes);
@@ -130,7 +130,7 @@ describe('LibBytes', () => {
                 RevertReason.LibBytesGreaterOrEqualTo20LengthRequired,
             );
         });
-        it('should pop the last 20 bytes from the input and return it when array holds more than one byte', async () => {
+        it('should pop the last 20 bytes from the input and return it when array holds more than 20 bytes', async () => {
             const [newBytes, poppedAddress] = await libBytes.publicPopLast20Bytes.callAsync(byteArrayLongerThan32Bytes);
             const expectedNewBytes = byteArrayLongerThan32Bytes.slice(0, -40);
             const expectedPoppedAddress = `0x${byteArrayLongerThan32Bytes.slice(-40)}`;
@@ -318,7 +318,7 @@ describe('LibBytes', () => {
             const bytes32 = await libBytes.publicReadBytes32.callAsync(testBytes32, testBytes32Offset);
             return expect(bytes32).to.be.equal(testBytes32);
         });
-        it('should successfully read bytes32 when it is offset in the array)', async () => {
+        it('should successfully read bytes32 when it is offset in the array', async () => {
             const bytes32ByteArrayBuffer = ethUtil.toBuffer(testBytes32);
             const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, bytes32ByteArrayBuffer]);
@@ -493,7 +493,7 @@ describe('LibBytes', () => {
             const bytes4 = await libBytes.publicReadBytes4.callAsync(testBytes4, testBytes4Offset);
             return expect(bytes4).to.be.equal(testBytes4);
         });
-        it('should successfully read bytes4 when it is offset in the array)', async () => {
+        it('should successfully read bytes4 when it is offset in the array', async () => {
             const bytes4ByteArrayBuffer = ethUtil.toBuffer(testBytes4);
             const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
             const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, bytes4ByteArrayBuffer]);
@@ -583,7 +583,7 @@ describe('LibBytes', () => {
     });
 
     describe('writeBytesWithLength', () => {
-        it('should successfully write short, nested array of bytes when it takes up the whole array)', async () => {
+        it('should successfully write short, nested array of bytes when it takes up the whole array', async () => {
             const testBytesOffset = new BigNumber(0);
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(shortTestBytesAsBuffer.byteLength));
             const bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
@@ -692,7 +692,7 @@ describe('LibBytes', () => {
                 RevertReason.LibBytesGreaterOrEqualToNestedBytesLengthRequired,
             );
         });
-        it('should fail if the length between the offset and end of the byte array is too short to hold the length of a nested byte array)', async () => {
+        it('should fail if the length between the offset and end of the byte array is too short to hold the length of a nested byte array', async () => {
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(shortTestBytesAsBuffer.byteLength));
             const badOffset = new BigNumber(ethUtil.toBuffer(shortTestBytesAsBuffer).byteLength);
             return expectContractCallFailed(
