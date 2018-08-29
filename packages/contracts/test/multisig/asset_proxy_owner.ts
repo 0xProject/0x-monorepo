@@ -148,25 +148,6 @@ describe('AssetProxyOwner', () => {
         });
     });
 
-    describe('readBytes4', () => {
-        it('should revert if byte array has a length < 4', async () => {
-            const byteArrayLessThan4Bytes = '0x010101';
-            return expectContractCallFailedWithoutReasonAsync(
-                testAssetProxyOwner.publicReadBytes4.callAsync(byteArrayLessThan4Bytes, new BigNumber(0)),
-            );
-        });
-        it('should return the first 4 bytes of a byte array of arbitrary length', async () => {
-            const byteArrayLongerThan32Bytes =
-                '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
-            const first4Bytes = await testAssetProxyOwner.publicReadBytes4.callAsync(
-                byteArrayLongerThan32Bytes,
-                new BigNumber(0),
-            );
-            const expectedFirst4Bytes = byteArrayLongerThan32Bytes.slice(0, 10);
-            expect(first4Bytes).to.equal(expectedFirst4Bytes);
-        });
-    });
-
     describe('registerAssetProxy', () => {
         it('should throw if not called by multisig', async () => {
             const isRegistered = true;
