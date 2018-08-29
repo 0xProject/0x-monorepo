@@ -42,7 +42,7 @@ describe('LibBytes', () => {
     const testUint256 = new BigNumber(testBytes32, 16);
     const testUint256B = new BigNumber(testBytes32B, 16);
     const testBytes4 = '0xabcdef12';
-    const testBytes4B = new BigNumber(testBytes4, 16);
+    const testByte = '0xab';
     let shortData: string;
     let shortTestBytes: string;
     let shortTestBytesAsBuffer: Buffer;
@@ -108,12 +108,18 @@ describe('LibBytes', () => {
                 RevertReason.LibBytesGreaterThanZeroLengthRequired,
             );
         });
-        it('should pop the last byte from the input and return it', async () => {
+        it('should pop the last byte from the input and return it when array holds more than 1 byte', async () => {
             const [newBytes, poppedByte] = await libBytes.publicPopLastByte.callAsync(byteArrayLongerThan32Bytes);
             const expectedNewBytes = byteArrayLongerThan32Bytes.slice(0, -2);
             const expectedPoppedByte = `0x${byteArrayLongerThan32Bytes.slice(-2)}`;
             expect(newBytes).to.equal(expectedNewBytes);
             expect(poppedByte).to.equal(expectedPoppedByte);
+        });
+        it('should pop the last byte from the input and return it when array is exactly one', async () => {
+            const [newBytes, poppedByte] = await libBytes.publicPopLastByte.callAsync(testByte);
+            const expectedNewBytes = '0x';
+            expect(newBytes).to.equal(expectedNewBytes);
+            return expect(poppedByte).to.be.equal(testByte);
         });
     });
 
@@ -124,10 +130,17 @@ describe('LibBytes', () => {
                 RevertReason.LibBytesGreaterOrEqualTo20LengthRequired,
             );
         });
-        it('should pop the last 20 bytes from the input and return it', async () => {
+        it('should pop the last 20 bytes from the input and return it when array holds more than one byte', async () => {
             const [newBytes, poppedAddress] = await libBytes.publicPopLast20Bytes.callAsync(byteArrayLongerThan32Bytes);
             const expectedNewBytes = byteArrayLongerThan32Bytes.slice(0, -40);
             const expectedPoppedAddress = `0x${byteArrayLongerThan32Bytes.slice(-40)}`;
+            expect(newBytes).to.equal(expectedNewBytes);
+            expect(poppedAddress).to.equal(expectedPoppedAddress);
+        });
+        it('should pop the last 20 bytes from the input and return it when array is exactly 20 bytes', async () => {
+            const [newBytes, poppedAddress] = await libBytes.publicPopLast20Bytes.callAsync(testAddress);
+            const expectedNewBytes = '0x';
+            const expectedPoppedAddress = testAddress;
             expect(newBytes).to.equal(expectedNewBytes);
             expect(poppedAddress).to.equal(expectedPoppedAddress);
         });
