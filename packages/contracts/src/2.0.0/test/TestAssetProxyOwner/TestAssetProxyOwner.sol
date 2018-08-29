@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.10;
+pragma solidity 0.4.24;
 
 import "../../protocol/AssetProxyOwner/AssetProxyOwner.sol";
 
@@ -26,7 +26,7 @@ contract TestAssetProxyOwner is
     AssetProxyOwner
 {
 
-    function TestAssetProxyOwner(
+    constructor (
         address[] memory _owners,
         address[] memory _assetProxyContracts,
         uint256 _required,
@@ -38,6 +38,7 @@ contract TestAssetProxyOwner is
     
     function testValidRemoveAuthorizedAddressAtIndexTx(uint256 id)
         public
+        view
         validRemoveAuthorizedAddressAtIndexTx(id)
         returns (bool)
     {
@@ -50,23 +51,9 @@ contract TestAssetProxyOwner is
     /// @return Successful if data is a call to `removeAuthorizedAddressAtIndex`.
     function isFunctionRemoveAuthorizedAddressAtIndex(bytes memory data)
         public
+        pure
         returns (bool)
     {
-        return readBytes4(data, 0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR;
-    }
-
-    /// @dev Reads an unpadded bytes4 value from a position in a byte array.
-    /// @param b Byte array containing a bytes4 value.
-    /// @param index Index in byte array of bytes4 value.
-    /// @return bytes4 value from byte array.
-    function publicReadBytes4(
-        bytes memory b,
-        uint256 index
-    )
-        public
-        returns (bytes4 result)
-    {
-        result = readBytes4(b, index);
-        return result;
+        return data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR;
     }
 }

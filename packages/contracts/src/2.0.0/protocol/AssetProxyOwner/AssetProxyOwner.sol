@@ -16,14 +16,17 @@
 
 */
 
-pragma solidity 0.4.10;
+pragma solidity 0.4.24;
 
 import "../../multisig/MultiSigWalletWithTimeLock.sol";
+import "../../utils/LibBytes/LibBytes.sol";
 
 
 contract AssetProxyOwner is
     MultiSigWalletWithTimeLock
 {
+
+    using LibBytes for bytes;
 
     event AssetProxyRegistration(address assetProxyContract, bool isRegistered);
 
@@ -37,8 +40,14 @@ contract AssetProxyOwner is
     ///      on an approved AssetProxy contract.
     modifier validRemoveAuthorizedAddressAtIndexTx(uint256 transactionId) {
         Transaction storage tx = transactions[transactionId];
-        require(isAssetProxyRegistered[tx.destination]);
-        require(readBytes4(tx.data, 0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR);
+        require(
+            isAssetProxyRegistered[tx.destination],
+            "UNREGISTERED_ASSET_PROXY"
+        );
+        require(
+            tx.data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR,
+            "INVALID_FUNCTION_SELECTOR"
+        );
         _;
     }
 
@@ -48,7 +57,7 @@ contract AssetProxyOwner is
     /// @param _assetProxyContracts Array of AssetProxy contract addresses.
     /// @param _required Number of required confirmations.
     /// @param _secondsTimeLocked Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
-    function AssetProxyOwner(
+    constructor (
         address[] memory _owners,
         address[] memory _assetProxyContracts,
         uint256 _required,
@@ -59,7 +68,10 @@ contract AssetProxyOwner is
     {
         for (uint256 i = 0; i < _assetProxyContracts.length; i++) {
             address assetProxy = _assetProxyContracts[i];
-            require(assetProxy != address(0));
+            require(
+                assetProxy != address(0),
+                "INVALID_ASSET_PROXY"
+            );
             isAssetProxyRegistered[assetProxy] = true;
         }
     }
@@ -74,7 +86,7 @@ contract AssetProxyOwner is
         notNull(assetProxyContract)
     {
         isAssetProxyRegistered[assetProxyContract] = isRegistered;
-        AssetProxyRegistration(assetProxyContract, isRegistered);
+        emit AssetProxyRegistration(assetProxyContract, isRegistered);
     }
 
     /// @dev Allows execution of `removeAuthorizedAddressAtIndex` without time lock.
@@ -89,36 +101,10 @@ contract AssetProxyOwner is
         tx.executed = true;
         // solhint-disable-next-line avoid-call-value
         if (tx.destination.call.value(tx.value)(tx.data))
-            Execution(transactionId);
+            emit Execution(transactionId);
         else {
-            ExecutionFailure(transactionId);
+            emit ExecutionFailure(transactionId);
             tx.executed = false;
         }
-    }
-
-    /// @dev Reads an unpadded bytes4 value from a position in a byte array.
-    /// @param b Byte array containing a bytes4 value.
-    /// @param index Index in byte array of bytes4 value.
-    /// @return bytes4 value from byte array.
-    function readBytes4(
-        bytes memory b,
-        uint256 index
-    )
-        internal
-        returns (bytes4 result)
-    {
-        require(b.length >= index + 4);
-
-        // Arrays are prefixed by a 32 byte length field
-        index += 32;
-
-        // Read the bytes4 from array memory
-        assembly {
-            result := mload(add(b, index))
-            // Solidity does not require us to clean the trailing bytes.
-            // We do it anyway
-            result := and(result, 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000)
-        }
-        return result;
     }
 }
