@@ -32,7 +32,6 @@ interface UseCase {
     description: string;
     classNames: string;
     style?: React.CSSProperties;
-    projectIconUrls: string[];
 }
 interface Project {
     logoFileName: string;
@@ -140,7 +139,6 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 )}
                 {this._renderInfoBoxes()}
                 {this._renderTokenizationSection()}
-                {this._renderBuildingBlocksSection()}
                 {this._renderUseCases()}
                 {this._renderCallToAction()}
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
@@ -535,53 +533,92 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             </div>
         );
     }
+    private _getUseCases(): UseCase[] {
+        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
+        const isEnglish = this.props.translate.getLanguage() === Language.English;
+        if (isEnglish) {
+            return [
+                {
+                    imageUrl: '/images/landing/governance_icon.png',
+                    type: this.props.translate.get(Key.GamingAndCollectables, Deco.Upper),
+                    description: this.props.translate.get(Key.GamingAndCollectablesDescription, Deco.Cap),
+                    classNames: 'lg-px2 md-px2',
+                },
+                {
+                    imageUrl: '/images/landing/prediction_market_icon.png',
+                    type: this.props.translate.get(Key.PredictionMarkets, Deco.Upper),
+                    description: this.props.translate.get(Key.PredictionMarketsDescription, Deco.Cap),
+                    classNames: 'lg-px2 md-px2',
+                },
+                {
+                    imageUrl: '/images/landing/fund_management_icon.png',
+                    type: this.props.translate.get(Key.OrderBooks, Deco.Upper),
+                    description: this.props.translate.get(Key.OrderBooksDescription, Deco.Cap),
+                    classNames: 'lg-px2 md-px2',
+                },
+                {
+                    imageUrl: '/images/landing/loans_icon.png',
+                    type: this.props.translate.get(Key.DecentralizedLoans, Deco.Upper),
+                    description: this.props.translate.get(Key.DecentralizedLoansDescription, Deco.Cap),
+                    classNames: 'lg-pr2 md-pr2 lg-col-6 md-col-6',
+                    style: {
+                        width: 291,
+                        float: 'right',
+                        marginTop: !isSmallScreen ? 38 : 0,
+                    },
+                },
+                {
+                    imageUrl: '/images/landing/stable_tokens_icon.png',
+                    type: this.props.translate.get(Key.StableTokens, Deco.Upper),
+                    description: this.props.translate.get(Key.StableTokensDescription, Deco.Cap),
+                    classNames: 'lg-pl2 md-pl2 lg-col-6 md-col-6',
+                    style: { width: 291, marginTop: !isSmallScreen ? 38 : 0 },
+                },
+            ];
+        } else {
+            return [
+                {
+                    imageUrl: '/images/landing/governance_icon.png',
+                    type: this.props.translate.get(Key.DecentralizedGovernance, Deco.Upper),
+                    description: this.props.translate.get(Key.DecentralizedGovernanceDescription, Deco.Cap),
+                    classNames: 'lg-px2 md-px2',
+                },
+                {
+                    imageUrl: '/images/landing/prediction_market_icon.png',
+                    type: this.props.translate.get(Key.PredictionMarkets, Deco.Upper),
+                    description: this.props.translate.get(Key.PredictionMarketsDescription, Deco.Cap),
+                    classNames: 'lg-px2 md-px2',
+                },
+                {
+                    imageUrl: '/images/landing/stable_tokens_icon.png',
+                    type: this.props.translate.get(Key.StableTokens, Deco.Upper),
+                    description: this.props.translate.get(Key.StableTokensDescription, Deco.Cap),
+                    classNames: 'lg-px2 md-px2',
+                },
+                {
+                    imageUrl: '/images/landing/loans_icon.png',
+                    type: this.props.translate.get(Key.DecentralizedLoans, Deco.Upper),
+                    description: this.props.translate.get(Key.DecentralizedLoansDescription, Deco.Cap),
+                    classNames: 'lg-pr2 md-pr2 lg-col-6 md-col-6',
+                    style: {
+                        width: 291,
+                        float: 'right',
+                        marginTop: !isSmallScreen ? 38 : 0,
+                    },
+                },
+                {
+                    imageUrl: '/images/landing/fund_management_icon.png',
+                    type: this.props.translate.get(Key.FundManagement, Deco.Upper),
+                    description: this.props.translate.get(Key.FundManagementDescription, Deco.Cap),
+                    classNames: 'lg-pl2 md-pl2 lg-col-6 md-col-6',
+                    style: { width: 291, marginTop: !isSmallScreen ? 38 : 0 },
+                },
+            ];
+        }
+    }
     private _renderUseCases(): React.ReactNode {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
-
-        const useCases: UseCase[] = [
-            {
-                imageUrl: '/images/landing/governance_icon.png',
-                type: this.props.translate.get(Key.DecentralizedGovernance, Deco.Upper),
-                description: this.props.translate.get(Key.DecentralizedGovernanceDescription, Deco.Cap),
-                projectIconUrls: ['/images/landing/aragon.png'],
-                classNames: 'lg-px2 md-px2',
-            },
-            {
-                imageUrl: '/images/landing/prediction_market_icon.png',
-                type: this.props.translate.get(Key.PredictionMarkets, Deco.Upper),
-                description: this.props.translate.get(Key.PredictionMarketsDescription, Deco.Cap),
-                projectIconUrls: ['/images/landing/augur.png'],
-                classNames: 'lg-px2 md-px2',
-            },
-            {
-                imageUrl: '/images/landing/stable_tokens_icon.png',
-                type: this.props.translate.get(Key.StableTokens, Deco.Upper),
-                description: this.props.translate.get(Key.StableTokensDescription, Deco.Cap),
-                projectIconUrls: ['/images/landing/maker.png'],
-                classNames: 'lg-px2 md-px2',
-            },
-            {
-                imageUrl: '/images/landing/loans_icon.png',
-                type: this.props.translate.get(Key.DecentralizedLoans, Deco.Upper),
-                description: this.props.translate.get(Key.DecentralizedLoansDescription, Deco.Cap),
-                projectIconUrls: ['/images/landing/dharma.png', '/images/landing/lendroid.png'],
-                classNames: 'lg-pr2 md-pr2 lg-col-6 md-col-6',
-                style: {
-                    width: 291,
-                    float: 'right',
-                    marginTop: !isSmallScreen ? 38 : 0,
-                },
-            },
-            {
-                imageUrl: '/images/landing/fund_management_icon.png',
-                type: this.props.translate.get(Key.FundManagement, Deco.Upper),
-                description: this.props.translate.get(Key.FundManagementDescription, Deco.Cap),
-                projectIconUrls: ['/images/landing/melonport.png'],
-                classNames: 'lg-pl2 md-pl2 lg-col-6 md-col-6',
-                style: { width: 291, marginTop: !isSmallScreen ? 38 : 0 },
-            },
-        ];
-
+        const useCases = this._getUseCases();
         const cases = _.map(useCases, (useCase: UseCase) => {
             const style = _.isUndefined(useCase.style) || isSmallScreen ? {} : useCase.style;
             const useCaseBoxStyle = {
@@ -626,7 +663,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             );
         });
         return (
-            <div className="clearfix pb4 lg-pt2 md-pt2 sm-pt4" style={{ backgroundColor: colors.heroGrey }}>
+            <div className="clearfix py4" style={{ backgroundColor: colors.heroGrey }}>
                 <div className="mx-auto pb4 pt3 mt1 sm-mt2 clearfix" style={{ maxWidth: '67em' }}>
                     {cases}
                 </div>

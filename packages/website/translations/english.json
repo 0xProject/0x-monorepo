@@ -43,10 +43,10 @@
         "decentralized prediction market platforms generate sets of tokens that represent a financial stake in the outcomes of real-world events. 0x allows these tokens to be instantly tradable.",
     "STABLE_TOKENS": "stable tokens",
     "STABLE_TOKENS_DESCRIPTION":
-        "Novel economic constructs such as stable coins require efficient, liquid markets to succeed. 0x will facilitate the underlying economic mechanisms that allow these tokens to remain stable.",
+        "novel economic constructs such as stable coins require efficient, liquid markets to succeed. 0x will facilitate the underlying economic mechanisms that allow these tokens to remain stable.",
     "DECENTRALIZED_LOANS": "decentralized loans",
     "DECENTRALIZED_LOANS_DESCRIPTION":
-        "Efficient lending requires liquid markets where investors can buy and re-sell loans. 0x enables an ecosystem of lenders to self-organize and efficiently determine market prices for all outstanding loans.",
+        "efficient lending requires liquid markets where investors can buy and re-sell loans. 0x enables an ecosystem of lenders to self-organize and efficiently determine market prices for all outstanding loans.",
     "FUND_MANAGEMENT": "fund management",
     "FUND_MANAGEMENT_DESCRIPTION":
         "Decentralized fund management limits fund managers to investing in pre-agreed upon asset classes. Embedding 0x into fund management smart contracts enables them to enforce these security constraints.",
@@ -81,5 +81,11 @@
     "HOME": "home",
     "ROCKETCHAT": "rocket.chat",
     "TRADE_CALL_TO_ACTION": "trade on 0x",
-    "OUR_MISSION_AND_VALUES": "our mission & values"
+    "OUR_MISSION_AND_VALUES": "our mission & values",
+    "GAMING_AND_COLLECTABLES": "gaming & collectables",
+    "GAMING_AND_COLLECTABLES_DESCRIPTION":
+        "artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality to give access and the ability to build marketplaces for NFT trading.",
+    "ORDER_BOOKS": "order books",
+    "ORDER_BOOKS_DESCRIPTION":
+        "there are thousands of decentralized apps that have native utility tokens. 0x provides market makers and professional exchanges an ability to host order books to facilitate the exchange of these assets."
 }
