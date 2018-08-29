@@ -138,10 +138,8 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                     colors.projectsGrey,
                     true,
                 )}
-                {this._renderTokenizationSection()}
-                {this._renderProtocolSection()}
-
                 {this._renderInfoBoxes()}
+                {this._renderTokenizationSection()}
                 {this._renderBuildingBlocksSection()}
                 {this._renderUseCases()}
                 {this._renderCallToAction()}

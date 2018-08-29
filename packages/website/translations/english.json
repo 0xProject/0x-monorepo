@@ -19,15 +19,15 @@
         "in 0x protocol, orders are transported off-chain, massively reducing gas costs and eliminating blockchain bloat. Relayers help broadcast orders and collect a fee each time they facilitate a trade. Anyone can build a relayer.",
     "RELAYERS_HEADER": "relayers building on 0x",
     "BENEFITS_HEADER": "benefits of 0x",
-    "BENEFIT_ONE_TITLE": "trustless exchange",
+    "BENEFIT_ONE_TITLE": "many assets",
     "BENEFIT_ONE_DESCRIPTION":
-        "built on Ethereum's distributed network with no centralized point of failure and no down time, each trade is settled atomically and without counterparty risk.",
-    "BENEFIT_TWO_TITLE": "shared liquidity",
+        "the 0x protocol facilitates the exchange of a growing number of Ethereum-based tokens including currencies, game items, and many more digital assets.",
+    "BENEFIT_TWO_TITLE": "networked liquidity",
     "BENEFIT_TWO_DESCRIPTION":
         "by sharing a standard API, relayers can easily aggregate liquidity pools, creating network effects around liquidity that compound as more relayers come online.",
-    "BENEFIT_THREE_TITLE": "open source",
+    "BENEFIT_THREE_TITLE": "exchange everywhere",
     "BENEFIT_THREE_DESCRIPTION":
-        "0x is open source, permissionless and free to use. Trade directly with a known counterparty for free or pay a relayer some ZRX tokens to access their liquidity pool.",
+        "0x allows trade functionality to fade into the background, enabling developers to focus on building while 0x handles the exchange.",
     "BUILDING_BLOCK_SECTION_HEADER": "a building block for dApps",
     "BUILDING_BLOCK_SECTION_DESCRIPTION":
         "0x protocol is a pluggable building block for dApps that require exchange functionality. Join the many developers that are already using 0x in their web applications and smart contracts.",
