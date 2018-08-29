@@ -13,8 +13,6 @@ export const docGenConfigs: DocGenConfigs = {
         'solc.StandardContractOutput':
             'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#output-description',
         'solc.CompilerSettings': 'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#input-description',
-        StandardOutput: 'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#input-description',
-        'solc.StandardOutput': 'https://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#input-description',
         Schema:
             'https://github.com/tdegrunt/jsonschema/blob/5c2edd4baba149964aec0f23c87ad12c25a50dfb/lib/index.d.ts#L49',
         Uint8Array: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array',
