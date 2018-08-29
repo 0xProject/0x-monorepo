@@ -173,26 +173,16 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                     lineHeight: '36px',
                                 }}
                             >
-                                <div
+                                <Text
                                     className="sm-pb2"
-                                    style={{
-                                        fontFamily: 'Roboto Mono',
-                                        fontSize: isSmallScreen ? 26 : 34,
-                                    }}
+                                    fontFamily="Roboto"
+                                    fontColor={colors.grey300}
+                                    fontWeight={500}
+                                    lineHeight="1.2em"
+                                    fontSize={isSmallScreen ? '28px' : '36px'}
                                 >
                                     {this.props.translate.get(Key.TopHeader, Deco.Cap)}
-                                </div>
-                                <div
-                                    className="pt2 h5 sm-mx-auto"
-                                    style={{
-                                        maxWidth: 446,
-                                        fontFamily: 'Roboto Mono',
-                                        lineHeight: 1.7,
-                                        fontWeight: 300,
-                                    }}
-                                >
-                                    {this.props.translate.get(Key.TopTagline)}
-                                </div>
+                                </Text>
                                 <Container className="pt3 clearfix sm-mx-auto" maxWidth="390px">
                                     <div className="lg-pr2 md-pr2 lg-col lg-col-6 sm-center sm-col sm-col-12 mb2">
                                         <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
