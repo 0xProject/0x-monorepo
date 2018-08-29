@@ -68,7 +68,10 @@ contract AssetProxyOwner is
     {
         for (uint256 i = 0; i < _assetProxyContracts.length; i++) {
             address assetProxy = _assetProxyContracts[i];
-            require(assetProxy != address(0));
+            require(
+                assetProxy != address(0),
+                "INVALID_ASSET_PROXY"
+            );
             isAssetProxyRegistered[assetProxy] = true;
         }
     }

@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.1-rc.7",
+        "changes": [
+            {
+                "note": "Add AssetProxyOwner revert reasons",
+                "pr": 1041
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.6",
         "changes": [
             {

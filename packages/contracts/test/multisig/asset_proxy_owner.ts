@@ -1,4 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -14,9 +15,11 @@ import { MixinAuthorizableContract } from '../../generated_contract_wrappers/mix
 import { TestAssetProxyOwnerContract } from '../../generated_contract_wrappers/test_asset_proxy_owner';
 import { artifacts } from '../utils/artifacts';
 import {
-    expectContractCallFailedWithoutReasonAsync,
-    expectContractCreationFailedWithoutReason,
+    expectContractCallFailedAsync,
+    expectContractCreationFailedAsync,
+    expectTransactionFailedAsync,
     expectTransactionFailedWithoutReasonAsync,
+    sendTransactionResult,
 } from '../utils/assertions';
 import { increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
@@ -109,8 +112,8 @@ describe('AssetProxyOwner', () => {
         });
         it('should throw if a null address is included in assetProxyContracts', async () => {
             const assetProxyContractAddresses = [erc20Proxy.address, constants.NULL_ADDRESS];
-            return expectContractCreationFailedWithoutReason(
-                AssetProxyOwnerContract.deployFrom0xArtifactAsync(
+            return expectContractCreationFailedAsync(
+                (AssetProxyOwnerContract.deployFrom0xArtifactAsync(
                     artifacts.AssetProxyOwner,
                     provider,
                     txDefaults,
@@ -118,7 +121,8 @@ describe('AssetProxyOwner', () => {
                     assetProxyContractAddresses,
                     REQUIRED_APPROVALS,
                     SECONDS_TIME_LOCKED,
-                ),
+                ) as any) as sendTransactionResult,
+                RevertReason.InvalidAssetProxy,
             );
         });
     });
@@ -281,8 +285,9 @@ describe('AssetProxyOwner', () => {
                 );
                 const log = submitTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
-                return expectContractCallFailedWithoutReasonAsync(
+                return expectContractCallFailedAsync(
                     testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(txId),
+                    RevertReason.InvalidFunctionSelector,
                 );
             });
 
@@ -316,8 +321,9 @@ describe('AssetProxyOwner', () => {
                 );
                 const log = submitTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
-                return expectContractCallFailedWithoutReasonAsync(
+                return expectContractCallFailedAsync(
                     testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(txId),
+                    RevertReason.UnregisteredAssetProxy,
                 );
             });
         });
@@ -358,10 +364,11 @@ describe('AssetProxyOwner', () => {
 
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-                return expectTransactionFailedWithoutReasonAsync(
+                return expectTransactionFailedAsync(
                     testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
                         from: owners[1],
                     }),
+                    RevertReason.UnregisteredAssetProxy,
                 );
             });
 
@@ -380,10 +387,11 @@ describe('AssetProxyOwner', () => {
 
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-                return expectTransactionFailedWithoutReasonAsync(
+                return expectTransactionFailedAsync(
                     testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
                         from: owners[1],
                     }),
+                    RevertReason.InvalidFunctionSelector,
                 );
             });
 

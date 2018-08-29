@@ -224,6 +224,9 @@ export enum RevertReason {
     Erc721InvalidSelector = 'ERC721_INVALID_SELECTOR',
     WalletError = 'WALLET_ERROR',
     ValidatorError = 'VALIDATOR_ERROR',
+    InvalidFunctionSelector = 'INVALID_FUNCTION_SELECTOR',
+    InvalidAssetProxy = 'INVALID_ASSET_PROXY',
+    UnregisteredAssetProxy = 'UNREGISTERED_ASSET_PROXY',
 }
 
 export enum StatusCodes {
