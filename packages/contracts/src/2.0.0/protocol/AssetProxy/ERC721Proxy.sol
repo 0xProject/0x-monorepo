@@ -18,7 +18,6 @@
 
 pragma solidity 0.4.24;
 
-import "../../utils/LibBytes/LibBytes.sol";
 import "./MixinAuthorizable.sol";
 
 
@@ -79,6 +78,8 @@ contract ERC721Proxy is
                 //
                 // (*): offset is computed from start of function parameters, so offset
                 //      by an additional 4 bytes in the calldata.
+                //
+                // (**): see table below to compute length of assetData Contents
                 //
                 // WARNING: The ABIv2 specification allows additional padding between
                 //          the Params and Data section. This will result in a larger

@@ -14,7 +14,7 @@ export const WrappedEthSectionNoticeDialog = (props: WrappedEthSectionNoticeDial
             title="Dedicated Wrapped Ether Section"
             titleStyle={{ fontWeight: 100 }}
             actions={[
-                <FlatButton key="acknowledgeWrapEthSection" label="Sounds good" onTouchTap={props.onToggleDialog} />,
+                <FlatButton key="acknowledgeWrapEthSection" label="Sounds good" onClick={props.onToggleDialog} />,
             ]}
             open={props.isOpen}
             onRequestClose={props.onToggleDialog}

@@ -467,8 +467,13 @@ library LibBytes {
             b.length >= index + 4,
             "GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED"
         );
+
+        // Arrays are prefixed by a 32 byte length field
+        index += 32;
+
+        // Read the bytes4 from array memory
         assembly {
-            result := mload(add(b, 32))
+            result := mload(add(b, index))
             // Solidity does not require us to clean the trailing bytes.
             // We do it anyway
             result := and(result, 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000)

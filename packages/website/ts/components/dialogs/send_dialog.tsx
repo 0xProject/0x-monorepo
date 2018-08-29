@@ -38,13 +38,13 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
     }
     public render(): React.ReactNode {
         const transferDialogActions = [
-            <FlatButton key="cancelTransfer" label="Cancel" onTouchTap={this._onCancel.bind(this)} />,
+            <FlatButton key="cancelTransfer" label="Cancel" onClick={this._onCancel.bind(this)} />,
             <FlatButton
                 key="sendTransfer"
                 disabled={this._hasErrors()}
                 label="Send"
                 primary={true}
-                onTouchTap={this._onSendClick.bind(this)}
+                onClick={this._onSendClick.bind(this)}
             />,
         ];
         return (

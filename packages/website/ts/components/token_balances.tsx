@@ -165,7 +165,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 key="errorOkBtn"
                 label="Ok"
                 primary={true}
-                onTouchTap={this._onErrorDialogToggle.bind(this, false)}
+                onClick={this._onErrorDialogToggle.bind(this, false)}
             />,
         ];
         const isTestNetwork = utils.isTestNetwork(this.props.networkId);
