@@ -151,14 +151,15 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     private _renderHero(): React.ReactNode {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const left = 'col lg-col-7 md-col-7 col-12 lg-pl4 md-pl4 sm-pl0 sm-px3 sm-center';
+        const flexClassName = isSmallScreen ? 'flex items-center flex-column' : 'flex items-center';
         return (
             <div className="clearfix py4" style={{ backgroundColor: colors.heroGrey }}>
                 <div className="mx-auto max-width-4 clearfix">
                     {this._renderWhatsNew()}
-                    <div className="lg-pt4 md-pt4 sm-pt2 lg-pb4 md-pb4 lg-mt4 md-mt4 sm-mt2 sm-mb4 clearfix">
-                        <div className="col lg-col-5 md-col-5 col-12 sm-center">
-                            <img src="/images/landing/hero_chip_image.png" height={isSmallScreen ? 300 : 395} />
-                        </div>
+                    <div className={`${flexClassName} lg-pt4 md-pt4 sm-pt2 lg-pb4 md-pb4 lg-mt4 md-mt4 sm-mt2 sm-mb4`}>
+                        <Container marginTop="30px" marginBottom="30px">
+                            <img src="/images/landing/0x_homepage.svg" height="250px" />
+                        </Container>
                         <div className={left} style={{ color: colors.white, height: 390, lineHeight: '390px' }}>
                             <div
                                 className="inline-block lg-align-middle md-align-middle sm-align-top"
