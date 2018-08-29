@@ -20,6 +20,7 @@ export interface TextProps {
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
     hoverColor?: string;
     noWrap?: boolean;
+    display?: string;
 }
 
 const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick, Tag }) => (
@@ -41,6 +42,7 @@ export const Text = styled(PlainText)`
     ${props => (props.onClick ? 'cursor: pointer' : '')};
     transition: color 0.5s ease;
     ${props => (props.noWrap ? 'white-space: nowrap' : '')};
+    ${props => (props.display ? `display: ${props.display}` : '')};
     &:hover {
         ${props => (props.onClick ? `color: ${props.hoverColor || darken(0.3, props.fontColor)}` : '')};
     }
