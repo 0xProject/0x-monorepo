@@ -6,8 +6,7 @@
     },
     "description": "0x project typescript type definitions",
     "scripts": {
-        "watch_without_deps": "tsc -w",
-        "build": "tsc",
+        "build": "tsc -b",
         "clean": "shx rm -rf lib"
     },
     "repository": {
@@ -32,8 +31,8 @@
     },
     "devDependencies": {
         "copyfiles": "^2.0.0",
-        "shx": "^0.2.2",
-        "typescript": "3.0.1"
+        "typescript": "3.0.1",
+        "shx": "^0.2.2"
     },
     "publishConfig": {
         "access": "public"

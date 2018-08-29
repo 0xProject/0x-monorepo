@@ -9,8 +9,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "lint": "tslint --project .",
-        "build": "tsc",
-        "watch_without_deps": "tsc -w",
+        "build": "tsc -b",
         "clean": "shx rm -rf lib"
     },
     "author": "Fabio Berger",
