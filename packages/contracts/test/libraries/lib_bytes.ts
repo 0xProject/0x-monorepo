@@ -41,6 +41,8 @@ describe('LibBytes', () => {
     const testBytes32B = '0x534877abd8443578526845cdfef020047528759477fedef87346527659aced32';
     const testUint256 = new BigNumber(testBytes32, 16);
     const testUint256B = new BigNumber(testBytes32B, 16);
+    const testBytes4 = '0xabcdef12';
+    const testBytes4B = new BigNumber(testBytes4, 16);
     let shortData: string;
     let shortTestBytes: string;
     let shortTestBytesAsBuffer: Buffer;
@@ -462,8 +464,9 @@ describe('LibBytes', () => {
         // AssertionError: expected promise to be rejected with an error including 'revert' but it was fulfilled with '0x08c379a0'
         it('should revert if byte array has a length < 4', async () => {
             const byteArrayLessThan4Bytes = '0x010101';
+            const offset = new BigNumber(0);
             return expectContractCallFailed(
-                libBytes.publicReadBytes4.callAsync(byteArrayLessThan4Bytes, new BigNumber(0)),
+                libBytes.publicReadBytes4.callAsync(byteArrayLessThan4Bytes, offset),
                 RevertReason.LibBytesGreaterOrEqualTo4LengthRequired,
             );
         });
@@ -471,6 +474,27 @@ describe('LibBytes', () => {
             const first4Bytes = await libBytes.publicReadBytes4.callAsync(byteArrayLongerThan32Bytes, new BigNumber(0));
             const expectedFirst4Bytes = byteArrayLongerThan32Bytes.slice(0, 10);
             expect(first4Bytes).to.equal(expectedFirst4Bytes);
+        });
+        it('should successfully read bytes4 when the bytes4 takes up the whole array', async () => {
+            const testBytes4Offset = new BigNumber(0);
+            const bytes4 = await libBytes.publicReadBytes4.callAsync(testBytes4, testBytes4Offset);
+            return expect(bytes4).to.be.equal(testBytes4);
+        });
+        it('should successfully read bytes4 when it is offset in the array)', async () => {
+            const bytes4ByteArrayBuffer = ethUtil.toBuffer(testBytes4);
+            const prefixByteArrayBuffer = ethUtil.toBuffer('0xabcdef');
+            const combinedByteArrayBuffer = Buffer.concat([prefixByteArrayBuffer, bytes4ByteArrayBuffer]);
+            const combinedByteArray = ethUtil.bufferToHex(combinedByteArrayBuffer);
+            const testBytes4Offset = new BigNumber(prefixByteArrayBuffer.byteLength);
+            const bytes4 = await libBytes.publicReadBytes4.callAsync(combinedByteArray, testBytes4Offset);
+            return expect(bytes4).to.be.equal(testBytes4);
+        });
+        it('should fail if the length between the offset and end of the byte array is too short to hold a bytes4', async () => {
+            const badOffset = new BigNumber(ethUtil.toBuffer(testBytes4).byteLength);
+            return expectContractCallFailed(
+                libBytes.publicReadBytes4.callAsync(testBytes4, badOffset),
+                RevertReason.LibBytesGreaterOrEqualTo4LengthRequired,
+            );
         });
     });
 
