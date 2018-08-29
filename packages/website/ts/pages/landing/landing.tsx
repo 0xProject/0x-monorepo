@@ -42,73 +42,6 @@ const THROTTLE_TIMEOUT = 100;
 const WHATS_NEW_TITLE = '18 ideas for 0x relayers in 2018';
 const WHATS_NEW_URL = 'https://blog.0xproject.com/18-ideas-for-0x-relayers-in-2018-80a1498b955f';
 
-const relayersAndDappProjects: Project[] = [
-    {
-        logoFileName: 'ercdex.png',
-        projectUrl: constants.PROJECT_URL_ERC_DEX,
-    },
-    {
-        logoFileName: 'radar_relay.png',
-        projectUrl: constants.PROJECT_URL_RADAR_RELAY,
-    },
-    {
-        logoFileName: 'paradex.png',
-        projectUrl: constants.PROJECT_URL_PARADEX,
-    },
-    {
-        logoFileName: 'the_ocean.png',
-        projectUrl: constants.PROJECT_URL_0CEAN,
-    },
-    {
-        logoFileName: 'dydx.png',
-        projectUrl: constants.PROJECT_URL_DYDX,
-    },
-    {
-        logoFileName: 'ethfinex.png',
-        projectUrl: constants.PROJECT_URL_ETHFINEX,
-    },
-    {
-        logoFileName: 'melonport.png',
-        projectUrl: constants.PROJECT_URL_MELONPORT,
-    },
-    {
-        logoFileName: 'maker.png',
-        projectUrl: constants.PROJECT_URL_MAKER,
-    },
-    {
-        logoFileName: 'dharma.png',
-        projectUrl: constants.PROJECT_URL_DHARMA,
-    },
-    {
-        logoFileName: 'lendroid.png',
-        projectUrl: constants.PROJECT_URL_LENDROID,
-    },
-    {
-        logoFileName: 'district0x.png',
-        projectUrl: constants.PROJECT_URL_DISTRICT_0X,
-    },
-    {
-        logoFileName: 'aragon.png',
-        projectUrl: constants.PROJECT_URL_ARAGON,
-    },
-    {
-        logoFileName: 'blocknet.png',
-        projectUrl: constants.PROJECT_URL_BLOCKNET,
-    },
-    {
-        logoFileName: 'imtoken.png',
-        projectUrl: constants.PROJECT_URL_IMTOKEN,
-    },
-    {
-        logoFileName: 'augur.png',
-        projectUrl: constants.PROJECT_URL_AUGUR,
-    },
-    {
-        logoFileName: 'anx.png',
-        projectUrl: constants.PROJECT_URL_OPEN_ANX,
-    },
-];
-
 const relayerProjects: Project[] = [
     {
         logoFileName: 'ethfinex.png',
@@ -199,19 +132,14 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 />
                 {this._renderHero()}
                 {this._renderProjects(
-                    relayersAndDappProjects,
-                    this.props.translate.get(Key.ProjectsHeader, Deco.Upper),
+                    relayerProjects,
+                    this.props.translate.get(Key.RelayersHeader, Deco.Upper),
                     colors.projectsGrey,
-                    false,
+                    true,
                 )}
                 {this._renderTokenizationSection()}
                 {this._renderProtocolSection()}
-                {this._renderProjects(
-                    relayerProjects,
-                    this.props.translate.get(Key.RelayersHeader, Deco.Upper),
-                    colors.heroGrey,
-                    true,
-                )}
+
                 {this._renderInfoBoxes()}
                 {this._renderBuildingBlocksSection()}
                 {this._renderUseCases()}
@@ -368,7 +296,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                     >
                         {this.props.translate.get(Key.FullListPrompt)}{' '}
                         <Link
-                            to={`${WebsitePaths.Wiki}#List-of-Projects-Using-0x-Protocol`}
+                            to={WebsitePaths.Portal}
                             className="text-decoration-none underline"
                             style={{ color: colors.landingLinkGrey }}
                         >
