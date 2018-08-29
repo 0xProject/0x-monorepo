@@ -7,6 +7,9 @@
     "scripts": {
         "build": "tsc",
         "test": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --timeout 5000 --exit",
+        "test:circleci": "yarn test:coverage",
+        "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
+        "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "lint": "tslint --project . --format stylish",
         "clean": "shx rm -rf lib"
     },

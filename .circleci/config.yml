@@ -98,6 +98,7 @@ jobs:
       - run: yarn wsrun test:circleci @0xproject/order-watcher
       - run: yarn wsrun test:circleci @0xproject/sol-compiler
       - run: yarn wsrun test:circleci @0xproject/sol-cov
+      - run: yarn wsrun test:circleci @0xproject/sol-doc
       - run: yarn wsrun test:circleci @0xproject/sra-report
       - run: yarn wsrun test:circleci @0xproject/subproviders
       - run: yarn wsrun test:circleci @0xproject/web3-wrapper
@@ -150,6 +151,10 @@ jobs:
           key: coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/sol-cov/coverage/lcov.info
+      - save_cache:
+          key: coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/sol-doc/coverage/lcov.info
       - save_cache:
           key: coverage-sra-report-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -216,6 +221,9 @@ jobs:
       - restore_cache:
           keys:
             - coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
             - coverage-sra-report-{{ .Environment.CIRCLE_SHA1 }}
