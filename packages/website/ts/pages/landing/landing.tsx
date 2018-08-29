@@ -335,7 +335,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             >
                                 {this.props.translate.get(Key.TokenizedSectionDescription, Deco.Cap)}
                             </div>
-                            <div className="flex pt1 sm-px3">{this._renderAssetTypes()}</div>
+                            <div className="flex pt1 sm-px3">{this._renderMissionAndValuesButton()}</div>
                         </div>
                     </div>
                     {!isSmallScreen && this._renderTokenCloud()}
@@ -461,48 +461,16 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             </div>
         );
     }
-    private _renderAssetTypes(): React.ReactNode {
-        const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
-        const assetTypes: AssetType[] = [
-            {
-                title: this.props.translate.get(Key.Currency, Deco.Cap),
-                imageUrl: '/images/landing/currency.png',
-            },
-            {
-                title: this.props.translate.get(Key.TraditionalAssets, Deco.Cap),
-                imageUrl: '/images/landing/stocks.png',
-                style: {
-                    paddingLeft: isSmallScreen ? 41 : 56,
-                    paddingRight: isSmallScreen ? 41 : 56,
-                },
-            },
-            {
-                title: this.props.translate.get(Key.DigitalGoods, Deco.Cap),
-                imageUrl: '/images/landing/digital_goods.png',
-            },
-        ];
-        const assets = _.map(assetTypes, (assetType: AssetType) => {
-            const style = _.isUndefined(assetType.style) ? {} : assetType.style;
-            return (
-                <div key={`asset-${assetType.title}`} className="center" style={{ opacity: 0.8, ...style }}>
-                    <div>
-                        <img src={assetType.imageUrl} height="80" />
-                    </div>
-                    <div
-                        style={{
-                            fontFamily: 'Roboto Mono',
-                            fontSize: 13.5,
-                            fontWeight: 400,
-                            color: colors.darkestGrey,
-                            lineHeight: 1.4,
-                        }}
-                    >
-                        {assetType.title}
-                    </div>
-                </div>
-            );
-        });
-        return assets;
+    private _renderMissionAndValuesButton(): React.ReactNode {
+        return (
+            <a
+                href={constants.URL_MISSION_AND_VALUES_BLOG_POST}
+                target="_blank"
+                className="inline-block text-decoration-none"
+            >
+                <CallToAction>{this.props.translate.get(Key.OurMissionAndValues, Deco.CapWords)}</CallToAction>
+            </a>
+        );
     }
     private _renderInfoBoxes(): React.ReactNode {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;

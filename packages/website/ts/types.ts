@@ -468,6 +468,7 @@ export enum Key {
     Home = 'HOME',
     RocketChat = 'ROCKETCHAT',
     TradeCallToAction = 'TRADE_CALL_TO_ACTION',
+    OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
 }
 
 export enum SmartContractDocSections {

@@ -9,7 +9,7 @@
     "FULL_LIST_LINK": "full list",
     "TOKENIZED_SECTION_HEADER": "the world's value is becoming tokenized",
     "TOKENIZED_SECTION_DESCRIPTION":
-        "the Ethereum blockchain is an open, borderless financial system that represents a wide variety of assets as cryptographic tokens. In the future, most digital assets and goods will be tokenized.",
+        "0x is the critical infrastructure layer in the emerging financial stack built on a foundation of Ethereum token standards. Developers needing exchange functionality for ERC 20 tokens, ERC 721 tokens, or any new asset type can easily integrate the 0x protocol into their application.",
     "CURRENCY": "currency",
     "TRADITIONAL_ASSETS": "traditional assets",
     "DIGITAL_GOODS": "digital goods",
@@ -80,5 +80,6 @@
     "DEVELOPERS": "developers",
     "HOME": "home",
     "ROCKETCHAT": "rocket.chat",
-    "TRADE_CALL_TO_ACTION": "trade on 0x"
+    "TRADE_CALL_TO_ACTION": "trade on 0x",
+    "OUR_MISSION_AND_VALUES": "our mission & values"
 }
