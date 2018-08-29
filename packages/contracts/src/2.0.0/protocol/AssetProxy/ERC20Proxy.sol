@@ -59,15 +59,64 @@ contract ERC20Proxy is
                     mstore(96, 0)
                     revert(0, 100)
                 }
-                
-                /////// Token contract address ///////
-                // The token address is found as follows:
-                // * It is stored at offset 4 in `assetData` contents.
-                // * This is stored at offset 32 from `assetData`.
-                // * The offset to `assetData` from Params is stored at offset
-                //   4 in calldata.
-                // * The offset of Params in calldata is 4.
-                // So we read location 4 and add 32 + 4 + 4 to it.
+
+                // `transferFrom`.
+                // The function is marked `external`, so no abi decodeding is done for
+                // us. Instead, we expect the `calldata` memory to contain the
+                // following:
+                //
+                // | Area     | Offset | Length  | Contents                            |
+                // |----------|--------|---------|-------------------------------------|
+                // | Header   | 0      | 4       | function selector                   |
+                // | Params   |        | 4 * 32  | function parameters:                |
+                // |          | 4      |         |   1. offset to assetData (*)        |
+                // |          | 36     |         |   2. from                           |
+                // |          | 68     |         |   3. to                             |
+                // |          | 100    |         |   4. amount                         |
+                // | Data     |        |         | assetData:                          |
+                // |          | 132    | 32      | assetData Length                    |
+                // |          | 164    | **      | assetData Contents                  |
+                //
+                // (*): offset is computed from start of function parameters, so offset
+                //      by an additional 4 bytes in the calldata.
+                //
+                // (**): see table below to compute length of assetData Contents
+                //
+                // WARNING: The ABIv2 specification allows additional padding between
+                //          the Params and Data section. This will result in a larger
+                //          offset to assetData.
+
+                // Asset data itself is encoded as follows:
+                //
+                // | Area     | Offset | Length  | Contents                            |
+                // |----------|--------|---------|-------------------------------------|
+                // | Header   | 0      | 4       | function selector                   |
+                // | Params   |        | 1 * 32  | function parameters:                |
+                // |          | 4      | 12 + 20 |   1. token address                  |
+
+                // We construct calldata for the `token.transferFrom` ABI.
+                // The layout of this calldata is in the table below.
+                //
+                // | Area     | Offset | Length  | Contents                            |
+                // |----------|--------|---------|-------------------------------------|
+                // | Header   | 0      | 4       | function selector                   |
+                // | Params   |        | 3 * 32  | function parameters:                |
+                // |          | 4      |         |   1. from                           |
+                // |          | 36     |         |   2. to                             |
+                // |          | 68     |         |   3. amount                         |
+
+                /////// Read token address from calldata ///////
+                // * The token address is stored in `assetData`.
+                //
+                // * The "offset to assetData" is stored at offset 4 in the calldata (table 1).
+                //   [assetDataOffsetFromParams = calldataload(4)]
+                //
+                // * Notes that the "offset to assetData" is relative to the "Params" area of calldata;
+                //   add 4 bytes to account for the length of the "Header" area (table 1).
+                //   [assetDataOffsetFromHeader = assetDataOffsetFromParams + 4]
+                //
+                // * The "token address" is offset 32+4=36 bytes into "assetData" (tables 1 & 2).
+                //   [tokenOffset = assetDataOffsetFromHeader + 36 = calldataload(4) + 4 + 36]
                 let token := calldataload(add(calldataload(4), 40))
                 
                 /////// Setup Header Area ///////

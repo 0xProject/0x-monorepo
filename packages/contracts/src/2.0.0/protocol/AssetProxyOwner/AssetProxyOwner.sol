@@ -108,8 +108,13 @@ contract AssetProxyOwner is
         returns (bytes4 result)
     {
         require(b.length >= index + 4);
+
+        // Arrays are prefixed by a 32 byte length field
+        index += 32;
+
+        // Read the bytes4 from array memory
         assembly {
-            result := mload(add(b, 32))
+            result := mload(add(b, index))
             // Solidity does not require us to clean the trailing bytes.
             // We do it anyway
             result := and(result, 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000)
