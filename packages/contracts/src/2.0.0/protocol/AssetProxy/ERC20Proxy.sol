@@ -18,7 +18,6 @@
 
 pragma solidity 0.4.24;
 
-import "../../utils/LibBytes/LibBytes.sol";
 import "./MixinAuthorizable.sol";
 
 
