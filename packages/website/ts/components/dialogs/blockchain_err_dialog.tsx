@@ -22,7 +22,7 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
                 key="blockchainErrOk"
                 label="Ok"
                 primary={true}
-                onTouchTap={this.props.toggleDialogFn.bind(this.props.toggleDialogFn, false)}
+                onClick={this.props.toggleDialogFn.bind(this.props.toggleDialogFn, false)}
             />,
         ];
 

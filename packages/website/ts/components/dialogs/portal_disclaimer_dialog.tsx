@@ -13,7 +13,7 @@ export const PortalDisclaimerDialog = (props: PortalDisclaimerDialogProps) => {
         <Dialog
             title="0x Portal Disclaimer"
             titleStyle={{ fontWeight: 100 }}
-            actions={[<FlatButton key="portalAgree" label="I Agree" onTouchTap={props.onToggleDialog} />]}
+            actions={[<FlatButton key="portalAgree" label="I Agree" onClick={props.onToggleDialog} />]}
             open={props.isOpen}
             onRequestClose={props.onToggleDialog}
             autoScrollBodyContent={true}

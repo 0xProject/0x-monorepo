@@ -410,7 +410,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         <MenuItem className="py2">{this.props.translate.get(Key.Blog, Deco.Cap)}</MenuItem>
                     </a>
                     <Link to={`${WebsitePaths.FAQ}`} className="text-decoration-none">
-                        <MenuItem className="py2" onTouchTap={this._onMenuButtonClick.bind(this)}>
+                        <MenuItem className="py2" onClick={this._onMenuButtonClick.bind(this)}>
                             {this.props.translate.get(Key.Faq, Deco.Cap)}
                         </MenuItem>
                     </Link>

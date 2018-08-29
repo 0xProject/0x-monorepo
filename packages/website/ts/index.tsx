@@ -3,7 +3,6 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
-import * as injectTapEventPlugin from 'react-tap-event-plugin';
 import { MetaTags } from 'ts/components/meta_tags';
 import { About } from 'ts/containers/about';
 import { FAQ } from 'ts/containers/faq';
@@ -17,8 +16,6 @@ import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
-// Polyfills
-injectTapEventPlugin();
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();

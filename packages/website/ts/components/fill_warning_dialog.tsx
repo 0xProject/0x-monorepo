@@ -18,12 +18,12 @@ export const FillWarningDialog = (props: FillWarningDialogProps) => {
                 <FlatButton
                     key="fillWarningCancel"
                     label="Cancel"
-                    onTouchTap={() => props.onToggleDialog(didCancel)} // tslint:disable-line:jsx-no-lambda
+                    onClick={() => props.onToggleDialog(didCancel)} // tslint:disable-line:jsx-no-lambda
                 />,
                 <FlatButton
                     key="fillWarningContinue"
                     label="Fill Order"
-                    onTouchTap={() => props.onToggleDialog(!didCancel)} // tslint:disable-line:jsx-no-lambda
+                    onClick={() => props.onToggleDialog(!didCancel)} // tslint:disable-line:jsx-no-lambda
                 />,
             ]}
             open={props.isOpen}
