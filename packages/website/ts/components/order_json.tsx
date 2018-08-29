@@ -14,7 +14,7 @@ import { utils } from 'ts/utils/utils';
 interface OrderJSONProps {
     exchangeContractIfExists: string;
     orderExpiryTimestamp: BigNumber;
-    orderECSignature: ECSignature;
+    orderSignature: string;
     orderTakerAddress: string;
     orderMakerAddress: string;
     orderSalt: BigNumber;
@@ -48,7 +48,7 @@ export class OrderJSON extends React.Component<OrderJSONProps, OrderJSONState> {
             this.props.orderMakerFee,
             this.props.orderTakerFee,
             this.props.orderFeeRecipient,
-            this.props.orderECSignature,
+            this.props.orderSignature,
             this.props.tokenByAddress,
             this.props.orderSalt,
         );
@@ -169,7 +169,7 @@ You can see and fill it here: ${this.state.shareLink}`);
             this.props.orderMakerFee,
             this.props.orderTakerFee,
             this.props.orderFeeRecipient,
-            this.props.orderECSignature,
+            this.props.orderSignature,
             this.props.tokenByAddress,
             this.props.orderSalt,
         );

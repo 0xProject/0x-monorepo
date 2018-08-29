@@ -7,7 +7,7 @@ import {
     Action,
     ActionTypes,
     BlockchainErrs,
-    Order,
+    PortalOrder,
     ProviderType,
     ScreenWidths,
     Side,
@@ -31,7 +31,7 @@ export interface State {
     orderExpiryTimestamp: BigNumber;
     orderFillAmount: BigNumber;
     orderTakerAddress: string;
-    orderECSignature: ECSignature;
+    orderSignature: string;
     orderSalt: BigNumber;
     nodeVersion: string;
     screenWidth: ScreenWidths;
@@ -45,7 +45,7 @@ export interface State {
     isPortalOnboardingShowing: boolean;
     hasPortalOnboardingBeenClosed: boolean;
     // Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
-    userSuppliedOrderCache: Order;
+    userSuppliedOrderCache: PortalOrder;
 
     // Docs
     docsVersion: string;
@@ -65,11 +65,7 @@ export const INITIAL_STATE: State = {
     networkId: undefined,
     orderExpiryTimestamp: utils.initialOrderExpiryUnixTimestampSec(),
     orderFillAmount: undefined,
-    orderECSignature: {
-        r: '',
-        s: '',
-        v: 27,
-    },
+    orderSignature: '',
     orderTakerAddress: constants.NULL_ADDRESS,
     orderSalt: generatePseudoRandomSalt(),
     nodeVersion: undefined,
@@ -90,7 +86,6 @@ export const INITIAL_STATE: State = {
     // Docs
     docsVersion: DEFAULT_DOCS_VERSION,
     availableDocVersions: [DEFAULT_DOCS_VERSION],
-
     // Shared
     flashMessage: undefined,
     providerType: ProviderType.Injected,
@@ -207,10 +202,10 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
                 lastForceTokenStateRefetch: moment().unix(),
             };
 
-        case ActionTypes.UpdateOrderECSignature: {
+        case ActionTypes.UpdateOrderSignature: {
             return {
                 ...state,
-                orderECSignature: action.data,
+                orderSignature: action.data,
             };
         }
 

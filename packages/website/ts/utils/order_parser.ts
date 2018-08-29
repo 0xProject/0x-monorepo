@@ -1,12 +1,12 @@
-import { logUtils } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
-import { Order } from 'ts/types';
+import { PortalOrder } from 'ts/types';
 
 export const orderParser = {
-    parse(queryString: string): Order | undefined {
+    parse(queryString: string): PortalOrder | undefined {
         if (queryString.length === 0) {
             return undefined;
         }
@@ -28,6 +28,33 @@ export const orderParser = {
             logUtils.log(`Invalid shared order: ${validationResult.errors}`);
             return undefined;
         }
-        return order;
+        const result = convertOrderStringFieldsToBigNumber(order);
+        return result;
     },
 };
+
+// TODO: consolidate this function with that in typeConverters in @0xproject/connect
+function convertOrderStringFieldsToBigNumber(order: any): any {
+    return convertStringsFieldsToBigNumbers(order, [
+        'makerAssetAmount',
+        'takerAssetAmount',
+        'makerFee',
+        'takerFee',
+        'expirationTimeSeconds',
+        'salt',
+    ]);
+}
+
+// TODO: consolidate this function with that in typeConverters in @0xproject/connect
+function convertStringsFieldsToBigNumbers(obj: any, fields: string[]): any {
+    const result = _.assign({}, obj);
+    _.each(fields, field => {
+        _.update(result, field, (value: string) => {
+            if (_.isUndefined(value)) {
+                throw new Error(`Could not find field '${field}' while converting string fields to BigNumber.`);
+            }
+            return new BigNumber(value);
+        });
+    });
+    return result;
+}

@@ -1,11 +1,12 @@
-import { ContractWrappersError, ExchangeContractErrs } from '@0xproject/contract-wrappers';
-import { OrderError } from '@0xproject/order-utils';
+import { ContractWrappersError } from '@0xproject/contract-wrappers';
+import { assetDataUtils, OrderError, signatureUtils } from '@0xproject/order-utils';
 import { constants as sharedConstants, Networks } from '@0xproject/react-shared';
-import { ECSignature, Provider } from '@0xproject/types';
+import { ECSignature, ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as bowser from 'bowser';
 import deepEqual = require('deep-equal');
+import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
@@ -16,7 +17,7 @@ import {
     BrowserType,
     Environments,
     OperatingSystemType,
-    Order,
+    PortalOrder,
     Providers,
     ProviderType,
     ScreenWidths,
@@ -64,35 +65,36 @@ export const utils = {
         return formattedDate;
     },
     generateOrder(
-        exchangeContractAddress: string,
+        exchangeAddress: string,
         sideToAssetToken: SideToAssetToken,
-        expirationUnixTimestampSec: BigNumber,
+        expirationTimeSeconds: BigNumber,
         orderTakerAddress: string,
         orderMakerAddress: string,
         makerFee: BigNumber,
         takerFee: BigNumber,
-        feeRecipient: string,
-        ecSignature: ECSignature,
+        feeRecipientAddress: string,
+        signature: string,
         tokenByAddress: TokenByAddress,
         orderSalt: BigNumber,
-    ): Order {
+    ): PortalOrder {
         const makerToken = tokenByAddress[sideToAssetToken[Side.Deposit].address];
         const takerToken = tokenByAddress[sideToAssetToken[Side.Receive].address];
         const order = {
             signedOrder: {
-                maker: orderMakerAddress,
-                taker: orderTakerAddress,
-                makerFee: makerFee.toString(),
-                takerFee: takerFee.toString(),
-                makerTokenAmount: sideToAssetToken[Side.Deposit].amount.toString(),
-                takerTokenAmount: sideToAssetToken[Side.Receive].amount.toString(),
-                makerTokenAddress: makerToken.address,
-                takerTokenAddress: takerToken.address,
-                expirationUnixTimestampSec: expirationUnixTimestampSec.toString(),
-                feeRecipient,
-                salt: orderSalt.toString(),
-                ecSignature,
-                exchangeContractAddress,
+                senderAddress: constants.NULL_ADDRESS,
+                makerAddress: orderMakerAddress,
+                takerAddress: orderTakerAddress,
+                makerFee,
+                takerFee,
+                makerAssetAmount: sideToAssetToken[Side.Deposit].amount,
+                takerAssetAmount: sideToAssetToken[Side.Receive].amount,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(makerToken.address),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(takerToken.address),
+                expirationTimeSeconds,
+                feeRecipientAddress,
+                salt: orderSalt,
+                signature,
+                exchangeAddress,
             },
             metadata: {
                 makerToken: {
@@ -231,10 +233,10 @@ export const utils = {
         const ContractWrappersErrorToHumanReadableError: { [error: string]: string } = {
             [ContractWrappersError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
             [ContractWrappersError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
-            [ContractWrappersError.TokenTransferProxyContractDoesNotExist]:
-                'TokenTransferProxy contract does not exist',
-            [ContractWrappersError.TokenRegistryContractDoesNotExist]: 'TokenRegistry contract does not exist',
-            [ContractWrappersError.TokenContractDoesNotExist]: 'Token contract does not exist',
+            [ContractWrappersError.ERC20ProxyContractDoesNotExist]: 'ERC20 proxy contract des not exist',
+            [ContractWrappersError.ERC721ProxyContractDoesNotExist]: 'ERC721 proxy contract des not exist',
+            [ContractWrappersError.ERC20TokenContractDoesNotExist]: 'ERC20 token contract does not exist',
+            [ContractWrappersError.ERC721TokenContractDoesNotExist]: 'ERC721 token contract does not exist',
             [ContractWrappersError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
             [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
             [OrderError.InvalidSignature]: 'Order signature is not valid',
@@ -247,12 +249,9 @@ export const utils = {
         } = {
             [ExchangeContractErrs.OrderFillExpired]: 'This order has expired',
             [ExchangeContractErrs.OrderCancelExpired]: 'This order has expired',
-            [ExchangeContractErrs.OrderCancelAmountZero]: "Order cancel amount can't be 0",
-            [ExchangeContractErrs.OrderAlreadyCancelledOrFilled]:
-                'This order has already been completely filled or cancelled',
+            [ExchangeContractErrs.OrderCancelled]: 'This order has been cancelled',
             [ExchangeContractErrs.OrderFillAmountZero]: "Order fill amount can't be 0",
-            [ExchangeContractErrs.OrderRemainingFillAmountZero]:
-                'This order has already been completely filled or cancelled',
+            [ExchangeContractErrs.OrderRemainingFillAmountZero]: 'This order has already been completely filled',
             [ExchangeContractErrs.OrderFillRoundingError]:
                 'Rounding error will occur when filling this order. Please try filling a different amount.',
             [ExchangeContractErrs.InsufficientTakerBalance]:

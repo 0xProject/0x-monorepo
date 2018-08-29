@@ -39,7 +39,7 @@ import {
     BlockchainErrs,
     HashData,
     ItemByAddress,
-    Order,
+    PortalOrder,
     ProviderType,
     ScreenWidths,
     Token,
@@ -71,7 +71,7 @@ export interface PortalProps {
     userEtherBalanceInWei?: BigNumber;
     userAddress: string;
     shouldBlockchainErrDialogBeOpen: boolean;
-    userSuppliedOrderCache: Order;
+    userSuppliedOrderCache: PortalOrder;
     location: Location;
     flashMessage?: string | React.ReactNode;
     lastForceTokenStateRefetch: number;
@@ -114,7 +114,7 @@ const DOCUMENT_DESCRIPTION = 'Learn about and trade on 0x Relayers';
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
-    private readonly _sharedOrderIfExists: Order;
+    private readonly _sharedOrderIfExists: PortalOrder;
     private readonly _throttledScreenWidthUpdate: () => void;
     constructor(props: PortalProps) {
         super(props);

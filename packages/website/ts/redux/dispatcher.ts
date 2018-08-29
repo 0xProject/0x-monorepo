@@ -7,7 +7,7 @@ import {
     AssetToken,
     BlockchainErrs,
     Language,
-    Order,
+    PortalOrder,
     ProviderType,
     ScreenWidths,
     Side,
@@ -50,7 +50,7 @@ export class Dispatcher {
             type: ActionTypes.UpdateOrderSalt,
         });
     }
-    public updateUserSuppliedOrderCache(order: Order): void {
+    public updateUserSuppliedOrderCache(order: PortalOrder): void {
         this._dispatch({
             data: order,
             type: ActionTypes.UpdateUserSuppliedOrderCache,
@@ -149,10 +149,10 @@ export class Dispatcher {
             type: ActionTypes.ForceTokenStateRefetch,
         });
     }
-    public updateECSignature(ecSignature: ECSignature): void {
+    public updateSignature(signature: string): void {
         this._dispatch({
-            data: ecSignature,
-            type: ActionTypes.UpdateOrderECSignature,
+            data: signature,
+            type: ActionTypes.UpdateOrderSignature,
         });
     }
     public updateUserWeiBalance(balance?: BigNumber): void {

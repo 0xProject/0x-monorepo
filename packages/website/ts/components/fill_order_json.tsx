@@ -33,11 +33,7 @@ export class FillOrderJSON extends React.Component<FillOrderJSONProps, FillOrder
             },
         };
         const hintOrderExpiryTimestamp = utils.initialOrderExpiryUnixTimestampSec();
-        const hintECSignature = {
-            r: '0xf01103f759e2289a28593eaf22e5820032...',
-            s: '937862111edcba395f8a9e0cc1b2c5e12320...',
-            v: 27,
-        };
+        const hintECSignature = '0x012761a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33';
         const hintSalt = generatePseudoRandomSalt();
         const feeRecipient = constants.NULL_ADDRESS;
         const hintOrder = utils.generateOrder(

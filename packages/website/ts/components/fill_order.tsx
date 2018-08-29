@@ -1,4 +1,4 @@
-import { getOrderHashHex, isValidSignature } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils, signatureUtils } from '@0xproject/order-utils';
 import { colors } from '@0xproject/react-shared';
 import { Order as ZeroExOrder } from '@0xproject/types';
 import { BigNumber, logUtils } from '@0xproject/utils';
@@ -22,7 +22,7 @@ import { VisualOrder } from 'ts/components/visual_order';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
-import { AlertTypes, BlockchainErrs, Order, Token, TokenByAddress, WebsitePaths } from 'ts/types';
+import { AlertTypes, BlockchainErrs, PortalOrder, Token, TokenByAddress, WebsitePaths } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
@@ -36,7 +36,7 @@ interface FillOrderProps {
     networkId: number;
     userAddress: string;
     tokenByAddress: TokenByAddress;
-    initialOrder: Order;
+    initialOrder: PortalOrder;
     dispatcher: Dispatcher;
     lastForceTokenStateRefetch: number;
     isFullWidth?: boolean;
@@ -49,7 +49,7 @@ interface FillOrderState {
     globalErrMsg: string;
     orderJSON: string;
     orderJSONErrMsg: string;
-    parsedOrder: Order;
+    parsedOrder: PortalOrder;
     didFillOrderSucceed: boolean;
     didCancelOrderSucceed: boolean;
     unavailableTakerAmount: BigNumber;
@@ -191,16 +191,18 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         );
     }
     private _renderVisualOrder(): React.ReactNode {
-        const takerTokenAddress = this.state.parsedOrder.signedOrder.takerTokenAddress;
+        const takerTokenAddress = assetDataUtils.decodeERC20AssetData(this.state.parsedOrder.signedOrder.takerAssetData)
+            .tokenAddress;
         const takerToken = this.props.tokenByAddress[takerTokenAddress];
-        const orderTakerAmount = new BigNumber(this.state.parsedOrder.signedOrder.takerTokenAmount);
-        const orderMakerAmount = new BigNumber(this.state.parsedOrder.signedOrder.makerTokenAmount);
+        const orderTakerAmount = this.state.parsedOrder.signedOrder.takerAssetAmount;
+        const orderMakerAmount = this.state.parsedOrder.signedOrder.makerAssetAmount;
         const takerAssetToken = {
             amount: orderTakerAmount.minus(this.state.unavailableTakerAmount),
             symbol: takerToken.symbol,
         };
         const fillToken = this.props.tokenByAddress[takerTokenAddress];
-        const makerTokenAddress = this.state.parsedOrder.signedOrder.makerTokenAddress;
+        const makerTokenAddress = assetDataUtils.decodeERC20AssetData(this.state.parsedOrder.signedOrder.makerAssetData)
+            .tokenAddress;
         const makerToken = this.props.tokenByAddress[makerTokenAddress];
         const makerAssetToken = {
             amount: orderMakerAmount.times(takerAssetToken.amount).div(orderTakerAmount),
@@ -210,7 +212,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             amount: this.props.orderFillAmount,
             symbol: takerToken.symbol,
         };
-        const parsedOrderExpiration = new BigNumber(this.state.parsedOrder.signedOrder.expirationUnixTimestampSec);
+        const parsedOrderExpiration = this.state.parsedOrder.signedOrder.expirationTimeSeconds;
 
         let orderReceiveAmount = 0;
         if (!_.isUndefined(this.props.orderFillAmount)) {
@@ -222,7 +224,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         }
         const isUserMaker =
             !_.isUndefined(this.state.parsedOrder) &&
-            this.state.parsedOrder.signedOrder.maker === this.props.userAddress;
+            this.state.parsedOrder.signedOrder.makerAddress === this.props.userAddress;
         const expiryDate = utils.convertToReadableDateTimeFromUnixTimestamp(parsedOrderExpiration);
         return (
             <div className="pt3 pb1">
@@ -233,11 +235,11 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                             Maker:
                         </div>
                         <div className="col col-2 pr1">
-                            <Identicon address={this.state.parsedOrder.signedOrder.maker} diameter={23} />
+                            <Identicon address={this.state.parsedOrder.signedOrder.makerAddress} diameter={23} />
                         </div>
                         <div className="col col-6">
                             <EthereumAddress
-                                address={this.state.parsedOrder.signedOrder.maker}
+                                address={this.state.parsedOrder.signedOrder.makerAddress}
                                 networkId={this.props.networkId}
                             />
                         </div>
@@ -367,17 +369,19 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         if (!_.isEmpty(this.state.orderJSONErrMsg)) {
             return;
         }
-
-        const makerTokenIfExists = this.props.tokenByAddress[this.state.parsedOrder.signedOrder.makerTokenAddress];
-        const takerTokenIfExists = this.props.tokenByAddress[this.state.parsedOrder.signedOrder.takerTokenAddress];
-
+        const makerTokenAddress = assetDataUtils.decodeERC20AssetData(this.state.parsedOrder.signedOrder.makerAssetData)
+            .tokenAddress;
+        const takerTokenAddress = assetDataUtils.decodeERC20AssetData(this.state.parsedOrder.signedOrder.takerAssetData)
+            .tokenAddress;
+        const makerTokenIfExists = this.props.tokenByAddress[makerTokenAddress];
+        const takerTokenIfExists = this.props.tokenByAddress[takerTokenAddress];
         const tokensToTrack: Token[] = [];
         const isUnseenMakerToken = _.isUndefined(makerTokenIfExists);
         const isMakerTokenTracked = !_.isUndefined(makerTokenIfExists) && utils.isTokenTracked(makerTokenIfExists);
         if (isUnseenMakerToken) {
             tokensToTrack.push({
                 ...this.state.parsedOrder.metadata.makerToken,
-                address: this.state.parsedOrder.signedOrder.makerTokenAddress,
+                address: makerTokenAddress,
                 iconUrl: undefined,
                 trackedTimestamp: undefined,
                 isRegistered: false,
@@ -390,7 +394,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         if (isUnseenTakerToken) {
             tokensToTrack.push({
                 ...this.state.parsedOrder.metadata.takerToken,
-                address: this.state.parsedOrder.signedOrder.takerTokenAddress,
+                address: takerTokenAddress,
                 iconUrl: undefined,
                 trackedTimestamp: undefined,
                 isRegistered: false,
@@ -411,7 +415,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
     }
     private async _validateFillOrderFireAndForgetAsync(orderJSON: string): Promise<void> {
         let orderJSONErrMsg = '';
-        let parsedOrder: Order;
+        let parsedOrder: PortalOrder;
         let orderHash: string;
         try {
             const order = JSON.parse(orderJSON);
@@ -422,36 +426,32 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                 return;
             }
             parsedOrder = order;
-
-            const makerAmount = new BigNumber(parsedOrder.signedOrder.makerTokenAmount);
-            const takerAmount = new BigNumber(parsedOrder.signedOrder.takerTokenAmount);
-            const expiration = new BigNumber(parsedOrder.signedOrder.expirationUnixTimestampSec);
-            const salt = new BigNumber(parsedOrder.signedOrder.salt);
-            const parsedMakerFee = new BigNumber(parsedOrder.signedOrder.makerFee);
-            const parsedTakerFee = new BigNumber(parsedOrder.signedOrder.takerFee);
-
+            const signedOrder = parsedOrder.signedOrder;
             const zeroExOrder: ZeroExOrder = {
-                exchangeContractAddress: parsedOrder.signedOrder.exchangeContractAddress,
-                expirationUnixTimestampSec: expiration,
-                feeRecipient: parsedOrder.signedOrder.feeRecipient,
-                maker: parsedOrder.signedOrder.maker,
-                makerFee: parsedMakerFee,
-                makerTokenAddress: parsedOrder.signedOrder.makerTokenAddress,
-                makerTokenAmount: makerAmount,
-                salt,
-                taker: _.isEmpty(parsedOrder.signedOrder.taker)
-                    ? constants.NULL_ADDRESS
-                    : parsedOrder.signedOrder.taker,
-                takerFee: parsedTakerFee,
-                takerTokenAddress: parsedOrder.signedOrder.takerTokenAddress,
-                takerTokenAmount: takerAmount,
+                exchangeAddress: signedOrder.exchangeAddress,
+                expirationTimeSeconds: signedOrder.expirationTimeSeconds,
+                feeRecipientAddress: signedOrder.feeRecipientAddress,
+                makerAddress: signedOrder.makerAddress,
+                makerFee: signedOrder.makerFee,
+                makerAssetData: signedOrder.makerAssetData,
+                makerAssetAmount: signedOrder.makerAssetAmount,
+                salt: signedOrder.salt,
+                takerAddress: _.isEmpty(signedOrder.takerAddress) ? constants.NULL_ADDRESS : signedOrder.takerAddress,
+                takerFee: signedOrder.takerFee,
+                takerAssetData: signedOrder.takerAssetData,
+                takerAssetAmount: signedOrder.takerAssetAmount,
+                senderAddress: signedOrder.senderAddress,
             };
-            orderHash = getOrderHashHex(zeroExOrder);
-
+            orderHash = orderHashUtils.getOrderHashHex(zeroExOrder);
             const exchangeContractAddr = this.props.blockchain.getExchangeContractAddressIfExists();
-            const signature = parsedOrder.signedOrder.ecSignature;
-            const isSignatureValid = isValidSignature(orderHash, signature, parsedOrder.signedOrder.maker);
-            if (exchangeContractAddr !== parsedOrder.signedOrder.exchangeContractAddress) {
+            const signature = signedOrder.signature;
+            const ecSignature = signatureUtils.parseECSignature(signature);
+            const isSignatureValid = signatureUtils.isValidECSignature(
+                orderHash,
+                ecSignature,
+                signedOrder.makerAddress,
+            );
+            if (exchangeContractAddr !== signedOrder.exchangeAddress) {
                 orderJSONErrMsg = 'This order was made on another network or using a deprecated Exchange contract';
                 parsedOrder = undefined;
             } else if (!isSignatureValid) {
@@ -484,11 +484,15 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             this.props.dispatcher.updateUserSuppliedOrderCache(undefined);
         } else {
             unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
+            const makerTokenAddress = assetDataUtils.decodeERC20AssetData(parsedOrder.signedOrder.makerAssetData)
+                .tokenAddress;
+            const takerTokenAddress = assetDataUtils.decodeERC20AssetData(parsedOrder.signedOrder.takerAssetData)
+                .tokenAddress;
             const isMakerTokenAddressInRegistry = await this.props.blockchain.isAddressInTokenRegistryAsync(
-                parsedOrder.signedOrder.makerTokenAddress,
+                makerTokenAddress,
             );
             const isTakerTokenAddressInRegistry = await this.props.blockchain.isAddressInTokenRegistryAsync(
-                parsedOrder.signedOrder.takerTokenAddress,
+                takerTokenAddress,
             );
             this.setState({
                 isMakerTokenAddressInRegistry,
@@ -537,7 +541,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             globalErrMsg = 'You must specify a fill amount';
         }
 
-        const signedOrder = this.props.blockchain.portalOrderToZeroExOrder(parsedOrder);
+        const signedOrder = parsedOrder.signedOrder;
         if (_.isEmpty(globalErrMsg)) {
             try {
                 await this.props.blockchain.validateFillOrderThrowIfInvalidAsync(
@@ -546,7 +550,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
                     this.props.userAddress,
                 );
             } catch (err) {
-                globalErrMsg = utils.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.signedOrder.taker);
+                globalErrMsg = utils.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.signedOrder.takerAddress);
             }
         }
         if (!_.isEmpty(globalErrMsg)) {
@@ -611,17 +615,15 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             return;
         }
         let globalErrMsg = '';
-
-        const takerTokenAmount = new BigNumber(parsedOrder.signedOrder.takerTokenAmount);
-
-        const signedOrder = this.props.blockchain.portalOrderToZeroExOrder(parsedOrder);
-        const orderHash = getOrderHashHex(signedOrder);
+        const signedOrder = parsedOrder.signedOrder;
+        const takerTokenAmount = signedOrder.takerAssetAmount;
+        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
         const availableTakerTokenAmount = takerTokenAmount.minus(unavailableTakerAmount);
         try {
             await this.props.blockchain.validateCancelOrderThrowIfInvalidAsync(signedOrder, availableTakerTokenAmount);
         } catch (err) {
-            globalErrMsg = utils.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.signedOrder.taker);
+            globalErrMsg = utils.zeroExErrToHumanReadableErrMsg(err.message, parsedOrder.signedOrder.takerAddress);
         }
         if (!_.isEmpty(globalErrMsg)) {
             this.setState({
@@ -631,7 +633,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             return;
         }
         try {
-            await this.props.blockchain.cancelOrderAsync(signedOrder, availableTakerTokenAmount);
+            await this.props.blockchain.cancelOrderAsync(signedOrder);
             this.setState({
                 isCancelling: false,
                 didCancelOrderSucceed: true,
