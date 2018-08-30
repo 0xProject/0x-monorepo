@@ -327,26 +327,6 @@ export class Blockchain {
             }),
         );
     }
-    // i think we can get rid of this?
-    // public portalOrderToZeroExOrder(portalOrder: PortalOrder): SignedOrder {
-    //     const exchangeContractAddress = this.getExchangeContractAddressIfExists();
-    //     const zeroExSignedOrder = {
-    //         exchangeContractAddress,
-    //         maker: portalOrder.signedOrder.maker,
-    //         taker: portalOrder.signedOrder.taker,
-    //         makerTokenAddress: portalOrder.signedOrder.makerTokenAddress,
-    //         takerTokenAddress: portalOrder.signedOrder.takerTokenAddress,
-    //         makerTokenAmount: new BigNumber(portalOrder.signedOrder.makerTokenAmount),
-    //         takerTokenAmount: new BigNumber(portalOrder.signedOrder.takerTokenAmount),
-    //         makerFee: new BigNumber(portalOrder.signedOrder.makerFee),
-    //         takerFee: new BigNumber(portalOrder.signedOrder.takerFee),
-    //         expirationUnixTimestampSec: new BigNumber(portalOrder.signedOrder.expirationUnixTimestampSec),
-    //         feeRecipient: portalOrder.signedOrder.feeRecipient,
-    //         ecSignature: portalOrder.signedOrder.ecSignature,
-    //         salt: new BigNumber(portalOrder.signedOrder.salt),
-    //     };
-    //     return zeroExSignedOrder;
-    // }
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber): Promise<BigNumber> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
