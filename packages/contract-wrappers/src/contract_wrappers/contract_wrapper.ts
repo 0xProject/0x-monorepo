@@ -145,9 +145,12 @@ export abstract class ContractWrapper {
     }
     protected _getContractAddress(artifact: ContractArtifact, addressIfExists?: string): string {
         if (_.isUndefined(addressIfExists)) {
+            if (_.isUndefined(artifact.networks[this._networkId])) {
+                throw new Error(ContractWrappersError.ContractNotDeployedOnNetwork);
+            }
             const contractAddress = artifact.networks[this._networkId].address;
             if (_.isUndefined(contractAddress)) {
-                throw new Error(ContractWrappersError.ExchangeContractDoesNotExist);
+                throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contractName]);
             }
             return contractAddress;
         } else {

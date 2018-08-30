@@ -4,6 +4,10 @@
         "changes": [
             {
                 "note": "Add `OrderValidatorWrapper`"
+            },
+            {
+                "note":
+                    "Fix bug where contracts not deployed on a network showed an `EXCHANGE_CONTRACT_DOES_NOT_EXIST` error instead of `CONTRACT_NOT_DEPLOYED_ON_NETWORK`"
             }
         ]
     },
