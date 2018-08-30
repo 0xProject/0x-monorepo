@@ -42,6 +42,12 @@ interface Project {
 const THROTTLE_TIMEOUT = 100;
 const WHATS_NEW_TITLE = 'V2 of the 0x Protocol is now live!';
 const WHATS_NEW_URL = 'https://blog.0xproject.com/18-ideas-for-0x-relayers-in-2018-80a1498b955f';
+const TITLE_STYLE: React.CSSProperties = {
+    fontFamily: 'Roboto Mono',
+    color: colors.grey,
+    fontWeight: 300,
+    letterSpacing: 3,
+};
 
 const relayerProjects: Project[] = [
     {
@@ -276,16 +282,10 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 </div>
             );
         });
-        const titleStyle: React.CSSProperties = {
-            fontFamily: 'Roboto Mono',
-            color: colors.grey,
-            fontWeight: 300,
-            letterSpacing: 3,
-        };
         return (
             <div className={`clearfix py4 ${isTitleCenter && 'center'}`} style={{ backgroundColor }}>
                 <div className="mx-auto max-width-4 clearfix sm-px3">
-                    <div className="h4 pb3 lg-pl0 md-pl3 sm-pl2" style={titleStyle}>
+                    <div className="h4 pb3 lg-pl0 md-pl3 sm-pl2" style={TITLE_STYLE}>
                         {title}
                     </div>
                     <div className="clearfix">{projectList}</div>
@@ -517,15 +517,9 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 </div>
             );
         });
-        const titleStyle: React.CSSProperties = {
-            fontFamily: 'Roboto Mono',
-            color: colors.grey,
-            fontWeight: 300,
-            letterSpacing: 3,
-        };
         return (
             <div className="clearfix" style={{ backgroundColor: colors.heroGrey }}>
-                <div className="center pb3 pt4" style={titleStyle}>
+                <div className="center pb3 pt4" style={TITLE_STYLE}>
                     {this.props.translate.get(Key.BenefitsHeader, Deco.Upper)}
                 </div>
                 <div className="mx-auto pb4 sm-mt2 clearfix" style={{ maxWidth: '60em' }}>
@@ -665,6 +659,9 @@ export class Landing extends React.Component<LandingProps, LandingState> {
         });
         return (
             <div className="clearfix py4" style={{ backgroundColor: colors.heroGrey }}>
+                <div className="center h4 pb3 lg-pl0 md-pl3 sm-pl2" style={TITLE_STYLE}>
+                    {this.props.translate.get(Key.UseCasesHeader, Deco.Upper)}
+                </div>
                 <div className="mx-auto pb4 pt3 mt1 sm-mt2 clearfix" style={{ maxWidth: '67em' }}>
                     {cases}
                 </div>

@@ -415,6 +415,7 @@ export enum Key {
     OffChainOnChainDescription = 'OFFCHAIN_ONCHAIN_DESCRIPTION',
     RelayersHeader = 'RELAYERS_HEADER',
     BenefitsHeader = 'BENEFITS_HEADER',
+    UseCasesHeader = 'USE_CASES_HEADER',
     BenefitOneTitle = 'BENEFIT_ONE_TITLE',
     BenefitOneDescription = 'BENEFIT_ONE_DESCRIPTION',
     BenefitTwoTitle = 'BENEFIT_TWO_TITLE',
