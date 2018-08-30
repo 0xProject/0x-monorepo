@@ -410,7 +410,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             {
                 title: this.props.translate.get(Key.BenefitThreeTitle, Deco.Cap),
                 description: this.props.translate.get(Key.BenefitThreeDescription, Deco.Cap),
-                imageUrl: '/images/landing/open_source.png', // TODO: Update this url
+                imageUrl: '/images/landing/exchange_everywhere.png',
                 classNames: 'right',
             },
         ];
@@ -418,9 +418,13 @@ export class Landing extends React.Component<LandingProps, LandingState> {
             return (
                 <div key={`box-${boxContent.title}`} className="col lg-col-4 md-col-4 col-12 sm-pb4">
                     <div className={`center sm-mx-auto ${!isSmallScreen && boxContent.classNames}`} style={boxStyle}>
-                        <div>
-                            <img src={boxContent.imageUrl} style={{ height: 210 }} />
-                        </div>
+                        <Container className="flex items-center" height="210px">
+                            <img
+                                className="mx-auto"
+                                src={boxContent.imageUrl}
+                                style={{ height: 'auto', maxWidth: 160 }}
+                            />
+                        </Container>
                         <div className="h3" style={{ color: 'black', fontFamily: 'Roboto Mono' }}>
                             {boxContent.title}
                         </div>
