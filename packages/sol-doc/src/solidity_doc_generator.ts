@@ -3,9 +3,8 @@ import * as _ from 'lodash';
 import { MethodAbi } from 'ethereum-types';
 
 import { Compiler, CompilerOptions } from '@0xproject/sol-compiler';
+import { DocAgnosticFormat } from '@0xproject/types';
 import { logUtils } from '@0xproject/utils';
-
-import { SolidityDocFormat } from './solidity_doc_format';
 
 /**
  * Compiles solidity files to both their ABI and devdoc outputs, and transforms
@@ -36,14 +35,14 @@ export class SolidityDocGenerator {
      * @param contractsToCompile list of contracts for which to generate doc objects
      * @return doc objects for use with documentation generation tools.
      */
-    public async generateAsync(contractsToCompile: string[]): Promise<SolidityDocFormat> {
+    public async generateAsync(contractsToCompile: string[]): Promise<DocAgnosticFormat> {
         if (!_.isUndefined(contractsToCompile)) {
             this._compilerOptions.contracts = contractsToCompile;
         }
 
         const compiler = new Compiler(this._compilerOptions);
 
-        const doc = new SolidityDocFormat();
+        const doc: DocAgnosticFormat = {};
 
         const compilerOutputs = await compiler.getCompilerOutputsAsync();
         for (const compilerOutput of compilerOutputs) {
