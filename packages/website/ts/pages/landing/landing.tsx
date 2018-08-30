@@ -215,19 +215,19 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 <a href={WHATS_NEW_URL} target="_blank" className="inline-block text-decoration-none">
                     <div className="flex items-center sm-pl0 md-pl2 lg-pl0">
                         <Container
-                            paddingTop="5px"
+                            paddingTop="3px"
                             paddingLeft="8px"
-                            paddingBottom="5px"
+                            paddingBottom="3px"
                             paddingRight="8px"
                             backgroundColor={colors.white}
                             borderRadius={6}
                         >
-                            <Text fontSize="16px" fontWeight={500} fontColor={colors.heroGrey}>
+                            <Text fontSize="14px" fontWeight={500} fontColor={colors.heroGrey}>
                                 New
                             </Text>
                         </Container>
                         <Container marginLeft="12px">
-                            <Text fontSize="18px" fontWeight={500} fontColor={colors.white}>
+                            <Text fontSize="16px" fontWeight={500} fontColor={colors.grey300}>
                                 {WHATS_NEW_TITLE}
                             </Text>
                         </Container>
