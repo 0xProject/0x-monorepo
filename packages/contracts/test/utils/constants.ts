@@ -60,6 +60,7 @@ export const constants = {
         'MARKET_SELL_ORDERS',
         'MATCH_ORDERS',
         'CANCEL_ORDER',
+        'BATCH_CANCEL_ORDERS',
         'CANCEL_ORDERS_UP_TO',
         'SET_SIGNATURE_VALIDATOR_APPROVAL',
     ],
