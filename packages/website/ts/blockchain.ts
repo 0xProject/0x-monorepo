@@ -8,7 +8,7 @@ import {
     ExchangeFillEventArgs,
     IndexedFilterValues,
 } from '@0xproject/contract-wrappers';
-import { orderHashUtils, signatureUtils, SignerType, assetDataUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils, signatureUtils, SignerType } from '@0xproject/order-utils';
 import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import {
     ledgerEthereumBrowserClientFactoryAsync,
