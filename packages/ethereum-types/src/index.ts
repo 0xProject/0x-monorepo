@@ -476,7 +476,6 @@ export interface Source {
     id: number;
 }
 
-// TODO: move the following into the sol-compiler package.
 /**
  * Options you can specify (as flags or in a compiler.json file) when invoking sol-compiler
  * contractsDir: Directory containing your project's Solidity contracts. Can contain nested directories.
