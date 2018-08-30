@@ -2,6 +2,7 @@ import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
+import * as _ from 'lodash';
 
 import { MixinAuthorizableContract } from '../../generated_contract_wrappers/mixin_authorizable';
 import { artifacts } from '../utils/artifacts';
@@ -28,8 +29,7 @@ describe('Authorizable', () => {
     });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        owner = address = accounts[0];
-        notOwner = accounts[1];
+        [owner, address, notOwner] = _.slice(accounts, 0, 3);
         authorizable = await MixinAuthorizableContract.deployFrom0xArtifactAsync(
             artifacts.MixinAuthorizable,
             provider,
