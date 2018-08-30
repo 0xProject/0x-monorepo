@@ -7,8 +7,16 @@ import { logUtils } from '@0xproject/utils';
 
 import { SolidityDocFormat } from './solidity_doc_format';
 
+/**
+ * Compiles solidity files to both their ABI and devdoc outputs, and transforms
+ * those outputs into the types that feed into documentation generation tools.
+ */
 export class SolidityDocGenerator {
     private readonly _compilerOptions: CompilerOptions;
+    /**
+     * Instantiate the generator.
+     * @param contractsDir the directory in which to find the contracts to be compiled
+     */
     constructor(contractsDir: string) {
         // instantiate sol-compiler, passing in options to say we want abi and devdoc
         this._compilerOptions = {
@@ -23,7 +31,11 @@ export class SolidityDocGenerator {
             },
         };
     }
-    /// run `contractsToCompile` through compiler, gathering output
+    /**
+     * Invoke the compiler and transform its outputs.
+     * @param contractsToCompile list of contracts for which to generate doc objects
+     * @return doc objects for use with documentation generation tools.
+     */
     public async generateAsync(contractsToCompile: string[]): Promise<SolidityDocFormat> {
         if (!_.isUndefined(contractsToCompile)) {
             this._compilerOptions.contracts = contractsToCompile;
