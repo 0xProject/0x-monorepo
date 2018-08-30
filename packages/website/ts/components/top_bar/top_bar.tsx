@@ -19,7 +19,7 @@ import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, Key, ProviderType, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
+import { Deco, Key, ProviderType, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 

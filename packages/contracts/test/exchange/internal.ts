@@ -6,10 +6,7 @@ import * as _ from 'lodash';
 
 import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
 import { artifacts } from '../utils/artifacts';
-import {
-    getInvalidOpcodeErrorMessageForCallAsync,
-    getRevertReasonOrErrorMessageForSendTransactionAsync,
-} from '../utils/assertions';
+import { getRevertReasonOrErrorMessageForSendTransactionAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_utils';
 import { constants } from '../utils/constants';
