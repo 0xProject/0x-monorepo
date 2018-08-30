@@ -13,7 +13,6 @@
     "repository": "https://github.com/0xProject/0x-monorepo.git",
     "author": "F. Eugene Aumson",
     "license": "Apache-2.0",
-    "private": false,
     "dependencies": {
         "@0xproject/sol-compiler": "^1.0.5",
         "@0xproject/types": "^1.0.1-rc.6",
@@ -31,5 +30,8 @@
         "shx": "^0.2.2",
         "source-map-support": "^0.5.0",
         "tslint": "5.11.0"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }
