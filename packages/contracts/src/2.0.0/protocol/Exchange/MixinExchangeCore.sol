@@ -107,14 +107,7 @@ contract MixinExchangeCore is
         public
         nonReentrant
     {
-        // Fetch current order status
-        OrderInfo memory orderInfo = getOrderInfo(order);
-
-        // Validate context
-        assertValidCancel(order, orderInfo);
-
-        // Perform cancel
-        updateCancelledState(order, orderInfo.orderHash);
+        cancelOrderInternal(order);
     }
 
     /// @dev Gets information about an order: status, hash, and amount filled.
@@ -234,6 +227,22 @@ contract MixinExchangeCore is
         settleOrder(order, takerAddress, fillResults);
 
         return fillResults;
+    }
+
+    /// @dev After calling, the order can not be filled anymore.
+    ///      Throws if order is invalid or sender does not have permission to cancel.
+    /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
+    function cancelOrderInternal(Order memory order)
+        internal
+    {
+        // Fetch current order status
+        OrderInfo memory orderInfo = getOrderInfo(order);
+
+        // Validate context
+        assertValidCancel(order, orderInfo);
+
+        // Perform cancel
+        updateCancelledState(order, orderInfo.orderHash);
     }
 
     /// @dev Updates state with results of a fill order.

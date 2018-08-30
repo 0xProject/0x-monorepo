@@ -72,6 +72,11 @@ contract MExchangeCore is
         internal
         returns (LibFillResults.FillResults memory fillResults);
 
+    /// @dev After calling, the order can not be filled anymore.
+    /// @param order Order struct containing order specifications.
+    function cancelOrderInternal(LibOrder.Order memory order)
+        internal;
+
     /// @dev Updates state with results of a fill order.
     /// @param order that was filled.
     /// @param takerAddress Address of taker who filled the order.
