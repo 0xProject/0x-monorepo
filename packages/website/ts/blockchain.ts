@@ -341,8 +341,6 @@ export class Blockchain {
         );
         const receipt = await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const logs: Array<LogWithDecodedArgs<ExchangeEventArgs>> = receipt.logs as any;
-        // how to get errors from logs?
-        // this._contractWrappers.exchange.throwLogErrorsAsErrors(logs);
         const logFill = _.find(logs, { event: ExchangeEvents.Fill });
         const args = (logFill.args as any) as ExchangeFillEventArgs;
         const takerAssetFilledAmount = args.takerAssetFilledAmount;
@@ -355,8 +353,6 @@ export class Blockchain {
         });
         const receipt = await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const logs: Array<LogWithDecodedArgs<ExchangeEventArgs>> = receipt.logs as any;
-        // how to get errors from logs?
-        // this._contractWrappers.exchange.throwLogErrorsAsErrors(logs);
         const logCancel = _.find(logs, { event: ExchangeEvents.Cancel });
         const args = (logCancel.args as any) as ExchangeCancelEventArgs;
         const cancelledOrderHash = args.orderHash;
