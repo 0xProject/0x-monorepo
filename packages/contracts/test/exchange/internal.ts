@@ -7,7 +7,6 @@ import * as _ from 'lodash';
 import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
 import { artifacts } from '../utils/artifacts';
 import {
-    getInvalidOpcodeErrorMessageForCallAsync,
     getRevertReasonOrErrorMessageForSendTransactionAsync,
 } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
