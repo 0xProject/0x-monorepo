@@ -8,6 +8,7 @@ import { SubscribeForm } from 'ts/components/forms/subscribe_form';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { CallToAction } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
+import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
@@ -154,8 +155,8 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 <div className="mx-auto max-width-4 clearfix">
                     {this._renderWhatsNew()}
                     <div className={`${flexClassName} lg-pt4 md-pt4 sm-pt2 lg-pb4 md-pb4 lg-mt4 md-mt4 sm-mt2 sm-mb4`}>
-                        <Container marginTop="30px" marginBottom="30px">
-                            <img src="/images/landing/0x_homepage.svg" height="250px" />
+                        <Container marginTop="30px" marginBottom="30px" marginLeft="15px" marginRight="15px">
+                            <Image src="/images/landing/0x_homepage.svg" maxWidth="100%" height="auto" />
                         </Container>
                         <div className={left} style={{ color: colors.white, height: 390, lineHeight: '390px' }}>
                             <div
