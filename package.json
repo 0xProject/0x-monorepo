@@ -35,7 +35,8 @@
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break -1; done;",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing",
-        "comment:postinstall": "HACK: For some reason `yarn` is not setting up symlinks properly for order-utils. We temporarily set them manually. Remove this after V2 refactor is complete."
+        "comment:postinstall": "HACK: For some reason `yarn` is not setting up symlink properly for types. We temporarily make it manually. Remove this ASAP!",
+        "postinstall": "mv node_modules/@0xproject/types node_modules/@0xproject/types-0.8.1; for i in website sra-report; do cp -R node_modules/@0xproject/types-0.8.1 packages/$i/node_modules/@0xproject/types; done; ln -s ../../packages/types node_modules/@0xproject/types"
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",

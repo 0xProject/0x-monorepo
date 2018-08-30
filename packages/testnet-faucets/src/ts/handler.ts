@@ -143,21 +143,22 @@ export class Handler {
         if (_.isUndefined(takerToken)) {
             throw new Error(`Unsupported asset type: ${requestedAssetType}`);
         }
-        const makerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), makerToken.decimals);
-        const takerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), takerToken.decimals);
+        const makerAssetAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), makerToken.decimals);
+        const takerAssetAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), takerToken.decimals);
         const order: Order = {
-            maker: configs.DISPENSER_ADDRESS,
-            taker: req.params.recipient,
+            senderAddress: configs.DISPENSER_ADDRESS,
+            makerAddress: configs.DISPENSER_ADDRESS,
+            takerAddress: req.params.recipient,
             makerFee: new BigNumber(0),
             takerFee: new BigNumber(0),
-            makerTokenAmount,
-            takerTokenAmount,
-            makerTokenAddress: makerToken.address,
-            takerTokenAddress: takerToken.address,
+            makerAssetAmount,
+            takerAssetAmount,
+            makerAssetData: makerToken.address,
+            takerAssetData: takerToken.address,
             salt: ZeroEx.generatePseudoRandomSalt(),
-            exchangeContractAddress: zeroEx.exchange.getContractAddress(),
-            feeRecipient: ZeroEx.NULL_ADDRESS,
-            expirationUnixTimestampSec: new BigNumber(Date.now() + FIVE_DAYS_IN_MS),
+            exchangeAddress: zeroEx.exchange.getContractAddress(),
+            feeRecipientAddress: ZeroEx.NULL_ADDRESS,
+            expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS),
         };
         const orderHash = ZeroEx.getOrderHashHex(order);
         const signature = await zeroEx.signOrderHashAsync(orderHash, configs.DISPENSER_ADDRESS, false);
