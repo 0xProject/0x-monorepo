@@ -10,6 +10,7 @@ import { CallToAction } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
+import { TypedText } from 'ts/components/ui/typed_text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, ScreenWidths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
@@ -49,6 +50,17 @@ const TITLE_STYLE: React.CSSProperties = {
     fontWeight: 300,
     letterSpacing: 3,
 };
+const ROTATING_LIST = [
+    'tokens',
+    'game items',
+    'digital art',
+    'outcomes',
+    'stocks',
+    'derivatives',
+    'loans',
+    'cats',
+    'everything',
+];
 
 const relayerProjects: Project[] = [
     {
@@ -155,8 +167,10 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private _renderHero(): React.ReactNode {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
-        const left = 'col lg-col-7 md-col-7 col-12 lg-pl4 md-pl4 sm-pl0 sm-px3 sm-center';
-        const flexClassName = isSmallScreen ? 'flex items-center flex-column' : 'flex items-center';
+        const left = 'col lg-col-6 md-col-6 col-12 lg-pl4 md-pl4 sm-pl0 sm-px3 sm-center';
+        const flexClassName = isSmallScreen
+            ? 'flex items-center flex-column justify-center'
+            : 'flex items-center justify-center';
         return (
             <div className="clearfix py4" style={{ backgroundColor: colors.heroGrey }}>
                 <div className="mx-auto max-width-4 clearfix">
@@ -173,37 +187,46 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                     lineHeight: '36px',
                                 }}
                             >
-                                <div
+                                <Text
                                     className="sm-pb2"
-                                    style={{
-                                        fontFamily: 'Roboto Mono',
-                                        fontSize: isSmallScreen ? 26 : 34,
-                                    }}
+                                    fontFamily="Roboto"
+                                    display="inline-block"
+                                    fontColor={colors.grey300}
+                                    fontWeight={500}
+                                    lineHeight="1.3em"
+                                    fontSize={isSmallScreen ? '28px' : '36px'}
                                 >
                                     {this.props.translate.get(Key.TopHeader, Deco.Cap)}
-                                </div>
-                                <div
-                                    className="pt2 h5 sm-mx-auto"
-                                    style={{
-                                        maxWidth: 446,
-                                        fontFamily: 'Roboto Mono',
-                                        lineHeight: 1.7,
-                                        fontWeight: 300,
-                                    }}
+                                    {this.props.translate.getLanguage() === Language.English && (
+                                        <React.Fragment>
+                                            {' '}
+                                            for{' '}
+                                            <TypedText
+                                                fontFamily="Roboto"
+                                                display="inline-block"
+                                                fontColor={colors.white}
+                                                fontWeight={700}
+                                                lineHeight="1.3em"
+                                                fontSize={isSmallScreen ? '28px' : '36px'}
+                                                textList={ROTATING_LIST}
+                                                shouldRepeat={true}
+                                            />
+                                        </React.Fragment>
+                                    )}
+                                </Text>
+                                <Container
+                                    className={`pt3 flex clearfix sm-mx-auto ${isSmallScreen ? 'justify-center' : ''}`}
                                 >
-                                    {this.props.translate.get(Key.TopTagline)}
-                                </div>
-                                <Container className="pt3 clearfix sm-mx-auto" maxWidth="390px">
-                                    <div className="lg-pr2 md-pr2 lg-col lg-col-6 sm-center sm-col sm-col-12 mb2">
+                                    <Container paddingRight="20px">
                                         <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
-                                            <CallToAction width="175px" type="light">
+                                            <CallToAction type="light">
                                                 {this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
                                             </CallToAction>
                                         </Link>
-                                    </div>
-                                    <div className="lg-col lg-col-6 sm-center sm-col sm-col-12">
+                                    </Container>
+                                    <div>
                                         <Link to={WebsitePaths.Portal} className="text-decoration-none">
-                                            <CallToAction width="175px">
+                                            <CallToAction>
                                                 {this.props.translate.get(Key.TradeCallToAction, Deco.Cap)}
                                             </CallToAction>
                                         </Link>
