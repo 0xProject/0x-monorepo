@@ -376,7 +376,8 @@ export class Blockchain {
         fillTakerTokenAmount: BigNumber,
         takerAddress: string,
     ): Promise<void> {
-        // we can use OrderValidationUtils here
+        // TODO: add validation here
+        // we can use OrderValidationUtils here?
         // await this._contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(
         //     signedOrder,
         //     fillTakerTokenAmount,
