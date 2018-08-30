@@ -53,7 +53,7 @@ const ROTATING_LIST = [
     'tokens',
     'game items',
     'digital art',
-    'outcomes',
+    'futures',
     'stocks',
     'derivatives',
     'loans',
