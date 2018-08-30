@@ -40,10 +40,9 @@ export class SolidityDocGenerator {
             this._compilerOptions.contracts = contractsToCompile;
         }
 
-        const compiler = new Compiler(this._compilerOptions);
-
         const doc: DocAgnosticFormat = {};
 
+        const compiler = new Compiler(this._compilerOptions);
         const compilerOutputs = await compiler.getCompilerOutputsAsync();
         for (const compilerOutput of compilerOutputs) {
             const solidityModules = _.keys(compilerOutput.contracts);
