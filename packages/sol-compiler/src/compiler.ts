@@ -162,7 +162,7 @@ export class Compiler {
         await this._compileContractsAsync(this._getContractNamesToCompile(), true);
     }
     /**
-     * Compiles Solidity files specified during construction, and returns the
+     * Compiles Solidity files specified during instantiation, and returns the
      * compiler output given by solc.  Return value is an array of outputs:
      * Solidity modules are batched together by version required, and each
      * element of the returned array corresponds to a compiler version, and
