@@ -10,10 +10,7 @@ const expect = chai.expect;
 
 describe('#SolidityDocGenerator', () => {
     it('should generate', async () => {
-        const generator = new SolidityDocGenerator(
-            `${__dirname}/../../test/fixtures/contracts`,
-            `${__dirname}/../../test/fixtures/artifacts`,
-        );
+        const generator = new SolidityDocGenerator(`${__dirname}/../../test/fixtures/contracts`);
 
         const doc = await generator.generateAsync(['TokenTransferProxy']);
 

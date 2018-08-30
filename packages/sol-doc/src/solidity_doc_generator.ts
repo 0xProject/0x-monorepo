@@ -9,11 +9,10 @@ import { SolidityDocFormat } from './solidity_doc_format';
 
 export class SolidityDocGenerator {
     private readonly _compilerOptions: CompilerOptions;
-    constructor(contractsDir: string, artifactsDir: string) {
+    constructor(contractsDir: string) {
         // instantiate sol-compiler, passing in options to say we want abi and devdoc
         this._compilerOptions = {
             contractsDir,
-            artifactsDir,
             contracts: '*',
             compilerSettings: {
                 outputSelection: {
