@@ -7,6 +7,7 @@ import * as yargs from 'yargs';
 
 import { runV1MigrationsAsync } from './1.0.0/migration';
 import { runV2TestnetMigrationsAsync } from './2.0.0-beta-testnet/migration';
+import { runV2MainnetMigrationsAsync } from './2.0.0-mainnet/migration';
 import { runV2MigrationsAsync } from './2.0.0/migration';
 
 import { providerFactory } from './utils/provider_factory';
@@ -15,6 +16,7 @@ enum ContractVersions {
     V1 = '1.0.0',
     V2 = '2.0.0',
     V2Testnet = '2.0.0-beta-testnet',
+    V2Mainnet = '2.0.0-mainnet',
 }
 const args = yargs.argv;
 
@@ -24,6 +26,8 @@ const args = yargs.argv;
     let providerConfigs;
     let provider: Provider;
     let txDefaults;
+    let web3Wrapper: Web3Wrapper;
+    let accounts: string[];
     switch (contractsVersion) {
         case ContractVersions.V1:
             providerConfigs = { shouldUseInProcessGanache: false };
@@ -43,13 +47,23 @@ const args = yargs.argv;
             break;
         case ContractVersions.V2Testnet:
             provider = await providerFactory.getLedgerProviderAsync();
-            const web3Wrapper = new Web3Wrapper(provider);
-            const accounts = await web3Wrapper.getAvailableAddressesAsync();
+            web3Wrapper = new Web3Wrapper(provider);
+            accounts = await web3Wrapper.getAvailableAddressesAsync();
             txDefaults = {
                 from: accounts[0],
                 gas: devConstants.GAS_LIMIT,
             };
             await runV2TestnetMigrationsAsync(provider, artifactsDir, txDefaults);
+            break;
+        case ContractVersions.V2Mainnet:
+            provider = await providerFactory.getLedgerProviderAsync();
+            web3Wrapper = new Web3Wrapper(provider);
+            accounts = await web3Wrapper.getAvailableAddressesAsync();
+            txDefaults = {
+                from: accounts[0],
+                gas: devConstants.GAS_LIMIT,
+            };
+            await runV2MainnetMigrationsAsync(provider, artifactsDir, txDefaults);
             break;
         default:
             throw new Error(`Unsupported contract version: ${contractsVersion}`);

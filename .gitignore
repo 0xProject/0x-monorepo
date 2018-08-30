@@ -101,6 +101,7 @@ packages/order-utils/src/generated_contract_wrappers/
 packages/migrations/src/1.0.0/contract_wrappers
 packages/migrations/src/2.0.0/contract_wrappers
 packages/migrations/src/2.0.0-beta-testnet/contract_wrappers
+packages/migrations/src/2.0.0-mainnet/contract_wrappers
 
 # solc-bin in sol-compiler
 packages/sol-compiler/solc_bin/
