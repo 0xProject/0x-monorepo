@@ -61,7 +61,7 @@ const ROTATING_LIST = [
     'derivatives',
     'loans',
     'cats',
-    'Everything.',
+    'everything',
 ];
 >>>>>>> Add TypedText component and use it on landing page
 
@@ -170,8 +170,10 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     }
     private _renderHero(): React.ReactNode {
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
-        const left = 'col lg-col-7 md-col-7 col-12 lg-pl4 md-pl4 sm-pl0 sm-px3 sm-center';
-        const flexClassName = isSmallScreen ? 'flex items-center flex-column' : 'flex items-center';
+        const left = 'col lg-col-6 md-col-6 col-12 lg-pl4 md-pl4 sm-pl0 sm-px3 sm-center';
+        const flexClassName = isSmallScreen
+            ? 'flex items-center flex-column justify-center'
+            : 'flex items-center justify-center';
         return (
             <div className="clearfix py4" style={{ backgroundColor: colors.heroGrey }}>
                 <div className="mx-auto max-width-4 clearfix">
@@ -194,7 +196,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                     display="inline-block"
                                     fontColor={colors.grey300}
                                     fontWeight={500}
-                                    lineHeight="1.2em"
+                                    lineHeight="1.3em"
                                     fontSize={isSmallScreen ? '28px' : '36px'}
                                 >
                                     {this.props.translate.get(Key.TopHeader, Deco.Cap)}
@@ -207,7 +209,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                                 display="inline-block"
                                                 fontColor={colors.white}
                                                 fontWeight={700}
-                                                lineHeight="1.2em"
+                                                lineHeight="1.3em"
                                                 fontSize={isSmallScreen ? '28px' : '36px'}
                                                 textList={ROTATING_LIST}
                                                 shouldRepeat={true}
@@ -215,17 +217,19 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                         </React.Fragment>
                                     )}
                                 </Text>
-                                <Container className="pt3 clearfix sm-mx-auto" maxWidth="390px">
-                                    <div className="lg-pr2 md-pr2 lg-col lg-col-6 sm-center sm-col sm-col-12 mb2">
+                                <Container
+                                    className={`pt3 flex clearfix sm-mx-auto ${isSmallScreen ? 'justify-center' : ''}`}
+                                >
+                                    <Container paddingRight="20px">
                                         <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
-                                            <CallToAction width="175px" type="light">
+                                            <CallToAction type="light">
                                                 {this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
                                             </CallToAction>
                                         </Link>
-                                    </div>
-                                    <div className="lg-col lg-col-6 sm-center sm-col sm-col-12">
+                                    </Container>
+                                    <div>
                                         <Link to={WebsitePaths.Portal} className="text-decoration-none">
-                                            <CallToAction width="175px">
+                                            <CallToAction>
                                                 {this.props.translate.get(Key.TradeCallToAction, Deco.Cap)}
                                             </CallToAction>
                                         </Link>

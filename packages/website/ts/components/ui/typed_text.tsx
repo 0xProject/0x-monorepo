@@ -35,6 +35,7 @@ export class TypedText extends React.Component<TypedTextProps, TypedTextState> {
             wordDelayMs,
             avgKeystrokeDelayMs,
             stdKeystrokeDelay,
+            // tslint:disable-next-line
             ...textProps
         } = this.props;
         const { cycleCount } = this.state;
