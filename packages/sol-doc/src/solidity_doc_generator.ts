@@ -36,7 +36,8 @@ export class SolidityDocGenerator {
      * @return doc objects for use with documentation generation tools.
      */
     public async generateAsync(contractsToCompile: string[]): Promise<DocAgnosticFormat> {
-        if (!_.isUndefined(contractsToCompile)) {
+        const shouldOverrideCatchAllContractsConfig = !_.isUndefined(contractsToCompile);
+        if (shouldOverrideCatchAllContractsConfig) {
             this._compilerOptions.contracts = contractsToCompile;
         }
 
