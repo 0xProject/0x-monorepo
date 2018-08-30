@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
 import { DummyERC721ReceiverContract } from '../../generated_contract_wrappers/dummy_erc721_receiver';
 import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
+import { DummyMultipleReturnERC20TokenContract } from '../../generated_contract_wrappers/dummy_multiple_return_erc20_token';
 import { DummyNoReturnERC20TokenContract } from '../../generated_contract_wrappers/dummy_no_return_erc20_token';
 import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
@@ -44,6 +45,7 @@ describe('Asset Transfer Proxies', () => {
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
     let noReturnErc20Token: DummyNoReturnERC20TokenContract;
+    let multipleReturnErc20Token: DummyMultipleReturnERC20TokenContract;
 
     let erc20Wrapper: ERC20Wrapper;
     let erc721Wrapper: ERC721Wrapper;
@@ -108,6 +110,30 @@ describe('Asset Transfer Proxies', () => {
         );
         await web3Wrapper.awaitTransactionSuccessAsync(
             await noReturnErc20Token.approve.sendTransactionAsync(
+                erc20Proxy.address,
+                constants.INITIAL_ERC20_ALLOWANCE,
+                { from: makerAddress },
+            ),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        multipleReturnErc20Token = await DummyMultipleReturnERC20TokenContract.deployFrom0xArtifactAsync(
+            artifacts.DummyMultipleReturnERC20Token,
+            provider,
+            txDefaults,
+            constants.DUMMY_TOKEN_NAME,
+            constants.DUMMY_TOKEN_SYMBOL,
+            constants.DUMMY_TOKEN_DECIMALS,
+            constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await multipleReturnErc20Token.setBalance.sendTransactionAsync(
+                makerAddress,
+                constants.INITIAL_ERC20_BALANCE,
+            ),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await multipleReturnErc20Token.approve.sendTransactionAsync(
                 erc20Proxy.address,
                 constants.INITIAL_ERC20_ALLOWANCE,
                 { from: makerAddress },
@@ -342,6 +368,33 @@ describe('Asset Transfer Proxies', () => {
                 );
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 expect(newBalances).to.deep.equal(erc20Balances);
+            });
+
+            it('should throw if token returns more than 32 bytes', async () => {
+                // Construct ERC20 asset data
+                const encodedAssetData = assetDataUtils.encodeERC20AssetData(multipleReturnErc20Token.address);
+                const amount = new BigNumber(10);
+                const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                    encodedAssetData,
+                    makerAddress,
+                    takerAddress,
+                    amount,
+                );
+                const initialMakerBalance = await multipleReturnErc20Token.balanceOf.callAsync(makerAddress);
+                const initialTakerBalance = await multipleReturnErc20Token.balanceOf.callAsync(takerAddress);
+                // Perform a transfer; expect this to fail.
+                await expectTransactionFailedAsync(
+                    web3Wrapper.sendTransactionAsync({
+                        to: erc20Proxy.address,
+                        data,
+                        from: exchangeAddress,
+                    }),
+                    RevertReason.TransferFailed,
+                );
+                const newMakerBalance = await multipleReturnErc20Token.balanceOf.callAsync(makerAddress);
+                const newTakerBalance = await multipleReturnErc20Token.balanceOf.callAsync(takerAddress);
+                expect(newMakerBalance).to.be.bignumber.equal(initialMakerBalance);
+                expect(newTakerBalance).to.be.bignumber.equal(initialTakerBalance);
             });
         });
 
