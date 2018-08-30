@@ -6,7 +6,7 @@ import { validator } from 'ts/schemas/validator';
 import { PortalOrder } from 'ts/types';
 
 export const orderParser = {
-    parse(queryString: string): PortalOrder | undefined {
+    parseQueryString(queryString: string): PortalOrder | undefined {
         if (queryString.length === 0) {
             return undefined;
         }
@@ -28,7 +28,22 @@ export const orderParser = {
             logUtils.log(`Invalid shared order: ${validationResult.errors}`);
             return undefined;
         }
-        const result = convertOrderStringFieldsToBigNumber(order);
+        const signedOrder = _.get(order, 'signedOrder');
+        const convertedSignedOrder = convertOrderStringFieldsToBigNumber(signedOrder);
+        const result = {
+            ...order,
+            signedOrder: convertedSignedOrder,
+        };
+        return result;
+    },
+    parseJsonString(orderJson: string): PortalOrder {
+        const order = JSON.parse(orderJson);
+        const signedOrder = _.get(order, 'signedOrder');
+        const convertedSignedOrder = convertOrderStringFieldsToBigNumber(signedOrder);
+        const result = {
+            ...order,
+            signedOrder: convertedSignedOrder,
+        };
         return result;
     },
 };

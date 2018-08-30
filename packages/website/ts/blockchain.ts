@@ -414,6 +414,15 @@ export class Blockchain {
         const lowercaseAddress = address.toLowerCase();
         return Web3Wrapper.isAddress(lowercaseAddress);
     }
+    public async isValidSignatureAsync(data: string, signature: string, signerAddress: string): Promise<boolean> {
+        const result = await signatureUtils.isValidSignatureAsync(
+            this._contractWrappers.getProvider(),
+            data,
+            signature,
+            signerAddress,
+        );
+        return result;
+    }
     public async pollTokenBalanceAsync(token: Token): Promise<BigNumber> {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
@@ -451,10 +460,10 @@ export class Blockchain {
             throw new Error('Tried to send a sign request but user has no associated addresses');
         }
         this._showFlashMessageIfLedger();
-
         const provider = this._contractWrappers.getProvider();
         const isLedgerSigner = !_.isUndefined(this._ledgerSubprovider);
-        const isMetaMaskSigner = utils.getProviderType(provider) === Providers.Metamask;
+        const injectedProvider = Blockchain._getInjectedWeb3().currentProvider;
+        const isMetaMaskSigner = utils.getProviderType(injectedProvider) === Providers.Metamask;
         let signerType = SignerType.Default;
         if (isLedgerSigner) {
             signerType = SignerType.Ledger;

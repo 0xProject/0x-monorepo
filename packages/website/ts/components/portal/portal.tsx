@@ -118,7 +118,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private readonly _throttledScreenWidthUpdate: () => void;
     constructor(props: PortalProps) {
         super(props);
-        this._sharedOrderIfExists = orderParser.parse(window.location.search);
+        this._sharedOrderIfExists = orderParser.parseQueryString(window.location.search);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
         const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
         const hasAcceptedDisclaimer =

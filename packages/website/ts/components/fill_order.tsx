@@ -26,6 +26,7 @@ import { AlertTypes, BlockchainErrs, PortalOrder, Token, TokenByAddress, Website
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
+import { orderParser } from 'ts/utils/order_parser';
 import { utils } from 'ts/utils/utils';
 
 interface FillOrderProps {
@@ -418,7 +419,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         let parsedOrder: PortalOrder;
         let orderHash: string;
         try {
-            const order = JSON.parse(orderJSON);
+            const order = orderParser.parseJsonString(orderJSON);
             const validationResult = validator.validate(order, portalOrderSchema);
             if (validationResult.errors.length > 0) {
                 orderJSONErrMsg = 'Submitted order JSON is not a valid order';
@@ -427,28 +428,12 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             }
             parsedOrder = order;
             const signedOrder = parsedOrder.signedOrder;
-            const zeroExOrder: ZeroExOrder = {
-                exchangeAddress: signedOrder.exchangeAddress,
-                expirationTimeSeconds: signedOrder.expirationTimeSeconds,
-                feeRecipientAddress: signedOrder.feeRecipientAddress,
-                makerAddress: signedOrder.makerAddress,
-                makerFee: signedOrder.makerFee,
-                makerAssetData: signedOrder.makerAssetData,
-                makerAssetAmount: signedOrder.makerAssetAmount,
-                salt: signedOrder.salt,
-                takerAddress: _.isEmpty(signedOrder.takerAddress) ? constants.NULL_ADDRESS : signedOrder.takerAddress,
-                takerFee: signedOrder.takerFee,
-                takerAssetData: signedOrder.takerAssetData,
-                takerAssetAmount: signedOrder.takerAssetAmount,
-                senderAddress: signedOrder.senderAddress,
-            };
-            orderHash = orderHashUtils.getOrderHashHex(zeroExOrder);
+            orderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const exchangeContractAddr = this.props.blockchain.getExchangeContractAddressIfExists();
             const signature = signedOrder.signature;
-            const ecSignature = signatureUtils.parseECSignature(signature);
-            const isSignatureValid = signatureUtils.isValidECSignature(
+            const isSignatureValid = await this.props.blockchain.isValidSignatureAsync(
                 orderHash,
-                ecSignature,
+                signature,
                 signedOrder.makerAddress,
             );
             if (exchangeContractAddr !== signedOrder.exchangeAddress) {
@@ -500,6 +485,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
         }
 
+        console.log(parsedOrder);
         this.setState({
             didOrderValidationRun: true,
             orderJSON,

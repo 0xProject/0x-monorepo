@@ -1,5 +1,5 @@
 import { ContractWrappersError } from '@0xproject/contract-wrappers';
-import { assetDataUtils, OrderError, signatureUtils } from '@0xproject/order-utils';
+import { assetDataUtils, OrderError } from '@0xproject/order-utils';
 import { constants as sharedConstants, Networks } from '@0xproject/react-shared';
 import { ECSignature, ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';

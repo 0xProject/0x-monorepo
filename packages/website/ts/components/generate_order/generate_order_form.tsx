@@ -331,7 +331,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
             salt: hashData.orderSalt,
             takerAddress: hashData.orderTakerAddress,
             takerFee: hashData.takerFee,
-            takerAssetData: hashData.receiveTokenContractAddr,
+            takerAssetData,
             takerAssetAmount: hashData.receiveAmount,
         };
         const orderHash = orderHashUtils.getOrderHashHex(zeroExOrder);
@@ -339,7 +339,7 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
         let globalErrMsg = '';
         let order;
         try {
-            const ecSignature = await this.props.blockchain.signOrderHashAsync(orderHash);
+            const signature = await this.props.blockchain.signOrderHashAsync(orderHash);
             order = utils.generateOrder(
                 exchangeAddress,
                 this.props.sideToAssetToken,
@@ -349,10 +349,11 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 hashData.makerFee,
                 hashData.takerFee,
                 hashData.feeRecipientAddress,
-                ecSignature,
+                signature,
                 this.props.tokenByAddress,
                 hashData.orderSalt,
             );
+            console.log(order);
             const validationResult = validator.validate(order, portalOrderSchema);
             if (validationResult.errors.length > 0) {
                 globalErrMsg = 'Order signing failed. Please refresh and try again';
