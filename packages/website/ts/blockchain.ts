@@ -403,13 +403,6 @@ export class Blockchain {
         //     takerAddress,
         // );
     }
-    public async validateCancelOrderThrowIfInvalidAsync(
-        order: Order,
-        cancelTakerTokenAmount: BigNumber,
-    ): Promise<void> {
-        // we can use OrderValidationUtils here
-        // await this._contractWrappers.exchange.validateCancelOrderThrowIfInvalidAsync(order, cancelTakerTokenAmount);
-    }
     public isValidAddress(address: string): boolean {
         const lowercaseAddress = address.toLowerCase();
         return Web3Wrapper.isAddress(lowercaseAddress);
