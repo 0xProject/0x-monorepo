@@ -110,7 +110,7 @@ export class Compiler {
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
         return { solcInstance, fullSolcVersion };
     }
-    private static _addHexPrefixes(compiledContract: solc.StandardContractOutput): void {
+    private static _addHexPrefixToContractBytecode(compiledContract: solc.StandardContractOutput): void {
         if (!_.isUndefined(compiledContract.evm)) {
             if (!_.isUndefined(compiledContract.evm.bytecode) && !_.isUndefined(compiledContract.evm.bytecode.object)) {
                 compiledContract.evm.bytecode.object = ethUtil.addHexPrefix(compiledContract.evm.bytecode.object);
@@ -254,7 +254,7 @@ export class Compiler {
                     );
                 }
 
-                Compiler._addHexPrefixes(compiledContract);
+                Compiler._addHexPrefixToContractBytecode(compiledContract);
 
                 if (shouldPersist) {
                     await this._persistCompiledContractAsync(
