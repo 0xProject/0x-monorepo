@@ -238,7 +238,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         const fullWidthClasses = isExpandedDisplayType ? 'pr4' : '';
         const logoUrl = isNightVersion ? '/images/protocol_logo_white.png' : '/images/protocol_logo_black.png';
         const menuClasses = `col col-${
-            isExpandedDisplayType ? '4' : '5'
+            isExpandedDisplayType ? '4' : '6'
         } ${fullWidthClasses} lg-pr0 md-pr2 sm-hide xs-hide`;
         const menuIconStyle = {
             fontSize: 25,
@@ -297,6 +297,13 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                 <TopBarMenuItem
                                     title={this.props.translate.get(Key.About, Deco.Cap)}
                                     path={`${WebsitePaths.About}`}
+                                    style={styles.menuItem}
+                                    isNightVersion={isNightVersion}
+                                    isExternal={false}
+                                />
+                                <TopBarMenuItem
+                                    title={this.props.translate.get(Key.Careers, Deco.Cap)}
+                                    path={`${WebsitePaths.Careers}`}
                                     style={styles.menuItem}
                                     isNightVersion={isNightVersion}
                                     isExternal={false}
@@ -405,6 +412,9 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     </a>
                     <Link to={`${WebsitePaths.About}`} className="text-decoration-none">
                         <MenuItem className="py2">{this.props.translate.get(Key.About, Deco.Cap)}</MenuItem>
+                    </Link>
+                    <Link to={`${WebsitePaths.Careers}`} className="text-decoration-none">
+                        <MenuItem className="py2">{this.props.translate.get(Key.Careers, Deco.Cap)}</MenuItem>
                     </Link>
                     <a className="text-decoration-none" target="_blank" href={constants.URL_BLOG}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Blog, Deco.Cap)}</MenuItem>
