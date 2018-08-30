@@ -1,3 +1,4 @@
+import { ZeroEx } from '0x.js';
 import {
     BlockRange,
     ContractWrappers,
@@ -76,6 +77,7 @@ export class Blockchain {
     public networkId: number;
     public nodeVersion: string;
     private _contractWrappers: ContractWrappers;
+    private _zeroEx: ZeroEx;
     private readonly _dispatcher: Dispatcher;
     private _web3Wrapper?: Web3Wrapper;
     private _blockchainWatcher?: BlockchainWatcher;
@@ -223,11 +225,9 @@ export class Blockchain {
         }
     }
     public async isAddressInTokenRegistryAsync(tokenAddress: string): Promise<boolean> {
-        utils.assert(!_.isUndefined(this._contractWrappers), 'Contract Wrappers must be instantiated.');
-        // need to get rid of token registry
-        // const tokenIfExists = await this._contractWrappers.tokenRegistry.getTokenIfExistsAsync(tokenAddress);
-        // return !_.isUndefined(tokenIfExists);
-        return false;
+        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+        const tokenIfExists = await this._zeroEx.tokenRegistry.getTokenIfExistsAsync(tokenAddress);
+        return !_.isUndefined(tokenIfExists);
     }
     public getLedgerDerivationPathIfExists(): string {
         if (_.isUndefined(this._ledgerSubprovider)) {
@@ -797,10 +797,8 @@ export class Blockchain {
         if (this.networkId === constants.NETWORK_ID_MAINNET) {
             tokenRegistryTokens = await backendClient.getTokenInfosAsync();
         } else {
-            // get rid of token registry
-            // utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
-            // tokenRegistryTokens = await this._contractWrappers.tokenRegistry.getTokensAsync();
-            tokenRegistryTokens = [] as ZeroExToken[];
+            utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
+            tokenRegistryTokens = await this._zeroEx.tokenRegistry.getTokensAsync();
         }
         const tokenByAddress: TokenByAddress = {};
         _.each(tokenRegistryTokens, (t: ZeroExToken) => {
@@ -879,6 +877,11 @@ export class Blockchain {
             this._contractWrappers.setProvider(provider, networkId);
         } else {
             this._contractWrappers = new ContractWrappers(provider, { networkId });
+        }
+        if (!_.isUndefined(this._zeroEx)) {
+            this._zeroEx.setProvider(provider, networkId);
+        } else {
+            this._zeroEx = new ZeroEx(provider, { networkId });
         }
         if (!_.isUndefined(this._blockchainWatcher)) {
             this._blockchainWatcher.destroy();

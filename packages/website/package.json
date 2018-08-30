@@ -18,6 +18,7 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
+        "0x.js": "^0.38.6",
         "@0xproject/contract-wrappers": "^1.0.1-rc.5",
         "@0xproject/order-utils": "^1.0.1-rc.6",
         "@0xproject/react-docs": "^1.0.7",

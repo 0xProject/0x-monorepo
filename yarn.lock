@@ -19,6 +19,23 @@
     ethers "3.0.22"
     lodash "4.17.10"
 
+"0x.js@^0.38.6":
+  version "0.38.6"
+  resolved "https://registry.yarnpkg.com/0x.js/-/0x.js-0.38.6.tgz#f6cb2b6ef9aea2ff7696c923095e0b794c1d84fc"
+  dependencies:
+    "@0xproject/assert" "^0.2.14"
+    "@0xproject/base-contract" "^0.3.6"
+    "@0xproject/contract-wrappers" "^0.1.1"
+    "@0xproject/order-utils" "^0.0.9"
+    "@0xproject/order-watcher" "^0.0.8"
+    "@0xproject/sol-compiler" "^0.5.4"
+    "@0xproject/types" "^0.8.2"
+    "@0xproject/typescript-typings" "^0.4.3"
+    "@0xproject/utils" "^0.7.3"
+    "@0xproject/web3-wrapper" "^0.7.3"
+    ethers "3.0.22"
+    lodash "4.17.10"
+
 "8fold-marked@0.3.9":
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/8fold-marked/-/8fold-marked-0.3.9.tgz#bb89c645612f8ccfaffac1ca6e3c11f168c9cf59"
@@ -538,7 +555,7 @@
     sinon "^4.0.0"
     websocket "^1.0.25"
 
-"@0xproject/contract-wrappers@^0.1.0":
+"@0xproject/contract-wrappers@^0.1.0", "@0xproject/contract-wrappers@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@0xproject/contract-wrappers/-/contract-wrappers-0.1.1.tgz#8108d7ec051f202ef0cfa77c91c4ef994bf89881"
   dependencies:
@@ -654,6 +671,47 @@
     ethereumjs-blockstream "5.0.0"
     ethers "3.0.22"
     lodash "4.17.10"
+
+"@0xproject/order-watcher@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@0xproject/order-watcher/-/order-watcher-0.0.8.tgz#cfba4c39ca8c5d39e076276479383d0aae022c6d"
+  dependencies:
+    "@0xproject/assert" "^0.2.14"
+    "@0xproject/base-contract" "^0.3.6"
+    "@0xproject/contract-wrappers" "^0.1.1"
+    "@0xproject/fill-scenarios" "^0.0.6"
+    "@0xproject/json-schemas" "^0.8.3"
+    "@0xproject/order-utils" "^0.0.9"
+    "@0xproject/types" "^0.8.2"
+    "@0xproject/typescript-typings" "^0.4.3"
+    "@0xproject/utils" "^0.7.3"
+    "@0xproject/web3-wrapper" "^0.7.3"
+    bintrees "1.0.2"
+    ethereum-types "^0.0.2"
+    ethereumjs-blockstream "5.0.0"
+    ethers "3.0.22"
+    lodash "4.17.10"
+
+"@0xproject/react-shared@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@0xproject/react-shared/-/react-shared-0.2.3.tgz#f0403b9b7f1cfbe2853b53cc983ebb13ee8753a5"
+  dependencies:
+    "@types/lodash" "4.14.104"
+    "@types/material-ui" "0.18.0"
+    "@types/node" "9.6.0"
+    "@types/react" "16.3.13"
+    "@types/react-dom" "16.0.4"
+    "@types/react-scroll" "0.0.31"
+    basscss "8.0.4"
+    is-mobile "0.2.2"
+    lodash "4.17.10"
+    material-ui "0.17.4"
+    react "15.6.1"
+    react-dom "15.6.1"
+    react-highlight "0xproject/react-highlight"
+    react-markdown "3.2.2"
+    react-scroll "1.7.7"
+    react-tap-event-plugin "2.0.1"
 
 "@0xproject/sol-compiler@^0.5.3", "@0xproject/sol-compiler@^0.5.4":
   version "0.5.4"
@@ -5300,7 +5358,7 @@ ethereumjs-wallet@~0.6.0:
 
 ethers@3.0.22:
   version "3.0.22"
-  resolved "https://registry.npmjs.org/ethers/-/ethers-3.0.22.tgz#7fab1ea16521705837aa43c15831877b2716b436"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-3.0.22.tgz#7fab1ea16521705837aa43c15831877b2716b436"
   dependencies:
     aes-js "3.0.0"
     bn.js "^4.4.0"
