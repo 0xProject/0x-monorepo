@@ -44,14 +44,12 @@ const THROTTLE_TIMEOUT = 100;
 const WHATS_NEW_TITLE = 'V2 of the 0x Protocol is now live!';
 // TODO: Update this url
 const WHATS_NEW_URL = 'https://blog.0xproject.com/18-ideas-for-0x-relayers-in-2018-80a1498b955f';
-<<<<<<< HEAD
 const TITLE_STYLE: React.CSSProperties = {
     fontFamily: 'Roboto Mono',
     color: colors.grey,
     fontWeight: 300,
     letterSpacing: 3,
 };
-=======
 const ROTATING_LIST = [
     'tokens',
     'game items',
@@ -63,7 +61,6 @@ const ROTATING_LIST = [
     'cats',
     'everything',
 ];
->>>>>>> Add TypedText component and use it on landing page
 
 const relayerProjects: Project[] = [
     {
