@@ -41,8 +41,7 @@ interface Project {
 }
 
 const THROTTLE_TIMEOUT = 100;
-const WHATS_NEW_TITLE = 'V2 of the 0x Protocol is now live!';
-// TODO: Update this url
+const WHATS_NEW_TITLE = '18 ideas for 0x relayers in 2018';
 const WHATS_NEW_URL = 'https://blog.0xproject.com/18-ideas-for-0x-relayers-in-2018-80a1498b955f';
 const TITLE_STYLE: React.CSSProperties = {
     fontFamily: 'Roboto Mono',
