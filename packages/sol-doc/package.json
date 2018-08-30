@@ -21,6 +21,7 @@
         "lodash": "^4.17.10"
     },
     "devDependencies": {
+        "@0xproject/tslint-config": "^1.0.6",
         "chai": "^4.1.2",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^2.0.2",
