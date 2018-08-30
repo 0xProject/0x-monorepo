@@ -170,17 +170,20 @@ export class Compiler {
      * that version.
      */
     public async getCompilerOutputsAsync(): Promise<StandardOutput[]> {
-        return this._compileContractsAsync(this._getContractNamesToCompile(), false);
+        const promisedOutputs = this._compileContractsAsync(this._getContractNamesToCompile(), false);
+        return promisedOutputs;
     }
     private _getContractNamesToCompile(): string[] {
+        let contractNamesToCompile;
         if (this._specifiedContracts === ALL_CONTRACTS_IDENTIFIER) {
             const allContracts = this._nameResolver.getAll();
-            return _.map(allContracts, contractSource =>
+            contractNamesToCompile = _.map(allContracts, contractSource =>
                 path.basename(contractSource.path, constants.SOLIDITY_FILE_EXTENSION),
             );
         } else {
-            return this._specifiedContracts;
+            contractNamesToCompile = this._specifiedContracts;
         }
+        return contractNamesToCompile;
     }
     /**
      * Compiles contracts, and, if `shouldPersist` is true, saves artifacts to artifactsDir.
