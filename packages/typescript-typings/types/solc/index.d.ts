@@ -1,4 +1,5 @@
 declare module 'solc' {
+    export { ErrorType, ErrorSeverity, SolcError, StandardContractOutput, StandardOutput } from 'ethereum-types';
     import { SolcError } from 'ethereum-types';
     export interface ContractCompilationResult {
         srcmap: string;
@@ -88,7 +89,6 @@ declare module 'solc' {
         };
         settings: CompilerSettings;
     }
-    export { ErrorType, ErrorSeverity, SolcError, StandardContractOutput, StandardOutput } from 'ethereum-types';
     export interface SolcInstance {
         compile(
             sources: InputSources,
