@@ -46,13 +46,13 @@ export class SolidityDocGenerator {
         const compiler = new Compiler(this._compilerOptions);
         const compilerOutputs = await compiler.getCompilerOutputsAsync();
         for (const compilerOutput of compilerOutputs) {
-            const solidityModules = _.keys(compilerOutput.contracts);
-            for (const solidityModule of solidityModules) {
-                const compiledSolidityModule = compilerOutput.contracts[solidityModule];
+            const contractFileNames = _.keys(compilerOutput.contracts);
+            for (const contractFileName of contractFileNames) {
+                const contractNameToOutput = compilerOutput.contracts[contractFileName];
 
-                const contracts = _.keys(compiledSolidityModule);
-                for (const contract of contracts) {
-                    const compiledContract = compiledSolidityModule[contract];
+                const contractNames = _.keys(contractNameToOutput);
+                for (const contractName of contractNames) {
+                    const compiledContract = contractNameToOutput[contractName];
                     if (_.isUndefined(compiledContract.abi)) {
                         throw new Error('compiled contract did not contain ABI output.');
                     }
@@ -61,7 +61,7 @@ export class SolidityDocGenerator {
                     }
 
                     logUtils.log(
-                        `TODO: extract data from ${contract}'s abi (eg name, which is "${
+                        `TODO: extract data from ${contractName}'s abi (eg name, which is "${
                             (compiledContract.abi[0] as MethodAbi).name
                         }", etc) and devdoc (eg title, which is "${
                             compiledContract.devdoc.title
