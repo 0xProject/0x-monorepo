@@ -233,3 +233,226 @@ export enum StatusCodes {
     MethodNotAllowed = 405,
     GatewayTimeout = 504,
 }
+
+export interface TypeDocType {
+    type: TypeDocTypes;
+    value: string;
+    name: string;
+    types: TypeDocType[];
+    typeArguments?: TypeDocType[];
+    declaration: TypeDocNode;
+    elementType?: TypeDocType;
+    indexSignature?: TypeDocNode;
+    elements?: TupleElement[];
+}
+
+export interface TupleElement {
+    type: string;
+    name: string;
+}
+
+export interface TypeDocNode {
+    id?: number;
+    name?: string;
+    kind?: string;
+    defaultValue?: string;
+    kindString?: string;
+    type?: TypeDocType;
+    fileName?: string;
+    line?: number;
+    comment?: TypeDocNode;
+    text?: string;
+    shortText?: string;
+    returns?: string;
+    declaration: TypeDocNode;
+    flags?: TypeDocFlags;
+    indexSignature?: TypeDocNode;
+    signatures?: TypeDocNode[];
+    parameters?: TypeDocNode[];
+    typeParameter?: TypeDocNode[];
+    sources?: TypeDocNode[];
+    children?: TypeDocNode[];
+    groups?: TypeDocGroup[];
+}
+
+export interface TypeDocFlags {
+    isStatic?: boolean;
+    isOptional?: boolean;
+    isPublic?: boolean;
+    isExported?: boolean;
+}
+
+export interface TypeDocGroup {
+    title: string;
+    children: number[];
+}
+
+export enum TypeDocTypes {
+    Intrinsic = 'intrinsic',
+    Reference = 'reference',
+    Array = 'array',
+    StringLiteral = 'stringLiteral',
+    Reflection = 'reflection',
+    Union = 'union',
+    TypeParameter = 'typeParameter',
+    Intersection = 'intersection',
+    Tuple = 'tuple',
+    Unknown = 'unknown',
+}
+
+export interface CustomTypeChild {
+    name: string;
+    type?: Type;
+    defaultValue?: string;
+}
+
+export interface Event {
+    name: string;
+    eventArgs: EventArg[];
+}
+
+export interface EventArg {
+    isIndexed: boolean;
+    name: string;
+    type: Type;
+}
+
+export interface Property {
+    name: string;
+    type: Type;
+    source?: Source;
+    comment?: string;
+    callPath?: string;
+}
+
+export interface BaseMethod {
+    isConstructor: boolean;
+    name: string;
+    returnComment?: string | undefined;
+    callPath: string;
+    parameters: Parameter[];
+    returnType: Type;
+    comment?: string;
+}
+
+export interface BaseFunction {
+    name: string;
+    returnComment?: string | undefined;
+    parameters: Parameter[];
+    returnType: Type;
+    comment?: string;
+}
+
+export interface TypeDefinitionByName {
+    [typeName: string]: CustomType;
+}
+
+export interface DocAgnosticFormat {
+    [sectionName: string]: DocSection;
+}
+
+export interface DocSection {
+    comment: string;
+    constructors: Array<TypescriptMethod | SolidityMethod>;
+    methods: Array<TypescriptMethod | SolidityMethod>;
+    properties: Property[];
+    types: CustomType[];
+    functions: TypescriptFunction[];
+    events?: Event[];
+    externalExportToLink?: ExternalExportToLink;
+}
+
+export interface TypescriptMethod extends BaseMethod {
+    source?: Source;
+    isStatic?: boolean;
+    typeParameter?: TypeParameter;
+}
+
+export interface TypescriptFunction extends BaseFunction {
+    source?: Source;
+    typeParameter?: TypeParameter;
+    callPath: string;
+}
+
+export interface SolidityMethod extends BaseMethod {
+    isConstant?: boolean;
+    isPayable?: boolean;
+}
+
+export interface Source {
+    fileName: string;
+    line: number;
+}
+
+export interface Parameter {
+    name: string;
+    comment: string;
+    isOptional: boolean;
+    type: Type;
+    defaultValue?: string;
+}
+
+export interface TypeParameter {
+    name: string;
+    type: Type;
+}
+
+export interface Type {
+    name: string;
+    typeDocType: TypeDocTypes;
+    value?: string;
+    isExportedClassReference?: boolean;
+    typeArguments?: Type[];
+    elementType?: ElementType;
+    types?: Type[];
+    method?: TypescriptMethod;
+    indexSignature?: IndexSignature;
+    externalLink?: string;
+    tupleElements?: Type[];
+}
+
+export interface ElementType {
+    name: string;
+    typeDocType: TypeDocTypes;
+}
+
+export interface IndexSignature {
+    keyName: string;
+    keyType: Type;
+    valueName: string;
+}
+
+export interface CustomType {
+    name: string;
+    kindString: string;
+    type?: Type;
+    method?: TypescriptMethod;
+    indexSignature?: IndexSignature;
+    defaultValue?: string;
+    comment?: string;
+    children?: CustomTypeChild[];
+}
+export interface GeneratedDocJson {
+    version: string;
+    metadata: Metadata;
+    typedocJson: TypeDocNode;
+}
+
+export interface ExportNameToTypedocNames {
+    [exportName: string]: string[];
+}
+
+export interface ExternalTypeToLink {
+    [externalTypeName: string]: string;
+}
+
+export interface ExternalExportToLink {
+    [externalExport: string]: string;
+}
+
+export interface Metadata {
+    exportPathToTypedocNames: ExportNameToTypedocNames;
+    exportPathOrder: string[];
+    externalTypeToLink: ExternalTypeToLink;
+    externalExportToLink: ExternalExportToLink;
+}

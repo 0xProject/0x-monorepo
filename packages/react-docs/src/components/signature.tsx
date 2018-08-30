@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { Parameter, Type as TypeDef, TypeDefinitionByName, TypeParameter } from '@0xproject/types';
+
 import { DocsInfo } from '../docs_info';
-import { Parameter, Type as TypeDef, TypeDefinitionByName, TypeParameter } from '../types';
 
 import { Type } from './type';
 

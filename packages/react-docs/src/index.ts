@@ -1,3 +1,5 @@
+export { DocAgnosticFormat, GeneratedDocJson } from '@0xproject/types';
+
 // Exported to give users of this library added flexibility if they want to build
 // a docs page from scratch using the individual components.
 export { Badge } from './components/badge';
@@ -15,15 +17,6 @@ export { Type } from './components/type';
 
 export { DocsInfo } from './docs_info';
 
-export {
-    DocsInfoConfig,
-    DocAgnosticFormat,
-    DocSection,
-    DoxityDocObj,
-    DocsMenu,
-    SupportedDocJson,
-    TypeDocNode,
-    GeneratedDocJson,
-} from './types';
+export { DocsInfoConfig, DoxityDocObj, DocsMenu, SupportedDocJson } from './types';
 
 export { constants } from './utils/constants';

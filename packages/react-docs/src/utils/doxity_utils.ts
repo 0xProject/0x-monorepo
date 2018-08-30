@@ -1,20 +1,17 @@
 import * as _ from 'lodash';
 
 import {
-    AbiTypes,
     DocAgnosticFormat,
     DocSection,
-    DoxityAbiDoc,
-    DoxityContractObj,
-    DoxityDocObj,
-    DoxityInput,
     EventArg,
     Parameter,
     Property,
     SolidityMethod,
     Type,
     TypeDocTypes,
-} from '../types';
+} from '@0xproject/types';
+
+import { AbiTypes, DoxityAbiDoc, DoxityContractObj, DoxityDocObj, DoxityInput } from '../types';
 
 export const doxityUtils = {
     convertToDocAgnosticFormat(doxityDocObj: DoxityDocObj): DocAgnosticFormat {

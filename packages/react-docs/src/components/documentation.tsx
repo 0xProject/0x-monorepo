@@ -9,24 +9,23 @@ import {
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
+import {
+    DocAgnosticFormat,
+    Event,
+    ExternalExportToLink,
+    Property,
+    SolidityMethod,
+    TypeDefinitionByName,
+    TypescriptFunction,
+    TypescriptMethod,
+} from '@0xproject/types';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import * as semver from 'semver';
 
 import { DocsInfo } from '../docs_info';
-import {
-    AddressByContractName,
-    DocAgnosticFormat,
-    Event,
-    ExternalExportToLink,
-    Property,
-    SolidityMethod,
-    SupportedDocJson,
-    TypeDefinitionByName,
-    TypescriptFunction,
-    TypescriptMethod,
-} from '../types';
+import { AddressByContractName, SupportedDocJson } from '../types';
 import { constants } from '../utils/constants';
 
 import { Badge } from './badge';

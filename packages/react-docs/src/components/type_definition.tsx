@@ -1,10 +1,11 @@
 import { AnchorTitle, colors, HeaderSizes } from '@0xproject/react-shared';
+import { CustomType, CustomTypeChild, TypeDefinitionByName, TypeDocTypes } from '@0xproject/types';
 import { errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { CustomType, CustomTypeChild, KindString, TypeDefinitionByName, TypeDocTypes } from '../types';
+import { KindString } from '../types';
 import { constants } from '../utils/constants';
 
 import { Comment } from './comment';

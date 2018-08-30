@@ -1,18 +1,16 @@
 import { MenuSubsectionsBySection } from '@0xproject/react-shared';
+import { DocAgnosticFormat, GeneratedDocJson, TypeDefinitionByName } from '@0xproject/types';
 import compareVersions = require('compare-versions');
 import * as _ from 'lodash';
 
 import {
     ContractsByVersionByNetworkId,
-    DocAgnosticFormat,
     DocsInfoConfig,
     DocsMenu,
     DoxityDocObj,
-    GeneratedDocJson,
     SectionNameToMarkdownByVersion,
     SectionsMap,
     SupportedDocJson,
-    TypeDefinitionByName,
 } from './types';
 import { doxityUtils } from './utils/doxity_utils';
 import { TypeDocUtils } from './utils/typedoc_utils';
