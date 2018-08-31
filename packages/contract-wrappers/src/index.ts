@@ -6,6 +6,7 @@ export { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
 export { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
 export { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
 export { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
+export { OrderValidatorWrapper } from './contract_wrappers/order_validator_wrapper';
 
 export { TransactionEncoder } from './utils/transaction_encoder';
 
@@ -21,6 +22,9 @@ export {
     OrderInfo,
     EventCallback,
     DecodedLogEvent,
+    BalanceAndAllowance,
+    OrderAndTraderInfo,
+    TraderInfo,
 } from './types';
 
 export { Order, SignedOrder, AssetProxyId } from '@0xproject/types';

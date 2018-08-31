@@ -33,6 +33,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
+        "@material-ui/core": "^3.0.1",
         "@types/is-mobile": "0.3.0",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "0.18.0",
@@ -44,13 +45,12 @@
         "change-case": "^3.0.2",
         "is-mobile": "^0.2.2",
         "lodash": "^4.17.5",
-        "material-ui": "^0.17.1",
-        "react": "15.6.1",
-        "react-dom": "15.6.1",
-        "react-highlight": "0xproject/react-highlight",
+        "material-ui": "^0.20.0",
+        "react": "^16.4.2",
+        "react-dom": "^16.4.2",
+        "react-highlight": "0xproject/react-highlight#2f40a42e0a3f0ad126f9f42d505b97b603fc7162",
         "react-markdown": "^3.2.2",
-        "react-scroll": "0xproject/react-scroll#similar-to-pr-330",
-        "react-tap-event-plugin": "^2.0.1"
+        "react-scroll": "0xproject/react-scroll#similar-to-pr-330"
     },
     "publishConfig": {
         "access": "public"

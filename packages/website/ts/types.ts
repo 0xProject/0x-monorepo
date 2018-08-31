@@ -415,6 +415,7 @@ export enum Key {
     OffChainOnChainDescription = 'OFFCHAIN_ONCHAIN_DESCRIPTION',
     RelayersHeader = 'RELAYERS_HEADER',
     BenefitsHeader = 'BENEFITS_HEADER',
+    UseCasesHeader = 'USE_CASES_HEADER',
     BenefitOneTitle = 'BENEFIT_ONE_TITLE',
     BenefitOneDescription = 'BENEFIT_ONE_DESCRIPTION',
     BenefitTwoTitle = 'BENEFIT_TWO_TITLE',
@@ -436,6 +437,10 @@ export enum Key {
     DecentralizedLoansDescription = 'DECENTRALIZED_LOANS_DESCRIPTION',
     FundManagement = 'FUND_MANAGEMENT',
     FundManagementDescription = 'FUND_MANAGEMENT_DESCRIPTION',
+    GamingAndCollectables = 'GAMING_AND_COLLECTABLES',
+    GamingAndCollectablesDescription = 'GAMING_AND_COLLECTABLES_DESCRIPTION',
+    OrderBooks = 'ORDER_BOOKS',
+    OrderBooksDescription = 'ORDER_BOOKS_DESCRIPTION',
     FinalCallToAction = 'FINAL_CALL_TO_ACTION',
     Documentation = 'DOCUMENTATION',
     Community = 'COMMUNITY',
@@ -468,6 +473,7 @@ export enum Key {
     Home = 'HOME',
     RocketChat = 'ROCKETCHAT',
     TradeCallToAction = 'TRADE_CALL_TO_ACTION',
+    OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
 }
 
 export enum SmartContractDocSections {

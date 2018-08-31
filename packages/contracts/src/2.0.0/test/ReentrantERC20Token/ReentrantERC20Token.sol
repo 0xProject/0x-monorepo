@@ -25,6 +25,7 @@ import "../../protocol/Exchange/interfaces/IExchange.sol";
 import "../../protocol/Exchange/libs/LibOrder.sol";
 
 
+// solhint-disable no-unused-vars
 contract ReentrantERC20Token is
     ERC20Token
 {
@@ -50,6 +51,7 @@ contract ReentrantERC20Token is
         MARKET_SELL_ORDERS,
         MATCH_ORDERS,
         CANCEL_ORDER,
+        BATCH_CANCEL_ORDERS,
         CANCEL_ORDERS_UP_TO,
         SET_SIGNATURE_VALIDATOR_APPROVAL
     }
@@ -148,6 +150,11 @@ contract ReentrantERC20Token is
             calldata = abi.encodeWithSelector(
                 EXCHANGE.cancelOrder.selector,
                 order
+            );
+        } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_CANCEL_ORDERS)) {
+            calldata = abi.encodeWithSelector(
+                EXCHANGE.batchCancelOrders.selector,
+                orders
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.CANCEL_ORDERS_UP_TO)) {
             calldata = abi.encodeWithSelector(

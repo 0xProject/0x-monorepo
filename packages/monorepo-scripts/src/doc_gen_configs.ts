@@ -39,6 +39,7 @@ export const docGenConfigs: DocGenConfigs = {
         'EtherTokenWrapper',
         'ExchangeWrapper',
         'ForwarderWrapper',
+        'OrderValidatorWrapper',
         'TransactionEncoder',
     ],
     // Some types are not explicitly part of the public interface like params, return values, etc... But we still

@@ -1,6 +1,5 @@
 import { MenuSubsectionsBySection } from '@0xproject/react-shared';
 import { DocAgnosticFormat, GeneratedDocJson, TypeDefinitionByName } from '@0xproject/types';
-import compareVersions = require('compare-versions');
 import * as _ from 'lodash';
 
 import {

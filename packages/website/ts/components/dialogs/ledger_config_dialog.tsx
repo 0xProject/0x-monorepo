@@ -64,7 +64,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     }
     public render(): React.ReactNode {
         const dialogActions = [
-            <FlatButton key="ledgerConnectCancel" label="Cancel" onTouchTap={this._onClose.bind(this)} />,
+            <FlatButton key="ledgerConnectCancel" label="Cancel" onClick={this._onClose.bind(this)} />,
         ];
         const dialogTitle =
             this.state.stepIndex === LedgerSteps.CONNECT ? 'Connect to your Ledger' : 'Select desired address';

@@ -1,4 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -14,9 +15,11 @@ import { MixinAuthorizableContract } from '../../generated_contract_wrappers/mix
 import { TestAssetProxyOwnerContract } from '../../generated_contract_wrappers/test_asset_proxy_owner';
 import { artifacts } from '../utils/artifacts';
 import {
-    expectContractCallFailedWithoutReasonAsync,
-    expectContractCreationFailedWithoutReason,
+    expectContractCallFailedAsync,
+    expectContractCreationFailedAsync,
+    expectTransactionFailedAsync,
     expectTransactionFailedWithoutReasonAsync,
+    sendTransactionResult,
 } from '../utils/assertions';
 import { increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
@@ -109,8 +112,8 @@ describe('AssetProxyOwner', () => {
         });
         it('should throw if a null address is included in assetProxyContracts', async () => {
             const assetProxyContractAddresses = [erc20Proxy.address, constants.NULL_ADDRESS];
-            return expectContractCreationFailedWithoutReason(
-                AssetProxyOwnerContract.deployFrom0xArtifactAsync(
+            return expectContractCreationFailedAsync(
+                (AssetProxyOwnerContract.deployFrom0xArtifactAsync(
                     artifacts.AssetProxyOwner,
                     provider,
                     txDefaults,
@@ -118,7 +121,8 @@ describe('AssetProxyOwner', () => {
                     assetProxyContractAddresses,
                     REQUIRED_APPROVALS,
                     SECONDS_TIME_LOCKED,
-                ),
+                ) as any) as sendTransactionResult,
+                RevertReason.InvalidAssetProxy,
             );
         });
     });
@@ -145,25 +149,6 @@ describe('AssetProxyOwner', () => {
                 removeAuthorizedAddressAtIndexData,
             );
             expect(isFunctionRemoveAuthorizedAddressAtIndex).to.be.true();
-        });
-    });
-
-    describe('readBytes4', () => {
-        it('should revert if byte array has a length < 4', async () => {
-            const byteArrayLessThan4Bytes = '0x010101';
-            return expectContractCallFailedWithoutReasonAsync(
-                testAssetProxyOwner.publicReadBytes4.callAsync(byteArrayLessThan4Bytes, new BigNumber(0)),
-            );
-        });
-        it('should return the first 4 bytes of a byte array of arbitrary length', async () => {
-            const byteArrayLongerThan32Bytes =
-                '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
-            const first4Bytes = await testAssetProxyOwner.publicReadBytes4.callAsync(
-                byteArrayLongerThan32Bytes,
-                new BigNumber(0),
-            );
-            const expectedFirst4Bytes = byteArrayLongerThan32Bytes.slice(0, 10);
-            expect(first4Bytes).to.equal(expectedFirst4Bytes);
         });
     });
 
@@ -300,8 +285,9 @@ describe('AssetProxyOwner', () => {
                 );
                 const log = submitTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
-                return expectContractCallFailedWithoutReasonAsync(
+                return expectContractCallFailedAsync(
                     testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(txId),
+                    RevertReason.InvalidFunctionSelector,
                 );
             });
 
@@ -335,8 +321,9 @@ describe('AssetProxyOwner', () => {
                 );
                 const log = submitTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
-                return expectContractCallFailedWithoutReasonAsync(
+                return expectContractCallFailedAsync(
                     testAssetProxyOwner.testValidRemoveAuthorizedAddressAtIndexTx.callAsync(txId),
+                    RevertReason.UnregisteredAssetProxy,
                 );
             });
         });
@@ -377,10 +364,11 @@ describe('AssetProxyOwner', () => {
 
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-                return expectTransactionFailedWithoutReasonAsync(
+                return expectTransactionFailedAsync(
                     testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
                         from: owners[1],
                     }),
+                    RevertReason.UnregisteredAssetProxy,
                 );
             });
 
@@ -399,10 +387,11 @@ describe('AssetProxyOwner', () => {
 
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
 
-                return expectTransactionFailedWithoutReasonAsync(
+                return expectTransactionFailedAsync(
                     testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
                         from: owners[1],
                     }),
+                    RevertReason.InvalidFunctionSelector,
                 );
             });
 

@@ -63,6 +63,42 @@ contract TestExchangeInternals is
     }
 
     /// @dev Calculates partial value given a numerator and denominator.
+    ///      Reverts if rounding error is >= 0.1%
+    /// @param numerator Numerator.
+    /// @param denominator Denominator.
+    /// @param target Value to calculate partial of.
+    /// @return Partial value of target.
+    function publicSafeGetPartialAmountFloor(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        public
+        pure
+        returns (uint256 partialAmount)
+    {
+        return safeGetPartialAmountFloor(numerator, denominator, target);
+    }
+
+    /// @dev Calculates partial value given a numerator and denominator.
+    ///      Reverts if rounding error is >= 0.1%
+    /// @param numerator Numerator.
+    /// @param denominator Denominator.
+    /// @param target Value to calculate partial of.
+    /// @return Partial value of target.
+    function publicSafeGetPartialAmountCeil(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        public
+        pure
+        returns (uint256 partialAmount)
+    {
+        return safeGetPartialAmountCeil(numerator, denominator, target);
+    }
+
+    /// @dev Calculates partial value given a numerator and denominator.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.

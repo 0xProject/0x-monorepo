@@ -8,9 +8,8 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "tsc -w",
         "clean": "shx rm -rf lib",
-        "build": "tsc",
+        "build": "tsc -b",
         "lint": "tslint --project .",
         "test:circleci": "yarn test:coverage",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
