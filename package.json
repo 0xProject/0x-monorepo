@@ -37,7 +37,7 @@
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break -1; done;",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing",
         "comment:postinstall": "HACK: For some reason `yarn` is not setting up symlink properly for types. We temporarily make it manually. Remove this ASAP!",
-        "postinstall": "mv node_modules/@0xproject/types node_modules/@0xproject/types-0.8.1; for i in website sra-report; do cp -R node_modules/@0xproject/types-0.8.1 packages/$i/node_modules/@0xproject/types; done; ln -s ../../packages/types node_modules/@0xproject/types"
+        "postinstall": "shx cp -R node_modules/@0xproject/types packages/website/node_modules/@0xproject; shx cp -R node_modules/@0xproject/types packages/sra-report/node_modules/@0xproject; rimraf node_modules/@0xproject/types; shx ln -s ../../packages/types node_modules/@0xproject/types"
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
