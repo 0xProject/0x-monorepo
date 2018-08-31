@@ -22,6 +22,7 @@ interface BoxContent {
     description: string;
     imageUrl: string;
     classNames: string;
+    maxWidth: number;
 }
 interface AssetType {
     title: string;
@@ -53,7 +54,7 @@ const ROTATING_LIST = [
     'tokens',
     'game items',
     'digital art',
-    'outcomes',
+    'futures',
     'stocks',
     'derivatives',
     'loans',
@@ -399,18 +400,21 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                 description: this.props.translate.get(Key.BenefitOneDescription, Deco.Cap),
                 imageUrl: '/images/landing/distributed_network.png',
                 classNames: '',
+                maxWidth: 160,
             },
             {
                 title: this.props.translate.get(Key.BenefitTwoTitle, Deco.Cap),
                 description: this.props.translate.get(Key.BenefitTwoDescription, Deco.Cap),
                 imageUrl: '/images/landing/liquidity.png',
                 classNames: 'mx-auto',
+                maxWidth: 160,
             },
             {
                 title: this.props.translate.get(Key.BenefitThreeTitle, Deco.Cap),
                 description: this.props.translate.get(Key.BenefitThreeDescription, Deco.Cap),
                 imageUrl: '/images/landing/exchange_everywhere.png',
                 classNames: 'right',
+                maxWidth: 130,
             },
         ];
         const boxes = _.map(boxContents, (boxContent: BoxContent) => {
@@ -421,7 +425,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             <img
                                 className="mx-auto"
                                 src={boxContent.imageUrl}
-                                style={{ height: 'auto', maxWidth: 160 }}
+                                style={{ height: 'auto', maxWidth: boxContent.maxWidth }}
                             />
                         </Container>
                         <div className="h3" style={{ color: 'black', fontFamily: 'Roboto Mono' }}>
@@ -565,7 +569,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                 lineHeight: 1.5,
                                 fontSize: 14,
                                 overflow: 'hidden',
-                                height: 104,
+                                height: 124,
                             }}
                         >
                             {useCase.description}
