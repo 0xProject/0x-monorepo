@@ -17,33 +17,35 @@
 */
 
 // solhint-disable
-pragma solidity ^0.4.10;
+pragma solidity ^0.4.15;
 
 import "./MultiSigWallet.sol";
 
 
 /// @title Multisignature wallet with time lock- Allows multiple parties to execute a transaction after a time lock has passed.
 /// @author Amir Bandeali - <amir@0xProject.com>
-contract MultiSigWalletWithTimeLock is MultiSigWallet {
+contract MultiSigWalletWithTimeLock is
+    MultiSigWallet
+{
 
-    event ConfirmationTimeSet(uint indexed transactionId, uint confirmationTime);
-    event TimeLockChange(uint secondsTimeLocked);
+    event ConfirmationTimeSet(uint256 indexed transactionId, uint256 confirmationTime);
+    event TimeLockChange(uint256 secondsTimeLocked);
 
-    uint public secondsTimeLocked;
+    uint256 public secondsTimeLocked;
 
-    mapping (uint => uint) public confirmationTimes;
+    mapping (uint256 => uint256) public confirmationTimes;
 
-    modifier notFullyConfirmed(uint transactionId) {
+    modifier notFullyConfirmed(uint256 transactionId) {
         require(!isConfirmed(transactionId));
         _;
     }
 
-    modifier fullyConfirmed(uint transactionId) {
+    modifier fullyConfirmed(uint256 transactionId) {
         require(isConfirmed(transactionId));
         _;
     }
 
-    modifier pastTimeLock(uint transactionId) {
+    modifier pastTimeLock(uint256 transactionId) {
         require(block.timestamp >= confirmationTimes[transactionId] + secondsTimeLocked);
         _;
     }
@@ -56,7 +58,11 @@ contract MultiSigWalletWithTimeLock is MultiSigWallet {
     /// @param _owners List of initial owners.
     /// @param _required Number of required confirmations.
     /// @param _secondsTimeLocked Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
-    function MultiSigWalletWithTimeLock(address[] _owners, uint _required, uint _secondsTimeLocked)
+    function MultiSigWalletWithTimeLock(
+        address[] _owners,
+        uint256 _required,
+        uint256 _secondsTimeLocked
+    )
         public
         MultiSigWallet(_owners, _required)
     {
@@ -65,7 +71,7 @@ contract MultiSigWalletWithTimeLock is MultiSigWallet {
 
     /// @dev Changes the duration of the time lock for transactions.
     /// @param _secondsTimeLocked Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
-    function changeTimeLock(uint _secondsTimeLocked)
+    function changeTimeLock(uint256 _secondsTimeLocked)
         public
         onlyWallet
     {
@@ -75,7 +81,7 @@ contract MultiSigWalletWithTimeLock is MultiSigWallet {
 
     /// @dev Allows an owner to confirm a transaction.
     /// @param transactionId Transaction ID.
-    function confirmTransaction(uint transactionId)
+    function confirmTransaction(uint256 transactionId)
         public
         ownerExists(msg.sender)
         transactionExists(transactionId)
@@ -89,34 +95,21 @@ contract MultiSigWalletWithTimeLock is MultiSigWallet {
         }
     }
 
-    /// @dev Allows an owner to revoke a confirmation for a transaction.
-    /// @param transactionId Transaction ID.
-    function revokeConfirmation(uint transactionId)
-        public
-        ownerExists(msg.sender)
-        confirmed(transactionId, msg.sender)
-        notExecuted(transactionId)
-        notFullyConfirmed(transactionId)
-    {
-        confirmations[transactionId][msg.sender] = false;
-        Revocation(msg.sender, transactionId);
-    }
-
     /// @dev Allows anyone to execute a confirmed transaction.
     /// @param transactionId Transaction ID.
-    function executeTransaction(uint transactionId)
+    function executeTransaction(uint256 transactionId)
         public
         notExecuted(transactionId)
         fullyConfirmed(transactionId)
         pastTimeLock(transactionId)
     {
-        Transaction storage tx = transactions[transactionId];
-        tx.executed = true;
-        if (tx.destination.call.value(tx.value)(tx.data))
+        Transaction storage txn = transactions[transactionId];
+        txn.executed = true;
+        if (external_call(txn.destination, txn.value, txn.data.length, txn.data))
             Execution(transactionId);
         else {
             ExecutionFailure(transactionId);
-            tx.executed = false;
+            txn.executed = false;
         }
     }
 
@@ -125,7 +118,7 @@ contract MultiSigWalletWithTimeLock is MultiSigWallet {
      */
 
     /// @dev Sets the time of when a submission first passed.
-    function setConfirmationTime(uint transactionId, uint confirmationTime)
+    function setConfirmationTime(uint256 transactionId, uint256 confirmationTime)
         internal
     {
         confirmationTimes[transactionId] = confirmationTime;
