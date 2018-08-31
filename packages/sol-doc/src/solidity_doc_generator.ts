@@ -124,7 +124,7 @@ function _genConstructorDoc(abiDefinition: ConstructorAbi, devdocIfExists: Devdo
     // from that object extract the "details" (comment) property
     comment = 'something from devdoc';
 
-    return {
+    const constructorDoc: SolidityMethod = {
         isConstructor: true,
         name: '', // sad we have to specify this
         callPath: '', // TODO: wtf is this?
@@ -134,6 +134,8 @@ function _genConstructorDoc(abiDefinition: ConstructorAbi, devdocIfExists: Devdo
         isPayable: abiDefinition.payable,
         comment,
     };
+
+    return constructorDoc;
 }
 
 function _genMethodDoc(
@@ -160,7 +162,7 @@ function _genMethodDoc(
     const isConstant = abiDefinition.type === 'fallback' ? true : abiDefinition.constant;
     // TODO: determine whether fallback functions are always constant, as coded just above
 
-    return {
+    const methodDoc: SolidityMethod = {
         isConstructor: false,
         name,
         callPath: '', // TODO: wtf is this?
@@ -170,6 +172,7 @@ function _genMethodDoc(
         isPayable: abiDefinition.payable,
         comment,
     };
+    return methodDoc;
 }
 
 function _genEventDoc(abiDefinition: EventAbi): Event {
