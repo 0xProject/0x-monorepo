@@ -3,8 +3,6 @@ import * as _ from 'lodash';
 import * as chai from 'chai';
 import 'mocha';
 
-import { DocSection } from '@0xproject/types';
-
 import { generateSolDocAsync } from '../src/solidity_doc_generator';
 
 import { chaiSetup } from './util/chai_setup';

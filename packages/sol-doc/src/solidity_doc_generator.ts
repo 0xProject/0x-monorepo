@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 
 import {
-    AbiDefinition,
     ConstructorAbi,
     DataItem,
     DevdocOutput,
@@ -22,7 +21,6 @@ import {
     Type,
     TypeDocTypes,
 } from '@0xproject/types';
-import { logUtils } from '@0xproject/utils';
 
 /**
  * Invoke the Solidity compiler and transform its ABI and devdoc outputs into
@@ -122,7 +120,7 @@ function _genConstructorDoc(abiDefinition: ConstructorAbi, devdocIfExists: Devdo
     let comment;
     // TODO: use methodSignature as the key to abiEntry.devdoc.methods, and
     // from that object extract the "details" (comment) property
-    comment = 'something from devdoc';
+    comment = `something from devdoc, using ${methodSignature} to find it`;
 
     const constructorDoc: SolidityMethod = {
         isConstructor: true,

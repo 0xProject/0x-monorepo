@@ -468,6 +468,7 @@ export class TypeDocUtils {
             methodIfExists = this._convertMethod(entity.declaration, isConstructor, sectionName);
         } else if (entity.type === TypeDocTypes.Tuple) {
             tupleElementsIfExists = _.map(entity.elements, el => {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 return { name: el.name, typeDocType: el.type as TypeDocTypes };
             });
         }
