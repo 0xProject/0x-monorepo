@@ -117,10 +117,8 @@ function _genConstructorDoc(abiDefinition: ConstructorAbi, devdocIfExists: Devdo
         devdocIfExists,
     );
 
-    let comment;
-    // TODO: use methodSignature as the key to abiEntry.devdoc.methods, and
-    // from that object extract the "details" (comment) property
-    comment = `something from devdoc, using ${methodSignature} to find it`;
+    const comment = _devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
+    // TODO: figure out why devdoc'd constructors don't get output by solc
 
     const constructorDoc: SolidityMethod = {
         isConstructor: true,
@@ -136,6 +134,26 @@ function _genConstructorDoc(abiDefinition: ConstructorAbi, devdocIfExists: Devdo
     return constructorDoc;
 }
 
+function _devdocMethodDetailsIfExist(
+    methodSignature: string,
+    devdocIfExists: DevdocOutput | undefined,
+): string | undefined {
+    let details;
+    if (!_.isUndefined(devdocIfExists)) {
+        const devdocMethodsIfExist = devdocIfExists.methods;
+        if (!_.isUndefined(devdocMethodsIfExist)) {
+            const devdocMethodIfExists = devdocMethodsIfExist[methodSignature];
+            if (!_.isUndefined(devdocMethodIfExists)) {
+                const devdocMethodDetailsIfExist = devdocMethodIfExists.details;
+                if (!_.isUndefined(devdocMethodDetailsIfExist)) {
+                    details = devdocMethodDetailsIfExist;
+                }
+            }
+        }
+    }
+    return details;
+}
+
 function _genMethodDoc(
     abiDefinition: MethodAbi | FallbackAbi,
     devdocIfExists: DevdocOutput | undefined,
@@ -147,10 +165,7 @@ function _genMethodDoc(
             ? { parameters: [], methodSignature: `${name}()` }
             : _genMethodParamsDoc(name, abiDefinition.inputs, devdocIfExists);
 
-    let comment;
-    // TODO: use methodSignature as the key to abiEntry.devdoc.methods, and
-    // from that object extract the "details" (comment) property
-    comment = 'something from devdoc';
+    const comment = _devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
 
     const returnType =
         abiDefinition.type === 'fallback'
@@ -205,9 +220,6 @@ function _genEventArgsDoc(args: DataItem[], devdocIfExists: DevdocOutput | undef
 
 /**
  * Extract documentation for each method paramater from @param params.
- * TODO: Then, use @param name, along with the types of the method
- * parameters, to form a method signature.  That signature is the key to
- * the method documentation held in @param devdocIfExists.
  */
 function _genMethodParamsDoc(
     name: string,
@@ -215,18 +227,37 @@ function _genMethodParamsDoc(
     devdocIfExists: DevdocOutput | undefined,
 ): { parameters: Parameter[]; methodSignature: string } {
     const parameters: Parameter[] = [];
+    let methodSignature = `${name}(`;
+
     for (const abiParam of abiParams) {
         const parameter: Parameter = {
             name: abiParam.name,
-            comment: '', // TODO: get from devdoc. see comment below.
+            comment: '',
             isOptional: false, // Unsupported in Solidity, until resolution of https://github.com/ethereum/solidity/issues/232
             type: { name: abiParam.type, typeDocType: TypeDocTypes.Intrinsic },
         };
         parameters.push(parameter);
+        methodSignature = `${methodSignature}${abiParam.type},`;
     }
-    // TODO: use methodSignature as the key to abiEntry.devdoc.methods, and
-    // from that object extract the "details" (comment) property
-    return { parameters, methodSignature: '' };
+
+    if (methodSignature.slice(-1) === ',') {
+        methodSignature = methodSignature.slice(0, -1);
+    }
+    methodSignature += ')';
+
+    if (!_.isUndefined(devdocIfExists)) {
+        const devdocMethodIfExists = devdocIfExists.methods[methodSignature];
+        if (!_.isUndefined(devdocMethodIfExists)) {
+            const devdocParamsIfExist = devdocMethodIfExists.params;
+            if (!_.isUndefined(devdocParamsIfExist)) {
+                for (const parameter of parameters) {
+                    parameter.comment = devdocParamsIfExist[parameter.name];
+                }
+            }
+        }
+    }
+
+    return { parameters, methodSignature };
 }
 
 function _genMethodReturnTypeDoc(

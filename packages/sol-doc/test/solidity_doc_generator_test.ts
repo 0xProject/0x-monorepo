@@ -3,6 +3,8 @@ import * as _ from 'lodash';
 import * as chai from 'chai';
 import 'mocha';
 
+import { SolidityMethod } from '@0xproject/types';
+
 import { generateSolDocAsync } from '../src/solidity_doc_generator';
 
 import { chaiSetup } from './util/chai_setup';
@@ -55,5 +57,20 @@ describe('#SolidityDocGenerator', () => {
             throw new Error('events should never be undefined');
         }
         expect(doc.ERC20Basic.events.length).to.equal(erc20BasicEventCount);
+
+        let addAuthorizedAddressMethod: SolidityMethod | undefined;
+        for (const method of doc.TokenTransferProxy.methods) {
+            if (method.name === 'addAuthorizedAddress') {
+                addAuthorizedAddressMethod = method;
+            }
+        }
+        expect(
+            addAuthorizedAddressMethod,
+            `method addAuthorizedAddress not found in ${JSON.stringify(doc.TokenTransferProxy.methods)}`,
+        ).to.not.be.undefined();
+        const tokenTransferProxyAddAuthorizedAddressComment = 'Authorizes an address.';
+        expect((addAuthorizedAddressMethod as SolidityMethod).comment).to.equal(
+            tokenTransferProxyAddAuthorizedAddressComment,
+        );
     });
 });
