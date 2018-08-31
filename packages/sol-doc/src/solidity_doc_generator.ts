@@ -211,16 +211,16 @@ function _genEventArgsDoc(args: DataItem[], devdocIfExists: DevdocOutput | undef
  */
 function _genMethodParamsDoc(
     name: string,
-    params: DataItem[],
+    abiParams: DataItem[],
     devdocIfExists: DevdocOutput | undefined,
 ): { parameters: Parameter[]; methodSignature: string } {
     const parameters: Parameter[] = [];
-    for (const input of params) {
+    for (const abiParam of abiParams) {
         const parameter: Parameter = {
-            name: input.name,
+            name: abiParam.name,
             comment: '', // TODO: get from devdoc. see comment below.
             isOptional: false, // Unsupported in Solidity, until resolution of https://github.com/ethereum/solidity/issues/232
-            type: { name: input.type, typeDocType: TypeDocTypes.Intrinsic },
+            type: { name: abiParam.type, typeDocType: TypeDocTypes.Intrinsic },
         };
         parameters.push(parameter);
     }
