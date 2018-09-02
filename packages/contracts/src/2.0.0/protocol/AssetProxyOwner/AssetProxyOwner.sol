@@ -98,9 +98,9 @@ contract AssetProxyOwner is
     {
         Transaction storage txn = transactions[transactionId];
         txn.executed = true;
-        if (external_call(txn.destination, txn.value, txn.data.length, txn.data))
+        if (external_call(txn.destination, txn.value, txn.data.length, txn.data)) {
             emit Execution(transactionId);
-        else {
+        } else {
             emit ExecutionFailure(transactionId);
             txn.executed = false;
         }
