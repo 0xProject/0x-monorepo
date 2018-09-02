@@ -3,8 +3,13 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
+import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
 import {
+    MultiSigWalletWithTimeLockConfirmationEventArgs,
+    MultiSigWalletWithTimeLockConfirmationTimeSetEventArgs,
     MultiSigWalletWithTimeLockContract,
+    MultiSigWalletWithTimeLockExecutionEventArgs,
+    MultiSigWalletWithTimeLockExecutionFailureEventArgs,
     MultiSigWalletWithTimeLockSubmissionEventArgs,
 } from '../../generated_contract_wrappers/multi_sig_wallet_with_time_lock';
 import { artifacts } from '../utils/artifacts';
@@ -21,6 +26,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
 describe('MultiSigWalletWithTimeLock', () => {
     let owners: string[];
+    let notOwner: string;
     const REQUIRED_APPROVALS = new BigNumber(2);
     const SECONDS_TIME_LOCKED = new BigNumber(1000000);
 
@@ -32,7 +38,8 @@ describe('MultiSigWalletWithTimeLock', () => {
     });
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        owners = [accounts[0], accounts[1]];
+        owners = [accounts[0], accounts[1], accounts[2]];
+        notOwner = accounts[3];
     });
 
     let multiSig: MultiSigWalletWithTimeLockContract;
@@ -45,6 +52,145 @@ describe('MultiSigWalletWithTimeLock', () => {
         await blockchainLifecycle.revertAsync();
     });
 
+    describe('confirmTransaction', () => {
+        let txId: BigNumber;
+        beforeEach(async () => {
+            const secondsTimeLocked = new BigNumber(0);
+            multiSig = await MultiSigWalletWithTimeLockContract.deployFrom0xArtifactAsync(
+                artifacts.MultiSigWalletWithTimeLock,
+                provider,
+                txDefaults,
+                owners,
+                REQUIRED_APPROVALS,
+                secondsTimeLocked,
+            );
+            multiSigWrapper = new MultiSigWrapper(multiSig, provider);
+            const destination = notOwner;
+            const data = constants.NULL_BYTES;
+            const txReceipt = await multiSigWrapper.submitTransactionAsync(destination, data, owners[0]);
+            txId = (txReceipt.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockSubmissionEventArgs>).args
+                .transactionId;
+        });
+        it('should revert if called by a non-owner', async () => {
+            await expectTransactionFailedWithoutReasonAsync(multiSigWrapper.confirmTransactionAsync(txId, notOwner));
+        });
+        it('should revert if transaction does not exist', async () => {
+            const nonexistentTxId = new BigNumber(123456789);
+            await expectTransactionFailedWithoutReasonAsync(
+                multiSigWrapper.confirmTransactionAsync(nonexistentTxId, owners[1]),
+            );
+        });
+        it('should revert if transaction is already confirmed by caller', async () => {
+            await expectTransactionFailedWithoutReasonAsync(multiSigWrapper.confirmTransactionAsync(txId, owners[0]));
+        });
+        it('should confirm transaction for caller and log a Confirmation event', async () => {
+            const txReceipt = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            const log = txReceipt.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockConfirmationEventArgs>;
+            expect(log.event).to.be.equal('Confirmation');
+            expect(log.args.sender).to.be.equal(owners[1]);
+            expect(log.args.transactionId).to.be.bignumber.equal(txId);
+        });
+        it('should revert if fully confirmed', async () => {
+            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            await expectTransactionFailedWithoutReasonAsync(multiSigWrapper.confirmTransactionAsync(txId, owners[2]));
+        });
+        it('should set the confirmation time of the transaction if it becomes fully confirmed', async () => {
+            const blockNum = await web3Wrapper.getBlockNumberAsync();
+            const timestamp = new BigNumber(await web3Wrapper.getBlockTimestampAsync(blockNum));
+            const txReceipt = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            const log = txReceipt.logs[1] as LogWithDecodedArgs<MultiSigWalletWithTimeLockConfirmationTimeSetEventArgs>;
+            expect(log.args.confirmationTime).to.be.bignumber.equal(timestamp);
+            expect(log.args.transactionId).to.be.bignumber.equal(txId);
+        });
+    });
+    describe('executeTransaction', () => {
+        let txId: BigNumber;
+        const secondsTimeLocked = new BigNumber(1000000);
+        beforeEach(async () => {
+            multiSig = await MultiSigWalletWithTimeLockContract.deployFrom0xArtifactAsync(
+                artifacts.MultiSigWalletWithTimeLock,
+                provider,
+                txDefaults,
+                owners,
+                REQUIRED_APPROVALS,
+                secondsTimeLocked,
+            );
+            multiSigWrapper = new MultiSigWrapper(multiSig, provider);
+            const destination = notOwner;
+            const data = constants.NULL_BYTES;
+            const txReceipt = await multiSigWrapper.submitTransactionAsync(destination, data, owners[0]);
+            txId = (txReceipt.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockSubmissionEventArgs>).args
+                .transactionId;
+        });
+        it('should revert if transaction has not been fully confirmed', async () => {
+            await web3Wrapper.increaseTimeAsync(secondsTimeLocked.toNumber());
+            await expectTransactionFailedWithoutReasonAsync(multiSigWrapper.executeTransactionAsync(txId, owners[1]));
+        });
+        it('should revert if time lock has not passed', async () => {
+            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            await expectTransactionFailedWithoutReasonAsync(multiSigWrapper.executeTransactionAsync(txId, owners[1]));
+        });
+        it('should execute a transaction and log an Execution event if successful and called by owner', async () => {
+            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            await web3Wrapper.increaseTimeAsync(secondsTimeLocked.toNumber());
+            const txReceipt = await multiSigWrapper.executeTransactionAsync(txId, owners[1]);
+            const log = txReceipt.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockExecutionEventArgs>;
+            expect(log.event).to.be.equal('Execution');
+            expect(log.args.transactionId).to.be.bignumber.equal(txId);
+        });
+        it('should execute a transaction and log an Execution event if successful and called by non-owner', async () => {
+            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            await web3Wrapper.increaseTimeAsync(secondsTimeLocked.toNumber());
+            const txReceipt = await multiSigWrapper.executeTransactionAsync(txId, notOwner);
+            const log = txReceipt.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockExecutionEventArgs>;
+            expect(log.event).to.be.equal('Execution');
+            expect(log.args.transactionId).to.be.bignumber.equal(txId);
+        });
+        it('should revert if a required confirmation is revoked before executeTransaction is called', async () => {
+            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            await web3Wrapper.increaseTimeAsync(secondsTimeLocked.toNumber());
+            await multiSigWrapper.revokeConfirmationAsync(txId, owners[0]);
+            await expectTransactionFailedWithoutReasonAsync(multiSigWrapper.executeTransactionAsync(txId, owners[1]));
+        });
+        it('should revert if transaction has been executed', async () => {
+            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            await web3Wrapper.increaseTimeAsync(secondsTimeLocked.toNumber());
+            const txReceipt = await multiSigWrapper.executeTransactionAsync(txId, owners[1]);
+            const log = txReceipt.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockExecutionEventArgs>;
+            expect(log.args.transactionId).to.be.bignumber.equal(txId);
+            await expectTransactionFailedWithoutReasonAsync(multiSigWrapper.executeTransactionAsync(txId, owners[1]));
+        });
+        it("should log an ExecutionFailure event and not update the transaction's execution state if unsuccessful", async () => {
+            const contractWithoutFallback = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+                artifacts.DummyERC20Token,
+                provider,
+                txDefaults,
+                constants.DUMMY_TOKEN_NAME,
+                constants.DUMMY_TOKEN_SYMBOL,
+                constants.DUMMY_TOKEN_DECIMALS,
+                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+            );
+            const data = constants.NULL_BYTES;
+            const value = new BigNumber(10);
+            const submissionTxReceipt = await multiSigWrapper.submitTransactionAsync(
+                contractWithoutFallback.address,
+                data,
+                owners[0],
+                { value },
+            );
+            const newTxId = (submissionTxReceipt.logs[0] as LogWithDecodedArgs<
+                MultiSigWalletWithTimeLockSubmissionEventArgs
+            >).args.transactionId;
+            await multiSigWrapper.confirmTransactionAsync(newTxId, owners[1]);
+            await web3Wrapper.increaseTimeAsync(secondsTimeLocked.toNumber());
+            const txReceipt = await multiSigWrapper.executeTransactionAsync(newTxId, owners[1]);
+            const executionFailureLog = txReceipt.logs[0] as LogWithDecodedArgs<
+                MultiSigWalletWithTimeLockExecutionEventArgs
+            >;
+            expect(executionFailureLog.event).to.be.equal('ExecutionFailure');
+            expect(executionFailureLog.args.transactionId).to.be.bignumber.equal(newTxId);
+        });
+    });
     describe('changeTimeLock', () => {
         describe('initially non-time-locked', async () => {
             before(async () => {

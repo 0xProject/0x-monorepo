@@ -36,6 +36,11 @@ export class MultiSigWrapper {
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
+    public async revokeConfirmationAsync(txId: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const txHash = await this._multiSig.revokeConfirmation.sendTransactionAsync(txId, { from });
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
     public async executeTransactionAsync(txId: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const txHash = await this._multiSig.executeTransaction.sendTransactionAsync(txId, {
             from,
