@@ -272,8 +272,12 @@ describe('AssetProxyOwner', () => {
             await multiSigWrapper.confirmTransactionAsync(erc721AddAuthorizedAddressTxId, owners[1]);
             await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
             await multiSigWrapper.executeTransactionAsync(registerAssetProxyTxId, owners[0]);
-            await multiSigWrapper.executeTransactionAsync(erc20AddAuthorizedAddressTxId, owners[0]);
-            await multiSigWrapper.executeTransactionAsync(erc721AddAuthorizedAddressTxId, owners[0]);
+            await multiSigWrapper.executeTransactionAsync(erc20AddAuthorizedAddressTxId, owners[0], {
+                gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+            });
+            await multiSigWrapper.executeTransactionAsync(erc721AddAuthorizedAddressTxId, owners[0], {
+                gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+            });
         });
 
         describe('validRemoveAuthorizedAddressAtIndexTx', () => {
