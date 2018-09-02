@@ -3,6 +3,7 @@ import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
+import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
 import {
@@ -53,6 +54,20 @@ describe('MultiSigWalletWithTimeLock', () => {
         await blockchainLifecycle.revertAsync();
     });
 
+    describe('external_call', () => {
+        it('should be internal', async () => {
+            const secondsTimeLocked = new BigNumber(0);
+            multiSig = await MultiSigWalletWithTimeLockContract.deployFrom0xArtifactAsync(
+                artifacts.MultiSigWalletWithTimeLock,
+                provider,
+                txDefaults,
+                owners,
+                REQUIRED_APPROVALS,
+                secondsTimeLocked,
+            );
+            expect(_.isUndefined((multiSig as any).external_call)).to.be.equal(true);
+        });
+    });
     describe('confirmTransaction', () => {
         let txId: BigNumber;
         beforeEach(async () => {
