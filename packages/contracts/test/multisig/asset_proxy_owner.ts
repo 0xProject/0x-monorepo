@@ -345,10 +345,11 @@ describe('AssetProxyOwner', () => {
                 const log = res.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
 
-                return expectTransactionFailedWithoutReasonAsync(
+                return expectTransactionFailedAsync(
                     testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
                         from: owners[1],
                     }),
+                    RevertReason.TxNotFullyConfirmed,
                 );
             });
 
