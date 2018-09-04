@@ -461,6 +461,21 @@
 			"address": "0x2240dab907db71e64d3e0dba4800c83b5c502d4e",
 			"links": {},
 			"constructorArgs": "[]"
+		},
+		"3": {
+			"address": "0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
+			"links": {},
+			"constructorArgs": "[]"
+		},
+		"42": {
+			"address": "0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e",
+			"links": {},
+			"constructorArgs": "[]"
+		},
+		"50": {
+			"address": "0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
+			"links": {},
+			"constructorArgs": "[]"
 		}
 	}
 }
