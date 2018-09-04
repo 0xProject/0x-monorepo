@@ -24,11 +24,6 @@ interface BoxContent {
     classNames: string;
     maxWidth: number;
 }
-interface AssetType {
-    title: string;
-    imageUrl: string;
-    style?: React.CSSProperties;
-}
 interface UseCase {
     imageUrl: string;
     type: string;
