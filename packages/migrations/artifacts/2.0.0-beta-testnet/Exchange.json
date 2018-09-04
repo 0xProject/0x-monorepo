@@ -2280,11 +2280,6 @@
 			"links": {},
 			"constructorArgs": "[\"0xf47261b0000000000000000000000000ff67881f8d12f372d91baae9752eb3631ff0ed00\"]"
 		},
-		"4": {
-			"address": "0x54102fa75b2446837b2c7472d4b533366ecd2811",
-			"links": {},
-			"constructorArgs": "[\"0xf47261b00000000000000000000000003da6832ff6bf2afa2daeda1e148a45c647cfb668\"]"
-		},
 		"42": {
 			"address": "0x35dd2932454449b14cee11a94d3674a936d5d7b2",
 			"links": {},
