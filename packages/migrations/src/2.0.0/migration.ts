@@ -22,11 +22,7 @@ import { OrderValidatorContract } from './contract_wrappers/order_validator';
  * @param artifactsDir The directory with compiler artifact files.
  * @param txDefaults Default transaction values to use when deploying contracts.
  */
-export const runV2MainnetMigrationsAsync = async (
-    provider: Provider,
-    artifactsDir: string,
-    txDefaults: Partial<TxData>,
-) => {
+export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: string, txDefaults: Partial<TxData>) => {
     const web3Wrapper = new Web3Wrapper(provider);
     const networkId = await web3Wrapper.getNetworkIdAsync();
     const artifactsWriter = new ArtifactWriter(artifactsDir, networkId);
