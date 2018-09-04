@@ -25,6 +25,7 @@ export {
     BalanceAndAllowance,
     OrderAndTraderInfo,
     TraderInfo,
+    ValidateOrderFillableOpts,
 } from './types';
 
 export { Order, SignedOrder, AssetProxyId } from '@0xproject/types';
