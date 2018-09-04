@@ -17,6 +17,7 @@ import { ExchangeContract } from './contract_wrappers/exchange';
 import { ForwarderContract } from './contract_wrappers/forwarder';
 import { OrderValidatorContract } from './contract_wrappers/order_validator';
 
+// tslint:disable-next-line:custom-no-magic-numbers
 const ERC20_TOTAL_SUPPLY = new BigNumber(1000000000000000000000000000);
 
 /**
@@ -144,6 +145,7 @@ export const runV2TestnetMigrationsAsync = async (
 
     // Set enough ZRX Balance to the Forwarder
     const maxZRXMintAmount = await zrxToken.MAX_MINT_AMOUNT.callAsync();
+    // tslint:disable-next-line:custom-no-magic-numbers
     const forwarderZRXBalance = maxZRXMintAmount.times(10);
     txHash = await zrxToken.setBalance.sendTransactionAsync(forwarder.address, forwarderZRXBalance);
     await web3Wrapper.awaitTransactionSuccessAsync(txHash);
