@@ -1,18 +1,23 @@
 import { assetDataUtils } from '@0xproject/order-utils';
-import { logUtils } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';
 
 import { ArtifactWriter } from '../utils/artifact_writer';
-
 import { constants } from '../utils/constants';
+import { erc20TokenInfo, erc721TokenInfo, etherTokenByNetwork } from '../utils/token_info';
 
 import { artifacts } from './artifacts';
 import { AssetProxyOwnerContract } from './contract_wrappers/asset_proxy_owner';
+import { DummyERC20TokenContract } from './contract_wrappers/dummy_erc20_token';
+import { DummyERC721TokenContract } from './contract_wrappers/dummy_erc721_token';
 import { ERC20ProxyContract } from './contract_wrappers/erc20_proxy';
 import { ERC721ProxyContract } from './contract_wrappers/erc721_proxy';
 import { ExchangeContract } from './contract_wrappers/exchange';
+import { ForwarderContract } from './contract_wrappers/forwarder';
 import { OrderValidatorContract } from './contract_wrappers/order_validator';
+
+const ERC20_TOTAL_SUPPLY = new BigNumber(1000000000000000000000000000);
 
 /**
  * Custom migrations should be defined in this function. This will be called with the CLI 'migrate:v2-beta-testnet' command.
@@ -41,9 +46,21 @@ export const runV2TestnetMigrationsAsync = async (
     );
     artifactsWriter.saveArtifact(erc721proxy);
 
+    const zrxDecimals = new BigNumber(18);
+    const zrxSupply = ERC20_TOTAL_SUPPLY;
+    const zrxToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+        artifacts.DummyERC20Token,
+        provider,
+        txDefaults,
+        '0x Protocol Token',
+        'ZRX',
+        zrxDecimals,
+        zrxSupply,
+    );
+    artifactsWriter.saveArtifact(zrxToken);
+
     // Deploy Exchange
-    const zrxAddressOnKovan = '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570';
-    const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxAddressOnKovan);
+    const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
     const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
         artifacts.Exchange,
         provider,
@@ -63,6 +80,18 @@ export const runV2TestnetMigrationsAsync = async (
     logUtils.log(`transactionHash: ${txHash}`);
     logUtils.log('Registering ERC721Proxy');
     await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+    // Ether token is already deployed on various test nets
+    const etherTokenAddress = etherTokenByNetwork[networkId].address;
+    const wethAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
+    const forwarder = await ForwarderContract.deployFrom0xArtifactAsync(
+        artifacts.Forwarder,
+        provider,
+        txDefaults,
+        exchange.address,
+        zrxAssetData,
+        wethAssetData,
+    );
+    artifactsWriter.saveArtifact(forwarder);
 
     // Deploy AssetProxyOwner
     const assetProxyOwner = await AssetProxyOwnerContract.deployFrom0xArtifactAsync(
@@ -112,4 +141,48 @@ export const runV2TestnetMigrationsAsync = async (
     logUtils.log(`transactionHash: ${txHash}`);
     logUtils.log('Transferring ownership of Exchange');
     await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+
+    // Set enough ZRX Balance to the Forwarder
+    const maxZRXMintAmount = await zrxToken.MAX_MINT_AMOUNT.callAsync();
+    const forwarderZRXBalance = maxZRXMintAmount.times(10);
+    txHash = await zrxToken.setBalance.sendTransactionAsync(forwarder.address, forwarderZRXBalance);
+    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+
+    txHash = await zrxToken.transferOwnership.sendTransactionAsync(assetProxyOwner.address);
+    logUtils.log(`transactionHash: ${txHash}`);
+    logUtils.log('Transferring ownership of ZRX token');
+    await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+
+    // Dummy Tokens
+    for (const token of erc20TokenInfo) {
+        const totalSupply = ERC20_TOTAL_SUPPLY;
+        const dummyToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+            artifacts.DummyERC20Token,
+            provider,
+            txDefaults,
+            token.name,
+            token.symbol,
+            token.decimals,
+            totalSupply,
+        );
+        logUtils.log(`DummyERC20 ${token.name}: ${dummyToken.address}`);
+        txHash = await dummyToken.transferOwnership.sendTransactionAsync(assetProxyOwner.address);
+        logUtils.log(`transactionHash: ${txHash}`);
+        logUtils.log(`Transferring ownership of ${token.name} `);
+        await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+    }
+    for (const token of erc721TokenInfo) {
+        const dummyToken = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
+            artifacts.DummyERC721Token,
+            provider,
+            txDefaults,
+            token.name,
+            token.symbol,
+        );
+        logUtils.log(`DummyERC721 ${token.name}: ${dummyToken.address}`);
+        txHash = await dummyToken.transferOwnership.sendTransactionAsync(assetProxyOwner.address);
+        logUtils.log(`transactionHash: ${txHash}`);
+        logUtils.log(`Transferring ownership of ${token.name} `);
+        await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+    }
 };
