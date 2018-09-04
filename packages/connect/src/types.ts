@@ -126,12 +126,12 @@ export interface PaginatedCollection<T> {
 export interface OrderConfigRequest {
     makerAddress: string;
     takerAddress: string;
-    makerAssetAmount: string;
-    takerAssetAmount: string;
+    makerAssetAmount: BigNumber;
+    takerAssetAmount: BigNumber;
     makerAssetData: string;
     takerAssetData: string;
     exchangeAddress: string;
-    expirationTimeSeconds: string;
+    expirationTimeSeconds: BigNumber;
 }
 
 export interface OrderConfigResponse {
