@@ -56,6 +56,7 @@
         "@types/bn.js": "^4.11.0",
         "@types/ethereumjs-tx": "^1.0.0",
         "@types/hdkey": "^0.7.0",
+        "@types/web3-provider-engine": "^14.0.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
