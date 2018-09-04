@@ -114,9 +114,9 @@ describe('MultiSigWalletWithTimeLock', () => {
             );
         });
         it('should set the confirmation time of the transaction if it becomes fully confirmed', async () => {
+            const txReceipt = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             const blockNum = await web3Wrapper.getBlockNumberAsync();
             const timestamp = new BigNumber(await web3Wrapper.getBlockTimestampAsync(blockNum));
-            const txReceipt = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             const log = txReceipt.logs[1] as LogWithDecodedArgs<MultiSigWalletWithTimeLockConfirmationTimeSetEventArgs>;
             expect(log.args.confirmationTime).to.be.bignumber.equal(timestamp);
             expect(log.args.transactionId).to.be.bignumber.equal(txId);
