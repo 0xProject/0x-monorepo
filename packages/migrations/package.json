@@ -25,9 +25,7 @@
     "config": {
         "abis": {
             "v1": "artifacts/1.0.0/@(DummyERC20Token|TokenTransferProxy_v1|Exchange_v1|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|WETH9).json",
-            "v2Testnet": "artifacts/2.0.0-testnet/@(DummyERC721Token|DummyERC20Token|ERC20Token|ERC721Token|ERC20Proxy|ERC721Proxy|Exchange|Forwarder|AssetProxyOwner|IWallet|IValidator|OrderValidator|ZRXToken).json",
-            "v2": "artifacts/2.0.0/@(DummyERC721Token|DummyERC20Token|ERC20Token|ERC721Token|ERC20Proxy|ERC721Proxy|Exchange|Forwarder|AssetProxyOwner|IWallet|IValidator|OrderValidator|ZRXToken).json",
-            "development": "artifacts/development/@(DummyERC721Token|DummyERC20Token|ERC20Token|ERC721Token|ERC20Proxy|ERC721Proxy|Exchange|Forwarder|AssetProxyOwner|IWallet|IValidator|OrderValidator|ZRXToken).json"
+            "v2": "artifacts/2.0.0/@(ERC20Token|DummyERC20Token|ERC721Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|Forwarder|AssetProxyOwner|ZRXToken|WETH9|IWallet|IValidator|OrderValidator).json"
         }
     },
     "license": "Apache-2.0",
