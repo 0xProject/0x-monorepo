@@ -227,6 +227,9 @@ export enum RevertReason {
     InvalidFunctionSelector = 'INVALID_FUNCTION_SELECTOR',
     InvalidAssetProxy = 'INVALID_ASSET_PROXY',
     UnregisteredAssetProxy = 'UNREGISTERED_ASSET_PROXY',
+    TxFullyConfirmed = 'TX_FULLY_CONFIRMED',
+    TxNotFullyConfirmed = 'TX_NOT_FULLY_CONFIRMED',
+    TimeLockIncomplete = 'TIME_LOCK_INCOMPLETE',
 }
 
 export enum StatusCodes {

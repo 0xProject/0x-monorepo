@@ -60,7 +60,7 @@ contract MixinExchangeWrapper is
         // Call `fillOrder` and handle any exceptions gracefully
         assembly {
             let success := call(
-                gas,                                // forward all gas, TODO: look into gas consumption of assert/throw
+                gas,                                // forward all gas
                 exchange,                           // call address of Exchange contract
                 0,                                  // transfer 0 wei
                 add(fillOrderCalldata, 32),         // pointer to start of input (skip array length in first 32 bytes)

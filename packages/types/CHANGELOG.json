@@ -5,6 +5,10 @@
             {
                 "note": "Add AssetProxyOwner revert reasons",
                 "pr": 1041
+            },
+            {
+                "note": "Add MultiSigWalletWithTimeLock revert reasons",
+                "pr": 1050
             }
         ]
     },

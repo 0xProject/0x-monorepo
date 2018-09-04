@@ -246,7 +246,6 @@ contract LibMath is
             numerator,
             denominator
         );
-        // TODO: safeMod
         remainder = safeSub(denominator, remainder) % denominator;
         isError = safeMul(1000, remainder) >= safeMul(numerator, target);
         return isError;

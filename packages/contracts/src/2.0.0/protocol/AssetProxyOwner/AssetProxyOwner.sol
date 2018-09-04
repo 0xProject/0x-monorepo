@@ -38,13 +38,13 @@ contract AssetProxyOwner is
     /// @dev Function will revert if the transaction does not call `removeAuthorizedAddressAtIndex`
     ///      on an approved AssetProxy contract.
     modifier validRemoveAuthorizedAddressAtIndexTx(uint256 transactionId) {
-        Transaction storage tx = transactions[transactionId];
+        Transaction storage txn = transactions[transactionId];
         require(
-            isAssetProxyRegistered[tx.destination],
+            isAssetProxyRegistered[txn.destination],
             "UNREGISTERED_ASSET_PROXY"
         );
         require(
-            tx.data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR,
+            txn.data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR,
             "INVALID_FUNCTION_SELECTOR"
         );
         _;
@@ -96,14 +96,13 @@ contract AssetProxyOwner is
         fullyConfirmed(transactionId)
         validRemoveAuthorizedAddressAtIndexTx(transactionId)
     {
-        Transaction storage tx = transactions[transactionId];
-        tx.executed = true;
-        // solhint-disable-next-line avoid-call-value
-        if (tx.destination.call.value(tx.value)(tx.data))
+        Transaction storage txn = transactions[transactionId];
+        txn.executed = true;
+        if (external_call(txn.destination, txn.value, txn.data.length, txn.data)) {
             emit Execution(transactionId);
-        else {
+        } else {
             emit ExecutionFailure(transactionId);
-            tx.executed = false;
+            txn.executed = false;
         }
     }
 }
