@@ -19,7 +19,7 @@ export const docGenConfigs: DocGenConfigs = {
         'Ganache.GanacheOpts':
             'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/ganache-core/index.d.ts#L8',
         'lightwallet.keystore':
-            'https://github.com/0xProject/0x-monorepo/blob/ddf85112d7e4eb1581e0d82ce6eedad429641106/packages/typescript-typings/types/eth-lightwallet/index.d.ts#L32',
+            'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/eth-lightwallet/index.d.ts#L36',
     },
     // If a 0x package re-exports an external package, we should add a link to it's exported items here
     EXTERNAL_EXPORT_TO_LINK: {

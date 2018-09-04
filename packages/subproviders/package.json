@@ -52,6 +52,7 @@
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.6",
         "@types/bip39": "^2.4.0",
+        "@types/eth-lightwallet": "^3.0.0",
         "@types/bn.js": "^4.11.0",
         "@types/ethereumjs-tx": "^1.0.0",
         "@types/hdkey": "^0.7.0",
