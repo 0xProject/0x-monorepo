@@ -1,5 +1,6 @@
 // tslint:disable:no-unnecessary-type-assertion
 import {
+    AssetBalanceAndProxyAllowanceFetcher,
     ContractWrappers,
     ERC20TokenApprovalEventArgs,
     ERC20TokenEventArgs,
@@ -15,6 +16,7 @@ import {
     ExchangeEventArgs,
     ExchangeEvents,
     ExchangeFillEventArgs,
+    OrderFilledCancelledFetcher,
     WETH9DepositEventArgs,
     WETH9EventArgs,
     WETH9Events,
@@ -34,8 +36,6 @@ import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from '
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
-import { AssetBalanceAndProxyAllowanceFetcher } from '../fetchers/asset_balance_and_proxy_allowance_fetcher';
-import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_fetcher';
 import { orderWatcherPartialConfigSchema } from '../schemas/order_watcher_partial_config_schema';
 import { OnOrderStateChangeCallback, OrderWatcherConfig, OrderWatcherError } from '../types';
 import { assert } from '../utils/assert';

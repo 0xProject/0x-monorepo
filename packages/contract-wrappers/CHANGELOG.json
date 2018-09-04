@@ -4,6 +4,16 @@
         "changes": [
             {
                 "note": "Add `OrderValidatorWrapper`"
+            },
+            {
+                "note":
+                    "Export `AssetBalanceAndProxyAllowanceFetcher` and `OrderFilledCancelledFetcher` implementations",
+                "pr": 1054
+            },
+            {
+                "note":
+                    "Add `validateOrderFillableOrThrowAsync` and `validateFillOrderThrowIfInvalidAsync` to ExchangeWrapper",
+                "pr": 1054
             }
         ]
     },

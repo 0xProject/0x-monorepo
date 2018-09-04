@@ -1,7 +1,10 @@
 // tslint:disable:no-unnecessary-type-assertion
-import { BlockParamLiteral, ExchangeWrapper } from '@0xproject/contract-wrappers';
 import { AbstractOrderFilledCancelledFetcher } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
+import { BlockParamLiteral } from 'ethereum-types';
+
+import { ERC20TokenWrapper } from '../contract_wrappers/erc20_token_wrapper';
+import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';
 
 export class OrderFilledCancelledFetcher implements AbstractOrderFilledCancelledFetcher {
     private readonly _exchange: ExchangeWrapper;
