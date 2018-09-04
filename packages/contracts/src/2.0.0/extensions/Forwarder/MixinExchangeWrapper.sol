@@ -34,7 +34,6 @@ contract MixinExchangeWrapper is
     LibConstants,
     MExchangeWrapper
 {
-
     /// @dev Fills the input order.
     ///      Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.

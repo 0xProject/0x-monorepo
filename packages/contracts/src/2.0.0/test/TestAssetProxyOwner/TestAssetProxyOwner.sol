@@ -25,7 +25,6 @@ import "../../protocol/AssetProxyOwner/AssetProxyOwner.sol";
 contract TestAssetProxyOwner is
     AssetProxyOwner
 {
-
     constructor (
         address[] memory _owners,
         address[] memory _assetProxyContracts,

@@ -25,7 +25,6 @@ import "./DummyERC20Token.sol";
 contract DummyMultipleReturnERC20Token is
     DummyERC20Token
 {
-
     constructor (
         string _name,
         string _symbol,
