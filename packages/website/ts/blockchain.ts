@@ -368,13 +368,11 @@ export class Blockchain {
         fillTakerTokenAmount: BigNumber,
         takerAddress: string,
     ): Promise<void> {
-        // TODO: add validation here
-        // we can use OrderValidationUtils here?
-        // await this._contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(
-        //     signedOrder,
-        //     fillTakerTokenAmount,
-        //     takerAddress,
-        // );
+        await this._contractWrappers.exchange.validateFillOrderThrowIfInvalidAsync(
+            signedOrder,
+            fillTakerTokenAmount,
+            takerAddress,
+        );
     }
     public isValidAddress(address: string): boolean {
         const lowercaseAddress = address.toLowerCase();

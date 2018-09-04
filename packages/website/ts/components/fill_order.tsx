@@ -483,7 +483,6 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             });
         }
 
-        console.log(parsedOrder);
         this.setState({
             didOrderValidationRun: true,
             orderJSON,

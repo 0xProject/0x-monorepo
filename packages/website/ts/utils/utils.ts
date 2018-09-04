@@ -6,7 +6,6 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as bowser from 'bowser';
 import deepEqual = require('deep-equal');
-import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
