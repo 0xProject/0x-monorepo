@@ -1,6 +1,5 @@
-import { assetDataUtils, orderHashUtils, signatureUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import { colors } from '@0xproject/react-shared';
-import { Order as ZeroExOrder } from '@0xproject/types';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as accounting from 'accounting';
@@ -24,7 +23,6 @@ import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
 import { AlertTypes, BlockchainErrs, PortalOrder, Token, TokenByAddress, WebsitePaths } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
-import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { orderParser } from 'ts/utils/order_parser';
 import { utils } from 'ts/utils/utils';

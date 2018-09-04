@@ -19,7 +19,7 @@ import {
     SignerSubprovider,
     Web3ProviderEngine,
 } from '@0xproject/subproviders';
-import { ECSignature, Order, SignedOrder, Token as ZeroExToken } from '@0xproject/types';
+import { SignedOrder, Token as ZeroExToken } from '@0xproject/types';
 import { BigNumber, intervalUtils, logUtils, promisify } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { BlockParam, LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -42,7 +42,6 @@ import {
     InjectedProviderObservable,
     InjectedProviderUpdate,
     InjectedWeb3,
-    PortalOrder,
     Providers,
     ProviderType,
     Side,

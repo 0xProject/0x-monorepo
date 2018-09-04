@@ -1,6 +1,6 @@
 import { assetDataUtils, generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils';
 import { colors } from '@0xproject/react-shared';
-import { ECSignature, Order as ZeroExOrder } from '@0xproject/types';
+import { Order as ZeroExOrder } from '@0xproject/types';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -353,7 +353,6 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 this.props.tokenByAddress,
                 hashData.orderSalt,
             );
-            console.log(order);
             const validationResult = validator.validate(order, portalOrderSchema);
             if (validationResult.errors.length > 0) {
                 globalErrMsg = 'Order signing failed. Please refresh and try again';

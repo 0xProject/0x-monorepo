@@ -1,4 +1,3 @@
-import { ECSignature } from '@0xproject/types';
 import { BigNumber, fetchAsync, logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';

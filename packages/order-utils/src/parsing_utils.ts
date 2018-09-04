@@ -23,5 +23,5 @@ export const orderParsingUtils = {
             'expirationTimeSeconds',
             'salt',
         ]);
-    }
-}
+    },
+};

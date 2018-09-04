@@ -1,5 +1,4 @@
 import { generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { ECSignature } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as moment from 'moment';

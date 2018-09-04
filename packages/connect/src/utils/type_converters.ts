@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { orderParsingUtils } from '@0xproject/order-utils';
 import * as _ from 'lodash';
 
 import { APIOrder } from '../types';
@@ -21,28 +21,6 @@ export const typeConverters = {
         };
     },
     convertAPIOrderStringFieldsToBigNumber(apiOrder: any): APIOrder {
-        return { ...apiOrder, order: typeConverters.convertOrderStringFieldsToBigNumber(apiOrder.order) };
-    },
-    convertOrderStringFieldsToBigNumber(order: any): any {
-        return typeConverters.convertStringsFieldsToBigNumbers(order, [
-            'makerAssetAmount',
-            'takerAssetAmount',
-            'makerFee',
-            'takerFee',
-            'expirationTimeSeconds',
-            'salt',
-        ]);
-    },
-    convertStringsFieldsToBigNumbers(obj: any, fields: string[]): any {
-        const result = _.assign({}, obj);
-        _.each(fields, field => {
-            _.update(result, field, (value: string) => {
-                if (_.isUndefined(value)) {
-                    throw new Error(`Could not find field '${field}' while converting string fields to BigNumber.`);
-                }
-                return new BigNumber(value);
-            });
-        });
-        return result;
+        return { ...apiOrder, order: orderParsingUtils.convertOrderStringFieldsToBigNumber(apiOrder.order) };
     },
 };

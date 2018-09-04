@@ -1,4 +1,5 @@
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { orderParsingUtils } from '@0xproject/order-utils';
+import { logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
@@ -29,7 +30,7 @@ export const orderParser = {
             return undefined;
         }
         const signedOrder = _.get(order, 'signedOrder');
-        const convertedSignedOrder = convertOrderStringFieldsToBigNumber(signedOrder);
+        const convertedSignedOrder = orderParsingUtils.convertOrderStringFieldsToBigNumber(signedOrder);
         const result = {
             ...order,
             signedOrder: convertedSignedOrder,
@@ -39,7 +40,7 @@ export const orderParser = {
     parseJsonString(orderJson: string): PortalOrder {
         const order = JSON.parse(orderJson);
         const signedOrder = _.get(order, 'signedOrder');
-        const convertedSignedOrder = convertOrderStringFieldsToBigNumber(signedOrder);
+        const convertedSignedOrder = orderParsingUtils.convertOrderStringFieldsToBigNumber(signedOrder);
         const result = {
             ...order,
             signedOrder: convertedSignedOrder,
@@ -47,29 +48,3 @@ export const orderParser = {
         return result;
     },
 };
-
-// TODO: consolidate this function with that in typeConverters in @0xproject/connect
-function convertOrderStringFieldsToBigNumber(order: any): any {
-    return convertStringsFieldsToBigNumbers(order, [
-        'makerAssetAmount',
-        'takerAssetAmount',
-        'makerFee',
-        'takerFee',
-        'expirationTimeSeconds',
-        'salt',
-    ]);
-}
-
-// TODO: consolidate this function with that in typeConverters in @0xproject/connect
-function convertStringsFieldsToBigNumbers(obj: any, fields: string[]): any {
-    const result = _.assign({}, obj);
-    _.each(fields, field => {
-        _.update(result, field, (value: string) => {
-            if (_.isUndefined(value)) {
-                throw new Error(`Could not find field '${field}' while converting string fields to BigNumber.`);
-            }
-            return new BigNumber(value);
-        });
-    });
-    return result;
-}
