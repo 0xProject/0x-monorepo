@@ -28,6 +28,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/utils/README.md",
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.6",
+        "@types/detect-node": "2.0.0",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
         "chai": "^4.0.1",

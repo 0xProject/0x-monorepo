@@ -35,6 +35,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/web3-wrapper/README.md",
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.6",
+        "@types/ganache-core": "^2.1.0",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
