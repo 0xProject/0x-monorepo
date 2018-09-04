@@ -353,7 +353,6 @@ export class GenerateOrderForm extends React.Component<GenerateOrderFormProps, G
                 this.props.tokenByAddress,
                 hashData.orderSalt,
             );
-            console.log(order);
             const validationResult = validator.validate(order, portalOrderSchema);
             if (validationResult.errors.length > 0) {
                 globalErrMsg = 'Order signing failed. Please refresh and try again';
