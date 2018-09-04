@@ -46,6 +46,7 @@ export {
     BalanceAndAllowance,
     OrderAndTraderInfo,
     TraderInfo,
+    ValidateOrderFillableOpts,
 } from '@0xproject/contract-wrappers';
 
 export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
