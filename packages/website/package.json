@@ -66,6 +66,7 @@
         "@types/accounting": "^0.4.1",
         "@types/blockies": "^0.0.0",
         "@types/deep-equal": "^1.0.0",
+        "@types/web3-provider-engine": "^14.0.0",
         "@types/find-versions": "^2.0.0",
         "@types/jsonschema": "^1.1.1",
         "@types/lodash": "4.14.104",

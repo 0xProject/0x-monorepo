@@ -47,6 +47,7 @@
         "@0xproject/monorepo-scripts": "^1.0.7",
         "@0xproject/tslint-config": "^1.0.6",
         "@types/lodash": "4.14.104",
+        "@types/web3-provider-engine": "^14.0.0",
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.0.53",
         "@types/sinon": "^2.2.2",
