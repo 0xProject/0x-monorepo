@@ -111,6 +111,8 @@ export class ContractWrappers {
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
             config.networkId,
+            this.erc20Token,
+            this.erc721Token,
             config.exchangeContractAddress,
             config.zrxContractAddress,
             blockPollingIntervalMs,

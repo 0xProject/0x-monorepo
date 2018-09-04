@@ -24,7 +24,6 @@ import "./LibEIP712.sol";
 contract LibOrder is
     LibEIP712
 {
-
     // Hash for the EIP712 Order Schema
     bytes32 constant internal EIP712_ORDER_SCHEMA_HASH = keccak256(abi.encodePacked(
         "Order(",

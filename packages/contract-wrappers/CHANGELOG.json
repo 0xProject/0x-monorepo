@@ -7,7 +7,18 @@
             },
             {
                 "note":
-                    "Fix bug where contracts not deployed on a network showed an `EXCHANGE_CONTRACT_DOES_NOT_EXIST` error instead of `CONTRACT_NOT_DEPLOYED_ON_NETWORK`"
+                    "Fix bug where contracts not deployed on a network showed an `EXCHANGE_CONTRACT_DOES_NOT_EXIST` error instead of `CONTRACT_NOT_DEPLOYED_ON_NETWORK`",
+                "pr": 1044
+            },
+            {
+                "note":
+                    "Export `AssetBalanceAndProxyAllowanceFetcher` and `OrderFilledCancelledFetcher` implementations",
+                "pr": 1054
+            },
+            {
+                "note":
+                    "Add `validateOrderFillableOrThrowAsync` and `validateFillOrderThrowIfInvalidAsync` to ExchangeWrapper",
+                "pr": 1054
             }
         ]
     },

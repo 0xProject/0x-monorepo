@@ -1,12 +1,19 @@
 import { schemas } from '@0xproject/json-schemas';
-import { assetDataUtils } from '@0xproject/order-utils';
+import {
+    assetDataUtils,
+    BalanceAndProxyAllowanceLazyStore,
+    ExchangeTransferSimulator,
+    OrderValidationUtils,
+} from '@0xproject/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
+import { BlockParamLiteral, ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
+import { AssetBalanceAndProxyAllowanceFetcher } from '../fetchers/asset_balance_and_proxy_allowance_fetcher';
+import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_fetcher';
 import { methodOptsSchema } from '../schemas/method_opts_schema';
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
@@ -17,13 +24,17 @@ import {
     IndexedFilterValues,
     MethodOpts,
     OrderInfo,
+    OrderStatus,
     OrderTransactionOpts,
+    ValidateOrderFillableOpts,
 } from '../types';
 import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
 import { TransactionEncoder } from '../utils/transaction_encoder';
 
 import { ContractWrapper } from './contract_wrapper';
+import { ERC20TokenWrapper } from './erc20_token_wrapper';
+import { ERC721TokenWrapper } from './erc721_token_wrapper';
 import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from './generated/exchange';
 
 /**
@@ -33,6 +44,8 @@ import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from './generated
 export class ExchangeWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.Exchange.compilerOutput.abi;
     private _exchangeContractIfExists?: ExchangeContract;
+    private _erc721TokenWrapper: ERC721TokenWrapper;
+    private _erc20TokenWrapper: ERC20TokenWrapper;
     private _contractAddressIfExists?: string;
     private _zrxContractAddressIfExists?: string;
     /**
@@ -48,11 +61,15 @@ export class ExchangeWrapper extends ContractWrapper {
     constructor(
         web3Wrapper: Web3Wrapper,
         networkId: number,
+        erc20TokenWrapper: ERC20TokenWrapper,
+        erc721TokenWrapper: ERC721TokenWrapper,
         contractAddressIfExists?: string,
         zrxContractAddressIfExists?: string,
         blockPollingIntervalMs?: number,
     ) {
         super(web3Wrapper, networkId, blockPollingIntervalMs);
+        this._erc20TokenWrapper = erc20TokenWrapper;
+        this._erc721TokenWrapper = erc721TokenWrapper;
         this._contractAddressIfExists = contractAddressIfExists;
         this._zrxContractAddressIfExists = zrxContractAddressIfExists;
     }
@@ -1083,6 +1100,64 @@ export class ExchangeWrapper extends ContractWrapper {
             artifacts.Exchange.compilerOutput.abi,
         );
         return logs;
+    }
+    /**
+     * Validate if the supplied order is fillable, and throw if it isn't
+     * @param signedOrder SignedOrder of interest
+     * @param opts ValidateOrderFillableOpts options (e.g expectedFillTakerTokenAmount.
+     * If it isn't supplied, we check if the order is fillable for a non-zero amount)
+     */
+    public async validateOrderFillableOrThrowAsync(
+        signedOrder: SignedOrder,
+        opts: ValidateOrderFillableOpts = {},
+    ): Promise<void> {
+        const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
+            this._erc20TokenWrapper,
+            this._erc721TokenWrapper,
+            BlockParamLiteral.Latest,
+        );
+        const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+        const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
+
+        const expectedFillTakerTokenAmountIfExists = opts.expectedFillTakerTokenAmount;
+        const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        await orderValidationUtils.validateOrderFillableOrThrowAsync(
+            exchangeTradeSimulator,
+            signedOrder,
+            this.getZRXAssetData(),
+            expectedFillTakerTokenAmountIfExists,
+        );
+    }
+    /**
+     * Validate a call to FillOrder and throw if it wouldn't succeed
+     * @param signedOrder SignedOrder of interest
+     * @param fillTakerAssetAmount Amount we'd like to fill the order for
+     * @param takerAddress The taker of the order
+     */
+    public async validateFillOrderThrowIfInvalidAsync(
+        signedOrder: SignedOrder,
+        fillTakerAssetAmount: BigNumber,
+        takerAddress: string,
+    ): Promise<void> {
+        const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
+            this._erc20TokenWrapper,
+            this._erc721TokenWrapper,
+            BlockParamLiteral.Latest,
+        );
+        const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+        const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
+
+        const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
+            exchangeTradeSimulator,
+            this._web3Wrapper.getProvider(),
+            signedOrder,
+            fillTakerAssetAmount,
+            takerAddress,
+            this.getZRXAssetData(),
+        );
     }
     /**
      * Retrieves the Ethereum address of the Exchange contract deployed on the network

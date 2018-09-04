@@ -14,7 +14,7 @@ import { ValidatorContract } from '../../generated_contract_wrappers/validator';
 import { WalletContract } from '../../generated_contract_wrappers/wallet';
 import { addressUtils } from '../utils/address_utils';
 import { artifacts } from '../utils/artifacts';
-import { expectContractCallFailedAsync, expectContractCallFailedWithoutReasonAsync } from '../utils/assertions';
+import { expectContractCallFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { LogDecoder } from '../utils/log_decoder';
