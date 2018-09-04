@@ -24,7 +24,6 @@ import "../interfaces/IAssets.sol";
 contract MAssets is
     IAssets
 {
-
     /// @dev Transfers given amount of asset to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to transfer to sender.

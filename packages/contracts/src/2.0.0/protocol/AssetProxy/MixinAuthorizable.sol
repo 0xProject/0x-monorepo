@@ -26,7 +26,6 @@ contract MixinAuthorizable is
     Ownable,
     MAuthorizable
 {
-
     /// @dev Only authorized addresses can invoke functions with this modifier.
     modifier onlyAuthorized {
         require(

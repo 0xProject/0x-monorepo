@@ -25,7 +25,6 @@ import "../../utils/LibBytes/LibBytes.sol";
 contract AssetProxyOwner is
     MultiSigWalletWithTimeLock
 {
-
     using LibBytes for bytes;
 
     event AssetProxyRegistration(address assetProxyContract, bool isRegistered);

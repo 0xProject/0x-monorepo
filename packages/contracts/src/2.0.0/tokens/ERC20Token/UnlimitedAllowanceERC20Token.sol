@@ -24,7 +24,6 @@ import "../ERC20Token/ERC20Token.sol";
 contract UnlimitedAllowanceERC20Token is
     ERC20Token
 {
-
     uint256 constant internal MAX_UINT = 2**256 - 1;
 
     /// @dev ERC20 transferFrom, modified such that an allowance of MAX_UINT represents an unlimited allowance. See https://github.com/ethereum/EIPs/issues/717

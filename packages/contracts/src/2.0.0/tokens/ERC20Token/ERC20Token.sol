@@ -24,7 +24,6 @@ import "./IERC20Token.sol";
 contract ERC20Token is
     IERC20Token
 {
-
     mapping (address => uint256) internal balances;
     mapping (address => mapping (address => uint256)) internal allowed;
 

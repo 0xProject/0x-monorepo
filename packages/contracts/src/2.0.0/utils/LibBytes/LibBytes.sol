@@ -188,7 +188,8 @@ library LibBytes {
         memCopy(
             result.contentAddress(),
             b.contentAddress() + from,
-            result.length);
+            result.length
+        );
         return result;
     }
     
@@ -433,7 +434,8 @@ library LibBytes {
         pure
         returns (uint256 result)
     {
-        return uint256(readBytes32(b, index));
+        result = uint256(readBytes32(b, index));
+        return result;
     }
 
     /// @dev Writes a uint256 into a specific position in a byte array.

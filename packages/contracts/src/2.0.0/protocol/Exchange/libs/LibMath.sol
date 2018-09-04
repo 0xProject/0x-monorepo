@@ -24,7 +24,6 @@ import "../../../utils/SafeMath/SafeMath.sol";
 contract LibMath is
     SafeMath
 {
-
     /// @dev Calculates partial value given a numerator and denominator rounded down.
     ///      Reverts if rounding error is >= 0.1%
     /// @param numerator Numerator.
@@ -206,7 +205,11 @@ contract LibMath is
         //        1000 * remainder  <  numerator * target
         // so we have a rounding error iff:
         //        1000 * remainder  >=  numerator * target
-        uint256 remainder = mulmod(target, numerator, denominator);
+        uint256 remainder = mulmod(
+            target,
+            numerator,
+            denominator
+        );
         isError = safeMul(1000, remainder) >= safeMul(numerator, target);
         return isError;
     }
@@ -238,7 +241,11 @@ contract LibMath is
             return false;
         }
         // Compute remainder as before
-        uint256 remainder = mulmod(target, numerator, denominator);
+        uint256 remainder = mulmod(
+            target,
+            numerator,
+            denominator
+        );
         // TODO: safeMod
         remainder = safeSub(denominator, remainder) % denominator;
         isError = safeMul(1000, remainder) >= safeMul(numerator, target);
