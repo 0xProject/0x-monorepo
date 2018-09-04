@@ -85,3 +85,6 @@ export {
     ExchangeEventArgs,
     ExchangeEvents,
 } from './contract_wrappers/generated/exchange';
+
+export { AssetBalanceAndProxyAllowanceFetcher } from './fetchers/asset_balance_and_proxy_allowance_fetcher';
+export { OrderFilledCancelledFetcher } from './fetchers/order_filled_cancelled_fetcher';
