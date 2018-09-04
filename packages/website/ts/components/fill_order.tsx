@@ -600,9 +600,6 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         let globalErrMsg = '';
         const signedOrder = parsedOrder.signedOrder;
         const takerTokenAmount = signedOrder.takerAssetAmount;
-        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        const unavailableTakerAmount = await this.props.blockchain.getUnavailableTakerAmountAsync(orderHash);
-        const availableTakerTokenAmount = takerTokenAmount.minus(unavailableTakerAmount);
         if (!_.isEmpty(globalErrMsg)) {
             this.setState({
                 isCancelling: false,

@@ -10,6 +10,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
 
+import { Provider } from 'ethereum-types';
 import {
     AccountState,
     BlockchainCallErrs,
