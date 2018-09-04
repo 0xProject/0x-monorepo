@@ -1,12 +1,11 @@
 import { ContractWrappersError } from '@0xproject/contract-wrappers';
 import { assetDataUtils, OrderError } from '@0xproject/order-utils';
 import { constants as sharedConstants, Networks } from '@0xproject/react-shared';
-import { ECSignature, ExchangeContractErrs } from '@0xproject/types';
+import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as bowser from 'bowser';
 import deepEqual = require('deep-equal');
-import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
