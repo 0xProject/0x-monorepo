@@ -1,3 +1,4 @@
+import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as dirtyChai from 'dirty-chai';
@@ -18,7 +19,6 @@ import { orderbookResponse } from './fixtures/standard_relayer_api/orderbook';
 import * as orderbookJSON from './fixtures/standard_relayer_api/orderbook.json';
 import { ordersResponse } from './fixtures/standard_relayer_api/orders';
 import * as ordersResponseJSON from './fixtures/standard_relayer_api/orders.json';
-import { BigNumber } from 'bignumber.js';
 
 chai.config.includeStack = true;
 chai.use(dirtyChai);
