@@ -4,6 +4,10 @@
         "changes": [
             {
                 "note": "Add `OrderValidatorWrapper`"
+            },
+            {
+                "note":
+                    "Export `AssetBalanceAndProxyAllowanceFetcher` and `OrderFilledCancelledFetcher` implementations"
             }
         ]
     },
