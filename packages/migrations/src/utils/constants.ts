@@ -13,4 +13,6 @@ export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     KOVAN_RPC_URL: 'https://kovan.infura.io/',
     KOVAN_NETWORK_ID: 42,
+    MAINNET_RPC_URL: 'https://mainnet.infura.io/',
+    MAINNET_NETWORK_ID: 1,
 };

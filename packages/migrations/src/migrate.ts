@@ -46,7 +46,7 @@ const args = yargs.argv;
             await runV2MigrationsAsync(provider, artifactsDir, txDefaults);
             break;
         case ContractVersions.V2Testnet:
-            provider = await providerFactory.getLedgerProviderAsync();
+            provider = await providerFactory.getKovanLedgerProviderAsync();
             web3Wrapper = new Web3Wrapper(provider);
             accounts = await web3Wrapper.getAvailableAddressesAsync();
             txDefaults = {
@@ -56,12 +56,13 @@ const args = yargs.argv;
             await runV2TestnetMigrationsAsync(provider, artifactsDir, txDefaults);
             break;
         case ContractVersions.V2Mainnet:
-            provider = await providerFactory.getLedgerProviderAsync();
+            provider = await providerFactory.getMainnetLedgerProviderAsync();
             web3Wrapper = new Web3Wrapper(provider);
             accounts = await web3Wrapper.getAvailableAddressesAsync();
             txDefaults = {
-                from: accounts[0],
+                from: accounts[2],
                 gas: devConstants.GAS_LIMIT,
+                gasPrice: 6000000000,
             };
             await runV2MainnetMigrationsAsync(provider, artifactsDir, txDefaults);
             break;

@@ -12,7 +12,7 @@ async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumC
     return ledgerEthClient;
 }
 export const providerFactory = {
-    async getLedgerProviderAsync(): Promise<Provider> {
+    async getKovanLedgerProviderAsync(): Promise<Provider> {
         const provider = new Web3ProviderEngine();
         const ledgerWalletConfigs = {
             networkId: constants.KOVAN_NETWORK_ID,
@@ -21,6 +21,18 @@ export const providerFactory = {
         const ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
         provider.addProvider(ledgerSubprovider);
         provider.addProvider(new RPCSubprovider(constants.KOVAN_RPC_URL));
+        provider.start();
+        return provider;
+    },
+    async getMainnetLedgerProviderAsync(): Promise<Provider> {
+        const provider = new Web3ProviderEngine();
+        const ledgerWalletConfigs = {
+            networkId: constants.MAINNET_NETWORK_ID,
+            ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
+        };
+        const ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
+        provider.addProvider(ledgerSubprovider);
+        provider.addProvider(new RPCSubprovider(constants.MAINNET_RPC_URL));
         provider.start();
         return provider;
     },
