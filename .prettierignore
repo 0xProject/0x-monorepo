@@ -24,3 +24,4 @@ lib
 /packages/migrations/artifacts/development
 package.json
 scripts/postpublish_utils.js
+packages/sol-cov/test/fixtures/artifacts
