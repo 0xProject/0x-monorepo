@@ -17,7 +17,7 @@ export const docGenConfigs: DocGenConfigs = {
             'https://github.com/tdegrunt/jsonschema/blob/5c2edd4baba149964aec0f23c87ad12c25a50dfb/lib/index.d.ts#L49',
         Uint8Array: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array',
         'Ganache.GanacheOpts':
-            'https://github.com/0xProject/0x-monorepo/blob/ddf85112d7e4eb1581e0d82ce6eedad429641106/packages/typescript-typings/types/ganache-core/index.d.ts#L3',
+            'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/ganache-core/index.d.ts#L8',
         'lightwallet.keystore':
             'https://github.com/0xProject/0x-monorepo/blob/ddf85112d7e4eb1581e0d82ce6eedad429641106/packages/typescript-typings/types/eth-lightwallet/index.d.ts#L32',
     },
