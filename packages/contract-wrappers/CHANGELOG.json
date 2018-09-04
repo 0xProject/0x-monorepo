@@ -8,6 +8,10 @@
             {
                 "note":
                     "Export `AssetBalanceAndProxyAllowanceFetcher` and `OrderFilledCancelledFetcher` implementations"
+            },
+            {
+                "note":
+                    "Add `validateOrderFillableOrThrowAsync` and `validateFillOrderThrowIfInvalidAsync` to ExchangeWrapper"
             }
         ]
     },
