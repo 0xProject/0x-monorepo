@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import { darken } from 'polished';
 import * as React from 'react';
 import Typist from 'react-typist';
 
