@@ -148,12 +148,12 @@ describe('HttpClient', () => {
         };
         const url = `${relayUrl}/order_config`;
         it('gets order config', async () => {
-            fetchMock.post(url, orderConfigResponseJSON);
+            fetchMock.get(url, orderConfigResponseJSON);
             const fees = await relayerClient.getOrderConfigAsync(request);
             expect(fees).to.be.deep.equal(orderConfigResponse);
         });
         it('does not mutate input', async () => {
-            fetchMock.post(url, orderConfigResponseJSON);
+            fetchMock.get(url, orderConfigResponseJSON);
             const makerAssetAmountBefore = request.makerAssetAmount;
             const takerAssetAmountBefore = request.takerAssetAmount;
             const expirationTimeSecondsBefore = request.expirationTimeSeconds;
@@ -163,7 +163,7 @@ describe('HttpClient', () => {
             expect(expirationTimeSecondsBefore).to.be.deep.equal(request.expirationTimeSeconds);
         });
         it('throws an error for invalid JSON response', async () => {
-            fetchMock.post(url, { test: 'dummy' });
+            fetchMock.get(url, { test: 'dummy' });
             expect(relayerClient.getOrderConfigAsync(request)).to.be.rejected();
         });
     });
