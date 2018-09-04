@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Remove types for web3-provider-engine, newman, ganache-core, detect-node, eth-lightwallet",
+                "pr": "1052"
+            }
+        ]
+    },
+    {
         "timestamp": 1535133899,
         "version": "1.0.5",
         "changes": [
