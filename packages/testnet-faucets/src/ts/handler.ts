@@ -107,7 +107,11 @@ export class Handler {
     private _dispenseAsset(req: express.Request, res: express.Response, requestedAssetType: RequestedAssetType): void {
         const networkId = req.params.networkId;
         const recipient = req.params.recipient;
-        const networkConfig = this._networkConfigByNetworkId[networkId];
+        const networkConfig = _.get(this._networkConfigByNetworkId, networkId);
+        if (_.isUndefined(networkConfig)) {
+            res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_NETWORK_ID');
+            return;
+        }
         let dispenserTask;
         switch (requestedAssetType) {
             case RequestedAssetType.ETH:
@@ -144,20 +148,20 @@ export class Handler {
             return;
         }
         res.setHeader('Content-Type', 'application/json');
-        const makerToken = TOKENS_BY_NETWORK[networkConfig.networkId][requestedAssetType];
-        if (_.isUndefined(makerToken)) {
+        const makerTokenIfExists = _.get(TOKENS_BY_NETWORK, [networkConfig.networkId, requestedAssetType]);
+        if (_.isUndefined(makerTokenIfExists)) {
             throw new Error(`Unsupported asset type: ${requestedAssetType}`);
         }
         const takerTokenSymbol =
             requestedAssetType === RequestedAssetType.WETH ? RequestedAssetType.ZRX : RequestedAssetType.WETH;
-        const takerToken = TOKENS_BY_NETWORK[networkConfig.networkId][takerTokenSymbol];
-        if (_.isUndefined(takerToken)) {
-            throw new Error(`Unsupported asset type: ${requestedAssetType}`);
+        const takerTokenIfExists = _.get(TOKENS_BY_NETWORK, [networkConfig.networkId, takerTokenSymbol]);
+        if (_.isUndefined(takerTokenIfExists)) {
+            throw new Error(`Unsupported asset type: ${takerTokenSymbol}`);
         }
-        const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, makerToken.decimals);
-        const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, takerToken.decimals);
-        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerToken.address);
-        const takerAssetData = assetDataUtils.encodeERC20AssetData(takerToken.address);
+        const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, makerTokenIfExists.decimals);
+        const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, takerTokenIfExists.decimals);
+        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenIfExists.address);
+        const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenIfExists.address);
         const order: Order = {
             makerAddress: configs.DISPENSER_ADDRESS,
             takerAddress: req.params.recipient as string,

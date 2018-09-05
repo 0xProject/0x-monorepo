@@ -42,15 +42,18 @@ export const dispenseAssetTasks = {
         return async () => {
             logUtils.log(`Processing ${tokenSymbol} ${recipientAddress}`);
             const amountToDispense = new BigNumber(DISPENSE_AMOUNT_TOKEN);
-            const token = TOKENS_BY_NETWORK[networkId][tokenSymbol];
-            if (_.isUndefined(token)) {
+            const tokenIfExists = _.get(TOKENS_BY_NETWORK, [networkId, tokenSymbol]);
+            if (_.isUndefined(tokenIfExists)) {
                 throw new Error(`Unsupported asset type: ${tokenSymbol}`);
             }
-            const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountToDispense, token.decimals);
-            const userBalanceBaseUnits = await erc20TokenWrapper.getBalanceAsync(token.address, recipientAddress);
+            const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountToDispense, tokenIfExists.decimals);
+            const userBalanceBaseUnits = await erc20TokenWrapper.getBalanceAsync(
+                tokenIfExists.address,
+                recipientAddress,
+            );
             const maxAmountBaseUnits = Web3Wrapper.toBaseUnitAmount(
                 new BigNumber(DISPENSE_MAX_AMOUNT_TOKEN),
-                token.decimals,
+                tokenIfExists.decimals,
             );
             if (userBalanceBaseUnits.greaterThanOrEqualTo(maxAmountBaseUnits)) {
                 logUtils.log(
@@ -59,7 +62,7 @@ export const dispenseAssetTasks = {
                 return;
             }
             const txHash = await erc20TokenWrapper.transferAsync(
-                token.address,
+                tokenIfExists.address,
                 configs.DISPENSER_ADDRESS,
                 recipientAddress,
                 baseUnitAmount,
