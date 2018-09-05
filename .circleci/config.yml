@@ -2,6 +2,7 @@ version: 2
 
 jobs:
   build:
+    resource_class: medium+
     docker:
       - image: circleci/node:9
     environment:
@@ -60,6 +61,7 @@ jobs:
       # initialized
       - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test contracts
   test-publish:
+    resource_class: medium+
     docker:
       - image: circleci/node:9
       - image: verdaccio/verdaccio
