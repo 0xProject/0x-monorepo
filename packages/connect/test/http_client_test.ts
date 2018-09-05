@@ -1,3 +1,4 @@
+import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as dirtyChai from 'dirty-chai';
@@ -138,21 +139,21 @@ describe('HttpClient', () => {
         const request = {
             makerAddress: '0x9e56625509c2f60af937f23b7b532600390e8c8b',
             takerAddress: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',
-            makerAssetAmount: '10000000000000000',
-            takerAssetAmount: '20000000000000000',
-            expirationTimeSeconds: '1532560590',
+            makerAssetAmount: new BigNumber('10000000000000000'),
+            takerAssetAmount: new BigNumber('20000000000000000'),
+            expirationTimeSeconds: new BigNumber('1532560590'),
             makerAssetData: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
             takerAssetData: '0x0257179264389b814a946f3e92105513705ca6b990',
             exchangeAddress: '0x12459c951127e0c374ff9105dda097662a027093',
         };
         const url = `${relayUrl}/order_config`;
         it('gets order config', async () => {
-            fetchMock.post(url, orderConfigResponseJSON);
+            fetchMock.get(url, orderConfigResponseJSON);
             const fees = await relayerClient.getOrderConfigAsync(request);
             expect(fees).to.be.deep.equal(orderConfigResponse);
         });
         it('does not mutate input', async () => {
-            fetchMock.post(url, orderConfigResponseJSON);
+            fetchMock.get(url, orderConfigResponseJSON);
             const makerAssetAmountBefore = request.makerAssetAmount;
             const takerAssetAmountBefore = request.takerAssetAmount;
             const expirationTimeSecondsBefore = request.expirationTimeSeconds;
@@ -162,7 +163,7 @@ describe('HttpClient', () => {
             expect(expirationTimeSecondsBefore).to.be.deep.equal(request.expirationTimeSeconds);
         });
         it('throws an error for invalid JSON response', async () => {
-            fetchMock.post(url, { test: 'dummy' });
+            fetchMock.get(url, { test: 'dummy' });
             expect(relayerClient.getOrderConfigAsync(request)).to.be.rejected();
         });
     });
