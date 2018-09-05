@@ -1,23 +1,16 @@
+interface TokensByNetwork {
+    [networkId: number]: { [tokenSymbol: string]: { address: string; decimals: number } };
+}
+
 export const tokens = {
     ZRX: {
-        name: '0x Protocol Token',
         decimals: 18,
-        symbol: 'ZRX',
     },
     WETH: {
-        name: 'Wrapped ETH',
         decimals: 18,
-        symbol: 'WETH',
     },
 };
-export const ETHER_TOKEN = {
-    name: 'Ether',
-    decimals: 18,
-    symbol: 'ETH',
-};
-export const TOKENS_BY_NETWORK: {
-    [networkId: number]: { [tokenSymbol: string]: { address: string; decimals: number; symbol: string; name: string } };
-} = {
+export const TOKENS_BY_NETWORK: TokensByNetwork = {
     3: {
         ZRX: {
             ...tokens.ZRX,
