@@ -1,6 +1,6 @@
 [
     {
-        "version": "1.0.1-rc.6",
+        "version": "1.0.1",
         "changes": [
             {
                 "note": "Add `OrderValidatorWrapper`"
