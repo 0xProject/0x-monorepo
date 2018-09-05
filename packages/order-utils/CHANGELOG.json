@@ -6,7 +6,8 @@
                 "note": "Export `orderParsingUtils`",
                 "pr": 1044
             }
-        ]
+        ],
+        "timestamp": 1536142250
     },
     {
         "version": "1.0.1-rc.6",

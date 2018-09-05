@@ -6,7 +6,8 @@
                 "note": "Remove types for web3-provider-engine, newman, ganache-core, detect-node, eth-lightwallet",
                 "pr": "1052"
             }
-        ]
+        ],
+        "timestamp": 1536142250
     },
     {
         "timestamp": 1535133899,

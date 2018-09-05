@@ -10,7 +10,8 @@
                 "note": "Add MultiSigWalletWithTimeLock revert reasons",
                 "pr": 1050
             }
-        ]
+        ],
+        "timestamp": 1536142250
     },
     {
         "version": "1.0.1-rc.6",

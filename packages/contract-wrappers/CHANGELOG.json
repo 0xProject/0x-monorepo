@@ -20,7 +20,8 @@
                     "Add `validateOrderFillableOrThrowAsync` and `validateFillOrderThrowIfInvalidAsync` to ExchangeWrapper",
                 "pr": 1054
             }
-        ]
+        ],
+        "timestamp": 1536142250
     },
     {
         "version": "1.0.1-rc.5",
