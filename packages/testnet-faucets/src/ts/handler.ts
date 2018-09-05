@@ -172,7 +172,7 @@ export class Handler {
             feeRecipientAddress: NULL_ADDRESS,
             senderAddress: NULL_ADDRESS,
             // tslint:disable-next-line:custom-no-magic-numbers
-            expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS).div(1000),
+            expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS).div(1000).floor(),
         };
         const orderHash = orderHashUtils.getOrderHashHex(order);
         const signature = await signatureUtils.ecSignOrderHashAsync(
