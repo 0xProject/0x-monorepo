@@ -27,3 +27,17 @@ export enum ContractName {
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',
 }
+
+export interface V2NetworkConfig {
+    [network: string]: {
+        rpcUrl: string;
+        exchange: string;
+        erc20Proxy: string;
+        erc721Proxy: string;
+        assetProxyOwner: string;
+        zrx: string;
+        assetProxyOwnerOwners: string[];
+        assetProxyOwnerRequiredConfirmations: BigNumber;
+        assetProxyOwnerSecondsTimeLocked: BigNumber;
+    };
+}

@@ -5,10 +5,11 @@
         "node": ">=6.12"
     },
     "description": "0x smart contract migrations",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "yarn pre_build && tsc -b",
+        "test": "yarn run_mocha",
         "pre_build": "run-s copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles 'artifacts/**/*' ./lib",
         "clean": "shx rm -rf lib src/1.0.0/contract_wrappers src/2.0.0-testnet/contract_wrappers src/2.0.0/contract_wrappers artifacts/development",
@@ -20,7 +21,8 @@
         "generate_contract_wrappers": "run-p generate_contract_wrappers:*",
         "generate_contract_wrappers:v1": "abi-gen --abis  ${npm_package_config_abis_v1} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/1.0.0/contract_wrappers --backend ethers",
         "generate_contract_wrappers:v2": "abi-gen --abis  ${npm_package_config_abis_v2} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/2.0.0/contract_wrappers --backend ethers",
-        "compile:v1": "sol-compiler --artifacts-dir artifacts/1.0.0 --contracts Exchange_v1,DummyERC20Token,ZRXToken,WETH9,TokenTransferProxy_v1,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry"
+        "compile:v1": "sol-compiler --artifacts-dir artifacts/1.0.0 --contracts Exchange_v1,DummyERC20Token,ZRXToken,WETH9,TokenTransferProxy_v1,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*.js' --timeout 100000 --bail --exit"
     },
     "config": {
         "abis": {
@@ -35,8 +37,13 @@
         "@0xproject/tslint-config": "^1.0.7",
         "@0xproject/types": "^1.0.1",
         "@types/yargs": "^10.0.0",
+        "chai": "^4.0.1",
+        "chai-as-promised": "^7.1.0",
+        "chai-bignumber": "^2.0.1",
         "copyfiles": "^2.0.0",
+        "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
+        "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",

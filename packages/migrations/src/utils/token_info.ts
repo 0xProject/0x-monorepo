@@ -1,6 +1,6 @@
 import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 
-import { ERC20Token, ERC721Token } from '../types';
+import { ERC20Token, ERC721Token } from './types';
 
 export const etherTokenByNetwork: { [networkId: number]: { address: string } } = {
     3: {
