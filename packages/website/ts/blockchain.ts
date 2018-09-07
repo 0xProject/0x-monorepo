@@ -27,6 +27,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
 import contract = require('truffle-contract');
+import { tokenAddressOverrides } from 'ts/utils/token_address_overrides';
 
 import { BlockchainWatcher } from 'ts/blockchain_watcher';
 import { AssetSendCompleted } from 'ts/components/flash_messages/asset_send_completed';
@@ -223,7 +224,13 @@ export class Blockchain {
     public async isAddressInTokenRegistryAsync(tokenAddress: string): Promise<boolean> {
         utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
         const tokenIfExists = await this._zeroEx.tokenRegistry.getTokenIfExistsAsync(tokenAddress);
-        return !_.isUndefined(tokenIfExists);
+        // HACK: Override token addresses on testnets
+        const tokenSymbolToAddressOverrides = tokenAddressOverrides[this.networkId];
+        let isTokenAddressInOverrides = false;
+        if (!_.isUndefined(tokenSymbolToAddressOverrides)) {
+            isTokenAddressInOverrides = _.keys(tokenSymbolToAddressOverrides).includes(tokenAddress);
+        }
+        return !_.isUndefined(tokenIfExists) || isTokenAddressInOverrides;
     }
     public getLedgerDerivationPathIfExists(): string {
         if (_.isUndefined(this._ledgerSubprovider)) {
@@ -771,6 +778,20 @@ export class Blockchain {
         } else {
             utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
             tokenRegistryTokens = await this._zeroEx.tokenRegistry.getTokensAsync();
+            const tokenSymbolToAddressOverrides = tokenAddressOverrides[this.networkId];
+            if (!_.isUndefined(tokenAddressOverrides)) {
+                // HACK: Override token addresses on testnets
+                tokenRegistryTokens = _.map(tokenRegistryTokens, (token: ZeroExToken) => {
+                    const overrideIfExists = tokenSymbolToAddressOverrides[token.symbol];
+                    if (!_.isUndefined(overrideIfExists)) {
+                        return {
+                            ...token,
+                            address: overrideIfExists,
+                        };
+                    }
+                    return token;
+                });
+            }
         }
         const tokenByAddress: TokenByAddress = {};
         _.each(tokenRegistryTokens, (t: ZeroExToken) => {
