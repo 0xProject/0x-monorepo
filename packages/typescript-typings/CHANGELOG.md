@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _September 5, 2018_
+
+    * Remove types for web3-provider-engine, newman, ganache-core, detect-node, eth-lightwallet (#1052)
+
 ## v1.0.5 - _August 24, 2018_
 
     * Dependencies updated

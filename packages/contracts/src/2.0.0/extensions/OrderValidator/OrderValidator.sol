@@ -28,10 +28,10 @@ import "../../utils/LibBytes/LibBytes.sol";
 
 contract OrderValidator {
 
+    using LibBytes for bytes;
+
     bytes4 constant internal ERC20_DATA_ID = bytes4(keccak256("ERC20Token(address)"));
     bytes4 constant internal ERC721_DATA_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
-
-    using LibBytes for bytes;
 
     struct TraderInfo {
         uint256 makerBalance;       // Maker's balance of makerAsset

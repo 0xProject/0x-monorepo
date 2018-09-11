@@ -29,7 +29,6 @@ import "../../protocol/Exchange/libs/LibOrder.sol";
 contract ReentrantERC20Token is
     ERC20Token
 {
-
     using LibBytes for bytes;
 
     // solhint-disable-next-line var-name-mixedcase

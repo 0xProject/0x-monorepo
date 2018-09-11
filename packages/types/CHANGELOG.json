@@ -1,12 +1,17 @@
 [
     {
-        "version": "1.0.1-rc.7",
+        "version": "1.0.1",
         "changes": [
             {
                 "note": "Add AssetProxyOwner revert reasons",
                 "pr": 1041
+            },
+            {
+                "note": "Add MultiSigWalletWithTimeLock revert reasons",
+                "pr": 1050
             }
-        ]
+        ],
+        "timestamp": 1536142250
     },
     {
         "version": "1.0.1-rc.6",

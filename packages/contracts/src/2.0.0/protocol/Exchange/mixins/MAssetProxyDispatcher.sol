@@ -24,7 +24,6 @@ import "../interfaces/IAssetProxyDispatcher.sol";
 contract MAssetProxyDispatcher is
     IAssetProxyDispatcher
 {
-
     // Logs registration of new asset proxy
     event AssetProxyRegistered(
         bytes4 id,              // Id of new registered AssetProxy.

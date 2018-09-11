@@ -24,7 +24,6 @@ import "../../tokens/ERC721Token/IERC721Receiver.sol";
 contract DummyERC721Receiver is
     IERC721Receiver
 {
-
     // Function selector for ERC721Receiver.onERC721Received
     // 0x150b7a02
     bytes4 constant internal ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));

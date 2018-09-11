@@ -1,5 +1,6 @@
 import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
+import { orderParsingUtils } from '@0xproject/order-utils';
 
 import {
     APIOrder,
@@ -19,7 +20,7 @@ export const relayerResponseJsonParsers = {
     },
     parseAssetPairsItemsJson(json: any): AssetPairsItem[] {
         return json.map((assetDataPair: any) => {
-            return typeConverters.convertStringsFieldsToBigNumbers(assetDataPair, [
+            return orderParsingUtils.convertStringsFieldsToBigNumbers(assetDataPair, [
                 'assetDataA.minAmount',
                 'assetDataA.maxAmount',
                 'assetDataB.minAmount',
@@ -44,6 +45,6 @@ export const relayerResponseJsonParsers = {
     },
     parseOrderConfigResponseJson(json: any): OrderConfigResponse {
         assert.doesConformToSchema('orderConfigResponse', json, schemas.relayerApiOrderConfigResponseSchema);
-        return typeConverters.convertStringsFieldsToBigNumbers(json, ['makerFee', 'takerFee']);
+        return orderParsingUtils.convertStringsFieldsToBigNumbers(json, ['makerFee', 'takerFee']);
     },
 };

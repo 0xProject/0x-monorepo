@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _September 5, 2018_
+
+    * Change `OrderConfigRequest` to use BigNumber instead of string for relevant fields. (#1058)
+
 ## v2.0.0-rc.2 - _August 27, 2018_
 
     * Dependencies updated

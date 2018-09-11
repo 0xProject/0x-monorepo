@@ -28,7 +28,6 @@ contract MixinWeth is
     LibConstants,
     MWeth
 {
-
     /// @dev Default payabale function, this allows us to withdraw WETH
     function ()
         public

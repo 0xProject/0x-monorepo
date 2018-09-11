@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1 - _September 5, 2018_
+
+    * Dependencies updated
+
 ## v1.0.1-rc.6 - _August 27, 2018_
 
     * Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js

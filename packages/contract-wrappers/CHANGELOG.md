@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1 - _September 5, 2018_
+
+    * Add `OrderValidatorWrapper`
+    * Fix bug where contracts not deployed on a network showed an `EXCHANGE_CONTRACT_DOES_NOT_EXIST` error instead of `CONTRACT_NOT_DEPLOYED_ON_NETWORK` (#1044)
+    * Export `AssetBalanceAndProxyAllowanceFetcher` and `OrderFilledCancelledFetcher` implementations (#1054)
+    * Add `validateOrderFillableOrThrowAsync` and `validateFillOrderThrowIfInvalidAsync` to ExchangeWrapper (#1054)
+
 ## v1.0.1-rc.5 - _August 27, 2018_
 
     * Fix missing `BlockParamLiteral` type import issue

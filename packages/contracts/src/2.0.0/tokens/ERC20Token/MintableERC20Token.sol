@@ -26,7 +26,6 @@ contract MintableERC20Token is
     SafeMath,
     UnlimitedAllowanceERC20Token
 {
-
     /// @dev Mints new tokens
     /// @param _to Address of the beneficiary that will own the minted token
     /// @param _value Amount of tokens to mint

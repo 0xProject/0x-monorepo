@@ -8,8 +8,8 @@ lib
 /packages/order-watcher/src/generated_contract_wrappers/
 /packages/order-utils/src/generated_contract_wrappers/
 /packages/migrations/src/1.0.0/contract_wrappers
+/packages/migrations/src/2.0.0-testnet/contract_wrappers
 /packages/migrations/src/2.0.0/contract_wrappers
-/packages/migrations/src/2.0.0-beta-testnet/contract_wrappers
 /packages/0x.js/src/artifacts
 /packages/contracts/src/artifacts
 /packages/contract-wrappers/src/artifacts
@@ -19,7 +19,9 @@ lib
 /packages/contract-wrappers/test/artifacts
 /packages/order-watcher/test/artifacts
 /packages/migrations/artifacts/1.0.0
+/packages/migrations/artifacts/2.0.0-testnet
 /packages/migrations/artifacts/2.0.0
-/packages/migrations/artifacts/2.0.0-beta-testnet
+/packages/migrations/artifacts/development
 package.json
 scripts/postpublish_utils.js
+packages/sol-cov/test/fixtures/artifacts

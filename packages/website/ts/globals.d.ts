@@ -10,6 +10,7 @@ declare module '*.json' {
     export default json;
     /* tslint:enable */
 }
+declare module 'web3-provider-engine/subproviders/filters';
 
 // This will be defined by default in TS 2.4
 // Source: https://github.com/Microsoft/TypeScript/issues/12364

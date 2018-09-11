@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1 - _September 5, 2018_
+
+    * Add AssetProxyOwner revert reasons (#1041)
+    * Add MultiSigWalletWithTimeLock revert reasons (#1050)
+
 ## v1.0.1-rc.6 - _August 27, 2018_
 
     * Add WalletError and ValidatorError revert reasons (#1012)

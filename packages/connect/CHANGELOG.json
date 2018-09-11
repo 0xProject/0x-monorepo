@@ -1,5 +1,15 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Change `OrderConfigRequest` to use BigNumber instead of string for relevant fields.",
+                "pr": 1058
+            }
+        ],
+        "timestamp": 1536142250
+    },
+    {
         "version": "2.0.0-rc.2",
         "changes": [
             {

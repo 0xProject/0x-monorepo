@@ -36,7 +36,6 @@ contract MixinWrapperFunctions is
     MExchangeCore,
     MWrapperFunctions
 {
-
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
@@ -82,7 +81,7 @@ contract MixinWrapperFunctions is
         // Delegate to `fillOrder` and handle any exceptions gracefully
         assembly {
             let success := delegatecall(
-                gas,                                // forward all gas, TODO: look into gas consumption of assert/throw
+                gas,                                // forward all gas
                 address,                            // call address of this contract
                 add(fillOrderCalldata, 32),         // pointer to start of input (skip array length in first 32 bytes)
                 mload(fillOrderCalldata),           // length of input

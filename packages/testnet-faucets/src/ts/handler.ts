@@ -1,27 +1,35 @@
-import { Order, ZeroEx } from '0x.js';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import {
+    assetDataUtils,
+    BigNumber,
+    ContractWrappers,
+    generatePseudoRandomSalt,
+    Order,
+    orderHashUtils,
+    Provider,
+    RPCSubprovider,
+    signatureUtils,
+    SignedOrder,
+    SignerType,
+    Web3ProviderEngine,
+} from '0x.js';
+import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0xproject/subproviders';
+import { logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { Provider } from 'ethereum-types';
 import * as express from 'express';
 import * as _ from 'lodash';
-
-import {
-    NonceTrackerSubprovider,
-    PrivateKeyWalletSubprovider,
-    RPCSubprovider,
-    Web3ProviderEngine,
-} from '@0xproject/subproviders';
 
 import { configs } from './configs';
 import { constants } from './constants';
 import { DispatchQueue } from './dispatch_queue';
 import { dispenseAssetTasks } from './dispense_asset_tasks';
 import { rpcUrls } from './rpc_urls';
+import { TOKENS_BY_NETWORK } from './tokens';
 
 interface NetworkConfig {
     dispatchQueue: DispatchQueue;
     web3Wrapper: Web3Wrapper;
-    zeroEx: ZeroEx;
+    contractWrappers: ContractWrappers;
+    networkId: number;
 }
 
 interface ItemByNetworkId<T> {
@@ -35,6 +43,9 @@ enum RequestedAssetType {
 }
 
 const FIVE_DAYS_IN_MS = 4.32e8; // TODO: make this configurable
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const ZERO = new BigNumber(0);
+const ASSET_AMOUNT = new BigNumber(0.1);
 
 export class Handler {
     private readonly _networkConfigByNetworkId: ItemByNetworkId<NetworkConfig> = {};
@@ -50,18 +61,18 @@ export class Handler {
         return engine;
     }
     constructor() {
-        _.forIn(rpcUrls, (rpcUrl: string, networkId: string) => {
+        _.forIn(rpcUrls, (rpcUrl: string, networkIdString: string) => {
             const providerObj = Handler._createProviderEngine(rpcUrl);
             const web3Wrapper = new Web3Wrapper(providerObj);
-            const zeroExConfig = {
-                networkId: +networkId,
-            };
-            const zeroEx = new ZeroEx(providerObj, zeroExConfig);
+            // tslint:disable-next-line:custom-no-magic-numbers
+            const networkId = parseInt(networkIdString, 10);
+            const contractWrappers = new ContractWrappers(providerObj, { networkId });
             const dispatchQueue = new DispatchQueue();
             this._networkConfigByNetworkId[networkId] = {
                 dispatchQueue,
                 web3Wrapper,
-                zeroEx,
+                contractWrappers,
+                networkId,
             };
         });
     }
@@ -96,7 +107,11 @@ export class Handler {
     private _dispenseAsset(req: express.Request, res: express.Response, requestedAssetType: RequestedAssetType): void {
         const networkId = req.params.networkId;
         const recipient = req.params.recipient;
-        const networkConfig = this._networkConfigByNetworkId[networkId];
+        const networkConfig = _.get(this._networkConfigByNetworkId, networkId);
+        if (_.isUndefined(networkConfig)) {
+            res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_NETWORK_ID');
+            return;
+        }
         let dispenserTask;
         switch (requestedAssetType) {
             case RequestedAssetType.ETH:
@@ -107,7 +122,8 @@ export class Handler {
                 dispenserTask = dispenseAssetTasks.dispenseTokenTask(
                     recipient,
                     requestedAssetType,
-                    networkConfig.zeroEx,
+                    networkConfig.networkId,
+                    networkConfig.contractWrappers.erc20Token,
                 );
                 break;
             default:
@@ -131,40 +147,48 @@ export class Handler {
             res.status(constants.BAD_REQUEST_STATUS).send('UNSUPPORTED_NETWORK_ID');
             return;
         }
-        const zeroEx = networkConfig.zeroEx;
         res.setHeader('Content-Type', 'application/json');
-        const makerToken = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(requestedAssetType);
-        if (_.isUndefined(makerToken)) {
+        const makerTokenIfExists = _.get(TOKENS_BY_NETWORK, [networkConfig.networkId, requestedAssetType]);
+        if (_.isUndefined(makerTokenIfExists)) {
             throw new Error(`Unsupported asset type: ${requestedAssetType}`);
         }
         const takerTokenSymbol =
             requestedAssetType === RequestedAssetType.WETH ? RequestedAssetType.ZRX : RequestedAssetType.WETH;
-        const takerToken = await zeroEx.tokenRegistry.getTokenBySymbolIfExistsAsync(takerTokenSymbol);
-        if (_.isUndefined(takerToken)) {
-            throw new Error(`Unsupported asset type: ${requestedAssetType}`);
+        const takerTokenIfExists = _.get(TOKENS_BY_NETWORK, [networkConfig.networkId, takerTokenSymbol]);
+        if (_.isUndefined(takerTokenIfExists)) {
+            throw new Error(`Unsupported asset type: ${takerTokenSymbol}`);
         }
-        const makerAssetAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), makerToken.decimals);
-        const takerAssetAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), takerToken.decimals);
+
+        const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, makerTokenIfExists.decimals);
+        const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, takerTokenIfExists.decimals);
+        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenIfExists.address);
+        const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenIfExists.address);
         const order: Order = {
-            senderAddress: configs.DISPENSER_ADDRESS,
             makerAddress: configs.DISPENSER_ADDRESS,
-            takerAddress: req.params.recipient,
-            makerFee: new BigNumber(0),
-            takerFee: new BigNumber(0),
+            takerAddress: req.params.recipient as string,
+            makerFee: ZERO,
+            takerFee: ZERO,
             makerAssetAmount,
             takerAssetAmount,
-            makerAssetData: makerToken.address,
-            takerAssetData: takerToken.address,
-            salt: ZeroEx.generatePseudoRandomSalt(),
-            exchangeAddress: zeroEx.exchange.getContractAddress(),
-            feeRecipientAddress: ZeroEx.NULL_ADDRESS,
-            expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS),
+            makerAssetData,
+            takerAssetData,
+            salt: generatePseudoRandomSalt(),
+            exchangeAddress: networkConfig.contractWrappers.exchange.getContractAddress(),
+            feeRecipientAddress: NULL_ADDRESS,
+            senderAddress: NULL_ADDRESS,
+            // tslint:disable-next-line:custom-no-magic-numbers
+            expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS).div(1000).floor(),
         };
-        const orderHash = ZeroEx.getOrderHashHex(order);
-        const signature = await zeroEx.signOrderHashAsync(orderHash, configs.DISPENSER_ADDRESS, false);
-        const signedOrder = {
+        const orderHash = orderHashUtils.getOrderHashHex(order);
+        const signature = await signatureUtils.ecSignOrderHashAsync(
+            networkConfig.web3Wrapper.getProvider(),
+            orderHash,
+            configs.DISPENSER_ADDRESS,
+            SignerType.Default,
+        );
+        const signedOrder: SignedOrder = {
             ...order,
-            ecSignature: signature,
+            signature,
         };
         const payload = JSON.stringify(signedOrder);
         logUtils.log(`Dispensed signed order: ${payload}`);

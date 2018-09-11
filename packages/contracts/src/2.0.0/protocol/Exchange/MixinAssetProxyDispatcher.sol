@@ -27,7 +27,6 @@ contract MixinAssetProxyDispatcher is
     Ownable,
     MAssetProxyDispatcher
 {
-    
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (bytes4 => IAssetProxy) public assetProxies;
 

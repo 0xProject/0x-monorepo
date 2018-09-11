@@ -31,7 +31,6 @@ contract TestLibs is
     LibFillResults,
     LibAbiEncoder
 {
-
     function publicAbiEncodeFillOrder(
         Order memory order,
         uint256 takerAssetFillAmount,

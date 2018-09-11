@@ -358,7 +358,7 @@ describe('ExchangeWrapper', () => {
     describe('#getVersionAsync', () => {
         it('should return version the hash', async () => {
             const version = await contractWrappers.exchange.getVersionAsync();
-            const VERSION = '2.0.1-alpha';
+            const VERSION = '2.0.0';
             expect(version).to.be.equal(VERSION);
         });
     });

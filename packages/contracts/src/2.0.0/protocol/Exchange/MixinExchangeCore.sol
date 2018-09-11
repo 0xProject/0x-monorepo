@@ -75,7 +75,11 @@ contract MixinExchangeCore is
 
         // Update orderEpoch
         orderEpoch[makerAddress][senderAddress] = newOrderEpoch;
-        emit CancelUpTo(makerAddress, senderAddress, newOrderEpoch);
+        emit CancelUpTo(
+            makerAddress,
+            senderAddress,
+            newOrderEpoch
+        );
     }
 
     /// @dev Fills the input order.
@@ -224,7 +228,11 @@ contract MixinExchangeCore is
         );
     
         // Settle order
-        settleOrder(order, takerAddress, fillResults);
+        settleOrder(
+            order,
+            takerAddress,
+            fillResults
+        );
 
         return fillResults;
     }

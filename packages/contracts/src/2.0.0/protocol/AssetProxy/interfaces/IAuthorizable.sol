@@ -24,7 +24,6 @@ import "../../../utils/Ownable/IOwnable.sol";
 contract IAuthorizable is
     IOwnable
 {
-
     /// @dev Authorizes an address.
     /// @param target Address to authorize.
     function addAuthorizedAddress(address target)
