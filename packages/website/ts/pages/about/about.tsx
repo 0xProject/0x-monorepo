@@ -210,7 +210,7 @@ const teamRow7: ProfileInfo[] = [
         name: 'Eugene Aumson',
         title: 'Engineer',
         description: `Developer Experience. Previously senior software engineer in foreign exchange applications at Bloomberg LP.`,
-        image: 'images/team/matt.jpg',
+        image: 'images/team/gene.jpg',
         linkedIn: 'https://www.linkedin.com/in/aumson/',
         github: 'https://github.com/feuGeneA',
     },
@@ -255,9 +255,9 @@ const advisors2: ProfileInfo[] = [
         name: 'David Sacks',
         description: 'Original COO of PayPal. Founder of Yammer. Investor in Facebook, Uber, SpaceX, Palantir, Airbnb and Houzz.',
         image: '/images/advisors/david.png',
-        linkedIn: 'https://www.linkedin.com/in/lindaxie/',
-        medium: 'https://medium.com/@linda.xie',
-        twitter: 'https://twitter.com/ljxie',
+        linkedIn: 'https://www.linkedin.com/in/davidoliversacks/',
+        medium: 'https://medium.com/@davidsacks',
+        twitter: 'https://twitter.com/DavidSacks',
     },
 ];
 
