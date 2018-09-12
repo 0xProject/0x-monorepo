@@ -206,6 +206,14 @@ const teamRow7: ProfileInfo[] = [
         image: 'images/team/matt.jpg',
         linkedIn: 'https://www.linkedin.com/in/mattytay/',
     },
+    {
+        name: 'Eugene Aumson',
+        title: 'Engineer',
+        description: `Developer Experience. Previously senior software engineer in foreign exchange applications at Bloomberg LP.`,
+        image: 'images/team/matt.jpg',
+        linkedIn: 'https://www.linkedin.com/in/aumson/',
+        github: 'https://github.com/feuGeneA',
+    },
 ];
 
 const advisors: ProfileInfo[] = [
