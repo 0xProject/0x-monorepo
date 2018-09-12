@@ -208,7 +208,7 @@ const teamRow7: ProfileInfo[] = [
     },
 ];
 
-const advisors: ProfileInfo[] = [
+const advisors1: ProfileInfo[] = [
     {
         name: 'Fred Ehrsam',
         description: 'Co-founder of Coinbase. Previously FX trader at Goldman Sachs.',
@@ -232,10 +232,21 @@ const advisors: ProfileInfo[] = [
         github: 'https://github.com/joeykrug',
         angellist: 'https://angel.co/joeykrug',
     },
+];
+
+const advisors2: ProfileInfo[] = [
     {
         name: 'Linda Xie',
         description: 'Co-founder of Scalar Capital. Previously PM at Coinbase.',
         image: '/images/advisors/linda.jpg',
+        linkedIn: 'https://www.linkedin.com/in/lindaxie/',
+        medium: 'https://medium.com/@linda.xie',
+        twitter: 'https://twitter.com/ljxie',
+    },
+    {
+        name: 'David Sacks',
+        description: 'Original COO of PayPal. Founder of Yammer. Investor in Facebook, Uber, SpaceX, Palantir, Airbnb and Houzz.',
+        image: '/images/advisors/david.png',
         linkedIn: 'https://www.linkedin.com/in/lindaxie/',
         medium: 'https://medium.com/@linda.xie',
         twitter: 'https://twitter.com/ljxie',
@@ -316,7 +327,8 @@ export class About extends React.Component<AboutProps, AboutState> {
                         >
                             Advisors:
                         </div>
-                        <div className="clearfix">{this._renderProfiles(advisors)}</div>
+                        <div className="clearfix">{this._renderProfiles(advisors1)}</div>
+                        <div className="clearfix">{this._renderProfiles(advisors2)}</div>
                     </div>
                     <div className="mx-auto py4 sm-px3" style={{ maxWidth: 308 }}>
                         <div className="pb2" style={styles.weAreHiring}>
