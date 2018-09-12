@@ -253,7 +253,7 @@ const advisors2: ProfileInfo[] = [
     },
     {
         name: 'David Sacks',
-        description: 'Original COO of PayPal. Founder of Yammer. Investor in Facebook, Uber, SpaceX, Palantir, Airbnb and Houzz.',
+        description: 'General Partner at Craft Ventures. Original COO of PayPal. Founder of Yammer.',
         image: '/images/advisors/david.png',
         linkedIn: 'https://www.linkedin.com/in/davidoliversacks/',
         medium: 'https://medium.com/@davidsacks',
