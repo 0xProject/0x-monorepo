@@ -1,5 +1,5 @@
 import { assert } from '@0xproject/assert';
-import { APIOrder, HttpClient } from '@0xproject/connect';
+import { APIOrder, HttpClient, OrderbookResponse } from '@0xproject/connect';
 import { ContractWrappers, OrderAndTraderInfo, OrderStatus } from '@0xproject/contract-wrappers';
 import { schemas } from '@0xproject/json-schemas';
 import { assetDataUtils } from '@0xproject/order-utils';
@@ -41,13 +41,11 @@ export const forwarderHelperFactory = {
      */
     async getForwarderHelperForMakerAssetDataAsync(
         makerAssetData: string,
-        takerAddress: string,
         sraUrl: string,
         rpcUrl?: string,
         networkId: number = 1,
     ): Promise<ForwarderHelper> {
         assert.isHexString('makerAssetData', makerAssetData);
-        assert.isETHAddressHex('takerAddress', takerAddress);
         assert.isWebUri('sraUrl', sraUrl);
         if (!_.isUndefined(rpcUrl)) {
             assert.isWebUri('rpcUrl', rpcUrl);
@@ -90,12 +88,12 @@ export const forwarderHelperFactory = {
         let feeOrdersAndRemainingFillableMakerAssetAmounts: OrdersAndRemainingFillableMakerAssetAmounts;
         if (!_.isUndefined(rpcUrl)) {
             // if we do have an rpc url, get on-chain orders and traders info via the OrderValidatorWrapper
-            const ordersFromSra = _.map(makerAssetOrderbook.asks.records, apiOrder => apiOrder.order);
-            const feeOrdersFromSra = _.map(zrxOrderbook.asks.records, apiOrder => apiOrder.order);
+            const ordersFromSra = getOpenAsksFromOrderbook(makerAssetOrderbook);
+            const feeOrdersFromSra = getOpenAsksFromOrderbook(zrxOrderbook);
             // TODO: try catch these requests and throw a more domain specific error
             const [makerAssetOrdersAndTradersInfo, feeOrdersAndTradersInfo] = await Promise.all(
                 _.map([ordersFromSra, feeOrdersFromSra], ordersToBeValidated => {
-                    const takerAddresses = _.map(ordersToBeValidated, () => takerAddress);
+                    const takerAddresses = _.map(ordersToBeValidated, () => constants.NULL_ADDRESS);
                     return contractWrappers.orderValidator.getOrdersAndTradersInfoAsync(
                         ordersToBeValidated,
                         takerAddresses,
@@ -161,8 +159,8 @@ function getValidOrdersAndRemainingFillableMakerAssetAmountsFromApi(
             const { orders, remainingFillableMakerAssetAmounts } = acc;
             // get order and metadata
             const { order, metaData } = apiOrder;
-            // if the order is expired, move on
-            if (orderUtils.isOrderExpired(order)) {
+            // if the order is expired or not open, move on
+            if (orderUtils.isOrderExpired(order) || !orderUtils.isOpenOrder(order)) {
                 return acc;
             }
             // calculate remainingFillableMakerAssetAmount from api metadata
@@ -246,5 +244,11 @@ function getValidOrdersAndRemainingFillableMakerAssetAmountsFromOnChain(
         },
         { orders: [] as SignedOrder[], remainingFillableMakerAssetAmounts: [] as BigNumber[] },
     );
+    return result;
+}
+
+function getOpenAsksFromOrderbook(orderbookResponse: OrderbookResponse): SignedOrder[] {
+    const asks = _.map(orderbookResponse.asks.records, apiOrder => apiOrder.order);
+    const result = _.filter(asks, ask => orderUtils.isOpenOrder(ask));
     return result;
 }

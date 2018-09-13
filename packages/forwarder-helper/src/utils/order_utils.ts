@@ -1,6 +1,8 @@
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
+import { constants } from '../constants';
+
 export const orderUtils = {
     isOrderExpired(order: SignedOrder): boolean {
         const millisecondsInSecond = 1000;
@@ -12,5 +14,8 @@ export const orderUtils = {
             ? new BigNumber(0)
             : remainingTakerAssetAmount.times(order.makerAssetAmount).dividedToIntegerBy(order.takerAssetAmount);
         return result;
+    },
+    isOpenOrder(order: SignedOrder): boolean {
+        return order.takerAddress === constants.NULL_ADDRESS;
     },
 };
