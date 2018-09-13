@@ -153,6 +153,26 @@ describe('#SolidityDocGenerator', () => {
             expect(methodDoc.comment).to.equal('methodWithSolhintDirective @dev');
         });
     });
+    it('should document a method that returns multiple values', async () => {
+        const doc = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, ['MultipleReturnValues']);
+        expect(doc.MultipleReturnValues).to.not.be.undefined();
+        expect(doc.MultipleReturnValues.methods).to.not.be.undefined();
+        let methodWithMultipleReturnValues: SolidityMethod | undefined;
+        for (const method of doc.MultipleReturnValues.methods) {
+            if (method.name === 'methodWithMultipleReturnValues') {
+                methodWithMultipleReturnValues = method;
+            }
+        }
+        if (_.isUndefined(methodWithMultipleReturnValues)) {
+            throw new Error('method should not be undefined');
+        }
+        const returnType = methodWithMultipleReturnValues.returnType;
+        expect(returnType.typeDocType).to.equal('tuple');
+        if (_.isUndefined(returnType.tupleElements)) {
+            throw new Error('returnType.tupleElements should not be undefined');
+        }
+        expect(returnType.tupleElements.length).to.equal(2);
+    });
 });
 
 function verifyTokenTransferProxyABIIsDocumented(doc: DocAgnosticFormat, contractName: string): void {
