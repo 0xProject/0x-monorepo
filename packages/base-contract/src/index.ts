@@ -87,10 +87,10 @@ export class BaseContract {
     // if it overflows the corresponding Solidity type, there is a bug in the
     // encoder, or the encoder performs unsafe type coercion.
     public static strictArgumentEncodingCheck(inputAbi: DataItem[], args: any[]): void {
-        const coder = ethers.utils.AbiCoder.defaultCoder;
+        const coder = new ethers.AbiCoder();
         const params = abiUtils.parseEthersParams(inputAbi);
-        const rawEncoded = coder.encode(params.names, params.types, args);
-        const rawDecoded = coder.decode(params.names, params.types, rawEncoded);
+        const rawEncoded = coder.encode(inputAbi, args);
+        const rawDecoded = coder.decode(inputAbi, rawEncoded);
         for (let i = 0; i < rawDecoded.length; i++) {
             const original = args[i];
             const decoded = rawDecoded[i];
