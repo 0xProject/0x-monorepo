@@ -18,7 +18,7 @@ try {
 _Promise syntax:_
 
 ```javascript
-signature = signatureUtils
+signatureUtils
     .ecSignOrderHashAsync(providerEngine, orderHashHex, maker, SignerType.Default)
     .then(function(signature) {
         console.log(signature);

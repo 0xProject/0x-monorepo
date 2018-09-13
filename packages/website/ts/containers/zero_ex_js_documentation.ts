@@ -16,6 +16,9 @@ const ErrorsMarkdownV1 = require('md/docs/0xjs/0.0.1/errors');
 const versioningMarkdownV1 = require('md/docs/0xjs/0.0.1/versioning');
 
 const IntroMarkdownV2 = require('md/docs/0xjs/1.0.0/introduction');
+const InstallationMarkdownV2 = require('md/docs/0xjs/1.0.0/installation');
+const AsyncMarkdownV2 = require('md/docs/0xjs/1.0.0/async');
+const ErrorsMarkdownV2 = ErrorsMarkdownV1;
 const versioningMarkdownV2 = require('md/docs/0xjs/1.0.0/versioning');
 
 /* tslint:enable:no-var-requires */
@@ -27,12 +30,6 @@ const markdownSections = {
     async: 'async',
     errors: 'errors',
     versioning: 'versioning',
-};
-
-const sharedMarkdownSections = {
-    [markdownSections.installation]: InstallationMarkdownV1,
-    [markdownSections.async]: AsyncMarkdownV1,
-    [markdownSections.errors]: ErrorsMarkdownV1,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -49,14 +46,17 @@ const docsInfoConfig: DocsInfoConfig = {
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
             [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
             [markdownSections.versioning]: versioningMarkdownV1,
-            ...sharedMarkdownSections,
+            [markdownSections.async]: AsyncMarkdownV1,
+            [markdownSections.errors]: ErrorsMarkdownV1,
         },
-        '1.0.1': {
+        '1.0.0': {
             [markdownSections.introduction]: IntroMarkdownV2,
+            [markdownSections.installation]: InstallationMarkdownV2,
             [markdownSections.versioning]: versioningMarkdownV2,
-            // These are the same as for V1
-            ...sharedMarkdownSections,
+            [markdownSections.async]: AsyncMarkdownV2,
+            [markdownSections.errors]: ErrorsMarkdownV2,
         },
     },
     markdownSections,
