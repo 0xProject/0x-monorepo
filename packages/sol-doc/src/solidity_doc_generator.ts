@@ -30,12 +30,12 @@ import {
  * @return doc object for use with documentation generation tools.
  */
 export async function generateSolDocAsync(
-    contractsToCompile: string[],
     contractsDir: string,
+    contractsToCompile?: string[],
 ): Promise<DocAgnosticFormat> {
     const doc: DocAgnosticFormat = {};
 
-    const compilerOptions = _makeCompilerOptions(contractsToCompile, contractsDir);
+    const compilerOptions = _makeCompilerOptions(contractsDir, contractsToCompile);
     const compiler = new Compiler(compilerOptions);
     const compilerOutputs = await compiler.getCompilerOutputsAsync();
     for (const compilerOutput of compilerOutputs) {
@@ -57,7 +57,7 @@ export async function generateSolDocAsync(
     return doc;
 }
 
-function _makeCompilerOptions(contractsToCompile: string[], contractsDir: string): CompilerOptions {
+function _makeCompilerOptions(contractsDir: string, contractsToCompile?: string[]): CompilerOptions {
     const compilerOptions: CompilerOptions = {
         contractsDir,
         contracts: '*',
@@ -70,7 +70,7 @@ function _makeCompilerOptions(contractsToCompile: string[], contractsDir: string
         },
     };
 
-    const shouldOverrideCatchAllContractsConfig = !_.isUndefined(contractsToCompile);
+    const shouldOverrideCatchAllContractsConfig = !_.isUndefined(contractsToCompile) && contractsToCompile.length > 0;
     if (shouldOverrideCatchAllContractsConfig) {
         compilerOptions.contracts = contractsToCompile;
     }
