@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Remove types for ethers.js",
+                "pr": "1069"
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
