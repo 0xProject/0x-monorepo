@@ -1,10 +1,15 @@
-0x.js is a promise-based library. This means that whenever an asynchronous call is required, the library method will return a native Javascript promise. You can therefore choose between using `promise` or `async/await` syntax when calling our async methods.
+0x packages are promise-based libraries. This means that whenever an asynchronous call is required, the library method will return a native Javascript promise. You can therefore choose between using `promise` or `async/await` syntax when calling our async methods.
 
 _Async/await syntax (recommended):_
 
 ```javascript
 try {
-    var availableAddresses = await zeroEx.getAvailableAddressesAsync();
+    const signature = await signatureUtils.ecSignOrderHashAsync(
+        providerEngine,
+        orderHashHex,
+        maker,
+        SignerType.Default,
+    );
 } catch (error) {
     console.log('Caught error: ', error);
 }
@@ -13,10 +18,10 @@ try {
 _Promise syntax:_
 
 ```javascript
-zeroEx
-    .getAvailableAddressesAsync()
-    .then(function(availableAddresses) {
-        console.log(availableAddresses);
+signature = signatureUtils
+    .ecSignOrderHashAsync(providerEngine, orderHashHex, maker, SignerType.Default)
+    .then(function(signature) {
+        console.log(signature);
     })
     .catch(function(error) {
         console.log('Caught error: ', error);
