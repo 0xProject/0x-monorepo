@@ -79,10 +79,15 @@ export const forwarderHelperFactory = {
             { baseAssetData: zrxTokenAssetData, quoteAssetData: etherTokenAssetData },
         ];
         const requestOpts = { networkId };
-        // TODO: try catch these requests and throw a more domain specific error
-        const [makerAssetOrderbook, zrxOrderbook] = await Promise.all(
-            _.map(orderbookRequests, request => sraClient.getOrderbookAsync(request, requestOpts)),
-        );
+        let makerAssetOrderbook: OrderbookResponse;
+        let zrxOrderbook: OrderbookResponse;
+        try {
+            [makerAssetOrderbook, zrxOrderbook] = await Promise.all(
+                _.map(orderbookRequests, request => sraClient.getOrderbookAsync(request, requestOpts)),
+            );
+        } catch (err) {
+            throw new Error(ForwarderHelperFactoryError.StandardRelayerApiError);
+        }
         // validate orders and find remaining fillable from on chain state or sra api
         let ordersAndRemainingFillableMakerAssetAmounts: OrdersAndRemainingFillableMakerAssetAmounts;
         let feeOrdersAndRemainingFillableMakerAssetAmounts: OrdersAndRemainingFillableMakerAssetAmounts;

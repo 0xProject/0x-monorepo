@@ -4,6 +4,7 @@ import { BigNumber } from '@0xproject/utils';
 export enum ForwarderHelperFactoryError {
     NoEtherTokenContractFound = 'NO_ETHER_TOKEN_CONTRACT_FOUND',
     NoZrxTokenContractFound = 'NO_ZRX_TOKEN_CONTRACT_FOUND',
+    StandardRelayerApiError = 'STANDARD_RELAYER_API_ERROR',
 }
 
 export interface ForwarderHelper {
