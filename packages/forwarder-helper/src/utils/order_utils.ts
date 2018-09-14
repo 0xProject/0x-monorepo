@@ -11,7 +11,7 @@ export const orderUtils = {
     },
     calculateRemainingMakerAssetAmount(order: SignedOrder, remainingTakerAssetAmount: BigNumber): BigNumber {
         const result = remainingTakerAssetAmount.eq(0)
-            ? new BigNumber(0)
+            ? constants.ZERO_AMOUNT
             : remainingTakerAssetAmount.times(order.makerAssetAmount).dividedToIntegerBy(order.takerAssetAmount);
         return result;
     },

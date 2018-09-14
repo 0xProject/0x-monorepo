@@ -24,6 +24,7 @@ export const forwarderHelperFactory = {
     getForwarderHelperForOrders(orders: SignedOrder[], feeOrders: SignedOrder[] = []): ForwarderHelper {
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
         assert.doesConformToSchema('feeOrders', orders, schemas.signedOrdersSchema);
+        // TODO: Add assertion here for orders all having the same makerAsset and takerAsset
         const config: ForwarderHelperImplConfig = {
             orders,
             feeOrders,
@@ -96,6 +97,7 @@ export const forwarderHelperFactory = {
             const ordersFromSra = getOpenAsksFromOrderbook(makerAssetOrderbook);
             const feeOrdersFromSra = getOpenAsksFromOrderbook(zrxOrderbook);
             // TODO: try catch these requests and throw a more domain specific error
+            // TODO: optimization, reduce this to once RPC call buy combining orders into one array and then splitting up the response
             const [makerAssetOrdersAndTradersInfo, feeOrdersAndTradersInfo] = await Promise.all(
                 _.map([ordersFromSra, feeOrdersFromSra], ordersToBeValidated => {
                     const takerAddresses = _.map(ordersToBeValidated, () => constants.NULL_ADDRESS);
@@ -159,7 +161,7 @@ function getValidOrdersAndRemainingFillableMakerAssetAmountsFromApi(
 ): OrdersAndRemainingFillableMakerAssetAmounts {
     const result = _.reduce(
         apiOrders,
-        (acc, apiOrder, index) => {
+        (acc, apiOrder) => {
             // get current accumulations
             const { orders, remainingFillableMakerAssetAmounts } = acc;
             // get order and metadata
@@ -168,7 +170,7 @@ function getValidOrdersAndRemainingFillableMakerAssetAmountsFromApi(
             if (orderUtils.isOrderExpired(order) || !orderUtils.isOpenOrder(order)) {
                 return acc;
             }
-            // calculate remainingFillableMakerAssetAmount from api metadata
+            // calculate remainingFillableMakerAssetAmount from api metadata, else assume order is completely fillable
             const remainingFillableTakerAssetAmount = _.get(
                 metaData,
                 'remainingTakerAssetAmount',
@@ -215,7 +217,7 @@ function getValidOrdersAndRemainingFillableMakerAssetAmountsFromOnChain(
             const { orders, remainingFillableMakerAssetAmounts } = acc;
             // get corresponding on-chain state for the order
             const { orderInfo, traderInfo } = ordersAndTradersInfo[index];
-            // if the order IS NOT fillable, do not add anything and continue iterating
+            // if the order IS NOT fillable, do not add anything to the accumulations and continue iterating
             if (orderInfo.orderStatus !== OrderStatus.FILLABLE) {
                 return acc;
             }
