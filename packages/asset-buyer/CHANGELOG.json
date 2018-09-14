@@ -1,30 +1,10 @@
 [
     {
-        "timestamp": 1536142250,
-        "version": "1.0.1",
+        "version": "1.0.0-rc.1",
         "changes": [
             {
-                "note": "Dependencies updated"
+                "note": "Init"
             }
         ]
-    },
-    {
-        "version": "1.0.1-rc.2",
-        "changes": [
-            {
-                "note": "Dependencies updated"
-            }
-        ],
-        "timestamp": 1535377027
-    },
-    {
-        "version": "1.0.1-rc.1",
-        "changes": [
-            {
-                "note": "Add initial forwarderHelperFactory",
-                "pr": 997
-            }
-        ],
-        "timestamp": 1535133899
     }
 ]

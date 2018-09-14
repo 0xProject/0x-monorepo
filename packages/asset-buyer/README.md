@@ -1,25 +1,25 @@
-## @0xproject/forwarder-helper
+## @0xproject/asset-buyer
 
-Provides convenience objects to help work with the Forwarder Contract
+Convenience package for buying assets
 
-### Read the [Documentation](https://0xproject.com/docs/forwarder-helper).
+### Read the [Documentation](https://0xproject.com/docs/asset-buyer).
 
 ## Installation
 
 ```bash
-yarn add @0xproject/forwarder-helper
+yarn add @0xproject/asset-buyer
 ```
 
 **Import**
 
 ```typescript
-import { forwarderHelperFactory } from '@0xproject/forwarder-helper';
+import { AssetBuyer } from '@0xproject/asset-buyer';
 ```
 
 or
 
 ```javascript
-var forwarderHelperFactory = require('@0xproject/forwarder-helper').forwarderHelperFactory;
+var AssetBuyer = require('@0xproject/asset-buyer').AssetBuyer;
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
@@ -55,13 +55,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/forwarder-helper yarn build
+PKG=@0xproject/asset-buyer yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/forwarder-helper yarn watch
+PKG=@0xproject/asset-buyer yarn watch
 ```
 
 ### Clean
