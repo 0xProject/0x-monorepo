@@ -48,6 +48,8 @@
         "@0xproject/types": "^1.0.1",
         "@0xproject/typescript-typings": "^2.0.0",
         "@0xproject/utils": "^1.0.8",
+        "@0xproject/web3-wrapper": "^2.0.2",
+        "ethereum-types": "^1.0.6",
         "lodash": "^4.17.10"
     },
     "devDependencies": {
