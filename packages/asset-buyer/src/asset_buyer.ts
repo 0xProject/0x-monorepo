@@ -1,5 +1,6 @@
 import { ContractWrappers } from '@0xproject/contract-wrappers';
-import { assetDataUtils } from '@0xproject/order-utils';
+import { schemas } from '@0xproject/json-schemas';
+import { assetDataUtils, SignedOrder } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -13,6 +14,7 @@ import {
     OrderFetcher,
     OrderFetcherResponse,
 } from './types';
+import { ProvidedOrderFetcher } from './order_fetchers/provided_order_fetcher';
 import { assert } from './utils/assert';
 import { buyQuoteCalculator } from './utils/buy_quote_calculator';
 import { orderFetcherResponseProcessor } from './utils/order_fetcher_response_processor';
@@ -31,6 +33,26 @@ export class AssetBuyer {
     private readonly _contractWrappers: ContractWrappers;
     private _lastRefreshTimeIfExists?: number;
     private _currentOrdersAndFillableAmountsIfExists?: AssetBuyerOrdersAndFillableAmounts;
+    public static getAssetBuyerForProvidedOrders(
+        provider: Provider,
+        orders: SignedOrder[],
+        feeOrders: SignedOrder[] = [],
+        networkId: number = constants.MAINNET_NETWORK_ID,
+        orderRefreshIntervalMs: number = DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+    ): AssetBuyer {
+        assert.isWeb3Provider('provider', provider);
+        assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
+        assert.doesConformToSchema('feeOrders', feeOrders, schemas.signedOrdersSchema);
+        assert.isNumber('networkId', networkId);
+        assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
+        assert.areValidProvidedOrders('orders', orders);
+        assert.areValidProvidedOrders('feeOrders', feeOrders);
+        assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
+        const assetData = orders[0].makerAssetData;
+        const orderFetcher = new ProvidedOrderFetcher(_.concat(orders, feeOrders));
+        const assetBuyer = new AssetBuyer(provider, assetData, orderFetcher, networkId, orderRefreshIntervalMs);
+        return assetBuyer;
+    }
     /**
      * Instantiates a new AssetBuyer instance
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
