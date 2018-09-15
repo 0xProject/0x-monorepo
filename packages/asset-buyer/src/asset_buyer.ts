@@ -7,6 +7,8 @@ import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
+import { ProvidedOrderFetcher } from './order_fetchers/provided_order_fetcher';
+import { StandardRelayerAPIOrderFetcher } from './order_fetchers/standard_relayer_api_order_fetcher';
 import {
     AssetBuyerError,
     AssetBuyerOrdersAndFillableAmounts,
@@ -14,7 +16,7 @@ import {
     OrderFetcher,
     OrderFetcherResponse,
 } from './types';
-import { ProvidedOrderFetcher } from './order_fetchers/provided_order_fetcher';
+
 import { assert } from './utils/assert';
 import { buyQuoteCalculator } from './utils/buy_quote_calculator';
 import { orderFetcherResponseProcessor } from './utils/order_fetcher_response_processor';
@@ -50,6 +52,23 @@ export class AssetBuyer {
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
         const assetData = orders[0].makerAssetData;
         const orderFetcher = new ProvidedOrderFetcher(_.concat(orders, feeOrders));
+        const assetBuyer = new AssetBuyer(provider, assetData, orderFetcher, networkId, orderRefreshIntervalMs);
+        return assetBuyer;
+    }
+    public static getAssetBuyerForERC20TokenAddress(
+        provider: Provider,
+        tokenAddress: string,
+        sraApiUrl: string,
+        networkId: number = constants.MAINNET_NETWORK_ID,
+        orderRefreshIntervalMs: number = DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+    ): AssetBuyer {
+        assert.isWeb3Provider('provider', provider);
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isWebUri('sraApiUrl', sraApiUrl);
+        assert.isNumber('networkId', networkId);
+        assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
+        const assetData = assetDataUtils.encodeERC20AssetData(tokenAddress);
+        const orderFetcher = new StandardRelayerAPIOrderFetcher(sraApiUrl);
         const assetBuyer = new AssetBuyer(provider, assetData, orderFetcher, networkId, orderRefreshIntervalMs);
         return assetBuyer;
     }
