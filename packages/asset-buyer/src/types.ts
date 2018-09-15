@@ -2,22 +2,45 @@ import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 /**
- * assetBuyAmount: The amount of asset to buy.
- * feePercentage: Optional affiliate percentage amount factoring into eth amount calculations.
+ * makerAssetData: The assetData representing the desired makerAsset.
+ * takerAssetData: The assetData representing the desired takerAsset.
+ * networkId: The networkId that the desired orders should be for.
  */
-export interface BuyQuoteRequest {
-    assetBuyAmount: BigNumber;
-    feePercentage?: BigNumber;
+export interface OrderFetcherRequest {
+    makerAssetData: string;
+    takerAssetData: string;
+    networkId: number;
 }
 
 /**
- * assetData: The asset information.
+ * orders: An array of orders with optional remaining fillable makerAsset amounts. See type for more info.
+ */
+export interface OrderFetcherResponse {
+    orders: SignedOrderWithRemainingFillableMakerAssetAmount[];
+}
+
+/**
+ * A normal SignedOrder with one extra optional property `remainingFillableMakerAssetAmount`
+ * remainingFillableMakerAssetAmount: The amount of the makerAsset that is available to be filled
+ */
+export interface SignedOrderWithRemainingFillableMakerAssetAmount extends SignedOrder {
+    remainingFillableMakerAssetAmount?: BigNumber;
+}
+/**
+ * Given an OrderFetchRequest, get an OrderFetchResponse.
+ */
+export interface OrderFetcher {
+    fetchOrdersAsync: (orderFetchRequest: OrderFetcherRequest) => Promise<OrderFetcherResponse>;
+}
+
+/**
+ * assetData: String that represents a specific asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
  * minRate: Min rate that needs to be paid in order to execute the buy.
  * maxRate: Max rate that can be paid in order to execute the buy.
- * assetBuyAmount: The amount of asset to buy. Passed through directly from the request.
- * feePercentage: Affiliate fee percentage used to calculate the eth amounts above. Passed through directly from the request.
+ * assetBuyAmount: The amount of asset to buy.
+ * feePercentage: Optional affiliate fee percentage used to calculate the eth amounts above.
  */
 export interface BuyQuote {
     assetData: string;
@@ -26,11 +49,11 @@ export interface BuyQuote {
     minRate: BigNumber;
     maxRate: BigNumber;
     assetBuyAmount: BigNumber;
-    feePercentage?: BigNumber;
+    feePercentage?: number;
 }
 
 /**
- * Possible errors thrown by an AssetBuyer instance or associated static methods
+ * Possible errors thrown by an AssetBuyer instance or associated static methods.
  */
 export enum AssetBuyerError {
     NoEtherTokenContractFound = 'NO_ETHER_TOKEN_CONTRACT_FOUND',
@@ -39,4 +62,11 @@ export enum AssetBuyerError {
     InsufficientAssetLiquidity = 'INSUFFICIENT_ASSET_LIQUIDITY',
     InsufficientZrxLiquidity = 'INSUFFICIENT_ZRX_LIQUIDITY',
     NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
+}
+
+export interface AssetBuyerOrdersAndFillableAmounts {
+    orders: SignedOrderWithRemainingFillableMakerAssetAmount[];
+    feeOrders: SignedOrderWithRemainingFillableMakerAssetAmount[];
+    remainingFillableMakerAssetAmounts: BigNumber[];
+    remainingFillableFeeAmounts: BigNumber[];
 }

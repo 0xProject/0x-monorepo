@@ -1,0 +1,227 @@
+import { ContractWrappers } from '@0xproject/contract-wrappers';
+import { assetDataUtils, marketUtils } from '@0xproject/order-utils';
+import { SignedOrder } from '@0xproject/types';
+import { BigNumber } from '@0xproject/utils';
+import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Provider } from 'ethereum-types';
+import * as _ from 'lodash';
+
+import { constants } from './constants';
+import {
+    AssetBuyerError,
+    AssetBuyerOrdersAndFillableAmounts,
+    BuyQuote,
+    OrderFetcher,
+    OrderFetcherResponse,
+} from './types';
+import { assert } from './utils/assert';
+import { buyQuoteCalculator } from './utils/buy_quote_calculator';
+import { orderFetcherResponseProcessor } from './utils/order_fetcher_response_processor';
+
+const SLIPPAGE_PERCENTAGE = 0.2; // 20% slippage protection, possibly move this into request interface
+const DEFAULT_ORDER_REFRESH_INTERVAL_MS = 10000; // 10 seconds
+const DEFAULT_FEE_PERCENTAGE = 0;
+const ETHER_TOKEN_DECIMALS = 18;
+
+export class AssetBuyer {
+    public readonly provider: Provider;
+    public readonly assetData: string;
+    public readonly orderFetcher: OrderFetcher;
+    public readonly networkId: number;
+    public readonly orderRefreshIntervalMs: number;
+    private _contractWrappers: ContractWrappers;
+    private _lastRefreshTimeIfExists?: number;
+    private _currentOrdersAndFillableAmountsIfExists?: AssetBuyerOrdersAndFillableAmounts;
+    /**
+     * Instantiates a new AssetBuyer instance
+     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   assetData               The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param   orderFetcher            An object that conforms to OrderFetcher, see type for definition.
+     * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
+     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states.
+     *                                  Defaults to 10000ms (10s).
+     * @return  An instance of AssetBuyer
+     */
+    constructor(
+        provider: Provider,
+        assetData: string,
+        orderFetcher: OrderFetcher,
+        networkId: number = constants.MAINNET_NETWORK_ID,
+        orderRefreshIntervalMs: number = DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+    ) {
+        assert.isWeb3Provider('provider', provider);
+        assert.isString('assetData', assetData);
+        assert.isValidOrderFetcher('orderFetcher', orderFetcher);
+        assert.isNumber('networkId', networkId);
+        assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
+        this.provider = provider;
+        this.assetData = assetData;
+        this.orderFetcher = orderFetcher;
+        this.networkId = networkId;
+        this.orderRefreshIntervalMs = orderRefreshIntervalMs;
+        this._contractWrappers = new ContractWrappers(this.provider, {
+            networkId,
+        });
+    }
+    /**
+     * Get a BuyQuote containing all information relevant to fulfilling a buy.
+     * Pass the BuyQuote to executeBuyQuoteAsync to execute the buy.
+     * @param   assetBuyAmount      The amount of asset to buy.
+     * @param   feePercentage       The affiliate fee percentage. Defaults to 0.
+     * @param   forceOrderRefresh   If set to true, new orders and state will be fetched instead of waiting for
+     *                              the next orderRefreshIntervalMs. Defaults to false.
+     * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
+     */
+    public async getBuyQuoteAsync(
+        assetBuyAmount: BigNumber,
+        feePercentage: number = DEFAULT_FEE_PERCENTAGE,
+        forceOrderRefresh: boolean = false,
+    ): Promise<BuyQuote> {
+        assert.isBigNumber('assetBuyAmount', assetBuyAmount);
+        assert.isNumber('feePercentage', feePercentage);
+        assert.isBoolean('forceOrderRefresh', forceOrderRefresh);
+        // we should refresh if:
+        // we do not have any orders OR
+        // we are forced to OR
+        // we have some last refresh time AND that time was sufficiently long ago
+        const shouldRefresh =
+            _.isUndefined(this._currentOrdersAndFillableAmountsIfExists) ||
+            forceOrderRefresh ||
+            (!_.isUndefined(this._lastRefreshTimeIfExists) &&
+                this._lastRefreshTimeIfExists + this.orderRefreshIntervalMs < Date.now());
+        let ordersAndFillableAmounts: AssetBuyerOrdersAndFillableAmounts;
+        if (shouldRefresh) {
+            ordersAndFillableAmounts = await this._getLatestOrdersAndFillableAmountsAsync();
+            this._lastRefreshTimeIfExists = Date.now();
+            this._currentOrdersAndFillableAmountsIfExists = ordersAndFillableAmounts;
+        } else {
+            // it is safe to cast to AssetBuyerOrdersAndFillableAmounts because shouldRefresh catches the undefined case above
+            ordersAndFillableAmounts = this
+                ._currentOrdersAndFillableAmountsIfExists as AssetBuyerOrdersAndFillableAmounts;
+        }
+        // TODO: optimization
+        // make the slippage percentage customizable by integrator
+        const buyQuote = buyQuoteCalculator.calculate(
+            ordersAndFillableAmounts,
+            assetBuyAmount,
+            feePercentage,
+            SLIPPAGE_PERCENTAGE,
+        );
+        return buyQuote;
+    }
+    /**
+     * Given a BuyQuote and desired rate, attempt to execute the buy.
+     * @param   buyQuote        An object that conforms to BuyQuote. See type definition for more information.
+     * @param   rate            The desired rate to execute the buy at. Affects the amount of ETH sent with the transaction, defaults to buyQuote.maxRate.
+     * @param   takerAddress    The address to perform the buy. Defaults to the first available address from the provider.
+     * @param   feeRecipient    The address where affiliate fees are sent. Defaults to null address (0x000...000).
+     * @return  A promise of the txHash.
+     */
+    public async executeBuyQuoteAsync(
+        buyQuote: BuyQuote,
+        rate?: BigNumber,
+        takerAddress?: string,
+        feeRecipient: string = constants.NULL_ADDRESS,
+    ): Promise<string> {
+        assert.isValidBuyQuote('buyQuote', buyQuote);
+        if (!_.isUndefined(rate)) {
+            assert.isBigNumber('rate', rate);
+        }
+        if (!_.isUndefined(takerAddress)) {
+            assert.isETHAddressHex('takerAddress', takerAddress);
+        }
+        assert.isETHAddressHex('feeRecipient', feeRecipient);
+        const { orders, feeOrders, feePercentage, assetBuyAmount, maxRate } = buyQuote;
+        // if no takerAddress is provided, try to get one from the provider
+        let finalTakerAddress;
+        if (!_.isUndefined(takerAddress)) {
+            finalTakerAddress = takerAddress;
+        } else {
+            const web3Wrapper = new Web3Wrapper(this.provider);
+            const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
+            const firstAvailableAddress = _.head(availableAddresses);
+            if (!_.isUndefined(firstAvailableAddress)) {
+                finalTakerAddress = firstAvailableAddress;
+            } else {
+                throw new Error(AssetBuyerError.NoAddressAvailable);
+            }
+        }
+        // if no rate is provided, default to the maxRate from buyQuote
+        const desiredRate = rate || maxRate;
+        // calculate how much eth is required to buy assetBuyAmount at the desired rate
+        const ethAmount = assetBuyAmount.dividedToIntegerBy(desiredRate);
+        // TODO: critical
+        // update the forwarder wrapper to take in feePercentage as a number instead of a BigNumber, verify with Amir that this is being done correctly
+        const feePercentageBigNumber = !_.isUndefined(feePercentage)
+            ? Web3Wrapper.toBaseUnitAmount(new BigNumber(1), ETHER_TOKEN_DECIMALS).mul(feePercentage)
+            : constants.ZERO_AMOUNT;
+        const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+            orders,
+            assetBuyAmount,
+            finalTakerAddress,
+            ethAmount,
+            feeOrders,
+            feePercentageBigNumber,
+            feeRecipient,
+        );
+        return txHash;
+    }
+    /**
+     * Ask the order fetcher for orders and process them.
+     */
+    private async _getLatestOrdersAndFillableAmountsAsync(): Promise<AssetBuyerOrdersAndFillableAmounts> {
+        // find ether token asset data
+        const etherTokenAssetData = this._getEtherTokenAssetData();
+        // find zrx token asset data
+        const zrxTokenAssetData = this._getZrxTokenAssetData();
+        // construct order fetcher requests
+        const targetOrderFetcherRequest = {
+            makerAssetData: this.assetData,
+            takerAssetData: etherTokenAssetData,
+            networkId: this.networkId,
+        };
+        const feeOrderFetcherRequest = {
+            makerAssetData: zrxTokenAssetData,
+            takerAssetData: etherTokenAssetData,
+            networkId: this.networkId,
+        };
+        const requests = [targetOrderFetcherRequest, feeOrderFetcherRequest];
+        // fetch orders and possible fillable amounts
+        const [targetOrderFetcherResponse, feeOrderFetcherResponse] = await Promise.all(
+            _.map(requests, request => this.orderFetcher.fetchOrdersAsync(request)),
+        );
+        // process the responses into one object
+        const ordersAndFillableAmounts = await orderFetcherResponseProcessor.processAsync(
+            targetOrderFetcherResponse,
+            feeOrderFetcherResponse,
+            zrxTokenAssetData,
+            this._contractWrappers.orderValidator,
+        );
+        return ordersAndFillableAmounts;
+    }
+    /**
+     * Get the assetData that represents the WETH token.
+     * Will throw if WETH does not exist for the current network.
+     */
+    private _getEtherTokenAssetData(): string {
+        const etherTokenAddressIfExists = this._contractWrappers.etherToken.getContractAddressIfExists();
+        if (_.isUndefined(etherTokenAddressIfExists)) {
+            throw new Error(AssetBuyerError.NoEtherTokenContractFound);
+        }
+        const etherTokenAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddressIfExists);
+        return etherTokenAssetData;
+    }
+    /**
+     * Get the assetData that represents the ZRX token.
+     * Will throw if ZRX does not exist for the current network.
+     */
+    private _getZrxTokenAssetData(): string {
+        let zrxTokenAssetData: string;
+        try {
+            zrxTokenAssetData = this._contractWrappers.exchange.getZRXAssetData();
+        } catch (err) {
+            throw new Error(AssetBuyerError.NoZrxTokenContractFound);
+        }
+        return zrxTokenAssetData;
+    }
+}
