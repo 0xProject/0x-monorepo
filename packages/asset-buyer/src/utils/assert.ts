@@ -2,7 +2,7 @@ import { assert as sharedAssert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 
-import { BuyQuote, OrderFetcher } from '../types';
+import { BuyQuote, OrderFetcher, OrderFetcherRequest } from '../types';
 
 export const assert = {
     ...sharedAssert,
@@ -19,5 +19,10 @@ export const assert = {
     },
     isValidOrderFetcher(variableName: string, orderFetcher: OrderFetcher): void {
         sharedAssert.isFunction(`${variableName}.fetchOrdersAsync`, orderFetcher.fetchOrdersAsync);
+    },
+    isValidOrderFetcherRequest(variableName: string, orderFetcherRequest: OrderFetcherRequest): void {
+        sharedAssert.isHexString(`${variableName}.makerAssetData`, orderFetcherRequest.makerAssetData);
+        sharedAssert.isHexString(`${variableName}.takerAssetData`, orderFetcherRequest.takerAssetData);
+        sharedAssert.isNumber(`${variableName}.networkId`, orderFetcherRequest.networkId);
     },
 };

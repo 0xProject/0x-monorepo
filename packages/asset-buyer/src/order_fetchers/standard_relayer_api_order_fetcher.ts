@@ -60,6 +60,7 @@ export class StandardRelayerAPIOrderFetcher implements OrderFetcher {
      * @return  An instance of OrderFetcherResponse. See type for more information.
      */
     public async fetchOrdersAsync(orderFetchRequest: OrderFetcherRequest): Promise<OrderFetcherResponse> {
+        assert.isValidOrderFetcherRequest('orderFetchRequest', orderFetchRequest);
         const { makerAssetData, takerAssetData, networkId } = orderFetchRequest;
         const orderbookRequest = { baseAssetData: makerAssetData, quoteAssetData: takerAssetData };
         const requestOpts = { networkId };
