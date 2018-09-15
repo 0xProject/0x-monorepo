@@ -43,7 +43,7 @@ export class StandardRelayerAPIOrderFetcher implements OrderFetcher {
     }
     /**
      * Instantiates a new StandardRelayerAPIOrderFetcher instance
-     * @param   apiUrl  The relayer API base HTTP url you would like to interact with.
+     * @param   apiUrl  The standard relayer API base HTTP url you would like to source orders from.
      * @return  An instance of StandardRelayerAPIOrderFetcher
      */
     constructor(apiUrl: string) {

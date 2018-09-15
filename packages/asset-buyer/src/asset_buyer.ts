@@ -35,6 +35,16 @@ export class AssetBuyer {
     private readonly _contractWrappers: ContractWrappers;
     private _lastRefreshTimeIfExists?: number;
     private _currentOrdersAndFillableAmountsIfExists?: AssetBuyerOrdersAndFillableAmounts;
+    /**
+     * Instantiates a new AssetBuyer instance
+     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   orders                  A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData (WETH).
+     * @param   feeOrders               A array of objects that conform to SignedOrder. All orders must have the same makerAssetData (ZRX) and takerAssetData (WETH). Defaults to an empty array.
+     * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
+     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states.
+     *                                  Defaults to 10000ms (10s).
+     * @return  An instance of AssetBuyer
+     */
     public static getAssetBuyerForProvidedOrders(
         provider: Provider,
         orders: SignedOrder[],
@@ -55,6 +65,42 @@ export class AssetBuyer {
         const assetBuyer = new AssetBuyer(provider, assetData, orderFetcher, networkId, orderRefreshIntervalMs);
         return assetBuyer;
     }
+    /**
+     * Instantiates a new AssetBuyer instance
+     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   assetData               The assetData that identifies the desired asset to buy.
+     * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
+     * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
+     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states.
+     *                                  Defaults to 10000ms (10s).
+     * @return  An instance of AssetBuyer
+     */
+    public static getAssetBuyerForAssetData(
+        provider: Provider,
+        assetData: string,
+        sraApiUrl: string,
+        networkId: number = constants.MAINNET_NETWORK_ID,
+        orderRefreshIntervalMs: number = DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+    ): AssetBuyer {
+        assert.isWeb3Provider('provider', provider);
+        assert.isHexString('assetData', assetData);
+        assert.isWebUri('sraApiUrl', sraApiUrl);
+        assert.isNumber('networkId', networkId);
+        assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
+        const orderFetcher = new StandardRelayerAPIOrderFetcher(sraApiUrl);
+        const assetBuyer = new AssetBuyer(provider, assetData, orderFetcher, networkId, orderRefreshIntervalMs);
+        return assetBuyer;
+    }
+    /**
+     * Instantiates a new AssetBuyer instance
+     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   tokenAddress            The ERC20 token address that identifies the desired asset to buy.
+     * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
+     * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
+     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states.
+     *                                  Defaults to 10000ms (10s).
+     * @return  An instance of AssetBuyer
+     */
     public static getAssetBuyerForERC20TokenAddress(
         provider: Provider,
         tokenAddress: string,
@@ -68,8 +114,13 @@ export class AssetBuyer {
         assert.isNumber('networkId', networkId);
         assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
         const assetData = assetDataUtils.encodeERC20AssetData(tokenAddress);
-        const orderFetcher = new StandardRelayerAPIOrderFetcher(sraApiUrl);
-        const assetBuyer = new AssetBuyer(provider, assetData, orderFetcher, networkId, orderRefreshIntervalMs);
+        const assetBuyer = AssetBuyer.getAssetBuyerForAssetData(
+            provider,
+            assetData,
+            sraApiUrl,
+            networkId,
+            orderRefreshIntervalMs,
+        );
         return assetBuyer;
     }
     /**
