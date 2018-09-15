@@ -1,18 +1,9 @@
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { constants } from '../constants';
-import {
-    AssetBuyerError,
-    OrderFetcher,
-    OrderFetcherRequest,
-    OrderFetcherResponse,
-    SignedOrderWithRemainingFillableMakerAssetAmount,
-} from '../types';
+import { OrderFetcher, OrderFetcherRequest, OrderFetcherResponse } from '../types';
 import { assert } from '../utils/assert';
-import { orderUtils } from '../utils/order_utils';
 
 export class ProvidedOrderFetcher implements OrderFetcher {
     public readonly providedOrders: SignedOrder[];

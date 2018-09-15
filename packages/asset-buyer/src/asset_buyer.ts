@@ -1,6 +1,5 @@
 import { ContractWrappers } from '@0xproject/contract-wrappers';
-import { assetDataUtils, marketUtils } from '@0xproject/order-utils';
-import { SignedOrder } from '@0xproject/types';
+import { assetDataUtils } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -29,7 +28,7 @@ export class AssetBuyer {
     public readonly orderFetcher: OrderFetcher;
     public readonly networkId: number;
     public readonly orderRefreshIntervalMs: number;
-    private _contractWrappers: ContractWrappers;
+    private readonly _contractWrappers: ContractWrappers;
     private _lastRefreshTimeIfExists?: number;
     private _currentOrdersAndFillableAmountsIfExists?: AssetBuyerOrdersAndFillableAmounts;
     /**
@@ -188,7 +187,7 @@ export class AssetBuyer {
         const requests = [targetOrderFetcherRequest, feeOrderFetcherRequest];
         // fetch orders and possible fillable amounts
         const [targetOrderFetcherResponse, feeOrderFetcherResponse] = await Promise.all(
-            _.map(requests, request => this.orderFetcher.fetchOrdersAsync(request)),
+            _.map(requests, async request => this.orderFetcher.fetchOrdersAsync(request)),
         );
         // process the responses into one object
         const ordersAndFillableAmounts = await orderFetcherResponseProcessor.processAsync(

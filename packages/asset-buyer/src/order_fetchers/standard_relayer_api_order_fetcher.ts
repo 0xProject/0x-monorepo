@@ -1,9 +1,6 @@
 import { APIOrder, HttpClient, OrderbookResponse } from '@0xproject/connect';
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { constants } from '../constants';
 import {
     AssetBuyerError,
     OrderFetcher,
@@ -16,7 +13,7 @@ import { orderUtils } from '../utils/order_utils';
 
 export class StandardRelayerAPIOrderFetcher implements OrderFetcher {
     public readonly apiUrl: string;
-    private _sraClient: HttpClient;
+    private readonly _sraClient: HttpClient;
     /**
      * Given an array of APIOrder objects from a standard relayer api, return an array
      * of SignedOrderWithRemainingFillableMakerAssetAmounts
