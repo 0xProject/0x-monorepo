@@ -165,6 +165,10 @@ function unbundleOrdersWithAmounts(
             const { remainingFillableMakerAssetAmount, ...order } = orderWithAmount;
             // if we are still missing a remainingFillableMakerAssetAmount, assume the order is completely fillable
             const newRemainingAmount = remainingFillableMakerAssetAmount || order.makerAssetAmount;
+            // if remaining amount is less than or equal to zero, do not add it
+            if (newRemainingAmount.lte(constants.ZERO_AMOUNT)) {
+                return acc;
+            }
             const newAcc = {
                 orders: _.concat(orders, order),
                 remainingFillableMakerAssetAmounts: _.concat(remainingFillableMakerAssetAmounts, newRemainingAmount),
