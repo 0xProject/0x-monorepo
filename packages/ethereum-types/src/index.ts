@@ -363,6 +363,7 @@ export type ErrorType =
     | 'FatalError'
     | 'Warning';
 export type ErrorSeverity = 'error' | 'warning';
+
 export interface SolcError {
     sourceLocation?: {
         file: string;
