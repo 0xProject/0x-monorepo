@@ -16,6 +16,9 @@ contract NatspecEverything {
     /// @return publicMethod @return
     function publicMethod(int p) public pure returns(int r) { return p; }
 
+    /// @dev Fallback @dev
+    function () public {}
+
     /// @notice externalMethod @notice
     /// @dev externalMethod @dev
     /// @param p externalMethod @param

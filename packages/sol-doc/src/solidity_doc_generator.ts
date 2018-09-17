@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 
 import {
+    AbiDefinition,
     ConstructorAbi,
     DataItem,
     DevdocOutput,
@@ -100,10 +101,13 @@ function _genDocSection(compiledContract: StandardContractOutput): DocSection {
                 // that's because the type of the events array doesn't have any fields for documentation!
                 break;
             case 'function':
+            case 'fallback':
                 docSection.methods.push(_genMethodDoc(abiDefinition, compiledContract.devdoc));
                 break;
             default:
-                throw new Error(`unknown and unsupported AbiDefinition type '${abiDefinition.type}'`);
+                throw new Error(
+                    `unknown and unsupported AbiDefinition type '${(abiDefinition as AbiDefinition).type}'`,
+                );
         }
     }
 
