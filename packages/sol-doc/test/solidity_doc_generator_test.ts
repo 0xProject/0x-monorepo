@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as chai from 'chai';
 import 'mocha';
 
-import { DocAgnosticFormat, SolidityMethod } from '@0xproject/types';
+import { DocAgnosticFormat, Event, SolidityMethod } from '@0xproject/types';
 
 import { generateSolDocAsync } from '../src/solidity_doc_generator';
 
@@ -43,6 +43,108 @@ describe('#SolidityDocGenerator', () => {
             expect((addAuthorizedAddressMethod as SolidityMethod).comment).to.equal(
                 tokenTransferProxyAddAuthorizedAddressComment,
             );
+
+            const expectedParamComment = 'Address to authorize.';
+            expect((addAuthorizedAddressMethod as SolidityMethod).parameters[0].comment).to.equal(expectedParamComment);
+        });
+    });
+    describe('when processing all the permutations of devdoc stuff that we use in our contracts', () => {
+        let doc: DocAgnosticFormat;
+        before(async () => {
+            doc = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, ['NatspecEverything']);
+            expect(doc).to.not.be.undefined();
+            expect(doc.NatspecEverything).to.not.be.undefined();
+        });
+        it('should emit the contract @title as its comment', () => {
+            expect(doc.NatspecEverything.comment).to.equal('Contract Title');
+        });
+        describe('should emit public method documentation for', () => {
+            let methodDoc: SolidityMethod;
+            before(() => {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
+                methodDoc = doc.NatspecEverything.methods.find(method => {
+                    return method.name === 'publicMethod';
+                }) as SolidityMethod;
+                if (_.isUndefined(methodDoc)) {
+                    throw new Error('publicMethod not found');
+                }
+            });
+            it('method name', () => {
+                expect(methodDoc.name).to.equal('publicMethod');
+            });
+            it('method comment', () => {
+                expect(methodDoc.comment).to.equal('publicMethod @dev');
+            });
+            it('parameter name', () => {
+                expect(methodDoc.parameters[0].name).to.equal('p');
+            });
+            it('parameter comment', () => {
+                expect(methodDoc.parameters[0].comment).to.equal('publicMethod @param');
+            });
+            it('return type name', () => {
+                expect(methodDoc.returnType.name).to.equal('r');
+            });
+        });
+        describe('should emit external method documentation for', () => {
+            let methodDoc: SolidityMethod;
+            before(() => {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
+                methodDoc = doc.NatspecEverything.methods.find(method => {
+                    return method.name === 'externalMethod';
+                }) as SolidityMethod;
+                if (_.isUndefined(methodDoc)) {
+                    throw new Error('externalMethod not found');
+                }
+            });
+            it('method name', () => {
+                expect(methodDoc.name).to.equal('externalMethod');
+            });
+            it('method comment', () => {
+                expect(methodDoc.comment).to.equal('externalMethod @dev');
+            });
+            it('parameter name', () => {
+                expect(methodDoc.parameters[0].name).to.equal('p');
+            });
+            it('parameter comment', () => {
+                expect(methodDoc.parameters[0].comment).to.equal('externalMethod @param');
+            });
+            it('return type name', () => {
+                expect(methodDoc.returnType.name).to.equal('r');
+            });
+        });
+        it('should not truncate a multi-line devdoc comment', () => {
+            // tslint:disable-next-line:no-unnecessary-type-assertion
+            const methodDoc: SolidityMethod = doc.NatspecEverything.methods.find(method => {
+                return method.name === 'methodWithLongDevdoc';
+            }) as SolidityMethod;
+            if (_.isUndefined(methodDoc)) {
+                throw new Error('methodWithLongDevdoc not found');
+            }
+            expect(methodDoc.comment).to.equal(
+                'Here is a really long developer documentation comment, which spans multiple lines, for the purposes of making sure that broken lines are consolidated into one devdoc comment.',
+            );
+        });
+        describe('should emit event documentation for', () => {
+            let eventDoc: Event;
+            before(() => {
+                eventDoc = (doc.NatspecEverything.events as Event[])[0];
+            });
+            it('event name', () => {
+                expect(eventDoc.name).to.equal('AnEvent');
+            });
+            it('parameter name', () => {
+                expect(eventDoc.eventArgs[0].name).to.equal('p');
+            });
+        });
+        it('should not let solhint directives obscure natspec content', () => {
+            // tslint:disable-next-line:no-unnecessary-type-assertion
+            const methodDoc: SolidityMethod = doc.NatspecEverything.methods.find(method => {
+                return method.name === 'methodWithSolhintDirective';
+            }) as SolidityMethod;
+            if (_.isUndefined(methodDoc)) {
+                throw new Error('methodWithSolhintDirective not found');
+            }
+            expect(methodDoc.comment).to.equal('methodWithSolhintDirective @dev');
         });
     });
 });
