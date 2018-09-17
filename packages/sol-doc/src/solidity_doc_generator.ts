@@ -124,7 +124,7 @@ function _genConstructorDoc(abiDefinition: ConstructorAbi, devdocIfExists: Devdo
         name: '', // sad we have to specify this
         callPath: '',
         parameters,
-        returnType: { name: '', typeDocType: TypeDocTypes.Intrinsic }, // sad we have to specify this
+        returnType: { name: '', typeDocType: TypeDocTypes.Reference }, // sad we have to specify this
         isConstant: false,
         isPayable: abiDefinition.payable,
         comment,
