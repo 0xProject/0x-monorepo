@@ -115,21 +115,17 @@ function _genDocSection(compiledContract: StandardContractOutput): DocSection {
 }
 
 function _genConstructorDoc(abiDefinition: ConstructorAbi, devdocIfExists: DevdocOutput | undefined): SolidityMethod {
-    const { parameters, methodSignature } = _genMethodParamsDoc(
-        '', // TODO: update depending on how constructors are keyed in devdoc
-        abiDefinition.inputs,
-        devdocIfExists,
-    );
+    const { parameters, methodSignature } = _genMethodParamsDoc('', abiDefinition.inputs, devdocIfExists);
 
     const comment = _devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
 
     const constructorDoc: SolidityMethod = {
         isConstructor: true,
         name: '', // sad we have to specify this
-        callPath: '', // TODO: wtf is this?
+        callPath: '',
         parameters,
         returnType: { name: '', typeDocType: TypeDocTypes.Intrinsic }, // sad we have to specify this
-        isConstant: false, // constructors are non-const by their nature, right?
+        isConstant: false,
         isPayable: abiDefinition.payable,
         comment,
     };
@@ -181,12 +177,11 @@ function _genMethodDoc(
             : devdocIfExists.methods[methodSignature].return;
 
     const isConstant = abiDefinition.type === 'fallback' ? true : abiDefinition.constant;
-    // TODO: determine whether fallback functions are always constant, as coded just above
 
     const methodDoc: SolidityMethod = {
         isConstructor: false,
         name,
-        callPath: '', // TODO: wtf is this?
+        callPath: '',
         parameters,
         returnType,
         returnComment,
