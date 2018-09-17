@@ -15,6 +15,7 @@ export interface ContainerProps {
     paddingRight?: StringOrNum;
     paddingLeft?: StringOrNum;
     backgroundColor?: string;
+    background?: string;
     borderRadius?: StringOrNum;
     maxWidth?: StringOrNum;
     maxHeight?: StringOrNum;

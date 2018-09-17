@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { Container } from 'ts/components/ui/container';
 import { Deco, Key, ObjectMap, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
@@ -16,17 +17,6 @@ export interface DocsContentTopBarProps {
 interface DocsContentTopBarState {
     isDrawerOpen: boolean;
 }
-
-const styles: Styles = {
-    menuItem: {
-        fontSize: 14,
-        color: colors.darkestGrey,
-        paddingTop: 6,
-        paddingBottom: 6,
-        cursor: 'pointer',
-        fontWeight: 400,
-    },
-};
 
 interface MenuItemInfo {
     title: string;
@@ -50,11 +40,6 @@ export class DocsContentTopBar extends React.Component<DocsContentTopBarProps, D
         }
     }
     public render(): React.ReactNode {
-        const menuIconStyle = {
-            fontSize: 25,
-            color: 'black',
-            cursor: 'pointer',
-        };
         const menuItemInfos: MenuItemInfo[] = [
             {
                 title: this.props.translate.get(Key.Github, Deco.Cap),
@@ -76,9 +61,9 @@ export class DocsContentTopBar extends React.Component<DocsContentTopBarProps, D
             },
         ];
         return (
-            <div style={{ height: 75 }} className="pb1">
-                <Container className="flex items-center" paddingTop={30} width="100%">
-                    <div className="col col-2">
+            <Container height={75} className="pb1">
+                <Container className="flex items-center lg-pt3 md-pt3 sm-pt1 relative" width="100%">
+                    <div className="col col-2 sm-hide xs-hide">
                         <Link
                             to={WebsitePaths.Home}
                             style={{ color: colors.linkSectionGrey }}
@@ -90,14 +75,28 @@ export class DocsContentTopBar extends React.Component<DocsContentTopBarProps, D
                             </div>
                         </Link>
                     </div>
-                    <div className="col col-10">
+                    <div className="col col-4 md-hide sm-hide xs-hide" />
+                    <div className="col col-6 md-pl4 md-ml4 sm-hide xs-hide">
                         <div className="flex items-center justify-between right" style={{ width: 300 }}>
                             {this._renderMenuItems(menuItemInfos)}
                         </div>
                     </div>
-                    <div className={'md-hide lg-hide'}>
-                        <div style={menuIconStyle}>
-                            <i className="zmdi zmdi-menu" onClick={this._onMenuButtonClick.bind(this)} />
+                    <div className="lg-hide md-hide">
+                        <DocsLogo height={30} containerStyle={{ paddingTop: 6, paddingLeft: 18 }} />
+                    </div>
+                    <div className="md-hide lg-hide absolute" style={{ right: 18, top: 12 }}>
+                        <div
+                            style={{
+                                fontSize: 30,
+                                color: 'black',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            <i
+                                className="zmdi zmdi-menu"
+                                style={{ color: colors.grey700 }}
+                                onClick={this._onMenuButtonClick.bind(this)}
+                            />
                         </div>
                     </div>
                 </Container>
@@ -110,7 +109,7 @@ export class DocsContentTopBar extends React.Component<DocsContentTopBarProps, D
                     }}
                 />
                 {this._renderDrawer()}
-            </div>
+            </Container>
         );
     }
     private _renderMenuItems(menuItemInfos: MenuItemInfo[]): React.ReactNode {
