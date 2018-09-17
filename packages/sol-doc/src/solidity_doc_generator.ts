@@ -231,8 +231,6 @@ function _genMethodParamsDoc(
     devdocIfExists: DevdocOutput | undefined,
 ): { parameters: Parameter[]; methodSignature: string } {
     const parameters: Parameter[] = [];
-    let methodSignature = `${name}(`;
-
     for (const abiParam of abiParams) {
         const parameter: Parameter = {
             name: abiParam.name,
@@ -241,13 +239,13 @@ function _genMethodParamsDoc(
             type: { name: abiParam.type, typeDocType: TypeDocTypes.Intrinsic },
         };
         parameters.push(parameter);
-        methodSignature = `${methodSignature}${abiParam.type},`;
     }
 
-    if (methodSignature.slice(-1) === ',') {
-        methodSignature = methodSignature.slice(0, -1);
-    }
-    methodSignature += ')';
+    const methodSignature = `${name}(${abiParams
+        .map(abiParam => {
+            return abiParam.type;
+        })
+        .join(',')})`;
 
     if (!_.isUndefined(devdocIfExists)) {
         const devdocMethodIfExists = devdocIfExists.methods[methodSignature];
