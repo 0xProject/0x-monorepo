@@ -84,6 +84,9 @@ describe('#SolidityDocGenerator', () => {
             it('return type name', () => {
                 expect(methodDoc.returnType.name).to.equal('r');
             });
+            it('return comment', () => {
+                expect(methodDoc.returnComment).to.equal('publicMethod @return');
+            });
         });
         describe('should emit external method documentation for', () => {
             let methodDoc: SolidityMethod;
@@ -110,6 +113,9 @@ describe('#SolidityDocGenerator', () => {
             });
             it('return type name', () => {
                 expect(methodDoc.returnType.name).to.equal('r');
+            });
+            it('return comment', () => {
+                expect(methodDoc.returnComment).to.equal('externalMethod @return');
             });
         });
         it('should not truncate a multi-line devdoc comment', () => {

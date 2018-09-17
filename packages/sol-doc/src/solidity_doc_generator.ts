@@ -176,6 +176,11 @@ function _genMethodDoc(
             ? { name: '', typeDocType: TypeDocTypes.Intrinsic }
             : _genMethodReturnTypeDoc(abiDefinition.outputs, methodSignature, devdocIfExists);
 
+    const returnComment =
+        _.isUndefined(devdocIfExists) || _.isUndefined(devdocIfExists.methods[methodSignature])
+            ? undefined
+            : devdocIfExists.methods[methodSignature].return;
+
     const isConstant = abiDefinition.type === 'fallback' ? true : abiDefinition.constant;
     // TODO: determine whether fallback functions are always constant, as coded just above
 
@@ -185,6 +190,7 @@ function _genMethodDoc(
         callPath: '', // TODO: wtf is this?
         parameters,
         returnType,
+        returnComment,
         isConstant,
         isPayable: abiDefinition.payable,
         comment,
