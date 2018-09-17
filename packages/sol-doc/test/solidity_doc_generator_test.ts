@@ -13,7 +13,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('#SolidityDocGenerator', () => {
-    it('should generate a doc object that matches the devdoc-free fixture', async () => {
+    it('should generate a doc object that matches the devdoc-free TokenTransferProxy fixture', async () => {
         const doc = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
             'TokenTransferProxyNoDevdoc',
         ]);
@@ -27,7 +27,7 @@ describe('#SolidityDocGenerator', () => {
         generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, ['TokenTransferProxy']),
     ];
     docPromises.forEach(docPromise => {
-        it('should generate a doc object that matches the fixture', async () => {
+        it('should generate a doc object that matches the TokenTransferProxy fixture', async () => {
             const doc = await docPromise;
             expect(doc).to.not.be.undefined();
 

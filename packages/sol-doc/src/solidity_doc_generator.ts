@@ -122,7 +122,6 @@ function _genConstructorDoc(abiDefinition: ConstructorAbi, devdocIfExists: Devdo
     );
 
     const comment = _devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
-    // TODO: figure out why devdoc'd constructors don't get output by solc
 
     const constructorDoc: SolidityMethod = {
         isConstructor: true,
