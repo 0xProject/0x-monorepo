@@ -15,11 +15,11 @@ const AsyncMarkdownV0 = require('md/docs/0xjs/0.0.1/async');
 const ErrorsMarkdownV0 = require('md/docs/0xjs/0.0.1/errors');
 const versioningMarkdownV0 = require('md/docs/0xjs/0.0.1/versioning');
 
-const IntroMarkdownV1 = require('md/docs/0xjs/1.0.0/introduction');
-const InstallationMarkdownV1 = require('md/docs/0xjs/1.0.0/installation');
-const AsyncMarkdownV1 = require('md/docs/0xjs/1.0.0/async');
+const IntroMarkdownV1 = require('md/docs/0xjs/1.0.1/introduction');
+const InstallationMarkdownV1 = require('md/docs/0xjs/1.0.1/installation');
+const AsyncMarkdownV1 = require('md/docs/0xjs/1.0.1/async');
 const ErrorsMarkdownV1 = ErrorsMarkdownV0;
-const versioningMarkdownV1 = require('md/docs/0xjs/1.0.0/versioning');
+const versioningMarkdownV1 = require('md/docs/0xjs/1.0.1/versioning');
 
 /* tslint:enable:no-var-requires */
 
@@ -51,7 +51,7 @@ const docsInfoConfig: DocsInfoConfig = {
             [markdownSections.async]: AsyncMarkdownV0,
             [markdownSections.errors]: ErrorsMarkdownV0,
         },
-        '1.0.0': {
+        '1.0.1': {
             [markdownSections.introduction]: IntroMarkdownV1,
             [markdownSections.installation]: InstallationMarkdownV1,
             [markdownSections.versioning]: versioningMarkdownV1,
