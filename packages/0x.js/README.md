@@ -19,7 +19,14 @@ npm install 0x.js --save
 **Import**
 
 ```javascript
-import { ZeroEx } from '0x.js';
+import {
+    assetDataUtils,
+    BigNumber,
+    ContractWrappers,
+    generatePseudoRandomSalt,
+    orderHashUtils,
+    signatureUtils,
+} from '0x.js';
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
