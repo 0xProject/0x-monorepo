@@ -90,7 +90,7 @@ function filterOutExpiredAndNonOpenOrders(
     orders: SignedOrderWithRemainingFillableMakerAssetAmount[],
 ): SignedOrderWithRemainingFillableMakerAssetAmount[] {
     const result = _.filter(orders, order => {
-        return orderUtils.isOpenOrder(order) && orderUtils.isOrderExpired(order);
+        return orderUtils.isOpenOrder(order) && !orderUtils.isOrderExpired(order);
     });
     return result;
 }
