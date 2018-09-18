@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.2 - _September 18, 2018_
+
+    * Add ZRX & WETH mainnet contract addresses into the included artifacts
+
 ## v1.0.1 - _September 5, 2018_
 
     * Add `OrderValidatorWrapper`

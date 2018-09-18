@@ -9,14 +9,18 @@ import { DocPackages } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/0xjs/1.0.0/introduction');
-const InstallationMarkdownV1 = require('md/docs/0xjs/1.0.0/installation');
-const AsyncMarkdownV1 = require('md/docs/0xjs/1.0.0/async');
-const ErrorsMarkdownV1 = require('md/docs/0xjs/1.0.0/errors');
-const versioningMarkdownV1 = require('md/docs/0xjs/1.0.0/versioning');
+const IntroMarkdownV0 = require('md/docs/0xjs/0.0.1/introduction');
+const InstallationMarkdownV0 = require('md/docs/0xjs/0.0.1/installation');
+const AsyncMarkdownV0 = require('md/docs/0xjs/0.0.1/async');
+const ErrorsMarkdownV0 = require('md/docs/0xjs/0.0.1/errors');
+const versioningMarkdownV0 = require('md/docs/0xjs/0.0.1/versioning');
 
-const IntroMarkdownV2 = require('md/docs/0xjs/2.0.0/introduction');
-const versioningMarkdownV2 = require('md/docs/0xjs/2.0.0/versioning');
+const IntroMarkdownV1 = require('md/docs/0xjs/1.0.1/introduction');
+const InstallationMarkdownV1 = require('md/docs/0xjs/1.0.1/installation');
+const AsyncMarkdownV1 = require('md/docs/0xjs/1.0.1/async');
+const ErrorsMarkdownV1 = ErrorsMarkdownV0;
+const versioningMarkdownV1 = require('md/docs/0xjs/1.0.1/versioning');
+
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -41,17 +45,16 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
+            [markdownSections.introduction]: IntroMarkdownV0,
+            [markdownSections.installation]: InstallationMarkdownV0,
+            [markdownSections.versioning]: versioningMarkdownV0,
+            [markdownSections.async]: AsyncMarkdownV0,
+            [markdownSections.errors]: ErrorsMarkdownV0,
+        },
+        '1.0.1': {
             [markdownSections.introduction]: IntroMarkdownV1,
             [markdownSections.installation]: InstallationMarkdownV1,
-            [markdownSections.async]: AsyncMarkdownV1,
-            [markdownSections.errors]: ErrorsMarkdownV1,
             [markdownSections.versioning]: versioningMarkdownV1,
-        },
-        '1.0.0-rc.1': {
-            [markdownSections.introduction]: IntroMarkdownV2,
-            [markdownSections.versioning]: versioningMarkdownV2,
-            // These are the same as for V1
-            [markdownSections.installation]: InstallationMarkdownV1,
             [markdownSections.async]: AsyncMarkdownV1,
             [markdownSections.errors]: ErrorsMarkdownV1,
         },

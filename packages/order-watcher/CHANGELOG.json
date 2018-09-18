@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Add ZRX & WETH mainnet contract addresses into the included artifacts"
+            }
+        ],
+        "timestamp": 1537265493
+    },
+    {
         "timestamp": 1536142250,
         "version": "1.0.1",
         "changes": [

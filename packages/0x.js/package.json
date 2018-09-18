@@ -1,6 +1,6 @@
 {
     "name": "0x.js",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -43,7 +43,7 @@
     "devDependencies": {
         "@0xproject/abi-gen": "^1.0.8",
         "@0xproject/dev-utils": "^1.0.7",
-        "@0xproject/migrations": "^1.0.7",
+        "@0xproject/migrations": "^1.0.8",
         "@0xproject/monorepo-scripts": "^1.0.8",
         "@0xproject/tslint-config": "^1.0.7",
         "@types/lodash": "4.14.104",
@@ -75,9 +75,9 @@
     "dependencies": {
         "@0xproject/assert": "^1.0.8",
         "@0xproject/base-contract": "^2.0.2",
-        "@0xproject/contract-wrappers": "^1.0.1",
+        "@0xproject/contract-wrappers": "^1.0.2",
         "@0xproject/order-utils": "^1.0.1",
-        "@0xproject/order-watcher": "^1.0.1",
+        "@0xproject/order-watcher": "^1.0.2",
         "@0xproject/subproviders": "^2.0.2",
         "@0xproject/types": "^1.0.1",
         "@0xproject/typescript-typings": "^2.0.0",
