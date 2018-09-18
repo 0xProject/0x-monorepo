@@ -20,6 +20,7 @@
     "dependencies": {
         "0x.js": "^0.38.6",
         "@0xproject/contract-wrappers": "^1.0.1",
+        "@0xproject/json-schemas": "^1.0.1",
         "@0xproject/order-utils": "^1.0.1",
         "@0xproject/react-docs": "^1.0.8",
         "@0xproject/react-shared": "^1.0.9",
