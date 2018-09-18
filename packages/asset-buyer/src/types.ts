@@ -65,8 +65,8 @@ export enum AssetBuyerError {
 }
 
 export interface AssetBuyerOrdersAndFillableAmounts {
-    orders: SignedOrderWithRemainingFillableMakerAssetAmount[];
-    feeOrders: SignedOrderWithRemainingFillableMakerAssetAmount[];
+    orders: SignedOrder[];
+    feeOrders: SignedOrder[];
     remainingFillableMakerAssetAmounts: BigNumber[];
     remainingFillableFeeAmounts: BigNumber[];
 }
