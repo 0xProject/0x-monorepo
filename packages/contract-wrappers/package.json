@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/contract-wrappers",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Smart TS wrappers for 0x smart contracts",
     "keywords": [
         "0xproject",
@@ -43,7 +43,7 @@
     "devDependencies": {
         "@0xproject/abi-gen": "^1.0.8",
         "@0xproject/dev-utils": "^1.0.7",
-        "@0xproject/migrations": "^1.0.7",
+        "@0xproject/migrations": "^1.0.8",
         "@0xproject/subproviders": "^2.0.2",
         "@0xproject/tslint-config": "^1.0.7",
         "@types/lodash": "4.14.104",
