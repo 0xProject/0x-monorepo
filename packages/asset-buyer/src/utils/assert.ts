@@ -41,4 +41,11 @@ export const assert = {
             `Expected all orders in ${variableName} to have the same makerAssetData and takerAssetData.`,
         );
     },
+    isValidPercentage(variableName: string, percentage: number): void {
+        assert.isNumber(variableName, percentage);
+        assert.assert(
+            percentage >= 0 && percentage <= 1,
+            `Expected ${variableName} to be between 0 and 1, but is ${percentage}`,
+        );
+    },
 };

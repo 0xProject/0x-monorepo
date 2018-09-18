@@ -159,15 +159,14 @@ export class AssetBuyer {
      *                              the next orderRefreshIntervalMs. Defaults to false.
      * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
      */
-    public async getBuyQuoteAsync(
-        assetBuyAmount: BigNumber,
-        options: Partial<BuyQuoteRequestOpts>,
-    ): Promise<BuyQuote> {
-        const { feePercentage, forceOrderRefresh, slippagePercentage } = { ...options, ...constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS };
+    public async getBuyQuoteAsync(assetBuyAmount: BigNumber, options: Partial<BuyQuoteRequestOpts>): Promise<BuyQuote> {
+        const { feePercentage, forceOrderRefresh, slippagePercentage } = {
+            ...options,
+            ...constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
+        };
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
-        assert.isNumber('feePercentage', feePercentage);
+        assert.isValidPercentage('feePercentage', feePercentage);
         assert.isBoolean('forceOrderRefresh', forceOrderRefresh);
-        assert.isNumber('feePercentage', slippagePercentage);
         // we should refresh if:
         // we do not have any orders OR
         // we are forced to OR
@@ -236,18 +235,13 @@ export class AssetBuyer {
         const desiredRate = rate || maxRate;
         // calculate how much eth is required to buy assetBuyAmount at the desired rate
         const ethAmount = assetBuyAmount.dividedToIntegerBy(desiredRate);
-        // TODO: critical
-        // update the forwarder wrapper to take in feePercentage as a number instead of a BigNumber, verify with Amir that this is being done correctly
-        const feePercentageBigNumber = !_.isUndefined(feePercentage)
-            ? Web3Wrapper.toBaseUnitAmount(new BigNumber(1), constants.ETHER_TOKEN_DECIMALS).mul(feePercentage)
-            : constants.ZERO_AMOUNT;
         const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
             orders,
             assetBuyAmount,
             finalTakerAddress,
             ethAmount,
             feeOrders,
-            feePercentageBigNumber,
+            feePercentage,
             feeRecipient,
         );
         return txHash;
