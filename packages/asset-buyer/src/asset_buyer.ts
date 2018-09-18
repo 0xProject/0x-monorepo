@@ -21,11 +21,6 @@ import { assert } from './utils/assert';
 import { buyQuoteCalculator } from './utils/buy_quote_calculator';
 import { orderFetcherResponseProcessor } from './utils/order_fetcher_response_processor';
 
-const SLIPPAGE_PERCENTAGE = 0.2; // 20% slippage protection, possibly move this into request interface
-const DEFAULT_ORDER_REFRESH_INTERVAL_MS = 10000; // 10 seconds
-const DEFAULT_FEE_PERCENTAGE = 0;
-const ETHER_TOKEN_DECIMALS = 18;
-
 export class AssetBuyer {
     public readonly provider: Provider;
     public readonly assetData: string;
@@ -50,7 +45,7 @@ export class AssetBuyer {
         orders: SignedOrder[],
         feeOrders: SignedOrder[] = [],
         networkId: number = constants.MAINNET_NETWORK_ID,
-        orderRefreshIntervalMs: number = DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+        orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
@@ -80,7 +75,7 @@ export class AssetBuyer {
         assetData: string,
         sraApiUrl: string,
         networkId: number = constants.MAINNET_NETWORK_ID,
-        orderRefreshIntervalMs: number = DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+        orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.isHexString('assetData', assetData);
@@ -106,7 +101,7 @@ export class AssetBuyer {
         tokenAddress: string,
         sraApiUrl: string,
         networkId: number = constants.MAINNET_NETWORK_ID,
-        orderRefreshIntervalMs: number = DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+        orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
@@ -138,7 +133,7 @@ export class AssetBuyer {
         assetData: string,
         orderFetcher: OrderFetcher,
         networkId: number = constants.MAINNET_NETWORK_ID,
-        orderRefreshIntervalMs: number = DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+        orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
     ) {
         assert.isWeb3Provider('provider', provider);
         assert.isString('assetData', assetData);
@@ -165,7 +160,7 @@ export class AssetBuyer {
      */
     public async getBuyQuoteAsync(
         assetBuyAmount: BigNumber,
-        feePercentage: number = DEFAULT_FEE_PERCENTAGE,
+        feePercentage: number = constants.DEFAULT_FEE_PERCENTAGE,
         forceOrderRefresh: boolean = false,
     ): Promise<BuyQuote> {
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
@@ -196,7 +191,7 @@ export class AssetBuyer {
             ordersAndFillableAmounts,
             assetBuyAmount,
             feePercentage,
-            SLIPPAGE_PERCENTAGE,
+            constants.DEFAULT_SLIPPAGE_PERCENTAGE,
         );
         return buyQuote;
     }
@@ -244,7 +239,7 @@ export class AssetBuyer {
         // TODO: critical
         // update the forwarder wrapper to take in feePercentage as a number instead of a BigNumber, verify with Amir that this is being done correctly
         const feePercentageBigNumber = !_.isUndefined(feePercentage)
-            ? Web3Wrapper.toBaseUnitAmount(new BigNumber(1), ETHER_TOKEN_DECIMALS).mul(feePercentage)
+            ? Web3Wrapper.toBaseUnitAmount(new BigNumber(1), constants.ETHER_TOKEN_DECIMALS).mul(feePercentage)
             : constants.ZERO_AMOUNT;
         const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
             orders,
