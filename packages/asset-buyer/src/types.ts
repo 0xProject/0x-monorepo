@@ -52,6 +52,12 @@ export interface BuyQuote {
     feePercentage?: number;
 }
 
+export interface BuyQuoteRequestOpts {
+    feePercentage: number;
+    forceOrderRefresh: boolean;
+    slippagePercentage: number;
+}
+
 /**
  * Possible errors thrown by an AssetBuyer instance or associated static methods.
  */

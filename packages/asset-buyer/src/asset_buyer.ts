@@ -13,6 +13,7 @@ import {
     AssetBuyerError,
     AssetBuyerOrdersAndFillableAmounts,
     BuyQuote,
+    BuyQuoteRequestOpts,
     OrderFetcher,
     OrderFetcherResponse,
 } from './types';
@@ -160,12 +161,13 @@ export class AssetBuyer {
      */
     public async getBuyQuoteAsync(
         assetBuyAmount: BigNumber,
-        feePercentage: number = constants.DEFAULT_FEE_PERCENTAGE,
-        forceOrderRefresh: boolean = false,
+        options: Partial<BuyQuoteRequestOpts>,
     ): Promise<BuyQuote> {
+        const { feePercentage, forceOrderRefresh, slippagePercentage } = { ...options, ...constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS };
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
         assert.isNumber('feePercentage', feePercentage);
         assert.isBoolean('forceOrderRefresh', forceOrderRefresh);
+        assert.isNumber('feePercentage', slippagePercentage);
         // we should refresh if:
         // we do not have any orders OR
         // we are forced to OR
@@ -185,13 +187,11 @@ export class AssetBuyer {
             ordersAndFillableAmounts = this
                 ._currentOrdersAndFillableAmountsIfExists as AssetBuyerOrdersAndFillableAmounts;
         }
-        // TODO: optimization
-        // make the slippage percentage customizable by integrator
         const buyQuote = buyQuoteCalculator.calculate(
             ordersAndFillableAmounts,
             assetBuyAmount,
             feePercentage,
-            constants.DEFAULT_SLIPPAGE_PERCENTAGE,
+            slippagePercentage,
         );
         return buyQuote;
     }
