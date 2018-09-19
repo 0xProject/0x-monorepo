@@ -1,0 +1,590 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "OrderValidator",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "order",
+                        "type": "tuple"
+                    },
+                    {
+                        "name": "takerAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "getOrderAndTraderInfo",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "orderStatus",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "orderHash",
+                                "type": "bytes32"
+                            },
+                            {
+                                "name": "orderTakerAssetFilledAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "orderInfo",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "name": "makerBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerZrxBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerZrxAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerZrxBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerZrxAllowance",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "traderInfo",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "name": "assetData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "getBalanceAndAllowance",
+                "outputs": [
+                    {
+                        "name": "balance",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "allowance",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "orders",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "name": "takerAddresses",
+                        "type": "address[]"
+                    }
+                ],
+                "name": "getOrdersAndTradersInfo",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "orderStatus",
+                                "type": "uint8"
+                            },
+                            {
+                                "name": "orderHash",
+                                "type": "bytes32"
+                            },
+                            {
+                                "name": "orderTakerAssetFilledAmount",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "ordersInfo",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "components": [
+                            {
+                                "name": "makerBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerZrxBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerZrxAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerZrxBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerZrxAllowance",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "tradersInfo",
+                        "type": "tuple[]"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "orders",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "name": "takerAddresses",
+                        "type": "address[]"
+                    }
+                ],
+                "name": "getTradersInfo",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerZrxBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerZrxAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerZrxBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerZrxAllowance",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "name": "tokenId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getERC721TokenOwner",
+                "outputs": [
+                    {
+                        "name": "owner",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "target",
+                        "type": "address"
+                    },
+                    {
+                        "name": "assetData",
+                        "type": "bytes[]"
+                    }
+                ],
+                "name": "getBalancesAndAllowances",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256[]"
+                    },
+                    {
+                        "name": "",
+                        "type": "uint256[]"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "takerAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "feeRecipientAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "senderAddress",
+                                "type": "address"
+                            },
+                            {
+                                "name": "makerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAssetAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerFee",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "expirationTimeSeconds",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "salt",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAssetData",
+                                "type": "bytes"
+                            },
+                            {
+                                "name": "takerAssetData",
+                                "type": "bytes"
+                            }
+                        ],
+                        "name": "order",
+                        "type": "tuple"
+                    },
+                    {
+                        "name": "takerAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "getTraderInfo",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "name": "makerBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerZrxBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "makerZrxAllowance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerZrxBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "name": "takerZrxAllowance",
+                                "type": "uint256"
+                            }
+                        ],
+                        "name": "traderInfo",
+                        "type": "tuple"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "name": "_exchange",
+                        "type": "address"
+                    },
+                    {
+                        "name": "_zrxAssetData",
+                        "type": "bytes"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            }
+        ]
+    },
+    "networks": {
+        "1": {
+            "address": "0x9463e518dea6810309563c81d5266c1b1d149138",
+            "links": {},
+            "constructorArgs":
+                "[\"0x4f833a24e1f95d70f028921e27040ca56e09ab0b\",\"0xf47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498\"]"
+        },
+        "3": {
+            "address": "0x90431a90516ab49af23a0530e04e8c7836e7122f",
+            "links": {},
+            "constructorArgs":
+                "[\"0x4530c0483a1633c7a1c97d2c53721caff2caaaaf\",\"0xf47261b0000000000000000000000000ff67881f8d12f372d91baae9752eb3631ff0ed00\"]"
+        },
+        "42": {
+            "address": "0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d",
+            "links": {},
+            "constructorArgs":
+                "[\"0x35dd2932454449b14cee11a94d3674a936d5d7b2\",\"0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa\"]"
+        },
+        "50": {
+            "address": "0xe86bb98fcf9bff3512c74589b78fb168200cc546",
+            "links": {},
+            "constructorArgs":
+                "[\"0x48bacb9266a570d521063ef5dd96e61686dbe788\",\"0xf47261b0000000000000000000000000871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c\"]"
+        }
+    }
+}

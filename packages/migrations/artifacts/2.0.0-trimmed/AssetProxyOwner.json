@@ -1,0 +1,717 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "AssetProxyOwner",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "owners",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "removeOwner",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "revokeConfirmation",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "isOwner",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "confirmations",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "executeRemoveAuthorizedAddressAtIndex",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "secondsTimeLocked",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "pending",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "executed",
+                        "type": "bool"
+                    }
+                ],
+                "name": "getTransactionCount",
+                "outputs": [
+                    {
+                        "name": "count",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "assetProxyContract",
+                        "type": "address"
+                    },
+                    {
+                        "name": "isRegistered",
+                        "type": "bool"
+                    }
+                ],
+                "name": "registerAssetProxy",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "addOwner",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "isConfirmed",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_secondsTimeLocked",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "changeTimeLock",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "isAssetProxyRegistered",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getConfirmationCount",
+                "outputs": [
+                    {
+                        "name": "count",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transactions",
+                "outputs": [
+                    {
+                        "name": "destination",
+                        "type": "address"
+                    },
+                    {
+                        "name": "value",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "data",
+                        "type": "bytes"
+                    },
+                    {
+                        "name": "executed",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "getOwners",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address[]"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "from",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "to",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "pending",
+                        "type": "bool"
+                    },
+                    {
+                        "name": "executed",
+                        "type": "bool"
+                    }
+                ],
+                "name": "getTransactionIds",
+                "outputs": [
+                    {
+                        "name": "_transactionIds",
+                        "type": "uint256[]"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getConfirmations",
+                "outputs": [
+                    {
+                        "name": "_confirmations",
+                        "type": "address[]"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "transactionCount",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_required",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "changeRequirement",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "confirmTransaction",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "destination",
+                        "type": "address"
+                    },
+                    {
+                        "name": "value",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "data",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "submitTransaction",
+                "outputs": [
+                    {
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "confirmationTimes",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "MAX_OWNER_COUNT",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "required",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "replaceOwner",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "executeTransaction",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "name": "_owners",
+                        "type": "address[]"
+                    },
+                    {
+                        "name": "_assetProxyContracts",
+                        "type": "address[]"
+                    },
+                    {
+                        "name": "_required",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "_secondsTimeLocked",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "payable": true,
+                "stateMutability": "payable",
+                "type": "fallback"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "name": "assetProxyContract",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "isRegistered",
+                        "type": "bool"
+                    }
+                ],
+                "name": "AssetProxyRegistration",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "transactionId",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "confirmationTime",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ConfirmationTimeSet",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "name": "secondsTimeLocked",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "TimeLockChange",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Confirmation",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Revocation",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Submission",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Execution",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "transactionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ExecutionFailure",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Deposit",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnerAddition",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnerRemoval",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "name": "required",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "RequirementChange",
+                "type": "event"
+            }
+        ]
+    },
+    "networks": {
+        "1": {
+            "address": "0x17992e4ffb22730138e4b62aaa6367fa9d3699a6",
+            "links": {},
+            "constructorArgs":
+                "[[\"0x257619b7155d247e43c8b6d90c8c17278ae481f0\",\"0x5ee2a00f8f01d099451844af7f894f26a57fcbf2\",\"0x894d623e0e0e8ed12c4a73dada999e275684a37d\"],[\"0x2240dab907db71e64d3e0dba4800c83b5c502d4e\",\"0x208e41fb445f1bb1b6780d58356e81405f3e6127\"],\"2\",\"1209600\"]"
+        },
+        "3": {
+            "address": "0xf5fa5b5fed2727a0e44ac67f6772e97977aa358b",
+            "links": {},
+            "constructorArgs":
+                "[[\"0x9df8137872ac09a8fee71d0da5c7539923fb9bf0\",\"0xcf34d44db312d188789f43a63d11cf2bebb4da15\",\"0x73fd50f2a6beac9cdac9fe87ef68a18edc415831\"],[\"0xb1408f4c245a23c31b98d2c626777d4c0d766caa\",\"0xe654aac058bfbf9f83fcaee7793311dd82f6ddb4\"],\"1\",\"0\"]"
+        },
+        "42": {
+            "address": "0x2c824d2882baa668e0d5202b1e7f2922278703f8",
+            "links": {},
+            "constructorArgs":
+                "[[\"0x9df8137872ac09a8fee71d0da5c7539923fb9bf0\",\"0xcf34d44db312d188789f43a63d11cf2bebb4da15\",\"0x73fd50f2a6beac9cdac9fe87ef68a18edc415831\"],[\"0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e\",\"0x2a9127c745688a165106c11cd4d647d2220af821\"],\"1\",\"0\"]"
+        },
+        "50": {
+            "address": "0x34d402f14d58e001d8efbe6585051bf9706aa064",
+            "links": {},
+            "constructorArgs":
+                "[[\"0x9df8137872ac09a8fee71d0da5c7539923fb9bf0\",\"0xcf34d44db312d188789f43a63d11cf2bebb4da15\",\"0x73fd50f2a6beac9cdac9fe87ef68a18edc415831\"],[\"0x1dc4c1cefef38a777b15aa20260a54e584b16c48\",\"0x1d7022f5b17d2f8b695918fb48fa1089c9f85401\"],\"1\",\"0\"]"
+        }
+    }
+}
