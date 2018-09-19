@@ -1,8 +1,6 @@
 import { AbiDecoder } from '@0xproject/utils';
-import { DecodedLogArgs, LogEntry, LogWithDecodedArgs } from 'ethereum-types';
+import { AbiDefinition, DecodedLogArgs, LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as R from 'ramda';
-
-import { artifacts } from '../../artifacts';
 
 // Raw events response from etherescan.io
 export interface EventsResponse {
@@ -48,16 +46,26 @@ export function _convertResponseToLogEntry(result: EventsResponseResult): LogEnt
 
 // Decodes a LogEntry into a LogWithDecodedArgs
 // tslint:disable-next-line:completed-docs
-export function _decodeLogEntry(log: LogEntry): LogWithDecodedArgs<DecodedLogArgs> {
-    const abiDecoder = new AbiDecoder([artifacts.Exchange.compilerOutput.abi]);
+export const _decodeLogEntry = R.curry((contractAbi: AbiDefinition[], log: LogEntry): LogWithDecodedArgs<
+    DecodedLogArgs
+> => {
+    const abiDecoder = new AbiDecoder([contractAbi]);
     const logWithDecodedArgs = abiDecoder.tryToDecodeLogOrNoop(log);
     // tslint:disable-next-line:no-unnecessary-type-assertion
     return logWithDecodedArgs as LogWithDecodedArgs<DecodedLogArgs>;
-}
+});
 
 /**
  * Parses and abi-decodes the raw events response from etherscan.io.
+ * @param contractAbi The ABI for the contract that the events where emited from.
  * @param rawEventsResponse The raw events response from etherescan.io.
  * @returns Parsed and decoded events.
  */
-export const parseRawEventsResponse = R.pipe(R.map(_convertResponseToLogEntry), R.map(_decodeLogEntry));
+export function parseRawEventsResponse(
+    contractAbi: AbiDefinition[],
+    rawEventsResponse: EventsResponse,
+): Array<LogWithDecodedArgs<DecodedLogArgs>> {
+    return R.pipe(R.map(_convertResponseToLogEntry), R.map(_decodeLogEntry(contractAbi)))(rawEventsResponse.result);
+}
+
+// export const parseRawEventsResponse = R.pipe(R.map(_convertResponseToLogEntry), R.map(_decodeLogEntry));
