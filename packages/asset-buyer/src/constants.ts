@@ -4,7 +4,7 @@ import { BuyQuoteRequestOpts } from './types';
 
 const DEFAULT_BUY_QUOTE_REQUEST_OPTS: BuyQuoteRequestOpts = {
     feePercentage: 0,
-    forceOrderRefresh: false,
+    shouldForceOrderRefresh: false,
     slippagePercentage: 0.2, // 20% slippage protection
 };
 

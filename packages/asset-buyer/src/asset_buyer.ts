@@ -160,20 +160,20 @@ export class AssetBuyer {
      * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
      */
     public async getBuyQuoteAsync(assetBuyAmount: BigNumber, options: Partial<BuyQuoteRequestOpts>): Promise<BuyQuote> {
-        const { feePercentage, forceOrderRefresh, slippagePercentage } = {
+        const { feePercentage, shouldForceOrderRefresh, slippagePercentage } = {
             ...options,
             ...constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
         };
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
         assert.isValidPercentage('feePercentage', feePercentage);
-        assert.isBoolean('forceOrderRefresh', forceOrderRefresh);
+        assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
         // we should refresh if:
         // we do not have any orders OR
         // we are forced to OR
         // we have some last refresh time AND that time was sufficiently long ago
         const shouldRefresh =
             _.isUndefined(this._currentOrdersAndFillableAmountsIfExists) ||
-            forceOrderRefresh ||
+            shouldForceOrderRefresh ||
             (!_.isUndefined(this._lastRefreshTimeIfExists) &&
                 this._lastRefreshTimeIfExists + this.orderRefreshIntervalMs < Date.now());
         let ordersAndFillableAmounts: AssetBuyerOrdersAndFillableAmounts;

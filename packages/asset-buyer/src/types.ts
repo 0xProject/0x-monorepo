@@ -54,7 +54,7 @@ export interface BuyQuote {
 
 export interface BuyQuoteRequestOpts {
     feePercentage: number;
-    forceOrderRefresh: boolean;
+    shouldForceOrderRefresh: boolean;
     slippagePercentage: number;
 }
 
