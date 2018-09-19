@@ -4,49 +4,42 @@
     "private": true,
     "description": "Data pipeline for offline analysis",
     "scripts": {
-        "build": "yarn tsc -b",
+        "build": "yarn pre_build && tsc -b",
+        "pre_build": "run-s update_artifacts copy_artifacts",
+        "copy_artifacts": "copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts",
+        "update_artifacts": "for i in ${npm_package_config_contracts_v2}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json src/artifacts; done;",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "clean": "shx rm -rf lib",
+        "clean": "shx rm -rf lib src/artifacts",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*"
+    },
+    "config": {
+        "contracts_v2": "Exchange",
+        "postpublish": {
+            "assets": []
+        }
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/0xProject/0x.js.git"
+        "url": "https://github.com/0xProject/0x-monorepo"
     },
     "license": "Apache-2.0",
-    "bugs": {
-        "url": "https://github.com/0xProject/0x.js/issues"
-    },
-    "homepage": "https://github.com/0xProject/0x.js/packages/pipeline/README.md",
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.7",
-        "@types/command-line-args": "^4.0.2",
-        "@types/dotenv": "^4.0.2",
-        "@types/glob": "^5.0.33",
-        "@types/lodash": "4.14.104",
-        "@types/node": "^8.0.53",
-        "@types/pg": "^7.4.1",
-        "@types/request": "^2.0.13",
-        "shx": "^0.2.2",
         "tslint": "5.11.0",
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "0x.js": "^0.38.3",
-        "@0xproject/connect": "^0.6.14",
-        "airtable": "^0.5.2",
-        "command-line-args": "^4.0.7",
-        "dotenv": "^4.0.0",
-        "lodash": "^4.17.4",
-        "node-redshift": "^0.1.5",
-        "pg": "^7.4.1",
-        "queue": "^4.4.2",
-        "request": "^2.83.0",
-        "web3": "^0.20.0"
+        "@0xproject/contract-wrappers": "^1.0.1",
+        "@0xproject/subproviders": "^2.0.2",
+        "@0xproject/utils": "^1.0.8",
+        "@types/ramda": "^0.25.38",
+        "axios": "^0.18.0",
+        "ethereum-types": "^1.0.6",
+        "ramda": "^0.25.0"
     }
 }
