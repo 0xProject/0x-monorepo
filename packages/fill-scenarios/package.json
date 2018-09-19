@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/fill-scenarios",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "0x order fill scenario generator",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -38,7 +38,7 @@
     },
     "dependencies": {
         "@0xproject/base-contract": "^2.0.2",
-        "@0xproject/order-utils": "^1.0.1",
+        "@0xproject/order-utils": "^1.0.2",
         "@0xproject/types": "^1.0.1",
         "@0xproject/typescript-typings": "^2.0.0",
         "@0xproject/utils": "^1.0.8",
