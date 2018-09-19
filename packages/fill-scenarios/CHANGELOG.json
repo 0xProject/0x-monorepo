@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Drastically reduce the bundle size by removing unused parts of included contract artifacts."
+            }
+        ]
+    },
+    {
         "timestamp": 1536142250,
         "version": "1.0.1",
         "changes": [
