@@ -30,7 +30,12 @@
                 "stateMutability": "view",
                 "type": "function"
             }
-        ]
+        ],
+        "evm": {
+            "bytecode": {
+                "object": "0x"
+            }
+        }
     },
     "networks": {}
 }
