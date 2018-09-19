@@ -1,5 +1,5 @@
 import { default as axios } from 'axios';
-import { BlockParam, BlockParamLiteral, DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
+import { AbiDefinition, BlockParam, BlockParamLiteral, DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
 
 import { EventsResponse, parseRawEventsResponse } from './events';
 
@@ -14,12 +14,14 @@ export class Etherscan {
     /**
      * Gets the decoded events for a specific contract and block range.
      * @param contractAddress  The address of the contract to get the events for.
+     * @param constractAbi The ABI of the contract.
      * @param fromBlock The start of the block range to get events for (inclusive).
      * @param toBlock The end of the block range to get events for (inclusive).
      * @returns A list of decoded events.
      */
     public async getContractEventsAsync(
         contractAddress: string,
+        contractAbi: AbiDefinition[],
         fromBlock: BlockParam = BlockParamLiteral.Earliest,
         toBlock: BlockParam = BlockParamLiteral.Latest,
     ): Promise<Array<LogWithDecodedArgs<DecodedLogArgs>>> {
@@ -28,7 +30,7 @@ export class Etherscan {
         }`;
         const resp = await axios.get<EventsResponse>(fullURL);
         // TODO(albrow): Check response code.
-        const decodedEvents = parseRawEventsResponse(resp.data.result);
+        const decodedEvents = parseRawEventsResponse(contractAbi, resp.data);
         return decodedEvents;
     }
 }
