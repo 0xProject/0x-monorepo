@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Add ObjectMap type",
+                "pr": 1037
+            }
+        ]
+    },
+    {
         "version": "1.0.1",
         "changes": [
             {

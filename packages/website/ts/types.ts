@@ -1,4 +1,4 @@
-import { SignedOrder } from '@0xproject/types';
+import { ObjectMap, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
 import * as React from 'react';
@@ -518,10 +518,6 @@ export interface OutdatedWrappedEtherByNetworkId {
 }
 
 export type ItemByAddress<T> = ObjectMap<T>;
-
-export interface ObjectMap<T> {
-    [key: string]: T;
-}
 
 export type TokenStateByAddress = ItemByAddress<TokenState>;
 
