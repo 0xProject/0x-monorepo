@@ -1,6 +1,6 @@
 import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { schemas } from '@0xproject/json-schemas';
-import { assetDataUtils, SignedOrder } from '@0xproject/order-utils';
+import { SignedOrder } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -19,6 +19,7 @@ import {
 } from './types';
 
 import { assert } from './utils/assert';
+import { assetDataUtils } from './utils/asset_data_utils';
 import { buyQuoteCalculator } from './utils/buy_quote_calculator';
 import { orderFetcherResponseProcessor } from './utils/order_fetcher_response_processor';
 
@@ -284,24 +285,13 @@ export class AssetBuyer {
      * Will throw if WETH does not exist for the current network.
      */
     private _getEtherTokenAssetData(): string {
-        const etherTokenAddressIfExists = this._contractWrappers.etherToken.getContractAddressIfExists();
-        if (_.isUndefined(etherTokenAddressIfExists)) {
-            throw new Error(AssetBuyerError.NoEtherTokenContractFound);
-        }
-        const etherTokenAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddressIfExists);
-        return etherTokenAssetData;
+        return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
     }
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
      */
     private _getZrxTokenAssetData(): string {
-        let zrxTokenAssetData: string;
-        try {
-            zrxTokenAssetData = this._contractWrappers.exchange.getZRXAssetData();
-        } catch (err) {
-            throw new Error(AssetBuyerError.NoZrxTokenContractFound);
-        }
-        return zrxTokenAssetData;
+        return assetDataUtils.getZrxTokenAssetData(this._contractWrappers);
     }
 }

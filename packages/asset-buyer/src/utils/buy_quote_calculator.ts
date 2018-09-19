@@ -59,6 +59,7 @@ export const buyQuoteCalculator = {
         let maxEthAmount = constants.ZERO_AMOUNT;
         let cumulativeMakerAmount = constants.ZERO_AMOUNT;
         _.forEach(allOrders, (order, index) => {
+            // TODO: Move this logic to order_utils
             const remainingFillableMakerAssetAmount = allRemainingAmounts[index];
             const orderRate = order.takerAssetAmount.div(order.makerAssetAmount);
             const claimableTakerAssetAmount = orderRate.mul(remainingFillableMakerAssetAmount);

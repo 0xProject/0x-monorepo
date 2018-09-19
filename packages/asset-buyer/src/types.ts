@@ -70,6 +70,13 @@ export enum AssetBuyerError {
     NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
 }
 
+/**
+ * Possible errors thrown by an StandardRelayerApiAssetBuyerManager instance or associated static methods.
+ */
+export enum StandardRelayerApiAssetBuyerManagerError {
+    AssetBuyerNotFound = 'ASSET_BUYER_NOT_FOUND',
+}
+
 export interface AssetBuyerOrdersAndFillableAmounts {
     orders: SignedOrder[];
     feeOrders: SignedOrder[];
