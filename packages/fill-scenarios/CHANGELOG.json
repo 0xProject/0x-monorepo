@@ -5,7 +5,8 @@
             {
                 "note": "Drastically reduce the bundle size by removing unused parts of included contract artifacts."
             }
-        ]
+        ],
+        "timestamp": 1537369748
     },
     {
         "timestamp": 1536142250,

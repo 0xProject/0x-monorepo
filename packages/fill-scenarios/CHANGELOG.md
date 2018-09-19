@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.2 - _September 19, 2018_
+
+    * Drastically reduce the bundle size by removing unused parts of included contract artifacts.
+
 ## v1.0.1 - _September 5, 2018_
 
     * Dependencies updated
