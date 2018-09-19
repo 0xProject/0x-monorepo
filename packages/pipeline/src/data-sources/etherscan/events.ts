@@ -25,21 +25,30 @@ export interface EventsResponseResult {
     transactionIndex: string;
 }
 
-function convertResponseToLogEntry(result: EventsResponseResult): LogEntry {
-    const radix = 10;
+const hexRadix = 16;
+
+function hexToInt(hex: string): number {
+    return parseInt(hex.replace('0x', ''), hexRadix);
+}
+
+// Converts a raw event response to a LogEntry
+// tslint:disable-next-line:completed-docs
+export function _convertResponseToLogEntry(result: EventsResponseResult): LogEntry {
     return {
-        logIndex: parseInt(result.logIndex, radix),
-        transactionIndex: parseInt(result.logIndex, radix),
+        logIndex: hexToInt(result.logIndex),
+        transactionIndex: hexToInt(result.transactionIndex),
         transactionHash: result.transactionHash,
         blockHash: '',
-        blockNumber: parseInt(result.blockNumber, radix),
+        blockNumber: hexToInt(result.blockNumber),
         address: result.address,
         data: result.data,
         topics: result.topics,
     };
 }
 
-function tryToDecodeLogOrNoop(log: LogEntry): LogWithDecodedArgs<DecodedLogArgs> {
+// Decodes a LogEntry into a LogWithDecodedArgs
+// tslint:disable-next-line:completed-docs
+export function _decodeLogEntry(log: LogEntry): LogWithDecodedArgs<DecodedLogArgs> {
     const abiDecoder = new AbiDecoder([artifacts.Exchange.compilerOutput.abi]);
     const logWithDecodedArgs = abiDecoder.tryToDecodeLogOrNoop(log);
     // tslint:disable-next-line:no-unnecessary-type-assertion
@@ -51,4 +60,4 @@ function tryToDecodeLogOrNoop(log: LogEntry): LogWithDecodedArgs<DecodedLogArgs>
  * @param rawEventsResponse The raw events response from etherescan.io.
  * @returns Parsed and decoded events.
  */
-export const parseRawEventsResponse = R.pipe(R.map(convertResponseToLogEntry), R.map(tryToDecodeLogOrNoop));
+export const parseRawEventsResponse = R.pipe(R.map(_convertResponseToLogEntry), R.map(_decodeLogEntry));

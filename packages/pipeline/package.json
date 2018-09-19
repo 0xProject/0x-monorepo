@@ -36,7 +36,12 @@
         "dirty-chai": "^2.0.1",
         "mocha": "^5.2.0",
         "tslint": "5.11.0",
-        "typescript": "3.0.1"
+        "typescript": "3.0.1",
+        "mocha": "^5.2.0",
+        "chai": "^4.1.2",
+        "chai-as-promised": "^7.1.1",
+        "chai-bignumber": "^2.0.2",
+        "dirty-chai": "^2.0.1"
     },
     "dependencies": {
         "@0x/connect": "^3.0.2",
