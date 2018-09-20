@@ -11,7 +11,6 @@ import { assetDataUtils } from './utils/asset_data_utils';
 
 import { OrderProvider, StandardRelayerApiAssetBuyerManagerError } from './types';
 
-// TODO: Read-only list of available assetDatas
 export class StandardRelayerAPIAssetBuyerManager {
     // Map of assetData to AssetBuyer for that assetData
     public readonly assetBuyerMap: ObjectMap<AssetBuyer>;
@@ -122,5 +121,13 @@ export class StandardRelayerAPIAssetBuyerManager {
     public getAssetBuyerFromERC20TokenAddress(tokenAddress: string): AssetBuyer {
         const assetData = assetDataUtils.encodeERC20AssetData(tokenAddress);
         return this.getAssetBuyerFromAssetData(assetData);
+    }
+    /**
+     * Get a list of all the assetDatas that the instance supports
+     *
+     * @return  An array of assetData strings
+     */
+    public getAssetDatas(): string[] {
+        return _.keys(this.assetBuyerMap);
     }
 }
