@@ -33,7 +33,7 @@ export class AssetBuyer {
     private _lastRefreshTimeIfExists?: number;
     private _currentOrdersAndFillableAmountsIfExists?: AssetBuyerOrdersAndFillableAmounts;
     /**
-     * Instantiates a new AssetBuyer instance
+     * Instantiates a new AssetBuyer instance given existing liquidity in the form of orders and feeOrders.
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   orders                  A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData (WETH).
      * @param   feeOrders               A array of objects that conform to SignedOrder. All orders must have the same makerAssetData (ZRX) and takerAssetData (WETH). Defaults to an empty array.
@@ -63,7 +63,7 @@ export class AssetBuyer {
         return assetBuyer;
     }
     /**
-     * Instantiates a new AssetBuyer instance
+     * Instantiates a new AssetBuyer instance given the desired assetData and a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   assetData               The assetData that identifies the desired asset to buy.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
@@ -89,7 +89,7 @@ export class AssetBuyer {
         return assetBuyer;
     }
     /**
-     * Instantiates a new AssetBuyer instance
+     * Instantiates a new AssetBuyer instance given the desired ERC20 token address and a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   tokenAddress            The ERC20 token address that identifies the desired asset to buy.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
