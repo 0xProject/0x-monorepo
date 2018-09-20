@@ -30,13 +30,13 @@
     "license": "Apache-2.0",
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.7",
-        "tslint": "5.11.0",
-        "typescript": "3.0.1",
-        "mocha": "^5.2.0",
         "chai": "^4.1.2",
         "chai-as-promised": "^7.1.1",
         "chai-bignumber": "^2.0.2",
-        "dirty-chai": "^2.0.1"
+        "dirty-chai": "^2.0.1",
+        "mocha": "^5.2.0",
+        "tslint": "5.11.0",
+        "typescript": "3.0.1"
     },
     "dependencies": {
         "@0xproject/contract-wrappers": "^1.0.1",
@@ -45,6 +45,9 @@
         "@types/ramda": "^0.25.38",
         "axios": "^0.18.0",
         "ethereum-types": "^1.0.6",
-        "ramda": "^0.25.0"
+        "ramda": "^0.25.0",
+        "reflect-metadata": "^0.1.12",
+        "sqlite3": "^4.0.2",
+        "typeorm": "^0.2.7"
     }
 }

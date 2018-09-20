@@ -1,5 +1,6 @@
+import { ExchangeEventArgs } from '@0xproject/contract-wrappers';
 import { AbiDecoder } from '@0xproject/utils';
-import { AbiDefinition, DecodedLogArgs, LogEntry, LogWithDecodedArgs } from 'ethereum-types';
+import { AbiDefinition, LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as R from 'ramda';
 
 // Raw events response from etherescan.io
@@ -47,12 +48,12 @@ export function _convertResponseToLogEntry(result: EventsResponseResult): LogEnt
 // Decodes a LogEntry into a LogWithDecodedArgs
 // tslint:disable-next-line:completed-docs
 export const _decodeLogEntry = R.curry((contractAbi: AbiDefinition[], log: LogEntry): LogWithDecodedArgs<
-    DecodedLogArgs
+    ExchangeEventArgs
 > => {
     const abiDecoder = new AbiDecoder([contractAbi]);
     const logWithDecodedArgs = abiDecoder.tryToDecodeLogOrNoop(log);
     // tslint:disable-next-line:no-unnecessary-type-assertion
-    return logWithDecodedArgs as LogWithDecodedArgs<DecodedLogArgs>;
+    return logWithDecodedArgs as LogWithDecodedArgs<ExchangeEventArgs>;
 });
 
 /**
@@ -64,7 +65,7 @@ export const _decodeLogEntry = R.curry((contractAbi: AbiDefinition[], log: LogEn
 export function parseRawEventsResponse(
     contractAbi: AbiDefinition[],
     rawEventsResponse: EventsResponse,
-): Array<LogWithDecodedArgs<DecodedLogArgs>> {
+): Array<LogWithDecodedArgs<ExchangeEventArgs>> {
     return R.pipe(R.map(_convertResponseToLogEntry), R.map(_decodeLogEntry(contractAbi)))(rawEventsResponse.result);
 }
 
