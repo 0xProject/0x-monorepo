@@ -3,15 +3,15 @@ import * as _ from 'lodash';
 
 import {
     AssetBuyerError,
-    OrderFetcher,
-    OrderFetcherRequest,
-    OrderFetcherResponse,
+    OrderProvider,
+    OrderProviderRequest,
+    OrderProviderResponse,
     SignedOrderWithRemainingFillableMakerAssetAmount,
 } from '../types';
 import { assert } from '../utils/assert';
 import { orderUtils } from '../utils/order_utils';
 
-export class StandardRelayerAPIOrderFetcher implements OrderFetcher {
+export class StandardRelayerAPIOrderFetcher implements OrderProvider {
     public readonly apiUrl: string;
     private readonly _sraClient: HttpClient;
     /**
@@ -56,7 +56,7 @@ export class StandardRelayerAPIOrderFetcher implements OrderFetcher {
      * @param   orderFetchRequest   An instance of OrderFetcherRequest. See type for more information.
      * @return  An instance of OrderFetcherResponse. See type for more information.
      */
-    public async fetchOrdersAsync(orderFetchRequest: OrderFetcherRequest): Promise<OrderFetcherResponse> {
+    public async getOrdersAsync(orderFetchRequest: OrderProviderRequest): Promise<OrderProviderResponse> {
         assert.isValidOrderFetcherRequest('orderFetchRequest', orderFetchRequest);
         const { makerAssetData, takerAssetData, networkId } = orderFetchRequest;
         const orderbookRequest = { baseAssetData: makerAssetData, quoteAssetData: takerAssetData };

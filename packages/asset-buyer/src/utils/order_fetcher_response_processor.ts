@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     AssetBuyerOrdersAndFillableAmounts,
-    OrderFetcherResponse,
+    OrderProviderResponse,
     SignedOrderWithRemainingFillableMakerAssetAmount,
 } from '../types';
 
@@ -28,8 +28,8 @@ export const orderFetcherResponseProcessor = {
      * - Sort by rate
      */
     async processAsync(
-        targetOrderFetcherResponse: OrderFetcherResponse,
-        feeOrderFetcherResponse: OrderFetcherResponse,
+        targetOrderFetcherResponse: OrderProviderResponse,
+        feeOrderFetcherResponse: OrderProviderResponse,
         zrxTokenAssetData: string,
         orderValidator?: OrderValidatorWrapper,
     ): Promise<AssetBuyerOrdersAndFillableAmounts> {

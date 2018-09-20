@@ -2,10 +2,10 @@ import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
 import * as _ from 'lodash';
 
-import { OrderFetcher, OrderFetcherRequest, OrderFetcherResponse } from '../types';
+import { OrderProvider, OrderProviderRequest, OrderProviderResponse } from '../types';
 import { assert } from '../utils/assert';
 
-export class ProvidedOrderFetcher implements OrderFetcher {
+export class ProvidedOrderFetcher implements OrderProvider {
     public readonly providedOrders: SignedOrder[];
     /**
      * Instantiates a new ProvidedOrderFetcher instance
@@ -21,7 +21,7 @@ export class ProvidedOrderFetcher implements OrderFetcher {
      * @param   orderFetchRequest   An instance of OrderFetcherRequest. See type for more information.
      * @return  An instance of OrderFetcherResponse. See type for more information.
      */
-    public async fetchOrdersAsync(orderFetchRequest: OrderFetcherRequest): Promise<OrderFetcherResponse> {
+    public async getOrdersAsync(orderFetchRequest: OrderProviderRequest): Promise<OrderProviderResponse> {
         assert.isValidOrderFetcherRequest('orderFetchRequest', orderFetchRequest);
         const { makerAssetData, takerAssetData } = orderFetchRequest;
         const orders = _.filter(this.providedOrders, order => {

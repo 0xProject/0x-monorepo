@@ -6,7 +6,7 @@ import { BigNumber } from '@0xproject/utils';
  * takerAssetData: The assetData representing the desired takerAsset.
  * networkId: The networkId that the desired orders should be for.
  */
-export interface OrderFetcherRequest {
+export interface OrderProviderRequest {
     makerAssetData: string;
     takerAssetData: string;
     networkId: number;
@@ -15,7 +15,7 @@ export interface OrderFetcherRequest {
 /**
  * orders: An array of orders with optional remaining fillable makerAsset amounts. See type for more info.
  */
-export interface OrderFetcherResponse {
+export interface OrderProviderResponse {
     orders: SignedOrderWithRemainingFillableMakerAssetAmount[];
 }
 
@@ -29,8 +29,8 @@ export interface SignedOrderWithRemainingFillableMakerAssetAmount extends Signed
 /**
  * Given an OrderFetchRequest, get an OrderFetchResponse.
  */
-export interface OrderFetcher {
-    fetchOrdersAsync: (orderFetchRequest: OrderFetcherRequest) => Promise<OrderFetcherResponse>;
+export interface OrderProvider {
+    getOrdersAsync: (orderProviderRequest: OrderProviderRequest) => Promise<OrderProviderResponse>;
 }
 
 /**

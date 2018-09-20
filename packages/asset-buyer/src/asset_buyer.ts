@@ -14,8 +14,8 @@ import {
     AssetBuyerOrdersAndFillableAmounts,
     BuyQuote,
     BuyQuoteRequestOpts,
-    OrderFetcher,
-    OrderFetcherResponse,
+    OrderProvider,
+    OrderProviderResponse,
 } from './types';
 
 import { assert } from './utils/assert';
@@ -26,7 +26,7 @@ import { orderFetcherResponseProcessor } from './utils/order_fetcher_response_pr
 export class AssetBuyer {
     public readonly provider: Provider;
     public readonly assetData: string;
-    public readonly orderFetcher: OrderFetcher;
+    public readonly orderFetcher: OrderProvider;
     public readonly networkId: number;
     public readonly orderRefreshIntervalMs: number;
     private readonly _contractWrappers: ContractWrappers;
@@ -133,7 +133,7 @@ export class AssetBuyer {
     constructor(
         provider: Provider,
         assetData: string,
-        orderFetcher: OrderFetcher,
+        orderFetcher: OrderProvider,
         networkId: number = constants.MAINNET_NETWORK_ID,
         orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
     ) {
@@ -152,8 +152,8 @@ export class AssetBuyer {
         });
     }
     /**
-     * Get a BuyQuote containing all information relevant to fulfilling a buy.
-     * Pass the BuyQuote to executeBuyQuoteAsync to execute the buy.
+     * Get a `BuyQuote` containing all information relevant to fulfilling a buy.
+     * You can then pass the `BuyQuote` to `executeBuyQuoteAsync` to execute the buy.
      * @param   assetBuyAmount      The amount of asset to buy.
      * @param   feePercentage       The affiliate fee percentage. Defaults to 0.
      * @param   forceOrderRefresh   If set to true, new orders and state will be fetched instead of waiting for
@@ -251,10 +251,8 @@ export class AssetBuyer {
      * Ask the order fetcher for orders and process them.
      */
     private async _getLatestOrdersAndFillableAmountsAsync(): Promise<AssetBuyerOrdersAndFillableAmounts> {
-        // find ether token asset data
-        const etherTokenAssetData = this._getEtherTokenAssetData();
-        // find zrx token asset data
-        const zrxTokenAssetData = this._getZrxTokenAssetData();
+        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
+        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
         // construct order fetcher requests
         const targetOrderFetcherRequest = {
             makerAssetData: this.assetData,
@@ -269,7 +267,7 @@ export class AssetBuyer {
         const requests = [targetOrderFetcherRequest, feeOrderFetcherRequest];
         // fetch orders and possible fillable amounts
         const [targetOrderFetcherResponse, feeOrderFetcherResponse] = await Promise.all(
-            _.map(requests, async request => this.orderFetcher.fetchOrdersAsync(request)),
+            _.map(requests, async request => this.orderFetcher.getOrdersAsync(request)),
         );
         // process the responses into one object
         const ordersAndFillableAmounts = await orderFetcherResponseProcessor.processAsync(
@@ -284,14 +282,14 @@ export class AssetBuyer {
      * Get the assetData that represents the WETH token.
      * Will throw if WETH does not exist for the current network.
      */
-    private _getEtherTokenAssetData(): string {
-        return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
+    private _getEtherTokenAssetDataOrThrow(): string {
+        return assetDataUtils.getEtherTokenAssetDataOrThrow(this._contractWrappers);
     }
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
      */
-    private _getZrxTokenAssetData(): string {
-        return assetDataUtils.getZrxTokenAssetData(this._contractWrappers);
+    private _getZrxTokenAssetDataOrThrow(): string {
+        return assetDataUtils.getZrxTokenAssetDataOrThrow(this._contractWrappers);
     }
 }

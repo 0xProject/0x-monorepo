@@ -3,7 +3,7 @@ import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
 import * as _ from 'lodash';
 
-import { BuyQuote, OrderFetcher, OrderFetcherRequest } from '../types';
+import { BuyQuote, OrderProvider, OrderProviderRequest } from '../types';
 
 export const assert = {
     ...sharedAssert,
@@ -18,10 +18,10 @@ export const assert = {
             sharedAssert.isNumber(`${variableName}.feePercentage`, buyQuote.feePercentage);
         }
     },
-    isValidOrderFetcher(variableName: string, orderFetcher: OrderFetcher): void {
-        sharedAssert.isFunction(`${variableName}.fetchOrdersAsync`, orderFetcher.fetchOrdersAsync);
+    isValidOrderFetcher(variableName: string, orderFetcher: OrderProvider): void {
+        sharedAssert.isFunction(`${variableName}.fetchOrdersAsync`, orderFetcher.getOrdersAsync);
     },
-    isValidOrderFetcherRequest(variableName: string, orderFetcherRequest: OrderFetcherRequest): void {
+    isValidOrderFetcherRequest(variableName: string, orderFetcherRequest: OrderProviderRequest): void {
         sharedAssert.isHexString(`${variableName}.makerAssetData`, orderFetcherRequest.makerAssetData);
         sharedAssert.isHexString(`${variableName}.takerAssetData`, orderFetcherRequest.takerAssetData);
         sharedAssert.isNumber(`${variableName}.networkId`, orderFetcherRequest.networkId);

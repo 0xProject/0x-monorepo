@@ -6,7 +6,7 @@ import { AssetBuyerError } from '../types';
 
 export const assetDataUtils = {
     ...sharedAssetDataUtils,
-    getEtherTokenAssetData(contractWrappers: ContractWrappers): string {
+    getEtherTokenAssetDataOrThrow(contractWrappers: ContractWrappers): string {
         const etherTokenAddressIfExists = contractWrappers.etherToken.getContractAddressIfExists();
         if (_.isUndefined(etherTokenAddressIfExists)) {
             throw new Error(AssetBuyerError.NoEtherTokenContractFound);
@@ -14,7 +14,7 @@ export const assetDataUtils = {
         const etherTokenAssetData = sharedAssetDataUtils.encodeERC20AssetData(etherTokenAddressIfExists);
         return etherTokenAssetData;
     },
-    getZrxTokenAssetData(contractWrappers: ContractWrappers): string {
+    getZrxTokenAssetDataOrThrow(contractWrappers: ContractWrappers): string {
         let zrxTokenAssetData: string;
         try {
             zrxTokenAssetData = contractWrappers.exchange.getZRXAssetData();

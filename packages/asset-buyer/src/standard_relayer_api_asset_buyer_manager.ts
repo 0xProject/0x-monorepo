@@ -9,8 +9,9 @@ import { constants } from './constants';
 import { assert } from './utils/assert';
 import { assetDataUtils } from './utils/asset_data_utils';
 
-import { OrderFetcher, StandardRelayerApiAssetBuyerManagerError } from './types';
+import { OrderProvider, StandardRelayerApiAssetBuyerManagerError } from './types';
 
+// TODO: Read-only list of available assetDatas
 export class StandardRelayerAPIAssetBuyerManager {
     // Map of assetData to AssetBuyer for that assetData
     public readonly assetBuyerMap: ObjectMap<AssetBuyer>;
@@ -37,7 +38,7 @@ export class StandardRelayerAPIAssetBuyerManager {
      * Instantiates a new StandardRelayerAPIAssetBuyerManager instance with all available assetDatas at the provided sraApiUrl
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
-     * @param   orderFetcher            An object that conforms to OrderFetcher, see type for definition.
+     * @param   orderProvider            An object that conforms to OrderProvider, see type for definition.
      * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
      * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states.
      *                                  Defaults to 10000ms (10s).
@@ -46,12 +47,12 @@ export class StandardRelayerAPIAssetBuyerManager {
     public static async getAssetBuyerManagerWithAllAvailableAssetDatasAsync(
         provider: Provider,
         sraApiUrl: string,
-        orderFetcher: OrderFetcher,
+        orderProvider: OrderProvider,
         networkId: number = constants.MAINNET_NETWORK_ID,
         orderRefreshIntervalMs?: number,
     ): Promise<StandardRelayerAPIAssetBuyerManager> {
         const contractWrappers = new ContractWrappers(provider, { networkId });
-        const etherTokenAssetData = assetDataUtils.getEtherTokenAssetData(contractWrappers);
+        const etherTokenAssetData = assetDataUtils.getEtherTokenAssetDataOrThrow(contractWrappers);
         const assetDatas = await StandardRelayerAPIAssetBuyerManager.getAllAvailableAssetDatasAsync(
             sraApiUrl,
             etherTokenAssetData,
@@ -59,7 +60,7 @@ export class StandardRelayerAPIAssetBuyerManager {
         return new StandardRelayerAPIAssetBuyerManager(
             provider,
             assetDatas,
-            orderFetcher,
+            orderProvider,
             networkId,
             orderRefreshIntervalMs,
         );
@@ -68,7 +69,7 @@ export class StandardRelayerAPIAssetBuyerManager {
      * Instantiates a new StandardRelayerAPIAssetBuyerManager instance
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   assetDatas              The assetDatas of the desired assets to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param   orderFetcher            An object that conforms to OrderFetcher, see type for definition.
+     * @param   orderProvider            An object that conforms to OrderProvider, see type for definition.
      * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
      * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states.
      *                                  Defaults to 10000ms (10s).
@@ -77,7 +78,7 @@ export class StandardRelayerAPIAssetBuyerManager {
     constructor(
         provider: Provider,
         assetDatas: string[],
-        orderFetcher: OrderFetcher,
+        orderProvider: OrderProvider,
         networkId?: number,
         orderRefreshIntervalMs?: number,
     ) {
@@ -88,7 +89,7 @@ export class StandardRelayerAPIAssetBuyerManager {
                 accAssetBuyerMap[assetData] = new AssetBuyer(
                     provider,
                     assetData,
-                    orderFetcher,
+                    orderProvider,
                     networkId,
                     orderRefreshIntervalMs,
                 );
@@ -98,7 +99,7 @@ export class StandardRelayerAPIAssetBuyerManager {
         );
     }
     /**
-     * Get a AssetBuyer for the provided assetData
+     * Get an AssetBuyer for the provided assetData
      * @param   assetData   The desired assetData.
      *
      * @return  An instance of AssetBuyer
@@ -113,7 +114,7 @@ export class StandardRelayerAPIAssetBuyerManager {
         return assetBuyer;
     }
     /**
-     * Get a AssetBuyer for the provided ERC20 tokenAddress
+     * Get an AssetBuyer for the provided ERC20 tokenAddress
      * @param   tokenAddress    The desired tokenAddress.
      *
      * @return  An instance of AssetBuyer

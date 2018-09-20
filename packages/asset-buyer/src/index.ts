@@ -9,9 +9,9 @@ export { StandardRelayerAPIAssetBuyerManager } from './standard_relayer_api_asse
 export {
     AssetBuyerError,
     BuyQuote,
-    OrderFetcher,
-    OrderFetcherRequest,
-    OrderFetcherResponse,
+    OrderProvider,
+    OrderProviderRequest,
+    OrderProviderResponse,
     SignedOrderWithRemainingFillableMakerAssetAmount,
     StandardRelayerApiAssetBuyerManagerError,
 } from './types';
