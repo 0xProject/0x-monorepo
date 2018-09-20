@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/connect",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -45,7 +45,7 @@
     "dependencies": {
         "@0xproject/assert": "^1.0.8",
         "@0xproject/json-schemas": "^1.0.1",
-        "@0xproject/order-utils": "^1.0.1",
+        "@0xproject/order-utils": "^1.0.2",
         "@0xproject/types": "^1.0.1",
         "@0xproject/typescript-typings": "^2.0.0",
         "@0xproject/utils": "^1.0.8",

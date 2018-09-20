@@ -206,9 +206,17 @@ const teamRow7: ProfileInfo[] = [
         image: 'images/team/matt.jpg',
         linkedIn: 'https://www.linkedin.com/in/mattytay/',
     },
+    {
+        name: 'Eugene Aumson',
+        title: 'Engineer',
+        description: `Developer Experience. Previously senior software engineer in foreign exchange applications at Bloomberg LP.`,
+        image: 'images/team/gene.jpg',
+        linkedIn: 'https://www.linkedin.com/in/aumson/',
+        github: 'https://github.com/feuGeneA',
+    },
 ];
 
-const advisors: ProfileInfo[] = [
+const advisors1: ProfileInfo[] = [
     {
         name: 'Fred Ehrsam',
         description: 'Co-founder of Coinbase. Previously FX trader at Goldman Sachs.',
@@ -232,6 +240,9 @@ const advisors: ProfileInfo[] = [
         github: 'https://github.com/joeykrug',
         angellist: 'https://angel.co/joeykrug',
     },
+];
+
+const advisors2: ProfileInfo[] = [
     {
         name: 'Linda Xie',
         description: 'Co-founder of Scalar Capital. Previously PM at Coinbase.',
@@ -239,6 +250,14 @@ const advisors: ProfileInfo[] = [
         linkedIn: 'https://www.linkedin.com/in/lindaxie/',
         medium: 'https://medium.com/@linda.xie',
         twitter: 'https://twitter.com/ljxie',
+    },
+    {
+        name: 'David Sacks',
+        description: 'General Partner at Craft Ventures. Original COO of PayPal. Founder of Yammer.',
+        image: '/images/advisors/david.png',
+        linkedIn: 'https://www.linkedin.com/in/davidoliversacks/',
+        medium: 'https://medium.com/@davidsacks',
+        twitter: 'https://twitter.com/DavidSacks',
     },
 ];
 
@@ -316,7 +335,8 @@ export class About extends React.Component<AboutProps, AboutState> {
                         >
                             Advisors:
                         </div>
-                        <div className="clearfix">{this._renderProfiles(advisors)}</div>
+                        <div className="clearfix">{this._renderProfiles(advisors1)}</div>
+                        <div className="clearfix">{this._renderProfiles(advisors2)}</div>
                     </div>
                     <div className="mx-auto py4 sm-px3" style={{ maxWidth: 308 }}>
                         <div className="pb2" style={styles.weAreHiring}>
