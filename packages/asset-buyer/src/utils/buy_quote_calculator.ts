@@ -3,6 +3,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
+import { orderUtils } from './order_utils';
 import { AssetBuyerError, AssetBuyerOrdersAndFillableAmounts, BuyQuote } from '../types';
 
 export const buyQuoteCalculator = {
@@ -30,7 +31,7 @@ export const buyQuoteCalculator = {
         if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
             throw new Error(AssetBuyerError.InsufficientAssetLiquidity);
         }
-        // TODO: optimization
+        // TODO(bmillman): optimization
         // update this logic to find the minimum amount of feeOrders to cover the worst case as opposed to
         // finding order that cover all fees, this will help with estimating ETH and minimizing gas usage
         const {
@@ -59,10 +60,11 @@ export const buyQuoteCalculator = {
         let maxEthAmount = constants.ZERO_AMOUNT;
         let cumulativeMakerAmount = constants.ZERO_AMOUNT;
         _.forEach(allOrders, (order, index) => {
-            // TODO: Move this logic to order_utils
             const remainingFillableMakerAssetAmount = allRemainingAmounts[index];
-            const orderRate = order.takerAssetAmount.div(order.makerAssetAmount);
-            const claimableTakerAssetAmount = orderRate.mul(remainingFillableMakerAssetAmount);
+            const claimableTakerAssetAmount = orderUtils.calculateRemainingTakerAssetAmount(
+                order,
+                remainingFillableMakerAssetAmount,
+            );
             // taker asset is always assumed to be WETH
             maxEthAmount = maxEthAmount.plus(claimableTakerAssetAmount);
             if (cumulativeMakerAmount.lessThan(assetBuyAmount)) {

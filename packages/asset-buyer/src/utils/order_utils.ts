@@ -10,10 +10,16 @@ export const orderUtils = {
         return order.expirationTimeSeconds.lessThan(currentUnixTimestampSec);
     },
     calculateRemainingMakerAssetAmount(order: SignedOrder, remainingTakerAssetAmount: BigNumber): BigNumber {
-        const result = remainingTakerAssetAmount.eq(0)
-            ? constants.ZERO_AMOUNT
-            : remainingTakerAssetAmount.times(order.makerAssetAmount).dividedToIntegerBy(order.takerAssetAmount);
-        return result;
+        if (remainingTakerAssetAmount.eq(0)) {
+            return constants.ZERO_AMOUNT;
+        }
+        return remainingTakerAssetAmount.times(order.makerAssetAmount).dividedToIntegerBy(order.takerAssetAmount);
+    },
+    calculateRemainingTakerAssetAmount(order: SignedOrder, remainingMakerAssetAmount: BigNumber): BigNumber {
+        if (remainingMakerAssetAmount.eq(0)) {
+            return constants.ZERO_AMOUNT;
+        }
+        return remainingMakerAssetAmount.times(order.takerAssetAmount).dividedToIntegerBy(order.makerAssetAmount);
     },
     isOpenOrder(order: SignedOrder): boolean {
         return order.takerAddress === constants.NULL_ADDRESS;
