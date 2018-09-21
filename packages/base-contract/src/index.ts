@@ -61,7 +61,7 @@ export class BaseContract {
         }
     }
     protected static _bnToBigNumber(_type: string, value: any): any {
-        return _.isObject(value) && value._bn ? new BigNumber(value.toString()) : value;
+        return _.isObject(value) && value._hex ? new BigNumber(value.toString()) : value;
     }
     protected static async _applyDefaultsToTxDataAsync<T extends Partial<TxData | TxDataPayable>>(
         txData: T,

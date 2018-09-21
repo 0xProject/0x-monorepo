@@ -1,5 +1,13 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Change the way we detect BN to work with the newest ethers.js"
+            }
+        ]
+    },
+    {
         "timestamp": 1536142250,
         "version": "2.0.2",
         "changes": [
