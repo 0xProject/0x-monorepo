@@ -439,7 +439,9 @@ export class Web3Wrapper {
      */
     public async getLogsAsync(filter: FilterObject): Promise<LogEntry[]> {
         if (!_.isUndefined(filter.blockHash) && (!_.isUndefined(filter.fromBlock) || !_.isUndefined(filter.toBlock))) {
-            throw new Error(`Cannot specify 'blockHash' as well as 'fromBlock'/'toBlock' in the filter supplied to 'getLogsAsync'`);
+            throw new Error(
+                `Cannot specify 'blockHash' as well as 'fromBlock'/'toBlock' in the filter supplied to 'getLogsAsync'`,
+            );
         }
 
         let fromBlock = filter.fromBlock;
