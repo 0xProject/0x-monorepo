@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note":
+                    "Fixes issue #1076 where Parity now returns a placeholder transactionReceipt before the transaction is mined."
+            }
+        ]
+    },
+    {
         "timestamp": 1536142250,
         "version": "2.0.2",
         "changes": [
