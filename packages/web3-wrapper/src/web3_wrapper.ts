@@ -438,6 +438,10 @@ export class Web3Wrapper {
      * @returns The corresponding log entries
      */
     public async getLogsAsync(filter: FilterObject): Promise<LogEntry[]> {
+        if (!_.isUndefined(filter.blockHash) && (!_.isUndefined(filter.fromBlock) || !_.isUndefined(filter.toBlock))) {
+            throw new Error(`Cannot specify 'blockHash' as well as 'fromBlock'/'toBlock' in the filter supplied to 'getLogsAsync'`);
+        }
+
         let fromBlock = filter.fromBlock;
         if (_.isNumber(fromBlock)) {
             fromBlock = utils.numberToHex(fromBlock);
