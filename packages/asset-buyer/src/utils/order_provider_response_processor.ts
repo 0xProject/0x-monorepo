@@ -19,7 +19,7 @@ interface OrdersAndRemainingFillableMakerAssetAmounts {
     remainingFillableMakerAssetAmounts: BigNumber[];
 }
 
-export const orderFetcherResponseProcessor = {
+export const orderProviderResponseProcessor = {
     /**
      * Take the responses for the target orders to buy and fee orders and process them.
      * Processing includes:
@@ -28,14 +28,14 @@ export const orderFetcherResponseProcessor = {
      * - Sort by rate
      */
     async processAsync(
-        targetOrderFetcherResponse: OrderProviderResponse,
-        feeOrderFetcherResponse: OrderProviderResponse,
+        targetOrderProviderResponse: OrderProviderResponse,
+        feeOrderProviderResponse: OrderProviderResponse,
         zrxTokenAssetData: string,
         orderValidator?: OrderValidatorWrapper,
     ): Promise<AssetBuyerOrdersAndFillableAmounts> {
         // drop orders that are expired or not open
-        const filteredTargetOrders = filterOutExpiredAndNonOpenOrders(targetOrderFetcherResponse.orders);
-        const filteredFeeOrders = filterOutExpiredAndNonOpenOrders(feeOrderFetcherResponse.orders);
+        const filteredTargetOrders = filterOutExpiredAndNonOpenOrders(targetOrderProviderResponse.orders);
+        const filteredFeeOrders = filterOutExpiredAndNonOpenOrders(feeOrderProviderResponse.orders);
         // set the orders to be sorted equal to the filtered orders
         let unsortedTargetOrders = filteredTargetOrders;
         let unsortedFeeOrders = filteredFeeOrders;

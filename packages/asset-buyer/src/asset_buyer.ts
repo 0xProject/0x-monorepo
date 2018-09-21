@@ -21,7 +21,7 @@ import {
 import { assert } from './utils/assert';
 import { assetDataUtils } from './utils/asset_data_utils';
 import { buyQuoteCalculator } from './utils/buy_quote_calculator';
-import { orderFetcherResponseProcessor } from './utils/order_fetcher_response_processor';
+import { orderProviderResponseProcessor } from './utils/order_provider_response_processor';
 
 export class AssetBuyer {
     public readonly provider: Provider;
@@ -270,7 +270,7 @@ export class AssetBuyer {
             _.map(requests, async request => this.orderFetcher.getOrdersAsync(request)),
         );
         // process the responses into one object
-        const ordersAndFillableAmounts = await orderFetcherResponseProcessor.processAsync(
+        const ordersAndFillableAmounts = await orderProviderResponseProcessor.processAsync(
             targetOrderFetcherResponse,
             feeOrderFetcherResponse,
             zrxTokenAssetData,
