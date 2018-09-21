@@ -539,7 +539,7 @@ export class Web3Wrapper {
         }
         // Immediately check if the transaction has already been mined.
         let transactionReceipt = await this.getTransactionReceiptAsync(txHash);
-        if (!_.isNull(transactionReceipt)) {
+        if (!_.isNull(transactionReceipt) && !_.isNull(transactionReceipt.blockNumber)) {
             const logsWithDecodedArgs = _.map(
                 transactionReceipt.logs,
                 this.abiDecoder.tryToDecodeLogOrNoop.bind(this.abiDecoder),

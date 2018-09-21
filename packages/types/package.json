@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/types",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -30,9 +30,9 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@types/node": "^8.0.53",
+        "@types/node": "*",
         "bignumber.js": "~4.1.0",
-        "ethereum-types": "^1.0.6"
+        "ethereum-types": "^1.0.7"
     },
     "publishConfig": {
         "access": "public"

@@ -1,5 +1,23 @@
 [
     {
+        "timestamp": 1537541580,
+        "version": "1.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537369748,
+        "version": "1.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1537265493,
         "version": "1.0.8",
         "changes": [
