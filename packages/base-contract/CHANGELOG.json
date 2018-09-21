@@ -3,7 +3,8 @@
         "version": "3.0.0",
         "changes": [
             {
-                "note": "Change the way we detect BN to work with the newest ethers.js"
+                "note": "Change the way we detect BN to work with the newest ethers.js",
+                "pr": 1069
             }
         ]
     },
