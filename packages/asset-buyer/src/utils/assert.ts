@@ -18,10 +18,10 @@ export const assert = {
             sharedAssert.isNumber(`${variableName}.feePercentage`, buyQuote.feePercentage);
         }
     },
-    isValidOrderFetcher(variableName: string, orderFetcher: OrderProvider): void {
+    isValidOrderProvider(variableName: string, orderFetcher: OrderProvider): void {
         sharedAssert.isFunction(`${variableName}.fetchOrdersAsync`, orderFetcher.getOrdersAsync);
     },
-    isValidOrderFetcherRequest(variableName: string, orderFetcherRequest: OrderProviderRequest): void {
+    isValidOrderProviderRequest(variableName: string, orderFetcherRequest: OrderProviderRequest): void {
         sharedAssert.isHexString(`${variableName}.makerAssetData`, orderFetcherRequest.makerAssetData);
         sharedAssert.isHexString(`${variableName}.takerAssetData`, orderFetcherRequest.takerAssetData);
         sharedAssert.isNumber(`${variableName}.networkId`, orderFetcherRequest.networkId);

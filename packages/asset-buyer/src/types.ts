@@ -27,7 +27,7 @@ export interface SignedOrderWithRemainingFillableMakerAssetAmount extends Signed
     remainingFillableMakerAssetAmount?: BigNumber;
 }
 /**
- * Given an OrderFetchRequest, get an OrderFetchResponse.
+ * Given an OrderProviderRequest, get an OrderProviderResponse.
  */
 export interface OrderProvider {
     getOrdersAsync: (orderProviderRequest: OrderProviderRequest) => Promise<OrderProviderResponse>;

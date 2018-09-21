@@ -7,8 +7,8 @@ import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
-import { ProvidedOrderFetcher } from './order_fetchers/provided_order_fetcher';
-import { StandardRelayerAPIOrderFetcher } from './order_fetchers/standard_relayer_api_order_fetcher';
+import { BasicOrderProvider } from './order_providers/basic_order_provider';
+import { StandardRelayerAPIOrderProvider } from './order_providers/standard_relayer_api_order_provider';
 import {
     AssetBuyerError,
     AssetBuyerOrdersAndFillableAmounts,
@@ -26,7 +26,7 @@ import { orderProviderResponseProcessor } from './utils/order_provider_response_
 export class AssetBuyer {
     public readonly provider: Provider;
     public readonly assetData: string;
-    public readonly orderFetcher: OrderProvider;
+    public readonly orderProvider: OrderProvider;
     public readonly networkId: number;
     public readonly orderRefreshIntervalMs: number;
     private readonly _contractWrappers: ContractWrappers;
@@ -58,8 +58,8 @@ export class AssetBuyer {
         assert.areValidProvidedOrders('feeOrders', feeOrders);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
         const assetData = orders[0].makerAssetData;
-        const orderFetcher = new ProvidedOrderFetcher(_.concat(orders, feeOrders));
-        const assetBuyer = new AssetBuyer(provider, assetData, orderFetcher, networkId, orderRefreshIntervalMs);
+        const orderProvider = new BasicOrderProvider(_.concat(orders, feeOrders));
+        const assetBuyer = new AssetBuyer(provider, assetData, orderProvider, networkId, orderRefreshIntervalMs);
         return assetBuyer;
     }
     /**
@@ -84,8 +84,8 @@ export class AssetBuyer {
         assert.isWebUri('sraApiUrl', sraApiUrl);
         assert.isNumber('networkId', networkId);
         assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
-        const orderFetcher = new StandardRelayerAPIOrderFetcher(sraApiUrl);
-        const assetBuyer = new AssetBuyer(provider, assetData, orderFetcher, networkId, orderRefreshIntervalMs);
+        const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl);
+        const assetBuyer = new AssetBuyer(provider, assetData, orderProvider, networkId, orderRefreshIntervalMs);
         return assetBuyer;
     }
     /**
@@ -124,7 +124,7 @@ export class AssetBuyer {
      * Instantiates a new AssetBuyer instance
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   assetData               The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param   orderFetcher            An object that conforms to OrderFetcher, see type for definition.
+     * @param   orderProvider            An object that conforms to OrderProvider, see type for definition.
      * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
      * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states.
      *                                  Defaults to 10000ms (10s).
@@ -133,18 +133,18 @@ export class AssetBuyer {
     constructor(
         provider: Provider,
         assetData: string,
-        orderFetcher: OrderProvider,
+        orderProvider: OrderProvider,
         networkId: number = constants.MAINNET_NETWORK_ID,
         orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
     ) {
         assert.isWeb3Provider('provider', provider);
         assert.isString('assetData', assetData);
-        assert.isValidOrderFetcher('orderFetcher', orderFetcher);
+        assert.isValidOrderProvider('orderProvider', orderProvider);
         assert.isNumber('networkId', networkId);
         assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
         this.provider = provider;
         this.assetData = assetData;
-        this.orderFetcher = orderFetcher;
+        this.orderProvider = orderProvider;
         this.networkId = networkId;
         this.orderRefreshIntervalMs = orderRefreshIntervalMs;
         this._contractWrappers = new ContractWrappers(this.provider, {
@@ -248,31 +248,31 @@ export class AssetBuyer {
         return txHash;
     }
     /**
-     * Ask the order fetcher for orders and process them.
+     * Ask the order Provider for orders and process them.
      */
     private async _getLatestOrdersAndFillableAmountsAsync(): Promise<AssetBuyerOrdersAndFillableAmounts> {
         const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
         const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
-        // construct order fetcher requests
-        const targetOrderFetcherRequest = {
+        // construct order Provider requests
+        const targetOrderProviderRequest = {
             makerAssetData: this.assetData,
             takerAssetData: etherTokenAssetData,
             networkId: this.networkId,
         };
-        const feeOrderFetcherRequest = {
+        const feeOrderProviderRequest = {
             makerAssetData: zrxTokenAssetData,
             takerAssetData: etherTokenAssetData,
             networkId: this.networkId,
         };
-        const requests = [targetOrderFetcherRequest, feeOrderFetcherRequest];
+        const requests = [targetOrderProviderRequest, feeOrderProviderRequest];
         // fetch orders and possible fillable amounts
-        const [targetOrderFetcherResponse, feeOrderFetcherResponse] = await Promise.all(
-            _.map(requests, async request => this.orderFetcher.getOrdersAsync(request)),
+        const [targetOrderProviderResponse, feeOrderProviderResponse] = await Promise.all(
+            _.map(requests, async request => this.orderProvider.getOrdersAsync(request)),
         );
         // process the responses into one object
         const ordersAndFillableAmounts = await orderProviderResponseProcessor.processAsync(
-            targetOrderFetcherResponse,
-            feeOrderFetcherResponse,
+            targetOrderProviderResponse,
+            feeOrderProviderResponse,
             zrxTokenAssetData,
             this._contractWrappers.orderValidator,
         );

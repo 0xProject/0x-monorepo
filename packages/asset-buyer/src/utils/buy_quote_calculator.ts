@@ -7,6 +7,7 @@ import { AssetBuyerError, AssetBuyerOrdersAndFillableAmounts, BuyQuote } from '.
 
 import { orderUtils } from './order_utils';
 
+// Calculates a buy quote for orders that have WETH as the takerAsset
 export const buyQuoteCalculator = {
     calculate(
         ordersAndFillableAmounts: AssetBuyerOrdersAndFillableAmounts,

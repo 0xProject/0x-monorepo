@@ -11,7 +11,7 @@ import {
 import { assert } from '../utils/assert';
 import { orderUtils } from '../utils/order_utils';
 
-export class StandardRelayerAPIOrderFetcher implements OrderProvider {
+export class StandardRelayerAPIOrderProvider implements OrderProvider {
     public readonly apiUrl: string;
     private readonly _sraClient: HttpClient;
     /**
@@ -42,9 +42,9 @@ export class StandardRelayerAPIOrderFetcher implements OrderProvider {
         return result;
     }
     /**
-     * Instantiates a new StandardRelayerAPIOrderFetcher instance
+     * Instantiates a new StandardRelayerAPIOrderProvider instance
      * @param   apiUrl  The standard relayer API base HTTP url you would like to source orders from.
-     * @return  An instance of StandardRelayerAPIOrderFetcher
+     * @return  An instance of StandardRelayerAPIOrderProvider
      */
     constructor(apiUrl: string) {
         assert.isWebUri('apiUrl', apiUrl);
@@ -52,13 +52,13 @@ export class StandardRelayerAPIOrderFetcher implements OrderProvider {
         this._sraClient = new HttpClient(apiUrl);
     }
     /**
-     * Given an object that conforms to OrderFetcherRequest, return the corresponding OrderFetcherResponse that satisfies the request.
-     * @param   orderFetchRequest   An instance of OrderFetcherRequest. See type for more information.
-     * @return  An instance of OrderFetcherResponse. See type for more information.
+     * Given an object that conforms to OrderProviderRequest, return the corresponding OrderProviderResponse that satisfies the request.
+     * @param   orderProviderRequest   An instance of OrderProviderRequest. See type for more information.
+     * @return  An instance of OrderProviderResponse. See type for more information.
      */
-    public async getOrdersAsync(orderFetchRequest: OrderProviderRequest): Promise<OrderProviderResponse> {
-        assert.isValidOrderFetcherRequest('orderFetchRequest', orderFetchRequest);
-        const { makerAssetData, takerAssetData, networkId } = orderFetchRequest;
+    public async getOrdersAsync(orderProviderRequest: OrderProviderRequest): Promise<OrderProviderResponse> {
+        assert.isValidOrderProviderRequest('orderProviderRequest', orderProviderRequest);
+        const { makerAssetData, takerAssetData, networkId } = orderProviderRequest;
         const orderbookRequest = { baseAssetData: makerAssetData, quoteAssetData: takerAssetData };
         const requestOpts = { networkId };
         let orderbook: OrderbookResponse;
@@ -68,7 +68,7 @@ export class StandardRelayerAPIOrderFetcher implements OrderProvider {
             throw new Error(AssetBuyerError.StandardRelayerApiError);
         }
         const apiOrders = orderbook.asks.records;
-        const orders = StandardRelayerAPIOrderFetcher._getSignedOrderWithRemainingFillableMakerAssetAmountFromApi(
+        const orders = StandardRelayerAPIOrderProvider._getSignedOrderWithRemainingFillableMakerAssetAmountFromApi(
             apiOrders,
         );
         return {
