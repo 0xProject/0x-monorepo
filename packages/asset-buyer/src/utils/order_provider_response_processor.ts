@@ -52,7 +52,7 @@ export const orderProviderResponseProcessor = {
         // if an orderValidator is provided, use on chain information to calculate remaining fillable makerAsset amounts
         if (!_.isUndefined(orderValidator)) {
             // TODO(bmillman): improvement
-            // try catch these requests and throw a more domain specific error
+            // try/catch these requests and throw a more domain specific error
             // TODO(bmillman): optimization
             // reduce this to once RPC call buy combining orders into one array and then splitting up the response
             const [targetOrdersAndTradersInfo, feeOrdersAndTradersInfo] = await Promise.all(

@@ -19,7 +19,7 @@ export const assert = {
         }
     },
     isValidOrderProvider(variableName: string, orderFetcher: OrderProvider): void {
-        sharedAssert.isFunction(`${variableName}.fetchOrdersAsync`, orderFetcher.getOrdersAsync);
+        sharedAssert.isFunction(`${variableName}.getOrdersAsync`, orderFetcher.getOrdersAsync);
     },
     isValidOrderProviderRequest(variableName: string, orderFetcherRequest: OrderProviderRequest): void {
         sharedAssert.isHexString(`${variableName}.makerAssetData`, orderFetcherRequest.makerAssetData);
