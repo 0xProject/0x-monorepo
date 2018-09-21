@@ -37,7 +37,7 @@
         "@0xproject/utils": "^1.0.8",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "^0.20.0",
-        "@types/node": "^8.0.53",
+        "@types/node": "*",
         "@types/react": "*",
         "@types/react-dom": "*",
         "@types/react-scroll": "1.5.3",

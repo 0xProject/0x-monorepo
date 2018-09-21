@@ -64,7 +64,7 @@
         "@types/loglevel": "^1.5.3",
         "@types/mkdirp": "^0.5.1",
         "@types/mocha": "^2.2.42",
-        "@types/node": "^8.0.53",
+        "@types/node": "*",
         "@types/rimraf": "^2.0.2",
         "@types/solidity-parser-antlr": "^0.2.0",
         "chai": "^4.0.1",
