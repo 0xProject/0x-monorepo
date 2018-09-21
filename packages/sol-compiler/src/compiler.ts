@@ -94,7 +94,7 @@ export class Compiler {
         if (await fsWrapper.doesFileExistAsync(compilerBinFilename)) {
             solcjs = (await fsWrapper.readFileAsync(compilerBinFilename)).toString();
         } else {
-            logUtils.log(`Downloading ${fullSolcVersion}...`);
+            logUtils.warn(`Downloading ${fullSolcVersion}...`);
             const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
             const response = await fetchAsync(url);
             const SUCCESS_STATUS = 200;
@@ -181,7 +181,9 @@ export class Compiler {
                 path.basename(contractSource.path, constants.SOLIDITY_FILE_EXTENSION),
             );
         } else {
-            contractNamesToCompile = this._specifiedContracts;
+            contractNamesToCompile = this._specifiedContracts.map(specifiedContract =>
+                path.basename(specifiedContract, constants.SOLIDITY_FILE_EXTENSION),
+            );
         }
         return contractNamesToCompile;
     }
@@ -236,7 +238,7 @@ export class Compiler {
         const solcVersions = _.keys(versionToInputs);
         for (const solcVersion of solcVersions) {
             const input = versionToInputs[solcVersion];
-            logUtils.log(
+            logUtils.warn(
                 `Compiling ${input.contractsToCompile.length} contracts (${
                     input.contractsToCompile
                 }) with Solidity v${solcVersion}...`,
@@ -329,7 +331,7 @@ export class Compiler {
         const artifactString = utils.stringifyWithFormatting(newArtifact);
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
-        logUtils.log(`${contractName} artifact saved!`);
+        logUtils.warn(`${contractName} artifact saved!`);
     }
     private _compile(solcInstance: solc.SolcInstance, standardInput: solc.StandardInput): solc.StandardOutput {
         const compiled: solc.StandardOutput = JSON.parse(
@@ -345,13 +347,13 @@ export class Compiler {
             if (!_.isEmpty(errors)) {
                 errors.forEach(error => {
                     const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
-                    logUtils.log(chalk.red(normalizedErrMsg));
+                    logUtils.warn(chalk.red(normalizedErrMsg));
                 });
                 throw new Error('Compilation errors encountered');
             } else {
                 warnings.forEach(warning => {
                     const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
-                    logUtils.log(chalk.yellow(normalizedWarningMsg));
+                    logUtils.warn(chalk.yellow(normalizedWarningMsg));
                 });
             }
         }

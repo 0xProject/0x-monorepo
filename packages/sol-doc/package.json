@@ -11,7 +11,12 @@
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "lint": "tslint --project . --format stylish",
-        "clean": "shx rm -rf lib"
+        "clean": "shx rm -rf lib",
+        "generate-v2-protocol-docs": "(cd ../contracts/src/2.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts $(cd protocol; ls -C1 */*.sol */interfaces/*.sol) ) > v2.0.0.json",
+        "deploy-v2-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v2.0.0.json s3://staging-doc-jsons/contracts/"
+    },
+    "bin": {
+        "sol-doc": "bin/sol-doc.js"
     },
     "repository": "https://github.com/0xProject/0x-monorepo.git",
     "author": "F. Eugene Aumson",
@@ -21,7 +26,8 @@
         "@0xproject/types": "^1.0.1-rc.6",
         "@0xproject/utils": "^1.0.5",
         "ethereum-types": "^1.0.4",
-        "lodash": "^4.17.10"
+        "lodash": "^4.17.10",
+        "yargs": "^12.0.2"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.6",
