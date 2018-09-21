@@ -1,5 +1,4 @@
 import { AbiDefinition, AbiType, ContractAbi, DataItem, MethodAbi } from 'ethereum-types';
-import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { BigNumber } from './configured_bignumber';
