@@ -1,5 +1,7 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
+export type ExchangeFillEventAssetType = 'erc20' | 'erc721';
+
 @Entity()
 export class ExchangeFillEvent {
     @PrimaryColumn() public logIndex!: number;
@@ -17,8 +19,17 @@ export class ExchangeFillEvent {
     @Column() public makerFeePaid!: string;
     @Column() public takerFeePaid!: string;
     @Column() public orderHash!: string;
-    // TODO(albrow): Decode asset data.
-    @Column() public makerAssetData!: string;
-    @Column() public takerAssetData!: string;
+    @Column() public rawMakerAssetData!: string;
+    @Column() public makerAssetType!: ExchangeFillEventAssetType;
+    @Column() public makerAssetProxyId!: string;
+    @Column() public makerTokenAddress!: string;
+    @Column({ nullable: true, type: String })
+    public makerTokenId!: string | null;
+    @Column() public rawTakerAssetData!: string;
+    @Column() public takerAssetType!: ExchangeFillEventAssetType;
+    @Column() public takerAssetProxyId!: string;
+    @Column() public takerTokenAddress!: string;
+    @Column({ nullable: true, type: String })
+    public takerTokenId!: string | null;
     // TODO(albrow): Include topics?
 }

@@ -1,7 +1,7 @@
 import { default as axios } from 'axios';
-import { AbiDefinition, BlockParam, BlockParamLiteral, DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
+import { AbiDefinition, BlockParam, BlockParamLiteral } from 'ethereum-types';
 
-import { EventsResponse, parseRawEventsResponse } from './events';
+import { EventsResponse, ExchangeEventEntity, parseRawEventsResponse } from './events';
 
 const ETHERSCAN_URL = 'https://api.etherscan.io/api';
 
@@ -24,7 +24,7 @@ export class Etherscan {
         contractAbi: AbiDefinition[],
         fromBlock: BlockParam = BlockParamLiteral.Earliest,
         toBlock: BlockParam = BlockParamLiteral.Latest,
-    ): Promise<Array<LogWithDecodedArgs<DecodedLogArgs>>> {
+    ): Promise<ExchangeEventEntity[]> {
         const fullURL = `${ETHERSCAN_URL}?module=logs&action=getLogs&address=${contractAddress}&fromBlock=${fromBlock}&toBlock=${toBlock}&apikey=${
             this._apiKey
         }`;
