@@ -13,7 +13,7 @@ import { OrderProvider, StandardRelayerApiAssetBuyerManagerError } from './types
 
 export class StandardRelayerAPIAssetBuyerManager {
     // Map of assetData to AssetBuyer for that assetData
-    public readonly assetBuyerMap: ObjectMap<AssetBuyer>;
+    private readonly _assetBuyerMap: ObjectMap<AssetBuyer>;
     /**
      * Returns an array of all assetDatas available at the provided sraApiUrl
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
@@ -82,7 +82,7 @@ export class StandardRelayerAPIAssetBuyerManager {
         orderRefreshIntervalMs?: number,
     ) {
         assert.assert(assetDatas.length > 0, `Expected 'assetDatas' to be a non-empty array.`);
-        this.assetBuyerMap = _.reduce(
+        this._assetBuyerMap = _.reduce(
             assetDatas,
             (accAssetBuyerMap: ObjectMap<AssetBuyer>, assetData: string) => {
                 accAssetBuyerMap[assetData] = new AssetBuyer(
@@ -104,7 +104,7 @@ export class StandardRelayerAPIAssetBuyerManager {
      * @return  An instance of AssetBuyer
      */
     public getAssetBuyerFromAssetData(assetData: string): AssetBuyer {
-        const assetBuyer = this.assetBuyerMap[assetData];
+        const assetBuyer = this._assetBuyerMap[assetData];
         if (_.isUndefined(assetBuyer)) {
             throw new Error(
                 `${StandardRelayerApiAssetBuyerManagerError.AssetBuyerNotFound}: For assetData ${assetData}`,
@@ -128,6 +128,6 @@ export class StandardRelayerAPIAssetBuyerManager {
      * @return  An array of assetData strings
      */
     public getAssetDatas(): string[] {
-        return _.keys(this.assetBuyerMap);
+        return _.keys(this._assetBuyerMap);
     }
 }
