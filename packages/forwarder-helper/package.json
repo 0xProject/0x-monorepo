@@ -42,7 +42,7 @@
         "@0xproject/types": "^1.0.1",
         "@0xproject/typescript-typings": "^2.0.0",
         "@0xproject/utils": "^1.0.8",
-        "@types/node": "^8.0.53",
+        "@types/node": "*",
         "lodash": "^4.17.10"
     },
     "devDependencies": {

@@ -37,7 +37,7 @@
         "@types/is-mobile": "0.3.0",
         "@types/lodash": "4.14.104",
         "@types/material-ui": "0.18.0",
-        "@types/node": "^8.0.53",
+        "@types/node": "*",
         "@types/react": "*",
         "@types/react-dom": "*",
         "@types/react-scroll": "1.5.3",
