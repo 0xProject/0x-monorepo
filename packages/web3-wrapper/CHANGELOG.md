@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.3 - _September 21, 2018_
+
+    * Fixes issue #1076 where Parity now returns a placeholder transactionReceipt before the transaction is mined. (#1079)
+
 ## v2.0.2 - _September 5, 2018_
 
     * Dependencies updated

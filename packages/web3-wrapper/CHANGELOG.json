@@ -7,7 +7,8 @@
                     "Fixes issue #1076 where Parity now returns a placeholder transactionReceipt before the transaction is mined.",
                 "pr": 1079
             }
-        ]
+        ],
+        "timestamp": 1537541580
     },
     {
         "timestamp": 1536142250,
