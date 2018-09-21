@@ -7,7 +7,9 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import {
+    AssetBuyerError,
     AssetBuyerOrdersAndFillableAmounts,
+    OrderProviderRequest,
     OrderProviderResponse,
     SignedOrderWithRemainingFillableMakerAssetAmount,
 } from '../types';
@@ -20,6 +22,14 @@ interface OrdersAndRemainingFillableMakerAssetAmounts {
 }
 
 export const orderProviderResponseProcessor = {
+    throwIfInvalidResponse(response: OrderProviderResponse, request: OrderProviderRequest): void {
+        const { makerAssetData, takerAssetData } = request;
+        _.forEach(response.orders, order => {
+            if (order.makerAssetData !== makerAssetData || order.takerAssetData !== takerAssetData) {
+                throw new Error(AssetBuyerError.InvalidOrderProviderResponse);
+            }
+        });
+    },
     /**
      * Take the responses for the target orders to buy and fee orders and process them.
      * Processing includes:

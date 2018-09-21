@@ -269,6 +269,10 @@ export class AssetBuyer {
         const [targetOrderProviderResponse, feeOrderProviderResponse] = await Promise.all(
             _.map(requests, async request => this.orderProvider.getOrdersAsync(request)),
         );
+        // since the order provider is an injected dependency, validate that it respects the API
+        // ie. it should only return maker/taker assetDatas that are specified
+        orderProviderResponseProcessor.throwIfInvalidResponse(targetOrderProviderResponse, targetOrderProviderRequest);
+        orderProviderResponseProcessor.throwIfInvalidResponse(feeOrderProviderResponse, feeOrderProviderRequest);
         // process the responses into one object
         const ordersAndFillableAmounts = await orderProviderResponseProcessor.processAsync(
             targetOrderProviderResponse,

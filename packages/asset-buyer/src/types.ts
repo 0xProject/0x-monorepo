@@ -68,6 +68,7 @@ export enum AssetBuyerError {
     InsufficientAssetLiquidity = 'INSUFFICIENT_ASSET_LIQUIDITY',
     InsufficientZrxLiquidity = 'INSUFFICIENT_ZRX_LIQUIDITY',
     NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
+    InvalidOrderProviderResponse = 'INVALID_ORDER_PROVIDER_RESPONSE',
 }
 
 /**
