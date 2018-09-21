@@ -3,8 +3,9 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { orderUtils } from './order_utils';
 import { AssetBuyerError, AssetBuyerOrdersAndFillableAmounts, BuyQuote } from '../types';
+
+import { orderUtils } from './order_utils';
 
 export const buyQuoteCalculator = {
     calculate(

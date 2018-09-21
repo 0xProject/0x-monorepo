@@ -41,9 +41,9 @@ export const orderFetcherResponseProcessor = {
         let unsortedFeeOrders = filteredFeeOrders;
         // if an orderValidator is provided, use on chain information to calculate remaining fillable makerAsset amounts
         if (!_.isUndefined(orderValidator)) {
-            // TODO: critical
+            // TODO(bmillman): improvement
             // try catch these requests and throw a more domain specific error
-            // TODO: optimization
+            // TODO(bmillman): optimization
             // reduce this to once RPC call buy combining orders into one array and then splitting up the response
             const [targetOrdersAndTradersInfo, feeOrdersAndTradersInfo] = await Promise.all(
                 _.map([filteredTargetOrders, filteredFeeOrders], ordersToBeValidated => {
@@ -65,7 +65,7 @@ export const orderFetcherResponseProcessor = {
             );
         }
         // sort orders by rate
-        // TODO: optimization
+        // TODO(bmillman): optimization
         // provide a feeRate to the sorting function to more accurately sort based on the current market for ZRX tokens
         const sortedTargetOrders = sortingUtils.sortOrdersByFeeAdjustedRate(unsortedTargetOrders);
         const sortedFeeOrders = sortingUtils.sortFeeOrdersByFeeAdjustedRate(unsortedFeeOrders);
