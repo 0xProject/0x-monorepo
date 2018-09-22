@@ -24,14 +24,13 @@ describe('#SolidityDocGenerator', () => {
     const docPromises: Array<Promise<DocAgnosticFormat>> = [
         generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`),
         generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, []),
-        generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, ['TokenTransferProxy']),
     ];
     docPromises.forEach(docPromise => {
-        it('should generate a doc object that matches the TokenTransferProxy fixture', async () => {
+        it('should generate a doc object that matches the TokenTransferProxy fixture with its dependencies', async () => {
             const doc = await docPromise;
             expect(doc).to.not.be.undefined();
 
-            verifyTokenTransferProxyABIIsDocumented(doc, 'TokenTransferProxy');
+            verifyTokenTransferProxyAndDepsABIsAreDocumented(doc, 'TokenTransferProxy');
 
             let addAuthorizedAddressMethod: SolidityMethod | undefined;
             for (const method of doc.TokenTransferProxy.methods) {
@@ -47,6 +46,12 @@ describe('#SolidityDocGenerator', () => {
             const expectedParamComment = 'Address to authorize.';
             expect((addAuthorizedAddressMethod as SolidityMethod).parameters[0].comment).to.equal(expectedParamComment);
         });
+    });
+    it('should generate a doc object that matches the TokenTransferProxy fixture', async () => {
+        const doc: DocAgnosticFormat = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
+            'TokenTransferProxy',
+        ]);
+        verifyTokenTransferProxyABIIsDocumented(doc, 'TokenTransferProxy');
     });
     describe('when processing all the permutations of devdoc stuff that we use in our contracts', () => {
         let doc: DocAgnosticFormat;
@@ -188,19 +193,10 @@ function verifyTokenTransferProxyABIIsDocumented(doc: DocAgnosticFormat, contrac
         throw new Error('events should never be undefined');
     }
     expect(events.length).to.equal(tokenTransferProxyEventCount);
+}
 
-    expect(doc.Ownable).to.not.be.undefined();
-    expect(doc.Ownable.constructors).to.not.be.undefined();
-    expect(doc.Ownable.methods).to.not.be.undefined();
-    const ownableConstructorCount = 1;
-    const ownableMethodCount = 2;
-    const ownableEventCount = 1;
-    expect(doc.Ownable.constructors.length).to.equal(ownableConstructorCount);
-    expect(doc.Ownable.methods.length).to.equal(ownableMethodCount);
-    if (_.isUndefined(doc.Ownable.events)) {
-        throw new Error('events should never be undefined');
-    }
-    expect(doc.Ownable.events.length).to.equal(ownableEventCount);
+function verifyTokenTransferProxyAndDepsABIsAreDocumented(doc: DocAgnosticFormat, contractName: string): void {
+    verifyTokenTransferProxyABIIsDocumented(doc, contractName);
 
     expect(doc.ERC20).to.not.be.undefined();
     expect(doc.ERC20.constructors).to.not.be.undefined();

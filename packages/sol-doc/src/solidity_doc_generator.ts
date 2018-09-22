@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import * as _ from 'lodash';
 
 import {
@@ -34,8 +36,7 @@ export async function generateSolDocAsync(
     contractsDir: string,
     contractsToDocument?: string[],
 ): Promise<DocAgnosticFormat> {
-    const doc: DocAgnosticFormat = {};
-
+    const docWithDependencies: DocAgnosticFormat = {};
     const compilerOptions = _makeCompilerOptions(contractsDir, contractsToDocument);
     const compiler = new Compiler(compilerOptions);
     const compilerOutputs = await compiler.getCompilerOutputsAsync();
@@ -50,8 +51,22 @@ export async function generateSolDocAsync(
                 if (_.isUndefined(compiledContract.abi)) {
                     throw new Error('compiled contract did not contain ABI output');
                 }
-                doc[contractName] = _genDocSection(compiledContract);
+                docWithDependencies[contractName] = _genDocSection(compiledContract);
             }
+        }
+    }
+
+    let doc: DocAgnosticFormat = {};
+    if (_.isUndefined(contractsToDocument) || contractsToDocument.length === 0) {
+        doc = docWithDependencies;
+    } else {
+        for (const contractToDocument of contractsToDocument) {
+            const contractBasename = path.basename(contractToDocument);
+            const contractName =
+                contractBasename.lastIndexOf('.sol') === -1
+                    ? contractBasename
+                    : contractBasename.substring(0, contractBasename.lastIndexOf('.sol'));
+            doc[contractName] = docWithDependencies[contractName];
         }
     }
 
