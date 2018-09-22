@@ -38,7 +38,7 @@ export enum KindString {
 }
 
 export enum SupportedDocJson {
-    Doxity = 'DOXITY',
+    Solidity = 'SOLIDITY',
     TypeDoc = 'TYPEDOC',
 }
 
@@ -48,40 +48,6 @@ export interface ContractsByVersionByNetworkId {
             [contractName: string]: string;
         };
     };
-}
-
-export interface DoxityDocObj {
-    [contractName: string]: DoxityContractObj;
-}
-
-export interface DoxityContractObj {
-    title: string;
-    fileName: string;
-    name: string;
-    abiDocs: DoxityAbiDoc[];
-}
-
-export interface DoxityAbiDoc {
-    constant: boolean;
-    inputs: DoxityInput[];
-    name: string;
-    outputs: DoxityOutput[];
-    payable: boolean;
-    type: string;
-    details?: string;
-    return?: string;
-}
-
-export interface DoxityOutput {
-    name: string;
-    type: string;
-}
-
-export interface DoxityInput {
-    name: string;
-    type: string;
-    description: string;
-    indexed?: boolean;
 }
 
 export interface AddressByContractName {

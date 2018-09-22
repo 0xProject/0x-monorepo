@@ -2,7 +2,7 @@
 
 #### WARNING: Alpha software. Expect things to break when trying to use.
 
-A full-page React component for rendering beautiful documentation for Solidity and Typescript code generated with [TypeDoc](http://typedoc.org/) or [Doxity](https://github.com/0xproject/doxity).
+A full-page React component for rendering beautiful documentation for Solidity and Typescript code generated with [TypeDoc](http://typedoc.org/) or [sol-doc](https://github.com/0xProject/0x-monorepo/tree/development/packages/sol-doc).
 
 <div style="text-align: center;">
 <img src="https://s3.eu-west-2.amazonaws.com/0x-wiki-images/screenshot.png" style="padding-bottom: 20px; padding-top: 20px;" width="80%" />
@@ -47,7 +47,7 @@ Feel free to contribute to these improvements!
 
 *   Allow user to pass in styling for all major elements similar to [Material-UI](http://www.material-ui.com/).
 *   Allow user to define an alternative font and have it change everywhere.
-*   Add source links to Solidity docs (currently unsupported by Doxity).
+*   Add source links to Solidity docs (currently unsupported by solc, which underlies sol-doc).
 
 ## Contributing
 

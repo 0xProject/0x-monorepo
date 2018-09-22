@@ -4,7 +4,7 @@
     "engines": {
         "node": ">=6.12"
     },
-    "description": "React documentation component for rendering TypeDoc & Doxity generated JSON",
+    "description": "React documentation component for rendering TypeDoc & sol-doc generated JSON",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {

@@ -14,9 +14,10 @@ export { Signature } from './components/signature';
 export { SourceLink } from './components/source_link';
 export { TypeDefinition } from './components/type_definition';
 export { Type } from './components/type';
+export { TypeDocUtils } from './utils/typedoc_utils';
 
 export { DocsInfo } from './docs_info';
 
-export { DocsInfoConfig, DoxityDocObj, DocsMenu, SupportedDocJson } from './types';
+export { DocsInfoConfig, DocsMenu, SupportedDocJson } from './types';
 
 export { constants } from './utils/constants';
