@@ -26,17 +26,17 @@ import {
 /**
  * Invoke the Solidity compiler and transform its ABI and devdoc outputs into
  * the types that are used as input to documentation generation tools.
- * @param contractsToCompile list of contracts for which to generate doc objects
+ * @param contractsToDocument list of contracts for which to generate doc objects
  * @param contractsDir the directory in which to find the `contractsToCompile` as well as their dependencies.
  * @return doc object for use with documentation generation tools.
  */
 export async function generateSolDocAsync(
     contractsDir: string,
-    contractsToCompile?: string[],
+    contractsToDocument?: string[],
 ): Promise<DocAgnosticFormat> {
     const doc: DocAgnosticFormat = {};
 
-    const compilerOptions = _makeCompilerOptions(contractsDir, contractsToCompile);
+    const compilerOptions = _makeCompilerOptions(contractsDir, contractsToDocument);
     const compiler = new Compiler(compilerOptions);
     const compilerOutputs = await compiler.getCompilerOutputsAsync();
     for (const compilerOutput of compilerOutputs) {
