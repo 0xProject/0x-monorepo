@@ -12,8 +12,10 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "lint": "tslint --project . --format stylish",
         "clean": "shx rm -rf lib",
+        "generate-v1-protocol-docs": "(cd ../contracts/src/1.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts Exchange/Exchange_v1.sol TokenRegistry/TokenRegistry.sol TokenTransferProxy/TokenTransferProxy_v1.sol) > v1.0.0.json",
         "generate-v2-protocol-docs": "(cd ../contracts/src/2.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts $(cd protocol; ls -C1 */*.sol */interfaces/*.sol) ) > v2.0.0.json",
-        "deploy-v2-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v2.0.0.json s3://staging-doc-jsons/contracts/"
+        "deploy-v2-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v2.0.0.json s3://staging-doc-jsons/contracts/",
+        "deploy-v1-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v1.0.0.json s3://staging-doc-jsons/contracts/"
     },
     "bin": {
         "sol-doc": "bin/sol-doc.js"
