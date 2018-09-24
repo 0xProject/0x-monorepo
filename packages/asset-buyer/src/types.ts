@@ -72,9 +72,9 @@ export enum AssetBuyerError {
 }
 
 /**
- * Possible errors thrown by an StandardRelayerApiAssetBuyerManager instance or associated static methods.
+ * Possible errors thrown by an AssetBuyerManager instance or associated static methods.
  */
-export enum StandardRelayerApiAssetBuyerManagerError {
+export enum AssetBuyerManagerError {
     AssetBuyerNotFound = 'ASSET_BUYER_NOT_FOUND',
 }
 

@@ -5,7 +5,7 @@ export { BigNumber } from '@0xproject/utils';
 export { AssetBuyer } from './asset_buyer';
 export { BasicOrderProvider } from './order_providers/basic_order_provider';
 export { StandardRelayerAPIOrderProvider } from './order_providers/standard_relayer_api_order_provider';
-export { StandardRelayerAPIAssetBuyerManager } from './standard_relayer_api_asset_buyer_manager';
+export { AssetBuyerManager } from './asset_buyer_manager';
 export {
     AssetBuyerError,
     BuyQuote,
@@ -13,5 +13,5 @@ export {
     OrderProviderRequest,
     OrderProviderResponse,
     SignedOrderWithRemainingFillableMakerAssetAmount,
-    StandardRelayerApiAssetBuyerManagerError,
+    AssetBuyerManagerError,
 } from './types';
