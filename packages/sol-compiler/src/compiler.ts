@@ -264,14 +264,28 @@ export class Compiler {
             }
         }
 
-        const sourceCodes = _.mapValues(
-            compilerOutput.sources,
-            (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,
+        // Output only the relevant source code based off the dependency tree
+        const dependencies = this._getDependencyList(contractName);
+        const relevantSourceCodes = _.reduce(
+            dependencies,
+            (acc: { [sourceFilePath: string]: string }, sourceFilePath) => {
+                acc[sourceFilePath] = this._resolver.resolve(sourceFilePath).source;
+                return acc;
+            },
+            {},
+        );
+        const relevantSources = _.reduce(
+            dependencies,
+            (acc: { [fileName: string]: { id: number } }, sourceFilePath) => {
+                acc[sourceFilePath] = compilerOutput.sources[sourceFilePath];
+                return acc;
+            },
+            {},
         );
         const contractVersion: ContractVersionData = {
             compilerOutput: compiledData,
-            sources: compilerOutput.sources,
-            sourceCodes,
+            sources: relevantSources,
+            sourceCodes: relevantSourceCodes,
             sourceTreeHashHex,
             compiler: {
                 name: 'solc',
@@ -329,7 +343,7 @@ export class Compiler {
     }
     /**
      * Gets the source tree hash for a file and its dependencies.
-     * @param fileName Name of contract file.
+     * @param importPath Path of the file
      */
     private _getSourceTreeHash(importPath: string): Buffer {
         const contractSource = this._resolver.resolve(importPath);
@@ -344,6 +358,23 @@ export class Compiler {
             const sourceTreeHashesBuffer = Buffer.concat([sourceHash, ...dependencySourceTreeHashes]);
             const sourceTreeHash = ethUtil.sha3(sourceTreeHashesBuffer);
             return sourceTreeHash;
+        }
+    }
+    /**
+     * Gets the exhaustive list of dependencies for a given file.
+     * @param importPath Path of the file
+     * @returns The full list of dependencies for a file
+     */
+    private _getDependencyList(importPath: string): string[] {
+        const contractSource = this._resolver.resolve(importPath);
+        const dependencies = parseDependencies(contractSource);
+        if (dependencies.length === 0) {
+            return [];
+        } else {
+            const dependencyTree = _.map(dependencies, (dependency: string) => this._getDependencyList(dependency));
+            const allDependencies = _.concat(dependencies, _.flatten(dependencyTree));
+            const uniqDependencies = _.uniq(allDependencies);
+            return uniqDependencies;
         }
     }
 }
