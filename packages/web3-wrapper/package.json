@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/web3-wrapper",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -53,11 +53,11 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0xproject/assert": "^1.0.8",
-        "@0xproject/json-schemas": "^1.0.1",
-        "@0xproject/typescript-typings": "^2.0.0",
-        "@0xproject/utils": "^1.0.8",
-        "ethereum-types": "^1.0.6",
+        "@0xproject/assert": "^1.0.9",
+        "@0xproject/json-schemas": "^1.0.2",
+        "@0xproject/typescript-typings": "^2.0.1",
+        "@0xproject/utils": "^1.0.9",
+        "ethereum-types": "^1.0.7",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
         "lodash": "^4.17.5"

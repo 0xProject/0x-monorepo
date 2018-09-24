@@ -240,6 +240,10 @@ export enum StatusCodes {
     GatewayTimeout = 504,
 }
 
+export interface ObjectMap<T> {
+    [key: string]: T;
+}
+
 export interface TypeDocType {
     type: TypeDocTypes;
     value: string;

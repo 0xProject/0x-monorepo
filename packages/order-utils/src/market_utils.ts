@@ -51,17 +51,23 @@ export const marketUtils = {
         // iterate through the orders input from left to right until we have enough makerAsset to fill totalFillAmount
         const result = _.reduce(
             orders,
-            ({ resultOrders, remainingFillAmount }, order, index) => {
+            ({ resultOrders, remainingFillAmount, ordersRemainingFillableMakerAssetAmounts }, order, index) => {
                 if (remainingFillAmount.lessThanOrEqualTo(constants.ZERO_AMOUNT)) {
-                    return { resultOrders, remainingFillAmount: constants.ZERO_AMOUNT };
+                    return {
+                        resultOrders,
+                        remainingFillAmount: constants.ZERO_AMOUNT,
+                        ordersRemainingFillableMakerAssetAmounts,
+                    };
                 } else {
                     const makerAssetAmountAvailable = remainingFillableMakerAssetAmounts[index];
+                    const shouldIncludeOrder = makerAssetAmountAvailable.gt(constants.ZERO_AMOUNT);
                     // if there is no makerAssetAmountAvailable do not append order to resultOrders
                     // if we have exceeded the total amount we want to fill set remainingFillAmount to 0
                     return {
-                        resultOrders: makerAssetAmountAvailable.gt(constants.ZERO_AMOUNT)
-                            ? _.concat(resultOrders, order)
-                            : resultOrders,
+                        resultOrders: shouldIncludeOrder ? _.concat(resultOrders, order) : resultOrders,
+                        ordersRemainingFillableMakerAssetAmounts: shouldIncludeOrder
+                            ? _.concat(ordersRemainingFillableMakerAssetAmounts, makerAssetAmountAvailable)
+                            : ordersRemainingFillableMakerAssetAmounts,
                         remainingFillAmount: BigNumber.max(
                             constants.ZERO_AMOUNT,
                             remainingFillAmount.minus(makerAssetAmountAvailable),
@@ -69,7 +75,11 @@ export const marketUtils = {
                     };
                 }
             },
-            { resultOrders: [] as T[], remainingFillAmount: totalFillAmount },
+            {
+                resultOrders: [] as T[],
+                remainingFillAmount: totalFillAmount,
+                ordersRemainingFillableMakerAssetAmounts: [] as BigNumber[],
+            },
         );
         return result;
     },
@@ -133,17 +143,18 @@ export const marketUtils = {
             },
             constants.ZERO_AMOUNT,
         );
-        const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
-            feeOrders,
-            totalFeeAmount,
-            {
-                remainingFillableMakerAssetAmounts: remainingFillableFeeAmounts,
-                slippageBufferAmount,
-            },
-        );
+        const {
+            resultOrders,
+            remainingFillAmount,
+            ordersRemainingFillableMakerAssetAmounts,
+        } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(feeOrders, totalFeeAmount, {
+            remainingFillableMakerAssetAmounts: remainingFillableFeeAmounts,
+            slippageBufferAmount,
+        });
         return {
             resultFeeOrders: resultOrders,
             remainingFeeAmount: remainingFillAmount,
+            feeOrdersRemainingFillableMakerAssetAmounts: ordersRemainingFillableMakerAssetAmounts,
         };
         // TODO: add more orders here to cover rounding
         // https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarding-contract-specification.md#over-buying-zrx
