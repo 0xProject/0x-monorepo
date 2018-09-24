@@ -1,10 +1,10 @@
 {
-    "name": "@0xproject/forwarder-helper",
-    "version": "1.0.4",
+    "name": "@0xproject/asset-buyer",
+    "version": "1.0.0-rc.1",
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Convenience object for working with the forwarder contract",
+    "description": "Convenience package for buying assets",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
@@ -34,21 +34,26 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/packages/forwarder-helper/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/asset-buyer/README.md",
     "dependencies": {
         "@0xproject/assert": "^1.0.9",
+        "@0xproject/connect": "^2.0.2",
+        "@0xproject/contract-wrappers": "^1.0.4",
         "@0xproject/json-schemas": "^1.0.2",
-        "@0xproject/order-utils": "^1.0.3",
+        "@0xproject/order-utils": "^1.0.1",
+        "@0xproject/subproviders": "^2.0.2",
         "@0xproject/types": "^1.0.2",
         "@0xproject/typescript-typings": "^2.0.1",
         "@0xproject/utils": "^1.0.9",
-        "@types/node": "*",
+        "@0xproject/web3-wrapper": "^2.0.3",
+        "ethereum-types": "^1.0.6",
         "lodash": "^4.17.10"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.7",
         "@types/lodash": "^4.14.116",
         "@types/mocha": "^2.2.42",
+        "@types/node": "*",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^2.0.1",

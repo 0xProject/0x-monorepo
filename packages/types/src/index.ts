@@ -239,3 +239,7 @@ export enum StatusCodes {
     MethodNotAllowed = 405,
     GatewayTimeout = 504,
 }
+
+export interface ObjectMap<T> {
+    [key: string]: T;
+}

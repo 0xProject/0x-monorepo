@@ -1,6 +1,7 @@
 import { assetDataUtils } from '@0xproject/order-utils';
+import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
-import { ObjectMap, PortalOrder } from 'ts/types';
+import { PortalOrder } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 export interface HeapAnalytics {
