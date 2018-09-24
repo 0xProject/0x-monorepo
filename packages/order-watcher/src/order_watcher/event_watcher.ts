@@ -82,6 +82,7 @@ export class EventWatcher {
             this._onLogStateChangedAsync.bind(this, callback, isRemoved),
         );
     }
+    // This method only exists in order to comply with the expected interface of Blockstream's constructor
     private async _getBlockOrNullAsync(): Promise<BlockWithoutTransactionData | null> {
         const blockIfExists = await this._web3Wrapper.getBlockIfExistsAsync.bind(this._web3Wrapper);
         if (_.isUndefined(blockIfExists)) {
