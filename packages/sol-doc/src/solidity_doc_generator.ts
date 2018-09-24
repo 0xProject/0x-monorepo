@@ -52,7 +52,7 @@ export async function generateSolDocAsync(
                 if (_.isUndefined(compiledContract.abi)) {
                     throw new Error('compiled contract did not contain ABI output');
                 }
-                docWithDependencies[contractName] = _genDocSection(compiledContract);
+                docWithDependencies[contractName] = _genDocSection(compiledContract, contractName);
             }
         }
     }
@@ -95,7 +95,7 @@ function _makeCompilerOptions(contractsDir: string, contractsToCompile?: string[
     return compilerOptions;
 }
 
-function _genDocSection(compiledContract: StandardContractOutput): DocSection {
+function _genDocSection(compiledContract: StandardContractOutput, contractName: string): DocSection {
     const docSection: DocSection = {
         comment: _.isUndefined(compiledContract.devdoc) ? '' : compiledContract.devdoc.title,
         constructors: [],
@@ -109,7 +109,7 @@ function _genDocSection(compiledContract: StandardContractOutput): DocSection {
     for (const abiDefinition of compiledContract.abi) {
         switch (abiDefinition.type) {
             case 'constructor':
-                docSection.constructors.push(_genConstructorDoc(abiDefinition, compiledContract.devdoc));
+                docSection.constructors.push(_genConstructorDoc(contractName, abiDefinition, compiledContract.devdoc));
                 break;
             case 'event':
                 (docSection.events as Event[]).push(_genEventDoc(abiDefinition));
@@ -130,17 +130,21 @@ function _genDocSection(compiledContract: StandardContractOutput): DocSection {
     return docSection;
 }
 
-function _genConstructorDoc(abiDefinition: ConstructorAbi, devdocIfExists: DevdocOutput | undefined): SolidityMethod {
+function _genConstructorDoc(
+    contractName: string,
+    abiDefinition: ConstructorAbi,
+    devdocIfExists: DevdocOutput | undefined,
+): SolidityMethod {
     const { parameters, methodSignature } = _genMethodParamsDoc('', abiDefinition.inputs, devdocIfExists);
 
     const comment = _devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
 
     const constructorDoc: SolidityMethod = {
         isConstructor: true,
-        name: '', // sad we have to specify this
+        name: contractName,
         callPath: '',
         parameters,
-        returnType: { name: '', typeDocType: TypeDocTypes.Reference }, // sad we have to specify this
+        returnType: { name: contractName, typeDocType: TypeDocTypes.Reference }, // sad we have to specify this
         isConstant: false,
         isPayable: abiDefinition.payable,
         comment,
