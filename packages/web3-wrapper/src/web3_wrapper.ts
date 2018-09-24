@@ -329,23 +329,29 @@ export class Web3Wrapper {
     /**
      * Fetch a specific Ethereum block without transaction data
      * @param blockParam The block you wish to fetch (blockHash, blockNumber or blockLiteral)
-     * @returns The requested block without transaction data
+     * @returns The requested block without transaction data, or undefined if block was not found
+     * (e.g the node isn't fully synced, there was a block re-org and the requested block was uncles, etc...)
      */
-    public async getBlockAsync(blockParam: string | BlockParam): Promise<BlockWithoutTransactionData> {
+    public async getBlockIfExistsAsync(
+        blockParam: string | BlockParam,
+    ): Promise<BlockWithoutTransactionData | undefined> {
         Web3Wrapper._assertBlockParamOrString(blockParam);
         const encodedBlockParam = marshaller.marshalBlockParam(blockParam);
         const method = utils.isHexStrict(blockParam) ? 'eth_getBlockByHash' : 'eth_getBlockByNumber';
         const shouldIncludeTransactionData = false;
-        const blockWithoutTransactionDataWithHexValues = await this._sendRawPayloadAsync<
+        const blockWithoutTransactionDataWithHexValuesOrNull = await this._sendRawPayloadAsync<
             BlockWithoutTransactionDataRPC
         >({
             method,
             params: [encodedBlockParam, shouldIncludeTransactionData],
         });
-        const blockWithoutTransactionData = marshaller.unmarshalIntoBlockWithoutTransactionData(
-            blockWithoutTransactionDataWithHexValues,
-        );
-        return blockWithoutTransactionData;
+        let blockWithoutTransactionDataIfExists;
+        if (!_.isNull(blockWithoutTransactionDataWithHexValuesOrNull)) {
+            blockWithoutTransactionDataIfExists = marshaller.unmarshalIntoBlockWithoutTransactionData(
+                blockWithoutTransactionDataWithHexValuesOrNull,
+            );
+        }
+        return blockWithoutTransactionDataIfExists;
     }
     /**
      * Fetch a specific Ethereum block with transaction data
@@ -376,8 +382,11 @@ export class Web3Wrapper {
      */
     public async getBlockTimestampAsync(blockParam: string | BlockParam): Promise<number> {
         Web3Wrapper._assertBlockParamOrString(blockParam);
-        const { timestamp } = await this.getBlockAsync(blockParam);
-        return timestamp;
+        const blockIfExists = await this.getBlockIfExistsAsync(blockParam);
+        if (_.isUndefined(blockIfExists)) {
+            throw new Error(`Failed to fetch block with blockParam: ${JSON.stringify(blockParam)}`);
+        }
+        return blockIfExists.timestamp;
     }
     /**
      * Retrieve the user addresses available through the backing provider
