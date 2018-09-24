@@ -2,6 +2,7 @@ import { AbiDecoder, intervalUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import {
     BlockParamLiteral,
+    BlockWithoutTransactionData,
     ContractAbi,
     ContractArtifact,
     FilterObject,
@@ -174,7 +175,7 @@ export abstract class ContractWrapper {
             throw new Error(ContractWrappersError.SubscriptionAlreadyPresent);
         }
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
-            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
+            this._getBlockOrNullAsync.bind(this),
             this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
             ContractWrapper._onBlockAndLogStreamerError.bind(this, isVerbose),
         );
@@ -194,6 +195,13 @@ export abstract class ContractWrapper {
             this._onLogStateChanged.bind(this, isRemoved),
         );
     }
+    private async _getBlockOrNullAsync(): Promise<BlockWithoutTransactionData | null> {
+        const blockIfExists = await this._web3Wrapper.getBlockIfExistsAsync.bind(this._web3Wrapper);
+        if (_.isUndefined(blockIfExists)) {
+            return null;
+        }
+        return blockIfExists;
+    }
     // HACK: This should be a package-scoped method (which doesn't exist in TS)
     // We don't want this method available in the public interface for all classes
     // who inherit from ContractWrapper, and it is only used by the internal implementation
@@ -212,11 +220,14 @@ export abstract class ContractWrapper {
         delete this._blockAndLogStreamerIfExists;
     }
     private async _reconcileBlockAsync(): Promise<void> {
-        const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
+        const latestBlockIfExists = await this._web3Wrapper.getBlockIfExistsAsync(BlockParamLiteral.Latest);
+        if (_.isUndefined(latestBlockIfExists)) {
+            return; // noop
+        }
         // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
-            await this._blockAndLogStreamerIfExists.reconcileNewBlock((latestBlock as any) as Block);
+            await this._blockAndLogStreamerIfExists.reconcileNewBlock((latestBlockIfExists as any) as Block);
         }
     }
 }

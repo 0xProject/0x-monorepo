@@ -85,28 +85,40 @@ describe('Web3Wrapper tests', () => {
             expect(typeof blockNumber).to.be.equal('number');
         });
     });
-    describe('#getBlockAsync', () => {
+    describe('#getBlockIfExistsAsync', () => {
         it('gets block when supplied a valid BlockParamLiteral value', async () => {
             const blockParamLiteral = BlockParamLiteral.Earliest;
-            const block = await web3Wrapper.getBlockAsync(blockParamLiteral);
-            expect(block.number).to.be.equal(0);
-            expect(utils.isBigNumber(block.difficulty)).to.equal(true);
-            expect(_.isNumber(block.gasLimit)).to.equal(true);
+            const blockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockParamLiteral);
+            if (_.isUndefined(blockIfExists)) {
+                throw new Error('Expected block to exist');
+            }
+            expect(blockIfExists.number).to.be.equal(0);
+            expect(utils.isBigNumber(blockIfExists.difficulty)).to.equal(true);
+            expect(_.isNumber(blockIfExists.gasLimit)).to.equal(true);
         });
         it('gets block when supplied a block number', async () => {
             const blockParamLiteral = 0;
-            const block = await web3Wrapper.getBlockAsync(blockParamLiteral);
-            expect(block.number).to.be.equal(0);
+            const blockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockParamLiteral);
+            if (_.isUndefined(blockIfExists)) {
+                throw new Error('Expected block to exist');
+            }
+            expect(blockIfExists.number).to.be.equal(0);
         });
         it('gets block when supplied a block hash', async () => {
             const blockParamLiteral = 0;
-            const block = await web3Wrapper.getBlockAsync(blockParamLiteral);
-            const sameBlock = await web3Wrapper.getBlockAsync(block.hash as string);
-            expect(sameBlock.number).to.be.equal(0);
+            const blockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockParamLiteral);
+            if (_.isUndefined(blockIfExists)) {
+                throw new Error('Expected block to exist');
+            }
+            const sameBlockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockIfExists.hash as string);
+            if (_.isUndefined(sameBlockIfExists)) {
+                throw new Error('Expected block to exist');
+            }
+            expect(sameBlockIfExists.number).to.be.equal(0);
         });
         it('should throw if supplied invalid blockParam value', async () => {
             const invalidBlockParam = 'deadbeef';
-            expect(web3Wrapper.getBlockAsync(invalidBlockParam)).to.eventually.to.be.rejected();
+            expect(web3Wrapper.getBlockIfExistsAsync(invalidBlockParam)).to.eventually.to.be.rejected();
         });
     });
     describe('#getBlockWithTransactionDataAsync', () => {

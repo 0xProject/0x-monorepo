@@ -1,6 +1,6 @@
 import { intervalUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { BlockParamLiteral, LogEntry, Provider } from 'ethereum-types';
+import { BlockParamLiteral, BlockWithoutTransactionData, LogEntry, Provider } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
@@ -62,7 +62,7 @@ export class EventWatcher {
             throw new Error(OrderWatcherError.SubscriptionAlreadyPresent);
         }
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
-            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
+            this._getBlockOrNullAsync.bind(this),
             this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
             this._onBlockAndLogStreamerError.bind(this),
         );
@@ -82,6 +82,13 @@ export class EventWatcher {
             this._onLogStateChangedAsync.bind(this, callback, isRemoved),
         );
     }
+    private async _getBlockOrNullAsync(): Promise<BlockWithoutTransactionData | null> {
+        const blockIfExists = await this._web3Wrapper.getBlockIfExistsAsync.bind(this._web3Wrapper);
+        if (_.isUndefined(blockIfExists)) {
+            return null;
+        }
+        return blockIfExists;
+    }
     private _stopBlockAndLogStream(): void {
         if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
             throw new Error(OrderWatcherError.SubscriptionNotFound);
@@ -100,11 +107,14 @@ export class EventWatcher {
         await this._emitDifferencesAsync(log, isRemoved ? LogEventState.Removed : LogEventState.Added, callback);
     }
     private async _reconcileBlockAsync(): Promise<void> {
-        const latestBlock = await this._web3Wrapper.getBlockAsync(this._stateLayer);
+        const latestBlockIfExists = await this._web3Wrapper.getBlockIfExistsAsync(this._stateLayer);
+        if (_.isUndefined(latestBlockIfExists)) {
+            return; // noop
+        }
         // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
-            await this._blockAndLogStreamerIfExists.reconcileNewBlock((latestBlock as any) as Block);
+            await this._blockAndLogStreamerIfExists.reconcileNewBlock((latestBlockIfExists as any) as Block);
         }
     }
     private async _emitDifferencesAsync(
