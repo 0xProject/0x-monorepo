@@ -29,6 +29,7 @@ export class AssetBuyer {
     public readonly orderProvider: OrderProvider;
     public readonly networkId: number;
     public readonly orderRefreshIntervalMs: number;
+    public readonly expiryBufferSeconds: number;
     private readonly _contractWrappers: ContractWrappers;
     private _lastRefreshTimeIfExists?: number;
     private _currentOrdersAndFillableAmountsIfExists?: AssetBuyerOrdersAndFillableAmounts;
@@ -38,8 +39,9 @@ export class AssetBuyer {
      * @param   orders                  A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData (WETH).
      * @param   feeOrders               A array of objects that conform to SignedOrder. All orders must have the same makerAssetData (ZRX) and takerAssetData (WETH). Defaults to an empty array.
      * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
-     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states.
-     *                                  Defaults to 10000ms (10s).
+     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
+     * @param   expiryBufferSeconds     The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+     *
      * @return  An instance of AssetBuyer
      */
     public static getAssetBuyerForProvidedOrders(
@@ -48,6 +50,7 @@ export class AssetBuyer {
         feeOrders: SignedOrder[] = [],
         networkId: number = constants.MAINNET_NETWORK_ID,
         orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+        expiryBufferSeconds: number = constants.DEFAULT_EXPIRY_BUFFER_SECONDS,
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
@@ -59,7 +62,14 @@ export class AssetBuyer {
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
         const assetData = orders[0].makerAssetData;
         const orderProvider = new BasicOrderProvider(_.concat(orders, feeOrders));
-        const assetBuyer = new AssetBuyer(provider, assetData, orderProvider, networkId, orderRefreshIntervalMs);
+        const assetBuyer = new AssetBuyer(
+            provider,
+            assetData,
+            orderProvider,
+            networkId,
+            orderRefreshIntervalMs,
+            expiryBufferSeconds,
+        );
         return assetBuyer;
     }
     /**
@@ -68,8 +78,9 @@ export class AssetBuyer {
      * @param   assetData               The assetData that identifies the desired asset to buy.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
      * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
-     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states.
-     *                                  Defaults to 10000ms (10s).
+     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
+     * @param   expiryBufferSeconds     The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+     *
      * @return  An instance of AssetBuyer
      */
     public static getAssetBuyerForAssetData(
@@ -78,6 +89,7 @@ export class AssetBuyer {
         sraApiUrl: string,
         networkId: number = constants.MAINNET_NETWORK_ID,
         orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+        expiryBufferSeconds: number = constants.DEFAULT_EXPIRY_BUFFER_SECONDS,
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.isHexString('assetData', assetData);
@@ -85,7 +97,14 @@ export class AssetBuyer {
         assert.isNumber('networkId', networkId);
         assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
         const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl);
-        const assetBuyer = new AssetBuyer(provider, assetData, orderProvider, networkId, orderRefreshIntervalMs);
+        const assetBuyer = new AssetBuyer(
+            provider,
+            assetData,
+            orderProvider,
+            networkId,
+            orderRefreshIntervalMs,
+            expiryBufferSeconds,
+        );
         return assetBuyer;
     }
     /**
@@ -94,8 +113,8 @@ export class AssetBuyer {
      * @param   tokenAddress            The ERC20 token address that identifies the desired asset to buy.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
      * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
-     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states.
-     *                                  Defaults to 10000ms (10s).
+     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
+     * @param   expiryBufferSeconds     The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
      * @return  An instance of AssetBuyer
      */
     public static getAssetBuyerForERC20TokenAddress(
@@ -104,6 +123,7 @@ export class AssetBuyer {
         sraApiUrl: string,
         networkId: number = constants.MAINNET_NETWORK_ID,
         orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+        expiryBufferSeconds: number = constants.DEFAULT_EXPIRY_BUFFER_SECONDS,
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
@@ -117,6 +137,7 @@ export class AssetBuyer {
             sraApiUrl,
             networkId,
             orderRefreshIntervalMs,
+            expiryBufferSeconds,
         );
         return assetBuyer;
     }
@@ -126,8 +147,9 @@ export class AssetBuyer {
      * @param   assetData               The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   orderProvider            An object that conforms to OrderProvider, see type for definition.
      * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
-     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states.
-     *                                  Defaults to 10000ms (10s).
+     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
+     * @param   expiryBufferSeconds     The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+     *
      * @return  An instance of AssetBuyer
      */
     constructor(
@@ -136,6 +158,7 @@ export class AssetBuyer {
         orderProvider: OrderProvider,
         networkId: number = constants.MAINNET_NETWORK_ID,
         orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
+        expiryBufferSeconds: number = constants.DEFAULT_EXPIRY_BUFFER_SECONDS,
     ) {
         assert.isWeb3Provider('provider', provider);
         assert.isString('assetData', assetData);
@@ -146,6 +169,7 @@ export class AssetBuyer {
         this.assetData = assetData;
         this.orderProvider = orderProvider;
         this.networkId = networkId;
+        this.expiryBufferSeconds = expiryBufferSeconds;
         this.orderRefreshIntervalMs = orderRefreshIntervalMs;
         this._contractWrappers = new ContractWrappers(this.provider, {
             networkId,
@@ -278,6 +302,7 @@ export class AssetBuyer {
             targetOrderProviderResponse,
             feeOrderProviderResponse,
             zrxTokenAssetData,
+            this.expiryBufferSeconds,
             this._contractWrappers.orderValidator,
         );
         return ordersAndFillableAmounts;

@@ -41,11 +41,18 @@ export const orderProviderResponseProcessor = {
         targetOrderProviderResponse: OrderProviderResponse,
         feeOrderProviderResponse: OrderProviderResponse,
         zrxTokenAssetData: string,
+        expiryBufferSeconds: number,
         orderValidator?: OrderValidatorWrapper,
     ): Promise<AssetBuyerOrdersAndFillableAmounts> {
         // drop orders that are expired or not open
-        const filteredTargetOrders = filterOutExpiredAndNonOpenOrders(targetOrderProviderResponse.orders);
-        const filteredFeeOrders = filterOutExpiredAndNonOpenOrders(feeOrderProviderResponse.orders);
+        const filteredTargetOrders = filterOutExpiredAndNonOpenOrders(
+            targetOrderProviderResponse.orders,
+            expiryBufferSeconds,
+        );
+        const filteredFeeOrders = filterOutExpiredAndNonOpenOrders(
+            feeOrderProviderResponse.orders,
+            expiryBufferSeconds,
+        );
         // set the orders to be sorted equal to the filtered orders
         let unsortedTargetOrders = filteredTargetOrders;
         let unsortedFeeOrders = filteredFeeOrders;
@@ -98,9 +105,10 @@ export const orderProviderResponseProcessor = {
  */
 function filterOutExpiredAndNonOpenOrders(
     orders: SignedOrderWithRemainingFillableMakerAssetAmount[],
+    expiryBufferSeconds: number,
 ): SignedOrderWithRemainingFillableMakerAssetAmount[] {
     const result = _.filter(orders, order => {
-        return orderUtils.isOpenOrder(order) && !orderUtils.isOrderExpired(order);
+        return orderUtils.isOpenOrder(order) && !orderUtils.willOrderExpire(order, expiryBufferSeconds);
     });
     return result;
 }
