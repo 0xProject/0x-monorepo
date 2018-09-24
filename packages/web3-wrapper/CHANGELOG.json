@@ -4,7 +4,8 @@
         "changes": [
             {
                 "note":
-                    "Rename `getBlockAsync` to `getBlockIfExistsAsync` and rather then throw if the requested block wasn't found, return undefined."
+                    "Rename `getBlockAsync` to `getBlockIfExistsAsync` and rather then throw if the requested block wasn't found, return undefined.",
+                "pr": 1082
             }
         ]
     },
