@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/order-utils",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -11,7 +11,7 @@
         "build": "yarn pre_build && tsc -b",
         "pre_build": "run-s update_artifacts generate_contract_wrappers",
         "generate_contract_wrappers": "abi-gen --abis 'lib/src/artifacts/@(Exchange|IWallet|IValidator|DummyERC20Token|ERC20Proxy|ERC20Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
-        "update_artifacts": "for i in ${npm_package_config_contracts_v2}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json lib/src/artifacts; done;",
+        "update_artifacts": "for i in ${npm_package_config_contracts_v2}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-trimmed/$i.json lib/src/artifacts; done;",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:circleci": "yarn test:coverage",
@@ -38,7 +38,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
-        "@0xproject/dev-utils": "^1.0.7",
+        "@0xproject/dev-utils": "^1.0.8",
         "@0xproject/tslint-config": "^1.0.7",
         "@types/bn.js": "^4.11.0",
         "@types/lodash": "4.14.104",
@@ -57,16 +57,16 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0xproject/assert": "^1.0.8",
-        "@0xproject/base-contract": "^2.0.2",
-        "@0xproject/json-schemas": "^1.0.1",
-        "@0xproject/types": "^1.0.1",
-        "@0xproject/typescript-typings": "^2.0.0",
-        "@0xproject/utils": "^1.0.8",
-        "@0xproject/web3-wrapper": "^2.0.2",
-        "@types/node": "^8.0.53",
+        "@0xproject/assert": "^1.0.9",
+        "@0xproject/base-contract": "^2.0.3",
+        "@0xproject/json-schemas": "^1.0.2",
+        "@0xproject/types": "^1.0.2",
+        "@0xproject/typescript-typings": "^2.0.1",
+        "@0xproject/utils": "^1.0.9",
+        "@0xproject/web3-wrapper": "^2.0.3",
+        "@types/node": "*",
         "bn.js": "^4.11.8",
-        "ethereum-types": "^1.0.6",
+        "ethereum-types": "^1.0.7",
         "ethereumjs-abi": "0.6.5",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
