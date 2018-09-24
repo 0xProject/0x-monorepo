@@ -225,6 +225,7 @@ export class AssetBuyer {
      * @param   rate            The desired rate to execute the buy at. Affects the amount of ETH sent with the transaction, defaults to buyQuote.maxRate.
      * @param   takerAddress    The address to perform the buy. Defaults to the first available address from the provider.
      * @param   feeRecipient    The address where affiliate fees are sent. Defaults to null address (0x000...000).
+     *
      * @return  A promise of the txHash.
      */
     public async executeBuyQuoteAsync(

@@ -2,6 +2,7 @@ import { HttpClient } from '@0xproject/connect';
 import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { SignedOrder } from '@0xproject/order-utils';
 import { ObjectMap } from '@0xproject/types';
+import { BigNumber } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -12,7 +13,7 @@ import { StandardRelayerAPIOrderProvider } from './order_providers/standard_rela
 import { assert } from './utils/assert';
 import { assetDataUtils } from './utils/asset_data_utils';
 
-import { AssetBuyerManagerError, OrderProvider } from './types';
+import { AssetBuyerManagerError, BuyQuote, BuyQuoteRequestOpts, OrderProvider } from './types';
 
 export class AssetBuyerManager {
     // Map of assetData to AssetBuyer for that assetData
@@ -162,5 +163,45 @@ export class AssetBuyerManager {
      */
     public getAssetDatas(): string[] {
         return _.keys(this._assetBuyerMap);
+    }
+    /**
+     * Get a `BuyQuote` containing all information relevant to fulfilling a buy.
+     * You can then pass the `BuyQuote` to `executeBuyQuoteAsync` to execute the buy.
+     *
+     * @param   assetData           The assetData that identifies the desired asset to buy.
+     * @param   assetBuyAmount      The amount of asset to buy.
+     * @param   feePercentage       The affiliate fee percentage. Defaults to 0.
+     * @param   forceOrderRefresh   If set to true, new orders and state will be fetched instead of waiting for
+     *                              the next orderRefreshIntervalMs. Defaults to false.
+     * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
+     */
+    public async getBuyQuoteAsync(
+        assetData: string,
+        assetBuyAmount: BigNumber,
+        options: Partial<BuyQuoteRequestOpts>,
+    ): Promise<BuyQuote> {
+        return this.getAssetBuyerFromAssetData(assetData).getBuyQuoteAsync(assetBuyAmount, options);
+    }
+    /**
+     * Given a BuyQuote and desired rate, attempt to execute the buy.
+     * @param   buyQuote        An object that conforms to BuyQuote. See type definition for more information.
+     * @param   rate            The desired rate to execute the buy at. Affects the amount of ETH sent with the transaction, defaults to buyQuote.maxRate.
+     * @param   takerAddress    The address to perform the buy. Defaults to the first available address from the provider.
+     * @param   feeRecipient    The address where affiliate fees are sent. Defaults to null address (0x000...000).
+     *
+     * @return  A promise of the txHash.
+     */
+    public async executeBuyQuoteAsync(
+        buyQuote: BuyQuote,
+        rate?: BigNumber,
+        takerAddress?: string,
+        feeRecipient?: string,
+    ): Promise<string> {
+        return this.getAssetBuyerFromAssetData(buyQuote.assetData).executeBuyQuoteAsync(
+            buyQuote,
+            rate,
+            takerAddress,
+            feeRecipient,
+        );
     }
 }
