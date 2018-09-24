@@ -291,11 +291,11 @@ function _genMethodReturnTypeDoc(
         methodReturnTypeDoc.typeDocType = TypeDocTypes.Tuple;
         methodReturnTypeDoc.tupleElements = [];
         for (const output of outputs) {
-            methodReturnTypeDoc.tupleElements.push({ name: output.name, typeDocType: TypeDocTypes.Intrinsic });
+            methodReturnTypeDoc.tupleElements.push({ name: output.type, typeDocType: TypeDocTypes.Intrinsic });
         }
     } else if (outputs.length === 1) {
         methodReturnTypeDoc.typeDocType = TypeDocTypes.Intrinsic;
-        methodReturnTypeDoc.name = outputs[0].name;
+        methodReturnTypeDoc.name = outputs[0].type;
     }
     return methodReturnTypeDoc;
 }

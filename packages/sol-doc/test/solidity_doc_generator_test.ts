@@ -86,8 +86,8 @@ describe('#SolidityDocGenerator', () => {
             it('parameter comment', () => {
                 expect(methodDoc.parameters[0].comment).to.equal('publicMethod @param');
             });
-            it('return type name', () => {
-                expect(methodDoc.returnType.name).to.equal('r');
+            it('return type', () => {
+                expect(methodDoc.returnType.name).to.equal('int256');
             });
             it('return comment', () => {
                 expect(methodDoc.returnComment).to.equal('publicMethod @return');
@@ -116,8 +116,8 @@ describe('#SolidityDocGenerator', () => {
             it('parameter comment', () => {
                 expect(methodDoc.parameters[0].comment).to.equal('externalMethod @param');
             });
-            it('return type name', () => {
-                expect(methodDoc.returnType.name).to.equal('r');
+            it('return type', () => {
+                expect(methodDoc.returnType.name).to.equal('int256');
             });
             it('return comment', () => {
                 expect(methodDoc.returnComment).to.equal('externalMethod @return');
