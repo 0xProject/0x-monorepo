@@ -269,7 +269,10 @@ describe('MultiSigWalletWithTimeLock', () => {
                 expect(confirmRes.logs).to.have.length(2);
 
                 const blockNum = await web3Wrapper.getBlockNumberAsync();
-                const blockInfo = await web3Wrapper.getBlockAsync(blockNum);
+                const blockInfo = await web3Wrapper.getBlockIfExistsAsync(blockNum);
+                if (_.isUndefined(blockInfo)) {
+                    throw new Error(`Unexpectedly failed to fetch block at #${blockNum}`);
+                }
                 const timestamp = new BigNumber(blockInfo.timestamp);
                 const confirmationTimeBigNum = new BigNumber(await multiSig.confirmationTimes.callAsync(txId));
 

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sra-report",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "engines": {
         "node": ">=6.12"
     },
@@ -33,13 +33,13 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-report/README.md",
     "dependencies": {
-        "@0xproject/assert": "^1.0.8",
+        "@0xproject/assert": "^1.0.9",
         "@0xproject/connect": "1.0.4",
         "@0xproject/json-schemas": "^0.8.3",
         "@0xproject/order-utils": "^0.0.9",
         "@0xproject/types": "^0.8.2",
-        "@0xproject/typescript-typings": "^2.0.0",
-        "@0xproject/utils": "^1.0.8",
+        "@0xproject/typescript-typings": "^2.0.1",
+        "@0xproject/utils": "^1.0.9",
         "chalk": "^2.3.0",
         "lodash": "^4.17.5",
         "newman": "^3.9.3",
@@ -51,7 +51,7 @@
         "@types/mocha": "^2.2.48",
         "@types/newman": "^3.9.0",
         "@types/nock": "^9.1.2",
-        "@types/node": "^8.0.53",
+        "@types/node": "*",
         "@types/yargs": "^10.0.0",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
