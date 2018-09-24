@@ -330,6 +330,7 @@ export class Web3Wrapper {
      * Fetch a specific Ethereum block without transaction data
      * @param blockParam The block you wish to fetch (blockHash, blockNumber or blockLiteral)
      * @returns The requested block without transaction data, or undefined if block was not found
+     * (e.g the node isn't fully synced, there was a block re-org and the requested block was uncles, etc...)
      */
     public async getBlockIfExistsAsync(
         blockParam: string | BlockParam,
