@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note":
+                    "Rename `getBlockAsync` to `getBlockIfExistsAsync` and rather then throw if the requested block wasn't found, return undefined."
+            }
+        ]
+    },
+    {
         "version": "2.0.3",
         "changes": [
             {
