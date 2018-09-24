@@ -8,6 +8,7 @@ import {
     DataItem,
     DevdocOutput,
     EventAbi,
+    EventParameter,
     FallbackAbi,
     MethodAbi,
     StandardContractOutput,
@@ -215,7 +216,7 @@ function _genEventDoc(abiDefinition: EventAbi): Event {
     return eventDoc;
 }
 
-function _genEventArgsDoc(args: DataItem[], devdocIfExists: DevdocOutput | undefined): EventArg[] {
+function _genEventArgsDoc(args: EventParameter[], devdocIfExists: DevdocOutput | undefined): EventArg[] {
     const eventArgsDoc: EventArg[] = [];
 
     for (const arg of args) {
@@ -227,7 +228,7 @@ function _genEventArgsDoc(args: DataItem[], devdocIfExists: DevdocOutput | undef
         };
 
         const eventArgDoc: EventArg = {
-            isIndexed: false, // TODO: wtf is this?
+            isIndexed: arg.indexed,
             name,
             type,
         };
