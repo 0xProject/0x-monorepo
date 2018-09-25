@@ -144,7 +144,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         } else if (this.props.docsInfo.type === SupportedDocJson.SolDoc) {
             // documenting solidity.
             docAgnosticFormat = versionDocObj as DocAgnosticFormat;
-            // need to modify docsInfo like convertToDocAgnosticFormat() would do
+            // HACK: need to modify docsInfo like convertToDocAgnosticFormat() would do
             this.props.docsInfo.menu.Contracts = [];
             _.each(docAgnosticFormat, (docObj, contractName) => {
                 this.props.docsInfo.sections[contractName] = contractName;
