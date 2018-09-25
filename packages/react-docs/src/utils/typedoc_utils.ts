@@ -419,7 +419,10 @@ export class TypeDocUtils {
         return func;
     }
     private _convertTypeParameter(entity: TypeDocNode, sectionName: string): TypeParameter {
-        const type = this._convertType(entity.type, sectionName);
+        let type;
+        if (!_.isUndefined(entity.type)) {
+            type = this._convertType(entity.type, sectionName);
+        }
         const parameter = {
             name: entity.name,
             type,

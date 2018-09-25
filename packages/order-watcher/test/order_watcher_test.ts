@@ -250,6 +250,32 @@ describe('OrderWatcher', () => {
                 await contractWrappers.exchange.fillOrderAsync(signedOrder, fillableAmount, takerAddress);
             })().catch(done);
         });
+        it('should include transactionHash in emitted orderStateInvalid when watched order fully filled', (done: DoneCallback) => {
+            (async () => {
+                signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                    makerAssetData,
+                    takerAssetData,
+                    makerAddress,
+                    takerAddress,
+                    fillableAmount,
+                );
+                await orderWatcher.addOrderAsync(signedOrder);
+
+                let transactionHash: string;
+                const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
+                    expect(orderState.isValid).to.be.false();
+                    const invalidOrderState = orderState as OrderStateInvalid;
+                    expect(invalidOrderState.transactionHash).to.be.equal(transactionHash);
+                });
+                orderWatcher.subscribe(callback);
+
+                transactionHash = await contractWrappers.exchange.fillOrderAsync(
+                    signedOrder,
+                    fillableAmount,
+                    takerAddress,
+                );
+            })().catch(done);
+        });
         it('should emit orderStateValid when watched order partially filled', (done: DoneCallback) => {
             (async () => {
                 signedOrder = await fillScenarios.createFillableSignedOrderAsync(
