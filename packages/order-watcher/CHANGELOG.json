@@ -17,7 +17,8 @@
                     "Add `transactionHash` to `OrderState` emitted by `OrderWatcher` subscriptions if the order's state change originated from a transaction.",
                 "pr": 1087
             }
-        ]
+        ],
+        "timestamp": 1537907159
     },
     {
         "version": "1.0.5",
