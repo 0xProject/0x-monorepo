@@ -12,7 +12,8 @@
                     "Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it",
                 "pr": 1080
             }
-        ]
+        ],
+        "timestamp": 1537907159
     },
     {
         "version": "1.0.5",

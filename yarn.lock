@@ -1358,7 +1358,7 @@ aes-js@3.0.0:
 
 aes-js@^0.2.3:
   version "0.2.4"
-  resolved "https://registry.npmjs.org/aes-js/-/aes-js-0.2.4.tgz#94b881ab717286d015fa219e08fb66709dda5a3d"
+  resolved "https://registry.yarnpkg.com/aes-js/-/aes-js-0.2.4.tgz#94b881ab717286d015fa219e08fb66709dda5a3d"
 
 ajv-keywords@^2.1.0:
   version "2.1.1"
@@ -2426,7 +2426,7 @@ balanced-match@^1.0.0:
 
 base-x@^1.1.0:
   version "1.1.0"
-  resolved "https://registry.npmjs.org/base-x/-/base-x-1.1.0.tgz#42d3d717474f9ea02207f6d1aa1f426913eeb7ac"
+  resolved "https://registry.yarnpkg.com/base-x/-/base-x-1.1.0.tgz#42d3d717474f9ea02207f6d1aa1f426913eeb7ac"
 
 base-x@^3.0.2:
   version "3.0.4"
@@ -2851,13 +2851,13 @@ bs58@^2.0.1:
 
 bs58@^3.1.0:
   version "3.1.0"
-  resolved "https://registry.npmjs.org/bs58/-/bs58-3.1.0.tgz#d4c26388bf4804cac714141b1945aa47e5eb248e"
+  resolved "https://registry.yarnpkg.com/bs58/-/bs58-3.1.0.tgz#d4c26388bf4804cac714141b1945aa47e5eb248e"
   dependencies:
     base-x "^1.1.0"
 
 bs58check@^1.0.8:
   version "1.3.4"
-  resolved "https://registry.npmjs.org/bs58check/-/bs58check-1.3.4.tgz#c52540073749117714fa042c3047eb8f9151cbf8"
+  resolved "https://registry.yarnpkg.com/bs58check/-/bs58check-1.3.4.tgz#c52540073749117714fa042c3047eb8f9151cbf8"
   dependencies:
     bs58 "^3.1.0"
     create-hash "^1.1.0"
@@ -5302,7 +5302,7 @@ ethereumjs-vm@^2.0.2, ethereumjs-vm@^2.1.0, ethereumjs-vm@^2.3.4:
 
 ethereumjs-wallet@0.6.0:
   version "0.6.0"
-  resolved "https://registry.npmjs.org/ethereumjs-wallet/-/ethereumjs-wallet-0.6.0.tgz#82763b1697ee7a796be7155da9dfb49b2f98cfdb"
+  resolved "https://registry.yarnpkg.com/ethereumjs-wallet/-/ethereumjs-wallet-0.6.0.tgz#82763b1697ee7a796be7155da9dfb49b2f98cfdb"
   dependencies:
     aes-js "^0.2.3"
     bs58check "^1.0.8"
@@ -6069,7 +6069,7 @@ ganache-core@0xProject/ganache-core#monorepo-dep:
     ethereumjs-tx "0xProject/ethereumjs-tx#fake-tx-include-signature-by-default"
     ethereumjs-util "^5.2.0"
     ethereumjs-vm "2.3.5"
-    ethereumjs-wallet "~0.6.0"
+    ethereumjs-wallet "0.6.0"
     fake-merkle-patricia-tree "~1.0.1"
     heap "~0.2.6"
     js-scrypt "^0.2.0"
