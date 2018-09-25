@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _September 25, 2018_
+
+    * Rename `getBlockAsync` to `getBlockIfExistsAsync` and rather then throw if the requested block wasn't found, return undefined. (#1082)
+
 ## v2.0.3 - _September 21, 2018_
 
     * Fixes issue #1076 where Parity now returns a placeholder transactionReceipt before the transaction is mined. (#1079)

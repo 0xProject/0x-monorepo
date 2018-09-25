@@ -6,7 +6,8 @@
                 "note": "Import SRA-related types from @0xproject/types",
                 "pr": 1085
             }
-        ]
+        ],
+        "timestamp": 1537875740
     },
     {
         "timestamp": 1537541580,
