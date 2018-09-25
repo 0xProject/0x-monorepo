@@ -56,7 +56,11 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
                 </div>
             );
         } else {
-            const numberOfColumns = this._numberOfColumnsForScreenWidth(this.props.screenWidth);
+            const numberOfRelayers = this.state.relayerInfos.length;
+            const numberOfColumns = Math.min(
+                numberOfRelayers,
+                this._numberOfColumnsForScreenWidth(this.props.screenWidth),
+            );
             return (
                 <GridList
                     cellHeight={CELL_HEIGHT}
