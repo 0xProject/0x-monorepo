@@ -1,9 +1,9 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
 
 export type ExchangeFillEventAssetType = 'erc20' | 'erc721';
 
 @Entity()
-export class ExchangeFillEvent {
+export class ExchangeFillEvent extends BaseEntity {
     @PrimaryColumn() public logIndex!: number;
 
     @Column() public address!: string;
