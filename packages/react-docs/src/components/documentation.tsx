@@ -329,7 +329,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         return <div>{externalExports}</div>;
     }
     private _renderNetworkBadgesIfExists(sectionName: string): React.ReactNode {
-        if (this.props.docsInfo.type !== SupportedDocJson.Solidity) {
+        if (this.props.docsInfo.type !== SupportedDocJson.SolDoc) {
             return null;
         }
 

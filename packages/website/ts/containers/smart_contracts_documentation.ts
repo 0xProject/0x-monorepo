@@ -17,7 +17,7 @@ const IntroMarkdownV2 = require('md/docs/smart_contracts/2.0.0/introduction');
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.SmartContracts,
     packageName: 'contracts',
-    type: SupportedDocJson.Solidity,
+    type: SupportedDocJson.SolDoc,
     displayName: '0x Smart Contracts',
     packageUrl: 'https://github.com/0xProject/contracts',
     markdownMenu: {

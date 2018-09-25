@@ -38,7 +38,7 @@ export enum KindString {
 }
 
 export enum SupportedDocJson {
-    Solidity = 'SOLIDITY',
+    SolDoc = 'SOL_DOC',
     TypeDoc = 'TYPEDOC',
 }
 

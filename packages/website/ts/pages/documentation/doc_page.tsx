@@ -141,7 +141,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                 versionDocObj as GeneratedDocJson,
                 this.props.docsInfo,
             ).convertToDocAgnosticFormat();
-        } else if (this.props.docsInfo.type === SupportedDocJson.Solidity) {
+        } else if (this.props.docsInfo.type === SupportedDocJson.SolDoc) {
             // documenting solidity.
             docAgnosticFormat = versionDocObj as DocAgnosticFormat;
             // need to modify docsInfo like convertToDocAgnosticFormat() would do
