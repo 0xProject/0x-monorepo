@@ -18,9 +18,8 @@ const JSON_TAB_WIDTH = 4;
         .demandOption('contracts-dir')
         .array('contracts')
         .help().argv;
-    process.stdout.write(
-        JSON.stringify(await generateSolDocAsync(argv.contractsDir, argv.contracts), null, JSON_TAB_WIDTH),
-    );
+    const doc = await generateSolDocAsync(argv.contractsDir, argv.contracts);
+    process.stdout.write(JSON.stringify(doc, null, JSON_TAB_WIDTH));
 })().catch(err => {
     throw err;
 });
