@@ -8,7 +8,8 @@
                 "pr": 1082
             },
             {
-                "note": "Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls",
+                "note":
+                    "Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls",
                 "pr": 1080
             }
         ]
