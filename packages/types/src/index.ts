@@ -111,12 +111,14 @@ export interface OrderStateValid {
     isValid: true;
     orderHash: string;
     orderRelevantState: OrderRelevantState;
+    transactionHash?: string;
 }
 
 export interface OrderStateInvalid {
     isValid: false;
     orderHash: string;
     error: ExchangeContractErrs;
+    transactionHash?: string;
 }
 
 export type OrderState = OrderStateValid | OrderStateInvalid;
