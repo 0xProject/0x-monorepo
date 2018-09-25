@@ -60,10 +60,10 @@ export function _convertToExchangeFillEvent(eventLog: LogWithDecodedArgs<Exchang
     const takerAssetData = assetDataUtils.decodeAssetDataOrThrow(eventLog.args.takerAssetData);
     const takerAssetType = takerAssetData.assetProxyId === AssetProxyId.ERC20 ? 'erc20' : 'erc721';
     const exchangeFillEvent = new ExchangeFillEvent();
-    exchangeFillEvent.logIndex = eventLog.logIndex as number;
-    exchangeFillEvent.address = eventLog.address as string;
-    exchangeFillEvent.rawData = eventLog.data as string;
+    exchangeFillEvent.contractAddress = eventLog.address as string;
     exchangeFillEvent.blockNumber = eventLog.blockNumber as number;
+    exchangeFillEvent.logIndex = eventLog.logIndex as number;
+    exchangeFillEvent.rawData = eventLog.data as string;
     exchangeFillEvent.makerAddress = eventLog.args.makerAddress.toString();
     exchangeFillEvent.takerAddress = eventLog.args.takerAddress.toString();
     exchangeFillEvent.feeRecepientAddress = eventLog.args.feeRecipientAddress;
@@ -94,10 +94,10 @@ export function _convertToExchangeCancelEvent(
     const takerAssetData = assetDataUtils.decodeAssetDataOrThrow(eventLog.args.takerAssetData);
     const takerAssetType = takerAssetData.assetProxyId === AssetProxyId.ERC20 ? 'erc20' : 'erc721';
     const exchangeCancelEvent = new ExchangeCancelEvent();
-    exchangeCancelEvent.logIndex = eventLog.logIndex as number;
-    exchangeCancelEvent.address = eventLog.address as string;
-    exchangeCancelEvent.rawData = eventLog.data as string;
+    exchangeCancelEvent.contractAddress = eventLog.address as string;
     exchangeCancelEvent.blockNumber = eventLog.blockNumber as number;
+    exchangeCancelEvent.logIndex = eventLog.logIndex as number;
+    exchangeCancelEvent.rawData = eventLog.data as string;
     exchangeCancelEvent.makerAddress = eventLog.args.makerAddress.toString();
     exchangeCancelEvent.takerAddress =
         eventLog.args.takerAddress == null ? null : eventLog.args.takerAddress.toString();
@@ -121,10 +121,10 @@ export function _convertToExchangeCancelUpToEvent(
     eventLog: LogWithDecodedArgs<ExchangeCancelUpToEventArgs>,
 ): ExchangeCancelUpToEvent {
     const exchangeCancelUpToEvent = new ExchangeCancelUpToEvent();
-    exchangeCancelUpToEvent.logIndex = eventLog.logIndex as number;
-    exchangeCancelUpToEvent.address = eventLog.address as string;
-    exchangeCancelUpToEvent.rawData = eventLog.data as string;
+    exchangeCancelUpToEvent.contractAddress = eventLog.address as string;
     exchangeCancelUpToEvent.blockNumber = eventLog.blockNumber as number;
+    exchangeCancelUpToEvent.logIndex = eventLog.logIndex as number;
+    exchangeCancelUpToEvent.rawData = eventLog.data as string;
     exchangeCancelUpToEvent.makerAddress = eventLog.args.makerAddress.toString();
     exchangeCancelUpToEvent.senderAddress = eventLog.args.senderAddress.toString();
     exchangeCancelUpToEvent.orderEpoch = eventLog.args.orderEpoch.toString();

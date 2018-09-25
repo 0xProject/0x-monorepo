@@ -17,11 +17,19 @@ const EXCHANGE_ADDRESS = '0x4f833a24e1f95d70f028921e27040ca56e09ab0b';
     const fillRepository = connection.getRepository(ExchangeFillEvent);
     const cancelRepository = connection.getRepository(ExchangeCancelEvent);
     const cancelUpToRepository = connection.getRepository(ExchangeCancelUpToEvent);
-    console.log(`found ${(await fillRepository.count()) + (await cancelRepository.count())} existing events`);
+    console.log(
+        `found ${(await fillRepository.count()) +
+            (await cancelRepository.count()) +
+            (await cancelUpToRepository.count())} existing events`,
+    );
     const rawEvents = await etherscan.getContractEventsAsync(EXCHANGE_ADDRESS);
     const events = parseExchangeEvents(rawEvents);
     for (const event of events) {
         await event.save();
     }
-    console.log(`now there are ${(await fillRepository.count()) + (await cancelRepository.count())} total events`);
+    console.log(
+        `now there are ${(await fillRepository.count()) +
+            (await cancelRepository.count()) +
+            (await cancelUpToRepository.count())} total events`,
+    );
 })();
