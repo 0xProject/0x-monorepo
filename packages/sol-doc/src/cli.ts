@@ -1,6 +1,8 @@
 import 'source-map-support/register';
 import * as yargs from 'yargs';
 
+import { logUtils } from '@0xproject/utils';
+
 import { generateSolDocAsync } from './solidity_doc_generator';
 
 const JSON_TAB_WIDTH = 4;
@@ -21,5 +23,6 @@ const JSON_TAB_WIDTH = 4;
     const doc = await generateSolDocAsync(argv.contractsDir, argv.contracts);
     process.stdout.write(JSON.stringify(doc, null, JSON_TAB_WIDTH));
 })().catch(err => {
-    throw err;
+    logUtils.warn(err);
+    process.exit(1);
 });
