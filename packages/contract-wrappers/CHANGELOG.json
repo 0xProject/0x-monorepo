@@ -4,7 +4,12 @@
         "changes": [
             {
                 "note":
-                    "Fixes dropped events in subscriptions by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too."
+                    "Fixes dropped events in subscriptions by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too.",            
+                "pr": 1080
+            },
+            {
+                "note": "Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it",
+                "pr": 1080
             }
         ]
     },
