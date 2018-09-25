@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Rename StandardRelayerAPIAssetBuyerManager to AssetBuyerManager and other API improvements.",
+                "pr": 1086
+            }
+        ]
+    },
+    {
         "timestamp": 1537875740,
         "version": "1.0.0",
         "changes": [
