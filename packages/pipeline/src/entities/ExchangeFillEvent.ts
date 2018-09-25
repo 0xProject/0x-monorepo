@@ -4,10 +4,10 @@ import { AssetType } from '../types';
 
 @Entity()
 export class ExchangeFillEvent extends BaseEntity {
+    @PrimaryColumn() public contractAddress!: string;
     @PrimaryColumn() public logIndex!: number;
     @PrimaryColumn() public blockNumber!: number;
 
-    @Column() public address!: string;
     @Column() public rawData!: string;
 
     @Column() public makerAddress!: string;
