@@ -3,7 +3,7 @@ import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
 import { AssetType } from '../types';
 
 @Entity()
-export class ExchangeFillEvent extends BaseEntity {
+export class ExchangeCancelEvent extends BaseEntity {
     @PrimaryColumn() public logIndex!: number;
 
     @Column() public address!: string;
@@ -11,13 +11,10 @@ export class ExchangeFillEvent extends BaseEntity {
     @Column() public blockNumber!: number;
 
     @Column() public makerAddress!: string;
-    @Column() public takerAddress!: string;
+    @Column({ nullable: true, type: String })
+    public takerAddress!: string;
     @Column() public feeRecepientAddress!: string;
     @Column() public senderAddress!: string;
-    @Column() public makerAssetFilledAmount!: string;
-    @Column() public takerAssetFilledAmount!: string;
-    @Column() public makerFeePaid!: string;
-    @Column() public takerFeePaid!: string;
     @Column() public orderHash!: string;
     @Column() public rawMakerAssetData!: string;
     @Column() public makerAssetType!: AssetType;
