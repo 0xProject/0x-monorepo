@@ -9,7 +9,7 @@ import {
     OrderbookResponse,
     OrderConfigResponse,
     OrdersResponse,
-} from '../types';
+} from '@0xproject/types';
 
 import { typeConverters } from './type_converters';
 

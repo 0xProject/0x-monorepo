@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Import SRA-related types from @0xproject/types",
+                "pr": 1085
+            }
+        ]
+    },
+    {
         "timestamp": 1537541580,
         "version": "2.0.2",
         "changes": [

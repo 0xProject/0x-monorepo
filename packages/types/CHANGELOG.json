@@ -5,6 +5,10 @@
             {
                 "note": "Add ObjectMap type",
                 "pr": 1037
+            },
+            {
+                "note": "Add SRA types from connect",
+                "pr": 1085
             }
         ]
     },
