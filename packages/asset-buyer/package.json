@@ -4,7 +4,7 @@
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Convenience package for buying assets",
+    "description": "Convenience package for discovering and buying assets with Ether.",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
@@ -69,6 +69,6 @@
         "typescript": "3.0.1"
     },
     "publishConfig": {
-        "access": "public"
+        "access": "private"
     }
 }

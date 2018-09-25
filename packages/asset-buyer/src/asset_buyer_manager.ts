@@ -13,7 +13,14 @@ import { StandardRelayerAPIOrderProvider } from './order_providers/standard_rela
 import { assert } from './utils/assert';
 import { assetDataUtils } from './utils/asset_data_utils';
 
-import { AssetBuyerManagerError, BuyQuote, BuyQuoteRequestOpts, OrderProvider } from './types';
+import {
+    AssetBuyerManagerError,
+    AssetBuyerOpts,
+    BuyQuote,
+    BuyQuoteExecutionOpts,
+    BuyQuoteRequestOpts,
+    OrderProvider,
+} from './types';
 
 export class AssetBuyerManager {
     // Map of assetData to AssetBuyer for that assetData
@@ -41,40 +48,28 @@ export class AssetBuyerManager {
      * Instantiates a new AssetBuyerManager instance with all available assetDatas at the provided sraApiUrl
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
-     * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
-     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
-     * @param   expiryBufferSeconds     The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+     * @param   options                 Initialization options for an AssetBuyer. See type definition for details.
      *
      * @return  An promise of an instance of AssetBuyerManager
      */
     public static async getAssetBuyerManagerFromStandardRelayerApiAsync(
         provider: Provider,
         sraApiUrl: string,
-        networkId: number = constants.MAINNET_NETWORK_ID,
-        orderRefreshIntervalMs?: number,
-        expiryBufferSeconds?: number,
+        options: Partial<AssetBuyerOpts>,
     ): Promise<AssetBuyerManager> {
+        const networkId = options.networkId || constants.MAINNET_NETWORK_ID;
         const contractWrappers = new ContractWrappers(provider, { networkId });
         const etherTokenAssetData = assetDataUtils.getEtherTokenAssetDataOrThrow(contractWrappers);
         const assetDatas = await AssetBuyerManager.getAllAvailableAssetDatasAsync(sraApiUrl, etherTokenAssetData);
         const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl);
-        return new AssetBuyerManager(
-            provider,
-            assetDatas,
-            orderProvider,
-            networkId,
-            orderRefreshIntervalMs,
-            expiryBufferSeconds,
-        );
+        return new AssetBuyerManager(provider, assetDatas, orderProvider, options);
     }
     /**
      * Instantiates a new AssetBuyerManager instance given existing liquidity in the form of orders and feeOrders.
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   orders                  A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData (WETH).
      * @param   feeOrders               A array of objects that conform to SignedOrder. All orders must have the same makerAssetData (ZRX) and takerAssetData (WETH). Defaults to an empty array.
-     * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
-     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
-     * @param   expiryBufferSeconds     The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+     * @param   options                 Initialization options for an AssetBuyer. See type definition for details.
      *
      * @return  An instance of AssetBuyerManager
      */
@@ -82,29 +77,18 @@ export class AssetBuyerManager {
         provider: Provider,
         orders: SignedOrder[],
         feeOrders: SignedOrder[] = [],
-        networkId?: number,
-        orderRefreshIntervalMs?: number,
-        expiryBufferSeconds?: number,
+        options: Partial<AssetBuyerOpts>,
     ): AssetBuyerManager {
         const assetDatas = _.map(orders, order => order.makerAssetData);
         const orderProvider = new BasicOrderProvider(_.concat(orders, feeOrders));
-        return new AssetBuyerManager(
-            provider,
-            assetDatas,
-            orderProvider,
-            networkId,
-            orderRefreshIntervalMs,
-            expiryBufferSeconds,
-        );
+        return new AssetBuyerManager(provider, assetDatas, orderProvider, options);
     }
     /**
      * Instantiates a new AssetBuyerManager instance
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   assetDatas              The assetDatas of the desired assets to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param   orderProvider            An object that conforms to OrderProvider, see type for definition.
-     * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
-     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
-     * @param   expiryBufferSeconds     The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+     * @param   orderProvider           An object that conforms to OrderProvider, see type for definition.
+     * @param   options                 Initialization options for an AssetBuyer. See type definition for details.
      *
      * @return  An instance of AssetBuyerManager
      */
@@ -112,22 +96,13 @@ export class AssetBuyerManager {
         provider: Provider,
         assetDatas: string[],
         orderProvider: OrderProvider,
-        networkId?: number,
-        orderRefreshIntervalMs?: number,
-        expiryBufferSeconds?: number,
+        options: Partial<AssetBuyerOpts>,
     ) {
         assert.assert(assetDatas.length > 0, `Expected 'assetDatas' to be a non-empty array.`);
         this._assetBuyerMap = _.reduce(
             assetDatas,
             (accAssetBuyerMap: ObjectMap<AssetBuyer>, assetData: string) => {
-                accAssetBuyerMap[assetData] = new AssetBuyer(
-                    provider,
-                    assetData,
-                    orderProvider,
-                    networkId,
-                    orderRefreshIntervalMs,
-                    expiryBufferSeconds,
-                );
+                accAssetBuyerMap[assetData] = new AssetBuyer(provider, assetData, orderProvider, options);
                 return accAssetBuyerMap;
             },
             {},
@@ -170,9 +145,8 @@ export class AssetBuyerManager {
      *
      * @param   assetData           The assetData that identifies the desired asset to buy.
      * @param   assetBuyAmount      The amount of asset to buy.
-     * @param   feePercentage       The affiliate fee percentage. Defaults to 0.
-     * @param   forceOrderRefresh   If set to true, new orders and state will be fetched instead of waiting for
-     *                              the next orderRefreshIntervalMs. Defaults to false.
+     * @param   options             Options for the execution of the BuyQuote. See type definition for more information.
+     *
      * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
      */
     public async getBuyQuoteAsync(
@@ -191,17 +165,7 @@ export class AssetBuyerManager {
      *
      * @return  A promise of the txHash.
      */
-    public async executeBuyQuoteAsync(
-        buyQuote: BuyQuote,
-        rate?: BigNumber,
-        takerAddress?: string,
-        feeRecipient?: string,
-    ): Promise<string> {
-        return this.getAssetBuyerFromAssetData(buyQuote.assetData).executeBuyQuoteAsync(
-            buyQuote,
-            rate,
-            takerAddress,
-            feeRecipient,
-        );
+    public async executeBuyQuoteAsync(buyQuote: BuyQuote, options: Partial<BuyQuoteExecutionOpts>): Promise<string> {
+        return this.getAssetBuyerFromAssetData(buyQuote.assetData).executeBuyQuoteAsync(buyQuote, options);
     }
 }

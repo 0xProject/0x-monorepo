@@ -8,7 +8,10 @@ export { StandardRelayerAPIOrderProvider } from './order_providers/standard_rela
 export { AssetBuyerManager } from './asset_buyer_manager';
 export {
     AssetBuyerError,
+    AssetBuyerOpts,
     BuyQuote,
+    BuyQuoteExecutionOpts,
+    BuyQuoteRequestOpts,
     OrderProvider,
     OrderProviderRequest,
     OrderProviderResponse,

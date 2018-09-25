@@ -52,10 +52,37 @@ export interface BuyQuote {
     feePercentage?: number;
 }
 
+/**
+ * feePercentage: The affiliate fee percentage. Defaults to 0.
+ * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
+ * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
+ */
 export interface BuyQuoteRequestOpts {
     feePercentage: number;
     shouldForceOrderRefresh: boolean;
     slippagePercentage: number;
+}
+
+/**
+ * rate: The desired rate to execute the buy at. Affects the amount of ETH sent with the transaction, defaults to buyQuote.maxRate.
+ * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
+ * feeRecipient: The address where affiliate fees are sent. Defaults to null address (0x000...000).
+ */
+export interface BuyQuoteExecutionOpts {
+    rate?: BigNumber;
+    takerAddress?: string;
+    feeRecipient: string;
+}
+
+/**
+ * networkId: The ethereum network id. Defaults to 1 (mainnet).
+ * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
+ * expiryBufferSeconds: The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+ */
+export interface AssetBuyerOpts {
+    networkId: number;
+    orderRefreshIntervalMs: number;
+    expiryBufferSeconds: number;
 }
 
 /**

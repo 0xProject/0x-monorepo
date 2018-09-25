@@ -11,8 +11,10 @@ import { BasicOrderProvider } from './order_providers/basic_order_provider';
 import { StandardRelayerAPIOrderProvider } from './order_providers/standard_relayer_api_order_provider';
 import {
     AssetBuyerError,
+    AssetBuyerOpts,
     AssetBuyerOrdersAndFillableAmounts,
     BuyQuote,
+    BuyQuoteExecutionOpts,
     BuyQuoteRequestOpts,
     OrderProvider,
     OrderProviderResponse,
@@ -38,9 +40,7 @@ export class AssetBuyer {
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   orders                  A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData (WETH).
      * @param   feeOrders               A array of objects that conform to SignedOrder. All orders must have the same makerAssetData (ZRX) and takerAssetData (WETH). Defaults to an empty array.
-     * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
-     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
-     * @param   expiryBufferSeconds     The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+     * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
      *
      * @return  An instance of AssetBuyer
      */
@@ -48,28 +48,17 @@ export class AssetBuyer {
         provider: Provider,
         orders: SignedOrder[],
         feeOrders: SignedOrder[] = [],
-        networkId: number = constants.MAINNET_NETWORK_ID,
-        orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
-        expiryBufferSeconds: number = constants.DEFAULT_EXPIRY_BUFFER_SECONDS,
+        options: Partial<AssetBuyerOpts>,
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
         assert.doesConformToSchema('feeOrders', feeOrders, schemas.signedOrdersSchema);
-        assert.isNumber('networkId', networkId);
-        assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
         assert.areValidProvidedOrders('orders', orders);
         assert.areValidProvidedOrders('feeOrders', feeOrders);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
         const assetData = orders[0].makerAssetData;
         const orderProvider = new BasicOrderProvider(_.concat(orders, feeOrders));
-        const assetBuyer = new AssetBuyer(
-            provider,
-            assetData,
-            orderProvider,
-            networkId,
-            orderRefreshIntervalMs,
-            expiryBufferSeconds,
-        );
+        const assetBuyer = new AssetBuyer(provider, assetData, orderProvider, options);
         return assetBuyer;
     }
     /**
@@ -77,9 +66,7 @@ export class AssetBuyer {
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   assetData               The assetData that identifies the desired asset to buy.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
-     * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
-     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
-     * @param   expiryBufferSeconds     The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+     * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
      *
      * @return  An instance of AssetBuyer
      */
@@ -87,24 +74,13 @@ export class AssetBuyer {
         provider: Provider,
         assetData: string,
         sraApiUrl: string,
-        networkId: number = constants.MAINNET_NETWORK_ID,
-        orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
-        expiryBufferSeconds: number = constants.DEFAULT_EXPIRY_BUFFER_SECONDS,
+        options: Partial<AssetBuyerOpts>,
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.isHexString('assetData', assetData);
         assert.isWebUri('sraApiUrl', sraApiUrl);
-        assert.isNumber('networkId', networkId);
-        assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
         const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl);
-        const assetBuyer = new AssetBuyer(
-            provider,
-            assetData,
-            orderProvider,
-            networkId,
-            orderRefreshIntervalMs,
-            expiryBufferSeconds,
-        );
+        const assetBuyer = new AssetBuyer(provider, assetData, orderProvider, options);
         return assetBuyer;
     }
     /**
@@ -112,59 +88,43 @@ export class AssetBuyer {
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   tokenAddress            The ERC20 token address that identifies the desired asset to buy.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
-     * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
-     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
-     * @param   expiryBufferSeconds     The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+     * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
+     *
      * @return  An instance of AssetBuyer
      */
     public static getAssetBuyerForERC20TokenAddress(
         provider: Provider,
         tokenAddress: string,
         sraApiUrl: string,
-        networkId: number = constants.MAINNET_NETWORK_ID,
-        orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
-        expiryBufferSeconds: number = constants.DEFAULT_EXPIRY_BUFFER_SECONDS,
+        options: Partial<AssetBuyerOpts>,
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isWebUri('sraApiUrl', sraApiUrl);
-        assert.isNumber('networkId', networkId);
-        assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
         const assetData = assetDataUtils.encodeERC20AssetData(tokenAddress);
-        const assetBuyer = AssetBuyer.getAssetBuyerForAssetData(
-            provider,
-            assetData,
-            sraApiUrl,
-            networkId,
-            orderRefreshIntervalMs,
-            expiryBufferSeconds,
-        );
+        const assetBuyer = AssetBuyer.getAssetBuyerForAssetData(provider, assetData, sraApiUrl, options);
         return assetBuyer;
     }
     /**
      * Instantiates a new AssetBuyer instance
-     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
-     * @param   assetData               The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param   orderProvider            An object that conforms to OrderProvider, see type for definition.
-     * @param   networkId               The ethereum network id. Defaults to 1 (mainnet).
-     * @param   orderRefreshIntervalMs  The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
-     * @param   expiryBufferSeconds     The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+     * @param   provider            The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   assetData           The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param   orderProvider       An object that conforms to OrderProvider, see type for definition.
+     * @param   options             Initialization options for the AssetBuyer. See type definition for details.
      *
      * @return  An instance of AssetBuyer
      */
-    constructor(
-        provider: Provider,
-        assetData: string,
-        orderProvider: OrderProvider,
-        networkId: number = constants.MAINNET_NETWORK_ID,
-        orderRefreshIntervalMs: number = constants.DEFAULT_ORDER_REFRESH_INTERVAL_MS,
-        expiryBufferSeconds: number = constants.DEFAULT_EXPIRY_BUFFER_SECONDS,
-    ) {
+    constructor(provider: Provider, assetData: string, orderProvider: OrderProvider, options: Partial<AssetBuyerOpts>) {
+        const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = {
+            ...constants.DEFAULT_ASSET_BUYER_OPTS,
+            ...options,
+        };
         assert.isWeb3Provider('provider', provider);
         assert.isString('assetData', assetData);
         assert.isValidOrderProvider('orderProvider', orderProvider);
         assert.isNumber('networkId', networkId);
         assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
+        assert.isNumber('expiryBufferSeconds', expiryBufferSeconds);
         this.provider = provider;
         this.assetData = assetData;
         this.orderProvider = orderProvider;
@@ -179,15 +139,14 @@ export class AssetBuyer {
      * Get a `BuyQuote` containing all information relevant to fulfilling a buy.
      * You can then pass the `BuyQuote` to `executeBuyQuoteAsync` to execute the buy.
      * @param   assetBuyAmount      The amount of asset to buy.
-     * @param   feePercentage       The affiliate fee percentage. Defaults to 0.
-     * @param   forceOrderRefresh   If set to true, new orders and state will be fetched instead of waiting for
-     *                              the next orderRefreshIntervalMs. Defaults to false.
+     * @param   options             Options for the request. See type definition for more information.
+     *
      * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
      */
     public async getBuyQuoteAsync(assetBuyAmount: BigNumber, options: Partial<BuyQuoteRequestOpts>): Promise<BuyQuote> {
         const { feePercentage, shouldForceOrderRefresh, slippagePercentage } = {
-            ...options,
             ...constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
+            ...options,
         };
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
         assert.isValidPercentage('feePercentage', feePercentage);
@@ -222,18 +181,15 @@ export class AssetBuyer {
     /**
      * Given a BuyQuote and desired rate, attempt to execute the buy.
      * @param   buyQuote        An object that conforms to BuyQuote. See type definition for more information.
-     * @param   rate            The desired rate to execute the buy at. Affects the amount of ETH sent with the transaction, defaults to buyQuote.maxRate.
-     * @param   takerAddress    The address to perform the buy. Defaults to the first available address from the provider.
-     * @param   feeRecipient    The address where affiliate fees are sent. Defaults to null address (0x000...000).
+     * @param   options         Options for the execution of the BuyQuote. See type definition for more information.
      *
      * @return  A promise of the txHash.
      */
-    public async executeBuyQuoteAsync(
-        buyQuote: BuyQuote,
-        rate?: BigNumber,
-        takerAddress?: string,
-        feeRecipient: string = constants.NULL_ADDRESS,
-    ): Promise<string> {
+    public async executeBuyQuoteAsync(buyQuote: BuyQuote, options: Partial<BuyQuoteExecutionOpts>): Promise<string> {
+        const { rate, takerAddress, feeRecipient } = {
+            ...constants.DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
+            ...options,
+        };
         assert.isValidBuyQuote('buyQuote', buyQuote);
         if (!_.isUndefined(rate)) {
             assert.isBigNumber('rate', rate);
