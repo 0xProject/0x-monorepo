@@ -20,7 +20,6 @@ enum LogEventState {
  */
 export class EventWatcher {
     private readonly _web3Wrapper: Web3Wrapper;
-    private readonly _stateLayer: BlockParamLiteral;
     private readonly _isVerbose: boolean;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
@@ -35,7 +34,6 @@ export class EventWatcher {
     ) {
         this._isVerbose = isVerbose;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._stateLayer = stateLayer;
         this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
             ? DEFAULT_EVENT_POLLING_INTERVAL_MS
             : pollingIntervalIfExistsMs;
@@ -82,31 +80,31 @@ export class EventWatcher {
             this._onLogStateChangedAsync.bind(this, callback, isRemoved),
         );
     }
-    /// This method only exists in order to comply with the expected interface of Blockstream's constructor
+    // This method only exists in order to comply with the expected interface of Blockstream's constructor
     private async _blockstreamGetBlockOrNullAsync(hash: string): Promise<Block | null> {
         const shouldIncludeTransactionData = false;
-        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync({
+        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync<Block | null>({
             method: 'eth_getBlockByHash',
             params: [hash, shouldIncludeTransactionData],
         });
-        return blockOrNull as Block;
+        return blockOrNull;
     }
     // This method only exists in order to comply with the expected interface of Blockstream's constructor
     private async _blockstreamGetLatestBlockOrNullAsync(): Promise<Block | null> {
         const shouldIncludeTransactionData = false;
-        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync({
+        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync<Block | null>({
             method: 'eth_getBlockByNumber',
             params: [BlockParamLiteral.Latest, shouldIncludeTransactionData],
         });
-        return blockOrNull as Block;
+        return blockOrNull;
     }
     // This method only exists in order to comply with the expected interface of Blockstream's constructor
-    private async _blockstreamGetLogsAsync(filterOptions: FilterObject): Promise<Log[]> {
-        const logs = await this._web3Wrapper.sendRawPayloadAsync({
+    private async _blockstreamGetLogsAsync(filterOptions: FilterObject): Promise<RawLogEntry[]> {
+        const logs = await this._web3Wrapper.sendRawPayloadAsync<RawLogEntry[]>({
             method: 'eth_getLogs',
             params: [filterOptions],
         });
-        return logs as Log[];
+        return logs as RawLogEntry[];
     }
     private _stopBlockAndLogStream(): void {
         if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
@@ -134,7 +132,7 @@ export class EventWatcher {
         // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
-            await this._blockAndLogStreamerIfExists.reconcileNewBlock((latestBlockOrNull as any) as Block);
+            await this._blockAndLogStreamerIfExists.reconcileNewBlock(latestBlockOrNull);
         }
     }
     private async _emitDifferencesAsync(
