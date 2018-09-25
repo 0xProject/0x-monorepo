@@ -1,18 +1,24 @@
-import { ExchangeCancelEventArgs, ExchangeEventArgs, ExchangeFillEventArgs } from '@0xproject/contract-wrappers';
+import {
+    ExchangeCancelEventArgs,
+    ExchangeCancelUpToEventArgs,
+    ExchangeEventArgs,
+    ExchangeFillEventArgs,
+} from '@0xproject/contract-wrappers';
 import { assetDataUtils } from '@0xproject/order-utils';
 import { AssetProxyId, ERC721AssetData } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
+import { LogWithDecodedArgs } from 'ethereum-types';
 import * as R from 'ramda';
 
 import { artifacts } from '../../artifacts';
 import { EventsResponse } from '../../data_sources/etherscan';
 import { ExchangeCancelEvent } from '../../entities/ExchangeCancelEvent';
+import { ExchangeCancelUpToEvent } from '../../entities/ExchangeCancelUpToEvent';
 import { ExchangeFillEvent } from '../../entities/ExchangeFillEvent';
 
 import { convertResponseToLogEntry, decodeLogEntry } from './event_utils';
 
-export type ExchangeEventEntity = ExchangeFillEvent | ExchangeCancelEvent;
+export type ExchangeEventEntity = ExchangeFillEvent | ExchangeCancelEvent | ExchangeCancelUpToEvent;
 
 const exchangeContractAbi = artifacts.Exchange.compilerOutput.abi;
 
@@ -27,7 +33,7 @@ export function parseExchangeEvents(rawEventsResponse: EventsResponse): Exchange
 }
 
 export function shouldIncludeLogEntry(logEntry: LogWithDecodedArgs<ExchangeEventArgs>): boolean {
-    if (!R.contains(logEntry.event, ['Fill', 'Cancel'])) {
+    if (!R.contains(logEntry.event, ['Fill', 'Cancel', 'CancelUpTo'])) {
         return false;
     } else if (logEntry.logIndex == null || isNaN(logEntry.logIndex)) {
         return false;
@@ -41,6 +47,8 @@ export function _convertToEntity(eventLog: LogWithDecodedArgs<ExchangeEventArgs>
             return _convertToExchangeFillEvent(eventLog as LogWithDecodedArgs<ExchangeFillEventArgs>);
         case 'Cancel':
             return _convertToExchangeCancelEvent(eventLog as LogWithDecodedArgs<ExchangeCancelEventArgs>);
+        case 'CancelUpTo':
+            return _convertToExchangeCancelUpToEvent(eventLog as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>);
         default:
             throw new Error('unexpected eventLog.event type: ' + eventLog.event);
     }
@@ -107,6 +115,20 @@ export function _convertToExchangeCancelEvent(
     exchangeCancelEvent.takerTokenAddress = takerAssetData.tokenAddress;
     exchangeCancelEvent.takerTokenId = bigNumbertoStringOrNull((takerAssetData as ERC721AssetData).tokenId);
     return exchangeCancelEvent;
+}
+
+export function _convertToExchangeCancelUpToEvent(
+    eventLog: LogWithDecodedArgs<ExchangeCancelUpToEventArgs>,
+): ExchangeCancelUpToEvent {
+    const exchangeCancelUpToEvent = new ExchangeCancelUpToEvent();
+    exchangeCancelUpToEvent.logIndex = eventLog.logIndex as number;
+    exchangeCancelUpToEvent.address = eventLog.address as string;
+    exchangeCancelUpToEvent.rawData = eventLog.data as string;
+    exchangeCancelUpToEvent.blockNumber = eventLog.blockNumber as number;
+    exchangeCancelUpToEvent.makerAddress = eventLog.args.makerAddress.toString();
+    exchangeCancelUpToEvent.senderAddress = eventLog.args.senderAddress.toString();
+    exchangeCancelUpToEvent.orderEpoch = eventLog.args.orderEpoch.toString();
+    return exchangeCancelUpToEvent;
 }
 
 function bigNumbertoStringOrNull(n: BigNumber): string | null {
