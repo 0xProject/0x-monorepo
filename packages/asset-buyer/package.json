@@ -69,6 +69,6 @@
         "typescript": "3.0.1"
     },
     "publishConfig": {
-        "access": "private"
+        "access": "public"
     }
 }
