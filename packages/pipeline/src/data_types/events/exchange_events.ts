@@ -1,23 +1,29 @@
 import { ExchangeEventArgs, ExchangeFillEventArgs } from '@0xproject/contract-wrappers';
 import { assetDataUtils } from '@0xproject/order-utils';
 import { AssetProxyId, ERC721AssetData } from '@0xproject/types';
-import { AbiDecoder, BigNumber } from '@0xproject/utils';
-import { AbiDefinition, LogEntry, LogWithDecodedArgs } from 'ethereum-types';
+import { BigNumber } from '@0xproject/utils';
+import { LogWithDecodedArgs } from 'ethereum-types';
 import * as R from 'ramda';
 
-import { ExchangeFillEvent } from '../../../entities/ExchangeFillEvent';
-import { decodeLogEntry } from '../event_utils';
+import { artifacts } from '../../artifacts';
+import { EventsResponse } from '../../data_sources/etherscan';
+import { ExchangeFillEvent } from '../../entities/ExchangeFillEvent';
 
-import { BaseEventHandler } from './base_event_handler';
+import { convertResponseToLogEntry, decodeLogEntry } from './event_utils';
 
 // TODO(albrow): Union with other exchange event entity types
 export type ExchangeEventEntity = ExchangeFillEvent;
 
-export class ExchangeEventHandler extends BaseEventHandler<ExchangeEventEntity> {
-    public convertLogEntryToEventEntity(logEntry: LogEntry): ExchangeEventEntity {
-        const decodedLogEntry = decodeLogEntry<ExchangeEventArgs>(this._abi, logEntry);
-        return _convertToEntity(decodedLogEntry);
-    }
+const exchangeContractAbi = artifacts.Exchange.compilerOutput.abi;
+
+export function parseExchangeEvents(rawEventsResponse: EventsResponse): ExchangeEventEntity[] {
+    const logEntries = R.map(convertResponseToLogEntry, rawEventsResponse.result);
+    const decodedLogEntries = R.map(
+        eventResponse => decodeLogEntry<ExchangeEventArgs>(exchangeContractAbi, eventResponse),
+        logEntries,
+    );
+    const filteredLogEntries = R.filter(logEntry => R.contains(logEntry.event, ['Fill']), decodedLogEntries);
+    return R.map(_convertToEntity, filteredLogEntries);
 }
 
 export function _convertToEntity(eventLog: LogWithDecodedArgs<ExchangeEventArgs>): ExchangeEventEntity {
@@ -25,8 +31,7 @@ export function _convertToEntity(eventLog: LogWithDecodedArgs<ExchangeEventArgs>
         case 'Fill':
             return _convertToExchangeFillEvent(eventLog as LogWithDecodedArgs<ExchangeFillEventArgs>);
         default:
-            return new ExchangeFillEvent();
-        // throw new Error('unexpected eventLog.event type: ' + eventLog.event);
+            throw new Error('unexpected eventLog.event type: ' + eventLog.event);
     }
 }
 
@@ -67,10 +72,4 @@ function bigNumbertoStringOrNull(n: BigNumber): string | null {
         return null;
     }
     return n.toString();
-}
-
-function filterEventLogs(
-    eventLogs: Array<LogWithDecodedArgs<ExchangeEventArgs>>,
-): Array<LogWithDecodedArgs<ExchangeEventArgs>> {
-    return R.filter(eventLog => eventLog.event === 'Fill', eventLogs);
 }
