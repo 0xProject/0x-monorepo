@@ -3,7 +3,7 @@ import * as yargs from 'yargs';
 
 import { generateSolDocAsync } from './solidity_doc_generator';
 
-const JSON_TABWIDTH = 4;
+const JSON_TAB_WIDTH = 4;
 
 (async () => {
     const argv = yargs
@@ -19,7 +19,7 @@ const JSON_TABWIDTH = 4;
         .array('contracts')
         .help().argv;
     process.stdout.write(
-        JSON.stringify(await generateSolDocAsync(argv.contractsDir, argv.contracts), null, JSON_TABWIDTH),
+        JSON.stringify(await generateSolDocAsync(argv.contractsDir, argv.contracts), null, JSON_TAB_WIDTH),
     );
 })().catch(err => {
     throw err;
