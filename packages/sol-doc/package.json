@@ -24,15 +24,15 @@
     "author": "F. Eugene Aumson",
     "license": "Apache-2.0",
     "dependencies": {
-        "@0xproject/sol-compiler": "^1.0.5",
-        "@0xproject/types": "^1.0.1-rc.6",
-        "@0xproject/utils": "^1.0.5",
+        "@0xproject/sol-compiler": "^1.1.4",
+        "@0xproject/types": "^1.1.0",
+        "@0xproject/utils": "^1.0.10",
         "ethereum-types": "^1.0.4",
         "lodash": "^4.17.10",
         "yargs": "^12.0.2"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.6",
+        "@0xproject/tslint-config": "^1.0.7",
         "chai": "^4.1.2",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^2.0.2",
