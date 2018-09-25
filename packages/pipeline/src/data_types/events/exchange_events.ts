@@ -2,7 +2,7 @@ import { ExchangeCancelEventArgs, ExchangeEventArgs, ExchangeFillEventArgs } fro
 import { assetDataUtils } from '@0xproject/order-utils';
 import { AssetProxyId, ERC721AssetData } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
-import { LogWithDecodedArgs } from 'ethereum-types';
+import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as R from 'ramda';
 
 import { artifacts } from '../../artifacts';
@@ -22,8 +22,17 @@ export function parseExchangeEvents(rawEventsResponse: EventsResponse): Exchange
         eventResponse => decodeLogEntry<ExchangeEventArgs>(exchangeContractAbi, eventResponse),
         logEntries,
     );
-    const filteredLogEntries = R.filter(logEntry => R.contains(logEntry.event, ['Fill', 'Cancel']), decodedLogEntries);
+    const filteredLogEntries = R.filter(shouldIncludeLogEntry, decodedLogEntries);
     return R.map(_convertToEntity, filteredLogEntries);
+}
+
+export function shouldIncludeLogEntry(logEntry: LogWithDecodedArgs<ExchangeEventArgs>): boolean {
+    if (!R.contains(logEntry.event, ['Fill', 'Cancel'])) {
+        return false;
+    } else if (logEntry.logIndex == null || isNaN(logEntry.logIndex)) {
+        return false;
+    }
+    return true;
 }
 
 export function _convertToEntity(eventLog: LogWithDecodedArgs<ExchangeEventArgs>): ExchangeEventEntity {

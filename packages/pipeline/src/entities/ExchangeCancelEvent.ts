@@ -5,10 +5,10 @@ import { AssetType } from '../types';
 @Entity()
 export class ExchangeCancelEvent extends BaseEntity {
     @PrimaryColumn() public logIndex!: number;
+    @PrimaryColumn() public blockNumber!: number;
 
     @Column() public address!: string;
     @Column() public rawData!: string;
-    @Column() public blockNumber!: number;
 
     @Column() public makerAddress!: string;
     @Column({ nullable: true, type: String })
