@@ -1,14 +1,14 @@
 import { AbiDecoder, intervalUtils, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { marshaller, Web3Wrapper } from '@0xproject/web3-wrapper';
 import {
     BlockParamLiteral,
-    BlockWithoutTransactionData,
     ContractAbi,
     ContractArtifact,
     FilterObject,
     LogEntry,
     LogWithDecodedArgs,
     RawLog,
+    RawLogEntry,
 } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
@@ -158,7 +158,8 @@ export abstract class ContractWrapper {
             return addressIfExists;
         }
     }
-    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, log: LogEntry): void {
+    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, rawLog: RawLogEntry): void {
+        const log: LogEntry = marshaller.unmarshalLog(rawLog);
         _.forEach(this._filters, (filter: FilterObject, filterToken: string) => {
             if (filterUtils.matchesFilter(log, filter)) {
                 const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
@@ -209,7 +210,7 @@ export abstract class ContractWrapper {
         const shouldIncludeTransactionData = false;
         const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync({
             method: 'eth_getBlockByNumber',
-            params: ['latest', shouldIncludeTransactionData],
+            params: [BlockParamLiteral.Latest, shouldIncludeTransactionData],
         });
         return blockOrNull as Block;
     }

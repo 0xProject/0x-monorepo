@@ -1,6 +1,6 @@
 import { intervalUtils, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { BlockParamLiteral, FilterObject, LogEntry, Provider } from 'ethereum-types';
+import { marshaller, Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BlockParamLiteral, FilterObject, LogEntry, Provider, RawLogEntry } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
@@ -96,7 +96,7 @@ export class EventWatcher {
         const shouldIncludeTransactionData = false;
         const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync({
             method: 'eth_getBlockByNumber',
-            params: ['latest', shouldIncludeTransactionData],
+            params: [BlockParamLiteral.Latest, shouldIncludeTransactionData],
         });
         return blockOrNull as Block;
     }
@@ -121,8 +121,9 @@ export class EventWatcher {
     private async _onLogStateChangedAsync(
         callback: EventWatcherCallback,
         isRemoved: boolean,
-        log: LogEntry,
+        rawLog: RawLogEntry,
     ): Promise<void> {
+        const log: LogEntry = marshaller.unmarshalLog(rawLog);
         await this._emitDifferencesAsync(log, isRemoved ? LogEventState.Removed : LogEventState.Added, callback);
     }
     private async _reconcileBlockAsync(): Promise<void> {
