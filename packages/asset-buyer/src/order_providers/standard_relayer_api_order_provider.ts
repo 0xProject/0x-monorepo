@@ -1,4 +1,5 @@
-import { APIOrder, HttpClient, OrderbookResponse } from '@0xproject/connect';
+import { HttpClient } from '@0xproject/connect';
+import { APIOrder, OrderbookResponse } from '@0xproject/types';
 import * as _ from 'lodash';
 
 import {
