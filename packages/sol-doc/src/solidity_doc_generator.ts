@@ -27,8 +27,8 @@ import {
 } from '@0xproject/types';
 
 /**
- * Invoke the Solidity compiler and transform its ABI and devdoc outputs into
- * the types that are used as input to documentation generation tools.
+ * Invoke the Solidity compiler and transform its ABI and devdoc outputs into a
+ * JSON format easily consumed by documentation rendering tools.
  * @param contractsToDocument list of contracts for which to generate doc objects
  * @param contractsDir the directory in which to find the `contractsToCompile` as well as their dependencies.
  * @return doc object for use with documentation generation tools.
@@ -243,7 +243,7 @@ function _genEventArgsDoc(args: EventParameter[], devdocIfExists: DevdocOutput |
 }
 
 /**
- * Extract documentation for each method paramater from @param params.
+ * Extract documentation for each method parameter from @param params.
  */
 function _genMethodParamsDoc(
     name: string,
