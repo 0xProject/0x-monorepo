@@ -12,7 +12,8 @@
                     "Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls",
                 "pr": 1080
             }
-        ]
+        ],
+        "timestamp": 1537875740
     },
     {
         "version": "2.0.3",

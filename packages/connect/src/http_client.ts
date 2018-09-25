@@ -1,19 +1,10 @@
 import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
-import { SignedOrder } from '@0xproject/types';
-import { fetchAsync } from '@0xproject/utils';
-import * as _ from 'lodash';
-import * as queryString from 'query-string';
-
-import { schemas as clientSchemas } from './schemas/schemas';
 import {
     APIOrder,
     AssetPairsRequestOpts,
     AssetPairsResponse,
-    Client,
     FeeRecipientsResponse,
-    HttpRequestOptions,
-    HttpRequestType,
     OrderbookRequest,
     OrderbookResponse,
     OrderConfigRequest,
@@ -22,14 +13,21 @@ import {
     OrdersResponse,
     PagedRequestOpts,
     RequestOpts,
-} from './types';
+    SignedOrder,
+} from '@0xproject/types';
+import { fetchAsync } from '@0xproject/utils';
+import * as _ from 'lodash';
+import * as queryString from 'query-string';
+
+import { schemas as clientSchemas } from './schemas/schemas';
+import { Client, HttpRequestOptions, HttpRequestType } from './types';
 import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 
 const TRAILING_SLASHES_REGEX = /\/+$/;
 
 /**
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
- * that implement the standard relayer API v0
+ * that implement the standard relayer API v2
  */
 export class HttpClient implements Client {
     private readonly _apiEndpointUrl: string;
