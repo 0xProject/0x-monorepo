@@ -1,6 +1,6 @@
 import { BigNumber } from '@0xproject/utils';
 
-import { OrderConfigResponse } from '../../../src/types';
+import { OrderConfigResponse } from '@0xproject/types';
 
 export const orderConfigResponse: OrderConfigResponse = {
     senderAddress: '0xa2b31dacf30a9c50ca473337c01d8a201ae33e32',

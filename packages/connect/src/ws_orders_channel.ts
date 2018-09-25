@@ -1,8 +1,9 @@
+import { OrdersChannelMessageTypes, OrdersChannelSubscriptionOpts } from '@0xproject/types';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import * as WebSocket from 'websocket';
 
-import { OrdersChannel, OrdersChannelHandler, OrdersChannelMessageTypes, OrdersChannelSubscriptionOpts } from './types';
+import { OrdersChannel, OrdersChannelHandler } from './types';
 import { assert } from './utils/assert';
 import { ordersChannelMessageParser } from './utils/orders_channel_message_parser';
 
