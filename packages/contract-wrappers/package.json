@@ -82,7 +82,7 @@
         "@0xproject/utils": "^1.0.10",
         "@0xproject/web3-wrapper": "^3.0.0",
         "ethereum-types": "^1.0.7",
-        "ethereumjs-blockstream": "5.0.0",
+        "ethereumjs-blockstream": "6.0.0",
         "ethereumjs-util": "^5.1.1",
         "ethers": "3.0.22",
         "js-sha3": "^0.7.0",

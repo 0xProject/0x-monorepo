@@ -181,6 +181,7 @@ export interface CallData extends CallTxDataBase {
 export interface FilterObject {
     fromBlock?: number | string;
     toBlock?: number | string;
+    blockHash?: string;
     address?: string;
     topics?: LogTopic[];
 }
