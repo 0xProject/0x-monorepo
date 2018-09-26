@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as yargs from 'yargs';
 
 import { publishReleaseNotesAsync } from './utils/github_release_utils';
@@ -9,14 +10,25 @@ const args = yargs
         type: 'boolean',
         demandOption: true,
     })
-    .example('$0 --isDryRun true', 'Full usage example').argv;
+    .option('packages', {
+        describe:
+            'Space-separated list of packages to generated release notes for. If not supplied, it does all `Lerna updated` packages',
+        type: 'string',
+    })
+    .example('$0 --isDryRun true --packages "0x.js @0xproject/web3-wrapper"', 'Full usage example').argv;
 
 (async () => {
     const isDryRun = args.isDryRun;
-    const shouldIncludePrivate = false;
-    const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
+    let packages;
+    if (_.isUndefined(args.packages)) {
+        const shouldIncludePrivate = false;
+        packages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
+    } else {
+        const packageNames = args.packages.split(' ');
+        packages = await utils.getPackagesByNameAsync(packageNames);
+    }
 
-    await publishReleaseNotesAsync(allUpdatedPackages, isDryRun);
+    await publishReleaseNotesAsync(packages, isDryRun);
     process.exit(0);
 })().catch(err => {
     utils.log(err);
