@@ -181,6 +181,7 @@ export interface CallData extends CallTxDataBase {
 export interface FilterObject {
     fromBlock?: number | string;
     toBlock?: number | string;
+    blockHash?: string;
     address?: string;
     topics?: LogTopic[];
 }
@@ -238,7 +239,7 @@ export enum AbiType {
     Fallback = 'fallback',
 }
 
-export type ContractEventArg = string | BigNumber | number | boolean;
+export type ContractEventArg = any;
 
 export interface DecodedLogArgs {
     [argName: string]: ContractEventArg;

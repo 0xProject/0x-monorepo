@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/json-schemas",
-    "version": "1.0.1",
+    "version": "1.0.4",
     "engines": {
         "node": ">=6.12"
     },
@@ -38,14 +38,14 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/json-schemas/README.md",
     "dependencies": {
-        "@0xproject/typescript-typings": "^2.0.0",
-        "@types/node": "^8.0.53",
+        "@0xproject/typescript-typings": "^2.0.2",
+        "@types/node": "*",
         "jsonschema": "^1.2.0",
         "lodash.values": "^4.3.0"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.7",
-        "@0xproject/utils": "^1.0.8",
+        "@0xproject/utils": "^1.0.11",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",

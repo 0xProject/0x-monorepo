@@ -5,6 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.1 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.1.0 - _September 25, 2018_
+
+    * Add ObjectMap type (#1037)
+    * Add SRA types from connect (#1085)
+
+## v1.0.2 - _September 21, 2018_
+
+    * Dependencies updated
+
 ## v1.0.1 - _September 5, 2018_
 
     * Add AssetProxyOwner revert reasons (#1041)

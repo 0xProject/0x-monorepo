@@ -5,6 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _September 25, 2018_
+
+    * Fixes dropped events in subscriptions by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too. (#1080)
+    * Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it (#1080)
+
+## v1.0.5 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.4 - _September 21, 2018_
+
+    * Dependencies updated
+
 ## v1.0.3 - _September 19, 2018_
 
     * Drastically reduce the bundle size by removing unused parts of included contract artifacts.

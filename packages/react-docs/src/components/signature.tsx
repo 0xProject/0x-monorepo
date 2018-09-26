@@ -134,14 +134,19 @@ function renderTypeParameter(
 ): React.ReactNode {
     const typeParam = (
         <span>
-            {`<${typeParameter.name} extends `}
-            <Type
-                type={typeParameter.type}
-                sectionName={sectionName}
-                typeDefinitionByName={typeDefinitionByName}
-                docsInfo={docsInfo}
-                isInPopover={isInPopover}
-            />
+            {`<${typeParameter.name}`}
+            {!_.isUndefined(typeParameter.type) && (
+                <span>
+                    {' extends '}
+                    <Type
+                        type={typeParameter.type}
+                        sectionName={sectionName}
+                        typeDefinitionByName={typeDefinitionByName}
+                        docsInfo={docsInfo}
+                        isInPopover={isInPopover}
+                    />
+                </span>
+            )}
             {`>`}
         </span>
     );

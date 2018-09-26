@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.4 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v2.0.3 - _September 25, 2018_
+
+    * Import SRA-related types from @0xproject/types (#1085)
+
+## v2.0.2 - _September 21, 2018_
+
+    * Dependencies updated
+
 ## v2.0.1 - _September 19, 2018_
 
     * Dependencies updated

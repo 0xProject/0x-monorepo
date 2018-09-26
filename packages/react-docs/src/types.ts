@@ -150,7 +150,7 @@ export interface Parameter {
 
 export interface TypeParameter {
     name: string;
-    type: Type;
+    type?: Type;
 }
 
 export interface Type {

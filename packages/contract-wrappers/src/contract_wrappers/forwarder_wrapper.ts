@@ -12,6 +12,7 @@ import { TransactionOpts } from '../types';
 import { assert } from '../utils/assert';
 import { calldataOptimizationUtils } from '../utils/calldata_optimization_utils';
 import { constants } from '../utils/constants';
+import { utils } from '../utils/utils';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ForwarderContract } from './generated/forwarder';
@@ -57,7 +58,7 @@ export class ForwarderWrapper extends ContractWrapper {
         takerAddress: string,
         ethAmount: BigNumber,
         signedFeeOrders: SignedOrder[] = [],
-        feePercentage: BigNumber = constants.ZERO_AMOUNT,
+        feePercentage: number = 0,
         feeRecipientAddress: string = constants.NULL_ADDRESS,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
@@ -66,7 +67,7 @@ export class ForwarderWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         assert.isBigNumber('ethAmount', ethAmount);
         assert.doesConformToSchema('signedFeeOrders', signedFeeOrders, schemas.signedOrdersSchema);
-        assert.isBigNumber('feePercentage', feePercentage);
+        assert.isNumber('feePercentage', feePercentage);
         assert.isETHAddressHex('feeRecipientAddress', feeRecipientAddress);
         assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
         // other assertions
@@ -76,6 +77,8 @@ export class ForwarderWrapper extends ContractWrapper {
             this.getZRXTokenAddress(),
             this.getEtherTokenAddress(),
         );
+        // format feePercentage
+        const formattedFeePercentage = utils.numberPercentageToEtherTokenAmountPercentage(feePercentage);
         // lowercase input addresses
         const normalizedTakerAddress = takerAddress.toLowerCase();
         const normalizedFeeRecipientAddress = feeRecipientAddress.toLowerCase();
@@ -89,7 +92,7 @@ export class ForwarderWrapper extends ContractWrapper {
             _.map(optimizedMarketOrders, order => order.signature),
             optimizedFeeOrders,
             _.map(optimizedFeeOrders, order => order.signature),
-            feePercentage,
+            formattedFeePercentage,
             feeRecipientAddress,
             {
                 value: ethAmount,
@@ -124,7 +127,7 @@ export class ForwarderWrapper extends ContractWrapper {
         takerAddress: string,
         ethAmount: BigNumber,
         signedFeeOrders: SignedOrder[] = [],
-        feePercentage: BigNumber = constants.ZERO_AMOUNT,
+        feePercentage: number = 0,
         feeRecipientAddress: string = constants.NULL_ADDRESS,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
@@ -134,7 +137,7 @@ export class ForwarderWrapper extends ContractWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
         assert.isBigNumber('ethAmount', ethAmount);
         assert.doesConformToSchema('signedFeeOrders', signedFeeOrders, schemas.signedOrdersSchema);
-        assert.isBigNumber('feePercentage', feePercentage);
+        assert.isNumber('feePercentage', feePercentage);
         assert.isETHAddressHex('feeRecipientAddress', feeRecipientAddress);
         assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
         // other assertions
@@ -144,6 +147,8 @@ export class ForwarderWrapper extends ContractWrapper {
             this.getZRXTokenAddress(),
             this.getEtherTokenAddress(),
         );
+        // format feePercentage
+        const formattedFeePercentage = utils.numberPercentageToEtherTokenAmountPercentage(feePercentage);
         // lowercase input addresses
         const normalizedTakerAddress = takerAddress.toLowerCase();
         const normalizedFeeRecipientAddress = feeRecipientAddress.toLowerCase();
@@ -158,7 +163,7 @@ export class ForwarderWrapper extends ContractWrapper {
             _.map(optimizedMarketOrders, order => order.signature),
             optimizedFeeOrders,
             _.map(optimizedFeeOrders, order => order.signature),
-            feePercentage,
+            formattedFeePercentage,
             feeRecipientAddress,
             {
                 value: ethAmount,

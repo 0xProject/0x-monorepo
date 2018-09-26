@@ -228,7 +228,7 @@ export class Blockchain {
         const tokenSymbolToAddressOverrides = tokenAddressOverrides[this.networkId];
         let isTokenAddressInOverrides = false;
         if (!_.isUndefined(tokenSymbolToAddressOverrides)) {
-            isTokenAddressInOverrides = _.keys(tokenSymbolToAddressOverrides).includes(tokenAddress);
+            isTokenAddressInOverrides = _.values(tokenSymbolToAddressOverrides).includes(tokenAddress);
         }
         return !_.isUndefined(tokenIfExists) || isTokenAddressInOverrides;
     }

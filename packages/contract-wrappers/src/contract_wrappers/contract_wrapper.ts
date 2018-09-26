@@ -1,5 +1,5 @@
 import { AbiDecoder, intervalUtils, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { marshaller, Web3Wrapper } from '@0xproject/web3-wrapper';
 import {
     BlockParamLiteral,
     ContractAbi,
@@ -8,6 +8,7 @@ import {
     LogEntry,
     LogWithDecodedArgs,
     RawLog,
+    RawLogEntry,
 } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
@@ -157,7 +158,8 @@ export abstract class ContractWrapper {
             return addressIfExists;
         }
     }
-    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, log: LogEntry): void {
+    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, rawLog: RawLogEntry): void {
+        const log: LogEntry = marshaller.unmarshalLog(rawLog);
         _.forEach(this._filters, (filter: FilterObject, filterToken: string) => {
             if (filterUtils.matchesFilter(log, filter)) {
                 const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
@@ -174,8 +176,8 @@ export abstract class ContractWrapper {
             throw new Error(ContractWrappersError.SubscriptionAlreadyPresent);
         }
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
-            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
-            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
+            this._blockstreamGetBlockOrNullAsync.bind(this),
+            this._blockstreamGetLogsAsync.bind(this),
             ContractWrapper._onBlockAndLogStreamerError.bind(this, isVerbose),
         );
         const catchAllLogFilter = {};
@@ -193,6 +195,32 @@ export abstract class ContractWrapper {
         this._onLogRemovedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogRemoved(
             this._onLogStateChanged.bind(this, isRemoved),
         );
+    }
+    // This method only exists in order to comply with the expected interface of Blockstream's constructor
+    private async _blockstreamGetBlockOrNullAsync(hash: string): Promise<Block | null> {
+        const shouldIncludeTransactionData = false;
+        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync<Block | null>({
+            method: 'eth_getBlockByHash',
+            params: [hash, shouldIncludeTransactionData],
+        });
+        return blockOrNull;
+    }
+    // This method only exists in order to comply with the expected interface of Blockstream's constructor
+    private async _blockstreamGetLatestBlockOrNullAsync(): Promise<Block | null> {
+        const shouldIncludeTransactionData = false;
+        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync<Block | null>({
+            method: 'eth_getBlockByNumber',
+            params: [BlockParamLiteral.Latest, shouldIncludeTransactionData],
+        });
+        return blockOrNull;
+    }
+    // This method only exists in order to comply with the expected interface of Blockstream's constructor
+    private async _blockstreamGetLogsAsync(filterOptions: FilterObject): Promise<RawLogEntry[]> {
+        const logs = await this._web3Wrapper.sendRawPayloadAsync<RawLogEntry[]>({
+            method: 'eth_getLogs',
+            params: [filterOptions],
+        });
+        return logs as RawLogEntry[];
     }
     // HACK: This should be a package-scoped method (which doesn't exist in TS)
     // We don't want this method available in the public interface for all classes
@@ -212,11 +240,14 @@ export abstract class ContractWrapper {
         delete this._blockAndLogStreamerIfExists;
     }
     private async _reconcileBlockAsync(): Promise<void> {
-        const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
+        const latestBlockOrNull = await this._blockstreamGetLatestBlockOrNullAsync();
+        if (_.isNull(latestBlockOrNull)) {
+            return; // noop
+        }
         // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
-            await this._blockAndLogStreamerIfExists.reconcileNewBlock((latestBlock as any) as Block);
+            await this._blockAndLogStreamerIfExists.reconcileNewBlock(latestBlockOrNull);
         }
     }
 }

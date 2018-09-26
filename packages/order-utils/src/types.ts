@@ -72,10 +72,12 @@ export interface FindFeeOrdersThatCoverFeesForTargetOrdersOpts {
 
 export interface FeeOrdersAndRemainingFeeAmount<T> {
     resultFeeOrders: T[];
+    feeOrdersRemainingFillableMakerAssetAmounts: BigNumber[];
     remainingFeeAmount: BigNumber;
 }
 
 export interface OrdersAndRemainingFillAmount<T> {
     resultOrders: T[];
+    ordersRemainingFillableMakerAssetAmounts: BigNumber[];
     remainingFillAmount: BigNumber;
 }
