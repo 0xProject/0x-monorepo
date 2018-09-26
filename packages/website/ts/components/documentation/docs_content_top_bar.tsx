@@ -1,11 +1,11 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { Container } from 'ts/components/ui/container';
-import { Deco, Key, ObjectMap, WebsitePaths } from 'ts/types';
+import { Link } from 'ts/components/ui/link';
+import { Deco, Key, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -57,11 +57,11 @@ export class DocsContentTopBar extends React.Component<DocsContentTopBarProps, D
                 title: this.props.translate.get(Key.LiveChat, Deco.Cap),
                 url: constants.URL_ZEROEX_CHAT,
                 iconUrl: '/images/developers/chat_icon.svg',
-                textStyle: { color: '#3289F1', fontWeight: 'bold' },
+                textStyle: { color: colors.lightLinkBlue, fontWeight: 'bold' },
             },
         ];
         return (
-            <Container height={75} className="pb1">
+            <Container height={75} className="pb2 mb3">
                 <Container className="flex items-center lg-pt3 md-pt3 sm-pt1 relative" width="100%">
                     <div className="col col-2 sm-hide xs-hide">
                         <Link

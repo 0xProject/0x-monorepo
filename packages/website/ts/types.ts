@@ -476,6 +476,8 @@ export enum Key {
     Sandbox = 'SANDBOX',
     Github = 'GITHUB',
     LiveChat = 'LIVE_CHAT',
+    LibrariesAndTools = 'LIBRARIES_AND_TOOLS',
+    More = 'MORE',
 }
 
 export enum SmartContractDocSections {
@@ -621,5 +623,12 @@ export interface InjectedWeb3 {
     version: {
         getNetwork(cd: (err: Error, networkId: string) => void): void;
     };
+}
+
+export interface TutorialInfo {
+    title: string;
+    iconUrl: string;
+    description: string;
+    location: string;
 }
 // tslint:disable:max-file-line-count
