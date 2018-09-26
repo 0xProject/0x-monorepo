@@ -16,6 +16,7 @@ export class ExchangeCancelEvent extends BaseEntity {
     @Column() public feeRecepientAddress!: string;
     @Column() public senderAddress!: string;
     @Column() public orderHash!: string;
+
     @Column() public rawMakerAssetData!: string;
     @Column() public makerAssetType!: AssetType;
     @Column() public makerAssetProxyId!: string;
@@ -28,5 +29,6 @@ export class ExchangeCancelEvent extends BaseEntity {
     @Column() public takerTokenAddress!: string;
     @Column({ nullable: true, type: String })
     public takerTokenId!: string | null;
+
     // TODO(albrow): Include topics?
 }

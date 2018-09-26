@@ -1,19 +1,28 @@
-import * as R from 'ramda';
+import { HttpClient } from '@0xproject/connect';
 import 'reflect-metadata';
-import { createConnection } from 'typeorm';
+import { Connection, createConnection } from 'typeorm';
 
 import { Etherscan } from './data_sources/etherscan';
 import { parseExchangeEvents } from './data_types/events/exchange_events';
+import { parseSraOrders } from './data_types/sra_order';
 import { ExchangeCancelEvent } from './entities/ExchangeCancelEvent';
 import { ExchangeCancelUpToEvent } from './entities/ExchangeCancelUpToEvent';
 import { ExchangeFillEvent } from './entities/ExchangeFillEvent';
+import { SraOrder } from './entities/SraOrder';
 import { config } from './ormconfig';
 
 const etherscan = new Etherscan(process.env.ETHERSCAN_API_KEY as string);
 const EXCHANGE_ADDRESS = '0x4f833a24e1f95d70f028921e27040ca56e09ab0b';
 
+let connection: Connection;
+
 (async () => {
-    const connection = await createConnection(config);
+    connection = await createConnection(config);
+    await getExchangeEventsAsync();
+    await getSraOrdersAsync();
+})();
+
+async function getExchangeEventsAsync(): Promise<void> {
     const fillRepository = connection.getRepository(ExchangeFillEvent);
     const cancelRepository = connection.getRepository(ExchangeCancelEvent);
     const cancelUpToRepository = connection.getRepository(ExchangeCancelUpToEvent);
@@ -32,4 +41,17 @@ const EXCHANGE_ADDRESS = '0x4f833a24e1f95d70f028921e27040ca56e09ab0b';
             (await cancelRepository.count()) +
             (await cancelUpToRepository.count())} total events`,
     );
-})();
+}
+
+async function getSraOrdersAsync(): Promise<void> {
+    const orderRepository = connection.getRepository(SraOrder);
+    console.log(`found ${await orderRepository.count()} existing orders`);
+
+    const connect = new HttpClient('https://api.radarrelay.com/0x/v2');
+    const rawOrders = await connect.getOrdersAsync();
+    const orders = parseSraOrders(rawOrders);
+    for (const order of orders) {
+        order.save();
+    }
+    console.log(`now there are ${await orderRepository.count()} total orders`);
+}

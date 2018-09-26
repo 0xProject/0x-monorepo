@@ -472,7 +472,17 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
-"@0xproject/assert@^1.0.10", "@0xproject/assert@^1.0.13":
+"@0xproject/assert@^0.2.14":
+  version "0.2.14"
+  resolved "https://registry.yarnpkg.com/@0xproject/assert/-/assert-0.2.14.tgz#7d5a373fedc8eb482716b730f4dddf3ef33bfa29"
+  dependencies:
+    "@0xproject/json-schemas" "^0.8.3"
+    "@0xproject/typescript-typings" "^0.4.3"
+    "@0xproject/utils" "^0.7.3"
+    lodash "4.17.10"
+    valid-url "1.0.9"
+
+"@0xproject/assert@^1.0.10", "@0xproject/assert@^1.0.11", "@0xproject/assert@^1.0.13":
   version "1.0.13"
   resolved "https://registry.yarnpkg.com/@0xproject/assert/-/assert-1.0.13.tgz#e370ccce08933dd2a970bdd02b92e59c65dd75d4"
   dependencies:
@@ -503,6 +513,22 @@
     ethereum-types "^1.0.11"
     ethers "4.0.0-beta.14"
     lodash "^4.17.5"
+
+"@0xproject/connect@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@0xproject/connect/-/connect-2.0.4.tgz#d61cd382edbb80120c8efce91dc85d2c668a5c5e"
+  dependencies:
+    "@0xproject/assert" "^1.0.11"
+    "@0xproject/json-schemas" "^1.0.4"
+    "@0xproject/order-utils" "^1.0.5"
+    "@0xproject/types" "^1.1.1"
+    "@0xproject/typescript-typings" "^2.0.2"
+    "@0xproject/utils" "^1.0.11"
+    lodash "^4.17.5"
+    query-string "^5.0.1"
+    sinon "^4.0.0"
+    uuid "^3.3.2"
+    websocket "^1.0.25"
 
 "@0xproject/contract-wrappers@^1.0.1":
   version "1.0.5"
@@ -539,7 +565,16 @@
     ethers "4.0.0-beta.14"
     lodash "^4.17.5"
 
-"@0xproject/json-schemas@^1.0.3", "@0xproject/json-schemas@^1.0.7":
+"@0xproject/json-schemas@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@0xproject/json-schemas/-/json-schemas-0.8.3.tgz#455e6219a6bd05e990392165192a983a9ab89f26"
+  dependencies:
+    "@0xproject/typescript-typings" "^0.4.3"
+    "@types/node" "9.6.0"
+    jsonschema "1.2.2"
+    lodash.values "4.3.0"
+
+"@0xproject/json-schemas@^1.0.3", "@0xproject/json-schemas@^1.0.4", "@0xproject/json-schemas@^1.0.7":
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/@0xproject/json-schemas/-/json-schemas-1.0.7.tgz#64b5692a1bcc5938ce2da01fc2f8aecd72ec35be"
   dependencies:
@@ -554,7 +589,7 @@
   dependencies:
     npm-registry-client "7.0.9"
 
-"@0xproject/order-utils@^1.0.4", "@0xproject/order-utils@^1.0.7":
+"@0xproject/order-utils@^1.0.2", "@0xproject/order-utils@^1.0.4", "@0xproject/order-utils@^1.0.5", "@0xproject/order-utils@^1.0.7":
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/@0xproject/order-utils/-/order-utils-1.0.7.tgz#475cd5f1a11dc7816847abb4d3fd17bbaf32bf4f"
   dependencies:
@@ -612,13 +647,38 @@
     tslint-react "^3.2.0"
     tsutils "3.0.0"
 
-"@0xproject/types@^1.1.0", "@0xproject/types@^1.1.1", "@0xproject/types@^1.1.4":
+"@0xproject/types@^0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-0.8.2.tgz#6f936b73bfb6f017b5102002d97da0881da92d1b"
+  dependencies:
+    "@types/node" "9.6.0"
+    bignumber.js "~4.1.0"
+
+"@0xproject/types@^1.0.1", "@0xproject/types@^1.1.0", "@0xproject/types@^1.1.1", "@0xproject/types@^1.1.4":
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@0xproject/types/-/types-1.1.4.tgz#3ffd65e670d6a21dab19ee0ffd5fad0056291b8e"
   dependencies:
     "@types/node" "*"
     bignumber.js "~4.1.0"
     ethereum-types "^1.0.11"
+
+"@0xproject/typescript-typings@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@0xproject/typescript-typings/-/typescript-typings-0.4.3.tgz#f99f939a43f2764ad7182fcd78a71212a1d76d96"
+  dependencies:
+    "@0xproject/types" "^0.8.2"
+    bignumber.js "~4.1.0"
+    ethereum-types "^0.0.2"
+
+"@0xproject/typescript-typings@^1.0.3":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@0xproject/typescript-typings/-/typescript-typings-1.0.5.tgz#a808443419f26a7b90d63d1afd3efbfb48644184"
+  dependencies:
+    "@types/bn.js" "^4.11.0"
+    "@types/react" "*"
+    bignumber.js "~4.1.0"
+    ethereum-types "^1.0.5"
+    popper.js "1.14.3"
 
 "@0xproject/typescript-typings@^2.0.1", "@0xproject/typescript-typings@^2.0.2":
   version "2.0.2"
@@ -640,7 +700,21 @@
     ethereum-types "^1.0.11"
     popper.js "1.14.3"
 
-"@0xproject/utils@^1.0.10", "@0xproject/utils@^1.0.11", "@0xproject/utils@^1.0.8":
+"@0xproject/utils@^0.7.3":
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/@0xproject/utils/-/utils-0.7.3.tgz#ffa7c6da9bf0dd3e13694f185dcfc48a8981ff05"
+  dependencies:
+    "@0xproject/typescript-typings" "^0.4.3"
+    "@types/node" "9.6.0"
+    bignumber.js "~4.1.0"
+    ethereum-types "^0.0.2"
+    ethereumjs-util "^5.1.1"
+    ethers "3.0.22"
+    js-sha3 "0.7.0"
+    lodash "4.17.10"
+    web3 "0.20.6"
+
+"@0xproject/utils@^1.0.10", "@0xproject/utils@^1.0.11", "@0xproject/utils@^1.0.4", "@0xproject/utils@^1.0.8":
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/@0xproject/utils/-/utils-1.0.11.tgz#5b53e7d9d4dbe68e219049218c9db04e97c37429"
   dependencies:
@@ -1645,6 +1719,10 @@
   version "9.6.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.5.tgz#ee700810fdf49ac1c399fc5980b7559b3e5a381d"
 
+"@types/node@9.6.0":
+  version "9.6.0"
+  resolved "http://registry.npmjs.org/@types/node/-/node-9.6.0.tgz#d3480ee666df9784b1001a1872a2f6ccefb6c2d7"
+
 "@types/node@^10.3.2":
   version "10.9.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.9.4.tgz#0f4cb2dc7c1de6096055357f70179043c33e9897"
@@ -1652,6 +1730,10 @@
 "@types/node@^10.5.3":
   version "10.5.7"
   resolved "https://registry.npmjs.org/@types/node/-/node-10.5.7.tgz#960d9feb3ade2233bcc9843c918d740b4f78a7cf"
+
+"@types/node@^8.0.53":
+  version "8.10.36"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.36.tgz#eac05d576fbcd0b4ea3c912dc58c20475c08d9e4"
 
 "@types/numeral@^0.0.22":
   version "0.0.22"
@@ -6076,6 +6158,13 @@ ethereum-common@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/ethereum-common/-/ethereum-common-0.0.18.tgz#2fdc3576f232903358976eb39da783213ff9523f"
 
+ethereum-types@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/ethereum-types/-/ethereum-types-0.0.2.tgz#6ef6faf46a24697cbf66b6c8a0ecf2095ce58c38"
+  dependencies:
+    "@types/node" "^8.0.53"
+    bignumber.js "~4.1.0"
+
 ethereumjs-abi@0.6.5, ethereumjs-abi@^0.6.5:
   version "0.6.5"
   resolved "https://registry.yarnpkg.com/ethereumjs-abi/-/ethereumjs-abi-0.6.5.tgz#5a637ef16ab43473fa72a29ad90871405b3f5241"
@@ -6225,9 +6314,9 @@ ethereumjs-wallet@0.6.0:
     utf8 "^2.1.1"
     uuid "^2.0.1"
 
-ethers@0xproject/ethers.js#eip-838-reasons, ethers@3.0.22:
-  version "3.0.18"
-  resolved "https://codeload.github.com/0xproject/ethers.js/tar.gz/b91342bd200d142af0165d6befddf783c8ae8447"
+ethers@3.0.22:
+  version "3.0.22"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-3.0.22.tgz#7fab1ea16521705837aa43c15831877b2716b436"
   dependencies:
     aes-js "3.0.0"
     bn.js "^4.4.0"
@@ -9180,13 +9269,13 @@ js-sha3@0.5.7:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.5.7.tgz#0d4ffd8002d5333aabaf4a23eed2f6374c9f28e7"
 
+js-sha3@0.7.0, js-sha3@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.7.0.tgz#0a5c57b36f79882573b2d84051f8bb85dd1bd63a"
+
 js-sha3@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.3.1.tgz#86122802142f0828502a0d1dee1d95e253bb0243"
-
-js-sha3@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.7.0.tgz#0a5c57b36f79882573b2d84051f8bb85dd1bd63a"
 
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"
@@ -9370,6 +9459,10 @@ jsonschema-draft4@^1.0.0:
 jsonschema@*, jsonschema@1.2.4, jsonschema@^1.2.0:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/jsonschema/-/jsonschema-1.2.4.tgz#a46bac5d3506a254465bc548876e267c6d0d6464"
+
+jsonschema@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/jsonschema/-/jsonschema-1.2.2.tgz#83ab9c63d65bf4d596f91d81195e78772f6452bc"
 
 jsprim@^1.2.2:
   version "1.4.1"
@@ -10061,7 +10154,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash.values@^4.3.0:
+lodash.values@4.3.0, lodash.values@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.values/-/lodash.values-4.3.0.tgz#a3a6c2b0ebecc5c2cba1c17e6e620fe81b53d347"
 
@@ -10070,6 +10163,10 @@ lodash.words@^3.0.0:
   resolved "https://registry.yarnpkg.com/lodash.words/-/lodash.words-3.2.0.tgz#4e2a8649bc08745b17c695b1a3ce8fee596623b3"
   dependencies:
     lodash._root "^3.0.0"
+
+lodash@4.17.10, lodash@^4.17.10:
+  version "4.17.10"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
 lodash@=4.17.4:
   version "4.17.4"
@@ -10086,10 +10183,6 @@ lodash@^4.0.0, lodash@^4.13.1, lodash@^4.15.0, lodash@^4.17.11:
 lodash@^4.14.0, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.1:
   version "4.17.5"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
-
-lodash@^4.17.10:
-  version "4.17.10"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
 lodash@~1.0.1:
   version "1.0.2"
@@ -16091,7 +16184,7 @@ v8flags@^2.0.2:
   dependencies:
     user-home "^1.1.1"
 
-valid-url@^1.0.9:
+valid-url@1.0.9, valid-url@^1.0.9:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/valid-url/-/valid-url-1.0.9.tgz#1c14479b40f1397a75782f115e4086447433a200"
 
@@ -16531,6 +16624,16 @@ web3-utils@1.0.0-beta.34:
 web3@0.20.2:
   version "0.20.2"
   resolved "https://registry.yarnpkg.com/web3/-/web3-0.20.2.tgz#c54dac5fc0e377399c04c1a6ecbb12e4513278d6"
+  dependencies:
+    bignumber.js "git+https://github.com/frozeman/bignumber.js-nolookahead.git"
+    crypto-js "^3.1.4"
+    utf8 "^2.1.1"
+    xhr2 "*"
+    xmlhttprequest "*"
+
+web3@0.20.6:
+  version "0.20.6"
+  resolved "http://registry.npmjs.org/web3/-/web3-0.20.6.tgz#3e97306ae024fb24e10a3d75c884302562215120"
   dependencies:
     bignumber.js "git+https://github.com/frozeman/bignumber.js-nolookahead.git"
     crypto-js "^3.1.4"
