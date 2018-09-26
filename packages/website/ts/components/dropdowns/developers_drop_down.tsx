@@ -16,16 +16,16 @@ const gettingStartedKeyToLinkInfo1: ObjectMap<LinkInfo> = {
     [Key.BuildARelayer]: {
         link: `${WebsitePaths.Wiki}#Build-A-Relayer`,
     },
-    [Key.IntroTutorial]: {
+    [Key.OrderBasics]: {
         link: `${WebsitePaths.Wiki}#Create,-Validate,-Fill-Order`,
     },
 };
 const gettingStartedKeyToLinkInfo2: ObjectMap<LinkInfo> = {
-    [Key.TradingTutorial]: {
-        link: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
-    },
-    [Key.EthereumDevelopment]: {
+    [Key.DevelopOnEthereum]: {
         link: `${WebsitePaths.Wiki}#Ethereum-Development`,
+    },
+    [Key.UseSharedLiquidity]: {
+        link: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
     },
 };
 const popularDocsToLinkInfos: ObjectMap<LinkInfo> = {
@@ -157,7 +157,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
         const links = _.map(keyToLinkInfo, (linkInfo: LinkInfo, key: string) => {
             i++;
             const isLast = i === numLinks;
-            const linkText = this.props.translate.get(key as Key, Deco.CapWords);
+            const linkText = this.props.translate.get(key as Key, Deco.Cap);
             return (
                 <div className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${key}`}>
                     <Link

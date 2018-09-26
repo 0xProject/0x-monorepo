@@ -2,11 +2,12 @@ import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
-import { TutorialInfo } from 'ts/types';
+import { Deco, Key, TutorialInfo } from 'ts/types';
+import { Translate } from 'ts/utils/translate';
 
 export interface TutorialButtonProps {
+    translate: Translate;
     tutorialInfo: TutorialInfo;
 }
 
@@ -44,10 +45,10 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
                     </div>
                     <div className="pl2">
                         <Text Tag="div" fontSize="18" fontColor={colors.lightLinkBlue} fontWeight="bold">
-                            {this.props.tutorialInfo.title}
+                            {this.props.translate.get(this.props.tutorialInfo.title as Key, Deco.Cap)}
                         </Text>
                         <Text Tag="div" fontColor="#555555" fontSize="16">
-                            {this.props.tutorialInfo.description}
+                            {this.props.translate.get(this.props.tutorialInfo.description as Key, Deco.Cap)}
                         </Text>
                     </div>
                     <div className="absolute" style={{ top: 31, right: 31 }}>

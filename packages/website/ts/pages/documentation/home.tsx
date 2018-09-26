@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, NestedSidebarMenu } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
@@ -24,27 +24,27 @@ interface Package {
 const THROTTLE_TIMEOUT = 100;
 const TUTORIALS: TutorialInfo[] = [
     {
-        title: 'Develop on Ethereum',
+        title: Key.DevelopOnEthereum,
         iconUrl: '/images/developers/tutorials/develop_on_ethereum.svg',
-        description: 'Learn more about building applications ontop of the Ethereum blockchain',
+        description: Key.DevelopOnEthereumDescription,
         location: `${WebsitePaths.Wiki}#Ethereum-Development`,
     },
     {
-        title: 'Build a relayer',
+        title: Key.BuildARelayer,
         iconUrl: '/images/developers/tutorials/build_a_relayer.svg',
-        description: 'Learn how to build your own 0x relayer from scratch',
+        description: Key.BuildARelayerDescription,
         location: `${WebsitePaths.Wiki}#Build-A-Relayer`,
     },
     {
-        title: 'Learn the 0x order basics',
+        title: Key.OrderBasics,
         iconUrl: '/images/developers/tutorials/0x_order_basics.svg',
-        description: 'Tutorial on how to create, validate and fill an order over 0x protocol',
+        description: Key.OrderBasicsDescription,
         location: `${WebsitePaths.Wiki}#Create,-Validate,-Fill-Order`,
     },
     {
-        title: 'Tap into shared liquidity',
+        title: Key.UseSharedLiquidity,
         iconUrl: '/images/developers/tutorials/use_shared_liquidity.svg',
-        description: 'Learn how to tap into the 0x shared liquidity pool using the Standard Relayer API',
+        description: Key.UseSharedLiquidityDescription,
         location: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
     },
 ];
@@ -322,6 +322,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                 <Container marginTop="36px">
                                     {_.map(TUTORIALS, tutorialInfo => (
                                         <TutorialButton
+                                            translate={this.props.translate}
                                             tutorialInfo={tutorialInfo}
                                             key={`tutorial-${tutorialInfo.title}`}
                                         />
