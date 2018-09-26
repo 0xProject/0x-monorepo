@@ -3,22 +3,24 @@ import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
 import { AssetType } from '../types';
 
 @Entity()
-export class ExchangeFillEvent extends BaseEntity {
-    @PrimaryColumn() public contractAddress!: string;
-    @PrimaryColumn() public logIndex!: number;
-    @PrimaryColumn() public blockNumber!: number;
+export class SraOrder extends BaseEntity {
+    @PrimaryColumn() public exchangeAddress!: string;
+    @PrimaryColumn() public orderHashHex!: string;
 
-    @Column() public rawData!: string;
+    @Column() public lastUpdatedTimestamp!: number;
+    @Column() public firstSeenTimestamp!: number;
 
     @Column() public makerAddress!: string;
     @Column() public takerAddress!: string;
-    @Column() public feeRecepientAddress!: string;
+    @Column() public feeRecipientAddress!: string;
     @Column() public senderAddress!: string;
-    @Column() public makerAssetFilledAmount!: string;
-    @Column() public takerAssetFilledAmount!: string;
-    @Column() public makerFeePaid!: string;
-    @Column() public takerFeePaid!: string;
-    @Column() public orderHash!: string;
+    @Column() public makerAssetAmount!: string;
+    @Column() public takerAssetAmount!: string;
+    @Column() public makerFee!: string;
+    @Column() public takerFee!: string;
+    @Column() public expirationTimeSeconds!: string;
+    @Column() public salt!: string;
+    @Column() public signature!: string;
 
     @Column() public rawMakerAssetData!: string;
     @Column() public makerAssetType!: AssetType;
@@ -33,5 +35,6 @@ export class ExchangeFillEvent extends BaseEntity {
     @Column({ nullable: true, type: String })
     public takerTokenId!: string | null;
 
-    // TODO(albrow): Include topics?
+    // TODO(albrow): Make this optional?
+    @Column() public metaDataJson!: string;
 }
