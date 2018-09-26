@@ -545,7 +545,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             <Section
                 header={!isMobile && <TextHeader labelText="0x Relayers" />}
                 body={
-                    <Container className="flex flex-column items-center">
+                    <Container className="flex flex-column">
                         {isMobile && (
                             <Container marginTop="20px" marginBottom="20px">
                                 {this._renderStartOnboarding()}
