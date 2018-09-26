@@ -149,7 +149,7 @@ export class HttpClient implements Client {
             params: requestOpts,
             payload: request,
         };
-        const responseJson = await this._requestAsync('/order_config', HttpRequestType.Get, httpRequestOpts);
+        const responseJson = await this._requestAsync('/order_config', HttpRequestType.Post, httpRequestOpts);
         const fees = relayerResponseJsonParsers.parseOrderConfigResponseJson(responseJson);
         return fees;
     }
