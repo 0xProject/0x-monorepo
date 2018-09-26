@@ -323,7 +323,7 @@ export const utils = {
         } else if ((provider as any).isMetaMask) {
             parsedProviderName = Providers.Metamask;
         } else if (!_.isUndefined(_.get(window, 'SOFA'))) {
-            parsedProviderName = Providers.Toshi;
+            parsedProviderName = Providers.CoinbaseWallet;
         } else if (!_.isUndefined(_.get(window, '__CIPHER__'))) {
             parsedProviderName = Providers.Cipher;
         }
@@ -453,14 +453,14 @@ export const utils = {
         if (isOnMobile) {
             switch (operatingSystem) {
                 case OperatingSystemType.Android:
-                    downloadLink = constants.URL_TOSHI_ANDROID_APP_STORE;
+                    downloadLink = constants.URL_COINBASE_WALLET_ANDROID_APP_STORE;
                     break;
                 case OperatingSystemType.iOS:
-                    downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
+                    downloadLink = constants.URL_COINBASE_WALLET_IOS_APP_STORE;
                     break;
                 default:
-                    // Toshi is only supported on these mobile OSes - just default to iOS
-                    downloadLink = constants.URL_TOSHI_IOS_APP_STORE;
+                    // Coinbase wallet is only supported on these mobile OSes - just default to iOS
+                    downloadLink = constants.URL_COINBASE_WALLET_IOS_APP_STORE;
             }
         } else {
             switch (browserType) {

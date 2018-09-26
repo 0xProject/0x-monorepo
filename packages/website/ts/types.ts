@@ -491,7 +491,7 @@ export enum Providers {
     Parity = 'PARITY',
     Metamask = 'METAMASK',
     Mist = 'MIST',
-    Toshi = 'TOSHI',
+    CoinbaseWallet = 'COINBASE_WALLET',
     Cipher = 'CIPHER',
 }
 
