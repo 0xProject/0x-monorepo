@@ -12,7 +12,7 @@ const args = yargs
     })
     .option('packages', {
         describe:
-            'Space-separated list of packages to generated release notes for. If not supplied, it does all `Lerna updated` packages',
+            'Space-separated list of packages to generated release notes for. If not supplied, it does all `Lerna updated` packages.',
         type: 'string',
     })
     .example('$0 --isDryRun true --packages "0x.js @0xproject/web3-wrapper"', 'Full usage example').argv;
