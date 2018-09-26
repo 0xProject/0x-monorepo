@@ -92,7 +92,6 @@ render(
                                 <Route path={WebsitePaths.FAQ} component={FAQ as any} />
                                 <Route path={WebsitePaths.About} component={About as any} />
                                 <Route path={WebsitePaths.Wiki} component={Wiki as any} />
-                                <Route path={WebsitePaths.Docs} component={DocsHome as any} />
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
                                     component={LazyZeroExJSDocumentation}
@@ -138,6 +137,7 @@ render(
                                     path={`${WebsitePaths.EthereumTypes}/:version?`}
                                     component={LazyEthereumTypesDocumentation}
                                 />
+                                <Route path={WebsitePaths.Docs} component={DocsHome as any} />
 
                                 {/* Legacy endpoints */}
                                 <Route
