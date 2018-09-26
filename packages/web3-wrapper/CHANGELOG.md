@@ -5,9 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.1 - _September 25, 2018_
+
+    * Dependencies updated
+
 ## v3.0.0 - _September 25, 2018_
 
     * Rename `getBlockAsync` to `getBlockIfExistsAsync` and rather then throw if the requested block wasn't found, return undefined. (#1082)
+    * Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls (#1080)
 
 ## v2.0.3 - _September 21, 2018_
 

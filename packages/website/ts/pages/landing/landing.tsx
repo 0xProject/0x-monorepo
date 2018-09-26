@@ -37,8 +37,8 @@ interface Project {
 }
 
 const THROTTLE_TIMEOUT = 100;
-const WHATS_NEW_TITLE = '18 ideas for 0x relayers in 2018';
-const WHATS_NEW_URL = 'https://blog.0xproject.com/18-ideas-for-0x-relayers-in-2018-80a1498b955f';
+const WHATS_NEW_TITLE = '0x Protocol v2 is Live!';
+const WHATS_NEW_URL = 'https://blog.0xproject.com/0x-protocol-v2-0-is-live-183aac180149';
 const TITLE_STYLE: React.CSSProperties = {
     fontFamily: 'Roboto Mono',
     color: colors.grey,

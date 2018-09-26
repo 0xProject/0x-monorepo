@@ -54,6 +54,13 @@ export const utils = {
         }
         return packages;
     },
+    async getPackagesByNameAsync(packageNames: string[]): Promise<Package[]> {
+        const allPackages = utils.getPackages(constants.monorepoRootPath);
+        const updatedPackages = _.filter(allPackages, pkg => {
+            return _.includes(packageNames, pkg.packageJson.name);
+        });
+        return updatedPackages;
+    },
     async getUpdatedPackagesAsync(shouldIncludePrivate: boolean): Promise<Package[]> {
         const updatedPublicPackages = await utils.getLernaUpdatedPackagesAsync(shouldIncludePrivate);
         const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
