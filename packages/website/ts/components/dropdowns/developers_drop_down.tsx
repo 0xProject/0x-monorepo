@@ -1,63 +1,56 @@
 import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { DropDown } from 'ts/components/ui/drop_down';
+import { Link } from 'ts/components/ui/link';
 import { Deco, Key, ObjectMap, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 interface LinkInfo {
     link: string;
-    shouldOpenNewTab: boolean;
+    shouldOpenInNewTab?: boolean;
 }
 
 const gettingStartedKeyToLinkInfo1: ObjectMap<LinkInfo> = {
     [Key.BuildARelayer]: {
         link: `${WebsitePaths.Wiki}#Build-A-Relayer`,
-        shouldOpenNewTab: false,
     },
     [Key.IntroTutorial]: {
         link: `${WebsitePaths.Wiki}#Create,-Validate,-Fill-Order`,
-        shouldOpenNewTab: false,
     },
 };
 const gettingStartedKeyToLinkInfo2: ObjectMap<LinkInfo> = {
     [Key.TradingTutorial]: {
         link: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
-        shouldOpenNewTab: false,
     },
     [Key.EthereumDevelopment]: {
         link: `${WebsitePaths.Wiki}#Ethereum-Development`,
-        shouldOpenNewTab: false,
     },
 };
 const popularDocsToLinkInfos: ObjectMap<LinkInfo> = {
     [Key.ZeroExJs]: {
         link: WebsitePaths.ZeroExJs,
-        shouldOpenNewTab: false,
     },
     [Key.Connect]: {
         link: WebsitePaths.Connect,
-        shouldOpenNewTab: false,
     },
     [Key.SmartContract]: {
         link: WebsitePaths.SmartContracts,
-        shouldOpenNewTab: false,
     },
 };
 const usefulLinksToLinkInfo: ObjectMap<LinkInfo> = {
     [Key.Github]: {
         link: constants.URL_GITHUB_ORG,
-        shouldOpenNewTab: true,
+        shouldOpenInNewTab: true,
     },
     [Key.Whitepaper]: {
         link: WebsitePaths.Whitepaper,
-        shouldOpenNewTab: true,
+        shouldOpenInNewTab: true,
     },
     [Key.Sandbox]: {
         link: constants.URL_SANDBOX,
-        shouldOpenNewTab: true,
+        shouldOpenInNewTab: true,
     },
 };
 
@@ -167,15 +160,15 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
             const linkText = this.props.translate.get(key as Key, Deco.CapWords);
             return (
                 <div className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${key}`}>
-                    {linkInfo.shouldOpenNewTab ? (
-                        <a target="_blank" className="text-decoration-none" style={linkStyle} href={linkInfo.link}>
-                            {linkText}
-                        </a>
-                    ) : (
-                        <Link to={linkInfo.link} className="text-decoration-none" style={linkStyle}>
-                            {linkText}
-                        </Link>
-                    )}
+                    <Link
+                        to={linkInfo.link}
+                        isExternal={!!linkInfo.shouldOpenInNewTab}
+                        shouldOpenInNewTab={linkInfo.shouldOpenInNewTab}
+                        className="text-decoration-none"
+                        style={linkStyle}
+                    >
+                        {linkText}
+                    </Link>
                 </div>
             );
         });
