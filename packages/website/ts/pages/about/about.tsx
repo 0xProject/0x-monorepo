@@ -194,7 +194,7 @@ const teamRow6: ProfileInfo[] = [
 const teamRow7: ProfileInfo[] = [
     {
         name: 'Clay Robbins',
-        title: 'Business Development Lead',
+        title: 'Ecosystem Development Lead',
         description: `Growth & Business Development. Previously product and partnerships at Square. Economics at Dartmouth College.`,
         image: 'images/team/clay.png',
         linkedIn: 'https://www.linkedin.com/in/robbinsclay/',
