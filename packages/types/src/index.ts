@@ -1,3 +1,5 @@
+// tslint:disable:max-file-line-count
+
 import { BigNumber } from 'bignumber.js';
 import { ContractAbi } from 'ethereum-types';
 
