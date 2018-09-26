@@ -1,4 +1,5 @@
 import { colors, constants as sharedConstants, utils as sharedUtils } from '@0xproject/react-shared';
+import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '@0xproject/types';
 import { errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -6,7 +7,6 @@ import { Link as ScrollLink } from 'react-scroll';
 import * as ReactTooltip from 'react-tooltip';
 
 import { DocsInfo } from '../docs_info';
-import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '../types';
 import { constants } from '../utils/constants';
 
 import { Signature } from './signature';

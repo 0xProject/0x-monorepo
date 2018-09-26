@@ -26,7 +26,7 @@ export async function getContractArtifactIfExistsAsync(
         contractArtifact = JSON.parse(contractArtifactString);
         return contractArtifact;
     } catch (err) {
-        logUtils.log(`Artifact for ${contractName} does not exist`);
+        logUtils.warn(`Artifact for ${contractName} does not exist`);
         return undefined;
     }
 }
@@ -37,7 +37,7 @@ export async function getContractArtifactIfExistsAsync(
  */
 export async function createDirIfDoesNotExistAsync(dirPath: string): Promise<void> {
     if (!fsWrapper.doesPathExistSync(dirPath)) {
-        logUtils.log(`Creating directory at ${dirPath}...`);
+        logUtils.warn(`Creating directory at ${dirPath}...`);
         await fsWrapper.mkdirpAsync(dirPath);
     }
 }

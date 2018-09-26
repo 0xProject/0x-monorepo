@@ -1,20 +1,15 @@
 import { MenuSubsectionsBySection } from '@0xproject/react-shared';
+import { DocAgnosticFormat, TypeDefinitionByName } from '@0xproject/types';
 import * as _ from 'lodash';
 
 import {
     ContractsByVersionByNetworkId,
-    DocAgnosticFormat,
     DocsInfoConfig,
     DocsMenu,
-    DoxityDocObj,
-    GeneratedDocJson,
     SectionNameToMarkdownByVersion,
     SectionsMap,
     SupportedDocJson,
-    TypeDefinitionByName,
 } from './types';
-import { doxityUtils } from './utils/doxity_utils';
-import { TypeDocUtils } from './utils/typedoc_utils';
 
 export class DocsInfo {
     public id: string;
@@ -94,13 +89,5 @@ export class DocsInfo {
         const typeDocSection = docAgnosticFormat[this.sections.types];
         const typeDefinitionByName = _.keyBy(typeDocSection.types, 'name') as any;
         return typeDefinitionByName;
-    }
-    public convertToDocAgnosticFormat(docObj: DoxityDocObj | GeneratedDocJson): DocAgnosticFormat {
-        if (this.type === SupportedDocJson.Doxity) {
-            return doxityUtils.convertToDocAgnosticFormat(docObj as DoxityDocObj);
-        } else {
-            const typeDocUtils = new TypeDocUtils(docObj as GeneratedDocJson, this);
-            return typeDocUtils.convertToDocAgnosticFormat();
-        }
     }
 }

@@ -1,7 +1,3 @@
-import { errorUtils } from '@0xproject/utils';
-import * as _ from 'lodash';
-
-import { DocsInfo } from '../docs_info';
 import {
     CustomType,
     CustomTypeChild,
@@ -11,7 +7,6 @@ import {
     ExternalTypeToLink,
     GeneratedDocJson,
     IndexSignature,
-    KindString,
     Parameter,
     Property,
     Type,
@@ -21,7 +16,12 @@ import {
     TypeParameter,
     TypescriptFunction,
     TypescriptMethod,
-} from '../types';
+} from '@0xproject/types';
+import { errorUtils } from '@0xproject/utils';
+import * as _ from 'lodash';
+
+import { DocsInfo } from '../docs_info';
+import { KindString } from '../types';
 
 import { constants } from './constants';
 
@@ -471,6 +471,8 @@ export class TypeDocUtils {
             methodIfExists = this._convertMethod(entity.declaration, isConstructor, sectionName);
         } else if (entity.type === TypeDocTypes.Tuple) {
             tupleElementsIfExists = _.map(entity.elements, el => {
+                // the following line is required due to an open tslint issue, https://github.com/palantir/tslint/issues/3540
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 return { name: el.name, typeDocType: el.type as TypeDocTypes };
             });
         }
