@@ -6,7 +6,6 @@ import {
 } from '@0xproject/contract-wrappers';
 import { assetDataUtils } from '@0xproject/order-utils';
 import { AssetProxyId, ERC721AssetData } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as R from 'ramda';
 
@@ -15,6 +14,7 @@ import { EventsResponse } from '../../data_sources/etherscan';
 import { ExchangeCancelEvent } from '../../entities/ExchangeCancelEvent';
 import { ExchangeCancelUpToEvent } from '../../entities/ExchangeCancelUpToEvent';
 import { ExchangeFillEvent } from '../../entities/ExchangeFillEvent';
+import { bigNumbertoStringOrNull } from '../../utils';
 
 import { convertResponseToLogEntry, decodeLogEntry } from './event_utils';
 
@@ -129,11 +129,4 @@ export function _convertToExchangeCancelUpToEvent(
     exchangeCancelUpToEvent.senderAddress = eventLog.args.senderAddress.toString();
     exchangeCancelUpToEvent.orderEpoch = eventLog.args.orderEpoch.toString();
     return exchangeCancelUpToEvent;
-}
-
-function bigNumbertoStringOrNull(n: BigNumber): string | null {
-    if (n == null) {
-        return null;
-    }
-    return n.toString();
 }
