@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Make abi_decoder compatible with ethers ^4.0.0",
+                "pr": 1069
+            }
+        ]
+    },
+    {
         "timestamp": 1537907159,
         "version": "1.0.11",
         "changes": [

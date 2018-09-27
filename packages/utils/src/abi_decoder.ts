@@ -47,7 +47,7 @@ export class AbiDecoder {
 
         let decodedData: any[];
         try {
-            decodedData = ethersInterface.events[event.name].parse(log.data);
+            decodedData = ethersInterface.events[event.name].decode(log.data);
         } catch (error) {
             if (error.code === ethers.errors.INVALID_ARGUMENT) {
                 // Because we index events by Method ID, and Method IDs are derived from the method
@@ -99,7 +99,7 @@ export class AbiDecoder {
         const ethersInterface = new ethers.Interface(abiArray);
         _.map(abiArray, (abi: AbiDefinition) => {
             if (abi.type === AbiType.Event) {
-                const topic = ethersInterface.events[abi.name].topics[0];
+                const topic = ethersInterface.events[abi.name].topic;
                 const numIndexedArgs = _.reduce(abi.inputs, (sum, input) => (input.indexed ? sum + 1 : sum), 0);
                 this._methodIds[topic] = {
                     ...this._methodIds[topic],
