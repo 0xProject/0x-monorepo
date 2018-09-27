@@ -117,10 +117,10 @@ function _genDocSection(compiledContract: StandardContractOutput, contractName: 
                 // that's because the type of the events array doesn't have any fields for documentation!
                 break;
             case 'function':
-                docSection.methods.push(_genMethodDoc(abiDefinition as MethodAbi, compiledContract.devdoc));
+                docSection.methods.push(_genMethodDoc(abiDefinition, compiledContract.devdoc));
                 break;
             case 'fallback':
-                docSection.methods.push(_genFallbackDoc(abiDefinition as FallbackAbi, compiledContract.devdoc));
+                docSection.methods.push(_genFallbackDoc(abiDefinition, compiledContract.devdoc));
                 break;
             default:
                 throw new Error(
