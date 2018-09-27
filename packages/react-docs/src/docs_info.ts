@@ -84,11 +84,11 @@ export class DocsInfo {
         return menuSubsectionsBySection;
     }
     public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat): { [name: string]: TypeDefinitionByName } {
-        if (_.isUndefined(this.sections.types)) {
+        if (_.isUndefined(docAgnosticFormat[this.typeSectionName])) {
             return {};
         }
 
-        const section = docAgnosticFormat[this.sections.types];
+        const section = docAgnosticFormat[this.typeSectionName];
         const typeDefinitionByName = _.keyBy(section.types, 'name') as any;
         return typeDefinitionByName;
     }
