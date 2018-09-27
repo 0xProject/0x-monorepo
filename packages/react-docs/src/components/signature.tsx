@@ -36,6 +36,7 @@ export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
         props.docsInfo,
         sectionName,
         props.isInPopover,
+        props.name,
         props.typeDefinitionByName,
     );
     const paramStringArray: any[] = [];
@@ -103,9 +104,10 @@ function renderParameters(
     docsInfo: DocsInfo,
     sectionName: string,
     isInPopover: boolean,
+    name: string,
     typeDefinitionByName?: TypeDefinitionByName,
 ): React.ReactNode[] {
-    const params = _.map(parameters, (p: Parameter) => {
+    const params = _.map(parameters, (p: Parameter, i: number) => {
         const isOptional = p.isOptional;
         const hasDefaultValue = !_.isUndefined(p.defaultValue);
         const type = (
@@ -121,7 +123,7 @@ function renderParameters(
             <span key={`param-${JSON.stringify(p.type)}-${name}-${i}`}>
                 {!_.isEmpty(p.name) && (
                     <span>
-                {p.name}
+                        {p.name}
                         {isOptional && '?'}:{' '}
                     </span>
                 )}

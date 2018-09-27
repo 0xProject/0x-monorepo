@@ -169,10 +169,10 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
             break;
 
         case TypeDocTypes.Tuple:
-            const tupleTypes = _.map(type.tupleElements, t => {
+            const tupleTypes = _.map(type.tupleElements, (t, i) => {
                 return (
                     <Type
-                        key={`type-tuple-${t.name}-${t.typeDocType}`}
+                        key={`type-tuple-${t.name}-${t.typeDocType}-${i}`}
                         type={t}
                         sectionName={props.sectionName}
                         typeDefinitionByName={props.typeDefinitionByName}
@@ -222,7 +222,7 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
         const id = Math.random().toString();
         const typeDefinitionAnchorId = isExportedClassReference
             ? props.type.name
-            : `${constants.TYPES_SECTION_NAME}-${typeName}`;
+            : `${props.docsInfo.typeSectionName}-${typeName}`;
         typeName = (
             <ScrollLink
                 to={typeDefinitionAnchorId}

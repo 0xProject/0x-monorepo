@@ -124,12 +124,12 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
             </div>
         );
     }
-    private _renderParameterDescriptions(parameters: Parameter[]): React.ReactNode {
-        const descriptions = _.map(parameters, parameter => {
+    private _renderParameterDescriptions(parameters: Parameter[], name: string): React.ReactNode {
+        const descriptions = _.map(parameters, (parameter: Parameter, i: number) => {
             const isOptional = parameter.isOptional;
             return (
                 <div
-                    key={`param-description-${parameter.name}`}
+                    key={`param-description-${parameter.name}-${name}-${i}`}
                     className="flex pb1 mb2"
                     style={{ borderBottom: '1px solid #f0f4f7' }}
                 >
