@@ -28,11 +28,11 @@ import {
     TypeDocTypes,
 } from '@0xproject/types';
 
-// Unforunately, the only way to currently retrieve the declared structs with Solidity contracts
-// is to tease it out of the params/return values included in it's ABI. These structures do
-// not include the structs actual name, so we needed a mapping to assign the proper name to a
+// Unforunately, the only way to currently retrieve the declared structs within Solidity contracts
+// is to tease them out of the params/return values included in the ABI. These structures do
+// not include the structs actual name, so we need a mapping to assign the proper name to a
 // struct. If the name is not in this mapping, the structs name will default to the param/return value
-// name.
+// name (which mostly coincide).
 const customTypeHashToName: { [hash: string]: string } = {
     '52d4a768701076c7bac06e386e430883975eb398732eccba797fd09dd064a60e': 'Order',
     '46f7e8c4d144d11a72ce5338458ea37b933500d7a65e740cbca6d16e350eaa48': 'FillResult',
