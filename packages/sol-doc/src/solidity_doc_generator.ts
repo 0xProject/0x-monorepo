@@ -422,6 +422,8 @@ function _generateCustomTypeHash(customType: CustomType): string {
 
 function _getStructsAsCustomTypes(abiDefinition: AbiDefinition): CustomType[] {
     const customTypes: CustomType[] = [];
+    // We cast to `any` here because we do not know yet if this type of abiDefinition contains
+    // an `input` key
     if (!_.isUndefined((abiDefinition as any).inputs)) {
         const methodOrConstructorAbi = abiDefinition as MethodAbi | ConstructorAbi;
         _.each(methodOrConstructorAbi.inputs, input => {
