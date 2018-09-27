@@ -19,12 +19,14 @@ export interface SignatureProps {
     callPath?: string;
     docsInfo: DocsInfo;
     isInPopover: boolean;
+    isFallback?: boolean;
 }
 
 const defaultProps = {
     shouldHideMethodName: false,
     shouldUseArrowSyntax: false,
     callPath: '',
+    isFallback: false,
 };
 
 export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
@@ -75,7 +77,7 @@ export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
     return (
         <span style={{ fontSize: 15 }}>
             {props.callPath}
-            {methodName}
+            {props.isFallback ? '' : methodName}
             {typeParameterIfExists}({hasMoreThenTwoParams && <br />}
             {paramStringArray})
             {props.returnType && (

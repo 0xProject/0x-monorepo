@@ -50,6 +50,7 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
     public render(): React.ReactNode {
         const method = this.props.method;
 
+        const isFallback = (method as SolidityMethod).isFallback;
         return (
             <div
                 id={`${this.props.sectionName}-${method.name}`}
@@ -63,10 +64,11 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
                         {(method as TypescriptMethod).isStatic && this._renderChip('Static')}
                         {(method as SolidityMethod).isConstant && this._renderChip('Constant')}
                         {(method as SolidityMethod).isPayable && this._renderChip('Payable')}
+                        {isFallback && this._renderChip('Fallback', colors.lightGreenA700)}
                         <div style={{ lineHeight: 1.3 }}>
                             <AnchorTitle
                                 headerSize={HeaderSizes.H3}
-                                title={method.name}
+                                title={isFallback ? '' : method.name}
                                 id={`${this.props.sectionName}-${method.name}`}
                                 shouldShowAnchor={this.state.shouldShowAnchor}
                             />
@@ -84,6 +86,7 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
                         typeDefinitionByName={this.props.typeDefinitionByName}
                         docsInfo={this.props.docsInfo}
                         isInPopover={false}
+                        isFallback={isFallback}
                     />
                 </code>
                 {(method as TypescriptMethod).source && (
@@ -114,9 +117,9 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
             </div>
         );
     }
-    private _renderChip(text: string): React.ReactNode {
+    private _renderChip(text: string, backgroundColor: string = colors.lightBlueA700): React.ReactNode {
         return (
-            <div className="p1 mr1" style={styles.chip}>
+            <div className="p1 mr1" style={{ ...styles.chip, backgroundColor }}>
                 {text}
             </div>
         );
