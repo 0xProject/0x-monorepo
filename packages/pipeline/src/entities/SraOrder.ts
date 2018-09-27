@@ -7,6 +7,7 @@ export class SraOrder extends BaseEntity {
     @PrimaryColumn() public exchangeAddress!: string;
     @PrimaryColumn() public orderHashHex!: string;
 
+    @Column() public sourceUrl!: string;
     @Column() public lastUpdatedTimestamp!: number;
     @Column() public firstSeenTimestamp!: number;
 
