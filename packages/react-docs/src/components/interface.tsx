@@ -20,9 +20,9 @@ export interface InterfaceProps {
 
 export const Interface: React.SFC<InterfaceProps> = (props: InterfaceProps): any => {
     const type = props.type;
-    const properties = _.map(type.children, property => {
+    const properties = _.map(type.children, (property, i) => {
         return (
-            <span key={`property-${property.name}-${property.type}-${type.name}`}>
+            <span key={`property-${property.name}-${property.type}-${type.name}-${i}`}>
                 {property.name}:{' '}
                 {property.type && !_.isUndefined(property.type.method) ? (
                     <Signature
