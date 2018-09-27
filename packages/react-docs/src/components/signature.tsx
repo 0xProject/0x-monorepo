@@ -118,9 +118,14 @@ function renderParameters(
             />
         );
         return (
-            <span key={`param-${p.type}-${p.name}`}>
+            <span key={`param-${JSON.stringify(p.type)}-${name}-${i}`}>
+                {!_.isEmpty(p.name) && (
+                    <span>
                 {p.name}
-                {isOptional && '?'}: {type}
+                        {isOptional && '?'}:{' '}
+                    </span>
+                )}
+                {type}
                 {hasDefaultValue && ` = ${p.defaultValue}`}
             </span>
         );
