@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Export ExpirationWatcher",
+                "pr": 1097
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
