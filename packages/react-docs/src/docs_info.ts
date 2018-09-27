@@ -18,6 +18,7 @@ export class DocsInfo {
     public packageName: string;
     public packageUrl: string;
     public menu: DocsMenu;
+    public typeSectionName: string;
     public sections: SectionsMap;
     public sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
     public contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
@@ -28,6 +29,7 @@ export class DocsInfo {
         this.displayName = config.displayName;
         this.packageName = config.packageName;
         this.packageUrl = config.packageUrl;
+        this.typeSectionName = config.type === SupportedDocJson.SolDoc ? 'structs' : 'types';
         this.sections = config.markdownSections;
         this.sectionNameToMarkdownByVersion = config.sectionNameToMarkdownByVersion;
         this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
@@ -53,7 +55,7 @@ export class DocsInfo {
                 _.isEmpty(docSection.properties) &&
                 _.isEmpty(docSection.events);
 
-            if (!_.isUndefined(this.sections.types) && sectionName === this.sections.types) {
+            if (sectionName === this.typeSectionName) {
                 const sortedTypesNames = _.sortBy(docSection.types, 'name');
                 const typeNames = _.map(sortedTypesNames, t => t.name);
                 menuSubsectionsBySection[sectionName] = typeNames;
@@ -86,8 +88,8 @@ export class DocsInfo {
             return {};
         }
 
-        const typeDocSection = docAgnosticFormat[this.sections.types];
-        const typeDefinitionByName = _.keyBy(typeDocSection.types, 'name') as any;
+        const section = docAgnosticFormat[this.sections.types];
+        const typeDefinitionByName = _.keyBy(section.types, 'name') as any;
         return typeDefinitionByName;
     }
 }

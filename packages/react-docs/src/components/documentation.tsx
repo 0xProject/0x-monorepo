@@ -266,7 +266,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             <div key={`section-${sectionName}`} className="py2 pr3 md-pl2 sm-pl3">
                 <div className="flex pb2">
                     <div style={{ marginRight: 7 }}>
-                        <SectionHeader sectionName={sectionName} />
+                        <SectionHeader sectionName={this.props.docsInfo.typeSectionName} />
                     </div>
                     {this._renderNetworkBadgesIfExists(sectionName)}
                 </div>
