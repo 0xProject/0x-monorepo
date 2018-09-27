@@ -1,5 +1,15 @@
 [
     {
+        "version": "1.0.6",
+        "changes": [
+            {
+                "note":
+                    "Add signerAddress normalization to `isValidECSignature` to avoid `invalid address recovery` error if caller supplies a checksummed address",
+                "pr": 1094
+            }
+        ]
+    },
+    {
         "timestamp": 1537907159,
         "version": "1.0.5",
         "changes": [
