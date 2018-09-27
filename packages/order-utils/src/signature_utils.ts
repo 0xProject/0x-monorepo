@@ -174,6 +174,7 @@ export const signatureUtils = {
         assert.isHexString('data', data);
         assert.doesConformToSchema('signature', signature, schemas.ecSignatureSchema);
         assert.isETHAddressHex('signerAddress', signerAddress);
+        const normalizedSignerAddress = signerAddress.toLowerCase();
 
         const msgHashBuff = ethUtil.toBuffer(data);
         try {
@@ -184,7 +185,8 @@ export const signatureUtils = {
                 ethUtil.toBuffer(signature.s),
             );
             const retrievedAddress = ethUtil.bufferToHex(ethUtil.pubToAddress(pubKey));
-            return retrievedAddress === signerAddress;
+            const normalizedRetrievedAddress = retrievedAddress.toLowerCase();
+            return normalizedRetrievedAddress === normalizedSignerAddress;
         } catch (err) {
             return false;
         }
