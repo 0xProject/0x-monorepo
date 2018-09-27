@@ -47,10 +47,12 @@ async function getSraOrdersAsync(): Promise<void> {
     const orderRepository = connection.getRepository(SraOrder);
     console.log(`found ${await orderRepository.count()} existing orders`);
 
-    const connect = new HttpClient('https://api.radarrelay.com/0x/v2');
+    const sraUrl = 'https://api.radarrelay.com/0x/v2';
+    const connect = new HttpClient(sraUrl);
     const rawOrders = await connect.getOrdersAsync();
     const orders = parseSraOrders(rawOrders);
     for (const order of orders) {
+        order.sourceUrl = sraUrl;
         order.save();
     }
     console.log(`now there are ${await orderRepository.count()} total orders`);
