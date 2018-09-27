@@ -13,6 +13,7 @@ import { Signature } from './signature';
 import { TypeDefinition } from './type_definition';
 
 const basicJsTypes = ['string', 'number', 'undefined', 'null', 'boolean'];
+const basicSolidityTypes = ['bytes', 'bytes4', 'uint256', 'address'];
 
 const defaultProps = {};
 
@@ -80,7 +81,7 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
 
         case TypeDocTypes.Array:
             typeName = type.elementType.name;
-            if (_.includes(basicJsTypes, typeName)) {
+            if (_.includes(basicJsTypes, typeName) || _.includes(basicSolidityTypes, typeName)) {
                 typeNameColor = colors.orange;
             }
             break;
