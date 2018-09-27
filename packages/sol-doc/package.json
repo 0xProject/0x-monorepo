@@ -29,7 +29,8 @@
         "@0xproject/utils": "^1.0.11",
         "ethereum-types": "^1.0.4",
         "lodash": "^4.17.10",
-        "yargs": "^12.0.2"
+        "yargs": "^12.0.2",
+        "ethereumjs-util": "^5.1.1"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.7",

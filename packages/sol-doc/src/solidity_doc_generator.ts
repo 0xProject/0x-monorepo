@@ -1,7 +1,5 @@
 import * as path from 'path';
 
-import * as _ from 'lodash';
-
 import {
     AbiDefinition,
     ConstructorAbi,
@@ -13,9 +11,13 @@ import {
     MethodAbi,
     StandardContractOutput,
 } from 'ethereum-types';
+import ethUtil = require('ethereumjs-util');
+import * as _ from 'lodash';
 
 import { Compiler, CompilerOptions } from '@0xproject/sol-compiler';
 import {
+    CustomType,
+    CustomTypeChild,
     DocAgnosticFormat,
     DocSection,
     Event,
@@ -25,6 +27,19 @@ import {
     Type,
     TypeDocTypes,
 } from '@0xproject/types';
+
+// Unforunately, the only way to currently retrieve the declared structs with Solidity contracts
+// is to tease it out of the params/return values included in it's ABI. These structures do
+// not include the structs actual name, so we needed a mapping to assign the proper name to a
+// struct. If the name is not in this mapping, the structs name will default to the param/return value
+// name.
+const customTypeHashToName: { [hash: string]: string } = {
+    '52d4a768701076c7bac06e386e430883975eb398732eccba797fd09dd064a60e': 'Order',
+    '46f7e8c4d144d11a72ce5338458ea37b933500d7a65e740cbca6d16e350eaa48': 'FillResult',
+    c22239cf0d29df1e6cf1be54f21692a8c0b3a48b9367540d4ffff4608b331ce9: 'OrderInfo',
+    c21e9ff31a30941c22e1cb43752114bb467c34dea58947f98966c9030fc8e4a9: 'TraderInfo',
+    '07c2bddc165e0b5005e6244dd4a9771fa61c78c4f42abd687d57567b0768136c': 'MatchedFillResult',
+};
 
 /**
  * Invoke the Solidity compiler and transform its ABI and devdoc outputs into a
@@ -41,6 +56,7 @@ export async function generateSolDocAsync(
     const compilerOptions = _makeCompilerOptions(contractsDir, contractsToDocument);
     const compiler = new Compiler(compilerOptions);
     const compilerOutputs = await compiler.getCompilerOutputsAsync();
+    let structs: CustomType[] = [];
     for (const compilerOutput of compilerOutputs) {
         const contractFileNames = _.keys(compilerOutput.contracts);
         for (const contractFileName of contractFileNames) {
@@ -53,9 +69,12 @@ export async function generateSolDocAsync(
                     throw new Error('compiled contract did not contain ABI output');
                 }
                 docWithDependencies[contractName] = _genDocSection(compiledContract, contractName);
+                structs = [...structs, ..._extractStructs(compiledContract)];
             }
         }
     }
+    structs = _dedupStructs(structs);
+    structs = _overwriteStructNames(structs);
 
     let doc: DocAgnosticFormat = {};
     if (_.isUndefined(contractsToDocument) || contractsToDocument.length === 0) {
@@ -70,6 +89,16 @@ export async function generateSolDocAsync(
             doc[contractName] = docWithDependencies[contractName];
         }
     }
+
+    doc.structs = {
+        comment: '',
+        constructors: [],
+        methods: [],
+        properties: [],
+        types: structs,
+        functions: [],
+        events: [],
+    };
 
     return doc;
 }
@@ -93,6 +122,33 @@ function _makeCompilerOptions(contractsDir: string, contractsToCompile?: string[
     }
 
     return compilerOptions;
+}
+
+function _extractStructs(compiledContract: StandardContractOutput): CustomType[] {
+    let customTypes: CustomType[] = [];
+    for (const abiDefinition of compiledContract.abi) {
+        switch (abiDefinition.type) {
+            case 'constructor': {
+                const types = _getStructsAsCustomTypes(abiDefinition);
+                customTypes = [...customTypes, ...types];
+                break;
+            }
+            case 'function': {
+                const types = _getStructsAsCustomTypes(abiDefinition);
+                customTypes = [...customTypes, ...types];
+                break;
+            }
+            case 'event':
+            case 'fallback':
+                // No types exist
+                break;
+            default:
+                throw new Error(
+                    `unknown and unsupported AbiDefinition type '${(abiDefinition as AbiDefinition).type}'`,
+                );
+        }
+    }
+    return customTypes;
 }
 
 function _genDocSection(compiledContract: StandardContractOutput, contractName: string): DocSection {
@@ -176,7 +232,7 @@ function _devdocMethodDetailsIfExist(
 }
 
 function _genFallbackDoc(abiDefinition: FallbackAbi, devdocIfExists: DevdocOutput | undefined): SolidityMethod {
-    const methodSignature = `${name}()`;
+    const methodSignature = `()`;
     const comment = _devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
 
     const returnComment =
@@ -186,7 +242,7 @@ function _genFallbackDoc(abiDefinition: FallbackAbi, devdocIfExists: DevdocOutpu
 
     const methodDoc: SolidityMethod = {
         isConstructor: false,
-        name: '',
+        name: 'fallback',
         callPath: '',
         parameters: [],
         returnType: { name: 'void', typeDocType: TypeDocTypes.Intrinsic },
@@ -194,23 +250,32 @@ function _genFallbackDoc(abiDefinition: FallbackAbi, devdocIfExists: DevdocOutpu
         isConstant: true,
         isPayable: abiDefinition.payable,
         isFallback: true,
-        comment,
+        comment: _.isEmpty(comment)
+            ? 'The default fallback function. It is executed on a call to the contract if none of the other functions match the given function identifier (or if no data was supplied at all).'
+            : comment,
     };
     return methodDoc;
 }
 
 function _genMethodDoc(abiDefinition: MethodAbi, devdocIfExists: DevdocOutput | undefined): SolidityMethod {
+    const name = abiDefinition.name;
     const { parameters, methodSignature } = _genMethodParamsDoc(name, abiDefinition.inputs, devdocIfExists);
-    const comment = _devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
-    const returnType = _genMethodReturnTypeDoc(abiDefinition.outputs, methodSignature, devdocIfExists);
+    const devDocComment = _devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
+    const returnType = _genMethodReturnTypeDoc(abiDefinition.outputs);
     const returnComment =
         _.isUndefined(devdocIfExists) || _.isUndefined(devdocIfExists.methods[methodSignature])
             ? undefined
             : devdocIfExists.methods[methodSignature].return;
 
+    const hasNoNamedParameters = _.isUndefined(_.find(parameters, p => !_.isEmpty(p.name)));
+    const isGeneratedGetter = hasNoNamedParameters;
+    const comment =
+        _.isEmpty(devDocComment) && isGeneratedGetter
+            ? `This is an auto-generated accessor method of the '${name}' contract instance variable.`
+            : devDocComment;
     const methodDoc: SolidityMethod = {
         isConstructor: false,
-        name: abiDefinition.name,
+        name,
         callPath: '',
         parameters,
         returnType,
@@ -262,11 +327,13 @@ function _genMethodParamsDoc(
 ): { parameters: Parameter[]; methodSignature: string } {
     const parameters: Parameter[] = [];
     for (const abiParam of abiParams) {
+        const type = _getTypeFromDataItem(abiParam);
+
         const parameter: Parameter = {
             name: abiParam.name,
             comment: '<No comment>',
             isOptional: false, // Unsupported in Solidity, until resolution of https://github.com/ethereum/solidity/issues/232
-            type: { name: abiParam.type, typeDocType: TypeDocTypes.Intrinsic },
+            type,
         };
         parameters.push(parameter);
     }
@@ -292,25 +359,143 @@ function _genMethodParamsDoc(
     return { parameters, methodSignature };
 }
 
-function _genMethodReturnTypeDoc(
-    outputs: DataItem[],
-    methodSignature: string,
-    devdocIfExists: DevdocOutput | undefined,
-): Type {
-    const methodReturnTypeDoc: Type = {
-        name: 'void',
-        typeDocType: TypeDocTypes.Intrinsic,
-        tupleElements: undefined,
-    };
+function _genMethodReturnTypeDoc(outputs: DataItem[]): Type {
     if (outputs.length > 1) {
-        methodReturnTypeDoc.typeDocType = TypeDocTypes.Tuple;
-        methodReturnTypeDoc.tupleElements = [];
+        const type: Type = {
+            name: '',
+            typeDocType: TypeDocTypes.Tuple,
+            tupleElements: [],
+        };
         for (const output of outputs) {
-            methodReturnTypeDoc.tupleElements.push({ name: output.type, typeDocType: TypeDocTypes.Intrinsic });
+            const tupleType = _getTypeFromDataItem(output);
+            (type.tupleElements as Type[]).push(tupleType);
         }
+        return type;
     } else if (outputs.length === 1) {
-        methodReturnTypeDoc.typeDocType = TypeDocTypes.Intrinsic;
-        methodReturnTypeDoc.name = outputs[0].type;
+        const output = outputs[0];
+        const type = _getTypeFromDataItem(output);
+        return type;
+    } else {
+        const type: Type = {
+            name: 'void',
+            typeDocType: TypeDocTypes.Intrinsic,
+        };
+        return type;
     }
-    return methodReturnTypeDoc;
+}
+
+function _capitalize(text: string): string {
+    return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+}
+
+function _dedupStructs(customTypes: CustomType[]): CustomType[] {
+    const uniqueCustomTypes: CustomType[] = [];
+    const seenTypes: { [hash: string]: boolean } = {};
+    _.each(customTypes, customType => {
+        const hash = _generateCustomTypeHash(customType);
+        if (!seenTypes[hash]) {
+            uniqueCustomTypes.push(customType);
+            seenTypes[hash] = true;
+        }
+    });
+    return uniqueCustomTypes;
+}
+
+function _overwriteStructNames(customTypes: CustomType[]): CustomType[] {
+    const localCustomTypes = _.cloneDeep(customTypes);
+    _.each(localCustomTypes, customType => {
+        const hash = _generateCustomTypeHash(customType);
+        if (!_.isUndefined(customTypeHashToName[hash])) {
+            customType.name = customTypeHashToName[hash];
+        }
+    });
+    return localCustomTypes;
+}
+
+function _generateCustomTypeHash(customType: CustomType): string {
+    const customTypeWithoutName = _.cloneDeep(customType);
+    delete customTypeWithoutName.name;
+    const customTypeWithoutNameStr = JSON.stringify(customTypeWithoutName);
+    const hash = ethUtil.sha256(customTypeWithoutNameStr).toString('hex');
+    return hash;
+}
+
+function _getStructsAsCustomTypes(abiDefinition: AbiDefinition): CustomType[] {
+    const customTypes: CustomType[] = [];
+    if (!_.isUndefined((abiDefinition as any).inputs)) {
+        const methodOrConstructorAbi = abiDefinition as MethodAbi | ConstructorAbi;
+        _.each(methodOrConstructorAbi.inputs, input => {
+            if (!_.isUndefined(input.components)) {
+                const customType = _getCustomTypeFromDataItem(input);
+                customTypes.push(customType);
+            }
+        });
+    }
+    if (!_.isUndefined((abiDefinition as any).outputs)) {
+        const methodAbi = abiDefinition as MethodAbi;
+        _.each(methodAbi.outputs, output => {
+            if (!_.isUndefined(output.components)) {
+                const customType = _getCustomTypeFromDataItem(output);
+                customTypes.push(customType);
+            }
+        });
+    }
+    return customTypes;
+}
+
+function _getCustomTypeFromDataItem(inputOrOutput: DataItem): CustomType {
+    const customType: CustomType = {
+        name: _.capitalize(inputOrOutput.name),
+        kindString: 'Interface',
+        children: [],
+    };
+    _.each(inputOrOutput.components, (component: DataItem) => {
+        const childType = _getTypeFromDataItem(component);
+        const customTypeChild = {
+            name: component.name,
+            type: childType,
+        };
+        // (fabio): Not sure why this type casting is necessary. Seems TS doesn't
+        // deduce that `customType.children` cannot be undefined anymore after being
+        // set to `[]` above.
+        (customType.children as CustomTypeChild[]).push(customTypeChild);
+    });
+    return customType;
+}
+
+function _getNameFromDataItemIfExists(dataItem: DataItem): string | undefined {
+    if (_.isUndefined(dataItem.components)) {
+        return undefined;
+    }
+    const customType = _getCustomTypeFromDataItem(dataItem);
+    const hash = _generateCustomTypeHash(customType);
+    if (_.isUndefined(customTypeHashToName[hash])) {
+        return undefined;
+    }
+    return customTypeHashToName[hash];
+}
+
+function _getTypeFromDataItem(dataItem: DataItem): Type {
+    const typeDocType = !_.isUndefined(dataItem.components) ? TypeDocTypes.Reference : TypeDocTypes.Intrinsic;
+    let typeName: string;
+    if (typeDocType === TypeDocTypes.Reference) {
+        const nameIfExists = _getNameFromDataItemIfExists(dataItem);
+        typeName = _.isUndefined(nameIfExists) ? _capitalize(dataItem.name) : nameIfExists;
+    } else {
+        typeName = dataItem.type;
+    }
+
+    const isArrayType = _.endsWith(dataItem.type, '[]');
+    let type: Type;
+    if (isArrayType) {
+        typeName = typeDocType === TypeDocTypes.Intrinsic ? typeName.slice(0, -2) : typeName;
+        type = {
+            elementType: { name: typeName, typeDocType },
+            typeDocType: TypeDocTypes.Array,
+            name: '',
+        };
+    } else {
+        type = { name: typeName, typeDocType };
+    }
+    return type;
 }
