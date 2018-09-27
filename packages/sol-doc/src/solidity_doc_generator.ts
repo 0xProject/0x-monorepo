@@ -490,6 +490,7 @@ function _getTypeFromDataItem(dataItem: DataItem): Type {
     const isArrayType = _.endsWith(dataItem.type, '[]');
     let type: Type;
     if (isArrayType) {
+        // tslint:disable-next-line:custom-no-magic-numbers
         typeName = typeDocType === TypeDocTypes.Intrinsic ? typeName.slice(0, -2) : typeName;
         type = {
             elementType: { name: typeName, typeDocType },
@@ -501,3 +502,4 @@ function _getTypeFromDataItem(dataItem: DataItem): Type {
     }
     return type;
 }
+// tslint:disable:max-file-line-count

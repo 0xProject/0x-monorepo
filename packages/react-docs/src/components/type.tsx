@@ -7,7 +7,6 @@ import { Link as ScrollLink } from 'react-scroll';
 import * as ReactTooltip from 'react-tooltip';
 
 import { DocsInfo } from '../docs_info';
-import { constants } from '../utils/constants';
 
 import { Signature } from './signature';
 import { TypeDefinition } from './type_definition';
