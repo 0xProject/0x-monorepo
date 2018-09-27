@@ -32,7 +32,6 @@ export interface SignatureBlockState {
 const styles: Styles = {
     chip: {
         fontSize: 13,
-        backgroundColor: colors.lightBlueA700,
         color: colors.white,
         height: 11,
         borderRadius: 14,
@@ -51,6 +50,7 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
         const method = this.props.method;
 
         const isFallback = (method as SolidityMethod).isFallback;
+        const onlyHasNamedParameters = !_.isUndefined(_.find(method.parameters, p => !_.isEmpty(p.name)));
         return (
             <div
                 id={`${this.props.sectionName}-${method.name}`}
@@ -98,12 +98,13 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
                 )}
                 {method.comment && <Comment comment={method.comment} className="py2" />}
                 {method.parameters &&
-                    !_.isEmpty(method.parameters) && (
+                    !_.isEmpty(method.parameters) &&
+                    onlyHasNamedParameters && (
                         <div>
                             <h4 className="pb1 thin" style={{ borderBottom: '1px solid #e1e8ed' }}>
                                 ARGUMENTS
                             </h4>
-                            {this._renderParameterDescriptions(method.parameters)}
+                            {this._renderParameterDescriptions(method.parameters, method.name)}
                         </div>
                     )}
                 {method.returnComment && (
