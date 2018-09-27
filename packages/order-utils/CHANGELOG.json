@@ -5,7 +5,7 @@
             {
                 "note":
                     "Add signerAddress normalization to `isValidECSignature` to avoid `invalid address recovery` error if caller supplies a checksummed address",
-                "pr": 1094
+                "pr": 1096
             }
         ]
     },
