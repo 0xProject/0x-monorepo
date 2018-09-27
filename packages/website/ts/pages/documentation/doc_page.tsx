@@ -146,9 +146,9 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             docAgnosticFormat = versionDocObj as DocAgnosticFormat;
             // HACK: need to modify docsInfo like convertToDocAgnosticFormat() would do
             this.props.docsInfo.menu.Contracts = [];
-            _.each(docAgnosticFormat, (docObj, contractName) => {
-                this.props.docsInfo.sections[contractName] = contractName;
-                this.props.docsInfo.menu.Contracts.push(contractName);
+            _.each(docAgnosticFormat, (_docObj, sectionName) => {
+                this.props.docsInfo.sections[sectionName] = sectionName;
+                this.props.docsInfo.menu.Contracts.push(sectionName);
             });
         }
 
