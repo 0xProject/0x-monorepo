@@ -519,6 +519,7 @@ export interface TypescriptFunction extends BaseFunction {
 export interface SolidityMethod extends BaseMethod {
     isConstant?: boolean;
     isPayable?: boolean;
+    isFallback?: boolean;
 }
 
 export interface Source {

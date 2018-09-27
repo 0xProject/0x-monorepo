@@ -117,8 +117,10 @@ function _genDocSection(compiledContract: StandardContractOutput, contractName: 
                 // that's because the type of the events array doesn't have any fields for documentation!
                 break;
             case 'function':
+                docSection.methods.push(_genMethodDoc(abiDefinition as MethodAbi, compiledContract.devdoc));
+                break;
             case 'fallback':
-                docSection.methods.push(_genMethodDoc(abiDefinition, compiledContract.devdoc));
+                docSection.methods.push(_genFallbackDoc(abiDefinition as FallbackAbi, compiledContract.devdoc));
                 break;
             default:
                 throw new Error(
@@ -173,39 +175,47 @@ function _devdocMethodDetailsIfExist(
     return details;
 }
 
-function _genMethodDoc(
-    abiDefinition: MethodAbi | FallbackAbi,
-    devdocIfExists: DevdocOutput | undefined,
-): SolidityMethod {
-    const name = abiDefinition.type === 'fallback' ? '' : abiDefinition.name;
-
-    const { parameters, methodSignature } =
-        abiDefinition.type === 'fallback'
-            ? { parameters: [], methodSignature: `${name}()` }
-            : _genMethodParamsDoc(name, abiDefinition.inputs, devdocIfExists);
-
+function _genFallbackDoc(abiDefinition: FallbackAbi, devdocIfExists: DevdocOutput | undefined): SolidityMethod {
+    const methodSignature = `${name}()`;
     const comment = _devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
-
-    const returnType =
-        abiDefinition.type === 'fallback'
-            ? { name: '', typeDocType: TypeDocTypes.Intrinsic }
-            : _genMethodReturnTypeDoc(abiDefinition.outputs, methodSignature, devdocIfExists);
 
     const returnComment =
         _.isUndefined(devdocIfExists) || _.isUndefined(devdocIfExists.methods[methodSignature])
             ? undefined
             : devdocIfExists.methods[methodSignature].return;
 
-    const isConstant = abiDefinition.type === 'fallback' ? true : abiDefinition.constant;
+    const methodDoc: SolidityMethod = {
+        isConstructor: false,
+        name: '',
+        callPath: '',
+        parameters: [],
+        returnType: { name: 'void', typeDocType: TypeDocTypes.Intrinsic },
+        returnComment,
+        isConstant: true,
+        isPayable: abiDefinition.payable,
+        isFallback: true,
+        comment,
+    };
+    return methodDoc;
+}
+
+function _genMethodDoc(abiDefinition: MethodAbi, devdocIfExists: DevdocOutput | undefined): SolidityMethod {
+    const { parameters, methodSignature } = _genMethodParamsDoc(name, abiDefinition.inputs, devdocIfExists);
+    const comment = _devdocMethodDetailsIfExist(methodSignature, devdocIfExists);
+    const returnType = _genMethodReturnTypeDoc(abiDefinition.outputs, methodSignature, devdocIfExists);
+    const returnComment =
+        _.isUndefined(devdocIfExists) || _.isUndefined(devdocIfExists.methods[methodSignature])
+            ? undefined
+            : devdocIfExists.methods[methodSignature].return;
 
     const methodDoc: SolidityMethod = {
         isConstructor: false,
-        name,
+        name: abiDefinition.name,
         callPath: '',
         parameters,
         returnType,
         returnComment,
-        isConstant,
+        isConstant: abiDefinition.constant,
         isPayable: abiDefinition.payable,
         comment,
     };
@@ -254,7 +264,7 @@ function _genMethodParamsDoc(
     for (const abiParam of abiParams) {
         const parameter: Parameter = {
             name: abiParam.name,
-            comment: '',
+            comment: '<No comment>',
             isOptional: false, // Unsupported in Solidity, until resolution of https://github.com/ethereum/solidity/issues/232
             type: { name: abiParam.type, typeDocType: TypeDocTypes.Intrinsic },
         };
@@ -288,7 +298,7 @@ function _genMethodReturnTypeDoc(
     devdocIfExists: DevdocOutput | undefined,
 ): Type {
     const methodReturnTypeDoc: Type = {
-        name: '',
+        name: 'void',
         typeDocType: TypeDocTypes.Intrinsic,
         tupleElements: undefined,
     };
