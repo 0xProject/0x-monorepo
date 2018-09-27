@@ -22,7 +22,8 @@ export interface EthersInterfaceByFunctionSignature {
 
 const REVERT_ERROR_SELECTOR = '08c379a0';
 const REVERT_ERROR_SELECTOR_OFFSET = 2;
-const REVERT_ERROR_SELECTOR_END = 10;
+const REVERT_ERROR_SELECTOR_BYTES_LENGTH = 4;
+const REVERT_ERROR_SELECTOR_END = REVERT_ERROR_SELECTOR_OFFSET + REVERT_ERROR_SELECTOR_BYTES_LENGTH * 2;
 
 export class BaseContract {
     protected _ethersInterfacesByFunctionSignature: EthersInterfaceByFunctionSignature;
@@ -90,7 +91,7 @@ export class BaseContract {
         if (rawCallResult.slice(REVERT_ERROR_SELECTOR_OFFSET, REVERT_ERROR_SELECTOR_END) === REVERT_ERROR_SELECTOR) {
             const revertReason = ethers.utils.defaultAbiCoder.decode(
                 ['string'],
-                ethers.utils.hexDataSlice(rawCallResult, 4),
+                ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
             );
             throw new Error(revertReason);
         }
