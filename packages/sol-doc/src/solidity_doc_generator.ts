@@ -127,15 +127,14 @@ function _makeCompilerOptions(contractsDir: string, contractsToCompile?: string[
 function _extractStructs(compiledContract: StandardContractOutput): CustomType[] {
     let customTypes: CustomType[] = [];
     for (const abiDefinition of compiledContract.abi) {
+        let types: CustomType[] = [];
         switch (abiDefinition.type) {
             case 'constructor': {
-                const types = _getStructsAsCustomTypes(abiDefinition);
-                customTypes = [...customTypes, ...types];
+                types = _getStructsAsCustomTypes(abiDefinition);
                 break;
             }
             case 'function': {
-                const types = _getStructsAsCustomTypes(abiDefinition);
-                customTypes = [...customTypes, ...types];
+                types = _getStructsAsCustomTypes(abiDefinition);
                 break;
             }
             case 'event':
@@ -147,6 +146,7 @@ function _extractStructs(compiledContract: StandardContractOutput): CustomType[]
                     `unknown and unsupported AbiDefinition type '${(abiDefinition as AbiDefinition).type}'`,
                 );
         }
+        customTypes = [...customTypes, ...types];
     }
     return customTypes;
 }
