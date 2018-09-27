@@ -20,6 +20,10 @@ export interface EthersInterfaceByFunctionSignature {
     [key: string]: ethers.Interface;
 }
 
+const REVERT_ERROR_SELECTOR = '08c379a0';
+const REVERT_ERROR_SELECTOR_OFFSET = 2;
+const REVERT_ERROR_SELECTOR_END = 10;
+
 export class BaseContract {
     protected _ethersInterfacesByFunctionSignature: EthersInterfaceByFunctionSignature;
     protected _web3Wrapper: Web3Wrapper;
@@ -81,6 +85,15 @@ export class BaseContract {
             txDataWithDefaults.gas = await estimateGasAsync(txDataWithDefaults);
         }
         return txDataWithDefaults;
+    }
+    protected static _throwIfRevertWithReasonCallResult(rawCallResult: string): void {
+        if (rawCallResult.slice(REVERT_ERROR_SELECTOR_OFFSET, REVERT_ERROR_SELECTOR_END) === REVERT_ERROR_SELECTOR) {
+            const revertReason = ethers.utils.defaultAbiCoder.decode(
+                ['string'],
+                ethers.utils.hexDataSlice(rawCallResult, 4),
+            );
+            throw new Error(revertReason);
+        }
     }
     // Throws if the given arguments cannot be safely/correctly encoded based on
     // the given inputAbi. An argument may not be considered safely encodeable

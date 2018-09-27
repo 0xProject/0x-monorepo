@@ -5,6 +5,10 @@
             {
                 "note": "Change the way we detect BN to work with the newest ethers.js",
                 "pr": 1069
+            },
+            {
+                "note": "Add baseContract._throwIfRevertWithReasonCallResult",
+                "pr": 1069
             }
         ]
     },
