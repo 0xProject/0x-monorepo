@@ -10,7 +10,6 @@ import {
     utils as sharedUtils,
 } from '@0xproject/react-shared';
 import {
-    CustomType,
     DocAgnosticFormat,
     Event,
     ExternalExportToLink,
@@ -219,7 +218,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             _.isEmpty(docSection.events);
 
         const sortedTypes = _.sortBy(docSection.types, 'name');
-        const typeDefs = _.map(sortedTypes, (customType: CustomType, i: number) => {
+        const typeDefs = _.map(sortedTypes, (customType, i) => {
             return (
                 <TypeDefinition
                     sectionName={sectionName}
