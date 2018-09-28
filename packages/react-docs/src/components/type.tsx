@@ -12,7 +12,7 @@ import { Signature } from './signature';
 import { TypeDefinition } from './type_definition';
 
 const basicJsTypes = ['string', 'number', 'undefined', 'null', 'boolean'];
-const basicSolidityTypes = ['bytes', 'bytes4', 'uint256', 'address'];
+const basicSolidityTypes = ['bytes', 'bytes4', 'bytes32', 'uint8', 'uint256', 'address'];
 
 const defaultProps = {};
 
