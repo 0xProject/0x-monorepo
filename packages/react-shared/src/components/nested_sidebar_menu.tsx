@@ -19,6 +19,7 @@ export interface NestedSidebarMenuProps {
     selectedVersion?: string;
     versions?: string[];
     onVersionSelected?: (semver: string) => void;
+    shouldReformatMenuItemNames?: boolean;
 }
 
 export interface NestedSidebarMenuState {}
@@ -42,16 +43,16 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
     public static defaultProps: Partial<NestedSidebarMenuProps> = {
         shouldDisplaySectionHeaders: true,
         onMenuItemClick: _.noop.bind(_),
+        shouldReformatMenuItemNames: true,
     };
     public render(): React.ReactNode {
         const navigation = _.map(this.props.topLevelMenu, (menuItems: string[], sectionName: string) => {
             const finalSectionName = utils.convertCamelCaseToSpaces(sectionName);
             if (this.props.shouldDisplaySectionHeaders) {
                 // tslint:disable-next-line:no-unused-variable
-                const id = utils.getIdFromName(sectionName);
                 return (
-                    <div key={`section-${sectionName}`} className="py1" style={{ color: colors.grey800 }}>
-                        <div style={{ fontWeight: 'bold', fontSize: 15 }} className="py1">
+                    <div key={`section-${sectionName}`} className="py1" style={{ color: colors.linkSectionGrey }}>
+                        <div style={{ fontWeight: 'bold', fontSize: 15, letterSpacing: 0.5 }} className="py1">
                             {finalSectionName.toUpperCase()}
                         </div>
                         {this._renderMenuItems(menuItems)}
@@ -86,7 +87,9 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             : styles.menuItemWithoutHeaders;
         const menuItemInnerDivStyles = this.props.shouldDisplaySectionHeaders ? styles.menuItemInnerDivWithHeaders : {};
         const menuItems = _.map(menuItemNames, menuItemName => {
-            const finalMenuItemName = utils.convertDashesToSpaces(menuItemName);
+            const finalMenuItemName = this.props.shouldReformatMenuItemNames
+                ? utils.convertDashesToSpaces(menuItemName)
+                : menuItemName;
             const id = utils.getIdFromName(menuItemName);
             return (
                 <div key={menuItemName}>
@@ -99,7 +102,13 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                         containerId={constants.DOCS_CONTAINER_ID}
                     >
                         <MenuItem style={menuItemStyles} innerDivStyle={menuItemInnerDivStyles}>
-                            <span style={{ textTransform: 'capitalize' }}>{finalMenuItemName}</span>
+                            <span
+                                style={{
+                                    textTransform: this.props.shouldReformatMenuItemNames ? 'capitalize' : 'none',
+                                }}
+                            >
+                                {finalMenuItemName}
+                            </span>
                         </MenuItem>
                     </ScrollLink>
                     {this._renderMenuItemSubsections(menuItemName)}
