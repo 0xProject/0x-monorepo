@@ -61,7 +61,7 @@ export class DocsContentTopBar extends React.Component<DocsContentTopBarProps, D
             },
         ];
         return (
-            <Container height={75} className="pb2 mb3">
+            <Container height={80}>
                 <Container className="flex items-center lg-pt3 md-pt3 sm-pt1 relative" width="100%">
                     <div className="col col-2 sm-hide xs-hide">
                         <Link

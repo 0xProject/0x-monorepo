@@ -40,10 +40,10 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
                         backgroundColor: this.state.isHovering ? '#e7f1fd' : colors.white,
                     }}
                 >
-                    <div>
+                    <div className="col col-1 flex items-center sm-pr3">
                         <img src={this.props.tutorialInfo.iconUrl} height={40} />
                     </div>
-                    <div className="pl2">
+                    <div className="pl2 col col-10">
                         <Text Tag="div" fontSize="18" fontColor={colors.lightLinkBlue} fontWeight="bold">
                             {this.props.translate.get(this.props.tutorialInfo.title as Key, Deco.Cap)}
                         </Text>
@@ -51,11 +51,13 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
                             {this.props.translate.get(this.props.tutorialInfo.description as Key, Deco.Cap)}
                         </Text>
                     </div>
-                    <div className="absolute" style={{ top: 31, right: 31 }}>
-                        <i
-                            className="zmdi zmdi-chevron-right bold"
-                            style={{ fontSize: 26, color: colors.lightLinkBlue }}
-                        />
+                    <div className="col col-1 flex items-center justify-end">
+                        <div className="right">
+                            <i
+                                className="zmdi zmdi-chevron-right bold"
+                                style={{ fontSize: 26, color: colors.lightLinkBlue }}
+                            />
+                        </div>
                     </div>
                 </div>
             </Link>

@@ -1,7 +1,14 @@
-import { colors, NestedSidebarMenu } from '@0xproject/react-shared';
+import {
+    colors,
+    constants,
+    constants as sharedConstants,
+    NestedSidebarMenu,
+    utils as sharedUtils,
+} from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
+import { Element as ScrollElement } from 'react-scroll';
 import { DocsContentTopBar } from 'ts/components/documentation/docs_content_top_bar';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { TutorialButton } from 'ts/components/documentation/tutorial_button';
@@ -22,6 +29,8 @@ interface Package {
 }
 
 const THROTTLE_TIMEOUT = 100;
+const TOP_BAR_HEIGHT = 80;
+const SCROLLER_WIDTH = 4;
 const TUTORIALS: TutorialInfo[] = [
     {
         title: Key.DevelopOnEthereum,
@@ -48,8 +57,13 @@ const TUTORIALS: TutorialInfo[] = [
         location: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
     },
 ];
+enum Categories {
+    ZeroExProtocol = '0x Protocol',
+    Ethereum = 'Ethereum',
+    CommunityMaintained = 'Community Maintained',
+}
 const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
-    '0x Protocol': [
+    [Categories.ZeroExProtocol]: [
         {
             name: '0x.js',
             description:
@@ -103,7 +117,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             shouldOpenInNewTab: true,
         },
     ],
-    Ethereum: [
+    [Categories.Ethereum]: [
         {
             name: 'abi-gen',
             description:
@@ -143,7 +157,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             to: WebsitePaths.Web3Wrapper,
         },
     ],
-    'Community Maintained': [
+    [Categories.CommunityMaintained]: [
         {
             name: '0x Event Extractor',
             description:
@@ -267,13 +281,20 @@ export interface HomeProps {
     dispatcher: Dispatcher;
 }
 
-export interface HomeState {}
+export interface HomeState {
+    isHoveringSidebar: boolean;
+    isHoveringMainContent: boolean;
+}
 
 export class Home extends React.Component<HomeProps, HomeState> {
     private readonly _throttledScreenWidthUpdate: () => void;
     constructor(props: HomeProps) {
         super(props);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
+        this.state = {
+            isHoveringSidebar: false,
+            isHoveringMainContent: false,
+        };
     }
     public componentDidMount(): void {
         window.addEventListener('resize', this._throttledScreenWidthUpdate);
@@ -283,8 +304,33 @@ export class Home extends React.Component<HomeProps, HomeState> {
         window.removeEventListener('resize', this._throttledScreenWidthUpdate);
     }
     public render(): React.ReactNode {
+        const mainContainerStyle: React.CSSProperties = {
+            position: 'absolute',
+            top: 80,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            overflowX: 'hidden',
+            overflowY: 'scroll',
+            minHeight: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
+            WebkitOverflowScrolling: 'touch',
+        };
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
-        const mainContentPadding = isSmallScreen ? 0 : 50;
+        const mainContentPadding = isSmallScreen ? 20 : 50;
+        const topLevelMenu = {
+            'Starter guides': _.map(TUTORIALS, tutorialInfo =>
+                this.props.translate.get(tutorialInfo.title as Key, Deco.Cap),
+            ),
+            [Categories.ZeroExProtocol]: _.map(CATEGORY_TO_PACKAGES[Categories.ZeroExProtocol], pkg => pkg.name),
+            [Categories.Ethereum]: _.map(CATEGORY_TO_PACKAGES[Categories.Ethereum], pkg => pkg.name),
+            [Categories.CommunityMaintained]: _.map(
+                CATEGORY_TO_PACKAGES[Categories.CommunityMaintained],
+                pkg => pkg.name,
+            ),
+        };
+        _.each(TUTORIALS, tutorialInfo => {
+            const id = sharedUtils.getIdFromName(this.props.translate.get(tutorialInfo.title as Key, Deco.Cap));
+        });
         return (
             <Container
                 className="flex items-center"
@@ -294,54 +340,95 @@ export class Home extends React.Component<HomeProps, HomeState> {
                 } 50%, ${colors.white} 100%)`}
             >
                 <DocumentTitle title="0x Docs Home" />
-                <div className="flex mx-auto">
+                <div className="flex mx-auto" style={{ height: '100vh' }}>
                     <Container
-                        className="sm-hide xs-hide"
+                        className="sm-hide xs-hide relative"
                         width={234}
                         paddingLeft={22}
                         paddingRight={22}
                         paddingTop={2}
                         backgroundColor={colors.grey100}
                     >
-                        <DocsLogo height={36} containerStyle={{ paddingTop: 28 }} />
+                        <DocsLogo height={36} containerStyle={{ paddingTop: 30, paddingBottom: 12 }} />
+                        <div
+                            style={{
+                                ...mainContainerStyle,
+                                paddingTop: 35,
+                                overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
+                            }}
+                            onMouseEnter={this._onSidebarHover.bind(this)}
+                            onMouseLeave={this._onSidebarHoverOff.bind(this)}
+                        >
+                            <NestedSidebarMenu
+                                topLevelMenu={topLevelMenu}
+                                menuSubsectionsBySection={{}}
+                                shouldDisplaySectionHeaders={true}
+                                shouldReformatMenuItemNames={false}
+                            />
+                        </div>
                     </Container>
                     <Container
+                        className="relative"
                         width={isSmallScreen ? '100vw' : 716}
                         paddingBottom="100px"
-                        paddingLeft={mainContentPadding}
-                        paddingRight={mainContentPadding}
                         backgroundColor={colors.white}
                     >
-                        <DocsContentTopBar location={this.props.location} translate={this.props.translate} />
-                        <div>
-                            {this._renderSectionTitle('Start building on 0x')}
-                            <Container paddingTop="12px">
-                                {this._renderSectionDescription(
-                                    'Follow one of our "Getting started" guides to learn more about building ontop of 0x.',
-                                )}
-                                <Container marginTop="36px">
-                                    {_.map(TUTORIALS, tutorialInfo => (
-                                        <TutorialButton
-                                            translate={this.props.translate}
-                                            tutorialInfo={tutorialInfo}
-                                            key={`tutorial-${tutorialInfo.title}`}
-                                        />
-                                    ))}
-                                </Container>
-                            </Container>
-                        </div>
-                        <div className="mt4">
-                            {this._renderSectionTitle(this.props.translate.get(Key.LibrariesAndTools, Deco.CapWords))}
-                            <Container paddingTop="12px">
-                                {this._renderSectionDescription(
-                                    'A list of available tools maintained by the 0x core developers and wider community for building on top of 0x Protocol and Ethereum',
-                                )}
-                                <Container marginTop="36px">
-                                    {_.map(CATEGORY_TO_PACKAGES, (pkgs, category) =>
-                                        this._renderPackageCategory(category, pkgs),
+                        <Container paddingLeft={mainContentPadding} paddingRight={mainContentPadding}>
+                            <DocsContentTopBar location={this.props.location} translate={this.props.translate} />
+                        </Container>
+                        <div
+                            id={sharedConstants.SCROLL_CONTAINER_ID}
+                            className="absolute"
+                            style={{
+                                ...mainContainerStyle,
+                                paddingTop: 30,
+                                paddingLeft: mainContentPadding,
+                                paddingRight: this.state.isHoveringMainContent
+                                    ? mainContentPadding - SCROLLER_WIDTH
+                                    : mainContentPadding,
+                                overflow: this.state.isHoveringMainContent ? 'auto' : 'hidden',
+                            }}
+                            onMouseEnter={this._onMainContentHover.bind(this)}
+                            onMouseLeave={this._onMainContentHoverOff.bind(this)}
+                        >
+                            <div>
+                                {this._renderSectionTitle('Start building on 0x')}
+                                <Container paddingTop="12px">
+                                    {this._renderSectionDescription(
+                                        'Follow one of our "Getting started" guides to learn more about building ontop of 0x.',
                                     )}
+                                    <Container marginTop="36px">
+                                        {_.map(TUTORIALS, tutorialInfo => (
+                                            <ScrollElement
+                                                name={sharedUtils.getIdFromName(
+                                                    this.props.translate.get(tutorialInfo.title as Key, Deco.Cap),
+                                                )}
+                                                key={`tutorial-${tutorialInfo.title}`}
+                                            >
+                                                <TutorialButton
+                                                    translate={this.props.translate}
+                                                    tutorialInfo={tutorialInfo}
+                                                />
+                                            </ScrollElement>
+                                        ))}
+                                    </Container>
                                 </Container>
-                            </Container>
+                            </div>
+                            <div className="mt4">
+                                {this._renderSectionTitle(
+                                    this.props.translate.get(Key.LibrariesAndTools, Deco.CapWords),
+                                )}
+                                <Container paddingTop="12px">
+                                    {this._renderSectionDescription(
+                                        'A list of available tools maintained by the 0x core developers and wider community for building on top of 0x Protocol and Ethereum',
+                                    )}
+                                    <Container marginTop="36px">
+                                        {_.map(CATEGORY_TO_PACKAGES, (pkgs, category) =>
+                                            this._renderPackageCategory(category, pkgs),
+                                        )}
+                                    </Container>
+                                </Container>
+                            </div>
                         </div>
                     </Container>
                 </div>
@@ -357,56 +444,59 @@ export class Home extends React.Component<HomeProps, HomeState> {
         );
     }
     private _renderPackage(pkg: Package): React.ReactNode {
+        const id = sharedUtils.getIdFromName(pkg.name);
         return (
-            <div className="pb2" key={`package-${pkg.name}`}>
-                <div
-                    style={{
-                        width: '100%',
-                        height: 1,
-                        backgroundColor: colors.grey300,
-                        marginTop: 11,
-                    }}
-                />
-                <div className="clearfix mt2 pt1">
-                    <div className="col col-4">
-                        <Link
-                            to={pkg.to}
-                            className="text-decoration-none"
-                            style={{ color: colors.lightLinkBlue }}
-                            isExternal={!!pkg.isExternal}
-                            shouldOpenInNewTab={!!pkg.shouldOpenInNewTab}
-                        >
-                            <Text Tag="div" fontColor={colors.lightLinkBlue} fontWeight="bold">
-                                {pkg.name}
+            <ScrollElement name={id} key={`package-${pkg.name}`}>
+                <div className="pb2">
+                    <div
+                        style={{
+                            width: '100%',
+                            height: 1,
+                            backgroundColor: colors.grey300,
+                            marginTop: 11,
+                        }}
+                    />
+                    <div className="clearfix mt2 pt1">
+                        <div className="md-col lg-col md-col-4 lg-col-4">
+                            <Link
+                                to={pkg.to}
+                                className="text-decoration-none"
+                                style={{ color: colors.lightLinkBlue }}
+                                isExternal={!!pkg.isExternal}
+                                shouldOpenInNewTab={!!pkg.shouldOpenInNewTab}
+                            >
+                                <Text Tag="div" fontColor={colors.lightLinkBlue} fontWeight="bold">
+                                    {pkg.name}
+                                </Text>
+                            </Link>
+                        </div>
+                        <div className="md-col lg-col md-col-6 lg-col-6 sm-py2">
+                            <Text Tag="div" fontColor={colors.grey700}>
+                                {pkg.description}
                             </Text>
-                        </Link>
-                    </div>
-                    <div className="col col-6">
-                        <Text Tag="div" fontColor={colors.grey700}>
-                            {pkg.description}
-                        </Text>
-                    </div>
-                    <div className="col col-2 relative">
-                        <Link
-                            to={pkg.to}
-                            className="text-decoration-none absolute"
-                            style={{ right: 0, color: colors.lightLinkBlue }}
-                            isExternal={!!pkg.isExternal}
-                            shouldOpenInNewTab={!!pkg.shouldOpenInNewTab}
-                        >
-                            <div className="flex">
-                                <div>{this.props.translate.get(Key.More, Deco.Cap)}</div>
-                                <Container paddingTop="1px" paddingLeft="6px">
-                                    <i
-                                        className="zmdi zmdi-chevron-right bold"
-                                        style={{ fontSize: 18, color: colors.lightLinkBlue }}
-                                    />
-                                </Container>
-                            </div>
-                        </Link>
+                        </div>
+                        <div className="md-col lg-col md-col-2 lg-col-2 sm-pb2 relative">
+                            <Link
+                                to={pkg.to}
+                                className="text-decoration-none absolute"
+                                style={{ right: 0, color: colors.lightLinkBlue }}
+                                isExternal={!!pkg.isExternal}
+                                shouldOpenInNewTab={!!pkg.shouldOpenInNewTab}
+                            >
+                                <div className="flex">
+                                    <div>{this.props.translate.get(Key.More, Deco.Cap)}</div>
+                                    <Container paddingTop="1px" paddingLeft="6px">
+                                        <i
+                                            className="zmdi zmdi-chevron-right bold"
+                                            style={{ fontSize: 18, color: colors.lightLinkBlue }}
+                                        />
+                                    </Container>
+                                </div>
+                            </Link>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </ScrollElement>
         );
     }
     private _renderSectionTitle(text: string): React.ReactNode {
@@ -426,5 +516,25 @@ export class Home extends React.Component<HomeProps, HomeState> {
     private _updateScreenWidth(): void {
         const newScreenWidth = utils.getScreenWidth();
         this.props.dispatcher.updateScreenWidth(newScreenWidth);
+    }
+    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
+        this.setState({
+            isHoveringSidebar: true,
+        });
+    }
+    private _onSidebarHoverOff(): void {
+        this.setState({
+            isHoveringSidebar: false,
+        });
+    }
+    private _onMainContentHover(_event: React.FormEvent<HTMLInputElement>): void {
+        this.setState({
+            isHoveringMainContent: true,
+        });
+    }
+    private _onMainContentHoverOff(): void {
+        this.setState({
+            isHoveringMainContent: false,
+        });
     }
 }
