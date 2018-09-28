@@ -353,7 +353,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                         key={`badge-${networkName}-${sectionName}`}
                         href={linkIfExists}
                         target="_blank"
-                        style={{ color: colors.white, textDecoration: 'none' }}
+                        style={{ color: colors.white, textDecoration: 'none', marginTop: 8 }}
                     >
                         <Badge title={networkName} backgroundColor={networkNameToColor[networkName]} />
                     </a>
