@@ -4,7 +4,7 @@ import { Connection, createConnection } from 'typeorm';
 
 import { Etherscan } from './data_sources/etherscan';
 import { parseExchangeEvents } from './data_types/events/exchange_events';
-import { parseSraOrders } from './data_types/sra_order';
+import { parseSraOrders } from './data_types/sra_orders';
 import { ExchangeCancelEvent } from './entities/ExchangeCancelEvent';
 import { ExchangeCancelUpToEvent } from './entities/ExchangeCancelUpToEvent';
 import { ExchangeFillEvent } from './entities/ExchangeFillEvent';
@@ -53,7 +53,7 @@ async function getSraOrdersAsync(): Promise<void> {
     const orders = parseSraOrders(rawOrders);
     for (const order of orders) {
         order.sourceUrl = sraUrl;
-        order.save();
+        await order.save();
     }
     console.log(`now there are ${await orderRepository.count()} total orders`);
 }
