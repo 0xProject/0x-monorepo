@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sra-spec",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -34,7 +34,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-spec/README.md",
     "dependencies": {
-        "@0xproject/json-schemas": "^1.0.4"
+        "@0xproject/json-schemas": "^1.0.5"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.7",
