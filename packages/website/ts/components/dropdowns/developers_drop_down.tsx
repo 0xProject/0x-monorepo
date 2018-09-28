@@ -1,9 +1,10 @@
 import { colors } from '@0xproject/react-shared';
+import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Link } from 'ts/components/ui/link';
-import { Deco, Key, ObjectMap, WebsitePaths } from 'ts/types';
+import { Deco, Key, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
