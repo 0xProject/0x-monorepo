@@ -22,8 +22,8 @@ export function _convertToEntity(apiOrder: APIOrder): SraOrder {
     sraOrder.orderHashHex = orderHashUtils.getOrderHashHex(apiOrder.order);
 
     // TODO(albrow): Set these fields to the correct values upstack.
-    sraOrder.lastUpdatedTimestamp = Date.now();
-    sraOrder.firstSeenTimestamp = Date.now();
+    sraOrder.lastUpdatedTimestamp = 0;
+    sraOrder.firstSeenTimestamp = 0;
 
     sraOrder.makerAddress = apiOrder.order.makerAddress;
     sraOrder.takerAddress = apiOrder.order.takerAddress;
