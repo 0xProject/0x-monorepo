@@ -101,7 +101,11 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                         duration={constants.DOCS_SCROLL_DURATION_MS}
                         containerId={constants.DOCS_CONTAINER_ID}
                     >
-                        <MenuItem style={menuItemStyles} innerDivStyle={menuItemInnerDivStyles}>
+                        <MenuItem
+                            style={menuItemStyles}
+                            innerDivStyle={menuItemInnerDivStyles}
+                            onClick={this._onMenuItemClick.bind(this)}
+                        >
                             <span
                                 style={{
                                     textTransform: this.props.shouldReformatMenuItemNames ? 'capitalize' : 'none',
@@ -145,6 +149,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                                         fontSize: 14,
                                         lineHeight: '35px',
                                     }}
+                                    onClick={this._onMenuItemClick.bind(this)}
                                 >
                                     {entityName}
                                 </MenuItem>
@@ -154,5 +159,10 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                 })}
             </ul>
         );
+    }
+    private _onMenuItemClick(): void {
+        if (!_.isUndefined(this.props.onMenuItemClick)) {
+            this.props.onMenuItemClick();
+        }
     }
 }
