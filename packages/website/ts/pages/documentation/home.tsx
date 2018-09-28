@@ -2,12 +2,14 @@ import {
     colors,
     constants,
     constants as sharedConstants,
+    MarkdownLinkBlock,
     NestedSidebarMenu,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
+import * as ReactMarkdown from 'react-markdown';
 import { Element as ScrollElement } from 'react-scroll';
 import { DocsContentTopBar } from 'ts/components/documentation/docs_content_top_bar';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
@@ -67,7 +69,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
         {
             name: '0x.js',
             description:
-                'A library for interacting with the 0x protocol. It is a high level package which combines a number of smaller specific-purpose packages such as `order-utils` and `contract-wrappers`.',
+                'A library for interacting with the 0x protocol. It is a high level package which combines a number of smaller specific-purpose packages such as [order-utils](https://0xproject.com/docs/order-utils) and [contract-wrappers](https://0xproject.com/docs/contract-wrappers).',
             to: WebsitePaths.ZeroExJs,
         },
         {
@@ -81,13 +83,13 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
         {
             name: '@0xproject/connect',
             description:
-                'An http & websocket client for interacting with relayers that have implemented the Standard Relayer API',
+                'An http & websocket client for interacting with relayers that have implemented the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api)',
             to: WebsitePaths.Connect,
         },
         {
             name: '@0xproject/contract-wrappers',
             description:
-                'Typescript/Javascript wrappers of the 0x protocol Ethereum smart contracts. Use this library to call methods on the 0x smart contracts, subscribe to contract events and to fetch information stored in the contracts.',
+                'Typescript/Javascript wrappers of the 0x protocol Ethereum smart contracts. Use this library to call methods on the 0x smart contracts, subscribe to contract events and to fetch information stored in contracts.',
             to: WebsitePaths.ContractWrappers,
         },
         {
@@ -135,7 +137,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
         {
             name: '@0xproject/sol-compiler',
             description:
-                'A wrapper around `solc-js` that adds smart re-compilation, ability to compile an entire project, Solidity version specific compilation, standard input description support and much more.',
+                'A wrapper around [solc-js](https://github.com/ethereum/solc-js) that adds smart re-compilation, ability to compile an entire project, Solidity version specific compilation, standard input description support and much more.',
             to: WebsitePaths.SolCompiler,
         },
         {
@@ -147,7 +149,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
         {
             name: '@0xproject/subproviders',
             description:
-                'A collection of subproviders to use with `web3-provider-engine` (e.g subproviders for interfacing with Ledger hardware wallet, Mnemonic wallet, private key wallet, etc...)',
+                'A collection of subproviders to use with [web3-provider-engine](https://www.npmjs.com/package/web3-provider-engine) (e.g subproviders for interfacing with Ledger hardware wallet, Mnemonic wallet, private key wallet, etc...)',
             to: WebsitePaths.Subproviders,
         },
         {
@@ -161,7 +163,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
         {
             name: '0x Event Extractor',
             description:
-                'NodeJS worker originally built for 0x Tracker which extracts 0x fill events from the Ethereum blockchain and persists them to MongoDB. Support for both V1 and V2 of the 0x protocol is included with events tagged against the protocol version they belong to.',
+                'Node.js worker originally built for 0x Tracker which extracts 0x fill events from the Ethereum blockchain and persists them to MongoDB. Support for both V1 and V2 of the 0x protocol is included with events tagged against the protocol version they belong to.',
             to: 'https://github.com/0xTracker/0x-event-extractor',
             shouldOpenInNewTab: true,
             isExternal: true,
@@ -169,7 +171,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
         {
             name: '0x Tracker Worker',
             description:
-                'NodeJS worker built for 0x Tracker which performs various ETL tasks related to the 0x protocol trading data and other information used on 0x Tracker.',
+                'Node.js worker built for 0x Tracker which performs various ETL tasks related to the 0x protocol trading data and other information used on 0x Tracker.',
             to: 'https://github.com/0xTracker/0x-tracker-worker',
             shouldOpenInNewTab: true,
             isExternal: true,
@@ -474,10 +476,13 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                 </Text>
                             </Link>
                         </div>
-                        <div className="md-col lg-col md-col-6 lg-col-6 sm-py2">
-                            <Text Tag="div" fontColor={colors.grey700}>
-                                {pkg.description}
-                            </Text>
+                        <div className="md-col lg-col md-col-6 lg-col-6 sm-py2" style={{ color: colors.grey700 }}>
+                            <ReactMarkdown
+                                source={pkg.description}
+                                renderers={{
+                                    link: MarkdownLinkBlock,
+                                }}
+                            />
                         </div>
                         <div className="md-col lg-col md-col-2 lg-col-2 sm-pb2 relative">
                             <Link
