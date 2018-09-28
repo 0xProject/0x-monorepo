@@ -333,7 +333,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
         });
         return (
             <Container
-                className="flex items-center"
+                className="flex items-center overflow-hidden"
                 width="100%"
                 background={`linear-gradient(to right, ${colors.grey100} 0%, ${colors.grey100} 50%, ${
                     colors.white
