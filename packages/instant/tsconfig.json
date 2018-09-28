@@ -1,0 +1,16 @@
+{
+    "extends": "../../tsconfig",
+    "compilerOptions": {
+        "outDir": "lib",
+        "rootDir": ".",
+        "jsx": "react",
+        "allowSyntheticDefaultImports": true,
+        "noImplicitAny": true,
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "lib": ["es2015"],
+        "target": "es5",
+        "sourceMap": true
+    },
+    "include": ["./src/**/*", "./test/**/*"]
+}
