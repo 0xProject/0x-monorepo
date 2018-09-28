@@ -10,7 +10,7 @@
         "build": "NODE_ENV=production node --max_old_space_size=8192 ../../node_modules/.bin/webpack",
         "clean": "shx rm -f public/bundle*",
         "lint": "tslint --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
-        "watch_without_deps": "webpack-dev-server --content-base public --https",
+        "dev": "webpack-dev-server --content-base public --https",
         "deploy_dogfood": "npm run build; aws s3 sync ./public/. s3://dogfood.0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "deploy_staging": "npm run build; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "deploy_live": "DEPLOY_ROLLBAR_SOURCEMAPS=true npm run build; aws s3 sync ./public/. s3://0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --exclude *.map.js"
