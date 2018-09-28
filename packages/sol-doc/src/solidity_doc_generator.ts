@@ -90,15 +90,17 @@ export async function generateSolDocAsync(
         }
     }
 
-    doc.structs = {
-        comment: '',
-        constructors: [],
-        methods: [],
-        properties: [],
-        types: structs,
-        functions: [],
-        events: [],
-    };
+    if (structs.length > 0) {
+        doc.structs = {
+            comment: '',
+            constructors: [],
+            methods: [],
+            properties: [],
+            types: structs,
+            functions: [],
+            events: [],
+        };
+    }
 
     return doc;
 }
