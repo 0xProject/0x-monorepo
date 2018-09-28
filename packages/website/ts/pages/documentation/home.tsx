@@ -374,7 +374,11 @@ export class Home extends React.Component<HomeProps, HomeState> {
                         backgroundColor={colors.white}
                     >
                         <Container paddingLeft={mainContentPadding} paddingRight={mainContentPadding}>
-                            <DocsContentTopBar location={this.props.location} translate={this.props.translate} />
+                            <DocsContentTopBar
+                                location={this.props.location}
+                                translate={this.props.translate}
+                                menu={topLevelMenu}
+                            />
                         </Container>
                         <div
                             id={sharedConstants.SCROLL_CONTAINER_ID}

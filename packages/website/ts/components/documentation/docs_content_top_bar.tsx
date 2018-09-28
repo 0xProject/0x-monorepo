@@ -1,4 +1,11 @@
-import { colors } from '@0xproject/react-shared';
+import { DocsInfo, DocsMenu } from '@0xproject/react-docs';
+import {
+    colors,
+    constants as sharedConstants,
+    MenuSubsectionsBySection,
+    NestedSidebarMenu,
+    Styles,
+} from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import * as React from 'react';
@@ -12,6 +19,7 @@ import { Translate } from 'ts/utils/translate';
 export interface DocsContentTopBarProps {
     location: Location;
     translate: Translate;
+    menu?: DocsMenu;
 }
 
 interface DocsContentTopBarState {
@@ -143,7 +151,15 @@ export class DocsContentTopBar extends React.Component<DocsContentTopBarProps, D
                 openSecondary={true}
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
-                <div className="clearfix">TODO</div>
+                <div className="clearfix pl1">
+                    <NestedSidebarMenu
+                        topLevelMenu={this.props.menu}
+                        menuSubsectionsBySection={{}}
+                        shouldDisplaySectionHeaders={true}
+                        shouldReformatMenuItemNames={false}
+                        onMenuItemClick={this._onMenuButtonClick.bind(this)}
+                    />
+                </div>
             </Drawer>
         );
     }
