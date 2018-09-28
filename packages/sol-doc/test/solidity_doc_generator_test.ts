@@ -5,16 +5,20 @@ import 'mocha';
 
 import { DocAgnosticFormat, Event, SolidityMethod } from '@0xproject/types';
 
-import { generateSolDocAsync } from '../src/solidity_doc_generator';
+import { SolDoc } from '../src/sol_doc';
 
 import { chaiSetup } from './util/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;
+let solDoc: SolDoc;
 
 describe('#SolidityDocGenerator', () => {
+    before(() => {
+        solDoc = new SolDoc();
+    });
     it('should generate a doc object that matches the devdoc-free TokenTransferProxy fixture', async () => {
-        const doc = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
+        const doc = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
             'TokenTransferProxyNoDevdoc',
         ]);
         expect(doc).to.not.be.undefined();
@@ -22,8 +26,8 @@ describe('#SolidityDocGenerator', () => {
         verifyTokenTransferProxyABIIsDocumented(doc, 'TokenTransferProxyNoDevdoc');
     });
     const docPromises: Array<Promise<DocAgnosticFormat>> = [
-        generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`),
-        generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, []),
+        solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`),
+        solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, []),
     ];
     docPromises.forEach(docPromise => {
         it('should generate a doc object that matches the TokenTransferProxy fixture with its dependencies', async () => {
@@ -48,7 +52,7 @@ describe('#SolidityDocGenerator', () => {
         });
     });
     it('should generate a doc object that matches the TokenTransferProxy fixture', async () => {
-        const doc: DocAgnosticFormat = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
+        const doc: DocAgnosticFormat = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
             'TokenTransferProxy',
         ]);
         verifyTokenTransferProxyABIIsDocumented(doc, 'TokenTransferProxy');
@@ -56,7 +60,7 @@ describe('#SolidityDocGenerator', () => {
     describe('when processing all the permutations of devdoc stuff that we use in our contracts', () => {
         let doc: DocAgnosticFormat;
         before(async () => {
-            doc = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, ['NatspecEverything']);
+            doc = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, ['NatspecEverything']);
             expect(doc).to.not.be.undefined();
             expect(doc.NatspecEverything).to.not.be.undefined();
         });
@@ -159,7 +163,9 @@ describe('#SolidityDocGenerator', () => {
         });
     });
     it('should document a method that returns multiple values', async () => {
-        const doc = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, ['MultipleReturnValues']);
+        const doc = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
+            'MultipleReturnValues',
+        ]);
         expect(doc.MultipleReturnValues).to.not.be.undefined();
         expect(doc.MultipleReturnValues.methods).to.not.be.undefined();
         let methodWithMultipleReturnValues: SolidityMethod | undefined;
