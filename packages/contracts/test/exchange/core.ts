@@ -8,7 +8,10 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
+import {
+    DummyERC20TokenContract,
+    DummyERC20TokenTransferEventArgs,
+} from '../../generated_contract_wrappers/dummy_erc20_token';
 import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
 import { DummyNoReturnERC20TokenContract } from '../../generated_contract_wrappers/dummy_no_return_erc20_token';
 import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
@@ -242,6 +245,40 @@ describe('Exchange core', () => {
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
                 RevertReason.ValidatorError,
             );
+        });
+
+        it('should not emit transfer events for transfers where from == to', async () => {
+            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, makerAddress);
+            const logs = txReceipt.logs;
+            const transferLogs = _.filter(
+                logs,
+                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
+            );
+            expect(transferLogs.length).to.be.equal(2);
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                zrxToken.address,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                feeRecipientAddress,
+            );
+            expect(
+                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.makerFee);
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                zrxToken.address,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                feeRecipientAddress,
+            );
+            expect(
+                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.takerFee);
         });
     });
 

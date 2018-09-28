@@ -1,5 +1,61 @@
 [
     {
+        "version": "1.0.6",
+        "changes": [
+            {
+                "note":
+                    "Add signerAddress normalization to `isValidECSignature` to avoid `invalid address recovery` error if caller supplies a checksummed address",
+                "pr": 1096
+            }
+        ]
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537875740,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Drastically reduce the bundle size by removing unused parts of included contract artifacts."
+            }
+        ],
+        "timestamp": 1537369748
+    },
+    {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Export `orderParsingUtils`",
+                "pr": 1044
+            }
+        ],
+        "timestamp": 1536142250
+    },
+    {
         "version": "1.0.1-rc.6",
         "changes": [
             {

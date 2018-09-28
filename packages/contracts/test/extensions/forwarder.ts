@@ -12,7 +12,11 @@ import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
 import { WETH9Contract } from '../../generated_contract_wrappers/weth9';
 import { artifacts } from '../utils/artifacts';
-import { expectTransactionFailedAsync } from '../utils/assertions';
+import {
+    expectContractCreationFailedAsync,
+    expectTransactionFailedAsync,
+    sendTransactionResult,
+} from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -37,6 +41,7 @@ describe(ContractName.Forwarder, () => {
     let otherAddress: string;
     let defaultMakerAssetAddress: string;
     let zrxAssetData: string;
+    let wethAssetData: string;
 
     let weth: DummyERC20TokenContract;
     let zrxToken: DummyERC20TokenContract;
@@ -90,7 +95,7 @@ describe(ContractName.Forwarder, () => {
         weth = new DummyERC20TokenContract(wethContract.abi, wethContract.address, provider);
         erc20Wrapper.addDummyTokenContract(weth);
 
-        const wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
+        wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
         zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
@@ -98,8 +103,7 @@ describe(ContractName.Forwarder, () => {
             txDefaults,
             zrxAssetData,
         );
-        const exchangeContract = new ExchangeContract(exchangeInstance.abi, exchangeInstance.address, provider);
-        exchangeWrapper = new ExchangeWrapper(exchangeContract, provider);
+        exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
@@ -162,6 +166,27 @@ describe(ContractName.Forwarder, () => {
         await blockchainLifecycle.revertAsync();
     });
 
+    describe('constructor', () => {
+        it('should revert if assetProxy is unregistered', async () => {
+            const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
+                artifacts.Exchange,
+                provider,
+                txDefaults,
+                zrxAssetData,
+            );
+            return expectContractCreationFailedAsync(
+                (ForwarderContract.deployFrom0xArtifactAsync(
+                    artifacts.Forwarder,
+                    provider,
+                    txDefaults,
+                    exchangeInstance.address,
+                    zrxAssetData,
+                    wethAssetData,
+                ) as any) as sendTransactionResult,
+                RevertReason.UnregisteredAssetProxy,
+            );
+        });
+    });
     describe('marketSellOrdersWithEth without extra fees', () => {
         it('should fill a single order', async () => {
             const ordersWithoutFee = [orderWithoutFee];

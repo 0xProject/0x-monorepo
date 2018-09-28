@@ -24,6 +24,83 @@ import "../../../utils/SafeMath/SafeMath.sol";
 contract LibMath is
     SafeMath
 {
+    /// @dev Calculates partial value given a numerator and denominator rounded down.
+    ///      Reverts if rounding error is >= 0.1%
+    /// @param numerator Numerator.
+    /// @param denominator Denominator.
+    /// @param target Value to calculate partial of.
+    /// @return Partial value of target rounded down.
+    function safeGetPartialAmountFloor(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        internal
+        pure
+        returns (uint256 partialAmount)
+    {
+        require(
+            denominator > 0,
+            "DIVISION_BY_ZERO"
+        );
+
+        require(
+            !isRoundingErrorFloor(
+                numerator,
+                denominator,
+                target
+            ),
+            "ROUNDING_ERROR"
+        );
+        
+        partialAmount = safeDiv(
+            safeMul(numerator, target),
+            denominator
+        );
+        return partialAmount;
+    }
+
+    /// @dev Calculates partial value given a numerator and denominator rounded down.
+    ///      Reverts if rounding error is >= 0.1%
+    /// @param numerator Numerator.
+    /// @param denominator Denominator.
+    /// @param target Value to calculate partial of.
+    /// @return Partial value of target rounded up.
+    function safeGetPartialAmountCeil(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        internal
+        pure
+        returns (uint256 partialAmount)
+    {
+        require(
+            denominator > 0,
+            "DIVISION_BY_ZERO"
+        );
+
+        require(
+            !isRoundingErrorCeil(
+                numerator,
+                denominator,
+                target
+            ),
+            "ROUNDING_ERROR"
+        );
+        
+        // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
+        //       ceil(a / b) = floor((a + b - 1) / b)
+        // To implement `ceil(a / b)` using safeDiv.
+        partialAmount = safeDiv(
+            safeAdd(
+                safeMul(numerator, target),
+                safeSub(denominator, 1)
+            ),
+            denominator
+        );
+        return partialAmount;
+    }
 
     /// @dev Calculates partial value given a numerator and denominator rounded down.
     /// @param numerator Numerator.
@@ -43,7 +120,7 @@ contract LibMath is
             denominator > 0,
             "DIVISION_BY_ZERO"
         );
-        
+
         partialAmount = safeDiv(
             safeMul(numerator, target),
             denominator
@@ -69,7 +146,7 @@ contract LibMath is
             denominator > 0,
             "DIVISION_BY_ZERO"
         );
-        
+
         // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
         // To implement `ceil(a / b)` using safeDiv.
@@ -128,7 +205,11 @@ contract LibMath is
         //        1000 * remainder  <  numerator * target
         // so we have a rounding error iff:
         //        1000 * remainder  >=  numerator * target
-        uint256 remainder = mulmod(target, numerator, denominator);
+        uint256 remainder = mulmod(
+            target,
+            numerator,
+            denominator
+        );
         isError = safeMul(1000, remainder) >= safeMul(numerator, target);
         return isError;
     }
@@ -160,8 +241,11 @@ contract LibMath is
             return false;
         }
         // Compute remainder as before
-        uint256 remainder = mulmod(target, numerator, denominator);
-        // TODO: safeMod
+        uint256 remainder = mulmod(
+            target,
+            numerator,
+            denominator
+        );
         remainder = safeSub(denominator, remainder) % denominator;
         isError = safeMul(1000, remainder) >= safeMul(numerator, target);
         return isError;

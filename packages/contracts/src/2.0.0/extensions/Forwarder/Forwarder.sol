@@ -34,7 +34,6 @@ contract Forwarder is
     MixinExchangeWrapper,
     MixinForwarderCore
 {
-
     constructor (
         address _exchange,
         bytes memory _zrxAssetData,

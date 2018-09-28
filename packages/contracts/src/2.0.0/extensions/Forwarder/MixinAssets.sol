@@ -31,7 +31,6 @@ contract MixinAssets is
     LibConstants,
     MAssets
 {
-
     using LibBytes for bytes;
 
     bytes4 constant internal ERC20_TRANSFER_SELECTOR = bytes4(keccak256("transfer(address,uint256)"));

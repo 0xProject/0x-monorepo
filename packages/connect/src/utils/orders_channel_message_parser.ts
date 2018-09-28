@@ -2,7 +2,7 @@ import { assert } from '@0xproject/assert';
 import { schemas } from '@0xproject/json-schemas';
 import * as _ from 'lodash';
 
-import { OrdersChannelMessage, OrdersChannelMessageTypes } from '../types';
+import { OrdersChannelMessage, OrdersChannelMessageTypes } from '@0xproject/types';
 
 import { relayerResponseJsonParsers } from './relayer_response_json_parsers';
 

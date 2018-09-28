@@ -3,6 +3,7 @@ import { assetDataUtils } from '@0xproject/order-utils';
 import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as chai from 'chai';
 import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
@@ -11,8 +12,10 @@ import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_prox
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
 import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
 import { ReentrantERC20TokenContract } from '../../generated_contract_wrappers/reentrant_erc20_token';
+import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
+import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
@@ -23,6 +26,8 @@ import { ERC20BalancesByOwner, ERC721TokenIdsByOwner } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+chaiSetup.configure();
+const expect = chai.expect;
 
 describe('matchOrders', () => {
     let makerAddressLeft: string;
@@ -57,6 +62,8 @@ describe('matchOrders', () => {
     let defaultERC721AssetAddress: string;
 
     let matchOrderTester: MatchOrderTester;
+
+    let testExchange: TestExchangeInternalsContract;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -160,6 +167,11 @@ describe('matchOrders', () => {
         orderFactoryRight = new OrderFactory(privateKeyRight, defaultOrderParamsRight);
         // Set match order tester
         matchOrderTester = new MatchOrderTester(exchangeWrapper, erc20Wrapper, erc721Wrapper, zrxToken.address);
+        testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
+            artifacts.TestExchangeInternals,
+            provider,
+            txDefaults,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -173,39 +185,170 @@ describe('matchOrders', () => {
             erc721TokenIdsByOwner = await erc721Wrapper.getBalancesAsync();
         });
 
-        it('Should give right maker a better price when correct price is not integral', async () => {
+        it('Should transfer correct amounts when right order is fully filled and values pass isRoundingErrorFloor but fail isRoundingErrorCeil', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2000), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1001), 0),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(17), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(98), 0),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(3000), 0),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Assert is rounding error ceil & not rounding error floor
+            // These assertions are taken from MixinMatchOrders::calculateMatchedFillResults
+            // The rounding error is derived computating how much the left maker will sell.
+            const numerator = signedOrderLeft.makerAssetAmount;
+            const denominator = signedOrderLeft.takerAssetAmount;
+            const target = signedOrderRight.makerAssetAmount;
+            const isRoundingErrorCeil = await testExchange.publicIsRoundingErrorCeil.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorCeil).to.be.true();
+            const isRoundingErrorFloor = await testExchange.publicIsRoundingErrorFloor.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorFloor).to.be.false();
+            // Match signedOrderLeft with signedOrderRight
+            // Note that the left maker received a slightly better sell price.
+            // This is intentional; see note in MixinMatchOrders.calculateMatchedFillResults.
+            // Because the left maker received a slightly more favorable sell price, the fee
+            // paid by the left taker is slightly higher than that paid by the left maker.
+            // Fees can be thought of as a tax paid by the seller, derived from the sale price.
+            const expectedTransferAmounts = {
+                // Left Maker
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
+                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16), // 76.47%
+                // Right Maker
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                // Taker
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), 0),
+                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16), // 76.53%
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+            };
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+                expectedTransferAmounts,
+            );
+        });
+
+        it('Should transfer correct amounts when left order is fully filled and values pass isRoundingErrorCeil but fail isRoundingErrorFloor', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(15), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(97), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(14), 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Assert is rounding error floor & not rounding error ceil
+            // These assertions are taken from MixinMatchOrders::calculateMatchedFillResults
+            // The rounding error is derived computating how much the right maker will buy.
+            const numerator = signedOrderRight.takerAssetAmount;
+            const denominator = signedOrderRight.makerAssetAmount;
+            const target = signedOrderLeft.takerAssetAmount;
+            const isRoundingErrorFloor = await testExchange.publicIsRoundingErrorFloor.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorFloor).to.be.true();
+            const isRoundingErrorCeil = await testExchange.publicIsRoundingErrorCeil.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorCeil).to.be.false();
+            // Match signedOrderLeft with signedOrderRight
+            // Note that the right maker received a slightly better purchase price.
+            // This is intentional; see note in MixinMatchOrders.calculateMatchedFillResults.
+            // Because the right maker received a slightly more favorable buy price, the fee
+            // paid by the right taker is slightly higher than that paid by the right maker.
+            // Fees can be thought of as a tax paid by the seller, derived from the sale price.
+            const expectedTransferAmounts = {
+                // Left Maker
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(15), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 0),
+                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                // Right Maker
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.7835051546391752'), 16), // 92.78%
+                // Taker
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
+                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.8571428571428571'), 16), // 92.85%
+            };
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+                expectedTransferAmounts,
+            );
+        });
+
+        it('Should give right maker a better buy price when rounding', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(16), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(83), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(49), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Note:
+            // The correct price buy price for the right maker would yield (49/83) * 22 = 12.988 units
+            // of the left maker asset. This gets rounded up to 13, giving the right maker a better price.
+            // Note:
             //  The maker/taker fee percentage paid on the right order differs because
-            //  they received different sale prices. Similarly, the right maker pays a
-            //  slightly higher lower than the right taker.
+            //  they received different sale prices. The right maker pays a
+            //  fee slightly lower than the right taker.
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2000), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1001), 0),
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(16), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
                 feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1001), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(301), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10.01), 16), // 10.01%
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5060240963855421'), 16), // 26.506%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1699), 0),
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('10.0333333333333333'), 16), // 10.03%
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5306122448979591'), 16), // 26.531%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -218,7 +361,7 @@ describe('matchOrders', () => {
             );
         });
 
-        it('Should give left maker a better price when correct price is not integral', async () => {
+        it('Should give left maker a better sell price when rounding', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
@@ -236,7 +379,8 @@ describe('matchOrders', () => {
             });
             // Note:
             //  The maker/taker fee percentage paid on the left order differs because
-            //  they received different sale prices.
+            //  they received different sale prices. The left maker pays a fee
+            //  slightly lower than the left taker.
             const expectedTransferAmounts = {
                 // Left Maker
                 amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(11), 0),
@@ -262,43 +406,143 @@ describe('matchOrders', () => {
             );
         });
 
-        it('Should transfer correct amounts when right order fill amount deviates from amount derived by `Exchange.fillOrder`', async () => {
+        it('Should give right maker and right taker a favorable fee price when rounding', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(16), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(4), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(83), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(49), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
+                makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 0),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 0),
             });
-            // TODO: These values will change after implementation of rounding up has been merged
+            // Note:
+            //  The maker/taker fee percentage paid on the right order differs because
+            //  they received different sale prices. The right maker pays a
+            //  fee slightly lower than the right taker.
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(16), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
                 feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                // Note:
-                //  For order [4,2] valid fill amounts through `Exchange.fillOrder` would be [2, 1] or [4, 2]
-                //  In this case we have fill amounts of [3, 1] which is attainable through
-                // `Exchange.matchOrders` but not `Exchange.fillOrder`
-                // Note:
-                //  The right maker fee differs from the right taker fee because their exchange rate differs.
-                //  The right maker always receives the better exchange and fee price.
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 16), // 75%
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2650), 0), // 2650.6 rounded down tro 2650
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(8), 0),
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
                 feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(2653), 0), // 2653.1 rounded down to 2653
+            };
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+                expectedTransferAmounts,
+            );
+        });
+
+        it('Should give left maker and left taker a favorable fee price when rounding', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(12), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(97), 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+                makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 0),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 0),
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(89), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Note:
+            //  The maker/taker fee percentage paid on the left order differs because
+            //  they received different sale prices. The left maker pays a
+            //  fee slightly lower than the left taker.
+            const expectedTransferAmounts = {
+                // Left Maker
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(11), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(89), 0),
+                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(9166), 0), // 9166.6 rounded down to 9166
+                // Right Maker
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(89), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                // Taker
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 0),
+                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(9175), 0), // 9175.2 rounded down to 9175
                 feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+            };
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                signedOrderLeft,
+                signedOrderRight,
+                takerAddress,
+                erc20BalancesByOwner,
+                erc721TokenIdsByOwner,
+                expectedTransferAmounts,
+            );
+        });
+
+        it('Should transfer correct amounts when right order fill amount deviates from amount derived by `Exchange.fillOrder`', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2126), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1063), 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            const expectedTransferAmounts = {
+                // Left Maker
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
+                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                // Right Maker
+                // Notes:
+                //  i.
+                //    The left order is fully filled by the right order, so the right maker must sell 1005 units of their asset to the left maker.
+                //    By selling 1005 units, the right maker should theoretically receive 502.5 units of the left maker's asset.
+                //    Since the transfer amount must be an integer, this value must be rounded down to 502 or up to 503.
+                //  ii.
+                //    If the right order were filled via `Exchange.fillOrder` the respective fill amounts would be [1004, 502] or [1006, 503].
+                //    It follows that we cannot trigger a sale of 1005 units of the right maker's asset through `Exchange.fillOrder`.
+                //  iii.
+                //    For an optimal match, the algorithm must choose either [1005, 502] or [1005, 503] as fill amounts for the right order.
+                //    The algorithm favors the right maker when the exchange rate must be rounded, so the final fill for the right order is [1005, 503].
+                //  iv.
+                //    The right maker fee differs from the right taker fee because their exchange rate differs.
+                //    The right maker always receives the better exchange and fee price.
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(503), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.2718720602069614'), 16), // 47.27%
+                // Taker
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(497), 0),
+                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.3189087488240827'), 16), // 47.31%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(

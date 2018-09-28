@@ -1,3 +1,5 @@
+// tslint:disable:max-file-line-count
+
 import { BigNumber } from 'bignumber.js';
 import { ContractAbi } from 'ethereum-types';
 
@@ -111,12 +113,14 @@ export interface OrderStateValid {
     isValid: true;
     orderHash: string;
     orderRelevantState: OrderRelevantState;
+    transactionHash?: string;
 }
 
 export interface OrderStateInvalid {
     isValid: false;
     orderHash: string;
     error: ExchangeContractErrs;
+    transactionHash?: string;
 }
 
 export type OrderState = OrderStateValid | OrderStateInvalid;
@@ -224,6 +228,12 @@ export enum RevertReason {
     Erc721InvalidSelector = 'ERC721_INVALID_SELECTOR',
     WalletError = 'WALLET_ERROR',
     ValidatorError = 'VALIDATOR_ERROR',
+    InvalidFunctionSelector = 'INVALID_FUNCTION_SELECTOR',
+    InvalidAssetProxy = 'INVALID_ASSET_PROXY',
+    UnregisteredAssetProxy = 'UNREGISTERED_ASSET_PROXY',
+    TxFullyConfirmed = 'TX_FULLY_CONFIRMED',
+    TxNotFullyConfirmed = 'TX_NOT_FULLY_CONFIRMED',
+    TimeLockIncomplete = 'TIME_LOCK_INCOMPLETE',
 }
 
 export enum StatusCodes {
@@ -232,4 +242,359 @@ export enum StatusCodes {
     InternalError = 500,
     MethodNotAllowed = 405,
     GatewayTimeout = 504,
+}
+
+export interface ObjectMap<T> {
+    [key: string]: T;
+}
+
+/**
+ * baseAssetData: The address of assetData designated as the baseToken in the currency pair calculation of price
+ * quoteAssetData: The address of assetData designated as the quoteToken in the currency pair calculation of price
+ * limit: Maximum number of bids and asks in orderbook snapshot
+ */
+export interface OrdersChannelSubscriptionOpts {
+    baseAssetData: string;
+    quoteAssetData: string;
+    limit: number;
+}
+
+export type OrdersChannelMessage = UpdateOrdersChannelMessage | UnknownOrdersChannelMessage;
+
+export enum OrdersChannelMessageTypes {
+    Update = 'update',
+    Unknown = 'unknown',
+}
+
+export interface UpdateOrdersChannelMessage {
+    type: OrdersChannelMessageTypes.Update;
+    requestId: string;
+    payload: APIOrder[];
+}
+
+export interface UnknownOrdersChannelMessage {
+    type: OrdersChannelMessageTypes.Unknown;
+    requestId: string;
+    payload: undefined;
+}
+
+export enum WebsocketConnectionEventType {
+    Close = 'close',
+    Error = 'error',
+    Message = 'message',
+}
+
+export enum WebsocketClientEventType {
+    Connect = 'connect',
+    ConnectFailed = 'connectFailed',
+}
+
+export type OrdersResponse = PaginatedCollection<APIOrder>;
+
+export interface APIOrder {
+    order: SignedOrder;
+    metaData: object;
+}
+
+export interface AssetPairsRequestOpts {
+    assetDataA?: string;
+    assetDataB?: string;
+}
+
+export type AssetPairsResponse = PaginatedCollection<AssetPairsItem>;
+
+export interface AssetPairsItem {
+    assetDataA: Asset;
+    assetDataB: Asset;
+}
+
+export interface Asset {
+    assetData: string;
+    minAmount: BigNumber;
+    maxAmount: BigNumber;
+    precision: number;
+}
+
+export interface OrdersRequestOpts {
+    makerAssetProxyId?: string;
+    takerAssetProxyId?: string;
+    makerAssetAddress?: string;
+    takerAssetAddress?: string;
+    exchangeAddress?: string;
+    senderAddress?: string;
+    makerAssetData?: string;
+    takerAssetData?: string;
+    makerAddress?: string;
+    takerAddress?: string;
+    traderAddress?: string;
+    feeRecipientAddress?: string;
+}
+
+export interface OrderbookRequest {
+    baseAssetData: string;
+    quoteAssetData: string;
+}
+
+export interface OrderbookResponse {
+    bids: PaginatedCollection<APIOrder>;
+    asks: PaginatedCollection<APIOrder>;
+}
+
+export interface PaginatedCollection<T> {
+    total: number;
+    page: number;
+    perPage: number;
+    records: T[];
+}
+
+export interface OrderConfigRequest {
+    makerAddress: string;
+    takerAddress: string;
+    makerAssetAmount: BigNumber;
+    takerAssetAmount: BigNumber;
+    makerAssetData: string;
+    takerAssetData: string;
+    exchangeAddress: string;
+    expirationTimeSeconds: BigNumber;
+}
+
+export interface OrderConfigResponse {
+    makerFee: BigNumber;
+    takerFee: BigNumber;
+    feeRecipientAddress: string;
+    senderAddress: string;
+}
+
+export type FeeRecipientsResponse = PaginatedCollection<string>;
+
+export interface RequestOpts {
+    networkId?: number;
+}
+
+export interface PagedRequestOpts {
+    page?: number;
+    perPage?: number;
+}
+
+export interface TypeDocType {
+    type: TypeDocTypes;
+    value: string;
+    name: string;
+    types: TypeDocType[];
+    typeArguments?: TypeDocType[];
+    declaration: TypeDocNode;
+    elementType?: TypeDocType;
+    indexSignature?: TypeDocNode;
+    elements?: TupleElement[];
+}
+
+export interface TupleElement {
+    type: string;
+    name: string;
+}
+
+export interface TypeDocNode {
+    id?: number;
+    name?: string;
+    kind?: string;
+    defaultValue?: string;
+    kindString?: string;
+    type?: TypeDocType;
+    fileName?: string;
+    line?: number;
+    comment?: TypeDocNode;
+    text?: string;
+    shortText?: string;
+    returns?: string;
+    declaration: TypeDocNode;
+    flags?: TypeDocFlags;
+    indexSignature?: TypeDocNode;
+    signatures?: TypeDocNode[];
+    parameters?: TypeDocNode[];
+    typeParameter?: TypeDocNode[];
+    sources?: TypeDocNode[];
+    children?: TypeDocNode[];
+    groups?: TypeDocGroup[];
+}
+
+export interface TypeDocFlags {
+    isStatic?: boolean;
+    isOptional?: boolean;
+    isPublic?: boolean;
+    isExported?: boolean;
+}
+
+export interface TypeDocGroup {
+    title: string;
+    children: number[];
+}
+
+export enum TypeDocTypes {
+    Intrinsic = 'intrinsic',
+    Reference = 'reference',
+    Array = 'array',
+    StringLiteral = 'stringLiteral',
+    Reflection = 'reflection',
+    Union = 'union',
+    TypeParameter = 'typeParameter',
+    Intersection = 'intersection',
+    Tuple = 'tuple',
+    Unknown = 'unknown',
+}
+
+export interface CustomTypeChild {
+    name: string;
+    type?: Type;
+    defaultValue?: string;
+}
+
+export interface Event {
+    name: string;
+    eventArgs: EventArg[];
+}
+
+export interface EventArg {
+    isIndexed: boolean;
+    name: string;
+    type: Type;
+}
+
+export interface Property {
+    name: string;
+    type: Type;
+    source?: Source;
+    comment?: string;
+    callPath?: string;
+}
+
+export interface BaseMethod {
+    isConstructor: boolean;
+    name: string;
+    returnComment?: string | undefined;
+    callPath: string;
+    parameters: Parameter[];
+    returnType: Type;
+    comment?: string;
+}
+
+export interface BaseFunction {
+    name: string;
+    returnComment?: string | undefined;
+    parameters: Parameter[];
+    returnType: Type;
+    comment?: string;
+}
+
+export interface TypeDefinitionByName {
+    [typeName: string]: CustomType;
+}
+
+export interface DocAgnosticFormat {
+    [sectionName: string]: DocSection;
+}
+
+export interface DocSection {
+    comment: string;
+    constructors: Array<TypescriptMethod | SolidityMethod>;
+    methods: Array<TypescriptMethod | SolidityMethod>;
+    properties: Property[];
+    types: CustomType[];
+    functions: TypescriptFunction[];
+    events?: Event[];
+    externalExportToLink?: ExternalExportToLink;
+}
+
+export interface TypescriptMethod extends BaseMethod {
+    source?: Source;
+    isStatic?: boolean;
+    typeParameter?: TypeParameter;
+}
+
+export interface TypescriptFunction extends BaseFunction {
+    source?: Source;
+    typeParameter?: TypeParameter;
+    callPath: string;
+}
+
+export interface SolidityMethod extends BaseMethod {
+    isConstant?: boolean;
+    isPayable?: boolean;
+}
+
+export interface Source {
+    fileName: string;
+    line: number;
+}
+
+export interface Parameter {
+    name: string;
+    comment: string;
+    isOptional: boolean;
+    type: Type;
+    defaultValue?: string;
+}
+
+export interface TypeParameter {
+    name: string;
+    type: Type;
+}
+
+export interface Type {
+    name: string;
+    typeDocType: TypeDocTypes;
+    value?: string;
+    isExportedClassReference?: boolean;
+    typeArguments?: Type[];
+    elementType?: ElementType;
+    types?: Type[];
+    method?: TypescriptMethod;
+    indexSignature?: IndexSignature;
+    externalLink?: string;
+    tupleElements?: Type[];
+}
+
+export interface ElementType {
+    name: string;
+    typeDocType: TypeDocTypes;
+}
+
+export interface IndexSignature {
+    keyName: string;
+    keyType: Type;
+    valueName: string;
+}
+
+export interface CustomType {
+    name: string;
+    kindString: string;
+    type?: Type;
+    method?: TypescriptMethod;
+    indexSignature?: IndexSignature;
+    defaultValue?: string;
+    comment?: string;
+    children?: CustomTypeChild[];
+}
+export interface GeneratedDocJson {
+    version: string;
+    metadata: Metadata;
+    typedocJson: TypeDocNode;
+}
+
+export interface ExportNameToTypedocNames {
+    [exportName: string]: string[];
+}
+
+export interface ExternalTypeToLink {
+    [externalTypeName: string]: string;
+}
+
+export interface ExternalExportToLink {
+    [externalExport: string]: string;
+}
+
+export interface Metadata {
+    exportPathToTypedocNames: ExportNameToTypedocNames;
+    exportPathOrder: string[];
+    externalTypeToLink: ExternalTypeToLink;
+    externalExportToLink: ExternalExportToLink;
 }

@@ -71,7 +71,7 @@ export class LifeCycleRaisedButton extends React.Component<LifeCycleRaisedButton
                 style={{ width: '100%' }}
                 backgroundColor={this.props.backgroundColor}
                 labelColor={this.props.labelColor}
-                onTouchTap={this.onClickAsync.bind(this)}
+                onClick={this.onClickAsync.bind(this)}
                 disabled={this.props.isDisabled || this.state.buttonState !== ButtonState.READY}
             />
         );

@@ -188,3 +188,24 @@ export enum OrderStatus {
     FULLY_FILLED,
     CANCELLED,
 }
+
+export interface TraderInfo {
+    makerBalance: BigNumber;
+    makerAllowance: BigNumber;
+    takerBalance: BigNumber;
+    takerAllowance: BigNumber;
+    makerZrxBalance: BigNumber;
+    makerZrxAllowance: BigNumber;
+    takerZrxBalance: BigNumber;
+    takerZrxAllowance: BigNumber;
+}
+
+export interface OrderAndTraderInfo {
+    orderInfo: OrderInfo;
+    traderInfo: TraderInfo;
+}
+
+export interface BalanceAndAllowance {
+    balance: BigNumber;
+    allowance: BigNumber;
+}

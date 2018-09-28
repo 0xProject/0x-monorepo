@@ -2,13 +2,11 @@
     "extends": "../../tsconfig",
     "compilerOptions": {
         "outDir": "lib",
-        "baseUrl": ".",
-        "declaration": false,
-        "allowJs": true
+        "rootDir": "."
     },
     "include": [
         "./globals.d.ts",
-        "./contract_wrappers",
+        "./generated_contract_wrappers",
         "./src/**/*",
         "./utils/**/*",
         "./test/**/*",

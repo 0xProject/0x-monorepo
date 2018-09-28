@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/order-utils",
-    "version": "1.0.1-rc.6",
+    "version": "1.0.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -8,12 +8,10 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "run-s pre_build transpile",
-        "pre_build": "run-s update_artifacts_v2_beta generate_contract_wrappers",
-        "transpile": "tsc",
+        "build": "yarn pre_build && tsc -b",
+        "pre_build": "run-s update_artifacts generate_contract_wrappers",
         "generate_contract_wrappers": "abi-gen --abis 'lib/src/artifacts/@(Exchange|IWallet|IValidator|DummyERC20Token|ERC20Proxy|ERC20Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
-        "update_artifacts_v2_beta": "for i in ${npm_package_config_contracts_v2_beta}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-beta-testnet/$i.json lib/src/artifacts; done;",
+        "update_artifacts": "for i in ${npm_package_config_contracts_v2}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-trimmed/$i.json lib/src/artifacts; done;",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:circleci": "yarn test:coverage",
@@ -22,10 +20,10 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf lib lib/src/artifacts src/generated_contract_wrappers generated_docs",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
-        "contracts_v2_beta": "IWallet IValidator Exchange ERC20Proxy ERC20Token DummyERC20Token",
+        "contracts_v2": "IWallet IValidator Exchange ERC20Proxy ERC20Token DummyERC20Token",
         "postpublish": {
             "assets": []
         }
@@ -40,8 +38,8 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
-        "@0xproject/dev-utils": "^1.0.6",
-        "@0xproject/tslint-config": "^1.0.6",
+        "@0xproject/dev-utils": "^1.0.10",
+        "@0xproject/tslint-config": "^1.0.7",
         "@types/bn.js": "^4.11.0",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
@@ -59,19 +57,19 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0xproject/assert": "^1.0.7",
-        "@0xproject/base-contract": "^2.0.1",
-        "@0xproject/json-schemas": "^1.0.1-rc.6",
-        "@0xproject/types": "^1.0.1-rc.6",
-        "@0xproject/typescript-typings": "^1.0.5",
-        "@0xproject/utils": "^1.0.7",
-        "@0xproject/web3-wrapper": "^2.0.1",
-        "@types/node": "^8.0.53",
+        "@0xproject/assert": "^1.0.11",
+        "@0xproject/base-contract": "^2.0.5",
+        "@0xproject/json-schemas": "^1.0.4",
+        "@0xproject/types": "^1.1.1",
+        "@0xproject/typescript-typings": "^2.0.2",
+        "@0xproject/utils": "^1.0.11",
+        "@0xproject/web3-wrapper": "^3.0.1",
+        "@types/node": "*",
         "bn.js": "^4.11.8",
-        "ethereum-types": "^1.0.5",
+        "ethereum-types": "^1.0.8",
         "ethereumjs-abi": "0.6.5",
         "ethereumjs-util": "^5.1.1",
-        "ethers": "3.0.22",
+        "ethers": "4.0.0-beta.14",
         "lodash": "^4.17.5"
     },
     "publishConfig": {

@@ -11,29 +11,28 @@ import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdownV1 = require('md/docs/smart_contracts/1.0.0/introduction');
+const IntroMarkdownV2 = require('md/docs/smart_contracts/2.0.0/introduction');
 /* tslint:enable:no-var-requires */
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.SmartContracts,
     packageName: 'contracts',
-    type: SupportedDocJson.Doxity,
+    type: SupportedDocJson.SolDoc,
     displayName: '0x Smart Contracts',
     packageUrl: 'https://github.com/0xProject/contracts',
     markdownMenu: {
         introduction: [Sections.Introduction],
-        contracts: [Sections.Exchange, Sections.TokenRegistry, Sections.ZRXToken, Sections.TokenTransferProxy],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
             [Sections.Introduction]: IntroMarkdownV1,
         },
+        '2.0.0': {
+            [Sections.Introduction]: IntroMarkdownV2,
+        },
     },
     markdownSections: {
         Introduction: Sections.Introduction,
-        Exchange: Sections.Exchange,
-        TokenTransferProxy: Sections.TokenTransferProxy,
-        TokenRegistry: Sections.TokenRegistry,
-        ZRXToken: Sections.ZRXToken,
     },
     contractsByVersionByNetworkId: {
         '1.0.0': {

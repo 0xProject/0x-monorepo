@@ -1,5 +1,81 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note":
+                    "Fixes dropped events in subscriptions by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too.",
+                "pr": 1080
+            },
+            {
+                "note":
+                    "Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it",
+                "pr": 1080
+            }
+        ],
+        "timestamp": 1537907159
+    },
+    {
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1537875740
+    },
+    {
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1537541580
+    },
+    {
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Drastically reduce the bundle size by removing unused parts of included contract artifacts."
+            }
+        ],
+        "timestamp": 1537369748
+    },
+    {
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Add ZRX & WETH mainnet contract addresses into the included artifacts"
+            }
+        ],
+        "timestamp": 1537265493
+    },
+    {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Add `OrderValidatorWrapper`"
+            },
+            {
+                "note":
+                    "Fix bug where contracts not deployed on a network showed an `EXCHANGE_CONTRACT_DOES_NOT_EXIST` error instead of `CONTRACT_NOT_DEPLOYED_ON_NETWORK`",
+                "pr": 1044
+            },
+            {
+                "note":
+                    "Export `AssetBalanceAndProxyAllowanceFetcher` and `OrderFilledCancelledFetcher` implementations",
+                "pr": 1054
+            },
+            {
+                "note":
+                    "Add `validateOrderFillableOrThrowAsync` and `validateFillOrderThrowIfInvalidAsync` to ExchangeWrapper",
+                "pr": 1054
+            }
+        ],
+        "timestamp": 1536142250
+    },
+    {
         "version": "1.0.1-rc.5",
         "changes": [
             {

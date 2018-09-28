@@ -24,7 +24,6 @@ import "./ERC721Token.sol";
 contract MintableERC721Token is
     ERC721Token
 {
-
     /// @dev Function to mint a new token
     ///      Reverts if the given token ID already exists
     /// @param _to Address of the beneficiary that will own the minted token

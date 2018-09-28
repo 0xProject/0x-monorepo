@@ -39,7 +39,6 @@ contract MixinForwarderCore is
     MExchangeWrapper,
     IForwarderCore
 {
-
     using LibBytes for bytes;
 
     /// @dev Constructor approves ERC20 proxy to transfer ZRX and WETH on this contract's behalf.
@@ -47,10 +46,12 @@ contract MixinForwarderCore is
         public
     {
         address proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
-        if (proxyAddress != address(0)) {
-            ETHER_TOKEN.approve(proxyAddress, MAX_UINT);
-            ZRX_TOKEN.approve(proxyAddress, MAX_UINT);
-        }
+        require(
+            proxyAddress != address(0),
+            "UNREGISTERED_ASSET_PROXY"
+        );
+        ETHER_TOKEN.approve(proxyAddress, MAX_UINT);
+        ZRX_TOKEN.approve(proxyAddress, MAX_UINT);
     }
 
     /// @dev Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.

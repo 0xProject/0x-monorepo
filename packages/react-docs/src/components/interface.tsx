@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { CustomType, TypeDefinitionByName } from '@0xproject/types';
+
 import { DocsInfo } from '../docs_info';
-import { CustomType, TypeDefinitionByName } from '../types';
 
 import { Signature } from './signature';
 import { Type } from './type';

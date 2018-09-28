@@ -18,7 +18,7 @@ export const configs = {
     DOMAIN_PRODUCTION: '0xproject.com',
     GOOGLE_ANALYTICS_ID: 'UA-98720122-1',
     LAST_LOCAL_STORAGE_FILL_CLEARANCE_DATE: '2017-11-22',
-    LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE: '2018-7-5',
+    LAST_LOCAL_STORAGE_TRACKED_TOKEN_CLEARANCE_DATE: '2018-9-7',
     OUTDATED_WRAPPED_ETHERS: [
         {
             42: {
@@ -44,27 +44,6 @@ export const configs = {
         [3]: [`https://ropsten.infura.io/${INFURA_API_KEY}`],
         [4]: [`https://rinkeby.infura.io/${INFURA_API_KEY}`],
     } as PublicNodeUrlsByNetworkId,
-    SYMBOLS_OF_MINTABLE_KOVAN_TOKENS: ['MKR', 'MLN', 'GNT', 'DGD', 'REP'],
-    SYMBOLS_OF_MINTABLE_RINKEBY_ROPSTEN_TOKENS: [
-        'TKN0',
-        'TKN1',
-        'TKN2',
-        'TKN3',
-        'TKN4',
-        'TKN5',
-        'TKN6',
-        'TKN7',
-        'TKN8',
-        'TKN9',
-        'TKN10',
-        'TKN11',
-        'TKN12',
-        'TKN13',
-        'TKN14',
-        'TKN15',
-        'TKN16',
-        'TKN17',
-        'TKN18',
-        'TKN19',
-    ],
+    SYMBOLS_OF_MINTABLE_KOVAN_TOKENS: ['ZRX', 'MKR', 'MLN', 'GNT', 'DGD', 'REP'],
+    SYMBOLS_OF_MINTABLE_ROPSTEN_TOKENS: ['ZRX', 'MKR', 'MLN', 'GNT', 'DGD', 'REP'],
 };

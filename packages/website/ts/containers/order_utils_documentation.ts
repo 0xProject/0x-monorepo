@@ -6,7 +6,6 @@ import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentatio
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
 import { DocPackages } from 'ts/types';
-import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */

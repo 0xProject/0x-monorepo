@@ -26,7 +26,6 @@ import "../interfaces/IMatchOrders.sol";
 contract MMatchOrders is
     IMatchOrders
 {
-
     /// @dev Validates context for matchOrders. Succeeds or throws.
     /// @param leftOrder First order to match.
     /// @param rightOrder Second order to match.

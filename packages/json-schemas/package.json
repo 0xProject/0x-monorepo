@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/json-schemas",
-    "version": "1.0.1-rc.6",
+    "version": "1.0.4",
     "engines": {
         "node": ">=6.12"
     },
@@ -8,7 +8,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "tsc -w",
+        "build": "tsc -b",
         "lint": "tslint --project .",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s clean build test",
@@ -17,8 +17,7 @@
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
         "clean": "shx rm -rf lib test_temp generated_docs",
-        "build": "tsc",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {
@@ -39,14 +38,14 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/json-schemas/README.md",
     "dependencies": {
-        "@0xproject/typescript-typings": "^1.0.5",
-        "@types/node": "^8.0.53",
+        "@0xproject/typescript-typings": "^2.0.2",
+        "@types/node": "*",
         "jsonschema": "^1.2.0",
         "lodash.values": "^4.3.0"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.6",
-        "@0xproject/utils": "^1.0.7",
+        "@0xproject/tslint-config": "^1.0.7",
+        "@0xproject/utils": "^1.0.11",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^2.2.42",

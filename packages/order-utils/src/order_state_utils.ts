@@ -114,7 +114,7 @@ export class OrderStateUtils {
      * @return State relevant to the signedOrder, as well as whether the signedOrder is "valid".
      * Validity is defined as a non-zero amount of the order can still be filled.
      */
-    public async getOpenOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
+    public async getOpenOrderStateAsync(signedOrder: SignedOrder, transactionHash?: string): Promise<OrderState> {
         const orderRelevantState = await this.getOpenOrderRelevantStateAsync(signedOrder);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const isOrderCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(orderHash);
@@ -134,6 +134,7 @@ export class OrderStateUtils {
                 isValid: true,
                 orderHash,
                 orderRelevantState,
+                transactionHash,
             };
             return orderState;
         } else {
@@ -141,6 +142,7 @@ export class OrderStateUtils {
                 isValid: false,
                 orderHash,
                 error: orderValidationResult.error,
+                transactionHash,
             };
             return orderState;
         }

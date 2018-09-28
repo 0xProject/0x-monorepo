@@ -2,6 +2,7 @@ version: 2
 
 jobs:
   build:
+    resource_class: medium+
     docker:
       - image: circleci/node:9
     environment:
@@ -50,7 +51,7 @@ jobs:
   test-contracts-geth:
     docker:
       - image: circleci/node:9
-      - image: albrow/0x-devnet
+      - image: 0xorg/devnet
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -60,9 +61,10 @@ jobs:
       # initialized
       - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test contracts
   test-publish:
+    resource_class: medium+
     docker:
       - image: circleci/node:9
-      - image: verdaccio/verdaccio
+      - image: 0xorg/verdaccio
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -98,6 +100,7 @@ jobs:
       - run: yarn wsrun test:circleci @0xproject/order-watcher
       - run: yarn wsrun test:circleci @0xproject/sol-compiler
       - run: yarn wsrun test:circleci @0xproject/sol-cov
+      - run: yarn wsrun test:circleci @0xproject/sol-doc
       - run: yarn wsrun test:circleci @0xproject/sra-report
       - run: yarn wsrun test:circleci @0xproject/subproviders
       - run: yarn wsrun test:circleci @0xproject/web3-wrapper
@@ -150,6 +153,10 @@ jobs:
           key: coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/sol-cov/coverage/lcov.info
+      - save_cache:
+          key: coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/sol-doc/coverage/lcov.info
       - save_cache:
           key: coverage-sra-report-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -216,6 +223,9 @@ jobs:
       - restore_cache:
           keys:
             - coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
             - coverage-sra-report-{{ .Environment.CIRCLE_SHA1 }}

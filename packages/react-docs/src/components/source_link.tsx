@@ -1,7 +1,6 @@
 import { colors } from '@0xproject/react-shared';
+import { Source } from '@0xproject/types';
 import * as React from 'react';
-
-import { Source } from '../types';
 
 export interface SourceLinkProps {
     source: Source;

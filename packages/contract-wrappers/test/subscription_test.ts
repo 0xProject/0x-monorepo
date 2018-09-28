@@ -61,7 +61,7 @@ describe('SubscriptionTest', () => {
                     callback,
                 );
                 stubs = [
-                    Sinon.stub((contractWrappers as any)._web3Wrapper, 'getBlockAsync').throws(
+                    Sinon.stub((contractWrappers as any)._web3Wrapper, 'getBlockIfExistsAsync').throws(
                         new Error('JSON RPC error'),
                     ),
                 ];

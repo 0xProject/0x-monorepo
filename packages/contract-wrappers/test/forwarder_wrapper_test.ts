@@ -25,10 +25,8 @@ describe('ForwarderWrapper', () => {
         blockPollingIntervalMs: 0,
     };
     const fillableAmount = new BigNumber(5);
-    const takerTokenFillAmount = new BigNumber(5);
     let contractWrappers: ContractWrappers;
     let fillScenarios: FillScenarios;
-    let forwarderContractAddress: string;
     let exchangeContractAddress: string;
     let zrxTokenAddress: string;
     let userAddresses: string[];
@@ -46,7 +44,6 @@ describe('ForwarderWrapper', () => {
     before(async () => {
         await blockchainLifecycle.startAsync();
         contractWrappers = new ContractWrappers(provider, contractWrappersConfig);
-        forwarderContractAddress = contractWrappers.forwarder.getContractAddress();
         exchangeContractAddress = contractWrappers.exchange.getContractAddress();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         zrxTokenAddress = tokenUtils.getProtocolTokenAddress();

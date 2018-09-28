@@ -1,14 +1,35 @@
 ## Contracts
 
-Smart contracts that implement the 0x protocol.
+Smart contracts that implement the 0x protocol. Addresses of the deployed contracts can be found [here](https://0xproject.com/wiki#Deployed-Addresses).
 
 ## Usage
 
-*   [Docs](https://0xproject.com/docs/contracts)
-*   [Overview of 0x protocol architecture](https://0xproject.com/wiki#Architecture)
-*   [0x smart contract interactions](https://0xproject.com/wiki#Contract-Interactions)
-*   [Deployed smart contract addresses](https://0xproject.com/wiki#Deployed-Addresses)
-*   [0x protocol message format](https://0xproject.com/wiki#Message-Format)
+### 2.0.0
+
+Contracts that make up and interact with version 2.0.0 of the protocol can be found in the `src/2.0.0` directory. The contents of this directory are broken down into the following subdirectories:
+
+*   protocol
+    *   This directory contains the contracts that make up version 2.0.0. A full specification can be found [here](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+*   extensions
+    *   This directory contains contracts that interact with the 2.0.0 contracts and will be used in production, such as the [Forwarder](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md) contract.
+*   examples
+    *   This directory contains example implementations of contracts that interact with the protocol but are _not_ intended for use in production. Examples include [filter](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#filter-contracts) contracts, a [Wallet](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#wallet) contract, and a [Validator](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#validator) contract, among others.
+*   tokens
+    *   This directory contains implementations of different tokens and token standards, including [wETH](https://weth.io/), ZRX, [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md), and [ERC721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md).
+*   multisig
+    *   This directory contains the [Gnosis MultiSigWallet](https://github.com/gnosis/MultiSigWallet) and a custom extension that adds a timelock to transactions within the MultiSigWallet.
+*   utils
+    *   This directory contains libraries and utils that are shared across all of the other directories.
+*   test
+    *   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
+
+### 1.0.0
+
+Contracts that make up version 1.0.0 of the protocol can be found in `src/1.0.0`. These contracts are considered deprecated and will have limited support going forward.
+
+## Bug bounty
+
+A bug bounty for the 2.0.0 contracts is ongoing! Instructions can be found [here](https://0xproject.com/wiki#Bug-Bounty).
 
 ## Contributing
 

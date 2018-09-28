@@ -5,6 +5,26 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.5 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.4 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.3 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v1.0.2 - _September 19, 2018_
+
+    * Drastically reduce the bundle size by removing unused parts of included contract artifacts.
+
+## v1.0.1 - _September 5, 2018_
+
+    * Export `orderParsingUtils` (#1044)
+
 ## v1.0.1-rc.6 - _August 27, 2018_
 
     * Fix missing `BlockParamLiteral` type import issue

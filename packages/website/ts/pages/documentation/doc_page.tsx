@@ -1,4 +1,11 @@
-import { DocAgnosticFormat, DocsInfo, Documentation } from '@0xproject/react-docs';
+import {
+    DocAgnosticFormat,
+    DocsInfo,
+    Documentation,
+    GeneratedDocJson,
+    SupportedDocJson,
+    TypeDocUtils,
+} from '@0xproject/react-docs';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -128,7 +135,22 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
 
         const versionFilePathToFetch = versionToFilePath[versionToFetch];
         const versionDocObj = await docUtils.getJSONDocFileAsync(versionFilePathToFetch, docBucketRoot);
-        const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj);
+        let docAgnosticFormat;
+        if (this.props.docsInfo.type === SupportedDocJson.TypeDoc) {
+            docAgnosticFormat = new TypeDocUtils(
+                versionDocObj as GeneratedDocJson,
+                this.props.docsInfo,
+            ).convertToDocAgnosticFormat();
+        } else if (this.props.docsInfo.type === SupportedDocJson.SolDoc) {
+            // documenting solidity.
+            docAgnosticFormat = versionDocObj as DocAgnosticFormat;
+            // HACK: need to modify docsInfo like convertToDocAgnosticFormat() would do
+            this.props.docsInfo.menu.Contracts = [];
+            _.each(docAgnosticFormat, (docObj, contractName) => {
+                this.props.docsInfo.sections[contractName] = contractName;
+                this.props.docsInfo.menu.Contracts.push(contractName);
+            });
+        }
 
         if (!this._isUnmounted) {
             this.setState({

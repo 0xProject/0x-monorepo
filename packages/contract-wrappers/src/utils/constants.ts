@@ -12,4 +12,6 @@ export const constants = {
     UNLIMITED_ALLOWANCE_IN_BASE_UNITS: new BigNumber(2).pow(256).minus(1),
     DEFAULT_BLOCK_POLLING_INTERVAL: 1000,
     ZERO_AMOUNT: new BigNumber(0),
+    ONE_AMOUNT: new BigNumber(1),
+    ETHER_TOKEN_DECIMALS: 18,
 };

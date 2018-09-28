@@ -177,13 +177,13 @@ contract MixinMatchOrders is
     {
         // Derive maker asset amounts for left & right orders, given store taker assert amounts
         uint256 leftTakerAssetAmountRemaining = safeSub(leftOrder.takerAssetAmount, leftOrderTakerAssetFilledAmount);
-        uint256 leftMakerAssetAmountRemaining = getPartialAmountFloor(
+        uint256 leftMakerAssetAmountRemaining = safeGetPartialAmountFloor(
             leftOrder.makerAssetAmount,
             leftOrder.takerAssetAmount,
             leftTakerAssetAmountRemaining
         );
         uint256 rightTakerAssetAmountRemaining = safeSub(rightOrder.takerAssetAmount, rightOrderTakerAssetFilledAmount);
-        uint256 rightMakerAssetAmountRemaining = getPartialAmountFloor(
+        uint256 rightMakerAssetAmountRemaining = safeGetPartialAmountFloor(
             rightOrder.makerAssetAmount,
             rightOrder.takerAssetAmount,
             rightTakerAssetAmountRemaining
@@ -205,7 +205,7 @@ contract MixinMatchOrders is
             matchedFillResults.left.takerAssetFilledAmount = matchedFillResults.right.makerAssetFilledAmount;
             // Round down to ensure the maker's exchange rate does not exceed the price specified by the order. 
             // We favor the maker when the exchange rate must be rounded.
-            matchedFillResults.left.makerAssetFilledAmount = getPartialAmountFloor(
+            matchedFillResults.left.makerAssetFilledAmount = safeGetPartialAmountFloor(
                 leftOrder.makerAssetAmount,
                 leftOrder.takerAssetAmount,
                 matchedFillResults.left.takerAssetFilledAmount
@@ -217,7 +217,7 @@ contract MixinMatchOrders is
             matchedFillResults.right.makerAssetFilledAmount = matchedFillResults.left.takerAssetFilledAmount;
             // Round up to ensure the maker's exchange rate does not exceed the price specified by the order.
             // We favor the maker when the exchange rate must be rounded.
-            matchedFillResults.right.takerAssetFilledAmount = getPartialAmountCeil(
+            matchedFillResults.right.takerAssetFilledAmount = safeGetPartialAmountCeil(
                 rightOrder.takerAssetAmount,
                 rightOrder.makerAssetAmount,
                 matchedFillResults.right.makerAssetFilledAmount
@@ -231,24 +231,24 @@ contract MixinMatchOrders is
         );
 
         // Compute fees for left order
-        matchedFillResults.left.makerFeePaid = getPartialAmountFloor(
+        matchedFillResults.left.makerFeePaid = safeGetPartialAmountFloor(
             matchedFillResults.left.makerAssetFilledAmount,
             leftOrder.makerAssetAmount,
             leftOrder.makerFee
         );
-        matchedFillResults.left.takerFeePaid = getPartialAmountFloor(
+        matchedFillResults.left.takerFeePaid = safeGetPartialAmountFloor(
             matchedFillResults.left.takerAssetFilledAmount,
             leftOrder.takerAssetAmount,
             leftOrder.takerFee
         );
 
         // Compute fees for right order
-        matchedFillResults.right.makerFeePaid = getPartialAmountFloor(
+        matchedFillResults.right.makerFeePaid = safeGetPartialAmountFloor(
             matchedFillResults.right.makerAssetFilledAmount,
             rightOrder.makerAssetAmount,
             rightOrder.makerFee
         );
-        matchedFillResults.right.takerFeePaid = getPartialAmountFloor(
+        matchedFillResults.right.takerFeePaid = safeGetPartialAmountFloor(
             matchedFillResults.right.takerAssetFilledAmount,
             rightOrder.takerAssetAmount,
             rightOrder.takerFee

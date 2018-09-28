@@ -76,6 +76,7 @@
         "no-unbound-method": true,
         "no-unnecessary-class": true,
         "no-unnecessary-type-assertion": true,
+        "no-unused-variable": true,
         "no-unsafe-finally": true,
         "number-literal-format": true,
         "object-literal-key-quotes": false,

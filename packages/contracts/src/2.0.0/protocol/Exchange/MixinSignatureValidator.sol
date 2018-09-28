@@ -251,7 +251,7 @@ contract MixinSignatureValidator is
                 walletAddress,    // address of Wallet contract
                 cdStart,          // pointer to start of input
                 mload(calldata),  // length of input
-                cdStart,          // write input over output
+                cdStart,          // write output over input
                 32                // output size is 32 bytes
             )
 
@@ -301,7 +301,7 @@ contract MixinSignatureValidator is
                 validatorAddress,  // address of Validator contract
                 cdStart,           // pointer to start of input
                 mload(calldata),   // length of input
-                cdStart,           // write input over output
+                cdStart,           // write output over input
                 32                 // output size is 32 bytes
             )
 

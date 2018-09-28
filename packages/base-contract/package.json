@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/base-contract",
-    "version": "2.0.1",
+    "version": "2.0.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -8,8 +8,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "tsc -w",
-        "build": "tsc",
+        "build": "tsc -b",
         "clean": "shx rm -rf lib",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s clean build test",
@@ -29,7 +28,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/base-contract/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.6",
+        "@0xproject/tslint-config": "^1.0.7",
         "@types/lodash": "4.14.104",
         "chai": "^4.0.1",
         "copyfiles": "^2.0.0",
@@ -41,11 +40,11 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0xproject/typescript-typings": "^1.0.5",
-        "@0xproject/utils": "^1.0.7",
-        "@0xproject/web3-wrapper": "^2.0.1",
-        "ethereum-types": "^1.0.5",
-        "ethers": "3.0.22",
+        "@0xproject/typescript-typings": "^2.0.2",
+        "@0xproject/utils": "^1.0.11",
+        "@0xproject/web3-wrapper": "^3.0.1",
+        "ethereum-types": "^1.0.8",
+        "ethers": "4.0.0-beta.14",
         "lodash": "^4.17.5"
     },
     "publishConfig": {

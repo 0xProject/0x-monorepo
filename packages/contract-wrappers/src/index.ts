@@ -6,6 +6,7 @@ export { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
 export { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
 export { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
 export { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
+export { OrderValidatorWrapper } from './contract_wrappers/order_validator_wrapper';
 
 export { TransactionEncoder } from './utils/transaction_encoder';
 
@@ -21,6 +22,10 @@ export {
     OrderInfo,
     EventCallback,
     DecodedLogEvent,
+    BalanceAndAllowance,
+    OrderAndTraderInfo,
+    TraderInfo,
+    ValidateOrderFillableOpts,
 } from './types';
 
 export { Order, SignedOrder, AssetProxyId } from '@0xproject/types';
@@ -81,3 +86,8 @@ export {
     ExchangeEventArgs,
     ExchangeEvents,
 } from './contract_wrappers/generated/exchange';
+
+export { AbstractBalanceAndProxyAllowanceFetcher, AbstractOrderFilledCancelledFetcher } from '@0xproject/order-utils';
+
+export { AssetBalanceAndProxyAllowanceFetcher } from './fetchers/asset_balance_and_proxy_allowance_fetcher';
+export { OrderFilledCancelledFetcher } from './fetchers/order_filled_cancelled_fetcher';

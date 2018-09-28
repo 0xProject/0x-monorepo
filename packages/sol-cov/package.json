@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-cov",
-    "version": "2.1.1",
+    "version": "2.1.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -8,8 +8,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "yarn pre_build && tsc -w",
-        "build": "yarn pre_build && tsc",
+        "build": "yarn pre_build && tsc -b",
         "pre_build": "run-s copy_test_fixtures",
         "lint": "tslint --project .",
         "test": "run-s compile_test run_mocha",
@@ -21,7 +20,7 @@
         "clean": "shx rm -rf lib test/fixtures/artifacts src/artifacts generated_docs",
         "copy_test_fixtures": "copyfiles 'test/fixtures/**/*' ./lib",
         "compile_test": "sol-compiler compile",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {
@@ -42,14 +41,13 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/dev-utils": "^1.0.6",
-        "@0xproject/sol-compiler": "^1.1.1",
-        "@0xproject/subproviders": "^2.0.1",
-        "@0xproject/typescript-typings": "^1.0.5",
-        "@0xproject/utils": "^1.0.7",
-        "@0xproject/web3-wrapper": "^2.0.1",
-        "@types/solidity-parser-antlr": "^0.2.1",
-        "ethereum-types": "^1.0.5",
+        "@0xproject/dev-utils": "^1.0.10",
+        "@0xproject/sol-compiler": "^1.1.5",
+        "@0xproject/subproviders": "^2.0.5",
+        "@0xproject/typescript-typings": "^2.0.2",
+        "@0xproject/utils": "^1.0.11",
+        "@0xproject/web3-wrapper": "^3.0.1",
+        "ethereum-types": "^1.0.8",
         "ethereumjs-util": "^5.1.1",
         "glob": "^7.1.2",
         "istanbul": "^0.4.5",
@@ -61,14 +59,14 @@
         "solidity-parser-antlr": "^0.2.12"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.6",
+        "@0xproject/tslint-config": "^1.0.7",
         "@types/istanbul": "^0.4.30",
         "@types/loglevel": "^1.5.3",
         "@types/mkdirp": "^0.5.1",
         "@types/mocha": "^2.2.42",
-        "@types/node": "^8.0.53",
+        "@types/node": "*",
         "@types/rimraf": "^2.0.2",
-        "@types/solidity-parser-antlr": "^0.2.1",
+        "@types/solidity-parser-antlr": "^0.2.0",
         "chai": "^4.0.1",
         "copyfiles": "^2.0.0",
         "dirty-chai": "^2.0.1",

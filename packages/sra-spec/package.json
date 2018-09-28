@@ -1,15 +1,15 @@
 {
     "name": "@0xproject/sra-spec",
-    "version": "1.0.1-rc.6",
+    "version": "1.0.4",
     "engines": {
         "node": ">=6.12"
     },
     "description": "Standard Relayer API Open API Spec",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
     "scripts": {
         "serve": "redoc-cli serve lib/api.json --watch",
-        "watch_without_deps": "run-p build-json:watch serve",
+        "watch_without_deps": "run-p build:watch serve",
         "lint": "tslint --project .",
         "test": "swagger-cli validate lib/api.json",
         "rebuild_and_test": "run-s clean build test",
@@ -17,10 +17,10 @@
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",
         "clean": "shx rm -rf lib",
-        "build": "tsc && yarn copy_md_files && yarn build-json",
-        "build-json": "ts-node build_scripts/buildJson.ts",
-        "build-json:watch": "chokidar 'src/**/*' -c 'yarn build-json' ",
-        "copy_md_files": "copyfiles -u 2 './src/md/**/*.md' ./lib/md",
+        "build": "tsc -b && yarn copy_md_files && yarn build-json",
+        "build-json": "node ./lib/build_scripts/buildJson",
+        "build:watch": "chokidar 'src/**/*' -c 'yarn build' ",
+        "copy_md_files": "copyfiles -u 2 './src/md/**/*.md' ./lib/src/md",
         "deploy-site": "discharge deploy"
     },
     "repository": {
@@ -34,10 +34,10 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-spec/README.md",
     "dependencies": {
-        "@0xproject/json-schemas": "^1.0.1-rc.6"
+        "@0xproject/json-schemas": "^1.0.4"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.6",
+        "@0xproject/tslint-config": "^1.0.7",
         "@loopback/openapi-v3-types": "^0.8.2",
         "@types/mocha": "^2.2.42",
         "@types/node": "^10.5.3",
@@ -54,7 +54,7 @@
         "swagger-cli": "^2.1.1",
         "ts-node": "^7.0.0",
         "tslint": "5.11.0",
-        "typescript": "2.7.1"
+        "typescript": "3.0.1"
     },
     "publishConfig": {
         "access": "public"

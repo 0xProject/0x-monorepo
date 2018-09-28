@@ -3,7 +3,6 @@ import { Link as ScrollLink } from 'react-scroll';
 
 import { HeaderSizes, Styles } from '../types';
 import { constants } from '../utils/constants';
-import { utils } from '../utils/utils';
 
 const headerSizeToScrollOffset: { [headerSize: string]: number } = {
     h2: -20,
