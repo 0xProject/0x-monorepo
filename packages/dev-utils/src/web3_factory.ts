@@ -14,6 +14,7 @@ import { env, EnvVars } from './env';
 export interface Web3Config {
     hasAddresses?: boolean; // default: true
     shouldUseInProcessGanache?: boolean; // default: false
+    shouldThrowErrorsOnGanacheRPCResponse?: boolean; // default: true
     rpcUrl?: string; // default: localhost:8545
     shouldUseFakeGasEstimate?: boolean; // default: true
 }
@@ -41,15 +42,19 @@ export const web3Factory = {
             if (!_.isUndefined(config.rpcUrl)) {
                 throw new Error('Cannot use both GanacheSubrovider and RPCSubprovider');
             }
+            const shouldThrowErrorsOnGanacheRPCResponse =
+                _.isUndefined(config.shouldThrowErrorsOnGanacheRPCResponse) ||
+                config.shouldThrowErrorsOnGanacheRPCResponse;
             provider.addProvider(
                 new GanacheSubprovider({
+                    vmErrorsOnRPCResponse: shouldThrowErrorsOnGanacheRPCResponse,
                     gasLimit: constants.GAS_LIMIT,
                     logger,
                     verbose: env.parseBoolean(EnvVars.VerboseGanache),
                     port: 8545,
                     network_id: 50,
                     mnemonic: 'concert load couple harbor equip island argue ramp clarify fence smart topic',
-                }),
+                } as any), // TODO remove any once types are merged in DefinitelyTyped
             );
         } else {
             provider.addProvider(new RPCSubprovider(config.rpcUrl || constants.RPC_URL));
