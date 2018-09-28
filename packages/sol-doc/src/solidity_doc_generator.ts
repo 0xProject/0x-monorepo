@@ -340,7 +340,16 @@ function _genMethodParamsDoc(
 
     const methodSignature = `${name}(${abiParams
         .map(abiParam => {
-            return abiParam.type;
+            if (!_.startsWith(abiParam.type, 'tuple')) {
+                return abiParam.type;
+            } else {
+                // Need to expand tuples:
+                // E.g: fillOrder(tuple,uint256,bytes) -> fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)
+                const isArray = _.endsWith(abiParam.type, '[]');
+                const expandedTypes = _.map(abiParam.components, c => c.type);
+                const type = `(${expandedTypes.join(',')})${isArray ? '[]' : ''}`;
+                return type;
+            }
         })
         .join(',')})`;
 
