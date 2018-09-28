@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _September 28, 2018_
+
+    * Change the way we detect BN to work with the newest ethers.js (#1069)
+    * Add baseContract._throwIfRevertWithReasonCallResult (#1069)
+
 ## v2.0.5 - _September 25, 2018_
 
     * Dependencies updated
