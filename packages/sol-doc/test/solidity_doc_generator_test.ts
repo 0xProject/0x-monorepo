@@ -207,6 +207,13 @@ describe('#SolidityDocGenerator', () => {
         expect(methodWithStructParamAndReturn.returnComment).to.be.equal('RETURN_COMMENT');
         expect(methodWithStructParamAndReturn.parameters[0].comment).to.be.equal('STUFF_COMMENT');
     });
+    it('should document the structs included in a contract', async () => {
+        const doc = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
+            'StructParamAndReturn',
+        ]);
+        expect(doc.structs).to.not.be.undefined();
+        expect(doc.structs.types.length).to.be.equal(1);
+    });
 });
 
 function verifyTokenTransferProxyABIIsDocumented(doc: DocAgnosticFormat, contractName: string): void {
