@@ -11,12 +11,9 @@ import { chaiSetup } from './util/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;
-let solDoc: SolDoc;
+const solDoc = new SolDoc();
 
 describe('#SolidityDocGenerator', () => {
-    before(() => {
-        solDoc = new SolDoc();
-    });
     it('should generate a doc object that matches the devdoc-free TokenTransferProxy fixture', async () => {
         const doc = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
             'TokenTransferProxyNoDevdoc',
