@@ -181,6 +181,32 @@ describe('#SolidityDocGenerator', () => {
         }
         expect(returnType.tupleElements.length).to.equal(2);
     });
+    it('should document a method that has a struct param and return value', async () => {
+        const doc = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
+            'StructParamAndReturn',
+        ]);
+        expect(doc.StructParamAndReturn).to.not.be.undefined();
+        expect(doc.StructParamAndReturn.methods).to.not.be.undefined();
+        let methodWithStructParamAndReturn: SolidityMethod | undefined;
+        for (const method of doc.StructParamAndReturn.methods) {
+            if (method.name === 'methodWithStructParamAndReturn') {
+                methodWithStructParamAndReturn = method;
+            }
+        }
+        if (_.isUndefined(methodWithStructParamAndReturn)) {
+            throw new Error('method should not be undefined');
+        }
+        /**
+         * Solc maps devDoc comments to methods using a method signature. If we incorrectly
+         * generate the methodSignatures, the devDoc comments won't be correctly associated
+         * with their methods and they won't show up in the output. By checking that the comments
+         * are included for a method with structs as params/returns, we are sure that the methodSignature
+         * generation is correct for this case.
+         */
+        expect(methodWithStructParamAndReturn.comment).to.be.equal('DEV_COMMENT');
+        expect(methodWithStructParamAndReturn.returnComment).to.be.equal('RETURN_COMMENT');
+        expect(methodWithStructParamAndReturn.parameters[0].comment).to.be.equal('STUFF_COMMENT');
+    });
 });
 
 function verifyTokenTransferProxyABIIsDocumented(doc: DocAgnosticFormat, contractName: string): void {
