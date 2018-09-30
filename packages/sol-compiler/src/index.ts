@@ -25,4 +25,5 @@ export {
     StandardContractOutput,
     StandardOutput,
     StateMutability,
+    SourceLocation,
 } from 'ethereum-types';

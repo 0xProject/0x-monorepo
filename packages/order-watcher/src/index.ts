@@ -1,4 +1,5 @@
 export { OrderWatcher } from './order_watcher/order_watcher';
+export { ExpirationWatcher } from './order_watcher/expiration_watcher';
 
 export {
     OrderStateValid,

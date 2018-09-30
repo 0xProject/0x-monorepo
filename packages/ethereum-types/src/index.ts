@@ -366,16 +366,18 @@ export type ErrorType =
 export type ErrorSeverity = 'error' | 'warning';
 
 export interface SolcError {
-    sourceLocation?: {
-        file: string;
-        start: number;
-        end: number;
-    };
+    sourceLocation?: SourceLocation;
     type: ErrorType;
     component: 'general' | 'ewasm';
     severity: ErrorSeverity;
     message: string;
     formattedMessage?: string;
+}
+
+export interface SourceLocation {
+    file: string;
+    start: number;
+    end: number;
 }
 
 export interface EvmOutput {
