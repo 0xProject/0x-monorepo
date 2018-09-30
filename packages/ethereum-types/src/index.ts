@@ -1,3 +1,4 @@
+// tslint:disable:max-file-line-count
 import { BigNumber } from 'bignumber.js';
 
 export type JSONRPCErrorCallback = (err: Error | null, result?: JSONRPCResponsePayload) => void;

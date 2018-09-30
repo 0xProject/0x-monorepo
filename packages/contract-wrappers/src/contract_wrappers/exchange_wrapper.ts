@@ -1124,6 +1124,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
         await orderValidationUtils.validateOrderFillableOrThrowAsync(
             exchangeTradeSimulator,
+            this._web3Wrapper.getProvider(),
             signedOrder,
             this.getZRXAssetData(),
             expectedFillTakerTokenAmountIfExists,

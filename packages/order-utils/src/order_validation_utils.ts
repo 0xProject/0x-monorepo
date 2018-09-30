@@ -109,6 +109,31 @@ export class OrderValidationUtils {
             throw new Error(RevertReason.TransferFailed);
         }
     }
+    private static async _validateSignatureIsValidOrThrowAsync(
+        provider: Provider,
+        orderHash: string,
+        signedOrder: SignedOrder,
+    ): Promise<void> {
+        // Note: isValidSignatureAsync can throw if the format is incorrect
+        try {
+            const isValidSignature = await signatureUtils.isValidSignatureAsync(
+                provider,
+                orderHash,
+                signedOrder.signature,
+                signedOrder.makerAddress,
+            );
+            if (!isValidSignature) {
+                throw new Error(OrderError.InvalidSignature);
+            }
+        } catch (e) {
+            throw new Error(OrderError.InvalidSignature);
+        }
+    }
+    private static _validateOrderNotCancelledOrThrow(isCancelled: boolean): void {
+        if (isCancelled) {
+            throw new Error(RevertReason.OrderCancelled);
+        }
+    }
     private static _validateRemainingFillAmountNotZeroOrThrow(
         takerAssetAmount: BigNumber,
         filledTakerTokenAmount: BigNumber,
@@ -134,6 +159,7 @@ export class OrderValidationUtils {
     /**
      * Validate if the supplied order is fillable, and throw if it isn't
      * @param exchangeTradeEmulator ExchangeTradeEmulator instance
+     * @param provider Web3 provider to use for JSON RPC requests
      * @param signedOrder SignedOrder of interest
      * @param zrxAssetData ZRX assetData
      * @param expectedFillTakerTokenAmount If supplied, this call will make sure this amount is fillable.
@@ -141,16 +167,23 @@ export class OrderValidationUtils {
      */
     public async validateOrderFillableOrThrowAsync(
         exchangeTradeEmulator: ExchangeTransferSimulator,
+        provider: Provider,
         signedOrder: SignedOrder,
         zrxAssetData: string,
         expectedFillTakerTokenAmount?: BigNumber,
     ): Promise<void> {
+        if (signedOrder.makerAssetAmount.eq(0) || signedOrder.takerAssetAmount.eq(0)) {
+            throw new Error(RevertReason.OrderUnfillable);
+        }
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+        await OrderValidationUtils._validateSignatureIsValidOrThrowAsync(provider, orderHash, signedOrder);
         const filledTakerTokenAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
         OrderValidationUtils._validateRemainingFillAmountNotZeroOrThrow(
             signedOrder.takerAssetAmount,
             filledTakerTokenAmount,
         );
+        const isCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(orderHash);
+        OrderValidationUtils._validateOrderNotCancelledOrThrow(isCancelled);
         OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
         let fillTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
         if (!_.isUndefined(expectedFillTakerTokenAmount)) {
@@ -188,24 +221,18 @@ export class OrderValidationUtils {
             throw new Error(RevertReason.InvalidTakerAmount);
         }
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        const isValid = await signatureUtils.isValidSignatureAsync(
-            provider,
-            orderHash,
-            signedOrder.signature,
-            signedOrder.makerAddress,
-        );
-        if (!isValid) {
-            throw new Error(OrderError.InvalidSignature);
-        }
+        await OrderValidationUtils._validateSignatureIsValidOrThrowAsync(provider, orderHash, signedOrder);
         const filledTakerTokenAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
         OrderValidationUtils._validateRemainingFillAmountNotZeroOrThrow(
             signedOrder.takerAssetAmount,
             filledTakerTokenAmount,
         );
+        const isCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(orderHash);
+        OrderValidationUtils._validateOrderNotCancelledOrThrow(isCancelled);
+        OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
         if (signedOrder.takerAddress !== constants.NULL_ADDRESS && signedOrder.takerAddress !== takerAddress) {
             throw new Error(RevertReason.InvalidTaker);
         }
-        OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
         const remainingTakerTokenAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
         const desiredFillTakerTokenAmount = remainingTakerTokenAmount.lessThan(fillTakerAssetAmount)
             ? remainingTakerTokenAmount

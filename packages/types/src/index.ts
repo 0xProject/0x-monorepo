@@ -171,6 +171,7 @@ export interface ERC721AssetData {
 // TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {
     OrderUnfillable = 'ORDER_UNFILLABLE',
+    OrderCancelled = 'ORDER_CANCELLED',
     InvalidMaker = 'INVALID_MAKER',
     InvalidTaker = 'INVALID_TAKER',
     InvalidSender = 'INVALID_SENDER',

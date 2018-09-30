@@ -9,6 +9,10 @@
             {
                 "note": "Added `ZeroExTransaction` type for Exchange executeTransaction",
                 "pr": 1102
+            },
+            {
+                "note": "Add `RevertReason.OrderCancelled`",
+                "pr": 1101
             }
         ]
     },

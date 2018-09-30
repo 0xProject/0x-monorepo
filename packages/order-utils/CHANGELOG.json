@@ -14,6 +14,14 @@
             {
                 "note": "Rename `ecSignOrderHashAsync` to `ecSignHashAsync` removing `SignerType` parameter.",
                 "pr": 1102
+            },
+            {
+                "note": "Validate order signature and order cancel state in `validateOrderFillableOrThrowAsync`",
+                "pr": 1101
+            },
+            {
+                "note": "Validate order cancel state in `validateFillOrderThrowIfInvalidAsync`",
+                "pr": 1101
             }
         ]
     },

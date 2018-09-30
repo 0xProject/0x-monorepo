@@ -1,10 +1,18 @@
-import { BigNumber } from '@0xproject/utils';
+import { Order, RevertReason, SignedOrder } from '@0xproject/types';
+import { BigNumber, NULL_BYTES } from '@0xproject/utils';
 import * as chai from 'chai';
 import 'mocha';
 
+import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
+import { orderHashUtils } from '../src/order_hash';
 import { OrderValidationUtils } from '../src/order_validation_utils';
+import { signatureUtils } from '../src/signature_utils';
+import { BalanceAndProxyAllowanceLazyStore } from '../src/store/balance_and_proxy_allowance_lazy_store';
 
 import { chaiSetup } from './utils/chai_setup';
+import { buildMockBalanceFetcher, buildMockOrderFilledFetcher } from './utils/mock_fetchers';
+import { testOrderFactory } from './utils/test_order_factory';
+import { provider } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -65,6 +73,144 @@ describe('OrderValidationUtils', () => {
             // (76564*105762562/676373677) = 0.0007%
             const isRoundingError = OrderValidationUtils.isRoundingErrorFloor(numerator, denominator, target);
             expect(isRoundingError).to.be.false();
+        });
+    });
+    describe('#validateOrderFillableOrThrowAsync', () => {
+        const takerAssetAmount = new BigNumber('1000');
+        const makerAssetAmount = new BigNumber('1000');
+        const makerAddress = '0x5409ed021d9299bf6814279a6a1411a7e866a631';
+        const signOrderAsync = async (order: Order): Promise<SignedOrder> => {
+            const orderHash = orderHashUtils.getOrderHashHex(order);
+            const signature = await signatureUtils.ecSignHashAsync(provider, orderHash, makerAddress);
+            return { ...order, signature };
+        };
+        it('should succeed if an order is valid and fillable', async () => {
+            const takerFilledAmount = new BigNumber(0);
+            const isCancelled = false;
+            const balanceAllowanceFetcher = buildMockBalanceFetcher(takerAssetAmount);
+            const filledCancelledFetcher = buildMockOrderFilledFetcher(takerFilledAmount, isCancelled);
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+            const exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+            const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+            const [order] = testOrderFactory.generateTestSignedOrders(
+                {
+                    makerAddress,
+                    makerAssetAmount,
+                    takerAssetAmount,
+                },
+                1,
+            );
+            const signedOrder = await signOrderAsync(order);
+
+            await orderValidationUtils.validateOrderFillableOrThrowAsync(
+                exchangeTransferSimulator,
+                provider,
+                signedOrder,
+                NULL_BYTES,
+            );
+        });
+        it('should throw if an order is cancelled', async () => {
+            const takerFilledAmount = new BigNumber(0);
+            const isCancelled = true;
+            const balanceAllowanceFetcher = buildMockBalanceFetcher(takerAssetAmount);
+            const filledCancelledFetcher = buildMockOrderFilledFetcher(takerFilledAmount, isCancelled);
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+            const exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+            const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+            const [order] = testOrderFactory.generateTestSignedOrders(
+                {
+                    makerAddress,
+                    makerAssetAmount,
+                    takerAssetAmount,
+                },
+                1,
+            );
+            const signedOrder = await signOrderAsync(order);
+
+            expect(
+                orderValidationUtils.validateOrderFillableOrThrowAsync(
+                    exchangeTransferSimulator,
+                    provider,
+                    signedOrder,
+                    NULL_BYTES,
+                ),
+            ).to.be.rejectedWith(RevertReason.OrderCancelled);
+        });
+        it('should throw if an order is fully filled', async () => {
+            const isCancelled = false;
+            const balanceAllowanceFetcher = buildMockBalanceFetcher(takerAssetAmount);
+            const filledCancelledFetcher = buildMockOrderFilledFetcher(takerAssetAmount, isCancelled);
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+            const exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+            const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+            const [order] = testOrderFactory.generateTestSignedOrders(
+                {
+                    makerAddress,
+                    makerAssetAmount,
+                    takerAssetAmount,
+                },
+                1,
+            );
+            const signedOrder = await signOrderAsync(order);
+
+            expect(
+                orderValidationUtils.validateOrderFillableOrThrowAsync(
+                    exchangeTransferSimulator,
+                    provider,
+                    signedOrder,
+                    NULL_BYTES,
+                ),
+            ).to.be.rejectedWith(RevertReason.OrderUnfillable);
+        });
+        it('should throw if an order maker amount is 0', async () => {
+            const isCancelled = false;
+            const balanceAllowanceFetcher = buildMockBalanceFetcher(takerAssetAmount);
+            const filledCancelledFetcher = buildMockOrderFilledFetcher(takerAssetAmount, isCancelled);
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+            const exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+            const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+            const [order] = testOrderFactory.generateTestSignedOrders(
+                {
+                    makerAddress,
+                    makerAssetAmount: new BigNumber(0),
+                    takerAssetAmount,
+                },
+                1,
+            );
+            const signedOrder = await signOrderAsync(order);
+
+            expect(
+                orderValidationUtils.validateOrderFillableOrThrowAsync(
+                    exchangeTransferSimulator,
+                    provider,
+                    signedOrder,
+                    NULL_BYTES,
+                ),
+            ).to.be.rejectedWith(RevertReason.OrderUnfillable);
+        });
+        it('should throw if an order signature is invalid', async () => {
+            const isCancelled = false;
+            const balanceAllowanceFetcher = buildMockBalanceFetcher(takerAssetAmount);
+            const filledCancelledFetcher = buildMockOrderFilledFetcher(takerAssetAmount, isCancelled);
+            const balanceAndProxyAllowanceLazyStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+            const exchangeTransferSimulator = new ExchangeTransferSimulator(balanceAndProxyAllowanceLazyStore);
+            const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+            const [order] = testOrderFactory.generateTestSignedOrders(
+                {
+                    makerAddress,
+                    makerAssetAmount,
+                    takerAssetAmount,
+                },
+                1,
+            );
+            expect(
+                orderValidationUtils.validateOrderFillableOrThrowAsync(
+                    exchangeTransferSimulator,
+                    provider,
+                    order,
+                    NULL_BYTES,
+                ),
+            ).to.be.rejectedWith(RevertReason.InvalidSignature);
         });
     });
 });
