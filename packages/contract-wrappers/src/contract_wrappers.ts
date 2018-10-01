@@ -58,7 +58,7 @@ export class ContractWrappers {
      */
     public orderValidator: OrderValidatorWrapper;
 
-    private _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new ContractWrappers instance.
      * @param   provider    The Provider instance you would like the 0x.js library to use for interacting with

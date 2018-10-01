@@ -23,7 +23,7 @@ const EIP712_ZEROEX_TRANSACTION_SCHEMA: EIP712Schema = {
  * can submit this to the blockchain. The Exchange context executes as if UserA had directly submitted this transaction.
  */
 export class TransactionEncoder {
-    private _exchangeInstance: ExchangeContract;
+    private readonly _exchangeInstance: ExchangeContract;
     constructor(exchangeInstance: ExchangeContract) {
         this._exchangeInstance = exchangeInstance;
     }
