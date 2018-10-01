@@ -360,7 +360,6 @@ export class Home extends React.Component<HomeProps, HomeState> {
                         >
                             <NestedSidebarMenu
                                 topLevelMenu={topLevelMenu}
-                                menuSubsectionsBySection={{}}
                                 shouldDisplaySectionHeaders={true}
                                 shouldReformatMenuItemNames={false}
                             />

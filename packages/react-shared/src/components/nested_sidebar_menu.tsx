@@ -12,7 +12,7 @@ import { VersionDropDown } from './version_drop_down';
 
 export interface NestedSidebarMenuProps {
     topLevelMenu: { [topLevel: string]: string[] };
-    menuSubsectionsBySection: MenuSubsectionsBySection;
+    menuSubsectionsBySection?: MenuSubsectionsBySection;
     sidebarHeader?: React.ReactNode;
     shouldDisplaySectionHeaders?: boolean;
     onMenuItemClick?: () => void;
@@ -44,6 +44,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
         shouldDisplaySectionHeaders: true,
         onMenuItemClick: _.noop.bind(_),
         shouldReformatMenuItemNames: true,
+        menuSubsectionsBySection: {},
     };
     public render(): React.ReactNode {
         const navigation = _.map(this.props.topLevelMenu, (menuItems: string[], sectionName: string) => {
@@ -122,7 +123,10 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
         return menuItems;
     }
     private _renderMenuItemSubsections(menuItemName: string): React.ReactNode {
-        if (_.isUndefined(this.props.menuSubsectionsBySection[menuItemName])) {
+        if (
+            _.isUndefined(this.props.menuSubsectionsBySection) ||
+            _.isUndefined(this.props.menuSubsectionsBySection[menuItemName])
+        ) {
             return null;
         }
         return this._renderMenuSubsectionsBySection(menuItemName, this.props.menuSubsectionsBySection[menuItemName]);

@@ -148,7 +148,6 @@ export class DocsContentTopBar extends React.Component<DocsContentTopBarProps, D
                 <div className="clearfix pl1">
                     <NestedSidebarMenu
                         topLevelMenu={this.props.menu}
-                        menuSubsectionsBySection={{}}
                         shouldDisplaySectionHeaders={true}
                         shouldReformatMenuItemNames={false}
                         onMenuItemClick={this._onMenuButtonClick.bind(this)}
