@@ -31,7 +31,7 @@ jobs:
             - node_modules/
       - run: >
             if [ -z "$(git diff --name-only development packages/website)" ]; then
-                yarn build --exclude website
+                yarn build:no_website
             else
                 yarn build
             fi
