@@ -26,7 +26,7 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
         return (
             <Link
                 to={this.props.tutorialInfo.location}
-                style={{ textDecoration: 'none' }}
+                className="text-decoration-none"
                 onMouseEnter={this._onHover.bind(this)}
                 onMouseLeave={this._onHoverOff.bind(this)}
             >
