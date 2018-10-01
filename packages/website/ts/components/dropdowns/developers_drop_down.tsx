@@ -6,7 +6,7 @@ import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Link } from 'ts/components/ui/link';
 import { Text } from 'ts/components/ui/text';
-import { Deco, Key, ObjectMap, WebsitePaths } from 'ts/types';
+import { Deco, Key, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 

@@ -472,7 +472,6 @@ export enum Key {
     LiveChat = 'LIVE_CHAT',
     LibrariesAndTools = 'LIBRARIES_AND_TOOLS',
     More = 'MORE',
-    OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
 }
 
 export enum SmartContractDocSections {
