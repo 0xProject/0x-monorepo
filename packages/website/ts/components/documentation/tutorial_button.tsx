@@ -35,10 +35,10 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
                     className="flex relative"
                     style={{
                         borderRadius: 4,
-                        border: `1px solid ${this.state.isHovering ? colors.lightLinkBlue : '#dfdfdf'}`,
+                        border: `1px solid ${this.state.isHovering ? colors.lightLinkBlue : colors.grey325}`,
                         padding: 20,
                         marginBottom: 15,
-                        backgroundColor: this.state.isHovering ? '#e7f1fd' : colors.white,
+                        backgroundColor: this.state.isHovering ? colors.lightestBlue : colors.white,
                     }}
                 >
                     <div className="col col-1 flex items-center sm-pr3">
@@ -48,7 +48,7 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
                         <Text Tag="div" fontSize="18" fontColor={colors.lightLinkBlue} fontWeight="bold">
                             {this.props.translate.get(this.props.tutorialInfo.title as Key, Deco.Cap)}
                         </Text>
-                        <Text Tag="div" fontColor="#555555" fontSize="16">
+                        <Text Tag="div" fontColor={colors.grey750} fontSize="16">
                             {this.props.translate.get(this.props.tutorialInfo.description as Key, Deco.Cap)}
                         </Text>
                     </div>
