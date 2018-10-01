@@ -14,10 +14,10 @@ jobs:
       - restore_cache:
           name: Restore Yarn Package Cache
           keys:
-            - yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-{{ .Branch }}
-            - yarn-packages-master
-            - yarn-packages-
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}
+            - yarn-packages-v1-master
+            - yarn-packages-v1-
       - run:
           name: install-yarn
           command: sudo npm install --global yarn@1.9.4
@@ -26,11 +26,11 @@ jobs:
           command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
       - save_cache:
           name: Save Yarn Package Cache
-          key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
       - save_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: repo-deps-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo
   build:
@@ -43,7 +43,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - repo-deps-{{ .Environment.CIRCLE_SHA1 }}
       - run: >
             if [ -z "$(git diff --name-only development packages/website)" ]; then
                 yarn build:ci:no_website
@@ -51,7 +51,7 @@ jobs:
                 yarn build:ci
             fi
       - save_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: repo-built-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo
   test-contracts-ganache:
@@ -61,7 +61,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - repo-built-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn wsrun test:circleci contracts
   test-contracts-geth:
     docker:
@@ -71,7 +71,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - repo-built-{{ .Environment.CIRCLE_SHA1 }}
       # HACK(albrow): we need to sleep 10 seconds to ensure the devnet is
       # initialized
       - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test contracts
@@ -84,7 +84,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - repo-built-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn test:publish:circleci
   test-doc-generation:
     docker:
@@ -93,7 +93,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - repo-built-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn test:generate_docs:circleci
   test-rest:
     docker:
@@ -102,7 +102,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - repo-built-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn wsrun test:circleci @0xproject/abi-gen
       - run: yarn wsrun test:circleci @0xproject/assert
       - run: yarn wsrun test:circleci @0xproject/base-contract
@@ -191,7 +191,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - repo-deps-{{ .Environment.CIRCLE_SHA1 }}
       - run: cd packages/tslint-config && yarn build:ci
       - run: yarn lerna run lint
       - run: yarn prettier:ci
@@ -202,7 +202,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - repo-built-{{ .Environment.CIRCLE_SHA1 }}
       - run: cd packages/0x.js && yarn build:umd:prod
       - run: yarn bundlesize
   submit-coverage:
@@ -212,7 +212,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - repo-built-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
             - coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
