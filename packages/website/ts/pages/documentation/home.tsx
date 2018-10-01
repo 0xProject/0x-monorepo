@@ -306,7 +306,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
         window.removeEventListener('resize', this._throttledScreenWidthUpdate);
     }
     public render(): React.ReactNode {
-        const mainContainerStyle: React.CSSProperties = {
+        const scrollableContainerStyles: React.CSSProperties = {
             position: 'absolute',
             top: 80,
             left: 0,
@@ -351,7 +351,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                         <DocsLogo height={36} containerStyle={{ paddingTop: 30, paddingBottom: 12 }} />
                         <div
                             style={{
-                                ...mainContainerStyle,
+                                ...scrollableContainerStyles,
                                 paddingTop: 35,
                                 overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
                             }}
@@ -383,7 +383,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                             id={sharedConstants.SCROLL_CONTAINER_ID}
                             className="absolute"
                             style={{
-                                ...mainContainerStyle,
+                                ...scrollableContainerStyles,
                                 paddingTop: 30,
                                 paddingLeft: mainContentPadding,
                                 paddingRight: this.state.isHoveringMainContent
