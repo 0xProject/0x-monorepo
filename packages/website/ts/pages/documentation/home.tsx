@@ -21,14 +21,6 @@ import { Deco, Key, ScreenWidths, TutorialInfo, WebsitePaths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
-interface Package {
-    name: string;
-    description: string;
-    to: string;
-    isExternal?: boolean;
-    shouldOpenInNewTab?: boolean;
-}
-
 const THROTTLE_TIMEOUT = 100;
 const TOP_BAR_HEIGHT = 80;
 const SCROLLER_WIDTH = 4;
@@ -63,6 +55,7 @@ enum Categories {
     Ethereum = 'Ethereum',
     CommunityMaintained = 'Community Maintained',
 }
+// TODO(fabio): Move this to it's own file
 const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
     [Categories.ZeroExProtocol]: [
         {
@@ -274,6 +267,14 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
         },
     ],
 };
+
+interface Package {
+    name: string;
+    description: string;
+    to: string;
+    isExternal?: boolean;
+    shouldOpenInNewTab?: boolean;
+}
 
 export interface HomeProps {
     location: Location;
