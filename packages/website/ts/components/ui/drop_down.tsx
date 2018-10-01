@@ -21,6 +21,7 @@ export interface DropDownProps {
     zDepth?: number;
     activateEvent?: DropdownMouseEvent;
     closeEvent?: DropdownMouseEvent;
+    popoverStyle?: React.CSSProperties;
 }
 
 interface DropDownState {
@@ -34,6 +35,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
         zDepth: 1,
         activateEvent: DropdownMouseEvent.Hover,
         closeEvent: DropdownMouseEvent.Hover,
+        popoverStyle: {},
     };
     private _isHovering: boolean;
     private _popoverCloseCheckIntervalId: number;
@@ -77,6 +79,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
                     useLayerForClickAway={this.props.closeEvent === DropdownMouseEvent.Click}
                     animated={false}
                     zDepth={this.props.zDepth}
+                    style={this.props.popoverStyle}
                 >
                     <div
                         onMouseEnter={this._onHover.bind(this)}

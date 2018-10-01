@@ -458,6 +458,13 @@ export enum Key {
     RocketChat = 'ROCKETCHAT',
     TradeCallToAction = 'TRADE_CALL_TO_ACTION',
     OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
+    BuildARelayer = 'BUILD_A_RELAYER',
+    EthereumDevelopment = 'ETHEREUM_DEVELOPMENT',
+    IntroTutorial = 'INTRO_TUTORIAL',
+    TradingTutorial = 'TRADING_TUTORIAL',
+    ViewAllDocumentation = 'VIEW_ALL_DOCUMENTATION',
+    Sandbox = 'SANDBOX',
+    Github = 'GITHUB',
 }
 
 export enum SmartContractDocSections {
