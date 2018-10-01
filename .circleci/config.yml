@@ -179,6 +179,7 @@ jobs:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn prettier:ci
       - run: yarn lerna run lint
+      - run: yarn bundlesize
   submit-coverage:
     docker:
       - image: circleci/node:9
