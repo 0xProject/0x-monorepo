@@ -35,15 +35,25 @@
         "test": "wsrun test $PKG --fast-exit --serial --exclude-missing",
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break -1; done;",
+        "bundlesize": "bundlesize",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing"
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
         "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types"
     },
+    "bundlesize": [
+        {
+            "path": "packages/0x.js/_bundles/index.min.js"
+        },
+        {
+            "path": "packages/0x.js/_bundles/index.js"
+        }
+    ],
     "devDependencies": {
         "@0x-lerna-fork/lerna": "3.0.0-beta.25",
         "async-child-process": "^1.1.1",
+        "bundlesize": "^0.17.0",
         "coveralls": "^3.0.0",
         "ganache-cli": "6.1.3",
         "lcov-result-merger": "^3.0.0",
