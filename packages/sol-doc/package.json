@@ -13,7 +13,7 @@
         "lint": "tslint --project . --format stylish",
         "clean": "shx rm -rf lib",
         "generate-v1-protocol-docs": "(cd ../contracts/src/1.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts Exchange/Exchange_v1.sol TokenRegistry/TokenRegistry.sol TokenTransferProxy/TokenTransferProxy_v1.sol) > v1.0.0.json",
-        "generate-v2-protocol-docs": "(cd ../contracts/src/2.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts $(cd protocol; ls -C1 */*.sol */interfaces/*.sol) ) > v2.0.0.json",
+        "generate-v2-protocol-docs": "(cd ../contracts/src/2.0.0; node ../../../../node_modules/.bin/sol-doc --contracts-dir . --contracts Exchange/Exchange.sol AssetProxy/ERC20Proxy.sol AssetProxy/ERC721Proxy.sol OrderValidator/OrderValidator.sol Forwarder/Forwarder.sol  AssetProxyOwner/AssetProxyOwner.sol) > v2.0.0.json",
         "deploy-v2-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v2.0.0.json s3://staging-doc-jsons/contracts/",
         "deploy-v1-protocol-docs": "aws --profile 0xproject s3 cp --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json v1.0.0.json s3://staging-doc-jsons/contracts/"
     },
@@ -28,6 +28,7 @@
         "@0xproject/types": "^1.1.2",
         "@0xproject/utils": "^2.0.0",
         "ethereum-types": "^1.0.9",
+        "ethereumjs-util": "^5.1.1",
         "lodash": "^4.17.10",
         "yargs": "^12.0.2"
     },

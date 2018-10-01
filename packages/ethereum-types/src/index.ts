@@ -497,4 +497,4 @@ export interface CompilerOptions {
     compilerSettings?: CompilerSettings;
     contracts?: string[] | '*';
     solcVersion?: string;
-}
+} // tslint:disable:max-file-line-count

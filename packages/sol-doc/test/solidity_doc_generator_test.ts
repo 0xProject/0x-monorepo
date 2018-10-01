@@ -5,16 +5,17 @@ import 'mocha';
 
 import { DocAgnosticFormat, Event, SolidityMethod } from '@0xproject/types';
 
-import { generateSolDocAsync } from '../src/solidity_doc_generator';
+import { SolDoc } from '../src/sol_doc';
 
 import { chaiSetup } from './util/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;
+const solDoc = new SolDoc();
 
 describe('#SolidityDocGenerator', () => {
     it('should generate a doc object that matches the devdoc-free TokenTransferProxy fixture', async () => {
-        const doc = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
+        const doc = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
             'TokenTransferProxyNoDevdoc',
         ]);
         expect(doc).to.not.be.undefined();
@@ -22,8 +23,8 @@ describe('#SolidityDocGenerator', () => {
         verifyTokenTransferProxyABIIsDocumented(doc, 'TokenTransferProxyNoDevdoc');
     });
     const docPromises: Array<Promise<DocAgnosticFormat>> = [
-        generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`),
-        generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, []),
+        solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`),
+        solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, []),
     ];
     docPromises.forEach(docPromise => {
         it('should generate a doc object that matches the TokenTransferProxy fixture with its dependencies', async () => {
@@ -48,7 +49,7 @@ describe('#SolidityDocGenerator', () => {
         });
     });
     it('should generate a doc object that matches the TokenTransferProxy fixture', async () => {
-        const doc: DocAgnosticFormat = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
+        const doc: DocAgnosticFormat = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
             'TokenTransferProxy',
         ]);
         verifyTokenTransferProxyABIIsDocumented(doc, 'TokenTransferProxy');
@@ -56,7 +57,7 @@ describe('#SolidityDocGenerator', () => {
     describe('when processing all the permutations of devdoc stuff that we use in our contracts', () => {
         let doc: DocAgnosticFormat;
         before(async () => {
-            doc = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, ['NatspecEverything']);
+            doc = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, ['NatspecEverything']);
             expect(doc).to.not.be.undefined();
             expect(doc.NatspecEverything).to.not.be.undefined();
         });
@@ -159,7 +160,9 @@ describe('#SolidityDocGenerator', () => {
         });
     });
     it('should document a method that returns multiple values', async () => {
-        const doc = await generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, ['MultipleReturnValues']);
+        const doc = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
+            'MultipleReturnValues',
+        ]);
         expect(doc.MultipleReturnValues).to.not.be.undefined();
         expect(doc.MultipleReturnValues.methods).to.not.be.undefined();
         let methodWithMultipleReturnValues: SolidityMethod | undefined;
@@ -177,6 +180,39 @@ describe('#SolidityDocGenerator', () => {
             throw new Error('returnType.tupleElements should not be undefined');
         }
         expect(returnType.tupleElements.length).to.equal(2);
+    });
+    it('should document a method that has a struct param and return value', async () => {
+        const doc = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
+            'StructParamAndReturn',
+        ]);
+        expect(doc.StructParamAndReturn).to.not.be.undefined();
+        expect(doc.StructParamAndReturn.methods).to.not.be.undefined();
+        let methodWithStructParamAndReturn: SolidityMethod | undefined;
+        for (const method of doc.StructParamAndReturn.methods) {
+            if (method.name === 'methodWithStructParamAndReturn') {
+                methodWithStructParamAndReturn = method;
+            }
+        }
+        if (_.isUndefined(methodWithStructParamAndReturn)) {
+            throw new Error('method should not be undefined');
+        }
+        /**
+         * Solc maps devDoc comments to methods using a method signature. If we incorrectly
+         * generate the methodSignatures, the devDoc comments won't be correctly associated
+         * with their methods and they won't show up in the output. By checking that the comments
+         * are included for a method with structs as params/returns, we are sure that the methodSignature
+         * generation is correct for this case.
+         */
+        expect(methodWithStructParamAndReturn.comment).to.be.equal('DEV_COMMENT');
+        expect(methodWithStructParamAndReturn.returnComment).to.be.equal('RETURN_COMMENT');
+        expect(methodWithStructParamAndReturn.parameters[0].comment).to.be.equal('STUFF_COMMENT');
+    });
+    it('should document the structs included in a contract', async () => {
+        const doc = await solDoc.generateSolDocAsync(`${__dirname}/../../test/fixtures/contracts`, [
+            'StructParamAndReturn',
+        ]);
+        expect(doc.structs).to.not.be.undefined();
+        expect(doc.structs.types.length).to.be.equal(1);
     });
 });
 
