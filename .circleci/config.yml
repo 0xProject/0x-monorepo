@@ -28,7 +28,6 @@ jobs:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-            - node_modules/
             - ~/.cache/yarn
       - save_cache:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
