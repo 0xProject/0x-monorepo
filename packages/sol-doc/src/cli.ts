@@ -30,7 +30,7 @@ const JSON_TAB_WIDTH = 4;
         '46f7e8c4d144d11a72ce5338458ea37b933500d7a65e740cbca6d16e350eaa48': 'FillResults',
         c22239cf0d29df1e6cf1be54f21692a8c0b3a48b9367540d4ffff4608b331ce9: 'OrderInfo',
         c21e9ff31a30941c22e1cb43752114bb467c34dea58947f98966c9030fc8e4a9: 'TraderInfo',
-        '07c2bddc165e0b5005e6244dd4a9771fa61c78c4f42abd687d57567b0768136c': 'MatchedFillResults',
+        '6de3264a1040e027d4bdd29c71e963028238ac4ef060541078a7aced44a4d46f': 'MatchedFillResults',
     };
     const solDoc = new SolDoc();
     const doc = await solDoc.generateSolDocAsync(argv.contractsDir, argv.contracts, customTypeHashToName);

@@ -270,15 +270,15 @@ export class SolDoc {
         }
         return type;
     }
-    private _overwriteStructNames(customTypes: CustomType[], customTypeHashToName?: ObjectMap<string>): CustomType[] {
-        if (_.isUndefined(customTypeHashToName)) {
+    private _overwriteStructNames(customTypes: CustomType[]): CustomType[] {
+        if (_.isUndefined(this._customTypeHashToName)) {
             return customTypes;
         }
         const localCustomTypes = _.cloneDeep(customTypes);
-        _.each(localCustomTypes, customType => {
+        _.each(localCustomTypes, (customType, i) => {
             const hash = SolDoc._generateCustomTypeHash(customType);
             if (!_.isUndefined(this._customTypeHashToName) && !_.isUndefined(this._customTypeHashToName[hash])) {
-                customType.name = this._customTypeHashToName[hash];
+                localCustomTypes[i].name = this._customTypeHashToName[hash];
             }
         });
         return localCustomTypes;
