@@ -26,6 +26,7 @@
         "build": "wsrun build $PKG --fast-exit -r --stages",
         "build:ci": "wsrun build:ci $PKG --fast-exit -r --stages",
         "build:no_website": "wsrun build $PKG --fast-exit -r --stages --exclude @0xproject/website",
+        "build:ci:no_website": "wsrun build:ci $PKG --fast-exit -r --stages --exclude @0xproject/website",
         "build:monorepo_scripts": "PKG=@0xproject/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",

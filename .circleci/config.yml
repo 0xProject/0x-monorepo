@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  build:
+  install-dependencies:
     resource_class: medium+
     docker:
       - image: circleci/node:9
@@ -29,11 +29,26 @@ jobs:
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - node_modules/
+      - save_cache:
+          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo
+  build:
+    resource_class: medium+
+    docker:
+      - image: circleci/node:9
+    environment:
+      CONTRACTS_COMMIT_HASH: '9ed05f5'
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: >
             if [ -z "$(git diff --name-only development packages/website)" ]; then
-                yarn build:no_website
+                yarn build:ci:no_website
             else
-                yarn build
+                yarn build:ci
             fi
       - save_cache:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
@@ -174,7 +189,9 @@ jobs:
     docker:
       - image: circleci/node:9
     steps:
-      - checkout
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn prettier:ci
       - run: yarn lerna run lint
   bundle-size:
@@ -251,7 +268,10 @@ workflows:
   version: 2
   main:
     jobs:
-      - build
+      - install-dependencies
+      - build:
+          requires:
+            - install-dependencies
       - test-contracts-ganache:
           requires:
             - build
@@ -261,7 +281,9 @@ workflows:
       - test-rest:
           requires:
             - build
-      - static-tests
+      - static-tests:
+          requires:
+            - install-dependencies
       - bundle-size:
           requires:
             - build
