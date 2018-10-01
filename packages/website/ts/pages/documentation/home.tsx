@@ -395,6 +395,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                 overflow: this.state.isHoveringMainContent ? 'auto' : 'hidden',
                             }}
                             onMouseEnter={this._onMainContentHover.bind(this)}
+                            onMouseOver={this._onMainContentHover.bind(this)}
                             onMouseLeave={this._onMainContentHoverOff.bind(this)}
                         >
                             <div>
@@ -537,9 +538,11 @@ export class Home extends React.Component<HomeProps, HomeState> {
         });
     }
     private _onMainContentHover(_event: React.FormEvent<HTMLInputElement>): void {
-        this.setState({
-            isHoveringMainContent: true,
-        });
+        if (!this.state.isHoveringMainContent) {
+            this.setState({
+                isHoveringMainContent: true,
+            });
+        }
     }
     private _onMainContentHoverOff(): void {
         this.setState({
