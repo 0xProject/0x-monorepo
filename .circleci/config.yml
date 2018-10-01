@@ -193,8 +193,8 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn prettier:ci
       - run: yarn lerna run lint
+      - run: yarn prettier:ci
   bundle-size:
     docker:
       - image: circleci/node:9
