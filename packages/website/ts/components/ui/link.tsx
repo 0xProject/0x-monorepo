@@ -9,6 +9,11 @@ export interface LinkProps {
     className?: string;
 }
 
+/**
+ * A generic link component which let's the developer render internal & external links, and their associated
+ * behaviors with a single link component. Many times we want a menu including both internal & external links
+ * and this abstracts away the differences of rendering both types of links.
+ */
 export const Link: React.StatelessComponent<LinkProps> = ({
     style,
     className,
