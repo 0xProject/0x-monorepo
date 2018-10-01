@@ -28,6 +28,7 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
                 to={this.props.tutorialInfo.location}
                 className="text-decoration-none"
                 onMouseEnter={this._onHover.bind(this)}
+                onMouseOver={this._onHover.bind(this)}
                 onMouseLeave={this._onHoverOff.bind(this)}
             >
                 <div
@@ -64,6 +65,9 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
         );
     }
     private _onHover(_event: React.FormEvent<HTMLInputElement>): void {
+        if (this.state.isHovering) {
+            return;
+        }
         this.setState({
             isHovering: true,
         });
