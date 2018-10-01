@@ -174,11 +174,18 @@ jobs:
     docker:
       - image: circleci/node:9
     steps:
+      - checkout
+      - run: yarn prettier:ci
+      - run: yarn lerna run lint
+  bundle-size:
+    docker:
+      - image: circleci/node:9
+    working_directory: ~/repo
+    steps:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn prettier:ci
-      - run: yarn lerna run lint
+      - run: cd packages/0x.js && yarn build:umd:prod
       - run: yarn bundlesize
   submit-coverage:
     docker:
@@ -254,7 +261,8 @@ workflows:
       - test-rest:
           requires:
             - build
-      - static-tests:
+      - static-tests
+      - bundle-size:
           requires:
             - build
       - test-publish:
