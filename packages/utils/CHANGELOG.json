@@ -6,7 +6,8 @@
                 "note": "Make abi_decoder compatible with ethers ^4.0.0",
                 "pr": 1069
             }
-        ]
+        ],
+        "timestamp": 1538157789
     },
     {
         "timestamp": 1537907159,

@@ -7,7 +7,8 @@
                     "Add signerAddress normalization to `isValidECSignature` to avoid `invalid address recovery` error if caller supplies a checksummed address",
                 "pr": 1096
             }
-        ]
+        ],
+        "timestamp": 1538157789
     },
     {
         "timestamp": 1537907159,
