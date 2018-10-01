@@ -84,7 +84,7 @@
     "DEVELOP_ON_ETHEREUM": "develop on Ethereum",
     "DEVELOP_ON_ETHEREUM_DESCRIPTION": "Learn how to build your own 0x relayer from scratch",
     "ORDER_BASICS": "0x order basics",
-    "ORDER_BASICS_DESCRIPTION": "Tutorial on how to create, validate and fill an order over 0x protocol",
+    "ORDER_BASICS_DESCRIPTION": "Tutorial on how to create, validate and fill an order using 0x",
     "USE_SHARED_LIQUIDITY": "use shared liquidity",
     "USE_SHARED_LIQUIDITY_DESCRIPTION": "Learn how to tap into shared liquidity using the Standard Relayer API",
     "VIEW_ALL_DOCUMENTATION": "view all documentation",
