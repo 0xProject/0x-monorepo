@@ -4,10 +4,10 @@ import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
-import { TestConstantsContract } from '../../generated_contract_wrappers/test_constants';
-import { TestLibsContract } from '../../generated_contract_wrappers/test_libs';
+import { TestConstantsContract } from '../../generated-wrappers/test_constants';
+import { TestLibsContract } from '../../generated-wrappers/test_libs';
+import { artifacts } from '../../src/artifacts';
 import { addressUtils } from '../utils/address_utils';
-import { artifacts } from '../utils/artifacts';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { OrderFactory } from '../utils/order_factory';

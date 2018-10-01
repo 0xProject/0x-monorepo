@@ -5,12 +5,12 @@ import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
-import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
-import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
-import { ExchangeWrapperContract } from '../../generated_contract_wrappers/exchange_wrapper';
-import { WhitelistContract } from '../../generated_contract_wrappers/whitelist';
-import { artifacts } from '../utils/artifacts';
+import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
+import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
+import { ExchangeContract } from '../../generated-wrappers/exchange';
+import { ExchangeWrapperContract } from '../../generated-wrappers/exchange_wrapper';
+import { WhitelistContract } from '../../generated-wrappers/whitelist';
+import { artifacts } from '../../src/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';

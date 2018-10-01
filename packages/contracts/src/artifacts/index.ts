@@ -1,0 +1,78 @@
+import { ContractArtifact } from 'ethereum-types';
+
+import * as AssetProxyOwner from '../../generated-artifacts/AssetProxyOwner.json';
+import * as DummyERC20Token from '../../generated-artifacts/DummyERC20Token.json';
+import * as DummyERC721Receiver from '../../generated-artifacts/DummyERC721Receiver.json';
+import * as DummyERC721Token from '../../generated-artifacts/DummyERC721Token.json';
+import * as DummyMultipleReturnERC20Token from '../../generated-artifacts/DummyMultipleReturnERC20Token.json';
+import * as DummyNoReturnERC20Token from '../../generated-artifacts/DummyNoReturnERC20Token.json';
+import * as ERC20Proxy from '../../generated-artifacts/ERC20Proxy.json';
+import * as ERC20Token from '../../generated-artifacts/ERC20Token.json';
+import * as ERC721Proxy from '../../generated-artifacts/ERC721Proxy.json';
+import * as ERC721Token from '../../generated-artifacts/ERC721Token.json';
+import * as Exchange from '../../generated-artifacts/Exchange.json';
+import * as ExchangeWrapper from '../../generated-artifacts/ExchangeWrapper.json';
+import * as Forwarder from '../../generated-artifacts/Forwarder.json';
+import * as IAssetData from '../../generated-artifacts/IAssetData.json';
+import * as IAssetProxy from '../../generated-artifacts/IAssetProxy.json';
+import * as InvalidERC721Receiver from '../../generated-artifacts/InvalidERC721Receiver.json';
+import * as IValidator from '../../generated-artifacts/IValidator.json';
+import * as IWallet from '../../generated-artifacts/IWallet.json';
+import * as MixinAuthorizable from '../../generated-artifacts/MixinAuthorizable.json';
+import * as MultiSigWallet from '../../generated-artifacts/MultiSigWallet.json';
+import * as MultiSigWalletWithTimeLock from '../../generated-artifacts/MultiSigWalletWithTimeLock.json';
+import * as OrderValidator from '../../generated-artifacts/OrderValidator.json';
+import * as ReentrantERC20Token from '../../generated-artifacts/ReentrantERC20Token.json';
+import * as TestAssetProxyDispatcher from '../../generated-artifacts/TestAssetProxyDispatcher.json';
+import * as TestAssetProxyOwner from '../../generated-artifacts/TestAssetProxyOwner.json';
+import * as TestConstants from '../../generated-artifacts/TestConstants.json';
+import * as TestExchangeInternals from '../../generated-artifacts/TestExchangeInternals.json';
+import * as TestLibBytes from '../../generated-artifacts/TestLibBytes.json';
+import * as TestLibs from '../../generated-artifacts/TestLibs.json';
+import * as TestSignatureValidator from '../../generated-artifacts/TestSignatureValidator.json';
+import * as TestStaticCallReceiver from '../../generated-artifacts/TestStaticCallReceiver.json';
+import * as Validator from '../../generated-artifacts/Validator.json';
+import * as Wallet from '../../generated-artifacts/Wallet.json';
+import * as WETH9 from '../../generated-artifacts/WETH9.json';
+import * as Whitelist from '../../generated-artifacts/Whitelist.json';
+import * as ZRXToken from '../../generated-artifacts/ZRXToken.json';
+
+// TODO(albrow): Do we need to export all of these?
+export const artifacts = {
+    AssetProxyOwner: (AssetProxyOwner as any) as ContractArtifact,
+    DummyERC20Token: (DummyERC20Token as any) as ContractArtifact,
+    DummyERC721Receiver: (DummyERC721Receiver as any) as ContractArtifact,
+    DummyERC721Token: (DummyERC721Token as any) as ContractArtifact,
+    DummyMultipleReturnERC20Token: (DummyMultipleReturnERC20Token as any) as ContractArtifact,
+    DummyNoReturnERC20Token: (DummyNoReturnERC20Token as any) as ContractArtifact,
+    ERC20Proxy: (ERC20Proxy as any) as ContractArtifact,
+    ERC20Token: (ERC20Token as any) as ContractArtifact,
+    ERC721Proxy: (ERC721Proxy as any) as ContractArtifact,
+    ERC721Token: (ERC721Token as any) as ContractArtifact,
+    Exchange: (Exchange as any) as ContractArtifact,
+    ExchangeWrapper: (ExchangeWrapper as any) as ContractArtifact,
+    Forwarder: (Forwarder as any) as ContractArtifact,
+    IAssetData: (IAssetData as any) as ContractArtifact,
+    IAssetProxy: (IAssetProxy as any) as ContractArtifact,
+    IValidator: (IValidator as any) as ContractArtifact,
+    IWallet: (IWallet as any) as ContractArtifact,
+    InvalidERC721Receiver: (InvalidERC721Receiver as any) as ContractArtifact,
+    MixinAuthorizable: (MixinAuthorizable as any) as ContractArtifact,
+    MultiSigWallet: (MultiSigWallet as any) as ContractArtifact,
+    MultiSigWalletWithTimeLock: (MultiSigWalletWithTimeLock as any) as ContractArtifact,
+    OrderValidator: (OrderValidator as any) as ContractArtifact,
+    ReentrantERC20Token: (ReentrantERC20Token as any) as ContractArtifact,
+    TestAssetProxyDispatcher: (TestAssetProxyDispatcher as any) as ContractArtifact,
+    TestAssetProxyOwner: (TestAssetProxyOwner as any) as ContractArtifact,
+    TestConstants: (TestConstants as any) as ContractArtifact,
+    TestExchangeInternals: (TestExchangeInternals as any) as ContractArtifact,
+    TestLibBytes: (TestLibBytes as any) as ContractArtifact,
+    TestLibs: (TestLibs as any) as ContractArtifact,
+    TestSignatureValidator: (TestSignatureValidator as any) as ContractArtifact,
+    TestStaticCallReceiver: (TestStaticCallReceiver as any) as ContractArtifact,
+    Validator: (Validator as any) as ContractArtifact,
+    WETH9: (WETH9 as any) as ContractArtifact,
+    Wallet: (Wallet as any) as ContractArtifact,
+    Whitelist: (Whitelist as any) as ContractArtifact,
+    ZRXToken: (ZRXToken as any) as ContractArtifact,
+};

@@ -8,18 +8,15 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import {
-    DummyERC20TokenContract,
-    DummyERC20TokenTransferEventArgs,
-} from '../../generated_contract_wrappers/dummy_erc20_token';
-import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
-import { DummyNoReturnERC20TokenContract } from '../../generated_contract_wrappers/dummy_no_return_erc20_token';
-import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
-import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
-import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated_contract_wrappers/exchange';
-import { ReentrantERC20TokenContract } from '../../generated_contract_wrappers/reentrant_erc20_token';
-import { TestStaticCallReceiverContract } from '../../generated_contract_wrappers/test_static_call_receiver';
-import { artifacts } from '../utils/artifacts';
+import { DummyERC20TokenContract, DummyERC20TokenTransferEventArgs } from '../../generated-wrappers/dummy_erc20_token';
+import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
+import { DummyNoReturnERC20TokenContract } from '../../generated-wrappers/dummy_no_return_erc20_token';
+import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
+import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
+import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated-wrappers/exchange';
+import { ReentrantERC20TokenContract } from '../../generated-wrappers/reentrant_erc20_token';
+import { TestStaticCallReceiverContract } from '../../generated-wrappers/test_static_call_receiver';
+import { artifacts } from '../../src/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
 import { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';

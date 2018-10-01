@@ -3,8 +3,8 @@ import { RevertReason } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
-import { artifacts } from '../utils/artifacts';
+import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
+import { artifacts } from '../../src/artifacts';
 import { expectContractCallFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';

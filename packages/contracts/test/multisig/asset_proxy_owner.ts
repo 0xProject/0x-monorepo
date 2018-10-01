@@ -10,10 +10,10 @@ import {
     AssetProxyOwnerExecutionEventArgs,
     AssetProxyOwnerExecutionFailureEventArgs,
     AssetProxyOwnerSubmissionEventArgs,
-} from '../../generated_contract_wrappers/asset_proxy_owner';
-import { MixinAuthorizableContract } from '../../generated_contract_wrappers/mixin_authorizable';
-import { TestAssetProxyOwnerContract } from '../../generated_contract_wrappers/test_asset_proxy_owner';
-import { artifacts } from '../utils/artifacts';
+} from '../../generated-wrappers/asset_proxy_owner';
+import { MixinAuthorizableContract } from '../../generated-wrappers/mixin_authorizable';
+import { TestAssetProxyOwnerContract } from '../../generated-wrappers/test_asset_proxy_owner';
+import { artifacts } from '../../src/artifacts';
 import {
     expectContractCallFailedAsync,
     expectContractCreationFailedAsync,
