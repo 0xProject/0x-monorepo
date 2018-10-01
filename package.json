@@ -45,9 +45,6 @@
     "bundlesize": [
         {
             "path": "packages/0x.js/_bundles/index.min.js"
-        },
-        {
-            "path": "packages/0x.js/_bundles/index.js"
         }
     ],
     "devDependencies": {
