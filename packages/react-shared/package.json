@@ -10,6 +10,7 @@
     "scripts": {
         "lint": "tslint --project .",
         "build": "tsc",
+        "build:ci": "yarn build",
         "watch_without_deps": "tsc -w",
         "clean": "shx rm -rf lib"
     },

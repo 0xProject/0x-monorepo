@@ -9,6 +9,7 @@
     "main": "server.js",
     "scripts": {
         "build": "node ../../node_modules/gulp/bin/gulp.js build",
+        "build:ci": "yarn build",
         "dev": "node ../../node_modules/gulp/bin/gulp.js run",
         "start": "node ./server/server.js",
         "lint": "tslint --project .",

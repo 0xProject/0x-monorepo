@@ -9,6 +9,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "yarn pre_build && tsc -b",
+        "build:ci": "yarn build",
         "pre_build": "run-s update_contract_fixtures",
         "update_contract_fixtures": "copyfiles 'test/fixtures/contracts/**/*' ./lib",
         "test": "yarn run_mocha",

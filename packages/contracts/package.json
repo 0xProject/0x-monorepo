@@ -12,6 +12,7 @@
     },
     "scripts": {
         "build": "yarn pre_build && tsc -b",
+        "build:ci": "yarn build",
         "pre_build": "run-s compile copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles -u 4 '../migrations/artifacts/development/**/*' ./lib/artifacts;",
         "test": "yarn run_mocha",

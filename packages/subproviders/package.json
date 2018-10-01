@@ -9,6 +9,7 @@
     "license": "Apache-2.0",
     "scripts": {
         "build": "tsc -b",
+        "build:ci": "yarn build",
         "clean": "shx rm -rf lib generated_docs",
         "lint": "tslint --project .",
         "run_mocha_unit": "mocha --require source-map-support/register --require make-promises-safe lib/test/unit/**/*_test.js --timeout 10000 --bail --exit",

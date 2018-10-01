@@ -16,6 +16,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build": "yarn build:all",
+        "build:ci": "yarn build:commonjs",
         "build:all": "run-p build:umd:prod build:commonjs",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
         "test:circleci": "run-s test:coverage",
