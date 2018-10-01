@@ -192,6 +192,7 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: cd packages/tslint-config && yarn build:ci
       - run: yarn lerna run lint
       - run: yarn prettier:ci
   bundle-size:
