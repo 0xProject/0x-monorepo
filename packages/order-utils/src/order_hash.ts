@@ -8,7 +8,7 @@ import { EIP712Schema, EIP712Types } from './types';
 
 const INVALID_TAKER_FORMAT = 'instance.takerAddress is not of a type(s) string';
 
-const EIP712_ORDER_SCHEMA: EIP712Schema = {
+export const EIP712_ORDER_SCHEMA: EIP712Schema = {
     name: 'Order',
     parameters: [
         { name: 'makerAddress', type: EIP712Types.Address },

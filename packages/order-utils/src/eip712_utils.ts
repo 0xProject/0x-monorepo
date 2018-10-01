@@ -5,11 +5,11 @@ import { crypto } from './crypto';
 import { EIP712Schema, EIP712Types } from './types';
 
 const EIP191_PREFIX = '\x19\x01';
-const EIP712_DOMAIN_NAME = '0x Protocol';
-const EIP712_DOMAIN_VERSION = '2';
 const EIP712_VALUE_LENGTH = 32;
+export const EIP712_DOMAIN_NAME = '0x Protocol';
+export const EIP712_DOMAIN_VERSION = '2';
 
-const EIP712_DOMAIN_SCHEMA: EIP712Schema = {
+export const EIP712_DOMAIN_SCHEMA: EIP712Schema = {
     name: 'EIP712Domain',
     parameters: [
         { name: 'name', type: EIP712Types.String },

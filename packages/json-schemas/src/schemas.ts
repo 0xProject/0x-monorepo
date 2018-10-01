@@ -2,6 +2,7 @@ import { addressSchema, hexSchema, numberSchema } from '../schemas/basic_type_sc
 import { blockParamSchema, blockRangeSchema } from '../schemas/block_range_schema';
 import { callDataSchema } from '../schemas/call_data_schema';
 import { ecSignatureParameterSchema, ecSignatureSchema } from '../schemas/ec_signature_schema';
+import { eip712TypedData } from '../schemas/eip712_typed_data';
 import { indexFilterValuesSchema } from '../schemas/index_filter_values_schema';
 import { orderCancellationRequestsSchema } from '../schemas/order_cancel_schema';
 import { orderFillOrKillRequestsSchema } from '../schemas/order_fill_or_kill_requests_schema';
@@ -39,6 +40,7 @@ export const schemas = {
     hexSchema,
     ecSignatureParameterSchema,
     ecSignatureSchema,
+    eip712TypedData,
     indexFilterValuesSchema,
     orderCancellationRequestsSchema,
     orderFillOrKillRequestsSchema,

@@ -1,12 +1,13 @@
-import { SignerType } from '@0xproject/types';
+import { Order, SignatureType, SignerType } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { JSONRPCErrorCallback, JSONRPCRequestPayload } from 'ethereum-types';
+import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import 'mocha';
-import * as Sinon from 'sinon';
 
-import { generatePseudoRandomSalt } from '../src';
+import { generatePseudoRandomSalt, orderHashUtils } from '../src';
+import { constants } from '../src/constants';
 import { signatureUtils } from '../src/signature_utils';
 
 import { chaiSetup } from './utils/chai_setup';
@@ -115,19 +116,53 @@ describe('Signature utils', () => {
             expect(salt.lessThan(twoPow256)).to.be.true();
         });
     });
+    describe('#ecSignOrderAsync', () => {
+        let makerAddress: string;
+        const fakeExchangeContractAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
+        let order: Order;
+        before(async () => {
+            const availableAddreses = await web3Wrapper.getAvailableAddressesAsync();
+            makerAddress = availableAddreses[0];
+            order = {
+                makerAddress,
+                takerAddress: constants.NULL_ADDRESS,
+                senderAddress: constants.NULL_ADDRESS,
+                feeRecipientAddress: constants.NULL_ADDRESS,
+                makerAssetData: constants.NULL_ADDRESS,
+                takerAssetData: constants.NULL_ADDRESS,
+                exchangeAddress: fakeExchangeContractAddress,
+                salt: new BigNumber(0),
+                makerFee: new BigNumber(0),
+                takerFee: new BigNumber(0),
+                makerAssetAmount: new BigNumber(0),
+                takerAssetAmount: new BigNumber(0),
+                expirationTimeSeconds: new BigNumber(0),
+            };
+        });
+        it('should result in the same signature as signing order hash without prefix', async () => {
+            const orderHashHex = orderHashUtils.getOrderHashHex(order);
+            const sig = ethUtil.ecsign(
+                ethUtil.toBuffer(orderHashHex),
+                Buffer.from('F2F48EE19680706196E2E339E5DA3491186E0C4C5030670656B0E0164837257D', 'hex'),
+            );
+            const signatureBuffer = Buffer.concat([
+                ethUtil.toBuffer(sig.v),
+                ethUtil.toBuffer(sig.r),
+                ethUtil.toBuffer(sig.s),
+                ethUtil.toBuffer(SignatureType.EIP712),
+            ]);
+            const signatureHex = `0x${signatureBuffer.toString('hex')}`;
+            const eip712Signature = await signatureUtils.ecSignOrderAsync(provider, order, makerAddress);
+            expect(signatureHex).to.eq(eip712Signature);
+        });
+    });
     describe('#ecSignOrderHashAsync', () => {
-        let stubs: Sinon.SinonStub[] = [];
         let makerAddress: string;
         before(async () => {
             const availableAddreses = await web3Wrapper.getAvailableAddressesAsync();
             makerAddress = availableAddreses[0];
         });
-        afterEach(() => {
-            // clean up any stubs after the test has completed
-            _.each(stubs, s => s.restore());
-            stubs = [];
-        });
-        it('Should return the correct Signature', async () => {
+        it('should return the correct Signature', async () => {
             const orderHash = '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0';
             const expectedSignature =
                 '0x1b61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403';
