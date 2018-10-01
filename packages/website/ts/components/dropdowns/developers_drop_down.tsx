@@ -2,9 +2,11 @@ import { colors } from '@0xproject/react-shared';
 import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Link } from 'ts/components/ui/link';
-import { Deco, Key, WebsitePaths } from 'ts/types';
+import { Text } from 'ts/components/ui/text';
+import { Deco, Key, ObjectMap, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -66,9 +68,11 @@ interface DevelopersDropDownState {}
 export class DevelopersDropDown extends React.Component<DevelopersDropDownProps, DevelopersDropDownState> {
     public render(): React.ReactNode {
         const activeNode = (
-            <div className="flex relative" style={{ color: this.props.menuIconStyle.color }}>
-                <div style={{ paddingRight: 10 }}>{this.props.translate.get(Key.Developers, Deco.Cap)}</div>
-            </div>
+            <Container className="flex relative" paddingRight="10">
+                <Text fontColor={this.props.menuIconStyle.color}>
+                    {this.props.translate.get(Key.Developers, Deco.Cap)}
+                </Text>
+            </Container>
         );
         return (
             <DropDown
@@ -84,13 +88,13 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
     private _renderDropdownMenu(): React.ReactNode {
         const dropdownMenu = (
             <div>
-                <div style={{ padding: '1.75rem' }}>
+                <Container padding="1.75rem">
                     {this._renderTitle('Getting started')}
                     <div className="flex">
                         <div className="pr4 mr2">{this._renderLinkSection(gettingStartedKeyToLinkInfo1)}</div>
                         <div>{this._renderLinkSection(gettingStartedKeyToLinkInfo2)}</div>
                     </div>
-                </div>
+                </Container>
                 <div
                     style={{
                         width: '100%',
@@ -110,7 +114,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                 </div>
                 <div
                     style={{
-                        padding: '1.125rem',
+                        padding: '0.8rem',
                         textAlign: 'center',
                         backgroundColor: colors.lightBgGrey,
                         borderBottomLeftRadius: 4,

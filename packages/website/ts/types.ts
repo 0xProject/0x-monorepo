@@ -457,6 +457,7 @@ export enum Key {
     Home = 'HOME',
     RocketChat = 'ROCKETCHAT',
     TradeCallToAction = 'TRADE_CALL_TO_ACTION',
+    OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
     BuildARelayer = 'BUILD_A_RELAYER',
     BuildARelayerDescription = 'BUILD_A_RELAYER_DESCRIPTION',
     DevelopOnEthereum = 'DEVELOP_ON_ETHEREUM',
