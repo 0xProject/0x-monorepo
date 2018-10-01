@@ -11414,7 +11414,7 @@ react-router@^4.2.0:
 
 react-scroll@0xproject/react-scroll#similar-to-pr-330:
   version "1.7.10"
-  resolved "https://codeload.github.com/0xproject/react-scroll/tar.gz/f28a6c51800152fde11e7362383992aa60a15703"
+  resolved "https://codeload.github.com/0xproject/react-scroll/tar.gz/0f625b270d7e966313cac8b811c0ae807b37e170"
   dependencies:
     lodash.throttle "^4.1.1"
     prop-types "^15.5.8"
