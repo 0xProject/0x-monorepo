@@ -1,11 +1,5 @@
-import { DocsInfo, DocsMenu } from '@0xproject/react-docs';
-import {
-    colors,
-    constants as sharedConstants,
-    MenuSubsectionsBySection,
-    NestedSidebarMenu,
-    Styles,
-} from '@0xproject/react-shared';
+import { DocsMenu } from '@0xproject/react-docs';
+import { colors, NestedSidebarMenu } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import * as React from 'react';

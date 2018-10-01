@@ -1,6 +1,5 @@
 import {
     colors,
-    constants,
     constants as sharedConstants,
     MarkdownLinkBlock,
     NestedSidebarMenu,
@@ -330,9 +329,6 @@ export class Home extends React.Component<HomeProps, HomeState> {
                 pkg => pkg.name,
             ),
         };
-        _.each(TUTORIALS, tutorialInfo => {
-            const id = sharedUtils.getIdFromName(this.props.translate.get(tutorialInfo.title as Key, Deco.Cap));
-        });
         return (
             <Container
                 className="flex items-center overflow-hidden"
@@ -549,4 +545,4 @@ export class Home extends React.Component<HomeProps, HomeState> {
             isHoveringMainContent: false,
         });
     }
-}
+} // tslint:disable:max-file-line-count
