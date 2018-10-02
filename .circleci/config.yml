@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  install-dependencies:
+  build:
     resource_class: medium+
     docker:
       - image: circleci/node:9
@@ -17,21 +17,6 @@ jobs:
       - run:
           name: yarn
           command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
-      - save_cache:
-          key: repo-deps-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo
-  build:
-    resource_class: medium+
-    docker:
-      - image: circleci/node:9
-    environment:
-      CONTRACTS_COMMIT_HASH: '9ed05f5'
-    working_directory: ~/repo
-    steps:
-      - restore_cache:
-          keys:
-            - repo-deps-{{ .Environment.CIRCLE_SHA1 }}
       - run: >
             if [ -z "$(git diff --name-only development packages/website)" ]; then
                 yarn build:ci:no_website
@@ -179,18 +164,9 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - repo-deps-{{ .Environment.CIRCLE_SHA1 }}
-      - run: cd packages/tslint-config && yarn build:ci
-      - run: yarn lerna run lint
-      - run: yarn prettier:ci
-  bundle-size:
-    docker:
-      - image: circleci/node:9
-    working_directory: ~/repo
-    steps:
-      - restore_cache:
-          keys:
             - repo-built-{{ .Environment.CIRCLE_SHA1 }}
+      - run: yarn lint
+      - run: yarn prettier:ci
       - run: cd packages/0x.js && yarn build:umd:prod
       - run: yarn bundlesize
   submit-coverage:
@@ -257,10 +233,7 @@ workflows:
   version: 2
   main:
     jobs:
-      - install-dependencies
-      - build:
-          requires:
-            - install-dependencies
+      - build
       - test-contracts-ganache:
           requires:
             - build
@@ -271,9 +244,6 @@ workflows:
           requires:
             - build
       - static-tests:
-          requires:
-            - install-dependencies
-      - bundle-size:
           requires:
             - build
       - test-publish:
