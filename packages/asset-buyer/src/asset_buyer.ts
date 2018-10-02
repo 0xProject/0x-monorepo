@@ -1,4 +1,3 @@
-import { HttpClient } from '@0xproject/connect';
 import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/order-utils';
@@ -239,6 +238,7 @@ export class AssetBuyer {
         const shouldRefresh =
             _.isUndefined(ordersEntryIfExists) ||
             shouldForceOrderRefresh ||
+            // tslint:disable:restrict-plus-operands
             ordersEntryIfExists.lastRefreshTime + this.orderRefreshIntervalMs < Date.now();
         if (!shouldRefresh) {
             const result = ordersEntryIfExists.ordersAndFillableAmounts;
