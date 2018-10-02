@@ -471,7 +471,10 @@ export enum Key {
     Github = 'GITHUB',
     LiveChat = 'LIVE_CHAT',
     LibrariesAndTools = 'LIBRARIES_AND_TOOLS',
+    LibrariesAndToolsDescription = 'LIBRARIES_AND_TOOLS_DESCRIPTION',
     More = 'MORE',
+    StartBuildOn0x = 'START_BUILDING_ON_0X',
+    StartBuildOn0xDescription = 'START_BUILDING_ON_0X_DESCRIPTION',
 }
 
 export enum SmartContractDocSections {

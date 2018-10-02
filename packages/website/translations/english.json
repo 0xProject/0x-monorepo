@@ -95,6 +95,8 @@
     "GITHUB": "github",
     "LIVE_CHAT": "live chat",
     "LIBRARIES_AND_TOOLS": "Libraries & Tools",
+    "LIBRARIES_AND_TOOLS_DESCRIPTION":
+        "A list of available tools maintained by the 0x core developers and wider community for building on top of 0x Protocol and Ethereum",
     "MORE": "more",
     "OUR_MISSION_AND_VALUES": "our mission & values",
     "GAMING_AND_COLLECTABLES": "gaming & collectables",
@@ -102,5 +104,8 @@
         "artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality to give access and the ability to build marketplaces for NFT trading.",
     "ORDER_BOOKS": "order books",
     "ORDER_BOOKS_DESCRIPTION":
-        "there are thousands of decentralized apps that have native utility tokens. 0x provides market makers and professional exchanges an ability to host order books to facilitate the exchange of these assets."
+        "there are thousands of decentralized apps that have native utility tokens. 0x provides market makers and professional exchanges an ability to host order books to facilitate the exchange of these assets.",
+    "START_BUILDING_ON_0X": "Start building on 0x",
+    "START_BUILDING_ON_0X_DESCRIPTION":
+        "Follow one of our \"Getting started\" guides to learn more about building ontop of 0x."
 }

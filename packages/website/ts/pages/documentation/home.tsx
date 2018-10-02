@@ -395,10 +395,10 @@ export class Home extends React.Component<HomeProps, HomeState> {
                             onMouseLeave={this._onMainContentHoverOff.bind(this)}
                         >
                             <div>
-                                {this._renderSectionTitle('Start building on 0x')}
+                                {this._renderSectionTitle(this.props.translate.get(Key.StartBuildOn0x, Deco.Cap))}
                                 <Container paddingTop="12px">
                                     {this._renderSectionDescription(
-                                        'Follow one of our "Getting started" guides to learn more about building ontop of 0x.',
+                                        this.props.translate.get(Key.StartBuildOn0xDescription, Deco.Cap),
                                     )}
                                     <Container marginTop="36px">
                                         {_.map(TUTORIALS, tutorialInfo => (
@@ -423,7 +423,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                 )}
                                 <Container paddingTop="12px">
                                     {this._renderSectionDescription(
-                                        'A list of available tools maintained by the 0x core developers and wider community for building on top of 0x Protocol and Ethereum',
+                                        this.props.translate.get(Key.LibrariesAndToolsDescription, Deco.Cap),
                                     )}
                                     <Container marginTop="36px">
                                         {_.map(CATEGORY_TO_PACKAGES, (pkgs, category) =>
