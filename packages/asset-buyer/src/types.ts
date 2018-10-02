@@ -105,9 +105,7 @@ export enum AssetBuyerManagerError {
     AssetBuyerNotFound = 'ASSET_BUYER_NOT_FOUND',
 }
 
-export interface AssetBuyerOrdersAndFillableAmounts {
+export interface OrdersAndFillableAmounts {
     orders: SignedOrder[];
-    feeOrders: SignedOrder[];
     remainingFillableMakerAssetAmounts: BigNumber[];
-    remainingFillableFeeAmounts: BigNumber[];
 }

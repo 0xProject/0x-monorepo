@@ -3,24 +3,23 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { AssetBuyerError, AssetBuyerOrdersAndFillableAmounts, BuyQuote } from '../types';
+import { AssetBuyerError, BuyQuote, OrdersAndFillableAmounts } from '../types';
 
 import { orderUtils } from './order_utils';
 
 // Calculates a buy quote for orders that have WETH as the takerAsset
 export const buyQuoteCalculator = {
     calculate(
-        ordersAndFillableAmounts: AssetBuyerOrdersAndFillableAmounts,
+        ordersAndFillableAmounts: OrdersAndFillableAmounts,
+        feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
         assetBuyAmount: BigNumber,
         feePercentage: number,
         slippagePercentage: number,
     ): BuyQuote {
-        const {
-            orders,
-            feeOrders,
-            remainingFillableMakerAssetAmounts,
-            remainingFillableFeeAmounts,
-        } = ordersAndFillableAmounts;
+        const orders = ordersAndFillableAmounts.orders;
+        const remainingFillableMakerAssetAmounts = ordersAndFillableAmounts.remainingFillableMakerAssetAmounts;
+        const feeOrders = feeOrdersAndFillableAmounts.orders;
+        const remainingFillableFeeAmounts = feeOrdersAndFillableAmounts.remainingFillableMakerAssetAmounts;
         const slippageBufferAmount = assetBuyAmount.mul(slippagePercentage).round();
         const {
             resultOrders,

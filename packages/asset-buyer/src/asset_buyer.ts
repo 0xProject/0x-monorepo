@@ -1,6 +1,8 @@
+import { HttpClient } from '@0xproject/connect';
 import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/order-utils';
+import { ObjectMap } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -12,12 +14,12 @@ import { StandardRelayerAPIOrderProvider } from './order_providers/standard_rela
 import {
     AssetBuyerError,
     AssetBuyerOpts,
-    AssetBuyerOrdersAndFillableAmounts,
     BuyQuote,
     BuyQuoteExecutionOpts,
     BuyQuoteRequestOpts,
     OrderProvider,
     OrderProviderResponse,
+    OrdersAndFillableAmounts,
 } from './types';
 
 import { assert } from './utils/assert';
@@ -25,16 +27,39 @@ import { assetDataUtils } from './utils/asset_data_utils';
 import { buyQuoteCalculator } from './utils/buy_quote_calculator';
 import { orderProviderResponseProcessor } from './utils/order_provider_response_processor';
 
+interface OrdersEntry {
+    ordersAndFillableAmounts: OrdersAndFillableAmounts;
+    lastRefreshTime: number;
+}
+
 export class AssetBuyer {
     public readonly provider: Provider;
-    public readonly assetData: string;
     public readonly orderProvider: OrderProvider;
     public readonly networkId: number;
     public readonly orderRefreshIntervalMs: number;
     public readonly expiryBufferSeconds: number;
     private readonly _contractWrappers: ContractWrappers;
-    private _lastRefreshTimeIfExists?: number;
-    private _currentOrdersAndFillableAmountsIfExists?: AssetBuyerOrdersAndFillableAmounts;
+    // cache of orders along with the time last updated keyed by assetData
+    private readonly _ordersEntryMap: ObjectMap<OrdersEntry> = {};
+    /**
+     * Returns an array of all assetDatas available at the provided sraApiUrl
+     * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
+     * @param   pairedWithAssetData     Optional filter argument to return assetDatas that only pair with this assetData value.
+     *
+     * @return  An array of all assetDatas available at the provider sraApiUrl
+     */
+    public static async getAllAvailableAssetDatasAsync(
+        sraApiUrl: string,
+        pairedWithAssetData?: string,
+    ): Promise<string[]> {
+        const client = new HttpClient(sraApiUrl);
+        const params = {
+            assetDataA: pairedWithAssetData,
+            perPage: constants.MAX_PER_PAGE,
+        };
+        const assetPairsResponse = await client.getAssetPairsAsync(params);
+        return _.uniq(_.map(assetPairsResponse.records, pairsItem => pairsItem.assetDataB.assetData));
+    }
     /**
      * Instantiates a new AssetBuyer instance given existing liquidity in the form of orders and feeOrders.
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
@@ -48,7 +73,7 @@ export class AssetBuyer {
         provider: Provider,
         orders: SignedOrder[],
         feeOrders: SignedOrder[] = [],
-        options: Partial<AssetBuyerOpts>,
+        options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
@@ -56,9 +81,8 @@ export class AssetBuyer {
         assert.areValidProvidedOrders('orders', orders);
         assert.areValidProvidedOrders('feeOrders', feeOrders);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
-        const assetData = orders[0].makerAssetData;
         const orderProvider = new BasicOrderProvider(_.concat(orders, feeOrders));
-        const assetBuyer = new AssetBuyer(provider, assetData, orderProvider, options);
+        const assetBuyer = new AssetBuyer(provider, orderProvider, options);
         return assetBuyer;
     }
     /**
@@ -70,63 +94,36 @@ export class AssetBuyer {
      *
      * @return  An instance of AssetBuyer
      */
-    public static getAssetBuyerForAssetData(
+    public static getAssetBuyerForSraApiUrl(
         provider: Provider,
-        assetData: string,
         sraApiUrl: string,
-        options: Partial<AssetBuyerOpts>,
+        options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
-        assert.isHexString('assetData', assetData);
         assert.isWebUri('sraApiUrl', sraApiUrl);
         const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl);
-        const assetBuyer = new AssetBuyer(provider, assetData, orderProvider, options);
-        return assetBuyer;
-    }
-    /**
-     * Instantiates a new AssetBuyer instance given the desired ERC20 token address and a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
-     * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
-     * @param   tokenAddress            The ERC20 token address that identifies the desired asset to buy.
-     * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
-     * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
-     *
-     * @return  An instance of AssetBuyer
-     */
-    public static getAssetBuyerForERC20TokenAddress(
-        provider: Provider,
-        tokenAddress: string,
-        sraApiUrl: string,
-        options: Partial<AssetBuyerOpts>,
-    ): AssetBuyer {
-        assert.isWeb3Provider('provider', provider);
-        assert.isETHAddressHex('tokenAddress', tokenAddress);
-        assert.isWebUri('sraApiUrl', sraApiUrl);
-        const assetData = assetDataUtils.encodeERC20AssetData(tokenAddress);
-        const assetBuyer = AssetBuyer.getAssetBuyerForAssetData(provider, assetData, sraApiUrl, options);
+        const assetBuyer = new AssetBuyer(provider, orderProvider, options);
         return assetBuyer;
     }
     /**
      * Instantiates a new AssetBuyer instance
      * @param   provider            The Provider instance you would like to use for interacting with the Ethereum network.
-     * @param   assetData           The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   orderProvider       An object that conforms to OrderProvider, see type for definition.
      * @param   options             Initialization options for the AssetBuyer. See type definition for details.
      *
      * @return  An instance of AssetBuyer
      */
-    constructor(provider: Provider, assetData: string, orderProvider: OrderProvider, options: Partial<AssetBuyerOpts>) {
+    constructor(provider: Provider, orderProvider: OrderProvider, options: Partial<AssetBuyerOpts> = {}) {
         const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = {
             ...constants.DEFAULT_ASSET_BUYER_OPTS,
             ...options,
         };
         assert.isWeb3Provider('provider', provider);
-        assert.isString('assetData', assetData);
         assert.isValidOrderProvider('orderProvider', orderProvider);
         assert.isNumber('networkId', networkId);
         assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
         assert.isNumber('expiryBufferSeconds', expiryBufferSeconds);
         this.provider = provider;
-        this.assetData = assetData;
         this.orderProvider = orderProvider;
         this.networkId = networkId;
         this.expiryBufferSeconds = expiryBufferSeconds;
@@ -136,46 +133,60 @@ export class AssetBuyer {
         });
     }
     /**
-     * Get a `BuyQuote` containing all information relevant to fulfilling a buy.
+     * Get a `BuyQuote` containing all information relevant to fulfilling a buy given a desired assetData.
      * You can then pass the `BuyQuote` to `executeBuyQuoteAsync` to execute the buy.
+     * @param   assetData           The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   assetBuyAmount      The amount of asset to buy.
      * @param   options             Options for the request. See type definition for more information.
      *
      * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
      */
-    public async getBuyQuoteAsync(assetBuyAmount: BigNumber, options: Partial<BuyQuoteRequestOpts>): Promise<BuyQuote> {
+    public async getBuyQuoteAsync(
+        assetData: string,
+        assetBuyAmount: BigNumber,
+        options: Partial<BuyQuoteRequestOpts>,
+    ): Promise<BuyQuote> {
         const { feePercentage, shouldForceOrderRefresh, slippagePercentage } = {
             ...constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
             ...options,
         };
+        assert.isString('assetData', assetData);
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
         assert.isValidPercentage('feePercentage', feePercentage);
         assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
-        // we should refresh if:
-        // we do not have any orders OR
-        // we are forced to OR
-        // we have some last refresh time AND that time was sufficiently long ago
-        const shouldRefresh =
-            _.isUndefined(this._currentOrdersAndFillableAmountsIfExists) ||
-            shouldForceOrderRefresh ||
-            (!_.isUndefined(this._lastRefreshTimeIfExists) &&
-                this._lastRefreshTimeIfExists + this.orderRefreshIntervalMs < Date.now());
-        let ordersAndFillableAmounts: AssetBuyerOrdersAndFillableAmounts;
-        if (shouldRefresh) {
-            ordersAndFillableAmounts = await this._getLatestOrdersAndFillableAmountsAsync();
-            this._lastRefreshTimeIfExists = Date.now();
-            this._currentOrdersAndFillableAmountsIfExists = ordersAndFillableAmounts;
-        } else {
-            // it is safe to cast to AssetBuyerOrdersAndFillableAmounts because shouldRefresh catches the undefined case above
-            ordersAndFillableAmounts = this
-                ._currentOrdersAndFillableAmountsIfExists as AssetBuyerOrdersAndFillableAmounts;
-        }
+        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+        const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
+            this._getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
+            this._getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
+            shouldForceOrderRefresh,
+        ]);
         const buyQuote = buyQuoteCalculator.calculate(
             ordersAndFillableAmounts,
+            feeOrdersAndFillableAmounts,
             assetBuyAmount,
             feePercentage,
             slippagePercentage,
         );
+        return buyQuote;
+    }
+    /**
+     * Get a `BuyQuote` containing all information relevant to fulfilling a buy given a desired ERC20 token address.
+     * You can then pass the `BuyQuote` to `executeBuyQuoteAsync` to execute the buy.
+     * @param   tokenAddress        The ERC20 token address.
+     * @param   assetBuyAmount      The amount of asset to buy.
+     * @param   options             Options for the request. See type definition for more information.
+     *
+     * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
+     */
+    public async getBuyQuoteForERC20TokenAddressAsync(
+        tokenAddress: string,
+        assetBuyAmount: BigNumber,
+        options: Partial<BuyQuoteRequestOpts>,
+    ): Promise<BuyQuote> {
+        assert.isETHAddressHex('tokenAddress', tokenAddress);
+        assert.isBigNumber('assetBuyAmount', assetBuyAmount);
+        const assetData = assetDataUtils.encodeERC20AssetData(tokenAddress);
+        const buyQuote = this.getBuyQuoteAsync(assetData, assetBuyAmount, options);
         return buyQuote;
     }
     /**
@@ -229,39 +240,54 @@ export class AssetBuyer {
         return txHash;
     }
     /**
-     * Ask the order Provider for orders and process them.
+     * Grab orders from the cache, if there is a miss or it is time to refresh, fetch and process the orders
      */
-    private async _getLatestOrdersAndFillableAmountsAsync(): Promise<AssetBuyerOrdersAndFillableAmounts> {
-        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
-        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
-        // construct order Provider requests
-        const targetOrderProviderRequest = {
-            makerAssetData: this.assetData,
-            takerAssetData: etherTokenAssetData,
-            networkId: this.networkId,
-        };
-        const feeOrderProviderRequest = {
-            makerAssetData: zrxTokenAssetData,
-            takerAssetData: etherTokenAssetData,
-            networkId: this.networkId,
-        };
-        const requests = [targetOrderProviderRequest, feeOrderProviderRequest];
-        // fetch orders and possible fillable amounts
-        const [targetOrderProviderResponse, feeOrderProviderResponse] = await Promise.all(
-            _.map(requests, async request => this.orderProvider.getOrdersAsync(request)),
-        );
-        // since the order provider is an injected dependency, validate that it respects the API
-        // ie. it should only return maker/taker assetDatas that are specified
-        orderProviderResponseProcessor.throwIfInvalidResponse(targetOrderProviderResponse, targetOrderProviderRequest);
-        orderProviderResponseProcessor.throwIfInvalidResponse(feeOrderProviderResponse, feeOrderProviderRequest);
-        // process the responses into one object
-        const ordersAndFillableAmounts = await orderProviderResponseProcessor.processAsync(
-            targetOrderProviderResponse,
-            feeOrderProviderResponse,
-            zrxTokenAssetData,
-            this.expiryBufferSeconds,
-            this._contractWrappers.orderValidator,
-        );
+    private async _getOrdersAndFillableAmountsAsync(
+        assetData: string,
+        shouldForceOrderRefresh: boolean,
+    ): Promise<OrdersAndFillableAmounts> {
+        // we should refresh if:
+        // we do not have any orders OR
+        // we are forced to OR
+        // we have some last refresh time AND that time was sufficiently long ago
+        const ordersEntryIfExists = this._ordersEntryMap[assetData];
+        const shouldRefresh =
+            _.isUndefined(ordersEntryIfExists) ||
+            shouldForceOrderRefresh ||
+            ordersEntryIfExists.lastRefreshTime + this.orderRefreshIntervalMs < Date.now();
+        let ordersAndFillableAmounts: OrdersAndFillableAmounts;
+        if (shouldRefresh) {
+            const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
+            const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+            // construct orderProvider request
+            const orderProviderRequest = {
+                makerAssetData: assetData,
+                takerAssetData: etherTokenAssetData,
+                networkId: this.networkId,
+            };
+            const request = orderProviderRequest;
+            // get provider response
+            const response = await this.orderProvider.getOrdersAsync(request);
+            // since the order provider is an injected dependency, validate that it respects the API
+            // ie. it should only return maker/taker assetDatas that are specified
+            orderProviderResponseProcessor.throwIfInvalidResponse(response, request);
+            // process the responses into one object
+            const isMakerAssetZrxToken = assetData === zrxTokenAssetData;
+            ordersAndFillableAmounts = await orderProviderResponseProcessor.processAsync(
+                response,
+                isMakerAssetZrxToken,
+                this.expiryBufferSeconds,
+                this._contractWrappers.orderValidator,
+            );
+            const lastRefreshTime = Date.now();
+            const updatedOrdersEntry = {
+                ordersAndFillableAmounts,
+                lastRefreshTime,
+            };
+            this._ordersEntryMap[assetData] = updatedOrdersEntry;
+        } else {
+            ordersAndFillableAmounts = ordersEntryIfExists.ordersAndFillableAmounts;
+        }
         return ordersAndFillableAmounts;
     }
     /**

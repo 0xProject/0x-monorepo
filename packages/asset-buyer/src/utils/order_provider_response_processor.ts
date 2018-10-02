@@ -8,18 +8,13 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     AssetBuyerError,
-    AssetBuyerOrdersAndFillableAmounts,
     OrderProviderRequest,
     OrderProviderResponse,
+    OrdersAndFillableAmounts,
     SignedOrderWithRemainingFillableMakerAssetAmount,
 } from '../types';
 
 import { orderUtils } from './order_utils';
-
-interface OrdersAndRemainingFillableMakerAssetAmounts {
-    orders: SignedOrder[];
-    remainingFillableMakerAssetAmounts: BigNumber[];
-}
 
 export const orderProviderResponseProcessor = {
     throwIfInvalidResponse(response: OrderProviderResponse, request: OrderProviderRequest): void {
@@ -38,65 +33,40 @@ export const orderProviderResponseProcessor = {
      * - Sort by rate
      */
     async processAsync(
-        targetOrderProviderResponse: OrderProviderResponse,
-        feeOrderProviderResponse: OrderProviderResponse,
-        zrxTokenAssetData: string,
+        orderProviderResponse: OrderProviderResponse,
+        isMakerAssetZrxToken: boolean,
         expiryBufferSeconds: number,
         orderValidator?: OrderValidatorWrapper,
-    ): Promise<AssetBuyerOrdersAndFillableAmounts> {
+    ): Promise<OrdersAndFillableAmounts> {
         // drop orders that are expired or not open
-        const filteredTargetOrders = filterOutExpiredAndNonOpenOrders(
-            targetOrderProviderResponse.orders,
-            expiryBufferSeconds,
-        );
-        const filteredFeeOrders = filterOutExpiredAndNonOpenOrders(
-            feeOrderProviderResponse.orders,
-            expiryBufferSeconds,
-        );
+        const filteredOrders = filterOutExpiredAndNonOpenOrders(orderProviderResponse.orders, expiryBufferSeconds);
         // set the orders to be sorted equal to the filtered orders
-        let unsortedTargetOrders = filteredTargetOrders;
-        let unsortedFeeOrders = filteredFeeOrders;
+        let unsortedOrders = filteredOrders;
         // if an orderValidator is provided, use on chain information to calculate remaining fillable makerAsset amounts
         if (!_.isUndefined(orderValidator)) {
             // TODO(bmillman): improvement
-            // try/catch these requests and throw a more domain specific error
-            // TODO(bmillman): optimization
-            // reduce this to once RPC call buy combining orders into one array and then splitting up the response
-            const [targetOrdersAndTradersInfo, feeOrdersAndTradersInfo] = await Promise.all(
-                _.map([filteredTargetOrders, filteredFeeOrders], ordersToBeValidated => {
-                    const takerAddresses = _.map(ordersToBeValidated, () => constants.NULL_ADDRESS);
-                    return orderValidator.getOrdersAndTradersInfoAsync(ordersToBeValidated, takerAddresses);
-                }),
+            // try/catch this request and throw a more domain specific error
+            const takerAddresses = _.map(filteredOrders, () => constants.NULL_ADDRESS);
+            const ordersAndTradersInfo = await orderValidator.getOrdersAndTradersInfoAsync(
+                filteredOrders,
+                takerAddresses,
             );
             // take orders + on chain information and find the valid orders and remaining fillable maker asset amounts
-            unsortedTargetOrders = getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
-                filteredTargetOrders,
-                targetOrdersAndTradersInfo,
-                zrxTokenAssetData,
-            );
-            // take orders + on chain information and find the valid orders and remaining fillable maker asset amounts
-            unsortedFeeOrders = getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
-                filteredFeeOrders,
-                feeOrdersAndTradersInfo,
-                zrxTokenAssetData,
+            unsortedOrders = getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
+                filteredOrders,
+                ordersAndTradersInfo,
+                isMakerAssetZrxToken,
             );
         }
         // sort orders by rate
         // TODO(bmillman): optimization
         // provide a feeRate to the sorting function to more accurately sort based on the current market for ZRX tokens
-        const sortedTargetOrders = sortingUtils.sortOrdersByFeeAdjustedRate(unsortedTargetOrders);
-        const sortedFeeOrders = sortingUtils.sortFeeOrdersByFeeAdjustedRate(unsortedFeeOrders);
+        const sortedOrders = isMakerAssetZrxToken
+            ? sortingUtils.sortFeeOrdersByFeeAdjustedRate(unsortedOrders)
+            : sortingUtils.sortOrdersByFeeAdjustedRate(unsortedOrders);
         // unbundle orders and fillable amounts and compile final result
-        const targetOrdersAndRemainingFillableMakerAssetAmounts = unbundleOrdersWithAmounts(sortedTargetOrders);
-        const feeOrdersAndRemainingFillableMakerAssetAmounts = unbundleOrdersWithAmounts(sortedFeeOrders);
-        return {
-            orders: targetOrdersAndRemainingFillableMakerAssetAmounts.orders,
-            feeOrders: feeOrdersAndRemainingFillableMakerAssetAmounts.orders,
-            remainingFillableMakerAssetAmounts:
-                targetOrdersAndRemainingFillableMakerAssetAmounts.remainingFillableMakerAssetAmounts,
-            remainingFillableFeeAmounts:
-                feeOrdersAndRemainingFillableMakerAssetAmounts.remainingFillableMakerAssetAmounts,
-        };
+        const result = unbundleOrdersWithAmounts(sortedOrders);
+        return result;
     },
 };
 
@@ -120,7 +90,7 @@ function filterOutExpiredAndNonOpenOrders(
 function getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
     inputOrders: SignedOrder[],
     ordersAndTradersInfo: OrderAndTraderInfo[],
-    zrxAssetData: string,
+    isMakerAssetZrxToken: boolean,
 ): SignedOrderWithRemainingFillableMakerAssetAmount[] {
     // iterate through the input orders and find the ones that are still fillable
     // for the orders that are still fillable, calculate the remaining fillable maker asset amount
@@ -147,7 +117,7 @@ function getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
             const remainingFillableCalculator = new RemainingFillableCalculator(
                 order.makerFee,
                 order.makerAssetAmount,
-                order.makerAssetData === zrxAssetData,
+                isMakerAssetZrxToken,
                 transferrableAssetAmount,
                 transferrableFeeAssetAmount,
                 remainingMakerAssetAmount,
@@ -175,7 +145,7 @@ function getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
  */
 function unbundleOrdersWithAmounts(
     ordersWithAmounts: SignedOrderWithRemainingFillableMakerAssetAmount[],
-): OrdersAndRemainingFillableMakerAssetAmounts {
+): OrdersAndFillableAmounts {
     const result = _.reduce(
         ordersWithAmounts,
         (acc, orderWithAmount) => {
