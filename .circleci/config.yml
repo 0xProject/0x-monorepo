@@ -11,29 +11,17 @@ jobs:
     steps:
       - checkout
       - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-{{ .Branch }}
-            - yarn-packages-master
-            - yarn-packages-
       - run:
           name: install-yarn
           command: sudo npm install --global yarn@1.9.4
       - run:
           name: yarn
           command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - node_modules/
       - run: >
             if [ -z "$(git diff --name-only development packages/website)" ]; then
-                yarn build --exclude website
+                yarn build:ci:no_website
             else
-                yarn build
+                yarn build:ci
             fi
       - save_cache:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
@@ -100,6 +88,7 @@ jobs:
       - run: yarn wsrun test:circleci @0xproject/order-watcher
       - run: yarn wsrun test:circleci @0xproject/sol-compiler
       - run: yarn wsrun test:circleci @0xproject/sol-cov
+      - run: yarn wsrun test:circleci @0xproject/sol-doc
       - run: yarn wsrun test:circleci @0xproject/sra-report
       - run: yarn wsrun test:circleci @0xproject/subproviders
       - run: yarn wsrun test:circleci @0xproject/web3-wrapper
@@ -153,6 +142,10 @@ jobs:
           paths:
             - ~/repo/packages/sol-cov/coverage/lcov.info
       - save_cache:
+          key: coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/sol-doc/coverage/lcov.info
+      - save_cache:
           key: coverage-sra-report-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/sra-report/coverage/lcov.info
@@ -172,8 +165,10 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn prettier:ci
       - run: yarn lerna run lint
+      - run: yarn prettier:ci
+      - run: cd packages/0x.js && yarn build:umd:prod
+      - run: yarn bundlesize
   submit-coverage:
     docker:
       - image: circleci/node:9
@@ -218,6 +213,9 @@ jobs:
       - restore_cache:
           keys:
             - coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
             - coverage-sra-report-{{ .Environment.CIRCLE_SHA1 }}

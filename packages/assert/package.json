@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/assert",
-    "version": "1.0.10",
+    "version": "1.0.12",
     "engines": {
         "node": ">=6.12"
     },
@@ -9,6 +9,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "tsc -b",
+        "build:ci": "yarn build",
         "clean": "shx rm -rf lib test_temp",
         "lint": "tslint --project .",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
@@ -44,9 +45,9 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0xproject/json-schemas": "^1.0.3",
-        "@0xproject/typescript-typings": "^2.0.1",
-        "@0xproject/utils": "^1.0.10",
+        "@0xproject/json-schemas": "^1.0.5",
+        "@0xproject/typescript-typings": "^3.0.0",
+        "@0xproject/utils": "^2.0.0",
         "lodash": "^4.17.5",
         "valid-url": "^1.0.9"
     },

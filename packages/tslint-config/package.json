@@ -8,6 +8,7 @@
     "main": "tslint.json",
     "scripts": {
         "build": "tsc -b",
+        "build:ci": "yarn build",
         "clean": "shx rm -rf lib",
         "lint": "tslint --project ."
     },

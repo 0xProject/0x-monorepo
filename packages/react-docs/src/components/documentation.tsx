@@ -9,24 +9,23 @@ import {
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
+import {
+    DocAgnosticFormat,
+    Event,
+    ExternalExportToLink,
+    Property,
+    SolidityMethod,
+    TypeDefinitionByName,
+    TypescriptFunction,
+    TypescriptMethod,
+} from '@0xproject/types';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import * as semver from 'semver';
 
 import { DocsInfo } from '../docs_info';
-import {
-    AddressByContractName,
-    DocAgnosticFormat,
-    Event,
-    ExternalExportToLink,
-    Property,
-    SolidityMethod,
-    SupportedDocJson,
-    TypeDefinitionByName,
-    TypescriptFunction,
-    TypescriptMethod,
-} from '../types';
+import { AddressByContractName, SupportedDocJson } from '../types';
 import { constants } from '../utils/constants';
 
 import { Badge } from './badge';
@@ -219,11 +218,11 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             _.isEmpty(docSection.events);
 
         const sortedTypes = _.sortBy(docSection.types, 'name');
-        const typeDefs = _.map(sortedTypes, customType => {
+        const typeDefs = _.map(sortedTypes, (customType, i) => {
             return (
                 <TypeDefinition
                     sectionName={sectionName}
-                    key={`type-${customType.name}`}
+                    key={`type-${customType.name}-${i}`}
                     customType={customType}
                     docsInfo={this.props.docsInfo}
                     typeDefinitionByName={typeDefinitionByName}
@@ -330,7 +329,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         return <div>{externalExports}</div>;
     }
     private _renderNetworkBadgesIfExists(sectionName: string): React.ReactNode {
-        if (this.props.docsInfo.type !== SupportedDocJson.Doxity) {
+        if (this.props.docsInfo.type !== SupportedDocJson.SolDoc) {
             return null;
         }
 
@@ -354,7 +353,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                         key={`badge-${networkName}-${sectionName}`}
                         href={linkIfExists}
                         target="_blank"
-                        style={{ color: colors.white, textDecoration: 'none' }}
+                        style={{ color: colors.white, textDecoration: 'none', marginTop: 8 }}
                     >
                         <Badge title={networkName} backgroundColor={networkNameToColor[networkName]} />
                     </a>

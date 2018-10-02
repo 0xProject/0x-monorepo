@@ -1,14 +1,12 @@
-import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { DoneCallback, SignedOrder } from '@0xproject/types';
+import { assetDataUtils } from '@0xproject/order-utils';
+import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import { BlockParamLiteral } from 'ethereum-types';
 import 'mocha';
 
-import { ContractWrappers, ExchangeCancelEventArgs, ExchangeEvents, ExchangeFillEventArgs, OrderStatus } from '../src';
-import { DecodedLogEvent } from '../src/types';
+import { ContractWrappers, OrderStatus } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';

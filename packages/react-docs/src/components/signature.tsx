@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { Parameter, Type as TypeDef, TypeDefinitionByName, TypeParameter } from '@0xproject/types';
+
 import { DocsInfo } from '../docs_info';
-import { Parameter, Type as TypeDef, TypeDefinitionByName, TypeParameter } from '../types';
 
 import { Type } from './type';
 
@@ -18,12 +19,14 @@ export interface SignatureProps {
     callPath?: string;
     docsInfo: DocsInfo;
     isInPopover: boolean;
+    isFallback?: boolean;
 }
 
 const defaultProps = {
     shouldHideMethodName: false,
     shouldUseArrowSyntax: false,
     callPath: '',
+    isFallback: false,
 };
 
 export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
@@ -33,6 +36,7 @@ export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
         props.docsInfo,
         sectionName,
         props.isInPopover,
+        props.name,
         props.typeDefinitionByName,
     );
     const paramStringArray: any[] = [];
@@ -74,7 +78,7 @@ export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
     return (
         <span style={{ fontSize: 15 }}>
             {props.callPath}
-            {methodName}
+            {props.isFallback ? '' : methodName}
             {typeParameterIfExists}({hasMoreThenTwoParams && <br />}
             {paramStringArray})
             {props.returnType && (
@@ -100,9 +104,10 @@ function renderParameters(
     docsInfo: DocsInfo,
     sectionName: string,
     isInPopover: boolean,
+    name: string,
     typeDefinitionByName?: TypeDefinitionByName,
 ): React.ReactNode[] {
-    const params = _.map(parameters, (p: Parameter) => {
+    const params = _.map(parameters, (p: Parameter, i: number) => {
         const isOptional = p.isOptional;
         const hasDefaultValue = !_.isUndefined(p.defaultValue);
         const type = (
@@ -115,9 +120,14 @@ function renderParameters(
             />
         );
         return (
-            <span key={`param-${p.type}-${p.name}`}>
-                {p.name}
-                {isOptional && '?'}: {type}
+            <span key={`param-${JSON.stringify(p.type)}-${name}-${i}`}>
+                {!_.isEmpty(p.name) && (
+                    <span>
+                        {p.name}
+                        {isOptional && '?'}:{' '}
+                    </span>
+                )}
+                {type}
                 {hasDefaultValue && ` = ${p.defaultValue}`}
             </span>
         );
@@ -134,14 +144,19 @@ function renderTypeParameter(
 ): React.ReactNode {
     const typeParam = (
         <span>
-            {`<${typeParameter.name} extends `}
-            <Type
-                type={typeParameter.type}
-                sectionName={sectionName}
-                typeDefinitionByName={typeDefinitionByName}
-                docsInfo={docsInfo}
-                isInPopover={isInPopover}
-            />
+            {`<${typeParameter.name}`}
+            {!_.isUndefined(typeParameter.type) && (
+                <span>
+                    {' extends '}
+                    <Type
+                        type={typeParameter.type}
+                        sectionName={sectionName}
+                        typeDefinitionByName={typeDefinitionByName}
+                        docsInfo={docsInfo}
+                        isInPopover={isInPopover}
+                    />
+                </span>
+            )}
             {`>`}
         </span>
     );

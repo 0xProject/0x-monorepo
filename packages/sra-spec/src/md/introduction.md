@@ -180,7 +180,7 @@ The identifier for the Proxy uses a similar scheme to [ABI function selectors](h
 ```js
 // ERC20 Proxy ID  0xf47261b0
 bytes4(keccak256('ERC20Token(address)'));
-// ERC721 Proxy ID 0x08e937fa
+// ERC721 Proxy ID 0x02571792
 bytes4(keccak256('ERC721Token(address,uint256)'));
 ```
 
@@ -192,10 +192,10 @@ For example, encoding the ERC20 token contract (address: 0x1dc4c1cefef38a777b15a
 0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48
 ```
 
-Encoding the ERC721 token contract (address: `0x371b13d97f4bf77d724e78c16b7dc74099f40e84`), token id (id: `99`, which hex encoded is `0x63`) and the ERC721 Transfer Proxy (id: 0x08e937fa) would be:
+Encoding the ERC721 token contract (address: `0x371b13d97f4bf77d724e78c16b7dc74099f40e84`), token id (id: `99`, which hex encoded is `0x63`) and the ERC721 Transfer Proxy (id: 0x02571792) would be:
 
 ```bash
-0x08e937fa000000000000000000000000371b13d97f4bf77d724e78c16b7dc74099f40e840000000000000000000000000000000000000000000000000000000000000063
+0x02571792000000000000000000000000371b13d97f4bf77d724e78c16b7dc74099f40e840000000000000000000000000000000000000000000000000000000000000063
 ```
 
 For more information see [the Asset Proxy](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#erc20proxy) section of the v2 spec and the [Ethereum ABI Spec](https://solidity.readthedocs.io/en/develop/abi-spec.html).

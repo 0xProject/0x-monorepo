@@ -1,7 +1,7 @@
 [
     {
-        "timestamp": 1537875740,
-        "version": "1.0.5",
+        "timestamp": 1538475601,
+        "version": "2.1.1",
         "changes": [
             {
                 "note": "Dependencies updated"
@@ -9,13 +9,53 @@
         ]
     },
     {
-        "timestamp": 1537541580,
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Export ExpirationWatcher",
+                "pr": 1097
+            }
+        ],
+        "timestamp": 1538157789
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note":
+                    "Fixes dropped events issue by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too.",
+                "pr": 1080
+            },
+            {
+                "note":
+                    "Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it",
+                "pr": 1080
+            },
+            {
+                "note":
+                    "Add `transactionHash` to `OrderState` emitted by `OrderWatcher` subscriptions if the order's state change originated from a transaction.",
+                "pr": 1087
+            }
+        ],
+        "timestamp": 1537907159
+    },
+    {
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1537875740
+    },
+    {
         "version": "1.0.4",
         "changes": [
             {
                 "note": "Dependencies updated"
             }
-        ]
+        ],
+        "timestamp": 1537541580
     },
     {
         "version": "1.0.3",

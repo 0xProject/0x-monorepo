@@ -1,4 +1,5 @@
 import { colors, constants as sharedConstants, utils as sharedUtils } from '@0xproject/react-shared';
+import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '@0xproject/types';
 import { errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -6,13 +7,12 @@ import { Link as ScrollLink } from 'react-scroll';
 import * as ReactTooltip from 'react-tooltip';
 
 import { DocsInfo } from '../docs_info';
-import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '../types';
-import { constants } from '../utils/constants';
 
 import { Signature } from './signature';
 import { TypeDefinition } from './type_definition';
 
 const basicJsTypes = ['string', 'number', 'undefined', 'null', 'boolean'];
+const basicSolidityTypes = ['bytes', 'bytes4', 'bytes32', 'uint8', 'uint256', 'address'];
 
 const defaultProps = {};
 
@@ -80,7 +80,7 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
 
         case TypeDocTypes.Array:
             typeName = type.elementType.name;
-            if (_.includes(basicJsTypes, typeName)) {
+            if (_.includes(basicJsTypes, typeName) || _.includes(basicSolidityTypes, typeName)) {
                 typeNameColor = colors.orange;
             }
             break;
@@ -168,10 +168,10 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
             break;
 
         case TypeDocTypes.Tuple:
-            const tupleTypes = _.map(type.tupleElements, t => {
+            const tupleTypes = _.map(type.tupleElements, (t, i) => {
                 return (
                     <Type
-                        key={`type-tuple-${t.name}-${t.typeDocType}`}
+                        key={`type-tuple-${t.name}-${t.typeDocType}-${i}`}
                         type={t}
                         sectionName={props.sectionName}
                         typeDefinitionByName={props.typeDefinitionByName}
@@ -221,7 +221,7 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
         const id = Math.random().toString();
         const typeDefinitionAnchorId = isExportedClassReference
             ? props.type.name
-            : `${constants.TYPES_SECTION_NAME}-${typeName}`;
+            : `${props.docsInfo.typeSectionName}-${typeName}`;
         typeName = (
             <ScrollLink
                 to={typeDefinitionAnchorId}

@@ -181,6 +181,7 @@ export interface CallData extends CallTxDataBase {
 export interface FilterObject {
     fromBlock?: number | string;
     toBlock?: number | string;
+    blockHash?: string;
     address?: string;
     topics?: LogTopic[];
 }
@@ -324,9 +325,59 @@ export interface ContractNetworkData {
     constructorArgs: string;
 }
 
+export type ParamDescription = string;
+
 export interface StandardContractOutput {
     abi: ContractAbi;
     evm: EvmOutput;
+    devdoc?: DevdocOutput;
+}
+
+export interface StandardOutput {
+    errors: SolcError[];
+    sources: {
+        [fileName: string]: {
+            id: number;
+            ast?: object;
+            legacyAST?: object;
+        };
+    };
+    contracts: {
+        [fileName: string]: {
+            [contractName: string]: StandardContractOutput;
+        };
+    };
+}
+
+export type ErrorType =
+    | 'JSONError'
+    | 'IOError'
+    | 'ParserError'
+    | 'DocstringParsingError'
+    | 'SyntaxError'
+    | 'DeclarationError'
+    | 'TypeError'
+    | 'UnimplementedFeatureError'
+    | 'InternalCompilerError'
+    | 'Exception'
+    | 'CompilerError'
+    | 'FatalError'
+    | 'Warning';
+export type ErrorSeverity = 'error' | 'warning';
+
+export interface SolcError {
+    sourceLocation?: SourceLocation;
+    type: ErrorType;
+    component: 'general' | 'ewasm';
+    severity: ErrorSeverity;
+    message: string;
+    formattedMessage?: string;
+}
+
+export interface SourceLocation {
+    file: string;
+    start: number;
+    end: number;
 }
 
 export interface EvmOutput {
@@ -337,6 +388,20 @@ export interface EvmOutput {
 export interface EvmBytecodeOutput {
     object: string;
     sourceMap: string;
+}
+
+export interface DevdocOutput {
+    title: string;
+    author: string;
+    methods: {
+        [signature: string]: {
+            details: string;
+            params: {
+                [name: string]: ParamDescription;
+            };
+            return?: string;
+        };
+    };
 }
 
 export interface ContractVersionData {
@@ -432,4 +497,4 @@ export interface CompilerOptions {
     compilerSettings?: CompilerSettings;
     contracts?: string[] | '*';
     solcVersion?: string;
-}
+} // tslint:disable-line:max-file-line-count

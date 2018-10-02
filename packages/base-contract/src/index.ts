@@ -20,6 +20,11 @@ export interface EthersInterfaceByFunctionSignature {
     [key: string]: ethers.Interface;
 }
 
+const REVERT_ERROR_SELECTOR = '08c379a0';
+const REVERT_ERROR_SELECTOR_OFFSET = 2;
+const REVERT_ERROR_SELECTOR_BYTES_LENGTH = 4;
+const REVERT_ERROR_SELECTOR_END = REVERT_ERROR_SELECTOR_OFFSET + REVERT_ERROR_SELECTOR_BYTES_LENGTH * 2;
+
 export class BaseContract {
     protected _ethersInterfacesByFunctionSignature: EthersInterfaceByFunctionSignature;
     protected _web3Wrapper: Web3Wrapper;
@@ -61,7 +66,7 @@ export class BaseContract {
         }
     }
     protected static _bnToBigNumber(_type: string, value: any): any {
-        return _.isObject(value) && value._bn ? new BigNumber(value.toString()) : value;
+        return _.isObject(value) && value._hex ? new BigNumber(value.toString()) : value;
     }
     protected static async _applyDefaultsToTxDataAsync<T extends Partial<TxData | TxDataPayable>>(
         txData: T,
@@ -82,15 +87,24 @@ export class BaseContract {
         }
         return txDataWithDefaults;
     }
+    protected static _throwIfRevertWithReasonCallResult(rawCallResult: string): void {
+        if (rawCallResult.slice(REVERT_ERROR_SELECTOR_OFFSET, REVERT_ERROR_SELECTOR_END) === REVERT_ERROR_SELECTOR) {
+            const revertReason = ethers.utils.defaultAbiCoder.decode(
+                ['string'],
+                ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
+            );
+            throw new Error(revertReason);
+        }
+    }
     // Throws if the given arguments cannot be safely/correctly encoded based on
     // the given inputAbi. An argument may not be considered safely encodeable
     // if it overflows the corresponding Solidity type, there is a bug in the
     // encoder, or the encoder performs unsafe type coercion.
     public static strictArgumentEncodingCheck(inputAbi: DataItem[], args: any[]): void {
-        const coder = ethers.utils.AbiCoder.defaultCoder;
+        const coder = new ethers.AbiCoder();
         const params = abiUtils.parseEthersParams(inputAbi);
-        const rawEncoded = coder.encode(params.names, params.types, args);
-        const rawDecoded = coder.decode(params.names, params.types, rawEncoded);
+        const rawEncoded = coder.encode(inputAbi, args);
+        const rawDecoded = coder.decode(inputAbi, rawEncoded);
         for (let i = 0; i < rawDecoded.length; i++) {
             const original = args[i];
             const decoded = rawDecoded[i];

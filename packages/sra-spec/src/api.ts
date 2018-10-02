@@ -249,7 +249,7 @@ export const api: OpenApiSpec = {
             },
         },
         '/v2/order_config': {
-            get: {
+            post: {
                 description: `Relayers have full discretion over the orders that they are willing to host on their orderbooks (e.g what fees they charge, etc...). In order for traders to discover their requirements programmatically, they can send an incomplete order to this endpoint and receive the missing fields, specifc to that order. This gives relayers a large amount of flexibility to tailor fees to unique traders, trading pairs and volume amounts. Submit a partial order and receive information required to complete the order: \`senderAddress\`, \`feeRecipientAddress\`, \`makerFee\`, \`takerFee\`. `,
                 operationId: 'getOrderConfig',
                 parameters: generateParameters([], false),

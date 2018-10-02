@@ -158,6 +158,7 @@ export class Handler {
         if (_.isUndefined(takerTokenIfExists)) {
             throw new Error(`Unsupported asset type: ${takerTokenSymbol}`);
         }
+
         const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, makerTokenIfExists.decimals);
         const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, takerTokenIfExists.decimals);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenIfExists.address);

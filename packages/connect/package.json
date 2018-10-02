@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/connect",
-    "version": "2.0.3",
+    "version": "3.0.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -16,6 +16,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "tsc -b",
+        "build:ci": "yarn build",
         "clean": "shx rm -rf lib test_temp generated_docs",
         "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
         "lint": "tslint --project .",
@@ -43,12 +44,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/connect/README.md",
     "dependencies": {
-        "@0xproject/assert": "^1.0.10",
-        "@0xproject/json-schemas": "^1.0.3",
-        "@0xproject/order-utils": "^1.0.4",
-        "@0xproject/types": "^1.1.0",
-        "@0xproject/typescript-typings": "^2.0.1",
-        "@0xproject/utils": "^1.0.10",
+        "@0xproject/assert": "^1.0.12",
+        "@0xproject/json-schemas": "^1.0.5",
+        "@0xproject/order-utils": "^1.0.6",
+        "@0xproject/types": "^1.1.2",
+        "@0xproject/typescript-typings": "^3.0.0",
+        "@0xproject/utils": "^2.0.0",
         "lodash": "^4.17.5",
         "query-string": "^5.0.1",
         "sinon": "^4.0.0",

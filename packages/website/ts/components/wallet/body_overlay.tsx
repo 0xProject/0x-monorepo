@@ -13,7 +13,7 @@ import { AccountState, ProviderType } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 const METAMASK_IMG_SRC = '/images/metamask_icon.png';
-const TOSHI_IMG_SRC = '/images/toshi_logo.jpg';
+const COINBASE_WALLET_IMG_SRC = '/images/coinbase_wallet_logo.png';
 
 export interface BodyOverlayProps {
     dispatcher: Dispatcher;
@@ -116,8 +116,8 @@ const UseDifferentWallet = (props: UseDifferentWallet) => {
 
 const GetWalletCallToAction = () => {
     const [downloadLink, isOnMobile] = utils.getBestWalletDownloadLinkAndIsMobile();
-    const imageUrl = isOnMobile ? TOSHI_IMG_SRC : METAMASK_IMG_SRC;
-    const text = isOnMobile ? 'Get Toshi Wallet' : 'Get MetaMask Wallet';
+    const imageUrl = isOnMobile ? COINBASE_WALLET_IMG_SRC : METAMASK_IMG_SRC;
+    const text = isOnMobile ? 'Get Coinbase Wallet' : 'Get MetaMask Wallet';
     return (
         <a href={downloadLink} target="_blank" style={{ textDecoration: 'none' }}>
             <Island

@@ -1,20 +1,15 @@
 import { MenuSubsectionsBySection } from '@0xproject/react-shared';
+import { DocAgnosticFormat, TypeDefinitionByName } from '@0xproject/types';
 import * as _ from 'lodash';
 
 import {
     ContractsByVersionByNetworkId,
-    DocAgnosticFormat,
     DocsInfoConfig,
     DocsMenu,
-    DoxityDocObj,
-    GeneratedDocJson,
     SectionNameToMarkdownByVersion,
     SectionsMap,
     SupportedDocJson,
-    TypeDefinitionByName,
 } from './types';
-import { doxityUtils } from './utils/doxity_utils';
-import { TypeDocUtils } from './utils/typedoc_utils';
 
 export class DocsInfo {
     public id: string;
@@ -23,6 +18,7 @@ export class DocsInfo {
     public packageName: string;
     public packageUrl: string;
     public menu: DocsMenu;
+    public typeSectionName: string;
     public sections: SectionsMap;
     public sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
     public contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
@@ -33,6 +29,7 @@ export class DocsInfo {
         this.displayName = config.displayName;
         this.packageName = config.packageName;
         this.packageUrl = config.packageUrl;
+        this.typeSectionName = config.type === SupportedDocJson.SolDoc ? 'structs' : 'types';
         this.sections = config.markdownSections;
         this.sectionNameToMarkdownByVersion = config.sectionNameToMarkdownByVersion;
         this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
@@ -58,7 +55,7 @@ export class DocsInfo {
                 _.isEmpty(docSection.properties) &&
                 _.isEmpty(docSection.events);
 
-            if (!_.isUndefined(this.sections.types) && sectionName === this.sections.types) {
+            if (sectionName === this.typeSectionName) {
                 const sortedTypesNames = _.sortBy(docSection.types, 'name');
                 const typeNames = _.map(sortedTypesNames, t => t.name);
                 menuSubsectionsBySection[sectionName] = typeNames;
@@ -87,20 +84,12 @@ export class DocsInfo {
         return menuSubsectionsBySection;
     }
     public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat): { [name: string]: TypeDefinitionByName } {
-        if (_.isUndefined(this.sections.types)) {
+        if (_.isUndefined(docAgnosticFormat[this.typeSectionName])) {
             return {};
         }
 
-        const typeDocSection = docAgnosticFormat[this.sections.types];
-        const typeDefinitionByName = _.keyBy(typeDocSection.types, 'name') as any;
+        const section = docAgnosticFormat[this.typeSectionName];
+        const typeDefinitionByName = _.keyBy(section.types, 'name') as any;
         return typeDefinitionByName;
-    }
-    public convertToDocAgnosticFormat(docObj: DoxityDocObj | GeneratedDocJson): DocAgnosticFormat {
-        if (this.type === SupportedDocJson.Doxity) {
-            return doxityUtils.convertToDocAgnosticFormat(docObj as DoxityDocObj);
-        } else {
-            const typeDocUtils = new TypeDocUtils(docObj as GeneratedDocJson, this);
-            return typeDocUtils.convertToDocAgnosticFormat();
-        }
     }
 }

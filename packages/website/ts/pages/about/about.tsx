@@ -194,7 +194,7 @@ const teamRow6: ProfileInfo[] = [
 const teamRow7: ProfileInfo[] = [
     {
         name: 'Clay Robbins',
-        title: 'Business Development Lead',
+        title: 'Ecosystem Development Lead',
         description: `Growth & Business Development. Previously product and partnerships at Square. Economics at Dartmouth College.`,
         image: 'images/team/clay.png',
         linkedIn: 'https://www.linkedin.com/in/robbinsclay/',
@@ -213,6 +213,30 @@ const teamRow7: ProfileInfo[] = [
         image: 'images/team/gene.jpg',
         linkedIn: 'https://www.linkedin.com/in/aumson/',
         github: 'https://github.com/feuGeneA',
+    },
+];
+
+const teamRow8: ProfileInfo[] = [
+    {
+        name: 'Weijie Wu',
+        title: 'Research Fellow',
+        description: `Researching decentralized governance. Previously Researcher at Huawei and Assistant Professor at Shanghai Jiao Tong University. PhD in Computer Science at The Chinese University of Hong Kong.`,
+        image: 'images/team/weijie.png',
+        linkedIn: 'https://www.linkedin.com/in/weijiewu/',
+    },
+    {
+        name: 'Rahul Singireddy',
+        title: 'Relayer Success Manager',
+        description: `Previously community at Zeppelin, growth at Dharma, and cryptocurrency contributor at Forbes. Symbolic Systems at Stanford.`,
+        image: 'images/team/rahul.png',
+        linkedIn: 'https://www.linkedin.com/in/rahul-singireddy-3037908a/',
+    },
+    {
+        name: 'Jason Somensatto',
+        title: 'Strategic Legal Counsel',
+        description: `Legal. Previously head of blockchain and crypto practice at Orrick. JD from George Washington University and undergrad at UVA.`,
+        image: 'images/team/jason.png',
+        linkedIn: 'https://www.linkedin.com/in/jasonsomensatto/',
     },
 ];
 
@@ -323,6 +347,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         <div className="clearfix">{this._renderProfiles(teamRow5)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow6)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow7)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow8)}</div>
                     </div>
                     <div className="pt3 pb2">
                         <div
