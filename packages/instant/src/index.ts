@@ -1,1 +1,1 @@
-export { ZeroExInstant } from './components/zero_ex_instant';
+export { ZeroExInstant, ZeroExInstantProps } from './components/zero_ex_instant';
