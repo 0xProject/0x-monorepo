@@ -1,9 +1,9 @@
 lib
 .nyc_output
-/packages/contract-wrappers/src/contract_wrappers/generated/
+/packages/contracts/generated-wrappers
+/packages/contracts/generated-artifacts
 /packages/metacoin/src/contract_wrappers
 /packages/0x.js/src/generated_contract_wrappers/
-/packages/contracts/generated_contract_wrappers/
 /packages/fill-scenarios/src/generated_contract_wrappers/
 /packages/order-watcher/src/generated_contract_wrappers/
 /packages/order-utils/src/generated_contract_wrappers/
@@ -11,12 +11,9 @@ lib
 /packages/migrations/src/2.0.0-testnet/contract_wrappers
 /packages/migrations/src/2.0.0/contract_wrappers
 /packages/0x.js/src/artifacts
-/packages/contracts/src/artifacts
-/packages/contract-wrappers/src/artifacts
 /packages/order-watcher/src/artifacts
 /packages/metacoin/artifacts
 /packages/sra-spec/public/
-/packages/contract-wrappers/test/artifacts
 /packages/order-watcher/test/artifacts
 /packages/migrations/artifacts/1.0.0
 /packages/migrations/artifacts/2.0.0-testnet
