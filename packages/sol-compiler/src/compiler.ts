@@ -296,13 +296,12 @@ export class Compiler {
         compilerOutput: solc.StandardOutput,
     ): Promise<void> {
         const compiledContract = compilerOutput.contracts[contractPath][contractName];
-        const sourceCodes = _.mapValues(
-            compilerOutput.sources,
-            (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,
-        );
+
+        const { sourceCodes, sources } = this._getSourcesWithDependencies(contractPath);
+
         const contractVersion: ContractVersionData = {
             compilerOutput: compiledContract,
-            sources: compilerOutput.sources,
+            sources,
             sourceCodes,
             sourceTreeHashHex,
             compiler: {
@@ -332,6 +331,54 @@ export class Compiler {
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
         logUtils.warn(`${contractName} artifact saved!`);
+    }
+    private _getSourcesWithDependencies(
+        contractPath: string,
+    ): { sourceCodes: { [sourceName: string]: string }; sources: { [sourceName: string]: { id: number } } } {
+        const sources = { [contractPath]: { id: 0 } };
+        const sourceCodes = { [contractPath]: this._resolver.resolve(contractPath).source };
+        this._recursivelyGatherDependencySources(contractPath, sourceCodes[contractPath], sources, sourceCodes, 1);
+        return { sourceCodes, sources };
+    }
+    private _recursivelyGatherDependencySources(
+        contractPath: string,
+        contractSource: string,
+        sourcesToAppendTo: { [sourceName: string]: { id: number } },
+        sourceCodesToAppendTo: { [sourceName: string]: string },
+        nextId: number,
+    ): number {
+        let nextId_ = nextId;
+
+        const importStatementMatches = contractSource.match(/import[^;]*;/g);
+        if (importStatementMatches === null) {
+            return nextId_;
+        }
+        for (const importStatementMatch of importStatementMatches) {
+            const importPathMatches = importStatementMatch.match(/\"([^\"]*)\"/);
+            if (importPathMatches === null || importPathMatches.length === 0) {
+                continue;
+            }
+
+            let importPath = importPathMatches[1];
+            const lastPathSeparatorPos = contractPath.lastIndexOf('/');
+            const importFolder = lastPathSeparatorPos === -1 ? '' : contractPath.slice(0, lastPathSeparatorPos + 1);
+            importPath = importPath.slice(0, 2) === './' ? importPath.replace(/^.\//, importFolder) : importPath;
+
+            if (_.isUndefined(sourcesToAppendTo[importPath])) {
+                sourcesToAppendTo[importPath] = { id: nextId_ };
+                sourceCodesToAppendTo[importPath] = this._resolver.resolve(importPath).source;
+                nextId_ += 1;
+
+                nextId_ = this._recursivelyGatherDependencySources(
+                    importPath,
+                    this._resolver.resolve(importPath).source,
+                    sourcesToAppendTo,
+                    sourceCodesToAppendTo,
+                    nextId_,
+                );
+            }
+        }
+        return nextId_;
     }
     private _compile(solcInstance: solc.SolcInstance, standardInput: solc.StandardInput): solc.StandardOutput {
         const compiled: solc.StandardOutput = JSON.parse(
