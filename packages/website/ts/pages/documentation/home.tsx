@@ -500,14 +500,14 @@ export class Home extends React.Component<HomeProps, HomeState> {
     }
     private _renderSectionTitle(text: string): React.ReactNode {
         return (
-            <Text fontColor="#333333" fontSize="30px" fontWeight="bold">
+            <Text fontColor={colors.projectsGrey} fontSize="30px" fontWeight="bold">
                 {text}
             </Text>
         );
     }
     private _renderSectionDescription(text: string): React.ReactNode {
         return (
-            <Text fontColor="#999999" fontSize="18px" fontFamily="Roboto Mono">
+            <Text fontColor={colors.linkSectionGrey} fontSize="18px" fontFamily="Roboto Mono">
                 {text}
             </Text>
         );
