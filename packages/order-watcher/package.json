@@ -13,6 +13,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "yarn pre_build && tsc -b",
+        "build:ci": "yarn build",
         "pre_build": "run-s update_artifacts copy_artifacts generate_contract_wrappers",
         "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
         "generate_contract_wrappers": "abi-gen --abis 'src/artifacts/@(Exchange|Token|TokenTransferProxy|EtherToken).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",

@@ -10,6 +10,7 @@
     "scripts": {
         "clean": "shx rm -rf lib",
         "build": "tsc -b",
+        "build:ci": "yarn build",
         "lint": "tslint --project .",
         "test:circleci": "yarn test:coverage",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",

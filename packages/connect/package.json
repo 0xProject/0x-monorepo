@@ -16,6 +16,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "tsc -b",
+        "build:ci": "yarn build",
         "clean": "shx rm -rf lib test_temp generated_docs",
         "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
         "lint": "tslint --project .",

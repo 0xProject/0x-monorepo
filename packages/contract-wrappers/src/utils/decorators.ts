@@ -1,4 +1,3 @@
-import { RevertReason } from '@0xproject/types';
 import * as _ from 'lodash';
 
 import { AsyncMethod, ContractWrappersError, SyncMethod } from '../types';
@@ -46,7 +45,7 @@ const asyncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
         // tslint:disable-next-line:only-arrow-functions
         descriptor.value = async function(...args: any[]): Promise<any> {
             try {
-                const result = await originalMethod.apply(this, args);
+                const result = await originalMethod.apply(this, args); // tslint:disable-line:no-invalid-this
                 return result;
             } catch (error) {
                 const transformedError = errorTransformer(error);
@@ -73,7 +72,7 @@ const syncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
         // tslint:disable-next-line:only-arrow-functions
         descriptor.value = function(...args: any[]): any {
             try {
-                const result = originalMethod.apply(this, args);
+                const result = originalMethod.apply(this, args); // tslint:disable-line:no-invalid-this
                 return result;
             } catch (error) {
                 const transformedError = errorTransformer(error);
