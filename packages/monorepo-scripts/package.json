@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@0xproject/monorepo-scripts",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "engines": {
         "node": ">=6.12"
     },
@@ -10,6 +10,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build": "tsc -b",
+        "build:ci": "yarn build",
         "lint": "tslint --project .",
         "clean": "shx rm -rf lib",
         "test:publish": "run-s build script:publish",

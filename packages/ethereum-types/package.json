@@ -1,6 +1,6 @@
 {
     "name": "ethereum-types",
-    "version": "1.0.8",
+    "version": "1.0.10",
     "engines": {
         "node": ">=6.12"
     },
@@ -9,6 +9,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build": "tsc -b",
+        "build:ci": "yarn build",
         "clean": "shx rm -rf lib generated_docs",
         "lint": "tslint --project .",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"

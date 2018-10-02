@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.1 - _October 2, 2018_
+
+    * Dependencies updated
+
+## v2.0.0 - _September 28, 2018_
+
+    * Make abi_decoder compatible with ethers ^4.0.0 (#1069)
+
 ## v1.0.11 - _September 25, 2018_
 
     * Dependencies updated

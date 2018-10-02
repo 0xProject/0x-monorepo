@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { KindString } from '../types';
+import { KindString, SupportedDocJson } from '../types';
 import { constants } from '../utils/constants';
 
 import { Comment } from './comment';
@@ -46,7 +46,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
         let codeSnippet: React.ReactNode;
         switch (customType.kindString) {
             case KindString.Interface:
-                typePrefix = 'Interface';
+                typePrefix = this.props.docsInfo.type === SupportedDocJson.SolDoc ? 'Struct' : 'Interface';
                 codeSnippet = (
                     <Interface
                         type={customType}

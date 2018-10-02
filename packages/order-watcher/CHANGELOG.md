@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.1 - _October 2, 2018_
+
+    * Dependencies updated
+
+## v2.1.0 - _September 28, 2018_
+
+    * Export ExpirationWatcher (#1097)
+
 ## v2.0.0 - _September 25, 2018_
 
     * Fixes dropped events issue by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too. (#1080)

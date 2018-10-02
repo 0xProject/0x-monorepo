@@ -1,12 +1,22 @@
 [
     {
+        "timestamp": 1538475601,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
                 "note": "Make abi_decoder compatible with ethers ^4.0.0",
                 "pr": 1069
             }
-        ]
+        ],
+        "timestamp": 1538157789
     },
     {
         "timestamp": 1537907159,

@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/migrations",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "engines": {
         "node": ">=6.12"
     },
@@ -9,6 +9,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build": "yarn pre_build && tsc -b",
+        "build:ci": "yarn build",
         "pre_build": "run-s copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles 'artifacts/**/*' ./lib",
         "clean": "shx rm -rf lib src/1.0.0/contract_wrappers src/2.0.0-testnet/contract_wrappers src/2.0.0/contract_wrappers artifacts/development",
@@ -30,10 +31,10 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0xproject/abi-gen": "^1.0.11",
-        "@0xproject/dev-utils": "^1.0.10",
+        "@0xproject/abi-gen": "^1.0.12",
+        "@0xproject/dev-utils": "^1.0.11",
         "@0xproject/tslint-config": "^1.0.7",
-        "@0xproject/types": "^1.1.1",
+        "@0xproject/types": "^1.1.2",
         "@types/yargs": "^10.0.0",
         "copyfiles": "^2.0.0",
         "make-promises-safe": "^1.1.0",
@@ -44,15 +45,15 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "@0xproject/base-contract": "^2.0.5",
-        "@0xproject/order-utils": "^1.0.5",
-        "@0xproject/sol-compiler": "^1.1.5",
-        "@0xproject/subproviders": "^2.0.5",
-        "@0xproject/typescript-typings": "^2.0.2",
-        "@0xproject/utils": "^1.0.11",
-        "@0xproject/web3-wrapper": "^3.0.1",
+        "@0xproject/base-contract": "^3.0.0",
+        "@0xproject/order-utils": "^1.0.6",
+        "@0xproject/sol-compiler": "^1.1.6",
+        "@0xproject/subproviders": "^2.0.6",
+        "@0xproject/typescript-typings": "^3.0.0",
+        "@0xproject/utils": "^2.0.0",
+        "@0xproject/web3-wrapper": "^3.0.2",
         "@ledgerhq/hw-app-eth": "^4.3.0",
-        "ethereum-types": "^1.0.8",
+        "ethereum-types": "^1.0.9",
         "ethers": "4.0.0-beta.14",
         "lodash": "^4.17.5"
     },

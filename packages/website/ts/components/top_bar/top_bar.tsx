@@ -136,7 +136,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             <Link key="subMenuItem-smartContracts" to={WebsitePaths.SmartContracts} className="text-decoration-none">
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
-                    primaryText={this.props.translate.get(Key.SmartContract, Deco.CapWords)}
+                    primaryText={this.props.translate.get(Key.SmartContracts, Deco.CapWords)}
                 />
             </Link>,
             <Link key="subMenuItem-0xconnect" to={WebsitePaths.Connect} className="text-decoration-none">

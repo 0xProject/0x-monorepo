@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sra-spec",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "engines": {
         "node": ">=6.12"
     },
@@ -18,6 +18,7 @@
         "test:circleci": "yarn test:coverage",
         "clean": "shx rm -rf lib",
         "build": "tsc -b && yarn copy_md_files && yarn build-json",
+        "build:ci": "yarn build",
         "build-json": "node ./lib/build_scripts/buildJson",
         "build:watch": "chokidar 'src/**/*' -c 'yarn build' ",
         "copy_md_files": "copyfiles -u 2 './src/md/**/*.md' ./lib/src/md",
@@ -34,7 +35,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-spec/README.md",
     "dependencies": {
-        "@0xproject/json-schemas": "^1.0.4"
+        "@0xproject/json-schemas": "^1.0.5"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.7",
