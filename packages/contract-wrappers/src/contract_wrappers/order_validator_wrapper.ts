@@ -1,3 +1,4 @@
+import { artifacts, wrappers } from '@0xproject/contracts';
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -5,19 +6,17 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
 import { BalanceAndAllowance, OrderAndTraderInfo, TraderInfo } from '../types';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
-import { OrderValidatorContract } from './generated/order_validator';
 
 /**
  * This class includes the functionality related to interacting with the OrderValidator contract.
  */
 export class OrderValidatorWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.OrderValidator.compilerOutput.abi;
-    private _orderValidatorContractIfExists?: OrderValidatorContract;
+    private _orderValidatorContractIfExists?: wrappers.OrderValidatorContract;
     /**
      * Instantiate OrderValidatorWrapper
      * @param web3Wrapper Web3Wrapper instance to use
@@ -170,12 +169,12 @@ export class OrderValidatorWrapper extends ContractWrapper {
     private _invalidateContractInstance(): void {
         delete this._orderValidatorContractIfExists;
     }
-    private async _getOrderValidatorContractAsync(): Promise<OrderValidatorContract> {
+    private async _getOrderValidatorContractAsync(): Promise<wrappers.OrderValidatorContract> {
         if (!_.isUndefined(this._orderValidatorContractIfExists)) {
             return this._orderValidatorContractIfExists;
         }
         const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(artifacts.OrderValidator);
-        const contractInstance = new OrderValidatorContract(
+        const contractInstance = new wrappers.OrderValidatorContract(
             abi,
             address,
             this._web3Wrapper.getProvider(),

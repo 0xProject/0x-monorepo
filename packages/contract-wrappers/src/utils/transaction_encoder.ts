@@ -1,10 +1,10 @@
+import { wrappers } from '@0xproject/contracts';
+
 import { schemas } from '@0xproject/json-schemas';
 import { eip712Utils } from '@0xproject/order-utils';
 import { Order, SignedOrder } from '@0xproject/types';
 import { BigNumber, signTypedDataUtils } from '@0xproject/utils';
 import _ = require('lodash');
-
-import { ExchangeContract } from '../contract_wrappers/generated/exchange';
 
 import { assert } from './assert';
 
@@ -14,8 +14,8 @@ import { assert } from './assert';
  * can submit this to the blockchain. The Exchange context executes as if UserA had directly submitted this transaction.
  */
 export class TransactionEncoder {
-    private readonly _exchangeInstance: ExchangeContract;
-    constructor(exchangeInstance: ExchangeContract) {
+    private readonly _exchangeInstance: wrappers.ExchangeContract;
+    constructor(exchangeInstance: wrappers.ExchangeContract) {
         this._exchangeInstance = exchangeInstance;
     }
     /**
@@ -275,7 +275,7 @@ export class TransactionEncoder {
         );
         return abiEncodedData;
     }
-    private _getExchangeContract(): ExchangeContract {
+    private _getExchangeContract(): wrappers.ExchangeContract {
         return this._exchangeInstance;
     }
 }

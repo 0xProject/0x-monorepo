@@ -1,3 +1,4 @@
+import { artifacts, wrappers } from '@0xproject/contracts';
 import { schemas } from '@0xproject/json-schemas';
 import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -5,7 +6,6 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
 import { OrderTransactionOpts } from '../types';
@@ -16,14 +16,13 @@ import { decorators } from '../utils/decorators';
 import { utils } from '../utils/utils';
 
 import { ContractWrapper } from './contract_wrapper';
-import { ForwarderContract } from './generated/forwarder';
 
 /**
  * This class includes the functionality related to interacting with the Forwarder contract.
  */
 export class ForwarderWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.Forwarder.compilerOutput.abi;
-    private _forwarderContractIfExists?: ForwarderContract;
+    private _forwarderContractIfExists?: wrappers.ForwarderContract;
     private _contractAddressIfExists?: string;
     private _zrxContractAddressIfExists?: string;
     constructor(
@@ -242,7 +241,7 @@ export class ForwarderWrapper extends ContractWrapper {
      * @return Address of Ether token
      */
     public getEtherTokenAddress(): string {
-        const contractAddress = this._getContractAddress(artifacts.EtherToken);
+        const contractAddress = this._getContractAddress(artifacts.WETH9);
         return contractAddress;
     }
     // HACK: We don't want this method to be visible to the other units within that package but not to the end user.
@@ -251,7 +250,7 @@ export class ForwarderWrapper extends ContractWrapper {
     private _invalidateContractInstance(): void {
         delete this._forwarderContractIfExists;
     }
-    private async _getForwarderContractAsync(): Promise<ForwarderContract> {
+    private async _getForwarderContractAsync(): Promise<wrappers.ForwarderContract> {
         if (!_.isUndefined(this._forwarderContractIfExists)) {
             return this._forwarderContractIfExists;
         }
@@ -259,7 +258,7 @@ export class ForwarderWrapper extends ContractWrapper {
             artifacts.Forwarder,
             this._contractAddressIfExists,
         );
-        const contractInstance = new ForwarderContract(
+        const contractInstance = new wrappers.ForwarderContract(
             abi,
             address,
             this._web3Wrapper.getProvider(),

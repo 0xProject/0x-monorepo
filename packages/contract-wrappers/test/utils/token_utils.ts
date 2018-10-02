@@ -1,8 +1,6 @@
+import { artifacts, wrappers } from '@0xproject/contracts';
 import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
-
-import { artifacts } from '../../src/artifacts';
-import { DummyERC721TokenContract } from '../../src/contract_wrappers/generated/dummy_erc721_token';
 
 import { constants } from './constants';
 import { provider, txDefaults, web3Wrapper } from './web3_wrapper';
@@ -24,7 +22,7 @@ export const tokenUtils = {
         return artifacts.ZRXToken.networks[constants.TESTRPC_NETWORK_ID].address;
     },
     getWethTokenAddress(): string {
-        return artifacts.EtherToken.networks[constants.TESTRPC_NETWORK_ID].address;
+        return artifacts.WETH9.networks[constants.TESTRPC_NETWORK_ID].address;
     },
     getDummyERC20TokenAddresses(): string[] {
         return DUMMY_ERC_20_ADRESSES;
@@ -33,7 +31,7 @@ export const tokenUtils = {
         return DUMMY_ERC_721_ADRESSES;
     },
     async mintDummyERC721Async(address: string, tokenOwner: string): Promise<BigNumber> {
-        const erc721 = new DummyERC721TokenContract(
+        const erc721 = new wrappers.DummyERC721TokenContract(
             artifacts.DummyERC721Token.compilerOutput.abi,
             address,
             provider,

@@ -7,6 +7,8 @@ export * from '../../generated-wrappers/dummy_multiple_return_erc20_token';
 export * from '../../generated-wrappers/dummy_no_return_erc20_token';
 export * from '../../generated-wrappers/erc20_proxy';
 export * from '../../generated-wrappers/erc721_proxy';
+export * from '../../generated-wrappers/erc20_token';
+export * from '../../generated-wrappers/erc721_token';
 export * from '../../generated-wrappers/exchange';
 export * from '../../generated-wrappers/exchange_wrapper';
 export * from '../../generated-wrappers/forwarder';

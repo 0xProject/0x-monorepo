@@ -1,4 +1,3 @@
-import * as artifacts from './artifacts';
+export * from './artifacts';
 import * as wrappers from './wrappers';
-
-export { wrappers, artifacts };
+export { wrappers };

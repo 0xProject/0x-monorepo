@@ -1,20 +1,19 @@
+import { artifacts, wrappers } from '@0xproject/contracts';
 import { AssetProxyId } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
-import { ERC20ProxyContract } from './generated/erc20_proxy';
 
 /**
  * This class includes the functionality related to interacting with the ERC20Proxy contract.
  */
 export class ERC20ProxyWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.ERC20Proxy.compilerOutput.abi;
-    private _erc20ProxyContractIfExists?: ERC20ProxyContract;
+    private _erc20ProxyContractIfExists?: wrappers.ERC20ProxyContract;
     private _contractAddressIfExists?: string;
     /**
      * Instantiate ERC20ProxyWrapper
@@ -72,7 +71,7 @@ export class ERC20ProxyWrapper extends ContractWrapper {
     private _invalidateContractInstance(): void {
         delete this._erc20ProxyContractIfExists;
     }
-    private async _getERC20ProxyContractAsync(): Promise<ERC20ProxyContract> {
+    private async _getERC20ProxyContractAsync(): Promise<wrappers.ERC20ProxyContract> {
         if (!_.isUndefined(this._erc20ProxyContractIfExists)) {
             return this._erc20ProxyContractIfExists;
         }
@@ -80,7 +79,7 @@ export class ERC20ProxyWrapper extends ContractWrapper {
             artifacts.ERC20Proxy,
             this._contractAddressIfExists,
         );
-        const contractInstance = new ERC20ProxyContract(
+        const contractInstance = new wrappers.ERC20ProxyContract(
             abi,
             address,
             this._web3Wrapper.getProvider(),

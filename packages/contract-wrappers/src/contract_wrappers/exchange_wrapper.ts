@@ -1,3 +1,4 @@
+import { artifacts, wrappers } from '@0xproject/contracts';
 import { schemas } from '@0xproject/json-schemas';
 import {
     assetDataUtils,
@@ -11,7 +12,6 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { BlockParamLiteral, ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
 import { AssetBalanceAndProxyAllowanceFetcher } from '../fetchers/asset_balance_and_proxy_allowance_fetcher';
 import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_fetcher';
 import { methodOptsSchema } from '../schemas/method_opts_schema';
@@ -35,7 +35,6 @@ import { TransactionEncoder } from '../utils/transaction_encoder';
 import { ContractWrapper } from './contract_wrapper';
 import { ERC20TokenWrapper } from './erc20_token_wrapper';
 import { ERC721TokenWrapper } from './erc721_token_wrapper';
-import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from './generated/exchange';
 
 /**
  * This class includes all the functionality related to calling methods, sending transactions and subscribing to
@@ -43,7 +42,7 @@ import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from './generated
  */
 export class ExchangeWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.Exchange.compilerOutput.abi;
-    private _exchangeContractIfExists?: ExchangeContract;
+    private _exchangeContractIfExists?: wrappers.ExchangeContract;
     private _erc721TokenWrapper: ERC721TokenWrapper;
     private _erc20TokenWrapper: ERC20TokenWrapper;
     private _contractAddressIfExists?: string;
@@ -1042,13 +1041,13 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
-    public subscribe<ArgsType extends ExchangeEventArgs>(
-        eventName: ExchangeEvents,
+    public subscribe<ArgsType extends wrappers.ExchangeEventArgs>(
+        eventName: wrappers.ExchangeEvents,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
         isVerbose: boolean = false,
     ): string {
-        assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, wrappers.ExchangeEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const exchangeContractAddress = this.getContractAddress();
@@ -1083,12 +1082,12 @@ export class ExchangeWrapper extends ContractWrapper {
      *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
      * @return  Array of logs that match the parameters
      */
-    public async getLogsAsync<ArgsType extends ExchangeEventArgs>(
-        eventName: ExchangeEvents,
+    public async getLogsAsync<ArgsType extends wrappers.ExchangeEventArgs>(
+        eventName: wrappers.ExchangeEvents,
         blockRange: BlockRange,
         indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
-        assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, wrappers.ExchangeEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const exchangeContractAddress = this.getContractAddress();
@@ -1201,7 +1200,7 @@ export class ExchangeWrapper extends ContractWrapper {
         delete this._exchangeContractIfExists;
     }
     // tslint:enable:no-unused-variable
-    private async _getExchangeContractAsync(): Promise<ExchangeContract> {
+    private async _getExchangeContractAsync(): Promise<wrappers.ExchangeContract> {
         if (!_.isUndefined(this._exchangeContractIfExists)) {
             return this._exchangeContractIfExists;
         }
@@ -1209,7 +1208,7 @@ export class ExchangeWrapper extends ContractWrapper {
             artifacts.Exchange,
             this._contractAddressIfExists,
         );
-        const contractInstance = new ExchangeContract(
+        const contractInstance = new wrappers.ExchangeContract(
             abi,
             address,
             this._web3Wrapper.getProvider(),

@@ -1,16 +1,15 @@
+import { artifacts, wrappers } from '@0xproject/contracts';
 import { schemas } from '@0xproject/json-schemas';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
 import { BlockRange, ContractWrappersError, EventCallback, IndexedFilterValues, TransactionOpts } from '../types';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ERC20TokenWrapper } from './erc20_token_wrapper';
-import { WETH9Contract, WETH9EventArgs, WETH9Events } from './generated/weth9';
 
 const removeUndefinedProperties = _.pickBy;
 
@@ -19,9 +18,9 @@ const removeUndefinedProperties = _.pickBy;
  * The caller can convert ETH into the equivalent number of wrapped ETH ERC20 tokens and back.
  */
 export class EtherTokenWrapper extends ContractWrapper {
-    public abi: ContractAbi = artifacts.EtherToken.compilerOutput.abi;
+    public abi: ContractAbi = artifacts.WETH9.compilerOutput.abi;
     private _etherTokenContractsByAddress: {
-        [address: string]: WETH9Contract;
+        [address: string]: wrappers.WETH9Contract;
     } = {};
     private _erc20TokenWrapper: ERC20TokenWrapper;
     /**
@@ -126,15 +125,15 @@ export class EtherTokenWrapper extends ContractWrapper {
      *                              the value is the value you are interested in. E.g `{_owner: aUserAddressHex}`
      * @return  Array of logs that match the parameters
      */
-    public async getLogsAsync<ArgsType extends WETH9EventArgs>(
+    public async getLogsAsync<ArgsType extends wrappers.WETH9EventArgs>(
         etherTokenAddress: string,
-        eventName: WETH9Events,
+        eventName: wrappers.WETH9Events,
         blockRange: BlockRange,
         indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
         const normalizedEtherTokenAddress = etherTokenAddress.toLowerCase();
-        assert.doesBelongToStringEnum('eventName', eventName, WETH9Events);
+        assert.doesBelongToStringEnum('eventName', eventName, wrappers.WETH9Events);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const logs = await this._getLogsAsync<ArgsType>(
@@ -142,7 +141,7 @@ export class EtherTokenWrapper extends ContractWrapper {
             eventName,
             blockRange,
             indexFilterValues,
-            artifacts.EtherToken.compilerOutput.abi,
+            artifacts.WETH9.compilerOutput.abi,
         );
         return logs;
     }
@@ -156,23 +155,23 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
-    public subscribe<ArgsType extends WETH9EventArgs>(
+    public subscribe<ArgsType extends wrappers.WETH9EventArgs>(
         etherTokenAddress: string,
-        eventName: WETH9Events,
+        eventName: wrappers.WETH9Events,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
         isVerbose: boolean = false,
     ): string {
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
         const normalizedEtherTokenAddress = etherTokenAddress.toLowerCase();
-        assert.doesBelongToStringEnum('eventName', eventName, WETH9Events);
+        assert.doesBelongToStringEnum('eventName', eventName, wrappers.WETH9Events);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const subscriptionToken = this._subscribe<ArgsType>(
             normalizedEtherTokenAddress,
             eventName,
             indexFilterValues,
-            artifacts.EtherToken.compilerOutput.abi,
+            artifacts.WETH9.compilerOutput.abi,
             callback,
             isVerbose,
         );
@@ -199,7 +198,7 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @returns The Ethereum address of the EtherToken contract or undefined.
      */
     public getContractAddressIfExists(): string | undefined {
-        const networkSpecificArtifact = artifacts.EtherToken.networks[this._networkId];
+        const networkSpecificArtifact = artifacts.WETH9.networks[this._networkId];
         const contractAddressIfExists = _.isUndefined(networkSpecificArtifact)
             ? undefined
             : networkSpecificArtifact.address;
@@ -210,16 +209,16 @@ export class EtherTokenWrapper extends ContractWrapper {
         this.unsubscribeAll();
         this._etherTokenContractsByAddress = {};
     }
-    private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<WETH9Contract> {
+    private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<wrappers.WETH9Contract> {
         let etherTokenContract = this._etherTokenContractsByAddress[etherTokenAddress];
         if (!_.isUndefined(etherTokenContract)) {
             return etherTokenContract;
         }
         const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
-            artifacts.EtherToken,
+            artifacts.WETH9,
             etherTokenAddress,
         );
-        const contractInstance = new WETH9Contract(
+        const contractInstance = new wrappers.WETH9Contract(
             abi,
             address,
             this._web3Wrapper.getProvider(),

@@ -1,10 +1,8 @@
+import { artifacts } from '@0xproject/contracts';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { constants } from './utils/constants';
-
-import { artifacts } from './artifacts';
 import { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
 import { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
 import { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
@@ -18,6 +16,7 @@ import { contractWrappersPrivateNetworkConfigSchema } from './schemas/contract_w
 import { contractWrappersPublicNetworkConfigSchema } from './schemas/contract_wrappers_public_network_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
+import { constants } from './utils/constants';
 /**
  * The ContractWrappers class contains smart contract wrappers helpful when building on 0x protocol.
  */
