@@ -8,6 +8,8 @@ yarn add @0xproject/instant
 
 **Import**
 
+**CommonJS module**
+
 ```typescript
 import { ZeroExInstant } from '@0xproject/instant';
 ```
@@ -24,6 +26,24 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 "compilerOptions": {
     "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
 }
+```
+
+**UMD Module**
+
+The package is also available as a UMD module named `zeroExInstant`.
+
+```html
+<head>
+    <script type="text/javascript" src="[zeroExInstantUMDPath]" charset="utf-8"></script>
+</head>
+<body>
+    <div id="zeroExInstantContainer"></div>
+    <script>
+        zeroExInstant.render({
+            // Initialization options
+        }, '#zeroExInstantContainer');
+    </script>
+</body>
 ```
 
 ## Contributing
