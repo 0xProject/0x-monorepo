@@ -160,6 +160,9 @@ export class AssetBuyer {
             this._getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
             shouldForceOrderRefresh,
         ]);
+        if (ordersAndFillableAmounts.orders.length === 0) {
+            throw new Error(`${AssetBuyerError.AssetUnavailable}: For assetData ${assetData}`);
+        }
         const buyQuote = buyQuoteCalculator.calculate(
             ordersAndFillableAmounts,
             feeOrdersAndFillableAmounts,

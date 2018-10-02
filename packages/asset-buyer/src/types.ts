@@ -96,13 +96,7 @@ export enum AssetBuyerError {
     InsufficientZrxLiquidity = 'INSUFFICIENT_ZRX_LIQUIDITY',
     NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
     InvalidOrderProviderResponse = 'INVALID_ORDER_PROVIDER_RESPONSE',
-}
-
-/**
- * Possible errors thrown by an AssetBuyerManager instance or associated static methods.
- */
-export enum AssetBuyerManagerError {
-    AssetBuyerNotFound = 'ASSET_BUYER_NOT_FOUND',
+    AssetUnavailable = 'ASSET_UNAVAILABLE',
 }
 
 export interface OrdersAndFillableAmounts {
