@@ -25,8 +25,7 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
     public render(): React.ReactNode {
         return (
             <Link
-                to={this.props.tutorialInfo.location}
-                className="text-decoration-none"
+                to={this.props.tutorialInfo.link.to}
                 onMouseEnter={this._onHover.bind(this)}
                 onMouseOver={this._onHover.bind(this)}
                 onMouseLeave={this._onHoverOff.bind(this)}
@@ -46,7 +45,7 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
                     </div>
                     <div className="lg-pl2 md-pl2 sm-pl3 col col-10">
                         <Text Tag="div" fontSize="18" fontColor={colors.lightLinkBlue} fontWeight="bold">
-                            {this.props.translate.get(this.props.tutorialInfo.title as Key, Deco.Cap)}
+                            {this.props.translate.get(this.props.tutorialInfo.link.title as Key, Deco.Cap)}
                         </Text>
                         <Text Tag="div" fontColor={colors.grey750} fontSize="16">
                             {this.props.translate.get(this.props.tutorialInfo.description as Key, Deco.Cap)}

@@ -618,10 +618,22 @@ export interface InjectedWeb3 {
     };
 }
 
-export interface TutorialInfo {
+export interface ALink {
     title: string;
+    to: string;
+    shouldOpenInNewTab?: boolean;
+    type?: LinkType;
+}
+
+export interface TutorialInfo {
     iconUrl: string;
     description: string;
-    location: string;
+    link: ALink;
+}
+
+export enum LinkType {
+    External = 'EXTERNAL',
+    ReactScroll = 'REACT_SCROLL',
+    ReactRoute = 'REACT_ROUTE',
 }
 // tslint:disable:max-file-line-count

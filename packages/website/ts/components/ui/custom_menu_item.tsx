@@ -1,24 +1,24 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'ts/components/ui/link';
 
-interface MenuItemProps {
+interface CustomMenuItemProps {
     to: string;
     style?: React.CSSProperties;
     onClick?: () => void;
     className?: string;
 }
 
-interface MenuItemState {
+interface CustomMenuItemState {
     isHovering: boolean;
 }
 
-export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
-    public static defaultProps: Partial<MenuItemProps> = {
+export class CustomMenuItem extends React.Component<CustomMenuItemProps, CustomMenuItemState> {
+    public static defaultProps: Partial<CustomMenuItemProps> = {
         onClick: _.noop.bind(_),
         className: '',
     };
-    public constructor(props: MenuItemProps) {
+    public constructor(props: CustomMenuItemProps) {
         super(props);
         this.state = {
             isHovering: false,
@@ -30,7 +30,7 @@ export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
             opacity: this.state.isHovering ? 0.5 : 1,
         };
         return (
-            <Link to={this.props.to} style={{ textDecoration: 'none', ...this.props.style }}>
+            <Link to={this.props.to} style={this.props.style}>
                 <div
                     onClick={this.props.onClick.bind(this)}
                     className={`mx-auto ${this.props.className}`}

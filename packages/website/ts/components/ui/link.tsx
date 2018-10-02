@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { Link as ReactRounterLink } from 'react-router-dom';
+import { LinkType } from 'ts/types';
 
 export interface LinkProps {
     to: string;
-    isExternal?: boolean;
+    type?: LinkType;
     shouldOpenInNewTab?: boolean;
     style?: React.CSSProperties;
     className?: string;
@@ -17,29 +18,39 @@ export interface LinkProps {
 export const Link: React.StatelessComponent<LinkProps> = ({
     style,
     className,
-    isExternal,
+    type,
     to,
     shouldOpenInNewTab,
     children,
 }) => {
-    if (isExternal) {
-        return (
-            <a target={shouldOpenInNewTab && '_blank'} className={className} style={style} href={to}>
-                {children}
-            </a>
-        );
-    } else {
-        return (
-            <ReactRounterLink to={to} className={className} style={style}>
-                {children}
-            </ReactRounterLink>
-        );
+    const styleWithDefault = {
+        textDecoration: 'none',
+        ...style,
+    };
+
+    switch (type) {
+        case LinkType.External:
+            return (
+                <a target={shouldOpenInNewTab && '_blank'} className={className} style={styleWithDefault} href={to}>
+                    {children}
+                </a>
+            );
+        case LinkType.ReactRoute:
+            return (
+                <ReactRounterLink to={to} className={className} style={styleWithDefault}>
+                    {children}
+                </ReactRounterLink>
+            );
+        case LinkType.ReactScroll:
+            return <div>TODO</div>;
+        default:
+            throw new Error(`Unrecognized LinkType: ${type}`);
     }
 };
 
 Link.defaultProps = {
-    isExternal: false,
-    shouldOpenInNewTab: false,
+    type: LinkType.ReactRoute,
+    shouldOpenInNewTab: true,
     style: {},
     className: '',
 };

@@ -10,7 +10,7 @@ export interface DocsLogoProps {
 export const DocsLogo: React.StatelessComponent<DocsLogoProps> = props => {
     return (
         <div style={props.containerStyle}>
-            <Link to={`${WebsitePaths.Docs}`} className="text-decoration-none">
+            <Link to={WebsitePaths.Docs}>
                 <img src="/images/docs_logo.svg" height={props.height} />
             </Link>
         </div>

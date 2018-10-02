@@ -1,61 +1,68 @@
 import { colors } from '@0xproject/react-shared';
-import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Link } from 'ts/components/ui/link';
 import { Text } from 'ts/components/ui/text';
-import { Deco, Key, WebsitePaths } from 'ts/types';
+import { ALink, Deco, Key, LinkType, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
-interface LinkInfo {
-    link: string;
-    shouldOpenInNewTab?: boolean;
-}
-
-const gettingStartedKeyToLinkInfo1: ObjectMap<LinkInfo> = {
-    [Key.BuildARelayer]: {
-        link: `${WebsitePaths.Wiki}#Build-A-Relayer`,
+const gettingStartedKeyToLinkInfo1: ALink[] = [
+    {
+        title: Key.BuildARelayer,
+        to: `${WebsitePaths.Wiki}#Build-A-Relayer`,
     },
-    [Key.OrderBasics]: {
-        link: `${WebsitePaths.Wiki}#Create,-Validate,-Fill-Order`,
+    {
+        title: Key.OrderBasics,
+        to: `${WebsitePaths.Wiki}#Create,-Validate,-Fill-Order`,
     },
-};
-const gettingStartedKeyToLinkInfo2: ObjectMap<LinkInfo> = {
-    [Key.DevelopOnEthereum]: {
-        link: `${WebsitePaths.Wiki}#Ethereum-Development`,
+];
+const gettingStartedKeyToLinkInfo2: ALink[] = [
+    {
+        title: Key.DevelopOnEthereum,
+        to: `${WebsitePaths.Wiki}#Ethereum-Development`,
     },
-    [Key.UseSharedLiquidity]: {
-        link: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
+    {
+        title: Key.UseSharedLiquidity,
+        to: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
     },
-};
-const popularDocsToLinkInfos: ObjectMap<LinkInfo> = {
-    [Key.ZeroExJs]: {
-        link: WebsitePaths.ZeroExJs,
+];
+const popularDocsToLinkInfos: ALink[] = [
+    {
+        title: Key.ZeroExJs,
+        to: WebsitePaths.ZeroExJs,
     },
-    [Key.Connect]: {
-        link: WebsitePaths.Connect,
+    {
+        title: Key.Connect,
+        to: WebsitePaths.Connect,
     },
-    [Key.SmartContract]: {
-        link: WebsitePaths.SmartContracts,
+    {
+        title: Key.SmartContract,
+        to: WebsitePaths.SmartContracts,
     },
-};
-const usefulLinksToLinkInfo: ObjectMap<LinkInfo> = {
-    [Key.Github]: {
-        link: constants.URL_GITHUB_ORG,
+];
+const usefulLinksToLinkInfo: ALink[] = [
+    {
+        title: Key.Github,
+        to: constants.URL_GITHUB_ORG,
+        type: LinkType.External,
         shouldOpenInNewTab: true,
     },
-    [Key.Whitepaper]: {
-        link: WebsitePaths.Whitepaper,
+    {
+        title: Key.Whitepaper,
+        to: WebsitePaths.Whitepaper,
+        type: LinkType.External,
         shouldOpenInNewTab: true,
     },
-    [Key.Sandbox]: {
-        link: constants.URL_SANDBOX,
+    {
+        title: Key.Sandbox,
+        to: constants.URL_SANDBOX,
+        type: LinkType.External,
         shouldOpenInNewTab: true,
     },
-};
+];
 
 interface DevelopersDropDownProps {
     translate: Translate;
@@ -123,7 +130,6 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                 >
                     <Link
                         to={WebsitePaths.Docs}
-                        className="text-decoration-none"
                         style={{
                             color: colors.lightBlueA700,
                             fontWeight: 'bold',
@@ -152,31 +158,25 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
             </div>
         );
     }
-    private _renderLinkSection(keyToLinkInfo: ObjectMap<LinkInfo>): React.ReactNode {
+    private _renderLinkSection(links: ALink[]): React.ReactNode {
         const linkStyle: React.CSSProperties = {
             color: colors.lightBlueA700,
             fontFamily: 'Roboto, Roboto Mono',
         };
-        const numLinks = _.size(keyToLinkInfo);
+        const numLinks = links.length;
         let i = 0;
-        const links = _.map(keyToLinkInfo, (linkInfo: LinkInfo, key: string) => {
+        const renderLinks = _.map(links, (link: ALink) => {
             i++;
             const isLast = i === numLinks;
-            const linkText = this.props.translate.get(key as Key, Deco.Cap);
+            const linkText = this.props.translate.get(link.title as Key, Deco.Cap);
             return (
-                <div className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${key}`}>
-                    <Link
-                        to={linkInfo.link}
-                        isExternal={!!linkInfo.shouldOpenInNewTab}
-                        shouldOpenInNewTab={linkInfo.shouldOpenInNewTab}
-                        className="text-decoration-none"
-                        style={linkStyle}
-                    >
+                <div className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${link.title}`}>
+                    <Link to={link.to} type={link.type} shouldOpenInNewTab={link.shouldOpenInNewTab} style={linkStyle}>
                         {linkText}
                     </Link>
                 </div>
             );
         });
-        return <div>{links}</div>;
+        return <div>{renderLinks}</div>;
     }
 }

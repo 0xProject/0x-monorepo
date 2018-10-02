@@ -1,11 +1,7 @@
-import {
-    colors,
-    constants as sharedConstants,
-    MarkdownLinkBlock,
-    NestedSidebarMenu,
-    utils as sharedUtils,
-} from '@0xproject/react-shared';
+import { colors, constants as sharedConstants, MarkdownLinkBlock, utils as sharedUtils } from '@0xproject/react-shared';
+import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
+import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import * as ReactMarkdown from 'react-markdown';
@@ -17,7 +13,7 @@ import { Container } from 'ts/components/ui/container';
 import { Link } from 'ts/components/ui/link';
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, Key, ScreenWidths, TutorialInfo, WebsitePaths } from 'ts/types';
+import { ALink, Deco, Key, LinkType, ScreenWidths, TutorialInfo, WebsitePaths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -26,28 +22,36 @@ const TOP_BAR_HEIGHT = 80;
 const SCROLLER_WIDTH = 4;
 const TUTORIALS: TutorialInfo[] = [
     {
-        title: Key.DevelopOnEthereum,
         iconUrl: '/images/developers/tutorials/develop_on_ethereum.svg',
         description: Key.DevelopOnEthereumDescription,
-        location: `${WebsitePaths.Wiki}#Ethereum-Development`,
+        link: {
+            title: Key.DevelopOnEthereum,
+            to: `${WebsitePaths.Wiki}#Ethereum-Development`,
+        },
     },
     {
-        title: Key.BuildARelayer,
         iconUrl: '/images/developers/tutorials/build_a_relayer.svg',
         description: Key.BuildARelayerDescription,
-        location: `${WebsitePaths.Wiki}#Build-A-Relayer`,
+        link: {
+            title: Key.BuildARelayer,
+            to: `${WebsitePaths.Wiki}#Build-A-Relayer`,
+        },
     },
     {
-        title: Key.OrderBasics,
         iconUrl: '/images/developers/tutorials/0x_order_basics.svg',
         description: Key.OrderBasicsDescription,
-        location: `${WebsitePaths.Wiki}#Create,-Validate,-Fill-Order`,
+        link: {
+            title: Key.OrderBasics,
+            to: `${WebsitePaths.Wiki}#Create,-Validate,-Fill-Order`,
+        },
     },
     {
-        title: Key.UseSharedLiquidity,
         iconUrl: '/images/developers/tutorials/use_shared_liquidity.svg',
         description: Key.UseSharedLiquidityDescription,
-        location: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
+        link: {
+            title: Key.UseSharedLiquidity,
+            to: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
+        },
     },
 ];
 enum Categories {
@@ -59,221 +63,276 @@ enum Categories {
 const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
     [Categories.ZeroExProtocol]: [
         {
-            name: '0x.js',
             description:
                 'A library for interacting with the 0x protocol. It is a high level package which combines a number of smaller specific-purpose packages such as [order-utils](https://0xproject.com/docs/order-utils) and [contract-wrappers](https://0xproject.com/docs/contract-wrappers).',
-            to: WebsitePaths.ZeroExJs,
+            link: {
+                title: '0x.js',
+                to: WebsitePaths.ZeroExJs,
+            },
         },
         {
-            name: '0x starter project',
             description:
                 'A Typescript starter project that will walk you through the basics of how to interact with 0x Protocol and trade of an SRA relayer',
-            to: 'https://github.com/0xProject/0x-starter-project',
-            isExternal: true,
-            shouldOpenInNewTab: true,
+            link: {
+                title: '0x starter project',
+                to: 'https://github.com/0xProject/0x-starter-project',
+                type: LinkType.External,
+                shouldOpenInNewTab: true,
+            },
         },
         {
-            name: '@0xproject/connect',
             description:
                 'An http & websocket client for interacting with relayers that have implemented the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api)',
-            to: WebsitePaths.Connect,
+            link: {
+                title: '@0xproject/connect',
+                to: WebsitePaths.Connect,
+            },
         },
         {
-            name: '@0xproject/contract-wrappers',
             description:
                 'Typescript/Javascript wrappers of the 0x protocol Ethereum smart contracts. Use this library to call methods on the 0x smart contracts, subscribe to contract events and to fetch information stored in contracts.',
-            to: WebsitePaths.ContractWrappers,
+            link: {
+                title: '@0xproject/contract-wrappers',
+                to: WebsitePaths.ContractWrappers,
+            },
         },
         {
-            name: '@0xproject/json-schemas',
             description:
                 'A collection of 0x-related JSON-schemas (incl. SRA request/response schemas, 0x order message format schema, etc...)',
-            to: WebsitePaths.JSONSchemas,
+            link: {
+                title: '@0xproject/json-schemas',
+                to: WebsitePaths.JSONSchemas,
+            },
         },
         {
-            name: '@0xproject/order-utils',
             description:
                 'A set of utils for working with 0x orders. It includes utilities for creating, signing, validating 0x orders, encoding/decoding assetData and much more.',
-            to: WebsitePaths.OrderUtils,
+            link: {
+                title: '@0xproject/order-utils',
+                to: WebsitePaths.OrderUtils,
+            },
         },
         {
-            name: '@0xproject/order-watcher',
             description:
                 "A daemon that watches a set of 0x orders and emits events when an order's fillability has changed. Can be used by a relayer to prune their orderbook or by a trader to keep their view of the market up-to-date.",
-            to: WebsitePaths.OrderWatcher,
+            link: {
+                title: '@0xproject/order-watcher',
+                to: WebsitePaths.OrderWatcher,
+            },
         },
         {
-            name: '@0xproject/sra-spec',
             description:
                 'Contains the Standard Relayer API OpenAPI Spec. The package distributes both a javascript object version and a json version.',
-            to: 'https://github.com/0xProject/0x-monorepo/tree/development/packages/sra-spec',
-            isExternal: true,
-            shouldOpenInNewTab: true,
+            link: {
+                title: '@0xproject/sra-spec',
+                to: 'https://github.com/0xProject/0x-monorepo/tree/development/packages/sra-spec',
+                type: LinkType.External,
+                shouldOpenInNewTab: true,
+            },
         },
     ],
     [Categories.Ethereum]: [
         {
-            name: 'abi-gen',
             description:
                 "This package allows you to generate TypeScript contract wrappers from ABI files. It's heavily inspired by Geth abigen but takes a different approach. You can write your custom handlebars templates which will allow you to seamlessly integrate the generated code into your existing codebase with existing conventions.",
-            to: 'https://github.com/0xProject/0x-monorepo/tree/development/packages/abi-gen',
-            isExternal: true,
-            shouldOpenInNewTab: true,
+            link: {
+                title: 'abi-gen',
+                to: 'https://github.com/0xProject/0x-monorepo/tree/development/packages/abi-gen',
+                type: LinkType.External,
+                shouldOpenInNewTab: true,
+            },
         },
         {
-            name: 'ethereum-types',
             description:
                 'A collection of Typescript types that are useful when working on an Ethereum-based project (e.g RawLog, Transaction, TxData, SolidityTypes, etc...).',
-            to: WebsitePaths.EthereumTypes,
+            link: {
+                title: 'ethereum-types',
+                to: WebsitePaths.EthereumTypes,
+            },
         },
         {
-            name: '@0xproject/sol-compiler',
             description:
                 'A wrapper around [solc-js](https://github.com/ethereum/solc-js) that adds smart re-compilation, ability to compile an entire project, Solidity version specific compilation, standard input description support and much more.',
-            to: WebsitePaths.SolCompiler,
+            link: {
+                title: '@0xproject/sol-compiler',
+                to: WebsitePaths.SolCompiler,
+            },
         },
         {
-            name: '@0xproject/sol-cov',
             description:
                 'A Solidity code coverage tool. Sol-cov uses transaction traces to figure out which lines of your code has been covered by your tests.',
-            to: WebsitePaths.SolCov,
+            link: {
+                title: '@0xproject/sol-cov',
+                to: WebsitePaths.SolCov,
+            },
         },
         {
-            name: '@0xproject/subproviders',
             description:
                 'A collection of subproviders to use with [web3-provider-engine](https://www.npmjs.com/package/web3-provider-engine) (e.g subproviders for interfacing with Ledger hardware wallet, Mnemonic wallet, private key wallet, etc...)',
-            to: WebsitePaths.Subproviders,
+            link: {
+                title: '@0xproject/subproviders',
+                to: WebsitePaths.Subproviders,
+            },
         },
         {
-            name: '@0xproject/web3-wrapper',
             description:
                 'A raw Ethereum JSON RPC client to simplify interfacing with Ethereum nodes. Also includes some convenience functions for awaiting transactions to be mined, converting between token units, etc...',
-            to: WebsitePaths.Web3Wrapper,
+            link: {
+                title: '@0xproject/web3-wrapper',
+                to: WebsitePaths.Web3Wrapper,
+            },
         },
     ],
     [Categories.CommunityMaintained]: [
         {
-            name: '0x Event Extractor',
             description:
                 'Node.js worker originally built for 0x Tracker which extracts 0x fill events from the Ethereum blockchain and persists them to MongoDB. Support for both V1 and V2 of the 0x protocol is included with events tagged against the protocol version they belong to.',
-            to: 'https://github.com/0xTracker/0x-event-extractor',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                title: '0x Event Extractor',
+                to: 'https://github.com/0xTracker/0x-event-extractor',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: '0x Tracker Worker',
             description:
                 'Node.js worker built for 0x Tracker which performs various ETL tasks related to the 0x protocol trading data and other information used on 0x Tracker.',
-            to: 'https://github.com/0xTracker/0x-tracker-worker',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                title: '0x Tracker Worker',
+                to: 'https://github.com/0xTracker/0x-tracker-worker',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'Aquaduct',
             description:
                 "ERCdex's Javascript SDK for trading on their relayer, as well as other Aquaduct partner relayers",
-            to: 'https://www.npmjs.com/package/aqueduct',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                title: 'Aquaduct',
+                to: 'https://www.npmjs.com/package/aqueduct',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'Aquaduct Server SDK',
             description:
                 'SDKs for automation using Aqueduct & ERC dEX. Aqueduct Server is a lightweight, portable and secure server that runs locally on any workstation. The server exposes a small number of foundational endpoints that enable working with the decentralized Aqueduct liquidity pool from any context or programming language.',
-            to: 'https://github.com/ERCdEX/aqueduct-server-sdk',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                title: 'Aquaduct Server SDK',
+                to: 'https://github.com/ERCdEX/aqueduct-server-sdk',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'DDEX Node.js SDK',
             description: 'A node.js SDK for trading on the DDEX relayer',
-            to: 'https://www.npmjs.com/package/ddex-api',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                to: 'https://www.npmjs.com/package/ddex-api',
+                title: 'DDEX Node.js SDK',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'ERCdex Widget',
             description: "The ERC dEX Trade Widget let's any website provide token liquidity to it's users",
-            to: 'https://github.com/ERCdEX/widget',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                to: 'https://github.com/ERCdEX/widget',
+                title: 'ERCdex Widget',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'ERCdex Java SDK',
             description: "ERCdex's Java SDK for trading on their relayer, as well as other Aquaduct partner relayers",
-            to: 'https://github.com/ERCdEX/java',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                to: 'https://github.com/ERCdEX/java',
+                title: 'ERCdex Java SDK',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'ERCdex Python SDK',
             description: "ERCdex's Python SDK for trading on their relayer, as well as other Aquaduct partner relayers",
-            to: 'https://github.com/ERCdEX/python',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                to: 'https://github.com/ERCdEX/python',
+                title: 'ERCdex Python SDK',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'Massive',
             description:
                 'A set of command-line tools for creating command-line scripts for interacting with the Ethereum blockchain in general, and 0x in particular',
-            to: 'https://github.com/NoteGio/massive',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                title: 'Massive',
+                to: 'https://github.com/NoteGio/massive',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'OpenRelay',
             description: 'An open-source API-only Relayer written in Go',
-            to: 'https://github.com/NoteGio/openrelay',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                to: 'https://github.com/NoteGio/openrelay',
+                title: 'OpenRelay',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'OpenRelay.js',
             description:
                 'A JavaScript Library for Interacting with OpenRelay.xyz and other 0x Standard Relayer API Implementations',
-            to: 'https://github.com/NoteGio/openrelay.js',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                title: 'OpenRelay.js',
+                to: 'https://github.com/NoteGio/openrelay.js',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'Radar SDK',
             description:
                 'The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs',
-            to: 'https://github.com/RadarRelay/sdk',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                title: 'Radar SDK',
+                to: 'https://github.com/RadarRelay/sdk',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'The Ocean Javascript SDK',
             description:
                 'The Ocean provides a simple REST API, WebSockets API, and JavaScript library to help you integrate decentralized trading into your existing trading strategy.',
-            to: 'https://github.com/TheOceanTrade/theoceanx-javascript',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                title: 'The Ocean Javascript SDK',
+                to: 'https://github.com/TheOceanTrade/theoceanx-javascript',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'Tokenlon Javascript SDK',
             description: "Tokenlon SDK provides APIs for developers to trade of imToken's relayer",
-            to: 'https://www.npmjs.com/package/tokenlon-sdk',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                to: 'https://www.npmjs.com/package/tokenlon-sdk',
+                title: 'Tokenlon Javascript SDK',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
         {
-            name: 'AssetData decoder library in Java',
             description: 'A small library that implements the 0x order assetData encoding/decoding in Java',
-            to: 'https://github.com/wildnothing/asset-data-decoder',
-            shouldOpenInNewTab: true,
-            isExternal: true,
+            link: {
+                to: 'https://github.com/wildnothing/asset-data-decoder',
+                title: 'AssetData decoder library in Java',
+                shouldOpenInNewTab: true,
+                type: LinkType.External,
+            },
         },
     ],
 };
 
 interface Package {
-    name: string;
     description: string;
-    to: string;
-    isExternal?: boolean;
-    shouldOpenInNewTab?: boolean;
+    link: ALink;
 }
 
 export interface HomeProps {
@@ -319,15 +378,18 @@ export class Home extends React.Component<HomeProps, HomeState> {
         };
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const mainContentPadding = isSmallScreen ? 20 : 50;
-        const topLevelMenu = {
-            'Starter guides': _.map(TUTORIALS, tutorialInfo =>
-                this.props.translate.get(tutorialInfo.title as Key, Deco.Cap),
-            ),
-            [Categories.ZeroExProtocol]: _.map(CATEGORY_TO_PACKAGES[Categories.ZeroExProtocol], pkg => pkg.name),
-            [Categories.Ethereum]: _.map(CATEGORY_TO_PACKAGES[Categories.Ethereum], pkg => pkg.name),
+        const sectionNameToLinks: ObjectMap<ALink[]> = {
+            'Starter guides': _.map(TUTORIALS, tutorialInfo => {
+                return {
+                    ...tutorialInfo.link,
+                    title: this.props.translate.get(tutorialInfo.link.title as Key, Deco.Cap),
+                };
+            }),
+            [Categories.ZeroExProtocol]: _.map(CATEGORY_TO_PACKAGES[Categories.ZeroExProtocol], pkg => pkg.link),
+            [Categories.Ethereum]: _.map(CATEGORY_TO_PACKAGES[Categories.Ethereum], pkg => pkg.link),
             [Categories.CommunityMaintained]: _.map(
                 CATEGORY_TO_PACKAGES[Categories.CommunityMaintained],
-                pkg => pkg.name,
+                pkg => pkg.link,
             ),
         };
         return (
@@ -358,11 +420,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                             onMouseEnter={this._onSidebarHover.bind(this, true)}
                             onMouseLeave={this._onSidebarHover.bind(this, false)}
                         >
-                            <NestedSidebarMenu
-                                topLevelMenu={topLevelMenu}
-                                shouldDisplaySectionHeaders={true}
-                                shouldReformatMenuItemNames={false}
-                            />
+                            {this._renderMenu(sectionNameToLinks)}
                         </div>
                     </Container>
                     <Container
@@ -375,7 +433,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                             <DocsContentTopBar
                                 location={this.props.location}
                                 translate={this.props.translate}
-                                menu={topLevelMenu}
+                                sectionNameToLinks={sectionNameToLinks}
                             />
                         </Container>
                         <div
@@ -404,9 +462,9 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                         {_.map(TUTORIALS, tutorialInfo => (
                                             <ScrollElement
                                                 name={sharedUtils.getIdFromName(
-                                                    this.props.translate.get(tutorialInfo.title as Key, Deco.Cap),
+                                                    this.props.translate.get(tutorialInfo.link.title as Key, Deco.Cap),
                                                 )}
-                                                key={`tutorial-${tutorialInfo.title}`}
+                                                key={`tutorial-${tutorialInfo.link.title}`}
                                             >
                                                 <TutorialButton
                                                     translate={this.props.translate}
@@ -438,6 +496,42 @@ export class Home extends React.Component<HomeProps, HomeState> {
             </Container>
         );
     }
+    private _renderMenu(sectionNameToLinks: ObjectMap<ALink[]>): React.ReactNode {
+        const navigation = _.map(sectionNameToLinks, (links: ALink[], sectionName: string) => {
+            // tslint:disable-next-line:no-unused-variable
+            return (
+                <div key={`section-${sectionName}`} className="py1" style={{ color: colors.linkSectionGrey }}>
+                    <div style={{ fontWeight: 'bold', fontSize: 15, letterSpacing: 0.5 }} className="py1">
+                        {sectionName.toUpperCase()}
+                    </div>
+                    {this._renderMenuItems(links)}
+                </div>
+            );
+        });
+        return <div className="pl1">{navigation}</div>;
+    }
+    private _renderMenuItems(links: ALink[]): React.ReactNode {
+        const menuItems = _.map(links, link => {
+            return (
+                <div key={`menuItem-${link.title}`}>
+                    <Link to={link.to} shouldOpenInNewTab={link.shouldOpenInNewTab} type={link.type}>
+                        <MenuItem
+                            style={{ minHeight: 0 }}
+                            innerDivStyle={{
+                                color: colors.grey800,
+                                fontSize: 14,
+                                lineHeight: 2,
+                                padding: 0,
+                            }}
+                        >
+                            {link.title}
+                        </MenuItem>
+                    </Link>
+                </div>
+            );
+        });
+        return menuItems;
+    }
     private _renderPackageCategory(category: string, pkgs: Package[]): React.ReactNode {
         return (
             <div key={`category-${category}`}>
@@ -447,22 +541,21 @@ export class Home extends React.Component<HomeProps, HomeState> {
         );
     }
     private _renderPackage(pkg: Package): React.ReactNode {
-        const id = sharedUtils.getIdFromName(pkg.name);
+        const id = sharedUtils.getIdFromName(pkg.link.title);
         return (
-            <ScrollElement name={id} key={`package-${pkg.name}`}>
+            <ScrollElement name={id} key={`package-${pkg.link.title}`}>
                 <div className="pb2">
                     <Container width="100%" height="1px" backgroundColor={colors.grey300} marginTop="11px" />
                     <div className="clearfix mt2 pt1">
                         <div className="md-col lg-col md-col-4 lg-col-4">
                             <Link
-                                to={pkg.to}
-                                className="text-decoration-none"
+                                to={pkg.link.to}
                                 style={{ color: colors.lightLinkBlue }}
-                                isExternal={!!pkg.isExternal}
-                                shouldOpenInNewTab={!!pkg.shouldOpenInNewTab}
+                                type={pkg.link.type}
+                                shouldOpenInNewTab={!!pkg.link.shouldOpenInNewTab}
                             >
                                 <Text Tag="div" fontColor={colors.lightLinkBlue} fontWeight="bold">
-                                    {pkg.name}
+                                    {pkg.link.title}
                                 </Text>
                             </Link>
                         </div>
@@ -476,11 +569,11 @@ export class Home extends React.Component<HomeProps, HomeState> {
                         </div>
                         <div className="md-col lg-col md-col-2 lg-col-2 sm-pb2 relative">
                             <Link
-                                to={pkg.to}
-                                className="text-decoration-none absolute"
+                                to={pkg.link.to}
+                                className="absolute"
                                 style={{ right: 0, color: colors.lightLinkBlue }}
-                                isExternal={!!pkg.isExternal}
-                                shouldOpenInNewTab={!!pkg.shouldOpenInNewTab}
+                                type={pkg.link.type}
+                                shouldOpenInNewTab={!!pkg.link.shouldOpenInNewTab}
                             >
                                 <div className="flex">
                                     <div>{this.props.translate.get(Key.More, Deco.Cap)}</div>

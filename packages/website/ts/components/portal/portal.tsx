@@ -3,7 +3,8 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import { Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Link } from 'ts/components/ui/link';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
@@ -317,7 +318,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         };
         return (
             <Section
-                header={<BackButton to={`${WebsitePaths.Portal}`} labelText="back to Relayers" />}
+                header={<BackButton to={WebsitePaths.Portal} labelText="back to Relayers" />}
                 body={<Menu selectedPath={routeComponentProps.location.pathname} theme={menuTheme} />}
             />
         );
@@ -389,9 +390,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </Container>
         );
         return !shouldStartOnboarding ? (
-            <Link to={{ pathname: `${WebsitePaths.Portal}/account` }} style={{ textDecoration: 'none' }}>
-                {startOnboarding}
-            </Link>
+            <Link to={`${WebsitePaths.Portal}/account`}>{startOnboarding}</Link>
         ) : (
             startOnboarding
         );
