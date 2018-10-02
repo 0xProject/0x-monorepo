@@ -512,12 +512,12 @@ export class Home extends React.Component<HomeProps, HomeState> {
             </Text>
         );
     }
-    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>, isHovering: boolean): void {
+    private _onSidebarHover(isHovering: boolean, _event: React.FormEvent<HTMLInputElement>): void {
         this.setState({
             isHoveringSidebar: isHovering,
         });
     }
-    private _onMainContentHover(_event: React.FormEvent<HTMLInputElement>, isHovering: boolean): void {
+    private _onMainContentHover(isHovering: boolean, _event: React.FormEvent<HTMLInputElement>): void {
         if (isHovering !== this.state.isHoveringMainContent) {
             this.setState({
                 isHoveringMainContent: isHovering,
