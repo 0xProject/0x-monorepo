@@ -165,7 +165,7 @@ jobs:
       - restore_cache:
           keys:
             - repo-built-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn lint
+      - run: yarn lerna run lint
       - run: yarn prettier:ci
       - run: cd packages/0x.js && yarn build:umd:prod
       - run: yarn bundlesize
