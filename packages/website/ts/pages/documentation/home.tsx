@@ -451,14 +451,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
         return (
             <ScrollElement name={id} key={`package-${pkg.name}`}>
                 <div className="pb2">
-                    <div
-                        style={{
-                            width: '100%',
-                            height: 1,
-                            backgroundColor: colors.grey300,
-                            marginTop: 11,
-                        }}
-                    />
+                    <Container width="100%" height="1px" backgroundColor={colors.grey300} marginTop="11px" />
                     <div className="clearfix mt2 pt1">
                         <div className="md-col lg-col md-col-4 lg-col-4">
                             <Link
