@@ -12,6 +12,7 @@
         "build:all": "run-p build:umd:prod build:commonjs",
         "build:umd:prod": "webpack --mode production",
         "build:commonjs": "tsc -b",
+        "buld:ci": "yarn build",
         "watch_without_deps": "tsc -w",
         "dev": "webpack-dev-server --mode development",
         "lint": "tslint --project .",
