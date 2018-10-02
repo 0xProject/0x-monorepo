@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetDataUtils, orderHashUtils, signatureUtils } from '@0xproject/order-utils';
-import { RevertReason, SignatureType, SignedOrder, SignerType } from '@0xproject/types';
+import { RevertReason, SignatureType, SignedOrder } from '@0xproject/types';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
@@ -231,10 +231,7 @@ describe('MixinSignatureValidator', () => {
         it('should return true when SignatureType=EthSign and signature is valid', async () => {
             // Create EthSign signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(
-                orderHashHex,
-                SignerType.Default,
-            );
+            const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(orderHashHex);
             const orderHashWithEthSignPrefixBuffer = ethUtil.toBuffer(orderHashWithEthSignPrefixHex);
             const ecSignature = ethUtil.ecsign(orderHashWithEthSignPrefixBuffer, signerPrivateKey);
             // Create 0x signature from EthSign signature
@@ -257,10 +254,7 @@ describe('MixinSignatureValidator', () => {
         it('should return false when SignatureType=EthSign and signature is invalid', async () => {
             // Create EthSign signature
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(
-                orderHashHex,
-                SignerType.Default,
-            );
+            const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(orderHashHex);
             const orderHashWithEthSignPrefixBuffer = ethUtil.toBuffer(orderHashWithEthSignPrefixHex);
             const ecSignature = ethUtil.ecsign(orderHashWithEthSignPrefixBuffer, signerPrivateKey);
             // Create 0x signature from EthSign signature

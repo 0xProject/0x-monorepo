@@ -23,7 +23,7 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
     constructor(privateKey: string) {
         assert.isString('privateKey', privateKey);
         super();
-        this._privateKeyBuffer = new Buffer(privateKey, 'hex');
+        this._privateKeyBuffer = Buffer.from(privateKey, 'hex');
         this._address = `0x${ethUtil.privateToAddress(this._privateKeyBuffer).toString('hex')}`;
     }
     /**

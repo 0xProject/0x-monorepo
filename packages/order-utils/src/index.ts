@@ -29,7 +29,6 @@ export {
     ERC20AssetData,
     ERC721AssetData,
     AssetProxyId,
-    SignerType,
     SignatureType,
     OrderStateValid,
     OrderStateInvalid,

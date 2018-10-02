@@ -143,16 +143,6 @@ export enum SignatureType {
     NSignatureTypes,
 }
 
-/**
- * The type of the Signer implementation. Some signer implementations use different message prefixes or implement different
- * eth_sign behaviour (e.g Metamask). Default assumes a spec compliant `eth_sign`.
- */
-export enum SignerType {
-    Default = 'DEFAULT',
-    Ledger = 'LEDGER',
-    Metamask = 'METAMASK',
-}
-
 export enum AssetProxyId {
     ERC20 = '0xf47261b0',
     ERC721 = '0x02571792',

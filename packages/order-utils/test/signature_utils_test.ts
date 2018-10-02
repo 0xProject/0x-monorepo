@@ -1,4 +1,4 @@
-import { Order, SignatureType, SignerType } from '@0xproject/types';
+import { Order, SignatureType } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { JSONRPCErrorCallback, JSONRPCRequestPayload } from 'ethereum-types';
@@ -153,10 +153,17 @@ describe('Signature utils', () => {
             ]);
             const signatureHex = `0x${signatureBuffer.toString('hex')}`;
             const eip712Signature = await signatureUtils.ecSignOrderAsync(provider, order, makerAddress);
+            const isValidSignature = await signatureUtils.isValidSignatureAsync(
+                provider,
+                orderHashHex,
+                eip712Signature,
+                makerAddress,
+            );
             expect(signatureHex).to.eq(eip712Signature);
+            expect(isValidSignature).to.eq(true);
         });
     });
-    describe('#ecSignOrderHashAsync', () => {
+    describe('#ecSignHashAsync', () => {
         let makerAddress: string;
         before(async () => {
             const availableAddreses = await web3Wrapper.getAvailableAddressesAsync();
@@ -166,12 +173,7 @@ describe('Signature utils', () => {
             const orderHash = '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0';
             const expectedSignature =
                 '0x1b61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403';
-            const ecSignature = await signatureUtils.ecSignOrderHashAsync(
-                provider,
-                orderHash,
-                makerAddress,
-                SignerType.Default,
-            );
+            const ecSignature = await signatureUtils.ecSignHashAsync(provider, orderHash, makerAddress);
             expect(ecSignature).to.equal(expectedSignature);
         });
         it('should return the correct Signature for signatureHex concatenated as R + S + V', async () => {
@@ -197,12 +199,7 @@ describe('Signature utils', () => {
                     }
                 },
             };
-            const ecSignature = await signatureUtils.ecSignOrderHashAsync(
-                fakeProvider,
-                orderHash,
-                makerAddress,
-                SignerType.Default,
-            );
+            const ecSignature = await signatureUtils.ecSignHashAsync(fakeProvider, orderHash, makerAddress);
             expect(ecSignature).to.equal(expectedSignature);
         });
         it('should return the correct Signature for signatureHex concatenated as V + R + S', async () => {
@@ -225,56 +222,12 @@ describe('Signature utils', () => {
                 },
             };
 
-            const ecSignature = await signatureUtils.ecSignOrderHashAsync(
-                fakeProvider,
-                orderHash,
-                makerAddress,
-                SignerType.Default,
-            );
-            expect(ecSignature).to.equal(expectedSignature);
-        });
-        // Note this is due to a bug in Metamask where it does not prefix before signing, this is a known issue and is to be fixed in the future
-        // Source: https://github.com/MetaMask/metamask-extension/commit/a9d36860bec424dcee8db043d3e7da6a5ff5672e
-        it('should receive a payload modified with a prefix when Metamask is SignerType', async () => {
-            const orderHash = '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004';
-            const orderHashPrefixed = '0xae70f31d26096291aa681b26cb7574563956221d0b4213631e1ef9df675d4cba';
-            const expectedSignature =
-                '0x1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03';
-            // Generated from a MM eth_sign request from 0x5409ed021d9299bf6814279a6a1411a7e866a631 signing 0xae70f31d26096291aa681b26cb7574563956221d0b4213631e1ef9df675d4cba
-            const metamaskSignature =
-                '0x117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b1b';
-            const fakeProvider = {
-                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
-                    if (payload.method === 'eth_sign') {
-                        const [, message] = payload.params;
-                        expect(message).to.equal(orderHashPrefixed);
-                        callback(null, {
-                            id: 42,
-                            jsonrpc: '2.0',
-                            result: metamaskSignature,
-                        });
-                    } else {
-                        callback(null, { id: 42, jsonrpc: '2.0', result: [makerAddress] });
-                    }
-                },
-            };
-
-            const ecSignature = await signatureUtils.ecSignOrderHashAsync(
-                fakeProvider,
-                orderHash,
-                makerAddress,
-                SignerType.Metamask,
-            );
+            const ecSignature = await signatureUtils.ecSignHashAsync(fakeProvider, orderHash, makerAddress);
             expect(ecSignature).to.equal(expectedSignature);
         });
         it('should return a valid signature', async () => {
             const orderHash = '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004';
-            const ecSignature = await signatureUtils.ecSignOrderHashAsync(
-                provider,
-                orderHash,
-                makerAddress,
-                SignerType.Default,
-            );
+            const ecSignature = await signatureUtils.ecSignHashAsync(provider, orderHash, makerAddress);
 
             const isValidSignature = await signatureUtils.isValidSignatureAsync(
                 provider,
@@ -291,38 +244,11 @@ describe('Signature utils', () => {
             r: '0xaca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d64393',
             s: '0x46b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf2',
         };
-        it('should concatenate v,r,s and append the EthSign signature type when SignerType is Default', async () => {
+        it('should concatenate v,r,s and append the EthSign signature type', async () => {
             const expectedSignatureWithSignatureType =
                 '0x1baca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d6439346b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf203';
-            const signatureWithSignatureType = signatureUtils.convertECSignatureToSignatureHex(
-                ecSignature,
-                SignerType.Default,
-            );
+            const signatureWithSignatureType = signatureUtils.convertECSignatureToSignatureHex(ecSignature);
             expect(signatureWithSignatureType).to.equal(expectedSignatureWithSignatureType);
-        });
-        it('should concatenate v,r,s and append the EthSign signature type when SignerType is Ledger', async () => {
-            const expectedSignatureWithSignatureType =
-                '0x1baca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d6439346b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf203';
-            const signatureWithSignatureType = signatureUtils.convertECSignatureToSignatureHex(
-                ecSignature,
-                SignerType.Ledger,
-            );
-            expect(signatureWithSignatureType).to.equal(expectedSignatureWithSignatureType);
-        });
-        it('should concatenate v,r,s and append the EthSign signature type when SignerType is Metamask', async () => {
-            const expectedSignatureWithSignatureType =
-                '0x1baca7da997ad177f040240cdccf6905b71ab16b74434388c3a72f34fd25d6439346b2bac274ff29b48b3ea6e2d04c1336eaceafda3c53ab483fc3ff12fac3ebf203';
-            const signatureWithSignatureType = signatureUtils.convertECSignatureToSignatureHex(
-                ecSignature,
-                SignerType.Metamask,
-            );
-            expect(signatureWithSignatureType).to.equal(expectedSignatureWithSignatureType);
-        });
-        it('should throw if the SignerType is invalid', async () => {
-            const expectedMessage = 'Unrecognized SignerType: INVALID_SIGNER';
-            expect(() =>
-                signatureUtils.convertECSignatureToSignatureHex(ecSignature, 'INVALID_SIGNER' as SignerType),
-            ).to.throw(expectedMessage);
         });
     });
 });

@@ -1,5 +1,6 @@
 import { marshaller, Web3Wrapper } from '@0xproject/web3-wrapper';
 import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
+import * as ethUtil from 'ethereumjs-util';
 
 import { Callback, ErrorCallback } from '../types';
 
@@ -7,12 +8,15 @@ import { Subprovider } from './subprovider';
 
 /**
  * This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine)
- * subprovider interface. It forwards JSON RPC requests involving the domain of a signer (getAccounts,
+ * subprovider interface and the provider sendAsync interface.
+ * It handles inconsistencies with Metamask implementations of various JSON RPC methods.
+ * It forwards JSON RPC requests involving the domain of a signer (getAccounts,
  * sendTransaction, signMessage etc...) to the provider instance supplied at instantiation. All other requests
  * are passed onwards for subsequent subproviders to handle.
  */
-export class SignerSubprovider extends Subprovider {
+export class MetamaskSubprovider extends Subprovider {
     private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _provider: Provider;
     /**
      * Instantiates a new SignerSubprovider
      * @param provider Web3 provider that should handle  all user account related requests
@@ -20,6 +24,7 @@ export class SignerSubprovider extends Subprovider {
     constructor(provider: Provider) {
         super();
         this._web3Wrapper = new Web3Wrapper(provider);
+        this._provider = provider;
     }
     /**
      * This method conforms to the web3-provider-engine interface.
@@ -63,17 +68,29 @@ export class SignerSubprovider extends Subprovider {
             case 'eth_sign':
                 [address, message] = payload.params;
                 try {
-                    const signature = await this._web3Wrapper.signMessageAsync(address, message);
-                    end(null, signature);
+                    // Metamask incorrectly implements eth_sign and does not prefix the message as per the spec
+                    // Source: https://github.com/MetaMask/metamask-extension/commit/a9d36860bec424dcee8db043d3e7da6a5ff5672e
+                    const msgBuff = ethUtil.toBuffer(message);
+                    const prefixedMsgBuff = ethUtil.hashPersonalMessage(msgBuff);
+                    const prefixedMsgHex = ethUtil.bufferToHex(prefixedMsgBuff);
+                    const signature = await this._web3Wrapper.signMessageAsync(address, prefixedMsgHex);
+                    signature ? end(null, signature) : end(new Error('Error performing eth_sign'), null);
                 } catch (err) {
                     end(err);
                 }
                 return;
             case 'eth_signTypedData':
+            case 'eth_signTypedData_v3':
                 [address, message] = payload.params;
                 try {
-                    const signature = await this._web3Wrapper.signTypedDataAsync(address, message);
-                    end(null, signature);
+                    // Metamask has namespaced signTypedData to v3 for an indeterminate period of time.
+                    // and expects message to be serialised as JSON
+                    const messageJSON = JSON.stringify(message);
+                    const signature = await this._web3Wrapper.sendRawPayloadAsync<string>({
+                        method: 'eth_signTypedData_v3',
+                        params: [address, messageJSON],
+                    });
+                    signature ? end(null, signature) : end(new Error('Error performing eth_signTypedData'), null);
                 } catch (err) {
                     end(err);
                 }
@@ -82,5 +99,26 @@ export class SignerSubprovider extends Subprovider {
                 next();
                 return;
         }
+    }
+    /**
+     * This method conforms to the provider sendAsync interface.
+     * Allowing the MetamaskSubprovider to be used as a generic provider (outside of Web3ProviderEngine) with the
+     * addition of wrapping the inconsistent Metamask behaviour
+     * @param payload JSON RPC payload
+     * @return The contents nested under the result key of the response body
+     */
+    public sendAsync(payload: JSONRPCRequestPayload, callback: ErrorCallback): void {
+        void this.handleRequest(
+            payload,
+            // handleRequest has decided to not handle this, so fall through to the provider
+            () => {
+                const sendAsync = this._provider.sendAsync.bind(this._provider);
+                sendAsync(payload, callback);
+            },
+            // handleRequest has called end and will handle this
+            (err, data) => {
+                err ? callback(err) : callback(null, { ...payload, result: data });
+            },
+        );
     }
 }

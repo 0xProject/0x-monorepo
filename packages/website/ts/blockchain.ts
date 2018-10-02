@@ -9,14 +9,14 @@ import {
     ExchangeFillEventArgs,
     IndexedFilterValues,
 } from '@0xproject/contract-wrappers';
-import { assetDataUtils, orderHashUtils, signatureUtils, SignerType } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils, signatureUtils } from '@0xproject/order-utils';
 import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
 import {
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
+    MetamaskSubprovider,
     RedundantSubprovider,
     RPCSubprovider,
-    SignerSubprovider,
     Web3ProviderEngine,
 } from '@0xproject/subproviders';
 import { SignedOrder, Token as ZeroExToken } from '@0xproject/types';
@@ -161,7 +161,7 @@ export class Blockchain {
             // We catch all requests involving a users account and send it to the injectedWeb3
             // instance. All other requests go to the public hosted node.
             const provider = new Web3ProviderEngine();
-            provider.addProvider(new SignerSubprovider(injectedWeb3.currentProvider));
+            provider.addProvider(new MetamaskSubprovider(injectedWeb3.currentProvider));
             provider.addProvider(new FilterSubprovider());
             const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
                 return new RPCSubprovider(publicNodeUrl);
@@ -432,21 +432,7 @@ export class Blockchain {
         }
         this._showFlashMessageIfLedger();
         const provider = this._contractWrappers.getProvider();
-        const isLedgerSigner = !_.isUndefined(this._ledgerSubprovider);
-        const injectedProvider = Blockchain._getInjectedWeb3().currentProvider;
-        const isMetaMaskSigner = utils.getProviderType(injectedProvider) === Providers.Metamask;
-        let signerType = SignerType.Default;
-        if (isLedgerSigner) {
-            signerType = SignerType.Ledger;
-        } else if (isMetaMaskSigner) {
-            signerType = SignerType.Metamask;
-        }
-        const ecSignatureString = await signatureUtils.ecSignOrderHashAsync(
-            provider,
-            orderHash,
-            makerAddress,
-            signerType,
-        );
+        const ecSignatureString = await signatureUtils.ecSignHashAsync(provider, orderHash, makerAddress);
         this._dispatcher.updateSignature(ecSignatureString);
         return ecSignatureString;
     }
