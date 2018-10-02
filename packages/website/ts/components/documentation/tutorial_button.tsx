@@ -44,7 +44,7 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
                     <div className="col col-1 flex items-center sm-pr3">
                         <img src={this.props.tutorialInfo.iconUrl} height={40} />
                     </div>
-                    <div className="pl2 col col-10">
+                    <div className="lg-pl2 md-pl2 sm-pl3 col col-10">
                         <Text Tag="div" fontSize="18" fontColor={colors.lightLinkBlue} fontWeight="bold">
                             {this.props.translate.get(this.props.tutorialInfo.title as Key, Deco.Cap)}
                         </Text>
