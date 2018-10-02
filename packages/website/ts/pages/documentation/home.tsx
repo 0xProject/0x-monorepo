@@ -355,8 +355,8 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                 paddingTop: 35,
                                 overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
                             }}
-                            onMouseEnter={this._onSidebarHover.bind(this)}
-                            onMouseLeave={this._onSidebarHoverOff.bind(this)}
+                            onMouseEnter={this._onSidebarHover.bind(this, true)}
+                            onMouseLeave={this._onSidebarHover.bind(this, false)}
                         >
                             <NestedSidebarMenu
                                 topLevelMenu={topLevelMenu}
@@ -390,9 +390,9 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                     : mainContentPadding,
                                 overflow: this.state.isHoveringMainContent ? 'auto' : 'hidden',
                             }}
-                            onMouseEnter={this._onMainContentHover.bind(this)}
-                            onMouseOver={this._onMainContentHover.bind(this)}
-                            onMouseLeave={this._onMainContentHoverOff.bind(this)}
+                            onMouseEnter={this._onMainContentHover.bind(this, true)}
+                            onMouseOver={this._onMainContentHover.bind(this, true)}
+                            onMouseLeave={this._onMainContentHover.bind(this, false)}
                         >
                             <div>
                                 {this._renderSectionTitle(this.props.translate.get(Key.StartBuildOn0x, Deco.Cap))}
@@ -512,30 +512,20 @@ export class Home extends React.Component<HomeProps, HomeState> {
             </Text>
         );
     }
-    private _updateScreenWidth(): void {
-        const newScreenWidth = utils.getScreenWidth();
-        this.props.dispatcher.updateScreenWidth(newScreenWidth);
-    }
-    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
+    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>, isHovering: boolean): void {
         this.setState({
-            isHoveringSidebar: true,
+            isHoveringSidebar: isHovering,
         });
     }
-    private _onSidebarHoverOff(): void {
-        this.setState({
-            isHoveringSidebar: false,
-        });
-    }
-    private _onMainContentHover(_event: React.FormEvent<HTMLInputElement>): void {
-        if (!this.state.isHoveringMainContent) {
+    private _onMainContentHover(_event: React.FormEvent<HTMLInputElement>, isHovering: boolean): void {
+        if (isHovering !== this.state.isHoveringMainContent) {
             this.setState({
-                isHoveringMainContent: true,
+                isHoveringMainContent: isHovering,
             });
         }
     }
-    private _onMainContentHoverOff(): void {
-        this.setState({
-            isHoveringMainContent: false,
-        });
+    private _updateScreenWidth(): void {
+        const newScreenWidth = utils.getScreenWidth();
+        this.props.dispatcher.updateScreenWidth(newScreenWidth);
     }
 } // tslint:disable:max-file-line-count
