@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.1 - _October 2, 2018_
+
+    * Dependencies updated
+
 ## v3.0.0 - _September 28, 2018_
 
     * Change /order_config request to a POST instead of GET (#1091)

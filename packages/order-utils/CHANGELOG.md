@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.7 - _October 2, 2018_
+
+    * Dependencies updated
+
 ## v1.0.6 - _September 28, 2018_
 
     * Add signerAddress normalization to `isValidECSignature` to avoid `invalid address recovery` error if caller supplies a checksummed address (#1096)
