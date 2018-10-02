@@ -14,28 +14,14 @@ yarn add @0xproject/asset-buyer
 
 **Import**
 
-For single-asset price estimation and purchase:
-
 ```typescript
 import { AssetBuyer } from '@0xproject/asset-buyer';
-```
-
-For multiple assets:
-
-```typescript
-import { AssetBuyerManager } from '@0xproject/asset-buyer';
 ```
 
 or
 
 ```javascript
 var AssetBuyer = require('@0xproject/asset-buyer').AssetBuyer;
-```
-
-and
-
-```javascript
-var AssetBuyerManager = require('@0xproject/asset-buyer').AssetBuyerManager;
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
