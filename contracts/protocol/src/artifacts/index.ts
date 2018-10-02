@@ -6,6 +6,7 @@ import * as ERC721Proxy from '../../generated-artifacts/ERC721Proxy.json';
 import * as Exchange from '../../generated-artifacts/Exchange.json';
 import * as MixinAuthorizable from '../../generated-artifacts/MixinAuthorizable.json';
 import * as MultiAssetProxy from '../../generated-artifacts/MultiAssetProxy.json';
+import * as OrderMatcher from '../../generated-artifacts/OrderMatcher.json';
 import * as OrderValidator from '../../generated-artifacts/OrderValidator.json';
 import * as TestAssetProxyDispatcher from '../../generated-artifacts/TestAssetProxyDispatcher.json';
 import * as TestAssetProxyOwner from '../../generated-artifacts/TestAssetProxyOwner.json';
@@ -20,6 +21,7 @@ export const artifacts = {
     Exchange: Exchange as ContractArtifact,
     MixinAuthorizable: MixinAuthorizable as ContractArtifact,
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
+    OrderMatcher: OrderMatcher as ContractArtifact,
     OrderValidator: OrderValidator as ContractArtifact,
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestAssetProxyOwner: TestAssetProxyOwner as ContractArtifact,
