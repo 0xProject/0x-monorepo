@@ -42,25 +42,6 @@ export class AssetBuyer {
     // cache of orders along with the time last updated keyed by assetData
     private readonly _ordersEntryMap: ObjectMap<OrdersEntry> = {};
     /**
-     * Returns an array of all assetDatas available at the provided sraApiUrl
-     * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
-     * @param   pairedWithAssetData     Optional filter argument to return assetDatas that only pair with this assetData value.
-     *
-     * @return  An array of all assetDatas available at the provider sraApiUrl
-     */
-    public static async getAllAvailableAssetDatasAsync(
-        sraApiUrl: string,
-        pairedWithAssetData?: string,
-    ): Promise<string[]> {
-        const client = new HttpClient(sraApiUrl);
-        const params = {
-            assetDataA: pairedWithAssetData,
-            perPage: constants.MAX_PER_PAGE,
-        };
-        const assetPairsResponse = await client.getAssetPairsAsync(params);
-        return _.uniq(_.map(assetPairsResponse.records, pairsItem => pairsItem.assetDataB.assetData));
-    }
-    /**
      * Instantiates a new AssetBuyer instance given existing liquidity in the form of orders and feeOrders.
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   orders                  A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData (WETH).
