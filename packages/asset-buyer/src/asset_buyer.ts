@@ -67,15 +67,14 @@ export class AssetBuyer {
         return assetBuyer;
     }
     /**
-     * Instantiates a new AssetBuyer instance given the desired assetData and a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
+     * Instantiates a new AssetBuyer instance given a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
      * @param   provider                The Provider instance you would like to use for interacting with the Ethereum network.
-     * @param   assetData               The assetData that identifies the desired asset to buy.
      * @param   sraApiUrl               The standard relayer API base HTTP url you would like to source orders from.
      * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
      *
      * @return  An instance of AssetBuyer
      */
-    public static getAssetBuyerForSraApiUrl(
+    public static getAssetBuyerForStandardRelayerAPIUrl(
         provider: Provider,
         sraApiUrl: string,
         options: Partial<AssetBuyerOpts> = {},
@@ -107,8 +106,8 @@ export class AssetBuyer {
         this.provider = provider;
         this.orderProvider = orderProvider;
         this.networkId = networkId;
-        this.expiryBufferSeconds = expiryBufferSeconds;
         this.orderRefreshIntervalMs = orderRefreshIntervalMs;
+        this.expiryBufferSeconds = expiryBufferSeconds;
         this._contractWrappers = new ContractWrappers(this.provider, {
             networkId,
         });
@@ -135,6 +134,7 @@ export class AssetBuyer {
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
         assert.isValidPercentage('feePercentage', feePercentage);
         assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
+        assert.isNumber('slippagePercentage', slippagePercentage);
         const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
         const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
             this._getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
@@ -224,54 +224,54 @@ export class AssetBuyer {
         return txHash;
     }
     /**
-     * Grab orders from the cache, if there is a miss or it is time to refresh, fetch and process the orders
+     * Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders
      */
     private async _getOrdersAndFillableAmountsAsync(
         assetData: string,
         shouldForceOrderRefresh: boolean,
     ): Promise<OrdersAndFillableAmounts> {
+        // try to get ordersEntry from the map
+        const ordersEntryIfExists = this._ordersEntryMap[assetData];
         // we should refresh if:
         // we do not have any orders OR
         // we are forced to OR
         // we have some last refresh time AND that time was sufficiently long ago
-        const ordersEntryIfExists = this._ordersEntryMap[assetData];
         const shouldRefresh =
             _.isUndefined(ordersEntryIfExists) ||
             shouldForceOrderRefresh ||
             ordersEntryIfExists.lastRefreshTime + this.orderRefreshIntervalMs < Date.now();
-        let ordersAndFillableAmounts: OrdersAndFillableAmounts;
-        if (shouldRefresh) {
-            const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
-            const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
-            // construct orderProvider request
-            const orderProviderRequest = {
-                makerAssetData: assetData,
-                takerAssetData: etherTokenAssetData,
-                networkId: this.networkId,
-            };
-            const request = orderProviderRequest;
-            // get provider response
-            const response = await this.orderProvider.getOrdersAsync(request);
-            // since the order provider is an injected dependency, validate that it respects the API
-            // ie. it should only return maker/taker assetDatas that are specified
-            orderProviderResponseProcessor.throwIfInvalidResponse(response, request);
-            // process the responses into one object
-            const isMakerAssetZrxToken = assetData === zrxTokenAssetData;
-            ordersAndFillableAmounts = await orderProviderResponseProcessor.processAsync(
-                response,
-                isMakerAssetZrxToken,
-                this.expiryBufferSeconds,
-                this._contractWrappers.orderValidator,
-            );
-            const lastRefreshTime = Date.now();
-            const updatedOrdersEntry = {
-                ordersAndFillableAmounts,
-                lastRefreshTime,
-            };
-            this._ordersEntryMap[assetData] = updatedOrdersEntry;
-        } else {
-            ordersAndFillableAmounts = ordersEntryIfExists.ordersAndFillableAmounts;
+        if (!shouldRefresh) {
+            const result = ordersEntryIfExists.ordersAndFillableAmounts;
+            return result;
         }
+        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
+        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+        // construct orderProvider request
+        const orderProviderRequest = {
+            makerAssetData: assetData,
+            takerAssetData: etherTokenAssetData,
+            networkId: this.networkId,
+        };
+        const request = orderProviderRequest;
+        // get provider response
+        const response = await this.orderProvider.getOrdersAsync(request);
+        // since the order provider is an injected dependency, validate that it respects the API
+        // ie. it should only return maker/taker assetDatas that are specified
+        orderProviderResponseProcessor.throwIfInvalidResponse(response, request);
+        // process the responses into one object
+        const isMakerAssetZrxToken = assetData === zrxTokenAssetData;
+        const ordersAndFillableAmounts = await orderProviderResponseProcessor.processAsync(
+            response,
+            isMakerAssetZrxToken,
+            this.expiryBufferSeconds,
+            this._contractWrappers.orderValidator,
+        );
+        const lastRefreshTime = Date.now();
+        const updatedOrdersEntry = {
+            ordersAndFillableAmounts,
+            lastRefreshTime,
+        };
+        this._ordersEntryMap[assetData] = updatedOrdersEntry;
         return ordersAndFillableAmounts;
     }
     /**
