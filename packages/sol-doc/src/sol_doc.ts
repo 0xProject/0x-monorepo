@@ -302,7 +302,7 @@ export class SolDoc {
                     break;
                 default:
                     throw new Error(
-                        `unknown and unsupported AbiDefinition type '${(abiDefinition as AbiDefinition).type}'`,
+                        `unknown and unsupported AbiDefinition type '${(abiDefinition as AbiDefinition).type}'`, // tslint:disable-line:no-unnecessary-type-assertion
                     );
             }
             customTypes = [...customTypes, ...types];
@@ -340,7 +340,7 @@ export class SolDoc {
                     break;
                 default:
                     throw new Error(
-                        `unknown and unsupported AbiDefinition type '${(abiDefinition as AbiDefinition).type}'`,
+                        `unknown and unsupported AbiDefinition type '${(abiDefinition as AbiDefinition).type}'`, // tslint:disable-line:no-unnecessary-type-assertion
                     );
             }
         }
@@ -486,7 +486,7 @@ export class SolDoc {
             });
         }
         if (!_.isUndefined((abiDefinition as any).outputs)) {
-            const methodAbi = abiDefinition as MethodAbi;
+            const methodAbi = abiDefinition as MethodAbi; // tslint:disable-line:no-unnecessary-type-assertion
             _.each(methodAbi.outputs, output => {
                 if (!_.isUndefined(output.components)) {
                     const customType = this._getCustomTypeFromDataItem(output);
