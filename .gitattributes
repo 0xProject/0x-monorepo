@@ -1,1 +1,4 @@
 *.sol linguist-language=Solidity
+
+# Automatically collapse generated files in GitHub.
+packages/contracts/generated-artifacts/*json linguist-generated
