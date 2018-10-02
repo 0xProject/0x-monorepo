@@ -11,61 +11,12 @@ jobs:
     steps:
       - checkout
       - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-v2-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-v2-{{ .Branch }}
-            - yarn-packages-v2-master
-            - yarn-packages-v2-
       - run:
           name: install-yarn
           command: sudo npm install --global yarn@1.9.4
       - run:
           name: yarn
-          command: yarn --cache-folder ~/.cache/yarn --frozen-lockfile install || yarn --cache-folder ~/.cache/yarn --frozen-lockfile install
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-v2-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
-            - node_modules
-            - packages/0x.js/node_modules
-            - packages/abi-gen/node_modules
-            - packages/assert/node_modules
-            - packages/asset-buyer/node_modules
-            - packages/base-contract/node_modules
-            - packages/connect/node_modules
-            - packages/contract-wrappers/node_modules
-            - packages/contract_templates/node_modules
-            - packages/contracts/node_modules
-            - packages/dev-utils/node_modules
-            - packages/devnet/node_modules
-            - packages/ethereum-types/node_modules
-            - packages/fill-scenarios/node_modules
-            - packages/json-schemas/node_modules
-            - packages/metacoin/node_modules
-            - packages/migrations/node_modules
-            - packages/monorepo-scripts/node_modules
-            - packages/order-utils/node_modules
-            - packages/order-watcher/node_modules
-            - packages/react-docs/node_modules
-            - packages/react-shared/node_modules
-            - packages/sol-compiler/node_modules
-            - packages/sol-cov/node_modules
-            - packages/sol-doc/node_modules
-            - packages/sol-resolver/node_modules
-            - packages/sra-report/node_modules
-            - packages/sra-spec/node_modules
-            - packages/subproviders/node_modules
-            - packages/testnet-faucets/node_modules
-            - packages/tslint-config/node_modules
-            - packages/types/node_modules
-            - packages/typescript-typings/node_modules
-            - packages/utils/node_modules
-            - packages/verdaccio/node_modules
-            - packages/web3-wrapper/node_modules
-            - packages/website/node_modules
+          command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
       - save_cache:
           key: repo-deps-{{ .Environment.CIRCLE_SHA1 }}
           paths:
