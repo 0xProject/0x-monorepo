@@ -171,7 +171,12 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
             const linkText = this.props.translate.get(link.title as Key, Deco.Cap);
             return (
                 <div className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${link.title}`}>
-                    <Link to={link.to} type={link.type} shouldOpenInNewTab={link.shouldOpenInNewTab} style={linkStyle}>
+                    <Link
+                        to={link.to}
+                        type={link.type}
+                        shouldOpenInNewTab={!!link.shouldOpenInNewTab}
+                        style={linkStyle}
+                    >
                         {linkText}
                     </Link>
                 </div>
