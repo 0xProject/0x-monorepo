@@ -47,6 +47,9 @@
     "bundlesize": [
         {
             "path": "packages/0x.js/_bundles/index.min.js"
+        },
+        {
+            "path": "packages/instant/public/main.bundle.js"
         }
     ],
     "devDependencies": {
