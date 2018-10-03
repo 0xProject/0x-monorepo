@@ -145,7 +145,6 @@ export class DocsContentTopBar extends React.Component<DocsContentTopBarProps, D
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
                 <div className="clearfix pl1">
-                    TODO
                     <NestedSidebarMenu
                         sectionNameToLinks={this.props.sectionNameToLinks}
                         shouldDisplaySectionHeaders={true}
