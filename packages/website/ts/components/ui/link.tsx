@@ -39,7 +39,7 @@ export const Link: React.StatelessComponent<LinkProps> = ({
         case LinkType.External:
             return (
                 <a
-                    target={shouldOpenInNewTab && '_blank'}
+                    target={shouldOpenInNewTab ? '_blank' : ''}
                     className={className}
                     style={styleWithDefault}
                     href={to}
@@ -51,12 +51,15 @@ export const Link: React.StatelessComponent<LinkProps> = ({
                 </a>
             );
         case LinkType.ReactRoute:
+            if (to === '/') {
+                console.log('got here!');
+            }
             return (
                 <ReactRounterLink
                     to={to}
                     className={className}
                     style={styleWithDefault}
-                    target={shouldOpenInNewTab && '_blank'}
+                    target={shouldOpenInNewTab ? '_blank' : ''}
                     onMouseOver={onMouseOver}
                     onMouseEnter={onMouseEnter}
                     onMouseLeave={onMouseLeave}
@@ -73,7 +76,7 @@ export const Link: React.StatelessComponent<LinkProps> = ({
 
 Link.defaultProps = {
     type: LinkType.ReactRoute,
-    shouldOpenInNewTab: true,
+    shouldOpenInNewTab: false,
     style: {},
     className: '',
     onMouseOver: _.noop.bind(_),
