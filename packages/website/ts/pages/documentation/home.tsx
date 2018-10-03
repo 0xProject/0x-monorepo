@@ -1,4 +1,12 @@
-import { colors, constants as sharedConstants, MarkdownLinkBlock, utils as sharedUtils } from '@0xproject/react-shared';
+import {
+    ALink,
+    colors,
+    constants as sharedConstants,
+    Link,
+    LinkType,
+    MarkdownLinkBlock,
+    utils as sharedUtils,
+} from '@0xproject/react-shared';
 import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import MenuItem from 'material-ui/MenuItem';
@@ -10,10 +18,9 @@ import { DocsContentTopBar } from 'ts/components/documentation/docs_content_top_
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { TutorialButton } from 'ts/components/documentation/tutorial_button';
 import { Container } from 'ts/components/ui/container';
-import { Link } from 'ts/components/ui/link';
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { ALink, Deco, Key, LinkType, ScreenWidths, TutorialInfo, WebsitePaths } from 'ts/types';
+import { Deco, Key, ScreenWidths, TutorialInfo, WebsitePaths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 

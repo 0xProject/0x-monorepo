@@ -23,3 +23,16 @@ export enum Networks {
     Ropsten = 'Ropsten',
     Rinkeby = 'Rinkeby',
 }
+
+export enum LinkType {
+    External = 'EXTERNAL',
+    ReactScroll = 'REACT_SCROLL',
+    ReactRoute = 'REACT_ROUTE',
+}
+
+export interface ALink {
+    title: string;
+    to: string;
+    shouldOpenInNewTab?: boolean;
+    type?: LinkType;
+}

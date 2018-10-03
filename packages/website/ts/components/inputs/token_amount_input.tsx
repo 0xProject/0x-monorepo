@@ -1,11 +1,10 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, Link } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
 import { BalanceBoundedInput } from 'ts/components/inputs/balance_bounded_input';
-import { Link } from 'ts/components/ui/link';
 import { Token, ValidatedBigNumberCallback, WebsitePaths } from 'ts/types';
 
 interface TokenAmountInputProps {

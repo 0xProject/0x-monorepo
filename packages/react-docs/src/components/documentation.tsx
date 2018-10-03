@@ -98,7 +98,10 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 marginLeft: 20,
             },
         };
-        const menuSubsectionsBySection = this.props.docsInfo.getMenuSubsectionsBySection(this.props.docAgnosticFormat);
+        const sectionNameToLinks = this.props.docsInfo.getSectionNameToLinks();
+        console.log('sectionNameToLinks', sectionNameToLinks);
+        const subsectionNameToLinks = this.props.docsInfo.getSubsectionNameToLinks(this.props.docAgnosticFormat);
+        console.log('subsectionNameToLinks', subsectionNameToLinks);
         return (
             <div>
                 {_.isUndefined(this.props.docAgnosticFormat) ? (
@@ -128,8 +131,8 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                                         selectedVersion={this.props.selectedVersion}
                                         versions={this.props.availableVersions}
                                         sidebarHeader={this.props.sidebarHeader}
-                                        topLevelMenu={this.props.docsInfo.menu}
-                                        menuSubsectionsBySection={menuSubsectionsBySection}
+                                        sectionNameToLinks={sectionNameToLinks}
+                                        subsectionNameToLinks={subsectionNameToLinks}
                                         onVersionSelected={this.props.onVersionSelected}
                                     />
                                 </div>

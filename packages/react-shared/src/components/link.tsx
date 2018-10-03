@@ -1,7 +1,10 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Link as ReactRounterLink } from 'react-router-dom';
-import { LinkType } from 'ts/types';
+import { Link as ScrollLink } from 'react-scroll';
+
+import { LinkType } from '../types';
+import { constants } from '../utils/constants';
 
 export interface LinkProps {
     to: string;
@@ -12,6 +15,7 @@ export interface LinkProps {
     onMouseOver?: (event: React.MouseEvent<HTMLElement>) => void;
     onMouseLeave?: (event: React.MouseEvent<HTMLElement>) => void;
     onMouseEnter?: (event: React.MouseEvent<HTMLElement>) => void;
+    containerId?: string;
 }
 
 /**
@@ -29,6 +33,7 @@ export const Link: React.StatelessComponent<LinkProps> = ({
     onMouseOver,
     onMouseLeave,
     onMouseEnter,
+    containerId,
 }) => {
     const styleWithDefault = {
         textDecoration: 'none',
@@ -65,7 +70,17 @@ export const Link: React.StatelessComponent<LinkProps> = ({
                 </ReactRounterLink>
             );
         case LinkType.ReactScroll:
-            return <div>TODO</div>;
+            return (
+                <ScrollLink
+                    to={to}
+                    offset={0}
+                    hashSpy={true}
+                    duration={constants.DOCS_SCROLL_DURATION_MS}
+                    containerId={containerId}
+                >
+                    {children}
+                </ScrollLink>
+            );
         default:
             throw new Error(`Unrecognized LinkType: ${type}`);
     }
@@ -79,6 +94,7 @@ Link.defaultProps = {
     onMouseOver: _.noop.bind(_),
     onMouseLeave: _.noop.bind(_),
     onMouseEnter: _.noop.bind(_),
+    containerId: constants.DOCS_CONTAINER_ID,
 };
 
 Link.displayName = 'Link';

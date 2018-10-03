@@ -1,11 +1,14 @@
-import { DocsInfo, DocsMenu } from '@0xproject/react-docs';
+import { DocsInfo } from '@0xproject/react-docs';
 import {
+    ALink,
     colors,
     constants as sharedConstants,
-    MenuSubsectionsBySection,
+    Link,
+    LinkType,
     NestedSidebarMenu,
     Styles,
 } from '@0xproject/react-shared';
+import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
@@ -16,9 +19,8 @@ import { DrawerMenu } from 'ts/components/portal/drawer_menu';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
 import { Container } from 'ts/components/ui/container';
-import { Link } from 'ts/components/ui/link';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, Key, LinkType, ProviderType, WebsitePaths } from 'ts/types';
+import { Deco, Key, ProviderType, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -40,8 +42,8 @@ export interface TopBarProps {
     translate: Translate;
     docsVersion?: string;
     availableDocVersions?: string[];
-    menu?: DocsMenu;
-    menuSubsectionsBySection?: MenuSubsectionsBySection;
+    sectionNameToLinks?: ObjectMap<ALink[]>;
+    subsectionNameToLinks?: ObjectMap<ALink[]>;
     displayType?: TopBarDisplayType;
     docsInfo?: DocsInfo;
     style?: React.CSSProperties;
@@ -311,14 +313,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         // because the sidebar renders `react-scroll` links which depend on the scroll container already
         // being rendered.
         const documentationContainer = document.getElementById(sharedConstants.SCROLL_CONTAINER_ID);
-        if (!isViewingDocsPage || _.isUndefined(this.props.menu) || _.isNull(documentationContainer)) {
+        if (!isViewingDocsPage || _.isUndefined(this.props.sectionNameToLinks) || _.isNull(documentationContainer)) {
             return undefined;
         }
         return (
             <div className="lg-hide md-hide">
                 <NestedSidebarMenu
-                    topLevelMenu={this.props.menu}
-                    menuSubsectionsBySection={this.props.menuSubsectionsBySection}
+                    sectionNameToLinks={this.props.sectionNameToLinks}
+                    subsectionNameToLinks={this.props.subsectionNameToLinks}
                     sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
@@ -337,8 +339,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         return (
             <div className="lg-hide md-hide">
                 <NestedSidebarMenu
-                    topLevelMenu={this.props.menuSubsectionsBySection}
-                    menuSubsectionsBySection={this.props.menuSubsectionsBySection}
+                    sectionNameToLinks={this.props.sectionNameToLinks}
+                    subsectionNameToLinks={this.props.subsectionNameToLinks}
                     sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}

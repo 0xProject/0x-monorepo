@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, Link } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
@@ -8,7 +8,6 @@ import { TopBar } from 'ts/components/top_bar/top_bar';
 import { CallToAction } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
-import { Link } from 'ts/components/ui/link';
 import { Text } from 'ts/components/ui/text';
 import { TypedText } from 'ts/components/ui/typed_text';
 import { Dispatcher } from 'ts/redux/dispatcher';

@@ -1,5 +1,5 @@
+import { Link } from '@0xproject/react-shared';
 import * as React from 'react';
-import { Link } from 'ts/components/ui/link';
 import { WebsitePaths } from 'ts/types';
 
 export interface DocsLogoProps {

@@ -1,5 +1,5 @@
 import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { colors } from '@0xproject/react-shared';
+import { colors, Link } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as accounting from 'accounting';
@@ -16,7 +16,6 @@ import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
 import { Alert } from 'ts/components/ui/alert';
 import { EthereumAddress } from 'ts/components/ui/ethereum_address';
 import { Identicon } from 'ts/components/ui/identicon';
-import { Link } from 'ts/components/ui/link';
 import { VisualOrder } from 'ts/components/visual_order';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';

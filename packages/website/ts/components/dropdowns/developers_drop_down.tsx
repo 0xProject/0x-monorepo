@@ -1,11 +1,10 @@
-import { colors } from '@0xproject/react-shared';
+import { ALink, colors, Link, LinkType } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
-import { Link } from 'ts/components/ui/link';
 import { Text } from 'ts/components/ui/text';
-import { ALink, Deco, Key, LinkType, WebsitePaths } from 'ts/types';
+import { Deco, Key, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 

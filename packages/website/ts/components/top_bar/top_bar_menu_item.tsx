@@ -1,8 +1,6 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, Link, LinkType } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'ts/components/ui/link';
-import { LinkType } from 'ts/types';
 
 import { CallToAction } from 'ts/components/ui/button';
 

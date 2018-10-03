@@ -1,13 +1,12 @@
-import { colors } from '@0xproject/react-shared';
+import { ALink, colors, Link, LinkType } from '@0xproject/react-shared';
 import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
-import { Link } from 'ts/components/ui/link';
 
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { ALink, Deco, Key, Language, LinkType, WebsitePaths } from 'ts/types';
+import { Deco, Key, Language, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 

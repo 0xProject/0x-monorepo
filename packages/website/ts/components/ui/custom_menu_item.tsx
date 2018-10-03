@@ -1,6 +1,6 @@
+import { Link } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'ts/components/ui/link';
 
 interface CustomMenuItemProps {
     to: string;

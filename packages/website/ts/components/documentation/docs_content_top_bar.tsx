@@ -1,12 +1,11 @@
-import { colors, NestedSidebarMenu } from '@0xproject/react-shared';
+import { ALink, colors, Link, NestedSidebarMenu } from '@0xproject/react-shared';
 import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import * as React from 'react';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { Container } from 'ts/components/ui/container';
-import { Link } from 'ts/components/ui/link';
-import { ALink, Deco, Key, WebsitePaths } from 'ts/types';
+import { Deco, Key, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -147,12 +146,12 @@ export class DocsContentTopBar extends React.Component<DocsContentTopBarProps, D
             >
                 <div className="clearfix pl1">
                     TODO
-                    {/* <NestedSidebarMenu
-                        topLevelMenu={this.props.menu}
+                    <NestedSidebarMenu
+                        sectionNameToLinks={this.props.sectionNameToLinks}
                         shouldDisplaySectionHeaders={true}
                         shouldReformatMenuItemNames={false}
                         onMenuItemClick={this._onMenuButtonClick.bind(this)}
-                    /> */}
+                    />
                 </div>
             </Drawer>
         );

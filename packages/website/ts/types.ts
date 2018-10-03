@@ -1,3 +1,4 @@
+import { ALink } from '@0xproject/react-shared';
 import { ObjectMap, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
@@ -618,22 +619,9 @@ export interface InjectedWeb3 {
     };
 }
 
-export interface ALink {
-    title: string;
-    to: string;
-    shouldOpenInNewTab?: boolean;
-    type?: LinkType;
-}
-
 export interface TutorialInfo {
     iconUrl: string;
     description: string;
     link: ALink;
-}
-
-export enum LinkType {
-    External = 'EXTERNAL',
-    ReactScroll = 'REACT_SCROLL',
-    ReactRoute = 'REACT_ROUTE',
 }
 // tslint:disable:max-file-line-count

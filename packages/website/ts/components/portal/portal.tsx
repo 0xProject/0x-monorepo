@@ -1,10 +1,9 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, Link } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
-import { Link } from 'ts/components/ui/link';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
