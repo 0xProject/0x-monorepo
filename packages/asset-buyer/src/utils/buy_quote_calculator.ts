@@ -5,8 +5,6 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import { AssetBuyerError, BuyQuote, OrdersAndFillableAmounts } from '../types';
 
-import { orderUtils } from './order_utils';
-
 // Calculates a buy quote for orders that have WETH as the takerAsset
 export const buyQuoteCalculator = {
     calculate(
