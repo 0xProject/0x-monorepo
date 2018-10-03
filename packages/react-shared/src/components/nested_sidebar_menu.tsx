@@ -127,9 +127,9 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
         ) {
             return null;
         }
-        return this._renderSubsectionsLinks(menuItemName, this.props.subsectionNameToLinks[menuItemName]);
+        return this._renderSubsectionLinks(menuItemName, this.props.subsectionNameToLinks[menuItemName]);
     }
-    private _renderSubsectionsLinks(menuItemName: string, links: ALink[]): React.ReactNode {
+    private _renderSubsectionLinks(menuItemName: string, links: ALink[]): React.ReactNode {
         return (
             <ul style={{ margin: 0, listStyleType: 'none', paddingLeft: 0 }} key={menuItemName}>
                 {_.map(links, link => {
