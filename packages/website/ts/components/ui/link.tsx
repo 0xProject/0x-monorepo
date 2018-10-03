@@ -51,9 +51,6 @@ export const Link: React.StatelessComponent<LinkProps> = ({
                 </a>
             );
         case LinkType.ReactRoute:
-            if (to === '/') {
-                console.log('got here!');
-            }
             return (
                 <ReactRounterLink
                     to={to}
