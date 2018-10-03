@@ -490,19 +490,19 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                     </Container>
                                 </Container>
                                 <Container marginTop="32px" paddingBottom="100px">
-                                {this._renderSectionTitle(
-                                    this.props.translate.get(Key.LibrariesAndTools, Deco.CapWords),
-                                )}
-                                <Container paddingTop="12px">
-                                    {this._renderSectionDescription(
-                                        this.props.translate.get(Key.LibrariesAndToolsDescription, Deco.Cap),
+                                    {this._renderSectionTitle(
+                                        this.props.translate.get(Key.LibrariesAndTools, Deco.CapWords),
                                     )}
-                                    <Container marginTop="36px">
-                                        {_.map(CATEGORY_TO_PACKAGES, (pkgs, category) =>
-                                            this._renderPackageCategory(category, pkgs),
+                                    <Container paddingTop="12px">
+                                        {this._renderSectionDescription(
+                                            this.props.translate.get(Key.LibrariesAndToolsDescription, Deco.Cap),
                                         )}
+                                        <Container marginTop="36px">
+                                            {_.map(CATEGORY_TO_PACKAGES, (pkgs, category) =>
+                                                this._renderPackageCategory(category, pkgs),
+                                            )}
+                                        </Container>
                                     </Container>
-                                </Container>
                                 </Container>
                             </div>
                         </div>
@@ -524,7 +524,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
             );
         });
         return (
-            <Container paddingLeft="8px" paddingBottom="100px">
+            <Container paddingLeft="22px" paddingBottom="100px">
                 {navigation}
             </Container>
         );
