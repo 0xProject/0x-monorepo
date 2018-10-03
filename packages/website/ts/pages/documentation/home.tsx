@@ -360,24 +360,35 @@ export interface HomeProps {
 export interface HomeState {
     isHoveringSidebar: boolean;
     isHoveringMainContent: boolean;
+    isSidebarScrolling: boolean;
 }
 
 export class Home extends React.Component<HomeProps, HomeState> {
     private readonly _throttledScreenWidthUpdate: () => void;
+    private readonly _throttledSidebarScrolling: () => void;
+    private _sidebarScrollClearingInterval: number;
     constructor(props: HomeProps) {
         super(props);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
+        this._throttledSidebarScrolling = _.throttle(this._onSidebarScroll.bind(this), THROTTLE_TIMEOUT);
         this.state = {
             isHoveringSidebar: false,
             isHoveringMainContent: false,
+            isSidebarScrolling: false,
         };
     }
     public componentDidMount(): void {
         window.addEventListener('resize', this._throttledScreenWidthUpdate);
         window.scrollTo(0, 0);
+        this._sidebarScrollClearingInterval = window.setInterval(() => {
+            this.setState({
+                isSidebarScrolling: false,
+            });
+        }, 1000);
     }
     public componentWillUnmount(): void {
         window.removeEventListener('resize', this._throttledScreenWidthUpdate);
+        window.clearInterval(this._sidebarScrollClearingInterval);
     }
     public render(): React.ReactNode {
         const scrollableContainerStyles: React.CSSProperties = {
@@ -422,10 +433,14 @@ export class Home extends React.Component<HomeProps, HomeState> {
                         width={234}
                         paddingLeft={22}
                         paddingRight={22}
-                        paddingTop={2}
+                        paddingTop={0}
                         backgroundColor={colors.grey100}
                     >
-                        <DocsLogo height={36} containerStyle={{ paddingTop: 30, paddingBottom: 12 }} />
+                        <Container
+                            borderBottom={this.state.isSidebarScrolling ? `1px solid ${colors.grey300}` : 'none'}
+                        >
+                            <DocsLogo height={36} containerStyle={{ paddingTop: 30, paddingBottom: 10 }} />
+                        </Container>
                         <div
                             style={{
                                 ...scrollableContainerStyles,
@@ -434,6 +449,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                             }}
                             onMouseEnter={this._onSidebarHover.bind(this, true)}
                             onMouseLeave={this._onSidebarHover.bind(this, false)}
+                            onWheel={this._throttledSidebarScrolling}
                         >
                             {this._renderMenu(sectionNameToLinks)}
                         </div>
@@ -524,7 +540,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
             );
         });
         return (
-            <Container paddingLeft="22px" paddingBottom="100px">
+            <Container paddingLeft="22px" paddingRight="22px" paddingBottom="100px">
                 {navigation}
             </Container>
         );
@@ -625,9 +641,11 @@ export class Home extends React.Component<HomeProps, HomeState> {
         );
     }
     private _onSidebarHover(isHovering: boolean, _event: React.FormEvent<HTMLInputElement>): void {
-        this.setState({
-            isHoveringSidebar: isHovering,
-        });
+        if (isHovering !== this.state.isHoveringSidebar) {
+            this.setState({
+                isHoveringSidebar: isHovering,
+            });
+        }
     }
     private _onMainContentHover(isHovering: boolean, _event: React.FormEvent<HTMLInputElement>): void {
         if (isHovering !== this.state.isHoveringMainContent) {
@@ -635,6 +653,11 @@ export class Home extends React.Component<HomeProps, HomeState> {
                 isHoveringMainContent: isHovering,
             });
         }
+    }
+    private _onSidebarScroll(_event: React.FormEvent<HTMLInputElement>): void {
+        this.setState({
+            isSidebarScrolling: true,
+        });
     }
     private _updateScreenWidth(): void {
         const newScreenWidth = utils.getScreenWidth();
