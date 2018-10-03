@@ -65,7 +65,7 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
         return (
             <Container height={80}>
                 <Container className="flex items-center lg-pt3 md-pt3 sm-pt1 relative" width="100%">
-                    <div className="col col-2 sm-hide xs-hide">
+                    <Container className="col col-2 sm-hide xs-hide">
                         <Link
                             to={WebsitePaths.Home}
                             style={{ color: colors.linkSectionGrey }}
@@ -78,17 +78,17 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                                 </Text>
                             </Container>
                         </Link>
-                    </div>
-                    <div className="col col-4 md-hide sm-hide xs-hide" />
-                    <div className="col col-6 md-pl4 md-ml4 sm-hide xs-hide">
-                        <div className="flex items-center justify-between right" style={{ width: 300 }}>
+                    </Container>
+                    <Container className="col col-4 md-hide sm-hide xs-hide" />
+                    <Container className="col col-6 md-pl4 md-ml4 sm-hide xs-hide">
+                        <Container className="flex items-center justify-between right" width="300px">
                             {this._renderMenuItems(menuItemInfos)}
-                        </div>
-                    </div>
-                    <div className="lg-hide md-hide">
+                        </Container>
+                    </Container>
+                    <Container className="lg-hide md-hide">
                         <DocsLogo height={30} containerStyle={{ paddingTop: 6, paddingLeft: 18 }} />
-                    </div>
-                    <div className="md-hide lg-hide absolute" style={{ right: 18, top: 12 }}>
+                    </Container>
+                    <Container className="md-hide lg-hide absolute" right="18px" top="12px">
                         <i
                             className="zmdi zmdi-menu"
                             style={{
@@ -98,16 +98,9 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                             }}
                             onClick={this._onMenuButtonClick.bind(this)}
                         />
-                    </div>
+                    </Container>
                 </Container>
-                <div
-                    style={{
-                        width: '100%',
-                        height: 1,
-                        backgroundColor: colors.grey300,
-                        marginTop: 11,
-                    }}
-                />
+                <Container width={'100%'} height={'1px'} backgroundColor={colors.grey300} marginTop={'11px'} />
                 {this._renderDrawer()}
             </Container>
         );
@@ -124,12 +117,12 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                         fontSize: 16,
                     }}
                 >
-                    <div className="flex">
+                    <Container className="flex">
                         <img src={menuItemInfo.iconUrl} width="18" />
                         <div className="flex items-center" style={{ ...menuItemInfo.textStyle, paddingLeft: 4 }}>
                             {menuItemInfo.title}
                         </div>
-                    </div>
+                    </Container>
                 </a>
             );
         });
@@ -143,14 +136,14 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                 openSecondary={true}
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
-                <div className="clearfix pl1">
+                <Container className="clearfix pl1">
                     <NestedSidebarMenu
                         sectionNameToLinks={this.props.sectionNameToLinks}
                         shouldDisplaySectionHeaders={true}
                         shouldReformatMenuItemNames={false}
                         onMenuItemClick={this._onMenuButtonClick.bind(this)}
                     />
-                </div>
+                </Container>
             </Drawer>
         );
     }

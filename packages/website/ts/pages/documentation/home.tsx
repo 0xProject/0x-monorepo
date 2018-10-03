@@ -435,7 +435,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                 } 50%, ${colors.white} 100%)`}
             >
                 <DocumentTitle title="0x Docs Home" />
-                <div className="flex mx-auto" style={{ height: '100vh' }}>
+                <Container className="flex mx-auto" height="100vh">
                     <Container
                         className="sm-hide xs-hide relative"
                         width={234}
@@ -496,7 +496,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                             onMouseOver={this._onMainContentHover.bind(this, true)}
                             onMouseLeave={this._onMainContentHover.bind(this, false)}
                         >
-                            <div>
+                            <Container>
                                 {this._renderSectionTitle(this.props.translate.get(Key.StartBuildOn0x, Deco.Cap))}
                                 <Container paddingTop="12px">
                                     {this._renderSectionDescription(
@@ -533,29 +533,29 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                         </Container>
                                     </Container>
                                 </Container>
-                            </div>
+                            </Container>
                         </div>
                     </Container>
-                </div>
+                </Container>
             </Container>
         );
     }
     private _renderPackageCategory(category: string, pkgs: Package[]): React.ReactNode {
         return (
-            <div key={`category-${category}`}>
+            <Container key={`category-${category}`}>
                 <Text fontSize="18px">{category}</Text>
-                <div>{_.map(pkgs, pkg => this._renderPackage(pkg))}</div>
-            </div>
+                <Container>{_.map(pkgs, pkg => this._renderPackage(pkg))}</Container>
+            </Container>
         );
     }
     private _renderPackage(pkg: Package): React.ReactNode {
         const id = sharedUtils.getIdFromName(pkg.link.title);
         return (
             <ScrollElement name={id} key={`package-${pkg.link.title}`}>
-                <div className="pb2">
+                <Container className="pb2">
                     <Container width="100%" height="1px" backgroundColor={colors.grey300} marginTop="11px" />
-                    <div className="clearfix mt2 pt1">
-                        <div className="md-col lg-col md-col-4 lg-col-4">
+                    <Container className="clearfix mt2 pt1">
+                        <Container className="md-col lg-col md-col-4 lg-col-4">
                             <Link
                                 to={pkg.link.to}
                                 style={{ color: colors.lightLinkBlue }}
@@ -566,16 +566,18 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                     {pkg.link.title}
                                 </Text>
                             </Link>
-                        </div>
-                        <div className="md-col lg-col md-col-6 lg-col-6 sm-py2" style={{ color: colors.grey700 }}>
-                            <ReactMarkdown
-                                source={pkg.description}
-                                renderers={{
-                                    link: MarkdownLinkBlock,
-                                }}
-                            />
-                        </div>
-                        <div className="md-col lg-col md-col-2 lg-col-2 sm-pb2 relative">
+                        </Container>
+                        <Container className="md-col lg-col md-col-6 lg-col-6 sm-py2">
+                            <Text fontColor={colors.grey700}>
+                                <ReactMarkdown
+                                    source={pkg.description}
+                                    renderers={{
+                                        link: MarkdownLinkBlock,
+                                    }}
+                                />
+                            </Text>
+                        </Container>
+                        <Container className="md-col lg-col md-col-2 lg-col-2 sm-pb2 relative">
                             <Link
                                 to={pkg.link.to}
                                 className="absolute"
@@ -583,19 +585,19 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                 type={pkg.link.type}
                                 shouldOpenInNewTab={!!pkg.link.shouldOpenInNewTab}
                             >
-                                <div className="flex">
-                                    <div>{this.props.translate.get(Key.More, Deco.Cap)}</div>
+                                <Container className="flex">
+                                    <Container>{this.props.translate.get(Key.More, Deco.Cap)}</Container>
                                     <Container paddingTop="1px" paddingLeft="6px">
                                         <i
                                             className="zmdi zmdi-chevron-right bold"
                                             style={{ fontSize: 18, color: colors.lightLinkBlue }}
                                         />
                                     </Container>
-                                </div>
+                                </Container>
                             </Link>
-                        </div>
-                    </div>
-                </div>
+                        </Container>
+                    </Container>
+                </Container>
             </ScrollElement>
         );
     }
