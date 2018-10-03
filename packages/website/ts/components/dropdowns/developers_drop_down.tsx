@@ -119,26 +119,26 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                         <div>{this._renderLinkSection(usefulLinksToLinkInfo)}</div>
                     </div>
                 </div>
-                <div
+                <Link
+                    to={WebsitePaths.Docs}
                     style={{
-                        padding: '0.8rem',
-                        textAlign: 'center',
-                        backgroundColor: colors.lightBgGrey,
-                        borderBottomLeftRadius: 4,
-                        borderBottomRightRadius: 4,
+                        color: colors.lightBlueA700,
+                        fontWeight: 'bold',
+                        fontSize: 14,
                     }}
                 >
-                    <Link
-                        to={WebsitePaths.Docs}
+                    <div
                         style={{
-                            color: colors.lightBlueA700,
-                            fontWeight: 'bold',
-                            fontSize: 14,
+                            padding: '0.8rem',
+                            textAlign: 'center',
+                            backgroundColor: colors.lightBgGrey,
+                            borderBottomLeftRadius: 4,
+                            borderBottomRightRadius: 4,
                         }}
                     >
                         {this.props.translate.get(Key.ViewAllDocumentation, Deco.Upper)}
-                    </Link>
-                </div>
+                    </div>
+                </Link>
             </div>
         );
         return dropdownMenu;
