@@ -92,16 +92,16 @@ function calculateRate(
     assetBuyAmount: BigNumber,
     feePercentage: number,
 ): BigNumber {
-    // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right (best rate to worst rate)
-    const [minEthAmountToBuyAsset, minZrxAmountToBuyAsset] = findEthAndZrxAmountNeededToBuyAsset(
+    // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
+    const [ethAmountToBuyAsset, zrxAmountToBuyAsset] = findEthAndZrxAmountNeededToBuyAsset(
         ordersAndFillableAmounts,
         assetBuyAmount,
     );
     // find the total eth needed to buy fees
-    const minEthAmountToBuyFees = findEthAmountNeededToBuyFees(feeOrdersAndFillableAmounts, minZrxAmountToBuyAsset);
-    const finalMinEthAmount = minEthAmountToBuyAsset.plus(minEthAmountToBuyFees).mul(feePercentage + 1);
+    const ethAmountToBuyFees = findEthAmountNeededToBuyFees(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
+    const ethAmount = ethAmountToBuyAsset.plus(ethAmountToBuyFees).mul(feePercentage + 1);
     // divide into the assetBuyAmount in order to find rate of makerAsset / WETH
-    const result = assetBuyAmount.div(finalMinEthAmount);
+    const result = assetBuyAmount.div(ethAmount);
     return result;
 }
 
@@ -156,7 +156,7 @@ function findEthAndZrxAmountNeededToBuyAsset(
             const zrxAmountForThisOrder = amountToFill.mul(order.takerFee).dividedToIntegerBy(order.makerAssetAmount);
             return {
                 ethAmount: acc.ethAmount.plus(ethAmountForThisOrder),
-                zrxAmount: acc.ethAmount.plus(zrxAmountForThisOrder),
+                zrxAmount: acc.zrxAmount.plus(zrxAmountForThisOrder),
                 remainingAssetBuyAmount: BigNumber.max(
                     constants.ZERO_AMOUNT,
                     acc.remainingAssetBuyAmount.minus(amountToFill),

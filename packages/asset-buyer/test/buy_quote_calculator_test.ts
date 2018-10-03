@@ -19,7 +19,8 @@ const NULL_BYTES = '0x';
 describe('buyQuoteCalculator', () => {
     describe('#calculate', () => {
         let ordersAndFillableAmounts: OrdersAndFillableAmounts;
-        let feeOrdersAndFillableAmounts: OrdersAndFillableAmounts;
+        let smallFeeOrderAndFillableAmount: OrdersAndFillableAmounts;
+        let allFeeOrdersAndFillableAmounts: OrdersAndFillableAmounts;
         beforeEach(() => {
             // generate two orders for our desired maker asset
             // the first order has a rate of 4 makerAsset / WETH with a takerFee of 200 ZRX and has only 200 / 400 makerAsset units left to fill (half fillable)
@@ -60,7 +61,7 @@ describe('buyQuoteCalculator', () => {
                 orders: signedOrders,
                 remainingFillableMakerAssetAmounts: [firstRemainingFillAmount, secondRemainingFillAmount],
             };
-            const feeOrder = orderFactory.createOrder(
+            const smallFeeOrder = orderFactory.createOrder(
                 NULL_ADDRESS,
                 new BigNumber(100),
                 NULL_BYTES,
@@ -68,13 +69,32 @@ describe('buyQuoteCalculator', () => {
                 NULL_BYTES,
                 NULL_ADDRESS,
             );
-            const signedFeeOrder = {
-                ...feeOrder,
+            const signedSmallFeeOrder = {
+                ...smallFeeOrder,
                 signature: NULL_BYTES,
             };
-            feeOrdersAndFillableAmounts = {
-                orders: [signedFeeOrder],
-                remainingFillableMakerAssetAmounts: [signedFeeOrder.makerAssetAmount],
+            smallFeeOrderAndFillableAmount = {
+                orders: [signedSmallFeeOrder],
+                remainingFillableMakerAssetAmounts: [signedSmallFeeOrder.makerAssetAmount],
+            };
+            const largeFeeOrder = orderFactory.createOrder(
+                NULL_ADDRESS,
+                new BigNumber(100),
+                NULL_BYTES,
+                new BigNumber(200),
+                NULL_BYTES,
+                NULL_ADDRESS,
+            );
+            const signedLargeFeeOrder = {
+                ...largeFeeOrder,
+                signature: NULL_BYTES,
+            };
+            allFeeOrdersAndFillableAmounts = {
+                orders: [signedSmallFeeOrder, signedLargeFeeOrder],
+                remainingFillableMakerAssetAmounts: [
+                    signedSmallFeeOrder.makerAssetAmount,
+                    largeFeeOrder.makerAssetAmount,
+                ],
             };
         });
         it('should throw if not enough maker asset liquidity', () => {
@@ -82,7 +102,7 @@ describe('buyQuoteCalculator', () => {
             expect(() =>
                 buyQuoteCalculator.calculate(
                     ordersAndFillableAmounts,
-                    feeOrdersAndFillableAmounts,
+                    smallFeeOrderAndFillableAmount,
                     new BigNumber(500),
                     0,
                     0,
@@ -94,14 +114,14 @@ describe('buyQuoteCalculator', () => {
             expect(() =>
                 buyQuoteCalculator.calculate(
                     ordersAndFillableAmounts,
-                    feeOrdersAndFillableAmounts,
+                    smallFeeOrderAndFillableAmount,
                     new BigNumber(300),
                     0,
                     0,
                 ),
             ).to.throw(AssetBuyerError.InsufficientZrxLiquidity);
         });
-        it('calculates a correct buyQuote', () => {
+        it('calculates a correct buyQuote with no slippage', () => {
             // we request 200 makerAsset units which can be filled using the first order
             // the first order requires a fee of 100 ZRX from the taker which can be filled by the feeOrder
             const assetBuyAmount = new BigNumber(200);
@@ -109,20 +129,52 @@ describe('buyQuoteCalculator', () => {
             const slippagePercentage = 0;
             const buyQuote = buyQuoteCalculator.calculate(
                 ordersAndFillableAmounts,
-                feeOrdersAndFillableAmounts,
+                smallFeeOrderAndFillableAmount,
                 assetBuyAmount,
                 feePercentage,
                 slippagePercentage,
             );
             // test if orders are correct
             expect(buyQuote.orders).to.deep.equal([ordersAndFillableAmounts.orders[0]]);
-            expect(buyQuote.feeOrders).to.deep.equal([feeOrdersAndFillableAmounts.orders[0]]);
+            expect(buyQuote.feeOrders).to.deep.equal([smallFeeOrderAndFillableAmount.orders[0]]);
             // test if rates are correct
+            // 50 eth to fill the first order + 100 eth for fees
             const expectedMinEthToFill = new BigNumber(150);
             const expectedMinRate = assetBuyAmount.div(expectedMinEthToFill.mul(feePercentage + 1));
             expect(buyQuote.minRate).to.bignumber.equal(expectedMinRate);
             // because we have no slippage protection, minRate is equal to maxRate
             expect(buyQuote.maxRate).to.bignumber.equal(expectedMinRate);
+            // test if feePercentage gets passed through
+            expect(buyQuote.feePercentage).to.equal(feePercentage);
+        });
+        it('calculates a correct buyQuote with with slippage', () => {
+            // we request 200 makerAsset units which can be filled using the first order
+            // however with 50% slippage we are protecting the buy with 100 extra makerAssetUnits
+            // so we need enough orders to fill 300 makerAssetUnits
+            // 300 makerAssetUnits can only be filled using both orders
+            // the first order requires a fee of 100 ZRX from the taker which can be filled by the feeOrder
+            const assetBuyAmount = new BigNumber(200);
+            const feePercentage = 0.02;
+            const slippagePercentage = 0.5;
+            const buyQuote = buyQuoteCalculator.calculate(
+                ordersAndFillableAmounts,
+                allFeeOrdersAndFillableAmounts,
+                assetBuyAmount,
+                feePercentage,
+                slippagePercentage,
+            );
+            // test if orders are correct
+            expect(buyQuote.orders).to.deep.equal(ordersAndFillableAmounts.orders);
+            expect(buyQuote.feeOrders).to.deep.equal(allFeeOrdersAndFillableAmounts.orders);
+            // test if rates are correct
+            // 50 eth to fill the first order + 100 eth for fees
+            const expectedMinEthToFill = new BigNumber(150);
+            const expectedMinRate = assetBuyAmount.div(expectedMinEthToFill.mul(feePercentage + 1));
+            expect(buyQuote.minRate).to.bignumber.equal(expectedMinRate);
+            // 100 eth to fill the first order + 200 eth for fees
+            const expectedMaxEthToFill = new BigNumber(300);
+            const expectedMaxRate = assetBuyAmount.div(expectedMaxEthToFill.mul(feePercentage + 1));
+            expect(buyQuote.maxRate).to.bignumber.equal(expectedMaxRate);
             // test if feePercentage gets passed through
             expect(buyQuote.feePercentage).to.equal(feePercentage);
         });
