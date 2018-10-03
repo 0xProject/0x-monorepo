@@ -99,9 +99,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             },
         };
         const sectionNameToLinks = this.props.docsInfo.getSectionNameToLinks();
-        console.log('sectionNameToLinks', sectionNameToLinks);
         const subsectionNameToLinks = this.props.docsInfo.getSubsectionNameToLinks(this.props.docAgnosticFormat);
-        console.log('subsectionNameToLinks', subsectionNameToLinks);
         return (
             <div>
                 {_.isUndefined(this.props.docAgnosticFormat) ? (
