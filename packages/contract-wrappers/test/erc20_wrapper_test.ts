@@ -1,4 +1,5 @@
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
+import { getContractAddresses } from '@0xproject/migrations';
 import { EmptyWalletSubprovider, Web3ProviderEngine } from '@0xproject/subproviders';
 import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -10,13 +11,13 @@ import {
     BlockParamLiteral,
     BlockRange,
     ContractWrappers,
+    ContractWrappersConfig,
     ContractWrappersError,
+    DecodedLogEvent,
     ERC20TokenApprovalEventArgs,
     ERC20TokenEvents,
     ERC20TokenTransferEventArgs,
 } from '../src';
-
-import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
@@ -33,10 +34,14 @@ describe('ERC20Wrapper', () => {
     let tokens: string[];
     let coinbase: string;
     let addressWithoutFunds: string;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
+    let config: ContractWrappersConfig;
+
     before(async () => {
+        config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+            contractAddresses: getContractAddresses(),
+            blockPollingIntervalMs: 10,
+        };
         contractWrappers = new ContractWrappers(provider, config);
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         tokens = tokenUtils.getDummyERC20TokenAddresses();
@@ -294,7 +299,7 @@ describe('ERC20Wrapper', () => {
         });
         it('should reduce the gas cost for transfers including tokens with unlimited allowance support', async () => {
             const transferAmount = new BigNumber(5);
-            const zrxAddress = tokenUtils.getProtocolTokenAddress();
+            const zrxAddress = getContractAddresses().zrxToken;
             const [, userWithNormalAllowance, userWithUnlimitedAllowance] = userAddresses;
             await contractWrappers.erc20Token.setAllowanceAsync(
                 zrxAddress,
@@ -539,7 +544,7 @@ describe('ERC20Wrapper', () => {
                     callbackNeverToBeCalled,
                 );
                 const callbackToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)();
-                contractWrappers.setProvider(provider, constants.TESTRPC_NETWORK_ID);
+                contractWrappers.setProvider(provider);
                 contractWrappers.erc20Token.subscribe(
                     tokenAddress,
                     ERC20TokenEvents.Transfer,
@@ -588,7 +593,7 @@ describe('ERC20Wrapper', () => {
         let txHash: string;
         before(() => {
             tokenAddress = tokens[0];
-            tokenTransferProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
+            tokenTransferProxyAddress = contractWrappers.erc20Proxy.address;
         });
         it('should get logs with decoded args emitted by Approval', async () => {
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);

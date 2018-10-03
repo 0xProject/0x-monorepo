@@ -624,3 +624,25 @@ export interface EIP712TypedData {
 export interface Stats {
     orderCount: number;
 }
+
+export interface ContractAddresses {
+    erc20Proxy: string;
+    erc721Proxy: string;
+    zrxToken: string;
+    etherToken: string;
+    exchange: string;
+    assetProxyOwner: string;
+    forwarder: string;
+    orderValidator: string;
+}
+
+export interface OptionalContractAddresses {
+    erc20Proxy?: string;
+    erc721Proxy?: string;
+    zrxToken?: string;
+    etherToken?: string;
+    exchange?: string;
+    assetProxyOwner?: string;
+    forwarder?: string;
+    orderValidator?: string;
+}

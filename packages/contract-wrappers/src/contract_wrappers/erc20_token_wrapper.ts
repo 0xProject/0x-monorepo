@@ -36,17 +36,11 @@ export class ERC20TokenWrapper extends ContractWrapper {
     /**
      * Instantiate ERC20TokenWrapper
      * @param web3Wrapper Web3Wrapper instance to use
-     * @param networkId Desired networkId
      * @param erc20ProxyWrapper The ERC20ProxyWrapper instance to use
      * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
      */
-    constructor(
-        web3Wrapper: Web3Wrapper,
-        networkId: number,
-        erc20ProxyWrapper: ERC20ProxyWrapper,
-        blockPollingIntervalMs?: number,
-    ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+    constructor(web3Wrapper: Web3Wrapper, erc20ProxyWrapper: ERC20ProxyWrapper, blockPollingIntervalMs?: number) {
+        super(web3Wrapper, blockPollingIntervalMs);
         this._tokenContractsByAddress = {};
         this._erc20ProxyWrapper = erc20ProxyWrapper;
     }
@@ -188,7 +182,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
         ownerAddress: string,
         methodOpts: MethodOpts = {},
     ): Promise<BigNumber> {
-        const proxyAddress = this._erc20ProxyWrapper.getContractAddress();
+        const proxyAddress = this._erc20ProxyWrapper.address;
         const allowanceInBaseUnits = await this.getAllowanceAsync(tokenAddress, ownerAddress, proxyAddress, methodOpts);
         return allowanceInBaseUnits;
     }
@@ -208,7 +202,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
         amountInBaseUnits: BigNumber,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
-        const proxyAddress = this._erc20ProxyWrapper.getContractAddress();
+        const proxyAddress = this._erc20ProxyWrapper.address;
         const txHash = await this.setAllowanceAsync(
             tokenAddress,
             ownerAddress,
@@ -434,13 +428,15 @@ export class ERC20TokenWrapper extends ContractWrapper {
         if (!_.isUndefined(tokenContract)) {
             return tokenContract;
         }
-        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
-            artifacts.ERC20Token,
-            normalizedTokenAddress,
-        );
+        // TODO(albrow): Do we really still need this check? The default error
+        // looks okay to me.
+        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(tokenAddress);
+        if (!doesContractExist) {
+            throw new Error(ContractWrappersError.ERC20TokenContractDoesNotExist);
+        }
         const contractInstance = new wrappers.ERC20TokenContract(
-            abi,
-            address,
+            this.abi,
+            normalizedTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

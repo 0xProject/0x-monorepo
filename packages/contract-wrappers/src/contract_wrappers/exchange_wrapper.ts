@@ -24,7 +24,6 @@ import {
     IndexedFilterValues,
     MethodOpts,
     OrderInfo,
-    OrderStatus,
     OrderTransactionOpts,
     ValidateOrderFillableOpts,
 } from '../types';
@@ -42,35 +41,34 @@ import { ERC721TokenWrapper } from './erc721_token_wrapper';
  */
 export class ExchangeWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.Exchange.compilerOutput.abi;
+    public address: string;
+    public zrxTokenAddress: string;
     private _exchangeContractIfExists?: wrappers.ExchangeContract;
     private _erc721TokenWrapper: ERC721TokenWrapper;
     private _erc20TokenWrapper: ERC20TokenWrapper;
-    private _contractAddressIfExists?: string;
-    private _zrxContractAddressIfExists?: string;
     /**
      * Instantiate ExchangeWrapper
-     * @param web3Wrapper Web3Wrapper instance to use
-     * @param networkId Desired networkId
-     * @param contractAddressIfExists The exchange contract address to use. This is usually pulled from
-     * the artifacts but needs to be specified when using with your own custom testnet.
-     * @param zrxContractAddressIfExists The ZRXToken contract address to use. This is usually pulled from
-     * the artifacts but needs to be specified when using with your own custom testnet.
-     * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
+     * @param web3Wrapper Web3Wrapper instance to use.
+     * @param erc20TokenWrapper ERC20TokenWrapper instance to use.
+     * @param erc721TokenWrapper ERC721TokenWrapper instance to use.
+     * @param address The address of the Exchange contract.
+     * @param zrxTokenAddress The address of the ZRX Token contract.
+     * @param blockPollingIntervalMs The block polling interval to use for active subscriptions.
      */
     constructor(
         web3Wrapper: Web3Wrapper,
-        networkId: number,
         erc20TokenWrapper: ERC20TokenWrapper,
         erc721TokenWrapper: ERC721TokenWrapper,
-        contractAddressIfExists?: string,
-        zrxContractAddressIfExists?: string,
+        // TODO(albrow): Make address optional?
+        address: string,
+        zrxTokenAddress: string,
         blockPollingIntervalMs?: number,
     ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+        super(web3Wrapper, blockPollingIntervalMs);
         this._erc20TokenWrapper = erc20TokenWrapper;
         this._erc721TokenWrapper = erc721TokenWrapper;
-        this._contractAddressIfExists = contractAddressIfExists;
-        this._zrxContractAddressIfExists = zrxContractAddressIfExists;
+        this.address = address;
+        this.zrxTokenAddress = zrxTokenAddress;
     }
     /**
      * Retrieve the address of an asset proxy by signature.
@@ -1050,9 +1048,8 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesBelongToStringEnum('eventName', eventName, wrappers.ExchangeEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
-        const exchangeContractAddress = this.getContractAddress();
         const subscriptionToken = this._subscribe<ArgsType>(
-            exchangeContractAddress,
+            this.address,
             eventName,
             indexFilterValues,
             artifacts.Exchange.compilerOutput.abi,
@@ -1090,9 +1087,8 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesBelongToStringEnum('eventName', eventName, wrappers.ExchangeEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
-        const exchangeContractAddress = this.getContractAddress();
         const logs = await this._getLogsAsync<ArgsType>(
-            exchangeContractAddress,
+            this.address,
             eventName,
             blockRange,
             indexFilterValues,
@@ -1159,29 +1155,11 @@ export class ExchangeWrapper extends ContractWrapper {
         );
     }
     /**
-     * Retrieves the Ethereum address of the Exchange contract deployed on the network
-     * that the user-passed web3 provider is connected to.
-     * @returns The Ethereum address of the Exchange contract being used.
-     */
-    public getContractAddress(): string {
-        const contractAddress = this._getContractAddress(artifacts.Exchange, this._contractAddressIfExists);
-        return contractAddress;
-    }
-    /**
-     * Returns the ZRX token address used by the exchange contract.
-     * @return Address of ZRX token
-     */
-    public getZRXTokenAddress(): string {
-        const contractAddress = this._getContractAddress(artifacts.ZRXToken, this._zrxContractAddressIfExists);
-        return contractAddress;
-    }
-    /**
      * Returns the ZRX asset data used by the exchange contract.
      * @return ZRX asset data
      */
     public getZRXAssetData(): string {
-        const zrxTokenAddress = this.getZRXTokenAddress();
-        const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
+        const zrxAssetData = assetDataUtils.encodeERC20AssetData(this.zrxTokenAddress);
         return zrxAssetData;
     }
     /**
@@ -1204,13 +1182,9 @@ export class ExchangeWrapper extends ContractWrapper {
         if (!_.isUndefined(this._exchangeContractIfExists)) {
             return this._exchangeContractIfExists;
         }
-        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
-            artifacts.Exchange,
-            this._contractAddressIfExists,
-        );
         const contractInstance = new wrappers.ExchangeContract(
-            abi,
-            address,
+            this.abi,
+            this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

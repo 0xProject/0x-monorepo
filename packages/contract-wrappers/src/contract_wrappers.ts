@@ -83,46 +83,29 @@ export class ContractWrappers {
         const blockPollingIntervalMs = _.isUndefined(config.blockPollingIntervalMs)
             ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
             : config.blockPollingIntervalMs;
-        this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, config.erc20ProxyContractAddress);
-        this.erc721Proxy = new ERC721ProxyWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            config.erc721ProxyContractAddress,
-        );
-        this.erc20Token = new ERC20TokenWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            this.erc20Proxy,
-            blockPollingIntervalMs,
-        );
-        this.erc721Token = new ERC721TokenWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            this.erc721Proxy,
-            blockPollingIntervalMs,
-        );
-        this.etherToken = new EtherTokenWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            this.erc20Token,
-            blockPollingIntervalMs,
-        );
+        if (_.isUndefined(config.contractAddresses.erc20Proxy)) {
+            throw new Error('config.contractAddresses.erc20Proxy is required for testing');
+        }
+        this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.contractAddresses.erc20Proxy);
+        this.erc721Proxy = new ERC721ProxyWrapper(this._web3Wrapper, config.contractAddresses.erc721Proxy);
+        this.erc20Token = new ERC20TokenWrapper(this._web3Wrapper, this.erc20Proxy, blockPollingIntervalMs);
+        this.erc721Token = new ERC721TokenWrapper(this._web3Wrapper, this.erc721Proxy, blockPollingIntervalMs);
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.erc20Token, blockPollingIntervalMs);
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
-            config.networkId,
             this.erc20Token,
             this.erc721Token,
-            config.exchangeContractAddress,
-            config.zrxContractAddress,
+            config.contractAddresses.exchange,
+            config.contractAddresses.zrxToken,
             blockPollingIntervalMs,
         );
         this.forwarder = new ForwarderWrapper(
             this._web3Wrapper,
-            config.networkId,
-            config.forwarderContractAddress,
-            config.zrxContractAddress,
+            config.contractAddresses.forwarder,
+            config.contractAddresses.zrxToken,
+            config.contractAddresses.etherToken,
         );
-        this.orderValidator = new OrderValidatorWrapper(this._web3Wrapper, config.networkId);
+        this.orderValidator = new OrderValidatorWrapper(this._web3Wrapper, config.contractAddresses.orderValidator);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all
@@ -130,16 +113,17 @@ export class ContractWrappers {
      * @param   provider    The Web3Provider you would like the 0x.js library to use from now on.
      * @param   networkId   The id of the network your provider is connected to
      */
-    public setProvider(provider: Provider, networkId: number): void {
+    public setProvider(provider: Provider): void {
+        // TODO(albrow): Make sure all contract wrappers are called below.
         this._web3Wrapper.setProvider(provider);
         (this.exchange as any)._invalidateContractInstances();
-        (this.exchange as any)._setNetworkId(networkId);
         (this.erc20Token as any)._invalidateContractInstances();
-        (this.erc20Token as any)._setNetworkId(networkId);
         (this.erc20Proxy as any)._invalidateContractInstance();
-        (this.erc20Proxy as any)._setNetworkId(networkId);
+        (this.erc721Token as any)._invalidateContractInstances();
+        (this.erc721Proxy as any)._invalidateContractInstance();
         (this.etherToken as any)._invalidateContractInstance();
-        (this.etherToken as any)._setNetworkId(networkId);
+        (this.forwarder as any)._invalidateContractInstance();
+        (this.orderValidator as any)._invalidateContractInstance();
     }
     /**
      * Get the provider instance currently used by 0x.js

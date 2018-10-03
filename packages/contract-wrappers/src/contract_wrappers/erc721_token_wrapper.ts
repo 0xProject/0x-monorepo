@@ -35,17 +35,11 @@ export class ERC721TokenWrapper extends ContractWrapper {
     /**
      * Instantiate ERC721TokenWrapper
      * @param web3Wrapper Web3Wrapper instance to use
-     * @param networkId Desired networkId
      * @param erc721ProxyWrapper The ERC721ProxyWrapper instance to use
      * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
      */
-    constructor(
-        web3Wrapper: Web3Wrapper,
-        networkId: number,
-        erc721ProxyWrapper: ERC721ProxyWrapper,
-        blockPollingIntervalMs?: number,
-    ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+    constructor(web3Wrapper: Web3Wrapper, erc721ProxyWrapper: ERC721ProxyWrapper, blockPollingIntervalMs?: number) {
+        super(web3Wrapper, blockPollingIntervalMs);
         this._tokenContractsByAddress = {};
         this._erc721ProxyWrapper = erc721ProxyWrapper;
     }
@@ -149,7 +143,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         ownerAddress: string,
         methodOpts: MethodOpts = {},
     ): Promise<boolean> {
-        const proxyAddress = this._erc721ProxyWrapper.getContractAddress();
+        const proxyAddress = this._erc721ProxyWrapper.address;
         const isProxyApprovedForAll = await this.isApprovedForAllAsync(
             tokenAddress,
             ownerAddress,
@@ -198,7 +192,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         tokenId: BigNumber,
         methodOpts: MethodOpts = {},
     ): Promise<boolean> {
-        const proxyAddress = this._erc721ProxyWrapper.getContractAddress();
+        const proxyAddress = this._erc721ProxyWrapper.address;
         const approvedAddress = await this.getApprovedIfExistsAsync(tokenAddress, tokenId, methodOpts);
         const isProxyApproved = approvedAddress === proxyAddress;
         return isProxyApproved;
@@ -259,7 +253,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         isApproved: boolean,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
-        const proxyAddress = this._erc721ProxyWrapper.getContractAddress();
+        const proxyAddress = this._erc721ProxyWrapper.address;
         const txHash = await this.setApprovalForAllAsync(tokenAddress, ownerAddress, proxyAddress, isApproved, txOpts);
         return txHash;
     }
@@ -317,7 +311,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         tokenId: BigNumber,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
-        const proxyAddress = this._erc721ProxyWrapper.getContractAddress();
+        const proxyAddress = this._erc721ProxyWrapper.address;
         const txHash = await this.setApprovalAsync(tokenAddress, proxyAddress, tokenId, txOpts);
         return txHash;
     }
@@ -461,13 +455,15 @@ export class ERC721TokenWrapper extends ContractWrapper {
         if (!_.isUndefined(tokenContract)) {
             return tokenContract;
         }
-        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
-            artifacts.ERC721Token,
-            normalizedTokenAddress,
-        );
+        // TODO(albrow): Do we really still need this check? The default error
+        // looks okay to me.
+        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(tokenAddress);
+        if (!doesContractExist) {
+            throw new Error(ContractWrappersError.ERC721TokenContractDoesNotExist);
+        }
         const contractInstance = new wrappers.ERC721TokenContract(
-            abi,
-            address,
+            this.abi,
+            normalizedTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

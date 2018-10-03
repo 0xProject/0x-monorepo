@@ -1,7 +1,7 @@
 import { wrappers } from '@0xproject/contracts';
+import { ContractAddresses, OrderState, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
-import { OrderState, SignedOrder } from '@0xproject/types';
 import { BlockParam, ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
 
 export enum ExchangeWrapperError {
@@ -120,11 +120,7 @@ export type SyncMethod = (...args: any[]) => any;
 export interface ContractWrappersConfig {
     networkId: number;
     gasPrice?: BigNumber;
-    exchangeContractAddress?: string;
-    zrxContractAddress?: string;
-    erc20ProxyContractAddress?: string;
-    erc721ProxyContractAddress?: string;
-    forwarderContractAddress?: string;
+    contractAddresses: ContractAddresses;
     blockPollingIntervalMs?: number;
 }
 

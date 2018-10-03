@@ -22,18 +22,16 @@ import { ContractWrapper } from './contract_wrapper';
  */
 export class ForwarderWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.Forwarder.compilerOutput.abi;
+    public address: string;
+    public zrxTokenAddress: string;
+    public etherTokenAddress: string;
     private _forwarderContractIfExists?: wrappers.ForwarderContract;
-    private _contractAddressIfExists?: string;
-    private _zrxContractAddressIfExists?: string;
-    constructor(
-        web3Wrapper: Web3Wrapper,
-        networkId: number,
-        contractAddressIfExists?: string,
-        zrxContractAddressIfExists?: string,
-    ) {
-        super(web3Wrapper, networkId);
-        this._contractAddressIfExists = contractAddressIfExists;
-        this._zrxContractAddressIfExists = zrxContractAddressIfExists;
+    // TODO(albrow): Make addresses optional?
+    constructor(web3Wrapper: Web3Wrapper, address: string, zrxTokenAddress: string, etherTokenAddress: string) {
+        super(web3Wrapper);
+        this.address = address;
+        this.zrxTokenAddress = zrxTokenAddress;
+        this.etherTokenAddress = etherTokenAddress;
     }
     /**
      * Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.
@@ -72,12 +70,8 @@ export class ForwarderWrapper extends ContractWrapper {
         assert.isETHAddressHex('feeRecipientAddress', feeRecipientAddress);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         // other assertions
-        assert.ordersCanBeUsedForForwarderContract(signedOrders, this.getEtherTokenAddress());
-        assert.feeOrdersCanBeUsedForForwarderContract(
-            signedFeeOrders,
-            this.getZRXTokenAddress(),
-            this.getEtherTokenAddress(),
-        );
+        assert.ordersCanBeUsedForForwarderContract(signedOrders, this.etherTokenAddress);
+        assert.feeOrdersCanBeUsedForForwarderContract(signedFeeOrders, this.zrxTokenAddress, this.etherTokenAddress);
         // format feePercentage
         const formattedFeePercentage = utils.numberPercentageToEtherTokenAmountPercentage(feePercentage);
         // lowercase input addresses
@@ -164,12 +158,8 @@ export class ForwarderWrapper extends ContractWrapper {
         assert.isETHAddressHex('feeRecipientAddress', feeRecipientAddress);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         // other assertions
-        assert.ordersCanBeUsedForForwarderContract(signedOrders, this.getEtherTokenAddress());
-        assert.feeOrdersCanBeUsedForForwarderContract(
-            signedFeeOrders,
-            this.getZRXTokenAddress(),
-            this.getEtherTokenAddress(),
-        );
+        assert.ordersCanBeUsedForForwarderContract(signedOrders, this.etherTokenAddress);
+        assert.feeOrdersCanBeUsedForForwarderContract(signedFeeOrders, this.zrxTokenAddress, this.etherTokenAddress);
         // format feePercentage
         const formattedFeePercentage = utils.numberPercentageToEtherTokenAmountPercentage(feePercentage);
         // lowercase input addresses
@@ -219,31 +209,6 @@ export class ForwarderWrapper extends ContractWrapper {
         );
         return txHash;
     }
-    /**
-     * Retrieves the Ethereum address of the Forwarder contract deployed on the network
-     * that the user-passed web3 provider is connected to.
-     * @returns The Ethereum address of the Forwarder contract being used.
-     */
-    public getContractAddress(): string {
-        const contractAddress = this._getContractAddress(artifacts.Forwarder, this._contractAddressIfExists);
-        return contractAddress;
-    }
-    /**
-     * Returns the ZRX token address used by the forwarder contract.
-     * @return Address of ZRX token
-     */
-    public getZRXTokenAddress(): string {
-        const contractAddress = this._getContractAddress(artifacts.ZRXToken, this._zrxContractAddressIfExists);
-        return contractAddress;
-    }
-    /**
-     * Returns the Ether token address used by the forwarder contract.
-     * @return Address of Ether token
-     */
-    public getEtherTokenAddress(): string {
-        const contractAddress = this._getContractAddress(artifacts.WETH9);
-        return contractAddress;
-    }
     // HACK: We don't want this method to be visible to the other units within that package but not to the end user.
     // TS doesn't give that possibility and therefore we make it private and access it over an any cast. Because of that tslint sees it as unused.
     // tslint:disable-next-line:no-unused-variable
@@ -254,13 +219,9 @@ export class ForwarderWrapper extends ContractWrapper {
         if (!_.isUndefined(this._forwarderContractIfExists)) {
             return this._forwarderContractIfExists;
         }
-        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
-            artifacts.Forwarder,
-            this._contractAddressIfExists,
-        );
         const contractInstance = new wrappers.ForwarderContract(
-            abi,
-            address,
+            this.abi,
+            this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

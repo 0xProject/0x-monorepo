@@ -8,26 +8,12 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build": "yarn pre_build && tsc -b",
+        "build": "tsc -b",
         "build:ci": "yarn build",
-        "pre_build": "run-s copy_artifacts generate_contract_wrappers",
-        "copy_artifacts": "copyfiles 'artifacts/**/*' ./lib",
-        "clean": "shx rm -rf lib src/1.0.0/contract_wrappers src/2.0.0-testnet/contract_wrappers src/2.0.0/contract_wrappers artifacts/development",
-        "lint": "tslint --project . --exclude **/src/v2/contract_wrappers/**/* --exclude **/src/v1/contract_wrappers/**/*",
-        "migrate:v1": "run-s build compile:v1 script:migrate:v1",
+        "clean": "shx rm -rf lib",
+        "lint": "tslint --project .",
         "migrate:v2": "run-s build script:migrate:v2",
-        "script:migrate:v1": "node ./lib/migrate.js --contracts-version 1.0.0",
-        "script:migrate:v2": "node ./lib/migrate.js --contracts-version 2.0.0",
-        "generate_contract_wrappers": "run-p generate_contract_wrappers:*",
-        "generate_contract_wrappers:v1": "abi-gen --abis  ${npm_package_config_abis_v1} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/1.0.0/contract_wrappers --backend ethers",
-        "generate_contract_wrappers:v2": "abi-gen --abis  ${npm_package_config_abis_v2} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/2.0.0/contract_wrappers --backend ethers",
-        "compile:v1": "sol-compiler --artifacts-dir artifacts/1.0.0 --contracts Exchange_v1,DummyERC20Token,ZRXToken,WETH9,TokenTransferProxy_v1,MultiSigWallet,MultiSigWalletWithTimeLock,MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress,TokenRegistry"
-    },
-    "config": {
-        "abis": {
-            "v1": "artifacts/1.0.0/@(DummyERC20Token|TokenTransferProxy_v1|Exchange_v1|TokenRegistry|MultiSigWallet|MultiSigWalletWithTimeLock|MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress|TokenRegistry|ZRXToken|WETH9).json",
-            "v2": "artifacts/2.0.0/@(ERC20Token|DummyERC20Token|ERC721Token|DummyERC721Token|ERC20Proxy|ERC721Proxy|Exchange|Forwarder|AssetProxyOwner|ZRXToken|WETH9|IWallet|IValidator|OrderValidator).json"
-        }
+        "script:migrate:v2": "node ./lib/migrate.js --contracts-version 2.0.0"
     },
     "license": "Apache-2.0",
     "devDependencies": {
@@ -45,6 +31,7 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
+        "@0xproject/contracts": "^2.1.48",
         "@0xproject/base-contract": "^3.0.1",
         "@0xproject/order-utils": "^1.0.7",
         "@0xproject/sol-compiler": "^1.1.7",

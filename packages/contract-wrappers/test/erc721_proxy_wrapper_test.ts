@@ -1,3 +1,4 @@
+import { getContractAddresses } from '@0xproject/migrations';
 import * as chai from 'chai';
 
 import { ContractWrappers } from '../src';
@@ -11,10 +12,12 @@ const expect = chai.expect;
 
 describe('ERC721ProxyWrapper', () => {
     let contractWrappers: ContractWrappers;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
     before(async () => {
+        const config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+            contractAddresses: getContractAddresses(),
+            blockPollingIntervalMs: 10,
+        };
         contractWrappers = new ContractWrappers(provider, config);
     });
     describe('#isAuthorizedAsync', () => {

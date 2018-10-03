@@ -30,13 +30,8 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @param erc20TokenWrapper The ERC20TokenWrapper instance to use
      * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
      */
-    constructor(
-        web3Wrapper: Web3Wrapper,
-        networkId: number,
-        erc20TokenWrapper: ERC20TokenWrapper,
-        blockPollingIntervalMs?: number,
-    ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+    constructor(web3Wrapper: Web3Wrapper, erc20TokenWrapper: ERC20TokenWrapper, blockPollingIntervalMs?: number) {
+        super(web3Wrapper, blockPollingIntervalMs);
         this._erc20TokenWrapper = erc20TokenWrapper;
     }
     /**
@@ -191,19 +186,6 @@ export class EtherTokenWrapper extends ContractWrapper {
     public unsubscribeAll(): void {
         super._unsubscribeAll();
     }
-    /**
-     * Retrieves the Ethereum address of the EtherToken contract deployed on the network
-     * that the user-passed web3 provider is connected to. If it's not Kovan, Ropsten, Rinkeby, Mainnet or TestRPC
-     * (networkId: 50), it will return undefined (e.g a private network).
-     * @returns The Ethereum address of the EtherToken contract or undefined.
-     */
-    public getContractAddressIfExists(): string | undefined {
-        const networkSpecificArtifact = artifacts.WETH9.networks[this._networkId];
-        const contractAddressIfExists = _.isUndefined(networkSpecificArtifact)
-            ? undefined
-            : networkSpecificArtifact.address;
-        return contractAddressIfExists;
-    }
     // tslint:disable-next-line:no-unused-variable
     private _invalidateContractInstance(): void {
         this.unsubscribeAll();
@@ -214,13 +196,16 @@ export class EtherTokenWrapper extends ContractWrapper {
         if (!_.isUndefined(etherTokenContract)) {
             return etherTokenContract;
         }
-        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
-            artifacts.WETH9,
-            etherTokenAddress,
-        );
+        // TODO(albrow): Do we really still need this check? The default error
+        // looks okay to me.
+        // TODO(albrow): Should we normalize the token address here?
+        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(etherTokenAddress);
+        if (!doesContractExist) {
+            throw new Error(ContractWrappersError.EtherTokenContractDoesNotExist);
+        }
         const contractInstance = new wrappers.WETH9Contract(
-            abi,
-            address,
+            this.abi,
+            etherTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

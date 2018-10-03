@@ -13,25 +13,25 @@ import { ContractWrapper } from './contract_wrapper';
  */
 export class ERC20ProxyWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.ERC20Proxy.compilerOutput.abi;
+    public address: string;
     private _erc20ProxyContractIfExists?: wrappers.ERC20ProxyContract;
-    private _contractAddressIfExists?: string;
     /**
      * Instantiate ERC20ProxyWrapper
      * @param web3Wrapper Web3Wrapper instance to use
-     * @param networkId Desired networkId
-     * @param contractAddressIfExists The contract address to use. This is usually pulled from
-     * the artifacts but needs to be specified when using with your own custom testnet.
+     * @param address The address of the ERC20Proxy contract
      */
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, contractAddressIfExists?: string) {
-        super(web3Wrapper, networkId);
-        this._contractAddressIfExists = contractAddressIfExists;
+    // TODO(albrow): Make address optional and default to looking up the address
+    // based in a hard-coded mapping based on web3Wrapper network id.
+    constructor(web3Wrapper: Web3Wrapper, address: string) {
+        super(web3Wrapper);
+        this.address = address;
     }
     /**
      * Get the 4 bytes ID of this asset proxy
      * @return  Proxy id
      */
     public async getProxyIdAsync(): Promise<AssetProxyId> {
-        const ERC20ProxyContractInstance = await this._getERC20ProxyContractAsync();
+        const ERC20ProxyContractInstance = this._getERC20ProxyContract();
         const proxyId = (await ERC20ProxyContractInstance.getProxyId.callAsync()) as AssetProxyId;
         return proxyId;
     }
@@ -43,7 +43,7 @@ export class ERC20ProxyWrapper extends ContractWrapper {
     public async isAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
         assert.isETHAddressHex('exchangeContractAddress', exchangeContractAddress);
         const normalizedExchangeContractAddress = exchangeContractAddress.toLowerCase();
-        const ERC20ProxyContractInstance = await this._getERC20ProxyContractAsync();
+        const ERC20ProxyContractInstance = this._getERC20ProxyContract();
         const isAuthorized = await ERC20ProxyContractInstance.authorized.callAsync(normalizedExchangeContractAddress);
         return isAuthorized;
     }
@@ -52,18 +52,9 @@ export class ERC20ProxyWrapper extends ContractWrapper {
      * @return  The list of authorized addresses.
      */
     public async getAuthorizedAddressesAsync(): Promise<string[]> {
-        const ERC20ProxyContractInstance = await this._getERC20ProxyContractAsync();
+        const ERC20ProxyContractInstance = this._getERC20ProxyContract();
         const authorizedAddresses = await ERC20ProxyContractInstance.getAuthorizedAddresses.callAsync();
         return authorizedAddresses;
-    }
-    /**
-     * Retrieves the Ethereum address of the ERC20Proxy contract deployed on the network
-     * that the user-passed web3 provider is connected to.
-     * @returns The Ethereum address of the ERC20Proxy contract being used.
-     */
-    public getContractAddress(): string {
-        const contractAddress = this._getContractAddress(artifacts.ERC20Proxy, this._contractAddressIfExists);
-        return contractAddress;
     }
     // HACK: We don't want this method to be visible to the other units within that package but not to the end user.
     // TS doesn't give that possibility and therefore we make it private and access it over an any cast. Because of that tslint sees it as unused.
@@ -71,17 +62,13 @@ export class ERC20ProxyWrapper extends ContractWrapper {
     private _invalidateContractInstance(): void {
         delete this._erc20ProxyContractIfExists;
     }
-    private async _getERC20ProxyContractAsync(): Promise<wrappers.ERC20ProxyContract> {
+    private _getERC20ProxyContract(): wrappers.ERC20ProxyContract {
         if (!_.isUndefined(this._erc20ProxyContractIfExists)) {
             return this._erc20ProxyContractIfExists;
         }
-        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
-            artifacts.ERC20Proxy,
-            this._contractAddressIfExists,
-        );
         const contractInstance = new wrappers.ERC20ProxyContract(
-            abi,
-            address,
+            this.abi,
+            this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

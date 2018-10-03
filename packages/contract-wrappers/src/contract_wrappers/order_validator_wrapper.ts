@@ -16,14 +16,17 @@ import { ContractWrapper } from './contract_wrapper';
  */
 export class OrderValidatorWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.OrderValidator.compilerOutput.abi;
+    public address: string;
     private _orderValidatorContractIfExists?: wrappers.OrderValidatorContract;
     /**
      * Instantiate OrderValidatorWrapper
-     * @param web3Wrapper Web3Wrapper instance to use
-     * @param networkId Desired networkId
+     * @param web3Wrapper Web3Wrapper instance to use.
+     * @param address The address of the OrderValidator contract.
      */
-    constructor(web3Wrapper: Web3Wrapper, networkId: number) {
-        super(web3Wrapper, networkId);
+    // TODO(albrow): Make address optional?
+    constructor(web3Wrapper: Web3Wrapper, address: string) {
+        super(web3Wrapper);
+        this.address = address;
     }
     /**
      * Get an object conforming to OrderAndTraderInfo containing on-chain information of the provided order and address
@@ -173,10 +176,9 @@ export class OrderValidatorWrapper extends ContractWrapper {
         if (!_.isUndefined(this._orderValidatorContractIfExists)) {
             return this._orderValidatorContractIfExists;
         }
-        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(artifacts.OrderValidator);
         const contractInstance = new wrappers.OrderValidatorContract(
-            abi,
-            address,
+            this.abi,
+            this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

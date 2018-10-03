@@ -1,4 +1,5 @@
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
+import { getContractAddresses } from '@0xproject/migrations';
 import { EmptyWalletSubprovider, Web3ProviderEngine } from '@0xproject/subproviders';
 import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -10,13 +11,14 @@ import {
     BlockParamLiteral,
     BlockRange,
     ContractWrappers,
+    ContractWrappersConfig,
     ContractWrappersError,
+    DecodedLogEvent,
     ERC721TokenApprovalEventArgs,
     ERC721TokenApprovalForAllEventArgs,
     ERC721TokenEvents,
     ERC721TokenTransferEventArgs,
 } from '../src';
-import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
@@ -37,10 +39,14 @@ describe('ERC721Wrapper', () => {
     let operatorAddress: string;
     let approvedAddress: string;
     let receiverAddress: string;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
+    let config: ContractWrappersConfig;
+
     before(async () => {
+        config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+            contractAddresses: getContractAddresses(),
+            blockPollingIntervalMs: 10,
+        };
         contractWrappers = new ContractWrappers(provider, config);
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         tokens = tokenUtils.getDummyERC721TokenAddresses();
@@ -333,7 +339,7 @@ describe('ERC721Wrapper', () => {
                     callbackNeverToBeCalled,
                 );
                 const callbackToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)();
-                contractWrappers.setProvider(provider, constants.TESTRPC_NETWORK_ID);
+                contractWrappers.setProvider(provider);
                 contractWrappers.erc721Token.subscribe(
                     tokenAddress,
                     ERC721TokenEvents.Approval,
