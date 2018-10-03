@@ -19,9 +19,10 @@ export interface LinkProps {
 }
 
 /**
- * A generic link component which let's the developer render internal & external links, and their associated
- * behaviors with a single link component. Many times we want a menu including both internal & external links
- * and this abstracts away the differences of rendering both types of links.
+ * A generic link component which let's the developer render internal, external and scroll-to-hash links, and
+ * their associated behaviors with a single link component. Many times we want a menu including a combination of
+ * internal, external and scroll links and the abstraction of the differences of rendering each types of link
+ * makes it much easier to do so.
  */
 export const Link: React.StatelessComponent<LinkProps> = ({
     style,
