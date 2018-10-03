@@ -489,8 +489,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                         ))}
                                     </Container>
                                 </Container>
-                            </div>
-                            <div className="mt4">
+                                <Container marginTop="32px" paddingBottom="100px">
                                 {this._renderSectionTitle(
                                     this.props.translate.get(Key.LibrariesAndTools, Deco.CapWords),
                                 )}
@@ -503,6 +502,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                             this._renderPackageCategory(category, pkgs),
                                         )}
                                     </Container>
+                                </Container>
                                 </Container>
                             </div>
                         </div>
@@ -523,7 +523,11 @@ export class Home extends React.Component<HomeProps, HomeState> {
                 </div>
             );
         });
-        return <div className="pl1">{navigation}</div>;
+        return (
+            <Container paddingLeft="8px" paddingBottom="100px">
+                {navigation}
+            </Container>
+        );
     }
     private _renderMenuItems(links: ALink[]): React.ReactNode {
         const menuItems = _.map(links, link => {
