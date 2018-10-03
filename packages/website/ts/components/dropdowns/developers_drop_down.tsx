@@ -128,7 +128,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                 >
                     <div
                         style={{
-                            padding: '0.8rem',
+                            padding: '0.9rem',
                             textAlign: 'center',
                             backgroundColor: colors.lightBgGrey,
                             borderBottomLeftRadius: 4,
