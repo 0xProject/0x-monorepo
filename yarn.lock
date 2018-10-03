@@ -11785,6 +11785,12 @@ polished@^1.9.3:
   version "1.9.3"
   resolved "https://registry.npmjs.org/polished/-/polished-1.9.3.tgz#d61b8a0c4624efe31e2583ff24a358932b6b75e1"
 
+polished@^2.2.0:
+  version "2.2.0"
+  resolved "http://localhost:4873/polished/-/polished-2.2.0.tgz#5ca7e178cc5352bd7fd1efc45342f7c6d59cc982"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+
 popper.js@1.14.3, popper.js@^1.14.1:
   version "1.14.3"
   resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.14.3.tgz#1438f98d046acf7b4d78cd502bf418ac64d4f095"

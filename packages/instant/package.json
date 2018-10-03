@@ -50,6 +50,7 @@
         "@0xproject/web3-wrapper": "^3.0.1",
         "ethereum-types": "^1.0.8",
         "lodash": "^4.17.10",
+        "polished": "^2.2.0",
         "react": "^16.5.2",
         "react-dom": "^16.5.2",
         "react-redux": "^5.0.7",

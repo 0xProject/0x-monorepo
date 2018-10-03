@@ -6,29 +6,24 @@ const {
     injectGlobal,
     keyframes,
     ThemeProvider,
-} = styledComponents as styledComponents.ThemedStyledComponentsModule<IThemeInterface>;
+} = styledComponents as styledComponents.ThemedStyledComponentsModule<Theme>;
 
-// Inject the inter-ui font into the page
-styledComponents.injectGlobal`
-    @import url('https://rsms.me/inter/inter-ui.css');
-`;
+export type Theme = { [key in ColorOption]: string };
 
-export interface IThemeInterface {
-    primaryColor: string;
-    black: string;
-    white: string;
-    darkGrey: string;
-    lightGrey: string;
-    fontFamily: string;
+export enum ColorOption {
+    primaryColor = 'primaryColor',
+    black = 'black',
+    lightGrey = 'lightGrey',
+    darkGrey = 'darkGrey',
+    white = 'white',
 }
 
-export const theme: IThemeInterface = {
+export const theme: Theme = {
     primaryColor: '#512D80',
     black: 'black',
     lightGrey: '#999999',
     darkGrey: '#333333',
     white: 'white',
-    fontFamily: 'Inter UI, sans-serif',
 };
 
 export { styled, css, injectGlobal, keyframes, ThemeProvider };
