@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 
-import { ALink, LinkType, Styles } from '../types';
+import { ALink, Styles } from '../types';
 import { colors } from '../utils/colors';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
@@ -127,9 +127,9 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
         ) {
             return null;
         }
-        return this._renderMenuSubsectionsBySection(menuItemName, this.props.subsectionNameToLinks[menuItemName]);
+        return this._renderSubsectionsLinks(menuItemName, this.props.subsectionNameToLinks[menuItemName]);
     }
-    private _renderMenuSubsectionsBySection(menuItemName: string, links: ALink[]): React.ReactNode {
+    private _renderSubsectionsLinks(menuItemName: string, links: ALink[]): React.ReactNode {
         return (
             <ul style={{ margin: 0, listStyleType: 'none', paddingLeft: 0 }} key={menuItemName}>
                 {_.map(links, link => {

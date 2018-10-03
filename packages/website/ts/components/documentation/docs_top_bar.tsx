@@ -9,13 +9,13 @@ import { Deco, Key, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
-export interface DocsContentTopBarProps {
+export interface DocsTopBarProps {
     location: Location;
     translate: Translate;
     sectionNameToLinks?: ObjectMap<ALink[]>;
 }
 
-interface DocsContentTopBarState {
+interface DocsTopBarState {
     isDrawerOpen: boolean;
 }
 
@@ -26,14 +26,14 @@ interface MenuItemInfo {
     textStyle: React.CSSProperties;
 }
 
-export class DocsContentTopBar extends React.Component<DocsContentTopBarProps, DocsContentTopBarState> {
-    constructor(props: DocsContentTopBarProps) {
+export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState> {
+    constructor(props: DocsTopBarProps) {
         super(props);
         this.state = {
             isDrawerOpen: false,
         };
     }
-    public componentWillReceiveProps(nextProps: DocsContentTopBarProps): void {
+    public componentWillReceiveProps(nextProps: DocsTopBarProps): void {
         if (nextProps.location.pathname !== this.props.location.pathname) {
             this.setState({
                 isDrawerOpen: false,

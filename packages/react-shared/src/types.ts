@@ -8,10 +8,6 @@ export enum HeaderSizes {
     H3 = 'h3',
 }
 
-export interface MenuSubsectionsBySection {
-    [section: string]: string[];
-}
-
 export enum EtherscanLinkSuffixes {
     Address = 'address',
     Tx = 'tx',

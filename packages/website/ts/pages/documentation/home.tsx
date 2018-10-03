@@ -10,13 +10,12 @@ import {
 } from '@0xproject/react-shared';
 import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
-import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
 import * as ReactMarkdown from 'react-markdown';
 import { Element as ScrollElement } from 'react-scroll';
-import { DocsContentTopBar } from 'ts/components/documentation/docs_content_top_bar';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
+import { DocsTopBar } from 'ts/components/documentation/docs_top_bar';
 import { TutorialButton } from 'ts/components/documentation/tutorial_button';
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
@@ -475,7 +474,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                         backgroundColor={colors.white}
                     >
                         <Container paddingLeft={mainContentPadding} paddingRight={mainContentPadding}>
-                            <DocsContentTopBar
+                            <DocsTopBar
                                 location={this.props.location}
                                 translate={this.props.translate}
                                 sectionNameToLinks={sectionNameToLinks}
