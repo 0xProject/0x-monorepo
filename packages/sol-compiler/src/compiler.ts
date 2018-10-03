@@ -349,7 +349,7 @@ export class Compiler {
     ): number {
         let nextId_ = nextId;
 
-        const importStatementMatches = contractSource.match(/import[^;]*;/g);
+        const importStatementMatches = contractSource.match(/\nimport[^;]*;/g);
         if (importStatementMatches === null) {
             return nextId_;
         }
@@ -360,9 +360,24 @@ export class Compiler {
             }
 
             let importPath = importPathMatches[1];
+            // HACK(ablrow): We have, e.g.:
+            //
+            //      importPath   = "../../utils/LibBytes/LibBytes.sol"
+            //      contractPath = "2.0.0/protocol/AssetProxyOwner/AssetProxyOwner.sol"
+            //
+            // Resolver doesn't understand "../" so we want to pass
+            // "2.0.0/utils/LibBytes/LibBytes.sol" to resolver.
+            //
+            // This hack involves using path.resolve. But path.resolve returns
+            // absolute directories by default. We trick it into thinking that
+            // contractPath is a root directory by prepending a '/' and then
+            // removing the '/' the end.
+            //
+            //      path.resolve("/a/b/c", ""../../d/e") === "/a/d/e"
+            //
             const lastPathSeparatorPos = contractPath.lastIndexOf('/');
-            const importFolder = lastPathSeparatorPos === -1 ? '' : contractPath.slice(0, lastPathSeparatorPos + 1);
-            importPath = importPath.slice(0, 2) === './' ? importPath.replace(/^.\//, importFolder) : importPath;
+            const contractFolder = lastPathSeparatorPos === -1 ? '' : contractPath.slice(0, lastPathSeparatorPos + 1);
+            importPath = path.resolve('/' + contractFolder, importPath).replace('/', '');
 
             if (_.isUndefined(sourcesToAppendTo[importPath])) {
                 sourcesToAppendTo[importPath] = { id: nextId_ };
