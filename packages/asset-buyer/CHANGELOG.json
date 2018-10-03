@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Expand AssetBuyer to work with multiple assets at once",
+                "pr": 1086
+            }
+        ]
+    },
+    {
         "timestamp": 1538475601,
         "version": "1.0.3",
         "changes": [
