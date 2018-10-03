@@ -5,6 +5,7 @@ import {
     Link,
     LinkType,
     MarkdownLinkBlock,
+    NestedSidebarMenu,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
 import { ObjectMap } from '@0xproject/types';
@@ -425,6 +426,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                 pkg => pkg.link,
             ),
         };
+        console.log('sectionNameToLinks', sectionNameToLinks);
         return (
             <Container
                 className="flex items-center overflow-hidden"
@@ -458,7 +460,12 @@ export class Home extends React.Component<HomeProps, HomeState> {
                             onMouseLeave={this._onSidebarHover.bind(this, false)}
                             onWheel={this._throttledSidebarScrolling}
                         >
-                            {this._renderMenu(sectionNameToLinks)}
+                            <Container paddingLeft="22px" paddingRight="22px" paddingBottom="100px">
+                                <NestedSidebarMenu
+                                    sectionNameToLinks={sectionNameToLinks}
+                                    shouldReformatMenuItemNames={false}
+                                />
+                            </Container>
                         </div>
                     </Container>
                     <Container
@@ -533,46 +540,6 @@ export class Home extends React.Component<HomeProps, HomeState> {
                 </div>
             </Container>
         );
-    }
-    private _renderMenu(sectionNameToLinks: ObjectMap<ALink[]>): React.ReactNode {
-        const navigation = _.map(sectionNameToLinks, (links: ALink[], sectionName: string) => {
-            // tslint:disable-next-line:no-unused-variable
-            return (
-                <div key={`section-${sectionName}`} className="py1" style={{ color: colors.linkSectionGrey }}>
-                    <div style={{ fontWeight: 'bold', fontSize: 15, letterSpacing: 0.5 }} className="py1">
-                        {sectionName.toUpperCase()}
-                    </div>
-                    {this._renderMenuItems(links)}
-                </div>
-            );
-        });
-        return (
-            <Container paddingLeft="22px" paddingRight="22px" paddingBottom="100px">
-                {navigation}
-            </Container>
-        );
-    }
-    private _renderMenuItems(links: ALink[]): React.ReactNode {
-        const menuItems = _.map(links, link => {
-            return (
-                <div key={`menuItem-${link.title}`}>
-                    <Link to={link.to} shouldOpenInNewTab={link.shouldOpenInNewTab} type={link.type}>
-                        <MenuItem
-                            style={{ minHeight: 0 }}
-                            innerDivStyle={{
-                                color: colors.grey800,
-                                fontSize: 14,
-                                lineHeight: 2,
-                                padding: 0,
-                            }}
-                        >
-                            {link.title}
-                        </MenuItem>
-                    </Link>
-                </div>
-            );
-        });
-        return menuItems;
     }
     private _renderPackageCategory(category: string, pkgs: Package[]): React.ReactNode {
         return (
