@@ -5,6 +5,10 @@
             {
                 "note": "Expand AssetBuyer to work with multiple assets at once",
                 "pr": 1086
+            },
+            {
+                "note": "Fix minRate and maxRate calculation",
+                "pr": 1113
             }
         ]
     },
