@@ -297,6 +297,10 @@ export class Compiler {
     ): Promise<void> {
         const compiledContract = compilerOutput.contracts[contractPath][contractName];
 
+        // need to gather sourceCodes for this artifact, but compilerOutput.sources (the list of contract modules)
+        // contains listings for for every contract compiled during the compiler invocation that compiled the contract
+        // to be persisted, which could include many that are irrelevant to the contract at hand.  So, gather up only
+        // the relevant sources:
         const { sourceCodes, sources } = this._getSourcesWithDependencies(contractPath, compilerOutput.sources);
 
         const contractVersion: ContractVersionData = {
@@ -333,7 +337,7 @@ export class Compiler {
         logUtils.warn(`${contractName} artifact saved!`);
     }
     /**
-     * For the given @param contractPath, populates JSON objects to be used in the ContractArtifact interface's
+     * For the given @param contractPath, populates JSON objects to be used in the ContractVersionData interface's
      * properties `sources` (source code file names mapped to ID numbers) and `sourceCodes` (source code content of
      * contracts) for that contract.  The source code pointed to by contractPath is read and parsed directly (via
      * `this._resolver.resolve().source`), as are its imports, recursively.  The ID numbers for @return `sources` are
