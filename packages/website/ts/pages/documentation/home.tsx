@@ -635,7 +635,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
     }
     private _renderSectionDescription(text: string): React.ReactNode {
         return (
-            <Text fontColor={colors.linkSectionGrey} fontSize="18px" fontFamily="Roboto Mono">
+            <Text fontColor={colors.linkSectionGrey} fontSize="16px" fontFamily="Roboto Mono">
                 {text}
             </Text>
         );
