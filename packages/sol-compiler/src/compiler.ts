@@ -297,7 +297,7 @@ export class Compiler {
     ): Promise<void> {
         const compiledContract = compilerOutput.contracts[contractPath][contractName];
 
-        const { sourceCodes, sources } = this._getSourcesWithDependencies(contractPath);
+        const { sourceCodes, sources } = this._getSourcesWithDependencies(contractPath, compilerOutput.sources);
 
         const contractVersion: ContractVersionData = {
             compilerOutput: compiledContract,
@@ -332,26 +332,39 @@ export class Compiler {
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
         logUtils.warn(`${contractName} artifact saved!`);
     }
+    /**
+     * For the given @param contractPath, populates JSON objects to be used in the ContractArtifact interface's
+     * properties `sources` (source code file names mapped to ID numbers) and `sourceCodes` (source code content of
+     * contracts) for that contract.  The source code pointed to by contractPath is read and parsed directly (via
+     * `this._resolver.resolve().source`), as are its imports, recursively.  The ID numbers for @return `sources` are
+     * taken from the corresponding ID's in @param fullSources, and the content for @return sourceCodes is read from
+     * disk (via the aforementioned `resolver.source`).
+     */
     private _getSourcesWithDependencies(
         contractPath: string,
+        fullSources: { [sourceName: string]: { id: number } },
     ): { sourceCodes: { [sourceName: string]: string }; sources: { [sourceName: string]: { id: number } } } {
-        const sources = { [contractPath]: { id: 0 } };
+        const sources = { [contractPath]: { id: fullSources[contractPath].id } };
         const sourceCodes = { [contractPath]: this._resolver.resolve(contractPath).source };
-        this._recursivelyGatherDependencySources(contractPath, sourceCodes[contractPath], sources, sourceCodes, 1);
+        this._recursivelyGatherDependencySources(
+            contractPath,
+            sourceCodes[contractPath],
+            fullSources,
+            sources,
+            sourceCodes,
+        );
         return { sourceCodes, sources };
     }
     private _recursivelyGatherDependencySources(
         contractPath: string,
         contractSource: string,
+        fullSources: { [sourceName: string]: { id: number } },
         sourcesToAppendTo: { [sourceName: string]: { id: number } },
         sourceCodesToAppendTo: { [sourceName: string]: string },
-        nextId: number,
-    ): number {
-        let nextId_ = nextId;
-
+    ): void {
         const importStatementMatches = contractSource.match(/\nimport[^;]*;/g);
         if (importStatementMatches === null) {
-            return nextId_;
+            return;
         }
         for (const importStatementMatch of importStatementMatches) {
             const importPathMatches = importStatementMatch.match(/\"([^\"]*)\"/);
@@ -380,20 +393,18 @@ export class Compiler {
             importPath = path.resolve('/' + contractFolder, importPath).replace('/', '');
 
             if (_.isUndefined(sourcesToAppendTo[importPath])) {
-                sourcesToAppendTo[importPath] = { id: nextId_ };
+                sourcesToAppendTo[importPath] = { id: fullSources[importPath].id };
                 sourceCodesToAppendTo[importPath] = this._resolver.resolve(importPath).source;
-                nextId_ += 1;
 
-                nextId_ = this._recursivelyGatherDependencySources(
+                this._recursivelyGatherDependencySources(
                     importPath,
                     this._resolver.resolve(importPath).source,
+                    fullSources,
                     sourcesToAppendTo,
                     sourceCodesToAppendTo,
-                    nextId_,
                 );
             }
         }
-        return nextId_;
     }
     private _compile(solcInstance: solc.SolcInstance, standardInput: solc.StandardInput): solc.StandardOutput {
         const compiled: solc.StandardOutput = JSON.parse(
