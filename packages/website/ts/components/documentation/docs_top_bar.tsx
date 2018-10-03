@@ -5,6 +5,7 @@ import Drawer from 'material-ui/Drawer';
 import * as React from 'react';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { Container } from 'ts/components/ui/container';
+import { Text } from 'ts/components/ui/text';
 import { Deco, Key, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -71,9 +72,11 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                             className="flex items-center text-decoration-none"
                         >
                             <i className="zmdi zmdi-chevron-left bold" style={{ fontSize: 16 }} />
-                            <div className="pl1" style={{ fontSize: 16 }}>
-                                0xproject.com
-                            </div>
+                            <Container paddingLeft="8px">
+                                <Text fontSize="16px" fontColor={colors.linkSectionGrey}>
+                                    0xproject.com
+                                </Text>
+                            </Container>
                         </Link>
                     </div>
                     <div className="col col-4 md-hide sm-hide xs-hide" />
@@ -86,19 +89,15 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                         <DocsLogo height={30} containerStyle={{ paddingTop: 6, paddingLeft: 18 }} />
                     </div>
                     <div className="md-hide lg-hide absolute" style={{ right: 18, top: 12 }}>
-                        <div
+                        <i
+                            className="zmdi zmdi-menu"
                             style={{
+                                color: colors.grey700,
                                 fontSize: 30,
-                                color: 'black',
                                 cursor: 'pointer',
                             }}
-                        >
-                            <i
-                                className="zmdi zmdi-menu"
-                                style={{ color: colors.grey700 }}
-                                onClick={this._onMenuButtonClick.bind(this)}
-                            />
-                        </div>
+                            onClick={this._onMenuButtonClick.bind(this)}
+                        />
                     </div>
                 </Container>
                 <div
