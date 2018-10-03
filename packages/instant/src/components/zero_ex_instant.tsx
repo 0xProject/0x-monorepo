@@ -1,11 +1,15 @@
 import * as React from 'react';
+import { Provider } from 'react-redux';
 
-import { ThemeProvider } from '../style/theme';
+import { store } from '../redux/store';
+import { theme, ThemeProvider } from '../style/theme';
 
 export interface ZeroExInstantProps {}
 
 export const ZeroExInstant: React.StatelessComponent<ZeroExInstantProps> = () => (
-    <ThemeProvider>
-        <div> ZeroExInstant </div>
-    </ThemeProvider>
+    <Provider store={store}>
+        <ThemeProvider theme={theme}>
+            <div> ZeroExInstant </div>
+        </ThemeProvider>
+    </Provider>
 );
