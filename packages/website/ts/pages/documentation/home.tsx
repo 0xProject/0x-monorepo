@@ -27,6 +27,7 @@ const TUTORIALS: TutorialInfo[] = [
         link: {
             title: Key.DevelopOnEthereum,
             to: `${WebsitePaths.Wiki}#Ethereum-Development`,
+            shouldOpenInNewTab: true,
         },
     },
     {
@@ -35,6 +36,7 @@ const TUTORIALS: TutorialInfo[] = [
         link: {
             title: Key.BuildARelayer,
             to: `${WebsitePaths.Wiki}#Build-A-Relayer`,
+            shouldOpenInNewTab: true,
         },
     },
     {
@@ -43,6 +45,7 @@ const TUTORIALS: TutorialInfo[] = [
         link: {
             title: Key.OrderBasics,
             to: `${WebsitePaths.Wiki}#Create,-Validate,-Fill-Order`,
+            shouldOpenInNewTab: true,
         },
     },
     {
@@ -51,6 +54,7 @@ const TUTORIALS: TutorialInfo[] = [
         link: {
             title: Key.UseSharedLiquidity,
             to: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
+            shouldOpenInNewTab: true,
         },
     },
 ];
@@ -68,6 +72,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '0x.js',
                 to: WebsitePaths.ZeroExJs,
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -76,8 +81,8 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '0x starter project',
                 to: 'https://github.com/0xProject/0x-starter-project',
-                type: LinkType.External,
                 shouldOpenInNewTab: true,
+                type: LinkType.External,
             },
         },
         {
@@ -86,6 +91,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '@0xproject/connect',
                 to: WebsitePaths.Connect,
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -94,6 +100,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '@0xproject/contract-wrappers',
                 to: WebsitePaths.ContractWrappers,
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -102,6 +109,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '@0xproject/json-schemas',
                 to: WebsitePaths.JSONSchemas,
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -110,6 +118,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '@0xproject/order-utils',
                 to: WebsitePaths.OrderUtils,
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -118,6 +127,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '@0xproject/order-watcher',
                 to: WebsitePaths.OrderWatcher,
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -126,8 +136,8 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '@0xproject/sra-spec',
                 to: 'https://github.com/0xProject/0x-monorepo/tree/development/packages/sra-spec',
-                type: LinkType.External,
                 shouldOpenInNewTab: true,
+                type: LinkType.External,
             },
         },
     ],
@@ -138,8 +148,8 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: 'abi-gen',
                 to: 'https://github.com/0xProject/0x-monorepo/tree/development/packages/abi-gen',
-                type: LinkType.External,
                 shouldOpenInNewTab: true,
+                type: LinkType.External,
             },
         },
         {
@@ -148,6 +158,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: 'ethereum-types',
                 to: WebsitePaths.EthereumTypes,
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -156,6 +167,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '@0xproject/sol-compiler',
                 to: WebsitePaths.SolCompiler,
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -164,6 +176,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '@0xproject/sol-cov',
                 to: WebsitePaths.SolCov,
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -172,6 +185,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '@0xproject/subproviders',
                 to: WebsitePaths.Subproviders,
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -180,6 +194,7 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
             link: {
                 title: '@0xproject/web3-wrapper',
                 to: WebsitePaths.Web3Wrapper,
+                shouldOpenInNewTab: true,
             },
         },
     ],
