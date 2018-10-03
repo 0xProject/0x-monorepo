@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'ts/components/ui/link';
 import { WebsitePaths } from 'ts/types';
 
 export interface DocsLogoProps {

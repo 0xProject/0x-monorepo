@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 import { Link as ReactRounterLink } from 'react-router-dom';
 import { LinkType } from 'ts/types';
@@ -8,6 +9,9 @@ export interface LinkProps {
     shouldOpenInNewTab?: boolean;
     style?: React.CSSProperties;
     className?: string;
+    onMouseOver?: (event: React.MouseEvent<HTMLElement>) => void;
+    onMouseLeave?: (event: React.MouseEvent<HTMLElement>) => void;
+    onMouseEnter?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 /**
@@ -22,6 +26,9 @@ export const Link: React.StatelessComponent<LinkProps> = ({
     to,
     shouldOpenInNewTab,
     children,
+    onMouseOver,
+    onMouseLeave,
+    onMouseEnter,
 }) => {
     const styleWithDefault = {
         textDecoration: 'none',
@@ -31,13 +38,29 @@ export const Link: React.StatelessComponent<LinkProps> = ({
     switch (type) {
         case LinkType.External:
             return (
-                <a target={shouldOpenInNewTab && '_blank'} className={className} style={styleWithDefault} href={to}>
+                <a
+                    target={shouldOpenInNewTab && '_blank'}
+                    className={className}
+                    style={styleWithDefault}
+                    href={to}
+                    onMouseOver={onMouseOver}
+                    onMouseEnter={onMouseEnter}
+                    onMouseLeave={onMouseLeave}
+                >
                     {children}
                 </a>
             );
         case LinkType.ReactRoute:
             return (
-                <ReactRounterLink to={to} className={className} style={styleWithDefault}>
+                <ReactRounterLink
+                    to={to}
+                    className={className}
+                    style={styleWithDefault}
+                    target={shouldOpenInNewTab && '_blank'}
+                    onMouseOver={onMouseOver}
+                    onMouseEnter={onMouseEnter}
+                    onMouseLeave={onMouseLeave}
+                >
                     {children}
                 </ReactRounterLink>
             );
@@ -53,6 +76,9 @@ Link.defaultProps = {
     shouldOpenInNewTab: true,
     style: {},
     className: '',
+    onMouseOver: _.noop.bind(_),
+    onMouseLeave: _.noop.bind(_),
+    onMouseEnter: _.noop.bind(_),
 };
 
 Link.displayName = 'Link';

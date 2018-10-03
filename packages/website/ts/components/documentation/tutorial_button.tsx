@@ -1,7 +1,7 @@
 import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'ts/components/ui/link';
 import { Text } from 'ts/components/ui/text';
 import { Deco, Key, TutorialInfo } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
@@ -26,6 +26,7 @@ export class TutorialButton extends React.Component<TutorialButtonProps, Tutoria
         return (
             <Link
                 to={this.props.tutorialInfo.link.to}
+                shouldOpenInNewTab={this.props.tutorialInfo.link.shouldOpenInNewTab}
                 onMouseEnter={this._onHover.bind(this)}
                 onMouseOver={this._onHover.bind(this)}
                 onMouseLeave={this._onHoverOff.bind(this)}
