@@ -35,21 +35,32 @@ export interface OrderProvider {
 
 /**
  * assetData: String that represents a specific asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+ * assetBuyAmount: The amount of asset to buy.
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
- * minRate: Min rate that needs to be paid in order to execute the buy.
- * maxRate: Max rate that can be paid in order to execute the buy.
- * assetBuyAmount: The amount of asset to buy.
  * feePercentage: Optional affiliate fee percentage used to calculate the eth amounts above.
+ * bestCaseQuoteInfo: Info about the best case price for the asset.
+ * worstCaseQuoteInfo: Info about the worst case price for the asset.
  */
 export interface BuyQuote {
     assetData: string;
+    assetBuyAmount: BigNumber;
     orders: SignedOrder[];
     feeOrders: SignedOrder[];
-    minRate: BigNumber;
-    maxRate: BigNumber;
-    assetBuyAmount: BigNumber;
     feePercentage?: number;
+    bestCaseQuoteInfo: BuyQuoteInfo;
+    worstCaseQuoteInfo: BuyQuoteInfo;
+}
+
+/**
+ * ethPerAssetPrice: The price of one unit of the desired asset in ETH
+ * feeEthAmount: The amount of eth required to pay the affiliate fee.
+ * totalEthAmount: the total amount of eth required to complete the buy. (Filling orders, feeOrders, and paying affiliate fee)
+ */
+export interface BuyQuoteInfo {
+    ethPerAssetPrice: BigNumber;
+    feeEthAmount: BigNumber;
+    totalEthAmount: BigNumber;
 }
 
 /**
@@ -64,12 +75,12 @@ export interface BuyQuoteRequestOpts {
 }
 
 /**
- * rate: The desired rate to execute the buy at. Affects the amount of ETH sent with the transaction, defaults to buyQuote.maxRate.
+ * ethAmount: The desired amount of eth to spend. Defaults to buyQuote.worstCaseQuoteInfo.totalEthAmount.
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
  * feeRecipient: The address where affiliate fees are sent. Defaults to null address (0x000...000).
  */
 export interface BuyQuoteExecutionOpts {
-    rate?: BigNumber;
+    ethAmount?: BigNumber;
     takerAddress?: string;
     feeRecipient: string;
 }

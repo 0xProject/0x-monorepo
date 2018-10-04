@@ -3,7 +3,7 @@ import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
 import * as _ from 'lodash';
 
-import { BuyQuote, OrderProvider, OrderProviderRequest } from '../types';
+import { BuyQuote, BuyQuoteInfo, OrderProvider, OrderProviderRequest } from '../types';
 
 export const assert = {
     ...sharedAssert,
@@ -11,12 +11,17 @@ export const assert = {
         sharedAssert.isHexString(`${variableName}.assetData`, buyQuote.assetData);
         sharedAssert.doesConformToSchema(`${variableName}.orders`, buyQuote.orders, schemas.signedOrdersSchema);
         sharedAssert.doesConformToSchema(`${variableName}.feeOrders`, buyQuote.feeOrders, schemas.signedOrdersSchema);
-        sharedAssert.isBigNumber(`${variableName}.minRate`, buyQuote.minRate);
-        sharedAssert.isBigNumber(`${variableName}.maxRate`, buyQuote.maxRate);
+        assert.isValidBuyQuoteInfo(`${variableName}.bestCaseQuoteInfo`, buyQuote.bestCaseQuoteInfo);
+        assert.isValidBuyQuoteInfo(`${variableName}.worstCaseQuoteInfo`, buyQuote.worstCaseQuoteInfo);
         sharedAssert.isBigNumber(`${variableName}.assetBuyAmount`, buyQuote.assetBuyAmount);
         if (!_.isUndefined(buyQuote.feePercentage)) {
             sharedAssert.isNumber(`${variableName}.feePercentage`, buyQuote.feePercentage);
         }
+    },
+    isValidBuyQuoteInfo(variableName: string, buyQuoteInfo: BuyQuoteInfo): void {
+        sharedAssert.isBigNumber(`${variableName}.ethPerAssetPrice`, buyQuoteInfo.ethPerAssetPrice);
+        sharedAssert.isBigNumber(`${variableName}.feeEthAmount`, buyQuoteInfo.feeEthAmount);
+        sharedAssert.isBigNumber(`${variableName}.totalEthAmount`, buyQuoteInfo.totalEthAmount);
     },
     isValidOrderProvider(variableName: string, orderFetcher: OrderProvider): void {
         sharedAssert.isFunction(`${variableName}.getOrdersAsync`, orderFetcher.getOrdersAsync);
