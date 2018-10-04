@@ -10,13 +10,16 @@ export interface ContainerProps {
     right?: string;
     bottom?: string;
     left?: string;
+    width?: string;
     maxWidth?: string;
-    margin: string;
+    margin?: string;
     marginTop?: string;
     marginRight?: string;
     marginBottom?: string;
     marginLeft?: string;
     padding?: string;
+    boxShadow?: string;
+    borderRadius?: string;
     className?: string;
     backgroundColor?: ColorOption;
 }
@@ -32,6 +35,7 @@ export const Container = styled(PlainContainer)`
     ${props => cssRuleIfExists(props, 'right')}
     ${props => cssRuleIfExists(props, 'bottom')}
     ${props => cssRuleIfExists(props, 'left')}
+    ${props => cssRuleIfExists(props, 'width')}
     ${props => cssRuleIfExists(props, 'max-width')}
     ${props => cssRuleIfExists(props, 'margin')}
     ${props => cssRuleIfExists(props, 'margin-top')}
@@ -39,9 +43,13 @@ export const Container = styled(PlainContainer)`
     ${props => cssRuleIfExists(props, 'margin-bottom')}
     ${props => cssRuleIfExists(props, 'margin-left')}
     ${props => cssRuleIfExists(props, 'padding')}
+    ${props => cssRuleIfExists(props, 'box-shadow')}
+    ${props => cssRuleIfExists(props, 'border-radius')}
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
 `;
 
 Container.defaultProps = {
     display: 'inline-block',
 };
+
+Container.displayName = 'Container';

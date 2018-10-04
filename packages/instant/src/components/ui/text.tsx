@@ -3,16 +3,16 @@ import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
 
-export type TextTag = 'p' | 'div' | 'span' | 'label' | 'h1' | 'h2' | 'h3' | 'h4' | 'i';
-
 export interface TextProps {
-    fontColor: ColorOption;
-    fontFamily: string;
-    fontStyle: string;
-    fontSize: string;
-    lineHeight: string;
+    fontColor?: ColorOption;
+    fontFamily?: string;
+    fontStyle?: string;
+    fontSize?: string;
+    opacity?: number;
+    letterSpacing?: string;
+    textTransform?: string;
+    lineHeight?: string;
     className?: string;
-    Tag?: TextTag;
     minHeight?: string;
     center?: boolean;
     fontWeight?: number | string;
@@ -23,10 +23,10 @@ export interface TextProps {
     display?: string;
 }
 
-const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick, Tag }) => (
-    <Tag className={className} onClick={onClick}>
+const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick }) => (
+    <p className={className} onClick={onClick}>
         {children}
-    </Tag>
+    </p>
 );
 
 const darkenOnHoverAmount = 0.3;
@@ -35,17 +35,23 @@ export const Text = styled(PlainText)`
     font-style: ${props => props.fontStyle};
     font-weight: ${props => props.fontWeight};
     font-size: ${props => props.fontSize};
+    opacity: ${props => props.opacity};
     text-decoration-line: ${props => props.textDecorationLine};
     ${props => (props.lineHeight ? `line-height: ${props.lineHeight}` : '')};
     ${props => (props.center ? 'text-align: center' : '')};
-    color: ${props => props.theme[props.fontColor]};
+    color: ${props => props.fontColor && props.theme[props.fontColor]};
     ${props => (props.minHeight ? `min-height: ${props.minHeight}` : '')};
     ${props => (props.onClick ? 'cursor: pointer' : '')};
     transition: color 0.5s ease;
     ${props => (props.noWrap ? 'white-space: nowrap' : '')};
     ${props => (props.display ? `display: ${props.display}` : '')};
+    ${props => (props.letterSpacing ? `letter-spacing: ${props.letterSpacing}` : '')};
+    ${props => (props.textTransform ? `text-transform: ${props.textTransform}` : '')};
     &:hover {
-        ${props => (props.onClick ? `color: ${props.hoverColor || darken(darkenOnHoverAmount, props.fontColor)}` : '')};
+        ${props =>
+            props.onClick
+                ? `color: ${props.hoverColor || darken(darkenOnHoverAmount, props.theme[props.fontColor || 'white'])}`
+                : ''};
     }
 `;
 
@@ -57,7 +63,6 @@ Text.defaultProps = {
     fontSize: '15px',
     lineHeight: '1.5em',
     textDecorationLine: 'none',
-    Tag: 'div',
     noWrap: false,
 };
 
@@ -66,9 +71,9 @@ Text.displayName = 'Text';
 export const Title: React.StatelessComponent<TextProps> = props => <Text {...props} />;
 
 Title.defaultProps = {
-    Tag: 'h2',
     fontSize: '20px',
     fontWeight: 600,
+    opacity: 1,
     fontColor: ColorOption.primaryColor,
 };
 
