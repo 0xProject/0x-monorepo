@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.11 - _October 4, 2018_
+
+    * Dependencies updated
+
 ## v1.0.10 - _October 2, 2018_
 
     * Dependencies updated
@@ -29,7 +33,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.4 - _August 14, 2018_
+## v1.0.4 - _August 13, 2018_
 
     * Dependencies updated
 
@@ -45,12 +49,12 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 20, 2018_
+## v1.0.0 - _July 19, 2018_
 
     * Add `TraceParams` interface for `debug_traceTransaction` parameters (#675)
     * Add `TransactionReceiptStatus` type (#812)
     * Add Artifact types: `CompilerSettings`, `CompilerOptions`, `OutputField` (#924)
 
-## v0.0.2 - _June 1, 2018_
+## v0.0.2 - _May 31, 2018_
 
     * Initial publish (#642)

@@ -5,7 +5,7 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v2.1.7 - _October 2, 2018_
+## v2.1.7 - _October 4, 2018_
 
     * Dependencies updated
 
@@ -37,7 +37,7 @@ CHANGELOG
 
     * Export types: `JSONRPCRequestPayload`, `Provider`, `JSONRPCErrorCallback`, `JSONRPCResponsePayload`, `JSONRPCRequestPayloadWithMethod`, `NextCallback`, `ErrorCallback`, `OnNextCompleted` and `Callback` (#924)
 
-## v2.0.0 - _August 14, 2018_
+## v2.0.0 - _August 13, 2018_
 
     * Fix a bug when eth_call coverage was not computed because of silent schema validation failures (#938)
     * Make `TruffleArtifactAdapter` read the `truffle.js` config for `solc` settings (#938)
@@ -56,7 +56,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 20, 2018_
+## v1.0.0 - _July 19, 2018_
 
     * Add artifact adapter as a parameter for `CoverageSubprovider`. Export `AbstractArtifactAdapter` (#589)
     * Implement `SolCompilerArtifactAdapter` and `TruffleArtifactAdapter` (#589)
@@ -89,7 +89,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.1.0 - _June 1, 2018_
+## v0.1.0 - _May 31, 2018_
 
     * Incorrect publish that was unpublished
 
@@ -97,7 +97,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.0.10 - _May 5, 2018_
+## v0.0.10 - _May 4, 2018_
 
     * Dependencies updated
 

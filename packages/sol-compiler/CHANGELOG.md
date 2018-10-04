@@ -5,7 +5,7 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.1.7 - _October 2, 2018_
+## v1.1.7 - _October 4, 2018_
 
     * Dependencies updated
 
@@ -39,7 +39,7 @@ CHANGELOG
     * Stop exporting types: `ContractArtifact`, `ContractNetworks` (#924)
     * Export types: `CompilerSettings`, `OutputField` (#924)
 
-## v1.0.5 - _August 14, 2018_
+## v1.0.5 - _August 13, 2018_
 
     * Dependencies updated
 
@@ -59,7 +59,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 20, 2018_
+## v1.0.0 - _July 19, 2018_
 
     * Dependencies updated
 
@@ -85,7 +85,7 @@ CHANGELOG
     * Properly export the executable binary (#588)
     * Add the ability to define a specific solidity version (#589)
 
-## v0.4.3 - _May 5, 2018_
+## v0.4.3 - _May 4, 2018_
 
     * Dependencies updated
 
