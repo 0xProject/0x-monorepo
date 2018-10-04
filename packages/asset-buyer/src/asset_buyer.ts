@@ -123,7 +123,7 @@ export class AssetBuyer {
     public async getBuyQuoteAsync(
         assetData: string,
         assetBuyAmount: BigNumber,
-        options: Partial<BuyQuoteRequestOpts>,
+        options: Partial<BuyQuoteRequestOpts> = {},
     ): Promise<BuyQuote> {
         const { feePercentage, shouldForceOrderRefresh, slippagePercentage } = {
             ...constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
@@ -164,7 +164,7 @@ export class AssetBuyer {
     public async getBuyQuoteForERC20TokenAddressAsync(
         tokenAddress: string,
         assetBuyAmount: BigNumber,
-        options: Partial<BuyQuoteRequestOpts>,
+        options: Partial<BuyQuoteRequestOpts> = {},
     ): Promise<BuyQuote> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
@@ -179,7 +179,10 @@ export class AssetBuyer {
      *
      * @return  A promise of the txHash.
      */
-    public async executeBuyQuoteAsync(buyQuote: BuyQuote, options: Partial<BuyQuoteExecutionOpts>): Promise<string> {
+    public async executeBuyQuoteAsync(
+        buyQuote: BuyQuote,
+        options: Partial<BuyQuoteExecutionOpts> = {},
+    ): Promise<string> {
         const { rate, takerAddress, feeRecipient } = {
             ...constants.DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
             ...options,
