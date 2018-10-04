@@ -18,6 +18,8 @@ export { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 export { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_allowance_lazy_store';
 export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_lazy_store';
 
+export { EIP712_DOMAIN_NAME, EIP712_DOMAIN_SCHEMA, EIP712_DOMAIN_VERSION } from './constants';
+
 export { Provider, JSONRPCRequestPayload, JSONRPCErrorCallback, JSONRPCResponsePayload } from 'ethereum-types';
 export {
     SignedOrder,

@@ -22,7 +22,7 @@ export const EIP712_DOMAIN_SCHEMA = {
     name: 'EIP712Domain',
     parameters: [
         { name: 'name', type: 'string' },
-        { name: 'version', type: 'string ' },
+        { name: 'version', type: 'string' },
         { name: 'verifyingContract', type: 'address' },
     ],
 };

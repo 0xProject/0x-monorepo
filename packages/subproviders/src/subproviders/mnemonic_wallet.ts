@@ -108,6 +108,25 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
         const sig = await privateKeyWallet.signPersonalMessageAsync(data, address);
         return sig;
     }
+    /**
+     * Sign an EIP712 Typed Data message.  The signing account will be the account
+     * associated with the provided address.
+     * If you've added this MnemonicWalletSubprovider to your app's provider, you can simply send an `eth_signTypedData`
+     * JSON RPC request, and this method will be called auto-magically.
+     * If you are not using this via a ProviderEngine instance, you can call it directly.
+     * @param address Address of the account to sign with
+     * @param data the typed data object
+     * @return Signature hex string (order: rsv)
+     */
+    public async signTypedDataAsync(address: string, typedData: any): Promise<string> {
+        if (_.isUndefined(typedData)) {
+            throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
+        }
+        assert.isETHAddressHex('address', address);
+        const privateKeyWallet = this._privateKeyWalletForAddress(address);
+        const sig = await privateKeyWallet.signTypedDataAsync(address, typedData);
+        return sig;
+    }
     private _privateKeyWalletForAddress(address: string): PrivateKeyWalletSubprovider {
         const derivedKeyInfo = this._findDerivedKeyInfoForAddress(address);
         const privateKeyHex = derivedKeyInfo.hdKey.privateKey.toString('hex');

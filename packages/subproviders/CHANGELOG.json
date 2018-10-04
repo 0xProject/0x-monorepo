@@ -3,7 +3,12 @@
         "version": "2.1.0",
         "changes": [
             {
-                "note": "Add Metamask Subprovider to handle inconsistent JSON RPC behaviour"
+                "note": "Add Metamask Subprovider to handle inconsistent JSON RPC behaviour",
+                "pr": 1102
+            },
+            {
+                "note": "Add support for eth_signTypedData in Mnemonic, Private and EthLightWallet",
+                "pr": 1102
             }
         ]
     },

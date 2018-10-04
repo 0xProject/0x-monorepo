@@ -7,8 +7,37 @@ const expect = chai.expect;
 
 describe('signTypedDataUtils', () => {
     describe('signTypedDataHash', () => {
-        const signTypedDataHashHex = '0x55eaa6ec02f3224d30873577e9ddd069a288c16d6fb407210eecbc501fa76692';
-        const signTypedData = {
+        const simpleSignTypedDataHashHex = '0xb460d69ca60383293877cd765c0f97bd832d66bca720f7e32222ce1118832493';
+        const simpleSignTypedData = {
+            types: {
+                EIP712Domain: [
+                    {
+                        name: 'name',
+                        type: 'string',
+                    },
+                ],
+                Test: [
+                    {
+                        name: 'testAddress',
+                        type: 'address',
+                    },
+                    {
+                        name: 'testNumber',
+                        type: 'uint256',
+                    },
+                ],
+            },
+            domain: {
+                name: 'Test',
+            },
+            message: {
+                testAddress: '0x0000000000000000000000000000000000000000',
+                testNumber: '12345',
+            },
+            primaryType: 'Test',
+        };
+        const orderSignTypedDataHashHex = '0x55eaa6ec02f3224d30873577e9ddd069a288c16d6fb407210eecbc501fa76692';
+        const orderSignTypedData = {
             types: {
                 EIP712Domain: [
                     {
@@ -97,11 +126,15 @@ describe('signTypedDataUtils', () => {
             },
             primaryType: 'Order',
         };
-        it.only('creates a known hash of the sign typed data', () => {
-            const hash = signTypedDataUtils.signTypedDataHash(signTypedData).toString('hex');
+        it('creates a hash of the test sign typed data', () => {
+            const hash = signTypedDataUtils.signTypedDataHash(simpleSignTypedData).toString('hex');
             const hashHex = `0x${hash}`;
-            expect(hashHex).to.be.eq(signTypedDataHashHex);
-            console.log(hash);
+            expect(hashHex).to.be.eq(simpleSignTypedDataHashHex);
+        });
+        it('creates a hash of the order sign typed data', () => {
+            const hash = signTypedDataUtils.signTypedDataHash(orderSignTypedData).toString('hex');
+            const hashHex = `0x${hash}`;
+            expect(hashHex).to.be.eq(orderSignTypedDataHashHex);
         });
     });
 });

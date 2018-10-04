@@ -1,19 +1,19 @@
 import { schemas } from '@0xproject/json-schemas';
-import { EIP712Schema, EIP712Types, eip712Utils } from '@0xproject/order-utils';
+import { EIP712_DOMAIN_NAME, EIP712_DOMAIN_SCHEMA, EIP712_DOMAIN_VERSION } from '@0xproject/order-utils';
 import { Order, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, signTypedDataUtils } from '@0xproject/utils';
 import _ = require('lodash');
 
 import { ExchangeContract } from '../contract_wrappers/generated/exchange';
 
 import { assert } from './assert';
 
-const EIP712_ZEROEX_TRANSACTION_SCHEMA: EIP712Schema = {
+const EIP712_ZEROEX_TRANSACTION_SCHEMA = {
     name: 'ZeroExTransaction',
     parameters: [
-        { name: 'salt', type: EIP712Types.Uint256 },
-        { name: 'signerAddress', type: EIP712Types.Address },
-        { name: 'data', type: EIP712Types.Bytes },
+        { name: 'salt', type: 'uint256' },
+        { name: 'signerAddress', type: 'address' },
+        { name: 'data', type: 'bytes' },
     ],
 };
 
@@ -37,16 +37,25 @@ export class TransactionEncoder {
     public getTransactionHex(data: string, salt: BigNumber, signerAddress: string): string {
         const exchangeAddress = this._getExchangeContract().address;
         const executeTransactionData = {
-            salt,
+            salt: salt.toString(),
             signerAddress,
             data,
         };
-        const executeTransactionHashBuff = eip712Utils.structHash(
-            EIP712_ZEROEX_TRANSACTION_SCHEMA,
-            executeTransactionData,
-        );
-        const eip721MessageBuffer = eip712Utils.createEIP712Message(executeTransactionHashBuff, exchangeAddress);
-        const messageHex = `0x${eip721MessageBuffer.toString('hex')}`;
+        const typedData = {
+            types: {
+                EIP712Domain: EIP712_DOMAIN_SCHEMA.parameters,
+                ZeroExTransaction: EIP712_ZEROEX_TRANSACTION_SCHEMA.parameters,
+            },
+            domain: {
+                name: EIP712_DOMAIN_NAME,
+                version: EIP712_DOMAIN_VERSION,
+                verifyingContract: exchangeAddress,
+            },
+            message: executeTransactionData,
+            primaryType: EIP712_ZEROEX_TRANSACTION_SCHEMA.name,
+        };
+        const eip712MessageBuffer = signTypedDataUtils.signTypedDataHash(typedData);
+        const messageHex = `0x${eip712MessageBuffer.toString('hex')}`;
         return messageHex;
     }
     /**
