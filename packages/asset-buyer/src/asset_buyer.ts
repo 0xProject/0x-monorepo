@@ -109,6 +109,17 @@ export class AssetBuyer {
         this.expiryBufferSeconds = expiryBufferSeconds;
         this._contractWrappers = new ContractWrappers(this.provider, {
             networkId,
+            // TODO(albrow): Load in real contract addresses here.
+            contractAddresses: {
+                erc20Proxy: '',
+                erc721Proxy: '',
+                zrxToken: '',
+                etherToken: '',
+                exchange: '',
+                assetProxyOwner: '',
+                forwarder: '',
+                orderValidator: '',
+            },
         });
     }
     /**
@@ -283,13 +294,13 @@ export class AssetBuyer {
      * Will throw if WETH does not exist for the current network.
      */
     private _getEtherTokenAssetDataOrThrow(): string {
-        return assetDataUtils.getEtherTokenAssetDataOrThrow(this._contractWrappers);
+        return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
     }
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
      */
     private _getZrxTokenAssetDataOrThrow(): string {
-        return assetDataUtils.getZrxTokenAssetDataOrThrow(this._contractWrappers);
+        return this._contractWrappers.exchange.getZRXAssetData();
     }
 }
