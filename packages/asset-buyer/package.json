@@ -4,7 +4,7 @@
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Convenience package for buying assets",
+    "description": "Convenience package for discovering and buying assets with Ether.",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
@@ -18,6 +18,7 @@
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
         "clean": "shx rm -rf lib test_temp scripts",
         "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "build:ci": "yarn build",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "config": {

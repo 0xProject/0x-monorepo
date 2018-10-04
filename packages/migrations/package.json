@@ -9,6 +9,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build": "yarn pre_build && tsc -b",
+        "build:ci": "yarn build",
         "pre_build": "run-s copy_artifacts generate_contract_wrappers",
         "copy_artifacts": "copyfiles 'artifacts/**/*' ./lib",
         "clean": "shx rm -rf lib src/1.0.0/contract_wrappers src/2.0.0-testnet/contract_wrappers src/2.0.0/contract_wrappers artifacts/development",

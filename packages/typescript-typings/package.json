@@ -1,12 +1,13 @@
 {
     "name": "@0xproject/typescript-typings",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "engines": {
         "node": ">=6.12"
     },
     "description": "0x project typescript type definitions",
     "scripts": {
         "build": "tsc -b",
+        "build:ci": "yarn build",
         "clean": "shx rm -rf lib"
     },
     "repository": {

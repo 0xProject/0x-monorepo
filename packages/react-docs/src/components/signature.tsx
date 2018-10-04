@@ -19,12 +19,14 @@ export interface SignatureProps {
     callPath?: string;
     docsInfo: DocsInfo;
     isInPopover: boolean;
+    isFallback?: boolean;
 }
 
 const defaultProps = {
     shouldHideMethodName: false,
     shouldUseArrowSyntax: false,
     callPath: '',
+    isFallback: false,
 };
 
 export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
@@ -34,6 +36,7 @@ export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
         props.docsInfo,
         sectionName,
         props.isInPopover,
+        props.name,
         props.typeDefinitionByName,
     );
     const paramStringArray: any[] = [];
@@ -75,7 +78,7 @@ export const Signature: React.SFC<SignatureProps> = (props: SignatureProps) => {
     return (
         <span style={{ fontSize: 15 }}>
             {props.callPath}
-            {methodName}
+            {props.isFallback ? '' : methodName}
             {typeParameterIfExists}({hasMoreThenTwoParams && <br />}
             {paramStringArray})
             {props.returnType && (
@@ -101,9 +104,10 @@ function renderParameters(
     docsInfo: DocsInfo,
     sectionName: string,
     isInPopover: boolean,
+    name: string,
     typeDefinitionByName?: TypeDefinitionByName,
 ): React.ReactNode[] {
-    const params = _.map(parameters, (p: Parameter) => {
+    const params = _.map(parameters, (p: Parameter, i: number) => {
         const isOptional = p.isOptional;
         const hasDefaultValue = !_.isUndefined(p.defaultValue);
         const type = (
@@ -116,9 +120,14 @@ function renderParameters(
             />
         );
         return (
-            <span key={`param-${p.type}-${p.name}`}>
-                {p.name}
-                {isOptional && '?'}: {type}
+            <span key={`param-${JSON.stringify(p.type)}-${name}-${i}`}>
+                {!_.isEmpty(p.name) && (
+                    <span>
+                        {p.name}
+                        {isOptional && '?'}:{' '}
+                    </span>
+                )}
+                {type}
                 {hasDefaultValue && ` = ${p.defaultValue}`}
             </span>
         );

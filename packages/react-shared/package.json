@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/react-shared",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "engines": {
         "node": ">=6.12"
     },
@@ -10,6 +10,7 @@
     "scripts": {
         "lint": "tslint --project .",
         "build": "tsc",
+        "build:ci": "yarn build",
         "watch_without_deps": "tsc -w",
         "clean": "shx rm -rf lib"
     },

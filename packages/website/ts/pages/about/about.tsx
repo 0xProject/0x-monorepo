@@ -230,6 +230,13 @@ const teamRow8: ProfileInfo[] = [
         image: 'images/team/rahul.png',
         linkedIn: 'https://www.linkedin.com/in/rahul-singireddy-3037908a/',
     },
+    {
+        name: 'Jason Somensatto',
+        title: 'Strategic Legal Counsel',
+        description: `Legal. Previously head of blockchain and crypto practice at Orrick. JD from George Washington University and undergrad at UVA.`,
+        image: 'images/team/jason.png',
+        linkedIn: 'https://www.linkedin.com/in/jasonsomensatto/',
+    },
 ];
 
 const advisors1: ProfileInfo[] = [

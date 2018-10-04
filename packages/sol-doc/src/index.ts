@@ -1,1 +1,1 @@
-export { generateSolDocAsync } from './solidity_doc_generator';
+export { SolDoc } from './sol_doc';
