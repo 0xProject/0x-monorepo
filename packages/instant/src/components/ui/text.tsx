@@ -24,9 +24,9 @@ export interface TextProps {
 }
 
 const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick }) => (
-    <p className={className} onClick={onClick}>
+    <div className={className} onClick={onClick}>
         {children}
-    </p>
+    </div>
 );
 
 const darkenOnHoverAmount = 0.3;
@@ -61,9 +61,9 @@ Text.defaultProps = {
     fontWeight: 400,
     fontColor: ColorOption.black,
     fontSize: '15px',
-    lineHeight: '1.5em',
     textDecorationLine: 'none',
     noWrap: false,
+    display: 'inline-block',
 };
 
 Text.displayName = 'Text';
