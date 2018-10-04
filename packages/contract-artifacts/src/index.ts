@@ -13,8 +13,7 @@ import * as OrderValidator from '../artifacts/OrderValidator.json';
 import * as WETH9 from '../artifacts/WETH9.json';
 import * as ZRXToken from '../artifacts/ZRXToken.json';
 
-// TODO(albrow): Do we need to export all of these?
-export const artifacts = {
+export {
     AssetProxyOwner,
     DummyERC20Token,
     DummyERC721Token,

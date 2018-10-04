@@ -79,6 +79,7 @@ packages/react-docs/example/public/bundle*
 packages/testnet-faucets/server/
 
 # generated contract artifacts/
+packages/contracts/generated-artifacts/
 packages/sol-cov/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 packages/order-watcher/test/artifacts/
@@ -90,6 +91,7 @@ packages/order-utils/src/artifacts/
 packages/migrations/artifacts/development/
 
 # generated contract wrappers
+packages/abi-gen-wrappers/wrappers
 packages/0x.js/src/generated_contract_wrappers/
 packages/contracts/generated-wrappers/
 packages/metacoin/src/contract_wrappers

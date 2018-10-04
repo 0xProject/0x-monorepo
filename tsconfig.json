@@ -22,6 +22,7 @@
     "references": [
         { "path": "./packages/0x.js" },
         { "path": "./packages/abi-gen" },
+        { "path": "./packages/abi-gen-wrappers" },
         { "path": "./packages/assert" },
         { "path": "./packages/asset-buyer" },
         { "path": "./packages/base-contract" },

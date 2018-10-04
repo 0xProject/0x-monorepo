@@ -1,0 +1,40 @@
+{
+    "name": "@0xproject/abi-gen-wrappers",
+    "version": "1.0.0",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Smart contract components of 0x protocol",
+    "main": "lib/src/index.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "build": "yarn pre_build && tsc -b",
+        "build:ci": "yarn build",
+        "pre_build": "yarn generate_contract_wrappers",
+        "clean": "shx rm -rf lib wrappers",
+        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output wrappers --backend ethers"
+    },
+    "config": {
+        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IValidator|IWallet|OrderValidator|WETH9|ZRXToken).json"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen-wrappers/README.md",
+    "devDependencies": {
+        "@0xproject/abi-gen": "^1.0.12",
+        "shx": "^0.2.2"
+    },
+    "dependencies": {
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
