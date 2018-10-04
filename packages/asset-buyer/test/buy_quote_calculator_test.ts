@@ -12,9 +12,6 @@ import { chaiSetup } from './utils/chai_setup';
 chaiSetup.configure();
 const expect = chai.expect;
 
-const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
-const NULL_BYTES = '0x';
-
 // tslint:disable:custom-no-magic-numbers
 describe('buyQuoteCalculator', () => {
     describe('#calculate', () => {
