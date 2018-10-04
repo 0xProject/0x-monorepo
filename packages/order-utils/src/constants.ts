@@ -14,3 +14,15 @@ export const constants = {
     INFINITE_TIMESTAMP_SEC: new BigNumber(2524604400), // Close to infinite
     ZERO_AMOUNT: new BigNumber(0),
 };
+
+export const EIP712_DOMAIN_NAME = '0x Protocol';
+export const EIP712_DOMAIN_VERSION = '2';
+
+export const EIP712_DOMAIN_SCHEMA = {
+    name: 'EIP712Domain',
+    parameters: [
+        { name: 'name', type: 'string' },
+        { name: 'version', type: 'string ' },
+        { name: 'verifyingContract', type: 'address' },
+    ],
+};

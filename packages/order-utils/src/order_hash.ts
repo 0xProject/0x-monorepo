@@ -1,28 +1,28 @@
 import { schemas, SchemaValidator } from '@0xproject/json-schemas';
 import { Order, SignedOrder } from '@0xproject/types';
+import { signTypedDataUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
-import { eip712Utils } from './eip712_utils';
-import { EIP712Schema, EIP712Types } from './types';
+import { EIP712_DOMAIN_NAME, EIP712_DOMAIN_SCHEMA, EIP712_DOMAIN_VERSION } from './constants';
 
 const INVALID_TAKER_FORMAT = 'instance.takerAddress is not of a type(s) string';
 
-export const EIP712_ORDER_SCHEMA: EIP712Schema = {
+export const EIP712_ORDER_SCHEMA = {
     name: 'Order',
     parameters: [
-        { name: 'makerAddress', type: EIP712Types.Address },
-        { name: 'takerAddress', type: EIP712Types.Address },
-        { name: 'feeRecipientAddress', type: EIP712Types.Address },
-        { name: 'senderAddress', type: EIP712Types.Address },
-        { name: 'makerAssetAmount', type: EIP712Types.Uint256 },
-        { name: 'takerAssetAmount', type: EIP712Types.Uint256 },
-        { name: 'makerFee', type: EIP712Types.Uint256 },
-        { name: 'takerFee', type: EIP712Types.Uint256 },
-        { name: 'expirationTimeSeconds', type: EIP712Types.Uint256 },
-        { name: 'salt', type: EIP712Types.Uint256 },
-        { name: 'makerAssetData', type: EIP712Types.Bytes },
-        { name: 'takerAssetData', type: EIP712Types.Bytes },
+        { name: 'makerAddress', type: 'address' },
+        { name: 'takerAddress', type: 'address' },
+        { name: 'feeRecipientAddress', type: 'address' },
+        { name: 'senderAddress', type: 'address' },
+        { name: 'makerAssetAmount', type: 'uint256' },
+        { name: 'takerAssetAmount', type: 'uint256' },
+        { name: 'makerFee', type: 'uint256' },
+        { name: 'takerFee', type: 'uint256' },
+        { name: 'expirationTimeSeconds', type: 'uint256' },
+        { name: 'salt', type: 'uint256' },
+        { name: 'makerAssetData', type: 'bytes' },
+        { name: 'takerAssetData', type: 'bytes' },
     ],
 };
 
@@ -69,11 +69,23 @@ export const orderHashUtils = {
      * @return  The resulting orderHash from hashing the supplied order as a Buffer
      */
     getOrderHashBuffer(order: SignedOrder | Order): Buffer {
-        const orderParamsHashBuff = eip712Utils.structHash(EIP712_ORDER_SCHEMA, order);
-        const orderHashBuff = eip712Utils.createEIP712Message(orderParamsHashBuff, order.exchangeAddress);
+        const normalizedOrder = _.mapValues(order, value => {
+            return _.isObject(value) ? value.toString() : value;
+        });
+        const typedData = {
+            types: {
+                EIP712Domain: EIP712_DOMAIN_SCHEMA.parameters,
+                Order: EIP712_ORDER_SCHEMA.parameters,
+            },
+            domain: {
+                name: EIP712_DOMAIN_NAME,
+                version: EIP712_DOMAIN_VERSION,
+                verifyingContract: order.exchangeAddress,
+            },
+            message: normalizedOrder,
+            primaryType: EIP712_ORDER_SCHEMA.name,
+        };
+        const orderHashBuff = signTypedDataUtils.signTypedDataHash(typedData);
         return orderHashBuff;
-    },
-    _getOrderSchemaBuffer(): Buffer {
-        return eip712Utils.compileSchema(EIP712_ORDER_SCHEMA);
     },
 };

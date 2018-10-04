@@ -2,7 +2,6 @@ export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
 export { generatePseudoRandomSalt } from './salt';
 export { assetDataUtils } from './asset_data_utils';
-export { eip712Utils } from './eip712_utils';
 export { marketUtils } from './market_utils';
 export { rateUtils } from './rate_utils';
 export { sortingUtils } from './sorting_utils';
@@ -36,9 +35,6 @@ export {
 } from '@0xproject/types';
 export {
     OrderError,
-    EIP712Parameter,
-    EIP712Schema,
-    EIP712Types,
     TradeSide,
     TransferType,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,

@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 
 import { artifacts } from './artifacts';
 import { assert } from './assert';
-import { EIP712_DOMAIN_NAME, EIP712_DOMAIN_SCHEMA, EIP712_DOMAIN_VERSION } from './eip712_utils';
+import { EIP712_DOMAIN_NAME, EIP712_DOMAIN_SCHEMA, EIP712_DOMAIN_VERSION } from './constants';
 import { ExchangeContract } from './generated_contract_wrappers/exchange';
 import { IValidatorContract } from './generated_contract_wrappers/i_validator';
 import { IWalletContract } from './generated_contract_wrappers/i_wallet';
