@@ -27,74 +27,37 @@ describe('buyQuoteCalculator', () => {
             // the second order has a rate of 2 makerAsset / WETH with a takerFee of 100 ZRX and has 200 / 200 makerAsset units left to fill (completely fillable)
             // generate one order for fees
             // the fee order has a rate of 1 ZRX / WETH with no taker fee and has 100 ZRX left to fill (completely fillable)
-            const firstOrder = orderFactory.createOrder(
-                NULL_ADDRESS,
-                new BigNumber(400),
-                NULL_BYTES,
-                new BigNumber(100),
-                NULL_BYTES,
-                NULL_ADDRESS,
-                {
-                    takerFee: new BigNumber(200),
-                },
-            );
-            const firstRemainingFillAmount = new BigNumber(200);
-            const secondOrder = orderFactory.createOrder(
-                NULL_ADDRESS,
-                new BigNumber(200),
-                NULL_BYTES,
-                new BigNumber(100),
-                NULL_BYTES,
-                NULL_ADDRESS,
-                {
-                    takerFee: new BigNumber(100),
-                },
-            );
-            const secondRemainingFillAmount = secondOrder.makerAssetAmount;
-            const signedOrders = _.map([firstOrder, secondOrder], order => {
-                return {
-                    ...order,
-                    signature: NULL_BYTES,
-                };
+            const firstOrder = orderFactory.createSignedOrderFromPartial({
+                makerAssetAmount: new BigNumber(400),
+                takerAssetAmount: new BigNumber(100),
+                takerFee: new BigNumber(200),
             });
+            const firstRemainingFillAmount = new BigNumber(200);
+            const secondOrder = orderFactory.createSignedOrderFromPartial({
+                makerAssetAmount: new BigNumber(200),
+                takerAssetAmount: new BigNumber(100),
+                takerFee: new BigNumber(100),
+            });
+            const secondRemainingFillAmount = secondOrder.makerAssetAmount;
             ordersAndFillableAmounts = {
-                orders: signedOrders,
+                orders: [firstOrder, secondOrder],
                 remainingFillableMakerAssetAmounts: [firstRemainingFillAmount, secondRemainingFillAmount],
             };
-            const smallFeeOrder = orderFactory.createOrder(
-                NULL_ADDRESS,
-                new BigNumber(100),
-                NULL_BYTES,
-                new BigNumber(100),
-                NULL_BYTES,
-                NULL_ADDRESS,
-            );
-            const signedSmallFeeOrder = {
-                ...smallFeeOrder,
-                signature: NULL_BYTES,
-            };
+            const smallFeeOrder = orderFactory.createSignedOrderFromPartial({
+                makerAssetAmount: new BigNumber(100),
+                takerAssetAmount: new BigNumber(100),
+            });
             smallFeeOrderAndFillableAmount = {
-                orders: [signedSmallFeeOrder],
-                remainingFillableMakerAssetAmounts: [signedSmallFeeOrder.makerAssetAmount],
+                orders: [smallFeeOrder],
+                remainingFillableMakerAssetAmounts: [smallFeeOrder.makerAssetAmount],
             };
-            const largeFeeOrder = orderFactory.createOrder(
-                NULL_ADDRESS,
-                new BigNumber(100),
-                NULL_BYTES,
-                new BigNumber(200),
-                NULL_BYTES,
-                NULL_ADDRESS,
-            );
-            const signedLargeFeeOrder = {
-                ...largeFeeOrder,
-                signature: NULL_BYTES,
-            };
+            const largeFeeOrder = orderFactory.createSignedOrderFromPartial({
+                makerAssetAmount: new BigNumber(100),
+                takerAssetAmount: new BigNumber(200),
+            });
             allFeeOrdersAndFillableAmounts = {
-                orders: [signedSmallFeeOrder, signedLargeFeeOrder],
-                remainingFillableMakerAssetAmounts: [
-                    signedSmallFeeOrder.makerAssetAmount,
-                    largeFeeOrder.makerAssetAmount,
-                ],
+                orders: [smallFeeOrder, largeFeeOrder],
+                remainingFillableMakerAssetAmounts: [smallFeeOrder.makerAssetAmount, largeFeeOrder.makerAssetAmount],
             };
         });
         it('should throw if not enough maker asset liquidity', () => {

@@ -8,8 +8,21 @@ import { orderHashUtils } from './order_hash';
 import { generatePseudoRandomSalt } from './salt';
 import { signatureUtils } from './signature_utils';
 import { CreateOrderOpts } from './types';
-
 export const orderFactory = {
+    createOrderFromPartial(partialOrder: Partial<Order>): Order {
+        const defaultOrder = generateEmptyOrder();
+        return {
+            ...defaultOrder,
+            ...partialOrder,
+        };
+    },
+    createSignedOrderFromPartial(partialSignedOrder: Partial<SignedOrder>): SignedOrder {
+        const defaultOrder = generateEmptySignedOrder();
+        return {
+            ...defaultOrder,
+            ...partialSignedOrder,
+        };
+    },
     createOrder(
         makerAddress: string,
         makerAssetAmount: BigNumber,
@@ -68,6 +81,30 @@ export const orderFactory = {
         return signedOrder;
     },
 };
+
+function generateEmptySignedOrder(): SignedOrder {
+    return {
+        ...generateEmptyOrder(),
+        signature: constants.NULL_BYTES,
+    };
+}
+function generateEmptyOrder(): Order {
+    return {
+        senderAddress: constants.NULL_ADDRESS,
+        makerAddress: constants.NULL_ADDRESS,
+        takerAddress: constants.NULL_ADDRESS,
+        makerFee: constants.ZERO_AMOUNT,
+        takerFee: constants.ZERO_AMOUNT,
+        makerAssetAmount: constants.ZERO_AMOUNT,
+        takerAssetAmount: constants.ZERO_AMOUNT,
+        makerAssetData: constants.NULL_BYTES,
+        takerAssetData: constants.NULL_BYTES,
+        salt: generatePseudoRandomSalt(),
+        exchangeAddress: constants.NULL_ADDRESS,
+        feeRecipientAddress: constants.NULL_ADDRESS,
+        expirationTimeSeconds: constants.INFINITE_TIMESTAMP_SEC,
+    };
+}
 
 function generateDefaultCreateOrderOpts(): {
     takerAddress: string;
