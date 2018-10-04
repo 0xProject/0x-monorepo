@@ -148,9 +148,11 @@ function findEthAndZrxAmountNeededToBuyAsset(
         (acc, order, index) => {
             const remainingFillableMakerAssetAmount = remainingFillableMakerAssetAmounts[index];
             const amountToFill = BigNumber.min(acc.remainingAssetBuyAmount, remainingFillableMakerAssetAmount);
+            // find the amount of eth required to fill amountToFill (amountToFill / makerAssetAmount) * takerAssetAmount
             const ethAmountForThisOrder = amountToFill
                 .mul(order.takerAssetAmount)
                 .dividedToIntegerBy(order.makerAssetAmount);
+            // find the amount of zrx required to fill fees for amountToFill (amountToFill / makerAssetAmount) * takerFee
             const zrxAmountForThisOrder = amountToFill.mul(order.takerFee).dividedToIntegerBy(order.makerAssetAmount);
             return {
                 ethAmount: acc.ethAmount.plus(ethAmountForThisOrder),
