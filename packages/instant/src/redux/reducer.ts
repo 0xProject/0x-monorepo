@@ -10,7 +10,7 @@ export const INITIAL_STATE: State = {
     ethUsdPrice: undefined,
 };
 
-export function reducer(state: State = INITIAL_STATE, action: Action): State {
+export const reducer = (state: State = INITIAL_STATE, action: Action): State => {
     switch (action.type) {
         case ActionTypes.UPDATE_ETH_USD_PRICE:
             return {
@@ -20,4 +20,4 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
         default:
             return state;
     }
-}
+};

@@ -6,7 +6,7 @@ const {
     injectGlobal,
     keyframes,
     ThemeProvider,
-} = styledComponents as styledComponents.ThemedStyledComponentsModule<Theme>;
+} = styledComponents;
 
 export type Theme = { [key in ColorOption]: string };
 
