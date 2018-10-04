@@ -123,7 +123,7 @@ export class AssetBuyer {
     public async getBuyQuoteAsync(
         assetData: string,
         assetBuyAmount: BigNumber,
-        options: Partial<BuyQuoteRequestOpts>,
+        options: Partial<BuyQuoteRequestOpts> = {},
     ): Promise<BuyQuote> {
         const { feePercentage, shouldForceOrderRefresh, slippagePercentage } = {
             ...constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
@@ -164,7 +164,7 @@ export class AssetBuyer {
     public async getBuyQuoteForERC20TokenAddressAsync(
         tokenAddress: string,
         assetBuyAmount: BigNumber,
-        options: Partial<BuyQuoteRequestOpts>,
+        options: Partial<BuyQuoteRequestOpts> = {},
     ): Promise<BuyQuote> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
@@ -179,20 +179,23 @@ export class AssetBuyer {
      *
      * @return  A promise of the txHash.
      */
-    public async executeBuyQuoteAsync(buyQuote: BuyQuote, options: Partial<BuyQuoteExecutionOpts>): Promise<string> {
-        const { rate, takerAddress, feeRecipient } = {
+    public async executeBuyQuoteAsync(
+        buyQuote: BuyQuote,
+        options: Partial<BuyQuoteExecutionOpts> = {},
+    ): Promise<string> {
+        const { ethAmount, takerAddress, feeRecipient } = {
             ...constants.DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
             ...options,
         };
         assert.isValidBuyQuote('buyQuote', buyQuote);
-        if (!_.isUndefined(rate)) {
-            assert.isBigNumber('rate', rate);
+        if (!_.isUndefined(ethAmount)) {
+            assert.isBigNumber('ethAmount', ethAmount);
         }
         if (!_.isUndefined(takerAddress)) {
             assert.isETHAddressHex('takerAddress', takerAddress);
         }
         assert.isETHAddressHex('feeRecipient', feeRecipient);
-        const { orders, feeOrders, feePercentage, assetBuyAmount, maxRate } = buyQuote;
+        const { orders, feeOrders, feePercentage, assetBuyAmount, worstCaseQuoteInfo } = buyQuote;
         // if no takerAddress is provided, try to get one from the provider
         let finalTakerAddress;
         if (!_.isUndefined(takerAddress)) {
@@ -207,15 +210,12 @@ export class AssetBuyer {
                 throw new Error(AssetBuyerError.NoAddressAvailable);
             }
         }
-        // if no rate is provided, default to the maxRate from buyQuote
-        const desiredRate = rate || maxRate;
-        // calculate how much eth is required to buy assetBuyAmount at the desired rate
-        const ethAmount = assetBuyAmount.dividedToIntegerBy(desiredRate);
+        // if no ethAmount is provided, default to the worst ethAmount from buyQuote
         const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
             orders,
             assetBuyAmount,
             finalTakerAddress,
-            ethAmount,
+            ethAmount || worstCaseQuoteInfo.totalEthAmount,
             feeOrders,
             feePercentage,
             feeRecipient,

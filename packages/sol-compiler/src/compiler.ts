@@ -296,13 +296,16 @@ export class Compiler {
         compilerOutput: solc.StandardOutput,
     ): Promise<void> {
         const compiledContract = compilerOutput.contracts[contractPath][contractName];
-        const sourceCodes = _.mapValues(
-            compilerOutput.sources,
-            (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,
-        );
+
+        // need to gather sourceCodes for this artifact, but compilerOutput.sources (the list of contract modules)
+        // contains listings for for every contract compiled during the compiler invocation that compiled the contract
+        // to be persisted, which could include many that are irrelevant to the contract at hand.  So, gather up only
+        // the relevant sources:
+        const { sourceCodes, sources } = this._getSourcesWithDependencies(contractPath, compilerOutput.sources);
+
         const contractVersion: ContractVersionData = {
             compilerOutput: compiledContract,
-            sources: compilerOutput.sources,
+            sources,
             sourceCodes,
             sourceTreeHashHex,
             compiler: {
@@ -332,6 +335,80 @@ export class Compiler {
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
         logUtils.warn(`${contractName} artifact saved!`);
+    }
+    /**
+     * For the given @param contractPath, populates JSON objects to be used in the ContractVersionData interface's
+     * properties `sources` (source code file names mapped to ID numbers) and `sourceCodes` (source code content of
+     * contracts) for that contract.  The source code pointed to by contractPath is read and parsed directly (via
+     * `this._resolver.resolve().source`), as are its imports, recursively.  The ID numbers for @return `sources` are
+     * taken from the corresponding ID's in @param fullSources, and the content for @return sourceCodes is read from
+     * disk (via the aforementioned `resolver.source`).
+     */
+    private _getSourcesWithDependencies(
+        contractPath: string,
+        fullSources: { [sourceName: string]: { id: number } },
+    ): { sourceCodes: { [sourceName: string]: string }; sources: { [sourceName: string]: { id: number } } } {
+        const sources = { [contractPath]: { id: fullSources[contractPath].id } };
+        const sourceCodes = { [contractPath]: this._resolver.resolve(contractPath).source };
+        this._recursivelyGatherDependencySources(
+            contractPath,
+            sourceCodes[contractPath],
+            fullSources,
+            sources,
+            sourceCodes,
+        );
+        return { sourceCodes, sources };
+    }
+    private _recursivelyGatherDependencySources(
+        contractPath: string,
+        contractSource: string,
+        fullSources: { [sourceName: string]: { id: number } },
+        sourcesToAppendTo: { [sourceName: string]: { id: number } },
+        sourceCodesToAppendTo: { [sourceName: string]: string },
+    ): void {
+        const importStatementMatches = contractSource.match(/\nimport[^;]*;/g);
+        if (importStatementMatches === null) {
+            return;
+        }
+        for (const importStatementMatch of importStatementMatches) {
+            const importPathMatches = importStatementMatch.match(/\"([^\"]*)\"/);
+            if (importPathMatches === null || importPathMatches.length === 0) {
+                continue;
+            }
+
+            let importPath = importPathMatches[1];
+            // HACK(ablrow): We have, e.g.:
+            //
+            //      importPath   = "../../utils/LibBytes/LibBytes.sol"
+            //      contractPath = "2.0.0/protocol/AssetProxyOwner/AssetProxyOwner.sol"
+            //
+            // Resolver doesn't understand "../" so we want to pass
+            // "2.0.0/utils/LibBytes/LibBytes.sol" to resolver.
+            //
+            // This hack involves using path.resolve. But path.resolve returns
+            // absolute directories by default. We trick it into thinking that
+            // contractPath is a root directory by prepending a '/' and then
+            // removing the '/' the end.
+            //
+            //      path.resolve("/a/b/c", ""../../d/e") === "/a/d/e"
+            //
+            const lastPathSeparatorPos = contractPath.lastIndexOf('/');
+            const contractFolder = lastPathSeparatorPos === -1 ? '' : contractPath.slice(0, lastPathSeparatorPos + 1);
+            importPath = path.resolve('/' + contractFolder, importPath).replace('/', '');
+
+            if (_.isUndefined(sourcesToAppendTo[importPath])) {
+                sourcesToAppendTo[importPath] = { id: fullSources[importPath].id };
+                sourceCodesToAppendTo[importPath] = this._resolver.resolve(importPath).source;
+
+                this._recursivelyGatherDependencySources(
+                    importPath,
+                    this._resolver.resolve(importPath).source,
+                    fullSources,
+                    sourcesToAppendTo,
+                    sourceCodesToAppendTo,
+                );
+            }
+        }
     }
     private _compile(solcInstance: solc.SolcInstance, standardInput: solc.StandardInput): solc.StandardOutput {
         const compiled: solc.StandardOutput = JSON.parse(

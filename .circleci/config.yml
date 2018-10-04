@@ -17,16 +17,20 @@ jobs:
       - run:
           name: yarn
           command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
-      - run: >
-            if [ -z "$(git diff --name-only development packages/website)" ]; then
-                yarn build:ci:no_website
-            else
-                yarn build:ci
-            fi
+      - run: yarn build:ci:no_website
       - save_cache:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo
+  build-website:
+    docker:
+      - image: circleci/node:9
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: cd packages/website && yarn build
   test-contracts-ganache:
     docker:
       - image: circleci/node:9
@@ -234,6 +238,9 @@ workflows:
   main:
     jobs:
       - build
+      - build-website:
+          requires:
+            - build
       - test-contracts-ganache:
           requires:
             - build
