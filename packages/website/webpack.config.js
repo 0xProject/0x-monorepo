@@ -17,6 +17,7 @@ const config = {
         chunkFilename: 'bundle-[name].js',
         publicPath: '/',
     },
+    devtool: 'source-map',
     resolve: {
         modules: [path.join(__dirname, '/ts'), 'node_modules'],
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.md'],
@@ -90,7 +91,6 @@ const config = {
 module.exports = (_env, argv) => {
     let plugins = [];
     if (argv.mode === 'development') {
-        config.devtool = 'source-map';
         config.mode = 'development';
     } else {
         config.mode = 'production';
