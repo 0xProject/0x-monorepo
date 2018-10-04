@@ -52,12 +52,16 @@ describe('buyQuoteCalculator', () => {
                 remainingFillableMakerAssetAmounts: [smallFeeOrder.makerAssetAmount],
             };
             const largeFeeOrder = orderFactory.createSignedOrderFromPartial({
-                makerAssetAmount: new BigNumber(100),
+                makerAssetAmount: new BigNumber(110),
                 takerAssetAmount: new BigNumber(200),
+                takerFee: new BigNumber(10),
             });
             allFeeOrdersAndFillableAmounts = {
                 orders: [smallFeeOrder, largeFeeOrder],
-                remainingFillableMakerAssetAmounts: [smallFeeOrder.makerAssetAmount, largeFeeOrder.makerAssetAmount],
+                remainingFillableMakerAssetAmounts: [
+                    smallFeeOrder.makerAssetAmount,
+                    largeFeeOrder.makerAssetAmount.minus(largeFeeOrder.takerFee),
+                ],
             };
         });
         it('should throw if not enough maker asset liquidity', () => {
