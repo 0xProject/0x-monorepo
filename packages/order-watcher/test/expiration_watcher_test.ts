@@ -1,7 +1,7 @@
-import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { tokenUtils } from '@0xproject/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
+import { getContractAddresses } from '@0xproject/migrations';
 import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -14,7 +14,6 @@ import { ExpirationWatcher } from '../src/order_watcher/expiration_watcher';
 import { utils } from '../src/utils/utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { constants } from './utils/constants';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -23,14 +22,8 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const MILISECONDS_IN_SECOND = 1000;
 
 describe('ExpirationWatcher', () => {
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
-    const contractWrappers = new ContractWrappers(provider, config);
     let userAddresses: string[];
-    let zrxTokenAddress: string;
     let fillScenarios: FillScenarios;
-    const exchangeContractAddress = contractWrappers.exchange.getContractAddress();
     let makerAssetData: string;
     let takerAssetData: string;
     let coinbase: string;
@@ -43,15 +36,15 @@ describe('ExpirationWatcher', () => {
     let expirationWatcher: ExpirationWatcher;
     before(async () => {
         await blockchainLifecycle.startAsync();
+        const contractAddresses = getContractAddresses();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        zrxTokenAddress = tokenUtils.getProtocolTokenAddress();
         fillScenarios = new FillScenarios(
             provider,
             userAddresses,
-            zrxTokenAddress,
-            exchangeContractAddress,
-            contractWrappers.erc20Proxy.getContractAddress(),
-            contractWrappers.erc721Proxy.getContractAddress(),
+            contractAddresses.zrxToken,
+            contractAddresses.exchange,
+            contractAddresses.erc20Proxy,
+            contractAddresses.erc721Proxy,
         );
         [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
         const [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();

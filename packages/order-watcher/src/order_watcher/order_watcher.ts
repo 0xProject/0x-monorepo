@@ -1,4 +1,5 @@
 // tslint:disable:no-unnecessary-type-assertion
+import * as artifacts from '@0xproject/contract-artifacts';
 import {
     AssetBalanceAndProxyAllowanceFetcher,
     ContractWrappers,
@@ -30,12 +31,18 @@ import {
     orderHashUtils,
     OrderStateUtils,
 } from '@0xproject/order-utils';
-import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder, Stats } from '@0xproject/types';
+import {
+    AssetProxyId,
+    ContractAddresses,
+    ExchangeContractErrs,
+    OrderState,
+    SignedOrder,
+    Stats,
+} from '@0xproject/types';
 import { errorUtils, intervalUtils } from '@0xproject/utils';
 import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
 import { orderWatcherPartialConfigSchema } from '../schemas/order_watcher_partial_config_schema';
 import { OnOrderStateChangeCallback, OrderWatcherConfig, OrderWatcherError } from '../types';
 import { assert } from '../utils/assert';
@@ -96,6 +103,7 @@ export class OrderWatcher {
     constructor(
         provider: Provider,
         networkId: number,
+        contractAddresses: ContractAddresses,
         partialConfig: Partial<OrderWatcherConfig> = DEFAULT_ORDER_WATCHER_CONFIG,
     ) {
         assert.isWeb3Provider('provider', provider);
@@ -110,9 +118,13 @@ export class OrderWatcher {
         this._collisionResistantAbiDecoder = new CollisionResistanceAbiDecoder(
             artifacts.ERC20Token.compilerOutput.abi,
             artifacts.ERC721Token.compilerOutput.abi,
-            [artifacts.EtherToken.compilerOutput.abi, artifacts.Exchange.compilerOutput.abi],
+            [artifacts.WETH9.compilerOutput.abi, artifacts.Exchange.compilerOutput.abi],
         );
-        const contractWrappers = new ContractWrappers(provider, { networkId });
+        const contractWrappers = new ContractWrappers(provider, {
+            networkId,
+            // TODO(albrow): Make contract addresses optional.
+            contractAddresses,
+        });
         this._eventWatcher = new EventWatcher(provider, config.eventPollingIntervalMs, STATE_LAYER, config.isVerbose);
         const balanceAndProxyAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
             contractWrappers.erc20Token,
