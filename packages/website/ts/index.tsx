@@ -26,47 +26,47 @@ import 'less/all.less';
 
 // We pass modulePromise returning lambda instead of module promise,
 // cause we only want to import the module when the user navigates to the page.
-// At the same time webpack statically parses for System.import() to determine bundle chunk split points
-// so each lazy import needs it's own `System.import()` declaration.
+// At the same time webpack statically parses for import() to determine bundle chunk split points
+// so each lazy import needs it's own `import()` declaration.
 
 const LazyPortal = createLazyComponent('Portal', async () =>
-    System.import<any>(/* webpackChunkName: "portal" */ 'ts/containers/portal'),
+    import(/* webpackChunkName: "portal" */ 'ts/containers/portal'),
 );
 const LazyZeroExJSDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "zeroExDocs" */ 'ts/containers/zero_ex_js_documentation'),
+    import(/* webpackChunkName: "zeroExDocs" */ 'ts/containers/zero_ex_js_documentation'),
 );
 const LazyContractWrappersDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "contractWrapperDocs" */ 'ts/containers/contract_wrappers_documentation'),
+    import(/* webpackChunkName: "contractWrapperDocs" */ 'ts/containers/contract_wrappers_documentation'),
 );
 const LazyOrderWatcherDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "orderWatcherDocs" */ 'ts/containers/order_watcher_documentation'),
+    import(/* webpackChunkName: "orderWatcherDocs" */ 'ts/containers/order_watcher_documentation'),
 );
 const LazySmartContractsDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "smartContractDocs" */ 'ts/containers/smart_contracts_documentation'),
+    import(/* webpackChunkName: "smartContractDocs" */ 'ts/containers/smart_contracts_documentation'),
 );
 const LazyConnectDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
+    import(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
 );
 const LazyWeb3WrapperDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "web3WrapperDocs" */ 'ts/containers/web3_wrapper_documentation'),
+    import(/* webpackChunkName: "web3WrapperDocs" */ 'ts/containers/web3_wrapper_documentation'),
 );
 const LazySolCompilerDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "solCompilerDocs" */ 'ts/containers/sol_compiler_documentation'),
+    import(/* webpackChunkName: "solCompilerDocs" */ 'ts/containers/sol_compiler_documentation'),
 );
 const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
+    import(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
 );
 const LazySolCovDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "solCovDocs" */ 'ts/containers/sol_cov_documentation'),
+    import(/* webpackChunkName: "solCovDocs" */ 'ts/containers/sol_cov_documentation'),
 );
 const LazySubprovidersDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "subproviderDocs" */ 'ts/containers/subproviders_documentation'),
+    import(/* webpackChunkName: "subproviderDocs" */ 'ts/containers/subproviders_documentation'),
 );
 const LazyOrderUtilsDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "orderUtilsDocs" */ 'ts/containers/order_utils_documentation'),
+    import(/* webpackChunkName: "orderUtilsDocs" */ 'ts/containers/order_utils_documentation'),
 );
 const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
+    import(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
 );
 
 const DOCUMENT_TITLE = '0x: The Protocol for Trading Tokens';
