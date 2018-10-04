@@ -1,12 +1,6 @@
 import * as styledComponents from 'styled-components';
 
-const {
-    default: styled,
-    css,
-    injectGlobal,
-    keyframes,
-    ThemeProvider,
-} = styledComponents;
+const { default: styled, css, injectGlobal, keyframes, ThemeProvider } = styledComponents;
 
 export type Theme = { [key in ColorOption]: string };
 
