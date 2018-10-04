@@ -20,7 +20,9 @@ export const IntroOnboardingStep: React.StatelessComponent<IntroOnboardingStepPr
                 <Text> Wrap ETH </Text>
             </div>
             <div className="flex flex-column items-center">
-                <Image src="/images/fake_toggle.svg" height="50px" width="50px" />
+                <Container marginBottom="9px">
+                    <Image src="/images/lock_icon.svg" height="35px" width="35x" />
+                </Container>
                 <Text> Unlock tokens </Text>
             </div>
         </Container>

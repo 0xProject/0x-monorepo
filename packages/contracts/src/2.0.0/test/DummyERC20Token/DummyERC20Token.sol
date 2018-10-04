@@ -18,17 +18,18 @@
 
 pragma solidity 0.4.24;
 
-import "../Mintable/Mintable.sol";
 import "../../utils/Ownable/Ownable.sol";
+import "../../tokens/ERC20Token/MintableERC20Token.sol";
 
 
 contract DummyERC20Token is 
-    Mintable,
-    Ownable
+    Ownable,
+    MintableERC20Token
 {
     string public name;
     string public symbol;
     uint256 public decimals;
+    uint256 public constant MAX_MINT_AMOUNT = 10000000000000000000000;
 
     constructor (
         string _name,
@@ -41,20 +42,36 @@ contract DummyERC20Token is
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
-        totalSupply = _totalSupply;
+        _totalSupply = _totalSupply;
         balances[msg.sender] = _totalSupply;
     }
 
+    /// @dev Sets the balance of target address
+    /// @param _target Address or which balance will be updated
+    /// @param _value New balance of target address
     function setBalance(address _target, uint256 _value)
-        public
+        external
         onlyOwner
     {
-        uint256 currBalance = balanceOf(_target);
+        uint256 currBalance = balances[_target];
         if (_value < currBalance) {
-            totalSupply = safeSub(totalSupply, safeSub(currBalance, _value));
+            _totalSupply = safeSub(_totalSupply, safeSub(currBalance, _value));
         } else {
-            totalSupply = safeAdd(totalSupply, safeSub(_value, currBalance));
+            _totalSupply = safeAdd(_totalSupply, safeSub(_value, currBalance));
         }
         balances[_target] = _value;
+    }
+
+    /// @dev Mints new tokens for sender
+    /// @param _value Amount of tokens to mint
+    function mint(uint256 _value)
+        external
+    {
+        require(
+            _value <= MAX_MINT_AMOUNT,
+            "VALUE_TOO_LARGE"
+        );
+
+        _mint(msg.sender, _value);
     }
 }

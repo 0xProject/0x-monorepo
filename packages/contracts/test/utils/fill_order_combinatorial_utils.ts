@@ -81,6 +81,12 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         erc20FiveDecimalTokenCount,
         fiveDecimals,
     );
+    const zeroDecimals = new BigNumber(0);
+    const erc20ZeroDecimalTokenCount = 2;
+    const [erc20ZeroDecimalTokenA, erc20ZeroDecimalTokenB] = await erc20Wrapper.deployDummyTokensAsync(
+        erc20ZeroDecimalTokenCount,
+        zeroDecimals,
+    );
     const erc20Proxy = await erc20Wrapper.deployProxyAsync();
     await erc20Wrapper.setBalancesAndAllowancesAsync();
 
@@ -119,6 +125,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         zrxToken.address,
         [erc20EighteenDecimalTokenA.address, erc20EighteenDecimalTokenB.address],
         [erc20FiveDecimalTokenA.address, erc20FiveDecimalTokenB.address],
+        [erc20ZeroDecimalTokenA.address, erc20ZeroDecimalTokenB.address],
         erc721Token,
         erc721Balances,
         exchangeContract.address,
@@ -460,17 +467,17 @@ export class FillOrderCombinatorialUtils {
             ? remainingTakerAmountToFill
             : alreadyFilledTakerAmount.add(takerAssetFillAmount);
 
-        const expFilledMakerAmount = orderUtils.getPartialAmount(
+        const expFilledMakerAmount = orderUtils.getPartialAmountFloor(
             expFilledTakerAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
         );
-        const expMakerFeePaid = orderUtils.getPartialAmount(
+        const expMakerFeePaid = orderUtils.getPartialAmountFloor(
             expFilledTakerAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerFee,
         );
-        const expTakerFeePaid = orderUtils.getPartialAmount(
+        const expTakerFeePaid = orderUtils.getPartialAmountFloor(
             expFilledTakerAmount,
             signedOrder.takerAssetAmount,
             signedOrder.takerFee,
@@ -497,7 +504,11 @@ export class FillOrderCombinatorialUtils {
         const actFilledTakerAmount = await this.exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
         expect(actFilledTakerAmount).to.be.bignumber.equal(expFilledTakerAmount, 'filledTakerAmount');
 
-        expect(txReceipt.logs.length).to.be.equal(1, 'logs length');
+        const exchangeLogs = _.filter(
+            txReceipt.logs,
+            txLog => txLog.address === this.exchangeWrapper.getExchangeAddress(),
+        );
+        expect(exchangeLogs.length).to.be.equal(1, 'logs length');
         // tslint:disable-next-line:no-unnecessary-type-assertion
         const log = txReceipt.logs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>;
         expect(log.args.makerAddress).to.be.equal(makerAddress, 'log.args.makerAddress');
@@ -657,7 +668,7 @@ export class FillOrderCombinatorialUtils {
         signedOrder: SignedOrder,
         takerAssetFillAmount: BigNumber,
     ): Promise<void> {
-        const makerAssetFillAmount = orderUtils.getPartialAmount(
+        const makerAssetFillAmount = orderUtils.getPartialAmountFloor(
             takerAssetFillAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
@@ -694,7 +705,7 @@ export class FillOrderCombinatorialUtils {
                 );
         }
 
-        const makerFee = orderUtils.getPartialAmount(
+        const makerFee = orderUtils.getPartialAmountFloor(
             takerAssetFillAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerFee,
@@ -818,7 +829,7 @@ export class FillOrderCombinatorialUtils {
                 );
         }
 
-        const takerFee = orderUtils.getPartialAmount(
+        const takerFee = orderUtils.getPartialAmountFloor(
             takerAssetFillAmount,
             signedOrder.takerAssetAmount,
             signedOrder.takerFee,

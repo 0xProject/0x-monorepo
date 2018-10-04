@@ -2,6 +2,7 @@ version: 2
 
 jobs:
   build:
+    resource_class: medium+
     docker:
       - image: circleci/node:9
     environment:
@@ -10,31 +11,26 @@ jobs:
     steps:
       - checkout
       - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-{{ .Branch }}
-            - yarn-packages-master
-            - yarn-packages-
+      - run:
+          name: install-yarn
+          command: sudo npm install --global yarn@1.9.4
       - run:
           name: yarn
-          command: yarn --frozen-lockfile install
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - node_modules/
-      - run: >
-            if [ -z "$(git diff --name-only v2-prototype packages/website)" ]; then
-                yarn build --exclude website
-            else
-                yarn build
-            fi
+          command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
+      - run: yarn build:ci:no_website
       - save_cache:
           key: repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo
+  build-website:
+    docker:
+      - image: circleci/node:9
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: cd packages/website && yarn build
   test-contracts-ganache:
     docker:
       - image: circleci/node:9
@@ -47,7 +43,7 @@ jobs:
   test-contracts-geth:
     docker:
       - image: circleci/node:9
-      - image: albrow/0x-devnet
+      - image: 0xorg/devnet
     working_directory: ~/repo
     steps:
       - restore_cache:
@@ -57,15 +53,25 @@ jobs:
       # initialized
       - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test contracts
   test-publish:
+    resource_class: medium+
     docker:
       - image: circleci/node:9
-      - image: verdaccio/verdaccio
+      - image: 0xorg/verdaccio
     working_directory: ~/repo
     steps:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn test:publish:circleci
+  test-doc-generation:
+    docker:
+      - image: circleci/node:9
+    working_directory: ~/repo
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: yarn test:generate_docs:circleci
   test-rest:
     docker:
       - image: circleci/node:9
@@ -74,7 +80,6 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn wsrun test:circleci 0x.js
       - run: yarn wsrun test:circleci @0xproject/abi-gen
       - run: yarn wsrun test:circleci @0xproject/assert
       - run: yarn wsrun test:circleci @0xproject/base-contract
@@ -87,14 +92,11 @@ jobs:
       - run: yarn wsrun test:circleci @0xproject/order-watcher
       - run: yarn wsrun test:circleci @0xproject/sol-compiler
       - run: yarn wsrun test:circleci @0xproject/sol-cov
+      - run: yarn wsrun test:circleci @0xproject/sol-doc
       - run: yarn wsrun test:circleci @0xproject/sra-report
       - run: yarn wsrun test:circleci @0xproject/subproviders
       - run: yarn wsrun test:circleci @0xproject/web3-wrapper
       - run: yarn wsrun test:circleci @0xproject/utils
-      - save_cache:
-          key: coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/repo/packages/0x.js/coverage/lcov.info
       - save_cache:
           key: coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -144,6 +146,10 @@ jobs:
           paths:
             - ~/repo/packages/sol-cov/coverage/lcov.info
       - save_cache:
+          key: coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/packages/sol-doc/coverage/lcov.info
+      - save_cache:
           key: coverage-sra-report-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/sra-report/coverage/lcov.info
@@ -163,8 +169,10 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: yarn prettier:ci
       - run: yarn lerna run lint
+      - run: yarn prettier:ci
+      - run: cd packages/0x.js && yarn build:umd:prod
+      - run: yarn bundlesize
   submit-coverage:
     docker:
       - image: circleci/node:9
@@ -173,9 +181,6 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          keys:
-            - coverage-0xjs-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
             - coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
@@ -214,6 +219,9 @@ jobs:
             - coverage-sol-cov-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
+            - coverage-sol-doc-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
             - coverage-sra-report-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
@@ -230,6 +238,9 @@ workflows:
   main:
     jobs:
       - build
+      - build-website:
+          requires:
+            - build
       - test-contracts-ganache:
           requires:
             - build
@@ -243,6 +254,9 @@ workflows:
           requires:
             - build
       - test-publish:
+          requires:
+            - build
+      - test-doc-generation:
           requires:
             - build
       - submit-coverage:

@@ -19,11 +19,6 @@ CHANGELOG
 
 export const changelogUtils = {
     getChangelogMdTitle(versionChangelog: VersionChangelog): string {
-        if (_.isUndefined(versionChangelog.timestamp)) {
-            throw new Error(
-                'All CHANGELOG.json entries must be updated to include a timestamp before generating their MD version',
-            );
-        }
         const date = moment(`${versionChangelog.timestamp}`, 'X').format('MMMM D, YYYY');
         const title = `\n## v${versionChangelog.version} - _${date}_\n\n`;
         return title;

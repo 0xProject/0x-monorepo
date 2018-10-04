@@ -1,20 +1,12 @@
-import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { DoneCallback, SignedOrder } from '@0xproject/types';
+import { assetDataUtils } from '@0xproject/order-utils';
+import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import { BlockParamLiteral } from 'ethereum-types';
 import 'mocha';
 
-import {
-    ContractWrappers,
-    DecodedLogEvent,
-    ExchangeCancelEventArgs,
-    ExchangeEvents,
-    ExchangeFillEventArgs,
-    OrderStatus,
-} from '../src';
+import { ContractWrappers, OrderStatus } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
@@ -31,10 +23,8 @@ describe('ForwarderWrapper', () => {
         blockPollingIntervalMs: 0,
     };
     const fillableAmount = new BigNumber(5);
-    const takerTokenFillAmount = new BigNumber(5);
     let contractWrappers: ContractWrappers;
     let fillScenarios: FillScenarios;
-    let forwarderContractAddress: string;
     let exchangeContractAddress: string;
     let zrxTokenAddress: string;
     let userAddresses: string[];
@@ -52,7 +42,6 @@ describe('ForwarderWrapper', () => {
     before(async () => {
         await blockchainLifecycle.startAsync();
         contractWrappers = new ContractWrappers(provider, contractWrappersConfig);
-        forwarderContractAddress = contractWrappers.forwarder.getContractAddress();
         exchangeContractAddress = contractWrappers.exchange.getContractAddress();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         zrxTokenAddress = tokenUtils.getProtocolTokenAddress();

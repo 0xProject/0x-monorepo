@@ -5,6 +5,41 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.3 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v3.0.2 - _September 28, 2018_
+
+    * Dependencies updated
+
+## v3.0.1 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v3.0.0 - _September 25, 2018_
+
+    * Rename `getBlockAsync` to `getBlockIfExistsAsync` and rather then throw if the requested block wasn't found, return undefined. (#1082)
+    * Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls (#1080)
+
+## v2.0.3 - _September 21, 2018_
+
+    * Fixes issue #1076 where Parity now returns a placeholder transactionReceipt before the transaction is mined. (#1079)
+
+## v2.0.2 - _September 5, 2018_
+
+    * Dependencies updated
+
+## v2.0.1 - _August 27, 2018_
+
+    * Dependencies updated
+
+## v2.0.0 - _August 24, 2018_
+
+    * Export types:  `BlockParam`, `TxData`, `Provider`, `TransactionReceipt`, `Transaction`, `TraceParams`, `TransactionTrace``, BlockWithoutTransactionDat`a, `LogEntry`, `FilterObject`, `CallData`, `TransactionReceiptWithDecodedLogs`, `BlockWithTransactionData``, LogTopi`c, `JSONRPCRequestPayload`, `TransactionReceiptStatus`, `DecodedLogArgs`, `StructLog`, `JSONRPCErrorCallback``, BlockParamLitera`l, `ContractEventArg`, `DecodedLogEntry`, `LogEntryEvent`, `OpCode`, `TxDataPayable`, `JSONRPCResponsePayload``, RawLogEntr`y, `DecodedLogEntryEvent`, `LogWithDecodedArgs`, `AbiDefinition`, `RawLog`, `FunctionAbi`, `EventAbi`, `EventParameter``, MethodAb`i, `ConstructorAbi`, `FallbackAbi`, `DataItem`, `ConstructorStateMutability` and `StateMutability` (#924)
+    * Stop exporting types: `CallTxDataBaseRPC` and `AbstractBlockRPC` (#924)
+    * Export `AbiDecoder` class (#924)
+
 ## v1.2.0 - _August 13, 2018_
 
     * Export marshaller to convert between RPC and user-space data formats (#938)

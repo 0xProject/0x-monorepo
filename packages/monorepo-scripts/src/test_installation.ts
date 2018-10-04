@@ -85,11 +85,13 @@ function logIfDefined(x: any): void {
             logIfDefined(packageError.error.stdout);
             logIfDefined(packageError.error.stack);
         });
+        process.exit(1);
+    } else {
         process.exit(0);
     }
 })().catch(err => {
     utils.log(`Unexpected error: ${err.message}`);
-    process.exit(0);
+    process.exit(1);
 });
 
 async function testInstallPackageAsync(
@@ -144,7 +146,7 @@ async function testInstallPackageAsync(
         const transpiledIndexFilePath = path.join(testDirectory, 'index.js');
         utils.log(`Running test script with ${packageName} imported`);
         await execAsync(`node ${transpiledIndexFilePath}`);
-        utils.log(`Successfilly ran test script with ${packageName} imported`);
+        utils.log(`Successfully ran test script with ${packageName} imported`);
     }
     await rimrafAsync(testDirectory);
 }

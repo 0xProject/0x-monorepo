@@ -5,6 +5,50 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.8 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v1.0.7 - _September 28, 2018_
+
+    * Dependencies updated
+
+## v1.0.6 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.5 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.4 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v1.0.3 - _September 19, 2018_
+
+    * Drastically reduce the bundle size by removing unused parts of included contract artifacts.
+
+## v1.0.2 - _September 18, 2018_
+
+    * Add ZRX & WETH mainnet contract addresses into the included artifacts
+
+## v1.0.1 - _September 5, 2018_
+
+    * Dependencies updated
+
+## v1.0.1-rc.6 - _August 27, 2018_
+
+    * Fix missing `BlockParamLiteral` type import issue
+
+## v1.0.1-rc.5 - _Invalid date_
+
+    * Fix `main` and `types` package.json entries so that they point to the new location of index.d.ts and index.js
+
+## v1.0.1-rc.4 - _August 24, 2018_
+
+    * Re-organize the exported interface of 0x.js. Remove the `ZeroEx` class, and instead export the same exports as `0x.js`'s sub-packages: `@0xproject/contract-wrappers`, `@0xproject/order-utils` and `@0xproject/order-watcher` (#963)
+
 ## v1.0.1-rc.3 - _August 13, 2018_
 
     * Dependencies updated

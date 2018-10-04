@@ -17,7 +17,7 @@ export class ExchangeWrapper {
     constructor(exchangeContract: ExchangeContract, provider: Provider) {
         this._exchange = exchangeContract;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, this._exchange.address);
+        this._logDecoder = new LogDecoder(this._web3Wrapper);
     }
     public async fillOrderAsync(
         signedOrder: SignedOrder,
@@ -265,5 +265,8 @@ export class ExchangeWrapper {
             params.signature,
         );
         return data;
+    }
+    public getExchangeAddress(): string {
+        return this._exchange.address;
     }
 }

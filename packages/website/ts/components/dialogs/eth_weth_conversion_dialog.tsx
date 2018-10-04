@@ -54,8 +54,8 @@ export class EthWethConversionDialog extends React.Component<
     }
     public render(): React.ReactNode {
         const convertDialogActions = [
-            <FlatButton key="cancel" label="Cancel" onTouchTap={this._onCancel.bind(this)} />,
-            <FlatButton key="convert" label="Convert" primary={true} onTouchTap={this._onConvertClick.bind(this)} />,
+            <FlatButton key="cancel" label="Cancel" onClick={this._onCancel.bind(this)} />,
+            <FlatButton key="convert" label="Convert" primary={true} onClick={this._onConvertClick.bind(this)} />,
         ];
         const title = this.props.direction === Side.Deposit ? 'Wrap ETH' : 'Unwrap WETH';
         return !_.isUndefined(this.props.etherBalanceInWei) ? (

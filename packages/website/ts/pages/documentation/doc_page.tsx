@@ -1,4 +1,11 @@
-import { DocAgnosticFormat, DocsInfo, Documentation } from '@0xproject/react-docs';
+import {
+    DocAgnosticFormat,
+    DocsInfo,
+    Documentation,
+    GeneratedDocJson,
+    SupportedDocJson,
+    TypeDocUtils,
+} from '@0xproject/react-docs';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -28,11 +35,13 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.Connect]: 'connect',
     [DocPackages.SmartContracts]: 'contracts',
     [DocPackages.Web3Wrapper]: 'web3-wrapper',
+    [DocPackages.ContractWrappers]: 'contract-wrappers',
     [DocPackages.SolCompiler]: 'sol-compiler',
     [DocPackages.JSONSchemas]: 'json-schemas',
     [DocPackages.SolCov]: 'sol-cov',
     [DocPackages.Subproviders]: 'subproviders',
     [DocPackages.OrderUtils]: 'order-utils',
+    [DocPackages.OrderWatcher]: 'order-watcher',
     [DocPackages.EthereumTypes]: 'ethereum-types',
 };
 
@@ -84,7 +93,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     location={this.props.location}
                     docsVersion={this.props.docsVersion}
                     availableDocVersions={this.props.availableDocVersions}
-                    menu={this.props.docsInfo.getMenu(this.props.docsVersion)}
+                    menu={this.props.docsInfo.menu}
                     menuSubsectionsBySection={menuSubsectionsBySection}
                     docsInfo={this.props.docsInfo}
                     translate={this.props.translate}
@@ -126,7 +135,22 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
 
         const versionFilePathToFetch = versionToFilePath[versionToFetch];
         const versionDocObj = await docUtils.getJSONDocFileAsync(versionFilePathToFetch, docBucketRoot);
-        const docAgnosticFormat = this.props.docsInfo.convertToDocAgnosticFormat(versionDocObj);
+        let docAgnosticFormat;
+        if (this.props.docsInfo.type === SupportedDocJson.TypeDoc) {
+            docAgnosticFormat = new TypeDocUtils(
+                versionDocObj as GeneratedDocJson,
+                this.props.docsInfo,
+            ).convertToDocAgnosticFormat();
+        } else if (this.props.docsInfo.type === SupportedDocJson.SolDoc) {
+            // documenting solidity.
+            docAgnosticFormat = versionDocObj as DocAgnosticFormat;
+            // HACK: need to modify docsInfo like convertToDocAgnosticFormat() would do
+            this.props.docsInfo.menu.Contracts = [];
+            _.each(docAgnosticFormat, (_docObj, sectionName) => {
+                this.props.docsInfo.sections[sectionName] = sectionName;
+                this.props.docsInfo.menu.Contracts.push(sectionName);
+            });
+        }
 
         if (!this._isUnmounted) {
             this.setState({

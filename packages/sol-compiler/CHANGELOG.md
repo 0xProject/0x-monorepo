@@ -5,6 +5,40 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.7 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v1.1.6 - _September 28, 2018_
+
+    * Dependencies updated
+
+## v1.1.5 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.1.4 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.1.3 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v1.1.2 - _September 5, 2018_
+
+    * Dependencies updated
+
+## v1.1.1 - _August 27, 2018_
+
+    * Dependencies updated
+
+## v1.1.0 - _August 24, 2018_
+
+    * Quicken compilation by sending multiple contracts to the same solcjs invocation, batching them together based on compiler version requirements. (#965)
+    * Stop exporting types: `ContractArtifact`, `ContractNetworks` (#924)
+    * Export types: `CompilerSettings`, `OutputField` (#924)
+
 ## v1.0.5 - _August 13, 2018_
 
     * Dependencies updated

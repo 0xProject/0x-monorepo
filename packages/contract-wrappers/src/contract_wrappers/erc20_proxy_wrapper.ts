@@ -16,6 +16,13 @@ export class ERC20ProxyWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.ERC20Proxy.compilerOutput.abi;
     private _erc20ProxyContractIfExists?: ERC20ProxyContract;
     private _contractAddressIfExists?: string;
+    /**
+     * Instantiate ERC20ProxyWrapper
+     * @param web3Wrapper Web3Wrapper instance to use
+     * @param networkId Desired networkId
+     * @param contractAddressIfExists The contract address to use. This is usually pulled from
+     * the artifacts but needs to be specified when using with your own custom testnet.
+     */
     constructor(web3Wrapper: Web3Wrapper, networkId: number, contractAddressIfExists?: string) {
         super(web3Wrapper, networkId);
         this._contractAddressIfExists = contractAddressIfExists;

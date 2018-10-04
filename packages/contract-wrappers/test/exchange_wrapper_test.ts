@@ -7,14 +7,8 @@ import * as chai from 'chai';
 import { BlockParamLiteral } from 'ethereum-types';
 import 'mocha';
 
-import {
-    ContractWrappers,
-    DecodedLogEvent,
-    ExchangeCancelEventArgs,
-    ExchangeEvents,
-    ExchangeFillEventArgs,
-    OrderStatus,
-} from '../src';
+import { ContractWrappers, ExchangeCancelEventArgs, ExchangeEvents, ExchangeFillEventArgs, OrderStatus } from '../src';
+import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
@@ -364,7 +358,7 @@ describe('ExchangeWrapper', () => {
     describe('#getVersionAsync', () => {
         it('should return version the hash', async () => {
             const version = await contractWrappers.exchange.getVersionAsync();
-            const VERSION = '2.0.1-alpha';
+            const VERSION = '2.0.0';
             expect(version).to.be.equal(VERSION);
         });
     });

@@ -12,6 +12,7 @@ import { ERC721TokenWrapper } from './contract_wrappers/erc721_token_wrapper';
 import { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
 import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
 import { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
+import { OrderValidatorWrapper } from './contract_wrappers/order_validator_wrapper';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { contractWrappersPrivateNetworkConfigSchema } from './schemas/contract_wrappers_private_network_config_schema';
 import { contractWrappersPublicNetworkConfigSchema } from './schemas/contract_wrappers_public_network_config_schema';
@@ -52,8 +53,12 @@ export class ContractWrappers {
      * An instance of the ForwarderWrapper class containing methods for interacting with any Forwarder smart contract.
      */
     public forwarder: ForwarderWrapper;
+    /**
+     * An instance of the OrderValidatorWrapper class containing methods for interacting with any OrderValidator smart contract.
+     */
+    public orderValidator: OrderValidatorWrapper;
 
-    private _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new ContractWrappers instance.
      * @param   provider    The Provider instance you would like the 0x.js library to use for interacting with
@@ -106,6 +111,8 @@ export class ContractWrappers {
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
             config.networkId,
+            this.erc20Token,
+            this.erc721Token,
             config.exchangeContractAddress,
             config.zrxContractAddress,
             blockPollingIntervalMs,
@@ -116,6 +123,7 @@ export class ContractWrappers {
             config.forwarderContractAddress,
             config.zrxContractAddress,
         );
+        this.orderValidator = new OrderValidatorWrapper(this._web3Wrapper, config.networkId);
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all

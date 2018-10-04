@@ -15,25 +15,39 @@ import * as _ from 'lodash';
 import { addressUtils } from './address_utils';
 import { BigNumber } from './configured_bignumber';
 
+/**
+ * AbiDecoder allows you to decode event logs given a set of supplied contract ABI's. It takes the contract's event
+ * signature from the ABI and attempts to decode the logs using it.
+ */
 export class AbiDecoder {
-    private readonly _methodIds: { [signatureHash: string]: EventAbi } = {};
+    private readonly _methodIds: { [signatureHash: string]: { [numIndexedArgs: number]: EventAbi } } = {};
+    /**
+     * Instantiate an AbiDecoder
+     * @param abiArrays An array of contract ABI's
+     * @return AbiDecoder instance
+     */
     constructor(abiArrays: AbiDefinition[][]) {
         _.forEach(abiArrays, this.addABI.bind(this));
     }
-    // This method can only decode logs from the 0x & ERC20 smart contracts
+    /**
+     * Attempt to decode a log given the ABI's the AbiDecoder knows about.
+     * @param log The log to attempt to decode
+     * @return The decoded log if the requisite ABI was available. Otherwise the log unaltered.
+     */
     public tryToDecodeLogOrNoop<ArgsType extends DecodedLogArgs>(log: LogEntry): LogWithDecodedArgs<ArgsType> | RawLog {
         const methodId = log.topics[0];
-        const event = this._methodIds[methodId];
-        if (_.isUndefined(event)) {
+        const numIndexedArgs = log.topics.length - 1;
+        if (_.isUndefined(this._methodIds[methodId]) || _.isUndefined(this._methodIds[methodId][numIndexedArgs])) {
             return log;
         }
+        const event = this._methodIds[methodId][numIndexedArgs];
         const ethersInterface = new ethers.Interface([event]);
         const decodedParams: DecodedLogArgs = {};
         let topicsIndex = 1;
 
         let decodedData: any[];
         try {
-            decodedData = ethersInterface.events[event.name].parse(log.data);
+            decodedData = ethersInterface.events[event.name].decode(log.data);
         } catch (error) {
             if (error.code === ethers.errors.INVALID_ARGUMENT) {
                 // Because we index events by Method ID, and Method IDs are derived from the method
@@ -45,7 +59,6 @@ export class AbiDecoder {
             }
             throw error;
         }
-
         let didFailToDecode = false;
         _.forEach(event.inputs, (param: EventParameter, i: number) => {
             // Indexed parameters are stored in topics. Non-indexed ones in decodedData
@@ -75,6 +88,10 @@ export class AbiDecoder {
             };
         }
     }
+    /**
+     * Add additional ABI definitions to the AbiDecoder
+     * @param abiArray An array of ABI definitions to add to the AbiDecoder
+     */
     public addABI(abiArray: AbiDefinition[]): void {
         if (_.isUndefined(abiArray)) {
             return;
@@ -82,8 +99,12 @@ export class AbiDecoder {
         const ethersInterface = new ethers.Interface(abiArray);
         _.map(abiArray, (abi: AbiDefinition) => {
             if (abi.type === AbiType.Event) {
-                const topic = ethersInterface.events[abi.name].topics[0];
-                this._methodIds[topic] = abi;
+                const topic = ethersInterface.events[abi.name].topic;
+                const numIndexedArgs = _.reduce(abi.inputs, (sum, input) => (input.indexed ? sum + 1 : sum), 0);
+                this._methodIds[topic] = {
+                    ...this._methodIds[topic],
+                    [numIndexedArgs]: abi,
+                };
             }
         });
     }

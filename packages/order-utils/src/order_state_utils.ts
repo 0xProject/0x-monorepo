@@ -11,6 +11,7 @@ import { BigNumber } from '@0xproject/utils';
 import { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
 import { orderHashUtils } from './order_hash';
+import { OrderValidationUtils } from './order_validation_utils';
 import { RemainingFillableCalculator } from './remaining_fillable_calculator';
 import { utils } from './utils';
 
@@ -22,9 +23,16 @@ interface SidedOrderRelevantState {
     traderFeeProxyAllowance: BigNumber;
     filledTakerAssetAmount: BigNumber;
     remainingFillableAssetAmount: BigNumber;
+    isOrderCancelled: boolean;
 }
-
-const ACCEPTABLE_RELATIVE_ROUNDING_ERROR = 0.0001;
+interface OrderValidResult {
+    isValid: true;
+}
+interface OrderInvalidResult {
+    isValid: false;
+    error: ExchangeContractErrs;
+}
+type OrderValidationResult = OrderValidResult | OrderInvalidResult;
 
 export class OrderStateUtils {
     private readonly _balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher;
@@ -32,65 +40,65 @@ export class OrderStateUtils {
     private static _validateIfOrderIsValid(
         signedOrder: SignedOrder,
         sidedOrderRelevantState: SidedOrderRelevantState,
-    ): void {
+    ): OrderValidationResult {
         const isMakerSide = sidedOrderRelevantState.isMakerSide;
+        if (sidedOrderRelevantState.isOrderCancelled) {
+            return { isValid: false, error: ExchangeContractErrs.OrderCancelled };
+        }
         const availableTakerAssetAmount = signedOrder.takerAssetAmount.minus(
             sidedOrderRelevantState.filledTakerAssetAmount,
         );
         if (availableTakerAssetAmount.eq(0)) {
-            throw new Error(ExchangeContractErrs.OrderRemainingFillAmountZero);
+            return { isValid: false, error: ExchangeContractErrs.OrderRemainingFillAmountZero };
         }
 
         if (sidedOrderRelevantState.traderBalance.eq(0)) {
-            throw new Error(
-                isMakerSide
-                    ? ExchangeContractErrs.InsufficientMakerBalance
-                    : ExchangeContractErrs.InsufficientTakerBalance,
-            );
+            const error = isMakerSide
+                ? ExchangeContractErrs.InsufficientMakerBalance
+                : ExchangeContractErrs.InsufficientTakerBalance;
+            return { isValid: false, error };
         }
         if (sidedOrderRelevantState.traderProxyAllowance.eq(0)) {
-            throw new Error(
-                isMakerSide
-                    ? ExchangeContractErrs.InsufficientMakerAllowance
-                    : ExchangeContractErrs.InsufficientTakerAllowance,
-            );
+            const error = isMakerSide
+                ? ExchangeContractErrs.InsufficientMakerAllowance
+                : ExchangeContractErrs.InsufficientTakerAllowance;
+            return { isValid: false, error };
         }
         if (!signedOrder.makerFee.eq(0)) {
             if (sidedOrderRelevantState.traderFeeBalance.eq(0)) {
-                throw new Error(
-                    isMakerSide
-                        ? ExchangeContractErrs.InsufficientMakerFeeBalance
-                        : ExchangeContractErrs.InsufficientTakerFeeBalance,
-                );
+                const error = isMakerSide
+                    ? ExchangeContractErrs.InsufficientMakerFeeBalance
+                    : ExchangeContractErrs.InsufficientTakerFeeBalance;
+                return { isValid: false, error };
             }
             if (sidedOrderRelevantState.traderFeeProxyAllowance.eq(0)) {
-                throw new Error(
-                    isMakerSide
-                        ? ExchangeContractErrs.InsufficientMakerFeeAllowance
-                        : ExchangeContractErrs.InsufficientTakerFeeAllowance,
-                );
+                const error = isMakerSide
+                    ? ExchangeContractErrs.InsufficientMakerFeeAllowance
+                    : ExchangeContractErrs.InsufficientTakerFeeAllowance;
+                return { isValid: false, error };
             }
         }
-
-        let minFillableTakerAssetAmountWithinNoRoundingErrorRange;
-        if (isMakerSide) {
-            minFillableTakerAssetAmountWithinNoRoundingErrorRange = signedOrder.takerAssetAmount
-                .dividedBy(ACCEPTABLE_RELATIVE_ROUNDING_ERROR)
-                .dividedBy(signedOrder.makerAssetAmount);
-        } else {
-            minFillableTakerAssetAmountWithinNoRoundingErrorRange = signedOrder.makerAssetAmount
-                .dividedBy(ACCEPTABLE_RELATIVE_ROUNDING_ERROR)
-                .dividedBy(signedOrder.takerAssetAmount);
+        const remainingTakerAssetAmount = signedOrder.takerAssetAmount.minus(
+            sidedOrderRelevantState.filledTakerAssetAmount,
+        );
+        const isRoundingError = OrderValidationUtils.isRoundingErrorFloor(
+            remainingTakerAssetAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerAssetAmount,
+        );
+        if (isRoundingError) {
+            return { isValid: false, error: ExchangeContractErrs.OrderFillRoundingError };
         }
-
-        if (
-            sidedOrderRelevantState.remainingFillableAssetAmount.lessThan(
-                minFillableTakerAssetAmountWithinNoRoundingErrorRange,
-            )
-        ) {
-            throw new Error(ExchangeContractErrs.OrderFillRoundingError);
-        }
+        return { isValid: true };
     }
+    /**
+     * Instantiate OrderStateUtils
+     * @param balanceAndProxyAllowanceFetcher A class that is capable of fetching balances
+     * and proxyAllowances for Ethereum addresses. It must implement AbstractBalanceAndProxyAllowanceFetcher
+     * @param orderFilledCancelledFetcher A class that is capable of fetching whether an order
+     * is cancelled and how much of it has been filled. It must implement AbstractOrderFilledCancelledFetcher
+     * @return Instance of OrderStateUtils
+     */
     constructor(
         balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher,
         orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher,
@@ -98,9 +106,18 @@ export class OrderStateUtils {
         this._balanceAndProxyAllowanceFetcher = balanceAndProxyAllowanceFetcher;
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
     }
-    public async getOpenOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
+    /**
+     * Get the orderState for an "open" order (i.e where takerAddress=NULL_ADDRESS)
+     * This method will only check the maker's balance/allowance to calculate the
+     * OrderState.
+     * @param signedOrder The order of interest
+     * @return State relevant to the signedOrder, as well as whether the signedOrder is "valid".
+     * Validity is defined as a non-zero amount of the order can still be filled.
+     */
+    public async getOpenOrderStateAsync(signedOrder: SignedOrder, transactionHash?: string): Promise<OrderState> {
         const orderRelevantState = await this.getOpenOrderRelevantStateAsync(signedOrder);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+        const isOrderCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(orderHash);
         const sidedOrderRelevantState = {
             isMakerSide: true,
             traderBalance: orderRelevantState.makerBalance,
@@ -109,24 +126,32 @@ export class OrderStateUtils {
             traderFeeProxyAllowance: orderRelevantState.makerFeeProxyAllowance,
             filledTakerAssetAmount: orderRelevantState.filledTakerAssetAmount,
             remainingFillableAssetAmount: orderRelevantState.remainingFillableMakerAssetAmount,
+            isOrderCancelled,
         };
-        try {
-            OrderStateUtils._validateIfOrderIsValid(signedOrder, sidedOrderRelevantState);
+        const orderValidationResult = OrderStateUtils._validateIfOrderIsValid(signedOrder, sidedOrderRelevantState);
+        if (orderValidationResult.isValid) {
             const orderState: OrderStateValid = {
                 isValid: true,
                 orderHash,
                 orderRelevantState,
+                transactionHash,
             };
             return orderState;
-        } catch (err) {
+        } else {
             const orderState: OrderStateInvalid = {
                 isValid: false,
                 orderHash,
-                error: err.message,
+                error: orderValidationResult.error,
+                transactionHash,
             };
             return orderState;
         }
     }
+    /**
+     * Get state relevant to an order (i.e makerBalance, makerAllowance, filledTakerAssetAmount, etc...
+     * @param signedOrder Order of interest
+     * @return An instance of OrderRelevantState
+     */
     public async getOpenOrderRelevantStateAsync(signedOrder: SignedOrder): Promise<OrderRelevantState> {
         const isMaker = true;
         const sidedOrderRelevantState = await this._getSidedOrderRelevantStateAsync(
@@ -149,6 +174,12 @@ export class OrderStateUtils {
         };
         return orderRelevantState;
     }
+    /**
+     * Get the max amount of the supplied order's takerAmount that could still be filled
+     * @param signedOrder Order of interest
+     * @param takerAddress Hypothetical taker of the order
+     * @return fillableTakerAssetAmount
+     */
     public async getMaxFillableTakerAssetAmountAsync(
         signedOrder: SignedOrder,
         takerAddress: string,
@@ -162,7 +193,7 @@ export class OrderStateUtils {
         );
         const remainingFillableTakerAssetAmountGivenMakersStatus = signedOrder.makerAssetAmount.eq(0)
             ? new BigNumber(0)
-            : utils.getPartialAmount(
+            : utils.getPartialAmountFloor(
                   orderRelevantMakerState.remainingFillableAssetAmount,
                   signedOrder.makerAssetAmount,
                   signedOrder.takerAssetAmount,
@@ -180,32 +211,6 @@ export class OrderStateUtils {
         ]);
 
         return fillableTakerAssetAmount;
-    }
-    public async getMaxFillableTakerAssetAmountForFailingOrderAsync(
-        signedOrder: SignedOrder,
-        takerAddress: string,
-    ): Promise<BigNumber> {
-        // Get min of taker balance & allowance
-        const takerAssetBalanceOfTaker = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
-            signedOrder.takerAssetData,
-            takerAddress,
-        );
-        const takerAssetAllowanceOfTaker = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
-            signedOrder.takerAssetData,
-            takerAddress,
-        );
-        const minTakerAssetAmount = BigNumber.min([takerAssetBalanceOfTaker, takerAssetAllowanceOfTaker]);
-
-        // get remainingFillAmount
-        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        const filledTakerAssetAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
-        const remainingFillTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerAssetAmount);
-
-        if (minTakerAssetAmount.gte(remainingFillTakerAssetAmount)) {
-            return remainingFillTakerAssetAmount;
-        } else {
-            return minTakerAssetAmount;
-        }
     }
     private async _getSidedOrderRelevantStateAsync(
         isMakerSide: boolean,
@@ -278,6 +283,7 @@ export class OrderStateUtils {
             traderFeeProxyAllowance,
             filledTakerAssetAmount,
             remainingFillableAssetAmount,
+            isOrderCancelled,
         };
         return sidedOrderRelevantState;
     }

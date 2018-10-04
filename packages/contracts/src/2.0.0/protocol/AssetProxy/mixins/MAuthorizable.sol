@@ -24,7 +24,6 @@ import "../interfaces/IAuthorizable.sol";
 contract MAuthorizable is
     IAuthorizable
 {
-
     // Event logged when a new address is authorized.
     event AuthorizedAddressAdded(
         address indexed target,

@@ -31,7 +31,6 @@ contract TestLibs is
     LibFillResults,
     LibAbiEncoder
 {
-
     function publicAbiEncodeFillOrder(
         Order memory order,
         uint256 takerAssetFillAmount,
@@ -49,7 +48,7 @@ contract TestLibs is
         return fillOrderCalldata;
     }
 
-    function publicGetPartialAmount(
+    function publicGetPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -58,7 +57,7 @@ contract TestLibs is
         pure
         returns (uint256 partialAmount)
     {
-        partialAmount = getPartialAmount(
+        partialAmount = getPartialAmountFloor(
             numerator,
             denominator,
             target
@@ -66,7 +65,24 @@ contract TestLibs is
         return partialAmount;
     }
 
-    function publicIsRoundingError(
+    function publicGetPartialAmountCeil(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        public
+        pure
+        returns (uint256 partialAmount)
+    {
+        partialAmount = getPartialAmountCeil(
+            numerator,
+            denominator,
+            target
+        );
+        return partialAmount;
+    }
+
+    function publicIsRoundingErrorFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -75,7 +91,24 @@ contract TestLibs is
         pure
         returns (bool isError)
     {
-        isError = isRoundingError(
+        isError = isRoundingErrorFloor(
+            numerator,
+            denominator,
+            target
+        );
+        return isError;
+    }
+
+    function publicIsRoundingErrorCeil(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        public
+        pure
+        returns (bool isError)
+    {
+        isError = isRoundingErrorCeil(
             numerator,
             denominator,
             target

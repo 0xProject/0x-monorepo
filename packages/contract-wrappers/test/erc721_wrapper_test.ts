@@ -11,12 +11,12 @@ import {
     BlockRange,
     ContractWrappers,
     ContractWrappersError,
-    DecodedLogEvent,
     ERC721TokenApprovalEventArgs,
     ERC721TokenApprovalForAllEventArgs,
     ERC721TokenEvents,
     ERC721TokenTransferEventArgs,
 } from '../src';
+import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
@@ -229,11 +229,17 @@ describe('ERC721Wrapper', () => {
         it('should set the proxy approval', async () => {
             const tokenId = await tokenUtils.mintDummyERC721Async(tokenAddress, ownerAddress);
 
-            const approvalBeforeSet = await contractWrappers.erc721Token.isProxyApprovedAsync(tokenAddress, tokenId);
-            expect(approvalBeforeSet).to.be.false();
+            const isProxyApprovedBeforeSet = await contractWrappers.erc721Token.isProxyApprovedAsync(
+                tokenAddress,
+                tokenId,
+            );
+            expect(isProxyApprovedBeforeSet).to.be.false();
             await contractWrappers.erc721Token.setProxyApprovalAsync(tokenAddress, tokenId);
-            const approvalAfterSet = await contractWrappers.erc721Token.isProxyApprovedAsync(tokenAddress, tokenId);
-            expect(approvalAfterSet).to.be.true();
+            const isProxyApprovedAfterSet = await contractWrappers.erc721Token.isProxyApprovedAsync(
+                tokenAddress,
+                tokenId,
+            );
+            expect(isProxyApprovedAfterSet).to.be.true();
         });
     });
     describe('#subscribe', () => {
@@ -357,7 +363,6 @@ describe('ERC721Wrapper', () => {
                 );
                 contractWrappers.erc721Token.unsubscribe(subscriptionToken);
 
-                const tokenId = await tokenUtils.mintDummyERC721Async(tokenAddress, ownerAddress);
                 const isApproved = true;
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await contractWrappers.erc721Token.setApprovalForAllAsync(
@@ -373,15 +378,11 @@ describe('ERC721Wrapper', () => {
         });
     });
     describe('#getLogsAsync', () => {
-        let tokenTransferProxyAddress: string;
         const blockRange: BlockRange = {
             fromBlock: 0,
             toBlock: BlockParamLiteral.Latest,
         };
         let txHash: string;
-        before(() => {
-            tokenTransferProxyAddress = contractWrappers.erc721Proxy.getContractAddress();
-        });
         it('should get logs with decoded args emitted by ApprovalForAll', async () => {
             const isApprovedForAll = true;
             txHash = await contractWrappers.erc721Token.setApprovalForAllAsync(

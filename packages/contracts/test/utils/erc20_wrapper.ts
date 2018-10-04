@@ -20,6 +20,13 @@ export class ERC20Wrapper {
     private readonly _dummyTokenContracts: DummyERC20TokenContract[];
     private _proxyContract?: ERC20ProxyContract;
     private _proxyIdIfExists?: string;
+    /**
+     * Instanitates an ERC20Wrapper
+     * @param provider Web3 provider to use for all JSON RPC requests
+     * @param tokenOwnerAddresses Addresses that we want to endow as owners for dummy ERC20 tokens
+     * @param contractOwnerAddress Desired owner of the contract
+     * Instance of ERC20Wrapper
+     */
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._dummyTokenContracts = [];
         this._web3Wrapper = new Web3Wrapper(provider);

@@ -1,4 +1,4 @@
-import { ECSignature } from '@0xproject/types';
+import { ObjectMap, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
 import * as React from 'react';
@@ -56,28 +56,12 @@ export interface OrderToken {
     decimals: number;
 }
 
-export interface SignedOrder {
-    maker: string;
-    taker: string;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
-    makerFee: string;
-    takerFee: string;
-    makerTokenAmount: string;
-    takerTokenAmount: string;
-    expirationUnixTimestampSec: string;
-    feeRecipient: string;
-    salt: string;
-    ecSignature: ECSignature;
-    exchangeContractAddress: string;
-}
-
 export interface OrderMetadata {
     makerToken: OrderToken;
     takerToken: OrderToken;
 }
 
-export interface Order {
+export interface PortalOrder {
     signedOrder: SignedOrder;
     metadata: OrderMetadata;
 }
@@ -120,7 +104,7 @@ export enum ActionTypes {
     UpdateChosenAssetTokenAddress = 'UPDATE_CHOSEN_ASSET_TOKEN_ADDRESS',
     UpdateOrderTakerAddress = 'UPDATE_ORDER_TAKER_ADDRESS',
     UpdateOrderSalt = 'UPDATE_ORDER_SALT',
-    UpdateOrderECSignature = 'UPDATE_ORDER_EC_SIGNATURE',
+    UpdateOrderSignature = 'UPDATE_ORDER_SIGNATURE',
     UpdateTokenByAddress = 'UPDATE_TOKEN_BY_ADDRESS',
     RemoveTokenFromTokenByAddress = 'REMOVE_TOKEN_FROM_TOKEN_BY_ADDRESS',
     ForceTokenStateRefetch = 'FORCE_TOKEN_STATE_REFETCH',
@@ -371,6 +355,8 @@ export enum WebsitePaths {
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
     Web3Wrapper = '/docs/web3-wrapper',
+    ContractWrappers = '/docs/contract-wrappers',
+    OrderWatcher = '/docs/order-watcher',
     SolCompiler = '/docs/sol-compiler',
     JSONSchemas = '/docs/json-schemas',
     SolCov = '/docs/sol-cov',
@@ -391,6 +377,8 @@ export enum DocPackages {
     Subproviders = 'SUBPROVIDERS',
     OrderUtils = 'ORDER_UTILS',
     EthereumTypes = 'ETHEREUM_TYPES',
+    ContractWrappers = 'CONTRACT_WRAPPERS',
+    OrderWatcher = 'ORDER_WATCHER',
 }
 
 export enum Key {
@@ -407,10 +395,11 @@ export enum Key {
     TraditionalAssets = 'TRADITIONAL_ASSETS',
     DigitalGoods = 'DIGITAL_GOODS',
     OffChainOrderRelay = 'OFFCHAIN_ORDER_RELAY',
-    OonChainSettlement = 'OONCHAIN_SETTLEMENT',
+    OnChainSettlement = 'ONCHAIN_SETTLEMENT',
     OffChainOnChainDescription = 'OFFCHAIN_ONCHAIN_DESCRIPTION',
     RelayersHeader = 'RELAYERS_HEADER',
     BenefitsHeader = 'BENEFITS_HEADER',
+    UseCasesHeader = 'USE_CASES_HEADER',
     BenefitOneTitle = 'BENEFIT_ONE_TITLE',
     BenefitOneDescription = 'BENEFIT_ONE_DESCRIPTION',
     BenefitTwoTitle = 'BENEFIT_TWO_TITLE',
@@ -432,6 +421,10 @@ export enum Key {
     DecentralizedLoansDescription = 'DECENTRALIZED_LOANS_DESCRIPTION',
     FundManagement = 'FUND_MANAGEMENT',
     FundManagementDescription = 'FUND_MANAGEMENT_DESCRIPTION',
+    GamingAndCollectables = 'GAMING_AND_COLLECTABLES',
+    GamingAndCollectablesDescription = 'GAMING_AND_COLLECTABLES_DESCRIPTION',
+    OrderBooks = 'ORDER_BOOKS',
+    OrderBooksDescription = 'ORDER_BOOKS_DESCRIPTION',
     FinalCallToAction = 'FINAL_CALL_TO_ACTION',
     Documentation = 'DOCUMENTATION',
     Community = 'COMMUNITY',
@@ -444,6 +437,9 @@ export enum Key {
     SolCov = 'SOL_COV',
     EthereumTypes = 'ETHEREUM_TYPES',
     Subproviders = 'SUBPROVIDERS',
+    ZeroExJs = '0X_JS',
+    ContractWrappers = 'CONTRACT_WRAPPERS',
+    OrderWatcher = 'ORDER_WATCHER',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',
@@ -461,6 +457,7 @@ export enum Key {
     Home = 'HOME',
     RocketChat = 'ROCKETCHAT',
     TradeCallToAction = 'TRADE_CALL_TO_ACTION',
+    OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
 }
 
 export enum SmartContractDocSections {
@@ -494,7 +491,7 @@ export enum Providers {
     Parity = 'PARITY',
     Metamask = 'METAMASK',
     Mist = 'MIST',
-    Toshi = 'TOSHI',
+    CoinbaseWallet = 'COINBASE_WALLET',
     Cipher = 'CIPHER',
 }
 
@@ -521,10 +518,6 @@ export interface OutdatedWrappedEtherByNetworkId {
 }
 
 export type ItemByAddress<T> = ObjectMap<T>;
-
-export interface ObjectMap<T> {
-    [key: string]: T;
-}
 
 export type TokenStateByAddress = ItemByAddress<TokenState>;
 

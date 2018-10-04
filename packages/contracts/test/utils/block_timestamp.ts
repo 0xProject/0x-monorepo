@@ -35,6 +35,9 @@ export async function increaseTimeAndMineBlockAsync(seconds: number): Promise<nu
  * @returns a new Promise which will resolve with the timestamp in seconds.
  */
 export async function getLatestBlockTimestampAsync(): Promise<number> {
-    const currentBlock = await web3Wrapper.getBlockAsync('latest');
-    return currentBlock.timestamp;
+    const currentBlockIfExists = await web3Wrapper.getBlockIfExistsAsync('latest');
+    if (_.isUndefined(currentBlockIfExists)) {
+        throw new Error(`Unable to fetch latest block.`);
+    }
+    return currentBlockIfExists.timestamp;
 }

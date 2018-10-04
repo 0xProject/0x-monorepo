@@ -2,7 +2,6 @@ import { configs } from './configs';
 
 const productionRpcUrls = {
     '3': `https://ropsten.infura.io/${configs.INFURA_API_KEY}`,
-    '4': `https://rinkeby.infura.io/${configs.INFURA_API_KEY}`,
     '42': `https://kovan.infura.io/${configs.INFURA_API_KEY}`,
 };
 

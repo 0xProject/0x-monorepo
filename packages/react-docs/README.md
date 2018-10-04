@@ -1,6 +1,8 @@
 ## @0xproject/react-docs
 
-A full-page React component for rendering beautiful documentation for Solidity and Typescript code generated with [TypeDoc](http://typedoc.org/) or [Doxity](https://github.com/0xproject/doxity). See a [live example](http://react-docs-example.s3-website-us-east-1.amazonaws.com/).
+#### WARNING: Alpha software. Expect things to break when trying to use.
+
+A full-page React component for rendering beautiful documentation for Solidity and Typescript code generated with [TypeDoc](http://typedoc.org/) or [sol-doc](https://github.com/0xProject/0x-monorepo/tree/development/packages/sol-doc).
 
 <div style="text-align: center;">
 <img src="https://s3.eu-west-2.amazonaws.com/0x-wiki-images/screenshot.png" style="padding-bottom: 20px; padding-top: 20px;" width="80%" />
@@ -27,8 +29,6 @@ yarn add @0xproject/react-docs
 
 ## Usage
 
-View the [live example](http://react-docs-example.s3-website-us-east-1.amazonaws.com/) that renders the [@0xproject/web3-wrapper](https://github.com/0xProject/0x-monorepo/tree/development/packages/web3-wrapper) Typescript package. It's source code is in the [react-docs-example](https://github.com/0xProject/0x-monorepo/tree/development/packages/react-docs-example) 0x monorepo subpackage.
-
 This package exposes both a single `Documentation` react component that will render a docs page, as well as all of it's sub-components in case someone wants to build their own layout.
 
 Currently this package still has some external dependencies outside of the `Documentation` component, so please start your project off by copying the [react-docs-example](https://github.com/0xProject/0x-monorepo/tree/development/packages/react-docs-example) directory and modifying it there. If you need changes in the [react-docs](https://github.com/0xProject/0x-monorepo/tree/development/packages/react-docs) package, fork the 0x monorepo, make the required changes and submit a PR. Until we merge it, you can have your project depend on your own custom fork.
@@ -47,7 +47,7 @@ Feel free to contribute to these improvements!
 
 *   Allow user to pass in styling for all major elements similar to [Material-UI](http://www.material-ui.com/).
 *   Allow user to define an alternative font and have it change everywhere.
-*   Add source links to Solidity docs (currently unsupported by Doxity).
+*   Add source links to Solidity docs (currently unsupported by solc, which underlies sol-doc).
 
 ## Contributing
 

@@ -3,7 +3,6 @@ import { Link as ScrollLink } from 'react-scroll';
 
 import { HeaderSizes, Styles } from '../types';
 import { constants } from '../utils/constants';
-import { utils } from '../utils/utils';
 
 const headerSizeToScrollOffset: { [headerSize: string]: number } = {
     h2: -20,
@@ -69,13 +68,13 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
                 </div>
                 <ScrollLink
                     to={this.props.id}
+                    hashSpy={true}
                     offset={headerSizeToScrollOffset[this.props.headerSize]}
                     duration={constants.DOCS_SCROLL_DURATION_MS}
                     containerId={constants.DOCS_CONTAINER_ID}
                 >
                     <i
                         className="zmdi zmdi-link"
-                        onClick={utils.setUrlHash.bind(utils, this.props.id)}
                         style={{ ...styles.anchor, opacity }}
                         onMouseOver={this._setHoverState.bind(this, true)}
                         onMouseOut={this._setHoverState.bind(this, false)}

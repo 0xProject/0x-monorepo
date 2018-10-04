@@ -1,18 +1,23 @@
-import { ContractArtifact } from '@0xproject/sol-compiler';
+import { ContractArtifact } from 'ethereum-types';
 
 import * as AssetProxyOwner from '../../artifacts/AssetProxyOwner.json';
 import * as DummyERC20Token from '../../artifacts/DummyERC20Token.json';
 import * as DummyERC721Receiver from '../../artifacts/DummyERC721Receiver.json';
 import * as DummyERC721Token from '../../artifacts/DummyERC721Token.json';
+import * as DummyMultipleReturnERC20Token from '../../artifacts/DummyMultipleReturnERC20Token.json';
+import * as DummyNoReturnERC20Token from '../../artifacts/DummyNoReturnERC20Token.json';
 import * as ERC20Proxy from '../../artifacts/ERC20Proxy.json';
 import * as ERC721Proxy from '../../artifacts/ERC721Proxy.json';
 import * as Exchange from '../../artifacts/Exchange.json';
 import * as ExchangeWrapper from '../../artifacts/ExchangeWrapper.json';
 import * as Forwarder from '../../artifacts/Forwarder.json';
 import * as IAssetProxy from '../../artifacts/IAssetProxy.json';
+import * as InvalidERC721Receiver from '../../artifacts/InvalidERC721Receiver.json';
 import * as MixinAuthorizable from '../../artifacts/MixinAuthorizable.json';
 import * as MultiSigWallet from '../../artifacts/MultiSigWallet.json';
 import * as MultiSigWalletWithTimeLock from '../../artifacts/MultiSigWalletWithTimeLock.json';
+import * as OrderValidator from '../../artifacts/OrderValidator.json';
+import * as ReentrantERC20Token from '../../artifacts/ReentrantERC20Token.json';
 import * as TestAssetProxyDispatcher from '../../artifacts/TestAssetProxyDispatcher.json';
 import * as TestAssetProxyOwner from '../../artifacts/TestAssetProxyOwner.json';
 import * as TestConstants from '../../artifacts/TestConstants.json';
@@ -20,6 +25,7 @@ import * as TestExchangeInternals from '../../artifacts/TestExchangeInternals.js
 import * as TestLibBytes from '../../artifacts/TestLibBytes.json';
 import * as TestLibs from '../../artifacts/TestLibs.json';
 import * as TestSignatureValidator from '../../artifacts/TestSignatureValidator.json';
+import * as TestStaticCallReceiver from '../../artifacts/TestStaticCallReceiver.json';
 import * as TokenRegistry from '../../artifacts/TokenRegistry.json';
 import * as Validator from '../../artifacts/Validator.json';
 import * as Wallet from '../../artifacts/Wallet.json';
@@ -32,6 +38,8 @@ export const artifacts = {
     DummyERC20Token: (DummyERC20Token as any) as ContractArtifact,
     DummyERC721Receiver: (DummyERC721Receiver as any) as ContractArtifact,
     DummyERC721Token: (DummyERC721Token as any) as ContractArtifact,
+    DummyMultipleReturnERC20Token: (DummyMultipleReturnERC20Token as any) as ContractArtifact,
+    DummyNoReturnERC20Token: (DummyNoReturnERC20Token as any) as ContractArtifact,
     ERC20Proxy: (ERC20Proxy as any) as ContractArtifact,
     ERC721Proxy: (ERC721Proxy as any) as ContractArtifact,
     Exchange: (Exchange as any) as ContractArtifact,
@@ -39,9 +47,12 @@ export const artifacts = {
     EtherToken: (EtherToken as any) as ContractArtifact,
     Forwarder: (Forwarder as any) as ContractArtifact,
     IAssetProxy: (IAssetProxy as any) as ContractArtifact,
+    InvalidERC721Receiver: (InvalidERC721Receiver as any) as ContractArtifact,
     MixinAuthorizable: (MixinAuthorizable as any) as ContractArtifact,
     MultiSigWallet: (MultiSigWallet as any) as ContractArtifact,
     MultiSigWalletWithTimeLock: (MultiSigWalletWithTimeLock as any) as ContractArtifact,
+    OrderValidator: (OrderValidator as any) as ContractArtifact,
+    ReentrantERC20Token: (ReentrantERC20Token as any) as ContractArtifact,
     TestAssetProxyOwner: (TestAssetProxyOwner as any) as ContractArtifact,
     TestAssetProxyDispatcher: (TestAssetProxyDispatcher as any) as ContractArtifact,
     TestConstants: (TestConstants as any) as ContractArtifact,
@@ -49,6 +60,7 @@ export const artifacts = {
     TestLibs: (TestLibs as any) as ContractArtifact,
     TestExchangeInternals: (TestExchangeInternals as any) as ContractArtifact,
     TestSignatureValidator: (TestSignatureValidator as any) as ContractArtifact,
+    TestStaticCallReceiver: (TestStaticCallReceiver as any) as ContractArtifact,
     Validator: (Validator as any) as ContractArtifact,
     Wallet: (Wallet as any) as ContractArtifact,
     TokenRegistry: (TokenRegistry as any) as ContractArtifact,

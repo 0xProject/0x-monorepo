@@ -82,7 +82,7 @@ const teamRow3: ProfileInfo[] = [
         name: 'Brandon Millman',
         title: 'Senior Engineer',
         description: `Full-stack engineer. Previously senior software engineer at \
-                      Twitter. Electrical and Computer Engineering at Duke.`,
+                      Twitter. Computer Science and Electrical Engineering at Duke.`,
         image: '/images/team/brandon.png',
         linkedIn: 'https://www.linkedin.com/in/brandon-millman-b093a022/',
         github: 'https://github.com/BMillman19',
@@ -194,14 +194,53 @@ const teamRow6: ProfileInfo[] = [
 const teamRow7: ProfileInfo[] = [
     {
         name: 'Clay Robbins',
-        title: 'Business Development Lead',
+        title: 'Ecosystem Development Lead',
         description: `Growth & Business Development. Previously product and partnerships at Square. Economics at Dartmouth College.`,
         image: 'images/team/clay.png',
         linkedIn: 'https://www.linkedin.com/in/robbinsclay/',
     },
+    {
+        name: 'Matt Taylor',
+        title: 'Marketing Lead',
+        description: `Growth & Marketing. Previously marketing at Abra and Square. Economics and Philosophy at Claremont McKenna College.`,
+        image: 'images/team/matt.jpg',
+        linkedIn: 'https://www.linkedin.com/in/mattytay/',
+    },
+    {
+        name: 'Eugene Aumson',
+        title: 'Engineer',
+        description: `Developer Experience. Previously senior software engineer in foreign exchange applications at Bloomberg LP.`,
+        image: 'images/team/gene.jpg',
+        linkedIn: 'https://www.linkedin.com/in/aumson/',
+        github: 'https://github.com/feuGeneA',
+    },
 ];
 
-const advisors: ProfileInfo[] = [
+const teamRow8: ProfileInfo[] = [
+    {
+        name: 'Weijie Wu',
+        title: 'Research Fellow',
+        description: `Researching decentralized governance. Previously Researcher at Huawei and Assistant Professor at Shanghai Jiao Tong University. PhD in Computer Science at The Chinese University of Hong Kong.`,
+        image: 'images/team/weijie.png',
+        linkedIn: 'https://www.linkedin.com/in/weijiewu/',
+    },
+    {
+        name: 'Rahul Singireddy',
+        title: 'Relayer Success Manager',
+        description: `Previously community at Zeppelin, growth at Dharma, and cryptocurrency contributor at Forbes. Symbolic Systems at Stanford.`,
+        image: 'images/team/rahul.png',
+        linkedIn: 'https://www.linkedin.com/in/rahul-singireddy-3037908a/',
+    },
+    {
+        name: 'Jason Somensatto',
+        title: 'Strategic Legal Counsel',
+        description: `Legal. Previously head of blockchain and crypto practice at Orrick. JD from George Washington University and undergrad at UVA.`,
+        image: 'images/team/jason.png',
+        linkedIn: 'https://www.linkedin.com/in/jasonsomensatto/',
+    },
+];
+
+const advisors1: ProfileInfo[] = [
     {
         name: 'Fred Ehrsam',
         description: 'Co-founder of Coinbase. Previously FX trader at Goldman Sachs.',
@@ -225,6 +264,9 @@ const advisors: ProfileInfo[] = [
         github: 'https://github.com/joeykrug',
         angellist: 'https://angel.co/joeykrug',
     },
+];
+
+const advisors2: ProfileInfo[] = [
     {
         name: 'Linda Xie',
         description: 'Co-founder of Scalar Capital. Previously PM at Coinbase.',
@@ -232,6 +274,14 @@ const advisors: ProfileInfo[] = [
         linkedIn: 'https://www.linkedin.com/in/lindaxie/',
         medium: 'https://medium.com/@linda.xie',
         twitter: 'https://twitter.com/ljxie',
+    },
+    {
+        name: 'David Sacks',
+        description: 'General Partner at Craft Ventures. Original COO of PayPal. Founder of Yammer.',
+        image: '/images/advisors/david.png',
+        linkedIn: 'https://www.linkedin.com/in/davidoliversacks/',
+        medium: 'https://medium.com/@davidsacks',
+        twitter: 'https://twitter.com/DavidSacks',
     },
 ];
 
@@ -297,6 +347,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                         <div className="clearfix">{this._renderProfiles(teamRow5)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow6)}</div>
                         <div className="clearfix">{this._renderProfiles(teamRow7)}</div>
+                        <div className="clearfix">{this._renderProfiles(teamRow8)}</div>
                     </div>
                     <div className="pt3 pb2">
                         <div
@@ -309,7 +360,8 @@ export class About extends React.Component<AboutProps, AboutState> {
                         >
                             Advisors:
                         </div>
-                        <div className="clearfix">{this._renderProfiles(advisors)}</div>
+                        <div className="clearfix">{this._renderProfiles(advisors1)}</div>
+                        <div className="clearfix">{this._renderProfiles(advisors2)}</div>
                     </div>
                     <div className="mx-auto py4 sm-px3" style={{ maxWidth: 308 }}>
                         <div className="pb2" style={styles.weAreHiring}>

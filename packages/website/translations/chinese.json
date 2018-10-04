@@ -13,7 +13,7 @@
     "TRADITIONAL_ASSETS": "传统资产",
     "DIGITAL_GOODS": "数字商品",
     "OFFCHAIN_ORDER_RELAY": "链下订单中继",
-    "OONCHAIN_SETTLEMENT": "链上最终结算",
+    "ONCHAIN_SETTLEMENT": "链上最终结算",
     "OFFCHAIN_ONCHAIN_DESCRIPTION":
         "在 0x 协议中，所有订单都通过链下传输，大幅削减了损耗成本，能够有效避免区块链膨胀。任何人都可以构建中继方，由中继方广播订单，每促成一笔交易，就可以收取一笔交易费。",
     "RELAYERS_HEADER": "基于 0X 协议构建的中继方",
@@ -61,6 +61,9 @@
     "SOL_COV": "Solidity Coverage",
     "ETHEREUM_TYPES": "Ethereum Types",
     "SUBPROVIDERS": "Subproviders",
+    "CONTRACT_WRAPPERS": "Contract Wrappers",
+    "ORDER_WATCHER": "OrderWatcher",
+    "0x.js": "0x.js",
     "BLOG": "博客",
     "FORUM": "论坛",
     "CONNECT": "0x 连接",

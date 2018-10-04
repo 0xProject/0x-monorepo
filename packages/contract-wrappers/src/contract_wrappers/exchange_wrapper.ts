@@ -1,12 +1,19 @@
 import { schemas } from '@0xproject/json-schemas';
-import { assetDataUtils } from '@0xproject/order-utils';
+import {
+    assetDataUtils,
+    BalanceAndProxyAllowanceLazyStore,
+    ExchangeTransferSimulator,
+    OrderValidationUtils,
+} from '@0xproject/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
+import { BlockParamLiteral, ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../artifacts';
+import { AssetBalanceAndProxyAllowanceFetcher } from '../fetchers/asset_balance_and_proxy_allowance_fetcher';
+import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_fetcher';
 import { methodOptsSchema } from '../schemas/method_opts_schema';
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
@@ -17,12 +24,17 @@ import {
     IndexedFilterValues,
     MethodOpts,
     OrderInfo,
+    OrderStatus,
     OrderTransactionOpts,
+    ValidateOrderFillableOpts,
 } from '../types';
 import { assert } from '../utils/assert';
 import { decorators } from '../utils/decorators';
+import { TransactionEncoder } from '../utils/transaction_encoder';
 
 import { ContractWrapper } from './contract_wrapper';
+import { ERC20TokenWrapper } from './erc20_token_wrapper';
+import { ERC721TokenWrapper } from './erc721_token_wrapper';
 import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from './generated/exchange';
 
 /**
@@ -32,16 +44,32 @@ import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from './generated
 export class ExchangeWrapper extends ContractWrapper {
     public abi: ContractAbi = artifacts.Exchange.compilerOutput.abi;
     private _exchangeContractIfExists?: ExchangeContract;
+    private _erc721TokenWrapper: ERC721TokenWrapper;
+    private _erc20TokenWrapper: ERC20TokenWrapper;
     private _contractAddressIfExists?: string;
     private _zrxContractAddressIfExists?: string;
+    /**
+     * Instantiate ExchangeWrapper
+     * @param web3Wrapper Web3Wrapper instance to use
+     * @param networkId Desired networkId
+     * @param contractAddressIfExists The exchange contract address to use. This is usually pulled from
+     * the artifacts but needs to be specified when using with your own custom testnet.
+     * @param zrxContractAddressIfExists The ZRXToken contract address to use. This is usually pulled from
+     * the artifacts but needs to be specified when using with your own custom testnet.
+     * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
+     */
     constructor(
         web3Wrapper: Web3Wrapper,
         networkId: number,
+        erc20TokenWrapper: ERC20TokenWrapper,
+        erc721TokenWrapper: ERC721TokenWrapper,
         contractAddressIfExists?: string,
         zrxContractAddressIfExists?: string,
         blockPollingIntervalMs?: number,
     ) {
         super(web3Wrapper, networkId, blockPollingIntervalMs);
+        this._erc20TokenWrapper = erc20TokenWrapper;
+        this._erc721TokenWrapper = erc721TokenWrapper;
         this._contractAddressIfExists = contractAddressIfExists;
         this._zrxContractAddressIfExists = zrxContractAddressIfExists;
     }
@@ -665,6 +693,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param leftSignedOrder  First order to match.
      * @param rightSignedOrder Second order to match.
      * @param takerAddress     The address that sends the transaction and gets the spread.
+     * @param orderTransactionOpts Optional arguments this method accepts.
      * @return Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -723,6 +752,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param signerAddress Address that should have signed the given hash.
      * @param signature     Proof that the hash has been signed by signer.
      * @param senderAddress Address that should send the transaction.
+     * @param orderTransactionOpts Optional arguments this method accepts.
      * @returns Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -901,7 +931,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Cancel a given order.
      * @param   order           An object that conforms to the Order or SignedOrder interface. The order you would like to cancel.
-     * @param   transactionOpts Optional arguments this method accepts.
+     * @param   orderTransactionOpts Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -1072,6 +1102,64 @@ export class ExchangeWrapper extends ContractWrapper {
         return logs;
     }
     /**
+     * Validate if the supplied order is fillable, and throw if it isn't
+     * @param signedOrder SignedOrder of interest
+     * @param opts ValidateOrderFillableOpts options (e.g expectedFillTakerTokenAmount.
+     * If it isn't supplied, we check if the order is fillable for a non-zero amount)
+     */
+    public async validateOrderFillableOrThrowAsync(
+        signedOrder: SignedOrder,
+        opts: ValidateOrderFillableOpts = {},
+    ): Promise<void> {
+        const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
+            this._erc20TokenWrapper,
+            this._erc721TokenWrapper,
+            BlockParamLiteral.Latest,
+        );
+        const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+        const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
+
+        const expectedFillTakerTokenAmountIfExists = opts.expectedFillTakerTokenAmount;
+        const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        await orderValidationUtils.validateOrderFillableOrThrowAsync(
+            exchangeTradeSimulator,
+            signedOrder,
+            this.getZRXAssetData(),
+            expectedFillTakerTokenAmountIfExists,
+        );
+    }
+    /**
+     * Validate a call to FillOrder and throw if it wouldn't succeed
+     * @param signedOrder SignedOrder of interest
+     * @param fillTakerAssetAmount Amount we'd like to fill the order for
+     * @param takerAddress The taker of the order
+     */
+    public async validateFillOrderThrowIfInvalidAsync(
+        signedOrder: SignedOrder,
+        fillTakerAssetAmount: BigNumber,
+        takerAddress: string,
+    ): Promise<void> {
+        const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
+            this._erc20TokenWrapper,
+            this._erc721TokenWrapper,
+            BlockParamLiteral.Latest,
+        );
+        const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+        const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
+
+        const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
+            exchangeTradeSimulator,
+            this._web3Wrapper.getProvider(),
+            signedOrder,
+            fillTakerAssetAmount,
+            takerAddress,
+            this.getZRXAssetData(),
+        );
+    }
+    /**
      * Retrieves the Ethereum address of the Exchange contract deployed on the network
      * that the user-passed web3 provider is connected to.
      * @returns The Ethereum address of the Exchange contract being used.
@@ -1096,6 +1184,16 @@ export class ExchangeWrapper extends ContractWrapper {
         const zrxTokenAddress = this.getZRXTokenAddress();
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
         return zrxAssetData;
+    }
+    /**
+     * Returns a Transaction Encoder. Transaction messages exist for the purpose of calling methods on the Exchange contract
+     * in the context of another address.
+     * @return TransactionEncoder
+     */
+    public async transactionEncoderAsync(): Promise<TransactionEncoder> {
+        const exchangeInstance = await this._getExchangeContractAsync();
+        const encoder = new TransactionEncoder(exchangeInstance);
+        return encoder;
     }
     // tslint:disable:no-unused-variable
     private _invalidateContractInstances(): void {

@@ -1,11 +1,16 @@
 import { AnchorTitle, colors, HeaderSizes, Styles } from '@0xproject/react-shared';
+import {
+    Parameter,
+    SolidityMethod,
+    TypeDefinitionByName,
+    TypescriptFunction,
+    TypescriptMethod,
+} from '@0xproject/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptFunction, TypescriptMethod } from '../types';
 import { constants } from '../utils/constants';
-import { typeDocUtils } from '../utils/typedoc_utils';
 
 import { Comment } from './comment';
 import { Signature } from './signature';
@@ -27,7 +32,6 @@ export interface SignatureBlockState {
 const styles: Styles = {
     chip: {
         fontSize: 13,
-        backgroundColor: colors.lightBlueA700,
         color: colors.white,
         height: 11,
         borderRadius: 14,
@@ -44,10 +48,9 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
     }
     public render(): React.ReactNode {
         const method = this.props.method;
-        if (typeDocUtils.isPrivateOrProtectedProperty(method.name)) {
-            return null;
-        }
 
+        const isFallback = (method as SolidityMethod).isFallback;
+        const hasExclusivelyNamedParams = !_.isUndefined(_.find(method.parameters, p => !_.isEmpty(p.name)));
         return (
             <div
                 id={`${this.props.sectionName}-${method.name}`}
@@ -61,10 +64,11 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
                         {(method as TypescriptMethod).isStatic && this._renderChip('Static')}
                         {(method as SolidityMethod).isConstant && this._renderChip('Constant')}
                         {(method as SolidityMethod).isPayable && this._renderChip('Payable')}
+                        {isFallback && this._renderChip('Fallback', colors.lightGreenA700)}
                         <div style={{ lineHeight: 1.3 }}>
                             <AnchorTitle
                                 headerSize={HeaderSizes.H3}
-                                title={method.name}
+                                title={isFallback ? '' : method.name}
                                 id={`${this.props.sectionName}-${method.name}`}
                                 shouldShowAnchor={this.state.shouldShowAnchor}
                             />
@@ -81,6 +85,8 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
                         sectionName={this.props.sectionName}
                         typeDefinitionByName={this.props.typeDefinitionByName}
                         docsInfo={this.props.docsInfo}
+                        isInPopover={false}
+                        isFallback={isFallback}
                     />
                 </code>
                 {(method as TypescriptMethod).source && (
@@ -92,12 +98,13 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
                 )}
                 {method.comment && <Comment comment={method.comment} className="py2" />}
                 {method.parameters &&
-                    !_.isEmpty(method.parameters) && (
+                    !_.isEmpty(method.parameters) &&
+                    hasExclusivelyNamedParams && (
                         <div>
                             <h4 className="pb1 thin" style={{ borderBottom: '1px solid #e1e8ed' }}>
                                 ARGUMENTS
                             </h4>
-                            {this._renderParameterDescriptions(method.parameters)}
+                            {this._renderParameterDescriptions(method.parameters, method.name)}
                         </div>
                     )}
                 {method.returnComment && (
@@ -111,19 +118,19 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
             </div>
         );
     }
-    private _renderChip(text: string): React.ReactNode {
+    private _renderChip(text: string, backgroundColor: string = colors.lightBlueA700): React.ReactNode {
         return (
-            <div className="p1 mr1" style={styles.chip}>
+            <div className="p1 mr1" style={{ ...styles.chip, backgroundColor }}>
                 {text}
             </div>
         );
     }
-    private _renderParameterDescriptions(parameters: Parameter[]): React.ReactNode {
-        const descriptions = _.map(parameters, parameter => {
+    private _renderParameterDescriptions(parameters: Parameter[], name: string): React.ReactNode {
+        const descriptions = _.map(parameters, (parameter: Parameter, i: number) => {
             const isOptional = parameter.isOptional;
             return (
                 <div
-                    key={`param-description-${parameter.name}`}
+                    key={`param-description-${parameter.name}-${name}-${i}`}
                     className="flex pb1 mb2"
                     style={{ borderBottom: '1px solid #f0f4f7' }}
                 >

@@ -104,6 +104,17 @@ describe('FillOrder Tests', () => {
             };
             await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
         });
+        it('should transfer the correct amounts when makerAssetAmount < takerAssetAmount with zero decimals', async () => {
+            const fillScenario = {
+                ...defaultFillScenario,
+                orderScenario: {
+                    ...defaultFillScenario.orderScenario,
+                    makerAssetAmountScenario: OrderAssetAmountScenario.Small,
+                    makerAssetDataScenario: AssetDataScenario.ERC20ZeroDecimals,
+                },
+            };
+            await fillOrderCombinatorialUtils.testFillOrderScenarioAsync(provider, fillScenario);
+        });
         it('should transfer the correct amounts when taker is specified and order is claimed by taker', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
@@ -220,7 +231,7 @@ describe('FillOrder Tests', () => {
         });
     });
 
-    describe('Testing Exchange of ERC721 Tokens', () => {
+    describe('Testing exchange of ERC721 Tokens', () => {
         it('should successfully exchange a single token between the maker and taker (via fillOrder)', async () => {
             const fillScenario = {
                 ...defaultFillScenario,

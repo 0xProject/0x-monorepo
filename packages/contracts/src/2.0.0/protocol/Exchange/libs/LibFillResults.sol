@@ -24,7 +24,6 @@ import "../../../utils/SafeMath/SafeMath.sol";
 contract LibFillResults is
     SafeMath
 {
-
     struct FillResults {
         uint256 makerAssetFilledAmount;  // Total amount of makerAsset(s) filled.
         uint256 takerAssetFilledAmount;  // Total amount of takerAsset(s) filled.

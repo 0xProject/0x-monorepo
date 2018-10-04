@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { RevertReason, SignedOrder } from '@0xproject/types';
+import { RevertReason, SignatureType, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -8,11 +8,17 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
+import {
+    DummyERC20TokenContract,
+    DummyERC20TokenTransferEventArgs,
+} from '../../generated_contract_wrappers/dummy_erc20_token';
 import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
+import { DummyNoReturnERC20TokenContract } from '../../generated_contract_wrappers/dummy_no_return_erc20_token';
 import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
 import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated_contract_wrappers/exchange';
+import { ReentrantERC20TokenContract } from '../../generated_contract_wrappers/reentrant_erc20_token';
+import { TestStaticCallReceiverContract } from '../../generated_contract_wrappers/test_static_call_receiver';
 import { artifacts } from '../utils/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
 import { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
@@ -39,9 +45,13 @@ describe('Exchange core', () => {
     let erc20TokenB: DummyERC20TokenContract;
     let zrxToken: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
+    let noReturnErc20Token: DummyNoReturnERC20TokenContract;
+    let reentrantErc20Token: ReentrantERC20TokenContract;
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
+    let maliciousWallet: TestStaticCallReceiverContract;
+    let maliciousValidator: TestStaticCallReceiverContract;
 
     let signedOrder: SignedOrder;
     let erc20Balances: ERC20BalancesByOwner;
@@ -107,6 +117,18 @@ describe('Exchange core', () => {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
+        maliciousWallet = maliciousValidator = await TestStaticCallReceiverContract.deployFrom0xArtifactAsync(
+            artifacts.TestStaticCallReceiver,
+            provider,
+            txDefaults,
+        );
+        reentrantErc20Token = await ReentrantERC20TokenContract.deployFrom0xArtifactAsync(
+            artifacts.ReentrantERC20Token,
+            provider,
+            txDefaults,
+            exchange.address,
+        );
+
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
 
@@ -133,6 +155,26 @@ describe('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
+        const reentrancyTest = (functionNames: string[]) => {
+            _.forEach(functionNames, async (functionName: string, functionId: number) => {
+                const description = `should not allow fillOrder to reenter the Exchange contract via ${functionName}`;
+                it(description, async () => {
+                    signedOrder = await orderFactory.newSignedOrderAsync({
+                        makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
+                    });
+                    await web3Wrapper.awaitTransactionSuccessAsync(
+                        await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
+                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    );
+                    await expectTransactionFailedAsync(
+                        exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+                        RevertReason.TransferFailed,
+                    );
+                });
+            });
+        };
+        describe('fillOrder reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
+
         it('should throw if signature is invalid', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
@@ -157,6 +199,216 @@ describe('Exchange core', () => {
             return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
                 RevertReason.OrderUnfillable,
+            );
+        });
+
+        it('should revert if `isValidSignature` tries to update state when SignatureType=Wallet', async () => {
+            const maliciousMakerAddress = maliciousWallet.address;
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await erc20TokenA.setBalance.sendTransactionAsync(
+                    maliciousMakerAddress,
+                    constants.INITIAL_ERC20_BALANCE,
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await maliciousWallet.approveERC20.sendTransactionAsync(
+                    erc20TokenA.address,
+                    erc20Proxy.address,
+                    constants.INITIAL_ERC20_ALLOWANCE,
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAddress: maliciousMakerAddress,
+                makerFee: constants.ZERO_AMOUNT,
+            });
+            signedOrder.signature = `0x0${SignatureType.Wallet}`;
+            await expectTransactionFailedAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+                RevertReason.WalletError,
+            );
+        });
+
+        it('should revert if `isValidSignature` tries to update state when SignatureType=Validator', async () => {
+            const isApproved = true;
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await exchange.setSignatureValidatorApproval.sendTransactionAsync(
+                    maliciousValidator.address,
+                    isApproved,
+                    { from: makerAddress },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            signedOrder.signature = `${maliciousValidator.address}0${SignatureType.Validator}`;
+            await expectTransactionFailedAsync(
+                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
+                RevertReason.ValidatorError,
+            );
+        });
+
+        it('should not emit transfer events for transfers where from == to', async () => {
+            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, makerAddress);
+            const logs = txReceipt.logs;
+            const transferLogs = _.filter(
+                logs,
+                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
+            );
+            expect(transferLogs.length).to.be.equal(2);
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                zrxToken.address,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                feeRecipientAddress,
+            );
+            expect(
+                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.makerFee);
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                zrxToken.address,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                feeRecipientAddress,
+            );
+            expect(
+                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.takerFee);
+        });
+    });
+
+    describe('Testing exchange of ERC20 tokens with no return values', () => {
+        before(async () => {
+            noReturnErc20Token = await DummyNoReturnERC20TokenContract.deployFrom0xArtifactAsync(
+                artifacts.DummyNoReturnERC20Token,
+                provider,
+                txDefaults,
+                constants.DUMMY_TOKEN_NAME,
+                constants.DUMMY_TOKEN_SYMBOL,
+                constants.DUMMY_TOKEN_DECIMALS,
+                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await noReturnErc20Token.setBalance.sendTransactionAsync(makerAddress, constants.INITIAL_ERC20_BALANCE),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await noReturnErc20Token.approve.sendTransactionAsync(
+                    erc20Proxy.address,
+                    constants.INITIAL_ERC20_ALLOWANCE,
+                    { from: makerAddress },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+        });
+        it('should transfer the correct amounts when makerAssetAmount === takerAssetAmount', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData: assetDataUtils.encodeERC20AssetData(noReturnErc20Token.address),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+            });
+
+            const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const initialFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+
+            const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const finalFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
+            expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
+            expect(finalTakerBalanceA).to.be.bignumber.equal(initialTakerBalanceA.plus(signedOrder.makerAssetAmount));
+            expect(finalTakerBalanceB).to.be.bignumber.equal(initialTakerBalanceB.minus(signedOrder.takerAssetAmount));
+            expect(finalMakerZrxBalance).to.be.bignumber.equal(initialMakerZrxBalance.minus(signedOrder.makerFee));
+            expect(finalTakerZrxBalance).to.be.bignumber.equal(initialTakerZrxBalance.minus(signedOrder.takerFee));
+            expect(finalFeeRecipientZrxBalance).to.be.bignumber.equal(
+                initialFeeRecipientZrxBalance.plus(signedOrder.makerFee.plus(signedOrder.takerFee)),
+            );
+        });
+        it('should transfer the correct amounts when makerAssetAmount > takerAssetAmount', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData: assetDataUtils.encodeERC20AssetData(noReturnErc20Token.address),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+            });
+
+            const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const initialFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+
+            const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const finalFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
+            expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
+            expect(finalTakerBalanceA).to.be.bignumber.equal(initialTakerBalanceA.plus(signedOrder.makerAssetAmount));
+            expect(finalTakerBalanceB).to.be.bignumber.equal(initialTakerBalanceB.minus(signedOrder.takerAssetAmount));
+            expect(finalMakerZrxBalance).to.be.bignumber.equal(initialMakerZrxBalance.minus(signedOrder.makerFee));
+            expect(finalTakerZrxBalance).to.be.bignumber.equal(initialTakerZrxBalance.minus(signedOrder.takerFee));
+            expect(finalFeeRecipientZrxBalance).to.be.bignumber.equal(
+                initialFeeRecipientZrxBalance.plus(signedOrder.makerFee.plus(signedOrder.takerFee)),
+            );
+        });
+        it('should transfer the correct amounts when makerAssetAmount < takerAssetAmount', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData: assetDataUtils.encodeERC20AssetData(noReturnErc20Token.address),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
+            });
+
+            const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const initialFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+
+            const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
+            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
+            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const finalFeeRecipientZrxBalance = await zrxToken.balanceOf.callAsync(feeRecipientAddress);
+
+            expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
+            expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
+            expect(finalTakerBalanceA).to.be.bignumber.equal(initialTakerBalanceA.plus(signedOrder.makerAssetAmount));
+            expect(finalTakerBalanceB).to.be.bignumber.equal(initialTakerBalanceB.minus(signedOrder.takerAssetAmount));
+            expect(finalMakerZrxBalance).to.be.bignumber.equal(initialMakerZrxBalance.minus(signedOrder.makerFee));
+            expect(finalTakerZrxBalance).to.be.bignumber.equal(initialTakerZrxBalance.minus(signedOrder.takerFee));
+            expect(finalFeeRecipientZrxBalance).to.be.bignumber.equal(
+                initialFeeRecipientZrxBalance.plus(signedOrder.makerFee.plus(signedOrder.takerFee)),
             );
         });
     });
@@ -315,7 +567,7 @@ describe('Exchange core', () => {
                 // HACK(albrow): We need to hardcode the gas estimate here because
                 // the Geth gas estimator doesn't work with the way we use
                 // delegatecall and swallow errors.
-                gas: 490000,
+                gas: 600000,
             });
 
             const newBalances = await erc20Wrapper.getBalancesAsync();

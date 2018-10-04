@@ -13,7 +13,7 @@
     "TRADITIONAL_ASSETS": "Традиционные активы",
     "DIGITAL_GOODS": "Цифровые товары",
     "OFFCHAIN_ORDER_RELAY": "Офчейн-ордер",
-    "OONCHAIN_SETTLEMENT": "Ончейн-транзакция",
+    "ONCHAIN_SETTLEMENT": "Ончейн-транзакция",
     "OFFCHAIN_ONCHAIN_DESCRIPTION":
         "При использовании протокола 0x ордера проводятся вне блокчейна, что сокращает расходы на газ (топливо) и предотвращает раздувание блокчейна. Релейеры помогают провести ордера и берут комиссию каждый раз, когда способствуют торгам. Любой может создать релейера.",
     "RELAYERS_HEADER": "РЕЛЕЙЕРЫ, РАЗРАБОТАННЫЕ НА 0X",
@@ -61,6 +61,9 @@
     "SOL_COV": "Solidity Coverage",
     "ETHEREUM_TYPES": "Ethereum Types",
     "SUBPROVIDERS": "Subproviders",
+    "CONTRACT_WRAPPERS": "Contract Wrappers",
+    "ORDER_WATCHER": "OrderWatcher",
+    "0X_JS": "0x.js",
     "BLOG": "Блог",
     "FORUM": "Форум",
     "CONNECT": "0x Connect",

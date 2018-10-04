@@ -188,7 +188,8 @@ library LibBytes {
         memCopy(
             result.contentAddress(),
             b.contentAddress() + from,
-            result.length);
+            result.length
+        );
         return result;
     }
     
@@ -433,7 +434,8 @@ library LibBytes {
         pure
         returns (uint256 result)
     {
-        return uint256(readBytes32(b, index));
+        result = uint256(readBytes32(b, index));
+        return result;
     }
 
     /// @dev Writes a uint256 into a specific position in a byte array.
@@ -467,8 +469,13 @@ library LibBytes {
             b.length >= index + 4,
             "GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED"
         );
+
+        // Arrays are prefixed by a 32 byte length field
+        index += 32;
+
+        // Read the bytes4 from array memory
         assembly {
-            result := mload(add(b, 32))
+            result := mload(add(b, index))
             // Solidity does not require us to clean the trailing bytes.
             // We do it anyway
             result := and(result, 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000)

@@ -1,4 +1,4 @@
-import { ContractArtifact } from '@0xproject/sol-compiler';
+import { ContractArtifact } from 'ethereum-types';
 
 import * as DummyERC20Token from './artifacts/DummyERC20Token.json';
 import * as ERC20Proxy from './artifacts/ERC20Proxy.json';

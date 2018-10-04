@@ -5,6 +5,39 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.1 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v3.0.0 - _September 28, 2018_
+
+    * Change the way we detect BN to work with the newest ethers.js (#1069)
+    * Add baseContract._throwIfRevertWithReasonCallResult (#1069)
+
+## v2.0.5 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v2.0.4 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v2.0.3 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v2.0.2 - _September 5, 2018_
+
+    * Dependencies updated
+
+## v2.0.1 - _August 27, 2018_
+
+    * Dependencies updated
+
+## v2.0.0 - _August 24, 2018_
+
+    * Dependencies updated
+
 ## v2.0.0-rc.1 - _August 13, 2018_
 
     * Added strict encoding/decoding checks for sendTransaction and call (#915)

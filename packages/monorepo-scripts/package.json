@@ -1,6 +1,7 @@
 {
+    "private": true,
     "name": "@0xproject/monorepo-scripts",
-    "version": "1.0.5",
+    "version": "1.0.11",
     "engines": {
         "node": ">=6.12"
     },
@@ -8,8 +9,8 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "watch_without_deps": "tsc -w",
-        "build": "tsc",
+        "build": "tsc -b",
+        "build:ci": "yarn build",
         "lint": "tslint --project .",
         "clean": "shx rm -rf lib",
         "test:publish": "run-s build script:publish",
@@ -17,7 +18,9 @@
         "script:deps_versions": "node ./lib/deps_versions.js",
         "script:prepublish_checks": "node ./lib/prepublish_checks.js",
         "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
-        "script:find_unused_deps": "node ./lib/find_unused_dependencies.js"
+        "script:find_unused_deps": "node ./lib/find_unused_dependencies.js",
+        "script:doc_generate_and_upload": "node ./lib/doc_generate_and_upload.js",
+        "script:publish_release_notes": "node ./lib/publish_release_notes.js"
     },
     "repository": {
         "type": "git",
@@ -31,16 +34,17 @@
     "devDependencies": {
         "@types/glob": "^5.0.33",
         "@types/mkdirp": "^0.5.2",
-        "@types/node": "^8.0.53",
+        "@types/node": "*",
         "@types/opn": "^5.1.0",
         "@types/rimraf": "^2.0.2",
         "@types/semver": "5.5.0",
+        "@types/yargs": "^10.0.0",
         "depcheck": "^0.6.9",
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
-        "typescript": "2.9.2"
+        "typescript": "3.0.1"
     },
     "dependencies": {
         "@lerna/batch-packages": "^3.0.0-beta.18",
@@ -60,7 +64,9 @@
         "rimraf": "^2.6.2",
         "semver": "5.5.0",
         "semver-diff": "^2.1.0",
-        "semver-sort": "0.0.4"
+        "semver-sort": "0.0.4",
+        "typedoc": "0.12.0",
+        "yargs": "^10.0.3"
     },
     "publishConfig": {
         "access": "public"

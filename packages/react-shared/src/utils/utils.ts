@@ -1,3 +1,4 @@
+import changeCase = require('change-case');
 import isMobile = require('is-mobile');
 import * as _ from 'lodash';
 import { scroller } from 'react-scroll';
@@ -32,6 +33,9 @@ export const utils = {
     },
     convertDashesToSpaces(text: string): string {
         return text.replace(/-/g, ' ');
+    },
+    convertCamelCaseToSpaces(text: string): string {
+        return changeCase.snake(text).replace(/_/g, ' ');
     },
     getEtherScanLinkIfExists(
         addressOrTxHash: string,

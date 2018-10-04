@@ -3,7 +3,7 @@ import { Order, SignedOrder } from '@0xproject/types';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
-import { EIP712Utils } from './eip712_utils';
+import { eip712Utils } from './eip712_utils';
 import { EIP712Schema, EIP712Types } from './types';
 
 const INVALID_TAKER_FORMAT = 'instance.takerAddress is not of a type(s) string';
@@ -69,11 +69,11 @@ export const orderHashUtils = {
      * @return  The resulting orderHash from hashing the supplied order as a Buffer
      */
     getOrderHashBuffer(order: SignedOrder | Order): Buffer {
-        const orderParamsHashBuff = EIP712Utils.structHash(EIP712_ORDER_SCHEMA, order);
-        const orderHashBuff = EIP712Utils.createEIP712Message(orderParamsHashBuff, order.exchangeAddress);
+        const orderParamsHashBuff = eip712Utils.structHash(EIP712_ORDER_SCHEMA, order);
+        const orderHashBuff = eip712Utils.createEIP712Message(orderParamsHashBuff, order.exchangeAddress);
         return orderHashBuff;
     },
     _getOrderSchemaBuffer(): Buffer {
-        return EIP712Utils.compileSchema(EIP712_ORDER_SCHEMA);
+        return eip712Utils.compileSchema(EIP712_ORDER_SCHEMA);
     },
 };

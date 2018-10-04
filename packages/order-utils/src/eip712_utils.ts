@@ -18,14 +18,14 @@ const EIP712_DOMAIN_SCHEMA: EIP712Schema = {
     ],
 };
 
-export const EIP712Utils = {
+export const eip712Utils = {
     /**
      * Compiles the EIP712Schema and returns the hash of the schema.
      * @param   schema The EIP712 schema.
      * @return  The hash of the compiled schema
      */
     compileSchema(schema: EIP712Schema): Buffer {
-        const eip712Schema = EIP712Utils._encodeType(schema);
+        const eip712Schema = eip712Utils._encodeType(schema);
         const eip712SchemaHashBuffer = crypto.solSHA3([eip712Schema]);
         return eip712SchemaHashBuffer;
     },
@@ -36,25 +36,47 @@ export const EIP712Utils = {
      * @return  The hash of an EIP712 message with domain separator prefixed
      */
     createEIP712Message(hashStruct: Buffer, contractAddress: string): Buffer {
-        const domainSeparatorHashBuffer = EIP712Utils._getDomainSeparatorHashBuffer(contractAddress);
+        const domainSeparatorHashBuffer = eip712Utils._getDomainSeparatorHashBuffer(contractAddress);
         const messageBuff = crypto.solSHA3([EIP191_PREFIX, domainSeparatorHashBuffer, hashStruct]);
         return messageBuff;
     },
+    /**
+     * Pad an address to 32 bytes
+     * @param address Address to pad
+     * @return padded address
+     */
     pad32Address(address: string): Buffer {
         const addressBuffer = ethUtil.toBuffer(address);
-        const addressPadded = EIP712Utils.pad32Buffer(addressBuffer);
+        const addressPadded = eip712Utils.pad32Buffer(addressBuffer);
         return addressPadded;
     },
+    /**
+     * Pad an buffer to 32 bytes
+     * @param buffer Address to pad
+     * @return padded buffer
+     */
     pad32Buffer(buffer: Buffer): Buffer {
         const bufferPadded = ethUtil.setLengthLeft(buffer, EIP712_VALUE_LENGTH);
         return bufferPadded;
     },
+    /**
+     * Hash together a EIP712 schema with the corresponding data
+     * @param schema EIP712-compliant schema
+     * @param data Data the complies to the schema
+     * @return A buffer containing the SHA256 hash of the schema and encoded data
+     */
+    structHash(schema: EIP712Schema, data: { [key: string]: any }): Buffer {
+        const encodedData = eip712Utils._encodeData(schema, data);
+        const schemaHash = eip712Utils.compileSchema(schema);
+        const hashBuffer = crypto.solSHA3([schemaHash, ...encodedData]);
+        return hashBuffer;
+    },
     _getDomainSeparatorSchemaBuffer(): Buffer {
-        return EIP712Utils.compileSchema(EIP712_DOMAIN_SCHEMA);
+        return eip712Utils.compileSchema(EIP712_DOMAIN_SCHEMA);
     },
     _getDomainSeparatorHashBuffer(exchangeAddress: string): Buffer {
-        const domainSeparatorSchemaBuffer = EIP712Utils._getDomainSeparatorSchemaBuffer();
-        const encodedData = EIP712Utils._encodeData(EIP712_DOMAIN_SCHEMA, {
+        const domainSeparatorSchemaBuffer = eip712Utils._getDomainSeparatorSchemaBuffer();
+        const encodedData = eip712Utils._encodeData(EIP712_DOMAIN_SCHEMA, {
             name: EIP712_DOMAIN_NAME,
             version: EIP712_DOMAIN_VERSION,
             verifyingContract: exchangeAddress,
@@ -77,17 +99,11 @@ export const EIP712Utils = {
             } else if (parameter.type === EIP712Types.Uint256) {
                 encodedValues.push(value);
             } else if (parameter.type === EIP712Types.Address) {
-                encodedValues.push(EIP712Utils.pad32Address(value));
+                encodedValues.push(eip712Utils.pad32Address(value));
             } else {
                 throw new Error(`Unable to encode ${parameter.type}`);
             }
         }
         return encodedValues;
-    },
-    structHash(schema: EIP712Schema, data: { [key: string]: any }): Buffer {
-        const encodedData = EIP712Utils._encodeData(schema, data);
-        const schemaHash = EIP712Utils.compileSchema(schema);
-        const hashBuffer = crypto.solSHA3([schemaHash, ...encodedData]);
-        return hashBuffer;
     },
 };

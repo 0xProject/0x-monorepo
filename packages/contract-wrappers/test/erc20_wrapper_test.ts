@@ -11,11 +11,12 @@ import {
     BlockRange,
     ContractWrappers,
     ContractWrappersError,
-    DecodedLogEvent,
     ERC20TokenApprovalEventArgs,
     ERC20TokenEvents,
     ERC20TokenTransferEventArgs,
 } from '../src';
+
+import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';

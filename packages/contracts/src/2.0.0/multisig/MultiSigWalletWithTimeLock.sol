@@ -16,47 +16,57 @@
 
 */
 
-// solhint-disable
-pragma solidity ^0.4.10;
+pragma solidity 0.4.24;
 
 import "./MultiSigWallet.sol";
 
 
 /// @title Multisignature wallet with time lock- Allows multiple parties to execute a transaction after a time lock has passed.
 /// @author Amir Bandeali - <amir@0xProject.com>
-contract MultiSigWalletWithTimeLock is MultiSigWallet {
+// solhint-disable not-rely-on-time
+contract MultiSigWalletWithTimeLock is
+    MultiSigWallet
+{
+    event ConfirmationTimeSet(uint256 indexed transactionId, uint256 confirmationTime);
+    event TimeLockChange(uint256 secondsTimeLocked);
 
-    event ConfirmationTimeSet(uint indexed transactionId, uint confirmationTime);
-    event TimeLockChange(uint secondsTimeLocked);
+    uint256 public secondsTimeLocked;
 
-    uint public secondsTimeLocked;
+    mapping (uint256 => uint256) public confirmationTimes;
 
-    mapping (uint => uint) public confirmationTimes;
-
-    modifier notFullyConfirmed(uint transactionId) {
-        require(!isConfirmed(transactionId));
+    modifier notFullyConfirmed(uint256 transactionId) {
+        require(
+            !isConfirmed(transactionId),
+            "TX_FULLY_CONFIRMED"
+        );
         _;
     }
 
-    modifier fullyConfirmed(uint transactionId) {
-        require(isConfirmed(transactionId));
+    modifier fullyConfirmed(uint256 transactionId) {
+        require(
+            isConfirmed(transactionId),
+            "TX_NOT_FULLY_CONFIRMED"
+        );
         _;
     }
 
-    modifier pastTimeLock(uint transactionId) {
-        require(block.timestamp >= confirmationTimes[transactionId] + secondsTimeLocked);
+    modifier pastTimeLock(uint256 transactionId) {
+        require(
+            block.timestamp >= confirmationTimes[transactionId] + secondsTimeLocked,
+            "TIME_LOCK_INCOMPLETE"
+        );
         _;
     }
-
-    /*
-     * Public functions
-     */
 
     /// @dev Contract constructor sets initial owners, required number of confirmations, and time lock.
     /// @param _owners List of initial owners.
     /// @param _required Number of required confirmations.
     /// @param _secondsTimeLocked Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
-    function MultiSigWalletWithTimeLock(address[] _owners, uint _required, uint _secondsTimeLocked)
+    constructor (
+        address[] _owners,
+        uint256 _required,
+        uint256 _secondsTimeLocked
+    )
         public
         MultiSigWallet(_owners, _required)
     {
@@ -65,17 +75,17 @@ contract MultiSigWalletWithTimeLock is MultiSigWallet {
 
     /// @dev Changes the duration of the time lock for transactions.
     /// @param _secondsTimeLocked Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
-    function changeTimeLock(uint _secondsTimeLocked)
+    function changeTimeLock(uint256 _secondsTimeLocked)
         public
         onlyWallet
     {
         secondsTimeLocked = _secondsTimeLocked;
-        TimeLockChange(_secondsTimeLocked);
+        emit TimeLockChange(_secondsTimeLocked);
     }
 
     /// @dev Allows an owner to confirm a transaction.
     /// @param transactionId Transaction ID.
-    function confirmTransaction(uint transactionId)
+    function confirmTransaction(uint256 transactionId)
         public
         ownerExists(msg.sender)
         transactionExists(transactionId)
@@ -83,52 +93,35 @@ contract MultiSigWalletWithTimeLock is MultiSigWallet {
         notFullyConfirmed(transactionId)
     {
         confirmations[transactionId][msg.sender] = true;
-        Confirmation(msg.sender, transactionId);
+        emit Confirmation(msg.sender, transactionId);
         if (isConfirmed(transactionId)) {
             setConfirmationTime(transactionId, block.timestamp);
         }
     }
 
-    /// @dev Allows an owner to revoke a confirmation for a transaction.
-    /// @param transactionId Transaction ID.
-    function revokeConfirmation(uint transactionId)
-        public
-        ownerExists(msg.sender)
-        confirmed(transactionId, msg.sender)
-        notExecuted(transactionId)
-        notFullyConfirmed(transactionId)
-    {
-        confirmations[transactionId][msg.sender] = false;
-        Revocation(msg.sender, transactionId);
-    }
-
     /// @dev Allows anyone to execute a confirmed transaction.
     /// @param transactionId Transaction ID.
-    function executeTransaction(uint transactionId)
+    function executeTransaction(uint256 transactionId)
         public
         notExecuted(transactionId)
         fullyConfirmed(transactionId)
         pastTimeLock(transactionId)
     {
-        Transaction storage tx = transactions[transactionId];
-        tx.executed = true;
-        if (tx.destination.call.value(tx.value)(tx.data))
-            Execution(transactionId);
-        else {
-            ExecutionFailure(transactionId);
-            tx.executed = false;
+        Transaction storage txn = transactions[transactionId];
+        txn.executed = true;
+        if (external_call(txn.destination, txn.value, txn.data.length, txn.data)) {
+            emit Execution(transactionId);
+        } else {
+            emit ExecutionFailure(transactionId);
+            txn.executed = false;
         }
     }
 
-    /*
-     * Internal functions
-     */
-
     /// @dev Sets the time of when a submission first passed.
-    function setConfirmationTime(uint transactionId, uint confirmationTime)
+    function setConfirmationTime(uint256 transactionId, uint256 confirmationTime)
         internal
     {
         confirmationTimes[transactionId] = confirmationTime;
-        ConfirmationTimeSet(transactionId, confirmationTime);
+        emit ConfirmationTimeSet(transactionId, confirmationTime);
     }
 }

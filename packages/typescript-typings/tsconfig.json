@@ -1,7 +1,7 @@
 {
     "extends": "../../tsconfig",
     "compilerOptions": {
-        "outDir": "lib"
-    },
-    "include": ["./monorepo_scripts/**/*"]
+        "outDir": "lib",
+        "rootDir": "."
+    }
 }

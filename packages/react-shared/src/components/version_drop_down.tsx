@@ -1,6 +1,6 @@
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import * as _ from 'lodash';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 
 export interface VersionDropDownProps {
@@ -15,23 +15,23 @@ export class VersionDropDown extends React.Component<VersionDropDownProps, Versi
     public render(): React.ReactNode {
         return (
             <div className="mx-auto" style={{ width: 120 }}>
-                <DropDownMenu
-                    maxHeight={300}
-                    value={this.props.selectedVersion}
-                    onChange={this._updateSelectedVersion.bind(this)}
-                >
+                <Select value={this.props.selectedVersion} onChange={this._updateSelectedVersion.bind(this)}>
                     {this._renderDropDownItems()}
-                </DropDownMenu>
+                </Select>
             </div>
         );
     }
     private _renderDropDownItems(): React.ReactNode[] {
         const items = _.map(this.props.versions, version => {
-            return <MenuItem key={version} value={version} primaryText={`v${version}`} />;
+            return (
+                <MenuItem key={version} value={version}>
+                    v{version}
+                </MenuItem>
+            );
         });
         return items;
     }
-    private _updateSelectedVersion(_e: any, _index: number, semver: string): void {
-        this.props.onVersionSelected(semver);
+    private _updateSelectedVersion(event: React.ChangeEvent<HTMLSelectElement>): void {
+        this.props.onVersionSelected(event.target.value);
     }
 }

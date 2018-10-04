@@ -5,6 +5,43 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.1 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v3.0.0 - _September 28, 2018_
+
+    * Change /order_config request to a POST instead of GET (#1091)
+
+## v2.0.4 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v2.0.3 - _September 25, 2018_
+
+    * Import SRA-related types from @0xproject/types (#1085)
+
+## v2.0.2 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v2.0.1 - _September 19, 2018_
+
+    * Dependencies updated
+
+## v2.0.0 - _September 5, 2018_
+
+    * Change `OrderConfigRequest` to use BigNumber instead of string for relevant fields. (#1058)
+
+## v2.0.0-rc.2 - _August 27, 2018_
+
+    * Dependencies updated
+
+## v2.0.0-rc.1 - _August 24, 2018_
+
+    * Updated for SRA v2 (#974)
+    * Stopped exporting `Order` type (#924)
+
 ## v1.0.5 - _August 13, 2018_
 
     * Dependencies updated

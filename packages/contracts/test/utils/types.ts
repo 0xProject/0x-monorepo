@@ -117,21 +117,24 @@ export interface TransferAmountsByMatchOrders {
     // Left Maker
     amountBoughtByLeftMaker: BigNumber;
     amountSoldByLeftMaker: BigNumber;
-    amountReceivedByLeftMaker: BigNumber;
     feePaidByLeftMaker: BigNumber;
     // Right Maker
     amountBoughtByRightMaker: BigNumber;
     amountSoldByRightMaker: BigNumber;
-    amountReceivedByRightMaker: BigNumber;
     feePaidByRightMaker: BigNumber;
     // Taker
     amountReceivedByTaker: BigNumber;
     feePaidByTakerLeft: BigNumber;
     feePaidByTakerRight: BigNumber;
-    totalFeePaidByTaker: BigNumber;
-    // Fee Recipients
-    feeReceivedLeft: BigNumber;
-    feeReceivedRight: BigNumber;
+}
+
+export interface TransferAmountsLoggedByMatchOrders {
+    makerAddress: string;
+    takerAddress: string;
+    makerAssetFilledAmount: string;
+    takerAssetFilledAmount: string;
+    makerFeePaid: string;
+    takerFeePaid: string;
 }
 
 export interface OrderInfo {
@@ -177,10 +180,11 @@ export enum ExpirationTimeSecondsScenario {
 }
 
 export enum AssetDataScenario {
-    ERC721 = 'ERC721',
+    ERC20ZeroDecimals = 'ERC20_ZERO_DECIMALS',
     ZRXFeeToken = 'ZRX_FEE_TOKEN',
     ERC20FiveDecimals = 'ERC20_FIVE_DECIMALS',
     ERC20NonZRXEighteenDecimals = 'ERC20_NON_ZRX_EIGHTEEN_DECIMALS',
+    ERC721 = 'ERC721',
 }
 
 export enum TakerAssetFillAmountScenario {

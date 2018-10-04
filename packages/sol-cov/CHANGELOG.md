@@ -5,6 +5,38 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.7 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v2.1.6 - _September 28, 2018_
+
+    * Dependencies updated
+
+## v2.1.5 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v2.1.4 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v2.1.3 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v2.1.2 - _September 5, 2018_
+
+    * Dependencies updated
+
+## v2.1.1 - _August 27, 2018_
+
+    * Dependencies updated
+
+## v2.1.0 - _August 24, 2018_
+
+    * Export types: `JSONRPCRequestPayload`, `Provider`, `JSONRPCErrorCallback`, `JSONRPCResponsePayload`, `JSONRPCRequestPayloadWithMethod`, `NextCallback`, `ErrorCallback`, `OnNextCompleted` and `Callback` (#924)
+
 ## v2.0.0 - _August 13, 2018_
 
     * Fix a bug when eth_call coverage was not computed because of silent schema validation failures (#938)

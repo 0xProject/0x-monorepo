@@ -26,7 +26,6 @@ contract TestSignatureValidator is
     MixinSignatureValidator,
     MixinTransactions
 {
-
     function publicIsValidSignature(
         bytes32 hash,
         address signer,

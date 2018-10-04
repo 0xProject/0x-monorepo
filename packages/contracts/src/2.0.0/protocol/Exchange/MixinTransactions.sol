@@ -28,22 +28,12 @@ contract MixinTransactions is
     MSignatureValidator,
     MTransactions
 {
-
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.
     mapping (bytes32 => bool) public transactions;
 
     // Address of current transaction signer
     address public currentContextAddress;
-
-    // Hash for the EIP712 ZeroEx Transaction Schema
-    bytes32 constant internal EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = keccak256(abi.encodePacked(
-        "ZeroExTransaction(",
-        "uint256 salt,",
-        "address signerAddress,",
-        "bytes data",
-        ")"
-    ));
 
     /// @dev Executes an exchange method call in the context of signer.
     /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
@@ -155,7 +145,8 @@ contract MixinTransactions is
         view
         returns (address)
     {
-        address contextAddress = currentContextAddress == address(0) ? msg.sender : currentContextAddress;
+        address currentContextAddress_ = currentContextAddress;
+        address contextAddress = currentContextAddress_ == address(0) ? msg.sender : currentContextAddress_;
         return contextAddress;
     }
 }

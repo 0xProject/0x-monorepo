@@ -1,7 +1,8 @@
 import { Order, SignedOrder } from '@0xproject/types';
 import * as _ from 'lodash';
 
-import { constants, orderFactory } from '../../src';
+import { constants } from '../../src/constants';
+import { orderFactory } from '../../src/order_factory';
 
 const BASE_TEST_ORDER: Order = orderFactory.createOrder(
     constants.NULL_ADDRESS,

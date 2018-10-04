@@ -10,13 +10,14 @@ import {
     BlockRange,
     ContractWrappers,
     ContractWrappersError,
-    DecodedLogEvent,
     WETH9ApprovalEventArgs,
     WETH9DepositEventArgs,
     WETH9Events,
     WETH9TransferEventArgs,
     WETH9WithdrawalEventArgs,
 } from '../src';
+
+import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
@@ -343,7 +344,7 @@ describe('EtherTokenWrapper', () => {
             etherTokenAddress = tokenUtils.getWethTokenAddress();
             erc20ProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
             // Start the block range after all migrations to avoid unexpected logs
-            const currentBlock = await web3Wrapper.getBlockNumberAsync();
+            const currentBlock: number = await web3Wrapper.getBlockNumberAsync();
             const fromBlock = currentBlock + 1;
             blockRange = {
                 fromBlock,

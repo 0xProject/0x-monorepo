@@ -8,7 +8,7 @@ This repository is a monorepo including the 0x protocol smart contracts and nume
 
 If you're developing on 0x now or are interested in using 0x infrastructure in the future, please join our [developer mailing list][dev-mailing-list-url] for updates.
 
-[website-url]: https://0xproject.com/
+[website-url]: https://0xproject.com
 [whitepaper-url]: https://0xproject.com/pdfs/0x_white_paper.pdf
 [dev-mailing-list-url]: http://eepurl.com/dx4cPf
 
@@ -25,16 +25,19 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 | [`0x.js`](/packages/0x.js)                                      | [![npm](https://img.shields.io/npm/v/0x.js.svg)](https://www.npmjs.com/package/0x.js)                                                 | A Javascript library for interacting with the 0x protocol                                                                 |
 | [`@0xproject/abi-gen`](/packages/abi-gen)                       | [![npm](https://img.shields.io/npm/v/@0xproject/abi-gen.svg)](https://www.npmjs.com/package/@0xproject/abi-gen)                       | Tool to generate TS wrappers from smart contract ABIs                                                                     |
 | [`@0xproject/assert`](/packages/assert)                         | [![npm](https://img.shields.io/npm/v/@0xproject/assert.svg)](https://www.npmjs.com/package/@0xproject/assert)                         | Type and schema assertions used by our packages                                                                           |
+| [`@0xproject/assert`](/packages/asset-buyer)                    | [![npm](https://img.shields.io/npm/v/@0xproject/asset-buyer.svg)](https://www.npmjs.com/package/@0xproject/asset-buyer)               | Convenience package for discovering and buying assets with Ether.                                                         |
 | [`@0xproject/base-contract`](/packages/base-contract)           | [![npm](https://img.shields.io/npm/v/@0xproject/base-contract.svg)](https://www.npmjs.com/package/@0xproject/base-contract)           | BaseContract used by auto-generated `abi-gen` wrapper contracts                                                           |
 | [`@0xproject/connect`](/packages/connect)                       | [![npm](https://img.shields.io/npm/v/@0xproject/connect.svg)](https://www.npmjs.com/package/@0xproject/connect)                       | A Javascript library for interacting with the Standard Relayer API                                                        |
-| [`@0xproject/sol-compiler`](/packages/sol-compiler)             | [![npm](https://img.shields.io/npm/v/@0xproject/sol-compiler.svg)](https://www.npmjs.com/package/@0xproject/sol-compiler)             | A thin wrapper around Solc.js that outputs artifacts, resolves imports, only re-compiles when needed, and other niceties. |
 | [`@0xproject/dev-utils`](/packages/dev-utils)                   | [![npm](https://img.shields.io/npm/v/@0xproject/dev-utils.svg)](https://www.npmjs.com/package/@0xproject/dev-utils)                   | Dev utils to be shared across 0x projects and packages                                                                    |
 | [`@0xproject/json-schemas`](/packages/json-schemas)             | [![npm](https://img.shields.io/npm/v/@0xproject/json-schemas.svg)](https://www.npmjs.com/package/@0xproject/json-schemas)             | 0x-related json schemas                                                                                                   |
 | [`@0xproject/monorepo-scripts`](/packages/monorepo-scripts)     | [![npm](https://img.shields.io/npm/v/@0xproject/monorepo-scripts.svg)](https://www.npmjs.com/package/@0xproject/monorepo-scripts)     | Monorepo scripts                                                                                                          |
+| [`@0xproject/order-utils`](/packages/order-utils)               | [![npm](https://img.shields.io/npm/v/@0xproject/order-utils.svg)](https://www.npmjs.com/package/@0xproject/order-utils)               | A set of utilities for generating, parsing, signing and validating 0x orders.                                             |
 | [`@0xproject/react-docs`](/packages/react-docs)                 | [![npm](https://img.shields.io/npm/v/@0xproject/react-docs.svg)](https://www.npmjs.com/package/@0xproject/react-docs)                 | React documentation component for rendering TypeDoc & Doxity generated JSON                                               |
 | [`@0xproject/react-shared`](/packages/react-shared)             | [![npm](https://img.shields.io/npm/v/@0xproject/react-shared.svg)](https://www.npmjs.com/package/@0xproject/react-shared)             | 0x shared react components                                                                                                |
-| [`@0xproject/sra-report`](/packages/sra-report)                 | [![npm](https://img.shields.io/npm/v/@0xproject/sra-report.svg)](https://www.npmjs.com/package/@0xproject/sra-report)                 | Generate reports for standard relayer API compliance                                                                      |
+| [`@0xproject/sol-compiler`](/packages/sol-compiler)             | [![npm](https://img.shields.io/npm/v/@0xproject/sol-compiler.svg)](https://www.npmjs.com/package/@0xproject/sol-compiler)             | A thin wrapper around Solc.js that outputs artifacts, resolves imports, only re-compiles when needed, and other niceties. |
 | [`@0xproject/sol-cov`](/packages/sol-cov)                       | [![npm](https://img.shields.io/npm/v/@0xproject/sol-cov.svg)](https://www.npmjs.com/package/@0xproject/sol-cov)                       | Solidity test coverage tool                                                                                               |
+| [`@0xproject/sra-spec`](/packages/sra-spec)                     | [![npm](https://img.shields.io/npm/v/@0xproject/sra-spec.svg)](https://www.npmjs.com/package/@0xproject/sra-spec)                     | OpenAPI specification for the standard relayer API                                                                        |
+| [`@0xproject/sra-report`](/packages/sra-report)                 | [![npm](https://img.shields.io/npm/v/@0xproject/sra-report.svg)](https://www.npmjs.com/package/@0xproject/sra-report)                 | Generate reports for standard relayer API compliance                                                                      |
 | [`@0xproject/subproviders`](/packages/subproviders)             | [![npm](https://img.shields.io/npm/v/@0xproject/subproviders.svg)](https://www.npmjs.com/package/@0xproject/subproviders)             | Useful web3 subproviders (e.g LedgerSubprovider)                                                                          |
 | [`@0xproject/tslint-config`](/packages/tslint-config)           | [![npm](https://img.shields.io/npm/v/@0xproject/tslint-config.svg)](https://www.npmjs.com/package/@0xproject/tslint-config)           | Custom 0x development TSLint rules                                                                                        |
 | [`@0xproject/types`](/packages/types)                           | [![npm](https://img.shields.io/npm/v/@0xproject/types.svg)](https://www.npmjs.com/package/@0xproject/types)                           | Shared type declarations                                                                                                  |
@@ -68,7 +71,7 @@ Dedicated documentation pages:
 Node version >= 6.12 is required.
 
 Most of the packages require additional typings for external dependencies.
-You can include those by prepending @0xproject/typescript-typings package to your [`typeRoots`](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html) config.
+You can include those by prepending the `@0xproject/typescript-typings` package to your [`typeRoots`](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html) config.
 
 ```json
 "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
@@ -82,13 +85,7 @@ We strongly recommend that the community help us make improvements and determine
 
 ### Install dependencies
 
-Make sure you are using Yarn v1.6. To install using brew:
-
-```
-brew unlink yarn
-brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/76215230de5f7f7bee2cfcdd7185cf49d949862d/Formula/yarn.rb
-brew switch yarn 1.6.0_1
-```
+Make sure you are using Yarn v1.9.4. To install using brew:
 
 Then install dependencies
 

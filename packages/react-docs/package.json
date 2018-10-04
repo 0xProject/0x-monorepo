@@ -1,18 +1,17 @@
 {
     "name": "@0xproject/react-docs",
-    "version": "1.0.5",
+    "version": "1.0.13",
     "engines": {
         "node": ">=6.12"
     },
-    "description": "React documentation component for rendering TypeDoc & Doxity generated JSON",
+    "description": "React documentation component for rendering TypeDoc & sol-doc generated JSON",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
         "lint": "tslint --project .",
-        "build": "tsc && copyfiles -u 2 './lib/monorepo_scripts/**/*' ./scripts",
-        "watch_without_deps": "tsc -w",
-        "clean": "shx rm -rf lib scripts",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+        "build": "tsc -b",
+        "build:ci": "yarn build",
+        "clean": "shx rm -rf lib"
     },
     "author": "Fabio Berger",
     "license": "Apache-2.0",
@@ -25,33 +24,33 @@
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "devDependencies": {
-        "@0xproject/dev-utils": "^1.0.4",
-        "@0xproject/monorepo-scripts": "^1.0.5",
-        "@0xproject/tslint-config": "^1.0.5",
+        "@0xproject/dev-utils": "^1.0.12",
+        "@0xproject/tslint-config": "^1.0.8",
         "@types/compare-versions": "^3.0.0",
-        "copyfiles": "^1.2.0",
+        "copyfiles": "^2.0.0",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "^5.9.1",
-        "typescript": "2.9.2"
+        "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0xproject/react-shared": "^1.0.6",
-        "@0xproject/utils": "^1.0.5",
+        "@0xproject/react-shared": "^1.0.15",
+        "@0xproject/types": "^1.1.4",
+        "@0xproject/utils": "^2.0.2",
         "@types/lodash": "4.14.104",
-        "@types/material-ui": "0.18.0",
-        "@types/node": "^8.0.53",
+        "@types/material-ui": "^0.20.0",
+        "@types/node": "*",
         "@types/react": "*",
         "@types/react-dom": "*",
-        "@types/react-scroll": "0.0.31",
+        "@types/react-scroll": "1.5.3",
         "basscss": "^8.0.3",
         "compare-versions": "^3.0.1",
         "lodash": "^4.17.5",
-        "material-ui": "^0.17.1",
-        "react": "15.6.1",
-        "react-dom": "15.6.1",
+        "material-ui": "^0.20.0",
+        "react": "^16.4.2",
+        "react-dom": "^16.4.2",
         "react-markdown": "^3.2.2",
-        "react-scroll": "^1.5.2",
+        "react-scroll": "0xproject/react-scroll#similar-to-pr-330",
         "react-tooltip": "^3.2.7",
         "semver": "5.5.0"
     },

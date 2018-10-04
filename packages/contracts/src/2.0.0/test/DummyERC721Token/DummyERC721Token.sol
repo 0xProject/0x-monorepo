@@ -18,59 +18,46 @@
 
 pragma solidity 0.4.24;
 
-import "../../tokens/ERC721Token/ERC721Token.sol";
+import "../../tokens/ERC721Token/MintableERC721Token.sol";
 import "../../utils/Ownable/Ownable.sol";
 
 
 // solhint-disable no-empty-blocks
 contract DummyERC721Token is
     Ownable,
-    ERC721Token
+    MintableERC721Token
 {
+    string public name;
+    string public symbol;
 
-    /**
-    * @dev Constructor passes its arguments to the base ERC721Token constructor
-    * @param name of token
-    * @param symbol of token
-    */
     constructor (
-        string name,
-        string symbol
+        string _name,
+        string _symbol
     )
         public
-        ERC721Token(name, symbol)
-    {}
-
-    /**
-    * @dev Function to mint a new token
-    * @dev Reverts if the given token ID already exists
-    * @param to address the beneficiary that will own the minted token
-    * @param tokenId uint256 ID of the token to be minted by the msg.sender
-    */
-    function mint(address to, uint256 tokenId)
-        public
-        onlyOwner
     {
-        require(
-            !exists(tokenId),
-            "Token with tokenId already exists."
-        );
-        _mint(to, tokenId);
+        name = _name;
+        symbol = _symbol;
     }
 
-    /**
-    * @dev Function to burn a token
-    * @dev Reverts if the given token ID doesn't exist
-    * @param tokenId uint256 ID of the token to be minted by the msg.sender
-    */
-    function burn(address owner, uint256 tokenId)
-        public
+    /// @dev Function to mint a new token
+    ///      Reverts if the given token ID already exists
+    /// @param _to Address of the beneficiary that will own the minted token
+    /// @param _tokenId ID of the token to be minted by the msg.sender    
+    function mint(address _to, uint256 _tokenId)
+        external
+    {
+        _mint(_to, _tokenId);
+    }
+
+    /// @dev Function to burn a token
+    ///      Reverts if the given token ID doesn't exist or not called by contract owner
+    /// @param _owner Owner of token with given token ID
+    /// @param _tokenId ID of the token to be burned by the msg.sender
+    function burn(address _owner, uint256 _tokenId)
+        external
         onlyOwner
     {
-        require(
-            exists(tokenId),
-            "Token with tokenId does not exist."
-        );
-        _burn(owner, tokenId);
+        _burn(_owner, _tokenId);
     }
 }

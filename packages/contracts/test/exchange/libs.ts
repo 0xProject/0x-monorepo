@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetDataUtils, EIP712Utils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, eip712Utils, orderHashUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -71,29 +71,57 @@ describe('Exchange libs', () => {
     // combinatorial tests in test/exchange/internal. They test specific edge
     // cases that are not covered by the combinatorial tests.
     describe('LibMath', () => {
-        it('should return false if there is a rounding error of 0.1%', async () => {
-            const numerator = new BigNumber(20);
-            const denominator = new BigNumber(999);
-            const target = new BigNumber(50);
-            // rounding error = ((20*50/999) - floor(20*50/999)) / (20*50/999) = 0.1%
-            const isRoundingError = await libs.publicIsRoundingError.callAsync(numerator, denominator, target);
-            expect(isRoundingError).to.be.false();
+        describe('isRoundingError', () => {
+            it('should return true if there is a rounding error of 0.1%', async () => {
+                const numerator = new BigNumber(20);
+                const denominator = new BigNumber(999);
+                const target = new BigNumber(50);
+                // rounding error = ((20*50/999) - floor(20*50/999)) / (20*50/999) = 0.1%
+                const isRoundingError = await libs.publicIsRoundingErrorFloor.callAsync(numerator, denominator, target);
+                expect(isRoundingError).to.be.true();
+            });
+            it('should return false if there is a rounding of 0.09%', async () => {
+                const numerator = new BigNumber(20);
+                const denominator = new BigNumber(9991);
+                const target = new BigNumber(500);
+                // rounding error = ((20*500/9991) - floor(20*500/9991)) / (20*500/9991) = 0.09%
+                const isRoundingError = await libs.publicIsRoundingErrorFloor.callAsync(numerator, denominator, target);
+                expect(isRoundingError).to.be.false();
+            });
+            it('should return true if there is a rounding error of 0.11%', async () => {
+                const numerator = new BigNumber(20);
+                const denominator = new BigNumber(9989);
+                const target = new BigNumber(500);
+                // rounding error = ((20*500/9989) - floor(20*500/9989)) / (20*500/9989) = 0.011%
+                const isRoundingError = await libs.publicIsRoundingErrorFloor.callAsync(numerator, denominator, target);
+                expect(isRoundingError).to.be.true();
+            });
         });
-        it('should return false if there is a rounding of 0.09%', async () => {
-            const numerator = new BigNumber(20);
-            const denominator = new BigNumber(9991);
-            const target = new BigNumber(500);
-            // rounding error = ((20*500/9991) - floor(20*500/9991)) / (20*500/9991) = 0.09%
-            const isRoundingError = await libs.publicIsRoundingError.callAsync(numerator, denominator, target);
-            expect(isRoundingError).to.be.false();
-        });
-        it('should return true if there is a rounding error of 0.11%', async () => {
-            const numerator = new BigNumber(20);
-            const denominator = new BigNumber(9989);
-            const target = new BigNumber(500);
-            // rounding error = ((20*500/9989) - floor(20*500/9989)) / (20*500/9989) = 0.011%
-            const isRoundingError = await libs.publicIsRoundingError.callAsync(numerator, denominator, target);
-            expect(isRoundingError).to.be.true();
+        describe('isRoundingErrorCeil', () => {
+            it('should return true if there is a rounding error of 0.1%', async () => {
+                const numerator = new BigNumber(20);
+                const denominator = new BigNumber(1001);
+                const target = new BigNumber(50);
+                // rounding error = (ceil(20*50/1001) - (20*50/1001)) / (20*50/1001) = 0.1%
+                const isRoundingError = await libs.publicIsRoundingErrorCeil.callAsync(numerator, denominator, target);
+                expect(isRoundingError).to.be.true();
+            });
+            it('should return false if there is a rounding of 0.09%', async () => {
+                const numerator = new BigNumber(20);
+                const denominator = new BigNumber(10009);
+                const target = new BigNumber(500);
+                // rounding error = (ceil(20*500/10009) - (20*500/10009)) / (20*500/10009) = 0.09%
+                const isRoundingError = await libs.publicIsRoundingErrorCeil.callAsync(numerator, denominator, target);
+                expect(isRoundingError).to.be.false();
+            });
+            it('should return true if there is a rounding error of 0.11%', async () => {
+                const numerator = new BigNumber(20);
+                const denominator = new BigNumber(10011);
+                const target = new BigNumber(500);
+                // rounding error = (ceil(20*500/10011) - (20*500/10011)) / (20*500/10011) = 0.11%
+                const isRoundingError = await libs.publicIsRoundingErrorCeil.callAsync(numerator, denominator, target);
+                expect(isRoundingError).to.be.true();
+            });
         });
     });
 
@@ -109,7 +137,7 @@ describe('Exchange libs', () => {
         describe('getDomainSeparatorSchema', () => {
             it('should output the correct domain separator schema hash', async () => {
                 const domainSeparatorSchema = await libs.getDomainSeparatorSchemaHash.callAsync();
-                const domainSchemaBuffer = EIP712Utils._getDomainSeparatorSchemaBuffer();
+                const domainSchemaBuffer = eip712Utils._getDomainSeparatorSchemaBuffer();
                 const schemaHashHex = `0x${domainSchemaBuffer.toString('hex')}`;
                 expect(schemaHashHex).to.be.equal(domainSeparatorSchema);
             });

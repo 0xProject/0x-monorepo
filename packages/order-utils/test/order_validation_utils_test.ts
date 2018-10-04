@@ -16,7 +16,7 @@ describe('OrderValidationUtils', () => {
             const denominator = new BigNumber(999);
             const target = new BigNumber(50);
             // rounding error = ((20*50/999) - floor(20*50/999)) / (20*50/999) = 0.1%
-            const isRoundingError = OrderValidationUtils.isRoundingError(numerator, denominator, target);
+            const isRoundingError = OrderValidationUtils.isRoundingErrorFloor(numerator, denominator, target);
             expect(isRoundingError).to.be.false();
         });
 
@@ -25,7 +25,7 @@ describe('OrderValidationUtils', () => {
             const denominator = new BigNumber(9991);
             const target = new BigNumber(500);
             // rounding error = ((20*500/9991) - floor(20*500/9991)) / (20*500/9991) = 0.09%
-            const isRoundingError = OrderValidationUtils.isRoundingError(numerator, denominator, target);
+            const isRoundingError = OrderValidationUtils.isRoundingErrorFloor(numerator, denominator, target);
             expect(isRoundingError).to.be.false();
         });
 
@@ -34,7 +34,7 @@ describe('OrderValidationUtils', () => {
             const denominator = new BigNumber(9989);
             const target = new BigNumber(500);
             // rounding error = ((20*500/9989) - floor(20*500/9989)) / (20*500/9989) = 0.011%
-            const isRoundingError = OrderValidationUtils.isRoundingError(numerator, denominator, target);
+            const isRoundingError = OrderValidationUtils.isRoundingErrorFloor(numerator, denominator, target);
             expect(isRoundingError).to.be.true();
         });
 
@@ -43,7 +43,7 @@ describe('OrderValidationUtils', () => {
             const denominator = new BigNumber(7);
             const target = new BigNumber(10);
             // rounding error = ((3*10/7) - floor(3*10/7)) / (3*10/7) = 6.67%
-            const isRoundingError = OrderValidationUtils.isRoundingError(numerator, denominator, target);
+            const isRoundingError = OrderValidationUtils.isRoundingErrorFloor(numerator, denominator, target);
             expect(isRoundingError).to.be.true();
         });
 
@@ -52,7 +52,7 @@ describe('OrderValidationUtils', () => {
             const denominator = new BigNumber(2);
             const target = new BigNumber(10);
 
-            const isRoundingError = OrderValidationUtils.isRoundingError(numerator, denominator, target);
+            const isRoundingError = OrderValidationUtils.isRoundingErrorFloor(numerator, denominator, target);
             expect(isRoundingError).to.be.false();
         });
 
@@ -63,7 +63,7 @@ describe('OrderValidationUtils', () => {
             const target = new BigNumber(105762562);
             // rounding error = ((76564*105762562/676373677) - floor(76564*105762562/676373677)) /
             // (76564*105762562/676373677) = 0.0007%
-            const isRoundingError = OrderValidationUtils.isRoundingError(numerator, denominator, target);
+            const isRoundingError = OrderValidationUtils.isRoundingErrorFloor(numerator, denominator, target);
             expect(isRoundingError).to.be.false();
         });
     });

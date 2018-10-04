@@ -96,4 +96,5 @@ export const CallToAction: React.StatelessComponent<CallToActionProps> = ({
 CallToAction.defaultProps = {
     type: 'dark',
     fontSize: '14px',
+    padding: '0.9em 1.6em',
 };

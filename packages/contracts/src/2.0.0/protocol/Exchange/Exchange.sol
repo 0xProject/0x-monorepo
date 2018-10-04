@@ -37,7 +37,6 @@ contract Exchange is
     MixinAssetProxyDispatcher,
     MixinWrapperFunctions
 {
-
     string constant public VERSION = "2.0.1-alpha";
 
     // Mixins are instantiated in the order they are inherited

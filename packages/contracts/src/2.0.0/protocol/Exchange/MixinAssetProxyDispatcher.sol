@@ -19,7 +19,6 @@
 pragma solidity 0.4.24;
 
 import "../../utils/Ownable/Ownable.sol";
-import "../../utils/LibBytes/LibBytes.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
 import "../AssetProxy/interfaces/IAssetProxy.sol";
 
@@ -28,8 +27,6 @@ contract MixinAssetProxyDispatcher is
     Ownable,
     MAssetProxyDispatcher
 {
-    using LibBytes for bytes;
-    
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (bytes4 => IAssetProxy) public assetProxies;
 
@@ -83,14 +80,14 @@ contract MixinAssetProxyDispatcher is
         internal
     {
         // Do nothing if no amount should be transferred.
-        if (amount > 0) {
+        if (amount > 0 && from != to) {
             // Ensure assetData length is valid
             require(
                 assetData.length > 3,
                 "LENGTH_GREATER_THAN_3_REQUIRED"
             );
             
-            // Lookup assetProxy
+            // Lookup assetProxy. We do not use `LibBytes.readBytes4` for gas efficiency reasons.
             bytes4 assetProxyId;
             assembly {
                 assetProxyId := and(mload(
