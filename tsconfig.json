@@ -26,6 +26,7 @@
         { "path": "./packages/asset-buyer" },
         { "path": "./packages/base-contract" },
         { "path": "./packages/connect" },
+        { "path": "./packages/contract-artifacts" },
         { "path": "./packages/contract-wrappers" },
         { "path": "./packages/contracts" },
         { "path": "./packages/dev-utils" },
