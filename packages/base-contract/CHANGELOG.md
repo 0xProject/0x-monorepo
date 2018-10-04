@@ -5,7 +5,7 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v3.0.1 - _October 2, 2018_
+## v3.0.1 - _October 4, 2018_
 
     * Dependencies updated
 
@@ -38,7 +38,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v2.0.0-rc.1 - _August 14, 2018_
+## v2.0.0-rc.1 - _August 13, 2018_
 
     * Added strict encoding/decoding checks for sendTransaction and call (#915)
 
@@ -58,7 +58,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 20, 2018_
+## v1.0.0 - _July 19, 2018_
 
     * Dependencies updated
 
@@ -74,7 +74,7 @@ CHANGELOG
 
     * Update EthersJs to fix the `value.toLowerCase()` is not a function bug caused by `ethers.js` breaking patch version https://github.com/ethers-io/ethers.js/issues/201
 
-## v0.3.3 - _June 1, 2018_
+## v0.3.3 - _May 31, 2018_
 
     * Incorrect publish that was unpublished
 
@@ -82,7 +82,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.3.1 - _May 5, 2018_
+## v0.3.1 - _May 4, 2018_
 
     * Dependencies updated
 

@@ -5,7 +5,7 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v2.0.2 - _October 2, 2018_
+## v2.0.2 - _October 4, 2018_
 
     * Dependencies updated
 
@@ -51,7 +51,7 @@ CHANGELOG
     * Remove superfluous exported types: `ContractEvent`, `Token`, `OrderFillRequest`, `ContractEventArgs`, `LogEvent`, `OnOrderStateChangeCallback`,     `ECSignature`, `OrderStateValid`, `OrderStateInvalid`, `OrderState`, `FilterObject`, `TransactionReceipt` & `TransactionReceiptWithDecodedLogs` (#924)
     * Added Transaction Encoder for use with 0x Exchange executeTransaction (#975)
 
-## v1.0.1-rc.3 - _August 14, 2018_
+## v1.0.1-rc.3 - _August 13, 2018_
 
     * Added strict encoding/decoding checks for sendTransaction and call (#915)
     * Add ForwarderWrapper (#934)
@@ -69,7 +69,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0-rc.1 - _July 20, 2018_
+## v1.0.0-rc.1 - _July 19, 2018_
 
     * Update blockstream to v5.0 and propogate up caught errors to active subscriptions (#815)
     * Update to v2 of 0x rpotocol (#822)

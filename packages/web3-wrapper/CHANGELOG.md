@@ -5,7 +5,7 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v3.0.3 - _October 2, 2018_
+## v3.0.3 - _October 4, 2018_
 
     * Dependencies updated
 
@@ -40,7 +40,7 @@ CHANGELOG
     * Stop exporting types: `CallTxDataBaseRPC` and `AbstractBlockRPC` (#924)
     * Export `AbiDecoder` class (#924)
 
-## v1.2.0 - _August 14, 2018_
+## v1.2.0 - _August 13, 2018_
 
     * Export marshaller to convert between RPC and user-space data formats (#938)
     * Export RPC types (#938)
@@ -61,7 +61,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 20, 2018_
+## v1.0.0 - _July 19, 2018_
 
     * Stop exporting `marshaller` utility file. (#902)
     * Export `marshaller` utility file. (#829)
@@ -80,7 +80,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.7.0 - _June 4, 2018_
+## v0.7.0 - _June 3, 2018_
 
     * Add `web3Wrapper.getContractCodeAsync` (#675)
     * Add `web3Wrapper.getTransactionTraceAsync` (#675)
@@ -95,7 +95,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.6.3 - _May 5, 2018_
+## v0.6.3 - _May 4, 2018_
 
     * Dependencies updated
 

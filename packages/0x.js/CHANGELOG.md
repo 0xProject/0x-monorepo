@@ -5,7 +5,7 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.8 - _October 2, 2018_
+## v1.0.8 - _October 4, 2018_
 
     * Dependencies updated
 
@@ -49,7 +49,7 @@ CHANGELOG
 
     * Re-organize the exported interface of 0x.js. Remove the `ZeroEx` class, and instead export the same exports as `0x.js`'s sub-packages: `@0xproject/contract-wrappers`, `@0xproject/order-utils` and `@0xproject/order-watcher` (#963)
 
-## v1.0.1-rc.3 - _August 14, 2018_
+## v1.0.1-rc.3 - _August 13, 2018_
 
     * Dependencies updated
     * Update ecSignOrderHashAsync to return the signature as a string for immediate use in contracts (#914)
@@ -66,11 +66,11 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0-rc.2 - _July 20, 2018_
+## v1.0.0-rc.2 - _July 19, 2018_
 
     * Remove `zeroEx.assetData`  and instead re-export it's static functions directly off `ZeroEx`
 
-## v1.0.0-rc.1 - _July 20, 2018_
+## v1.0.0-rc.1 - _July 19, 2018_
 
     * Remove tokenRegistry wrapper (#863)
     * Rename `zeroEx.token` to `zeroEx.erc20Token`, and add `zeroEx.erc721Token` (#863)
@@ -110,7 +110,7 @@ CHANGELOG
     * Renamed createOrderStateWatcher to createOrderWatcherAsync since it is now async (#579)
     * Renamed ZeroExError to ContractWrappersErrors since they now lives in the @0xproject/contract-wrappers subpackage (#579)
 
-## v0.37.2 - _May 5, 2018_
+## v0.37.2 - _May 4, 2018_
 
     * Dependencies updated
 
