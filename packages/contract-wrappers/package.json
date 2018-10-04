@@ -12,6 +12,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "yarn pre_build && tsc -b",
+        "build:ci": "yarn build",
         "pre_build": "run-s update_artifacts generate_contract_wrappers copy_artifacts",
         "generate_contract_wrappers": "abi-gen --abis 'src/artifacts/@(Exchange|DummyERC20Token|DummyERC721Token|ZRXToken|ERC20Token|ERC721Token|WETH9|ERC20Proxy|ERC721Proxy|Forwarder|OrderValidator).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers/generated --backend ethers",
         "lint": "tslint --project . --exclude **/src/contract_wrappers/**/* --exclude **/lib/**/*",
@@ -52,7 +53,6 @@
         "@types/sinon": "^2.2.2",
         "@types/uuid": "^3.4.2",
         "@types/web3-provider-engine": "^14.0.0",
-        "awesome-typescript-loader": "^3.1.3",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^2.0.1",

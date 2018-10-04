@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.1 - _October 2, 2018_
+
+    * Dependencies updated
+
 ## v2.1.0 - _September 28, 2018_
 
     * Export ExpirationWatcher (#1097)

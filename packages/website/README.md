@@ -14,7 +14,7 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 
 ## Local Dev Setup
 
-Requires Node version 6.9.5 or higher.
+Requires Node version 6.9.5 or higher
 
 Add the following to your `/etc/hosts` file:
 

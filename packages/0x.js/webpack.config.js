@@ -2,8 +2,7 @@
  * This is to generate the umd bundle only
  */
 const _ = require('lodash');
-const webpack = require('webpack');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
 const production = process.env.NODE_ENV === 'production';
 
@@ -16,6 +15,7 @@ if (production) {
 
 module.exports = {
     entry,
+    mode: 'production',
     output: {
         path: path.resolve(__dirname, '_bundles'),
         filename: '[name].js',
@@ -27,19 +27,18 @@ module.exports = {
         extensions: ['.ts', '.js', '.json'],
     },
     devtool: 'source-map',
-    plugins: [
-        // TODO: Revert to webpack bundled version with webpack v4.
-        // The v3 series bundled version does not support ES6 and
-        // fails to build.
-        new UglifyJsPlugin({
-            sourceMap: true,
-            uglifyOptions: {
-                mangle: {
-                    reserved: ['BigNumber'],
+    optimization: {
+        minimizer: [
+            new TerserPlugin({
+                sourceMap: true,
+                terserOptions: {
+                    mangle: {
+                        reserved: ['BigNumber'],
+                    },
                 },
-            },
-        }),
-    ],
+            }),
+        ],
+    },
     module: {
         rules: [
             {
@@ -58,10 +57,6 @@ module.exports = {
                     },
                 ],
                 exclude: /node_modules/,
-            },
-            {
-                test: /\.json$/,
-                loader: 'json-loader',
             },
         ],
     },

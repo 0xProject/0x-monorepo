@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/sol-resolver",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "engines": {
         "node": ">=6.12"
     },
@@ -9,6 +9,7 @@
     "types": "lib/index.d.ts",
     "scripts": {
         "build": "tsc -b",
+        "build:ci": "yarn build",
         "clean": "shx rm -rf lib",
         "lint": "tslint --project ."
     },

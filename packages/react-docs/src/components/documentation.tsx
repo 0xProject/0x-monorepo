@@ -218,11 +218,11 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
             _.isEmpty(docSection.events);
 
         const sortedTypes = _.sortBy(docSection.types, 'name');
-        const typeDefs = _.map(sortedTypes, customType => {
+        const typeDefs = _.map(sortedTypes, (customType, i) => {
             return (
                 <TypeDefinition
                     sectionName={sectionName}
-                    key={`type-${customType.name}`}
+                    key={`type-${customType.name}-${i}`}
                     customType={customType}
                     docsInfo={this.props.docsInfo}
                     typeDefinitionByName={typeDefinitionByName}
@@ -353,7 +353,7 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                         key={`badge-${networkName}-${sectionName}`}
                         href={linkIfExists}
                         target="_blank"
-                        style={{ color: colors.white, textDecoration: 'none' }}
+                        style={{ color: colors.white, textDecoration: 'none', marginTop: 8 }}
                     >
                         <Badge title={networkName} backgroundColor={networkNameToColor[networkName]} />
                     </a>

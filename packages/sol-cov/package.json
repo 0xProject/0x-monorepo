@@ -9,6 +9,7 @@
     "types": "lib/src/index.d.ts",
     "scripts": {
         "build": "yarn pre_build && tsc -b",
+        "build:ci": "yarn build",
         "pre_build": "run-s copy_test_fixtures",
         "lint": "tslint --project .",
         "test": "run-s compile_test run_mocha",

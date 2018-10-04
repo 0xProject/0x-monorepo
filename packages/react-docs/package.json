@@ -10,6 +10,7 @@
     "scripts": {
         "lint": "tslint --project .",
         "build": "tsc -b",
+        "build:ci": "yarn build",
         "clean": "shx rm -rf lib"
     },
     "author": "Fabio Berger",

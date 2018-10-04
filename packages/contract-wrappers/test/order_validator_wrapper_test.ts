@@ -1,15 +1,14 @@
-import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { DoneCallback, SignedOrder } from '@0xproject/types';
+import { assetDataUtils } from '@0xproject/order-utils';
+import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
-import { BlockParamLiteral } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { ContractWrappers, ExchangeCancelEventArgs, ExchangeEvents, ExchangeFillEventArgs, OrderStatus } from '../src';
-import { DecodedLogEvent, OrderInfo, TraderInfo } from '../src/types';
+import { ContractWrappers, OrderStatus } from '../src';
+import { OrderInfo, TraderInfo } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
@@ -26,7 +25,6 @@ describe('OrderValidator', () => {
         blockPollingIntervalMs: 0,
     };
     const fillableAmount = new BigNumber(5);
-    const partialFillAmount = new BigNumber(2);
     let contractWrappers: ContractWrappers;
     let fillScenarios: FillScenarios;
     let exchangeContractAddress: string;

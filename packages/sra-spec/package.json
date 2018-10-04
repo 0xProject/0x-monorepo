@@ -18,6 +18,7 @@
         "test:circleci": "yarn test:coverage",
         "clean": "shx rm -rf lib",
         "build": "tsc -b && yarn copy_md_files && yarn build-json",
+        "build:ci": "yarn build",
         "build-json": "node ./lib/build_scripts/buildJson",
         "build:watch": "chokidar 'src/**/*' -c 'yarn build' ",
         "copy_md_files": "copyfiles -u 2 './src/md/**/*.md' ./lib/src/md",
