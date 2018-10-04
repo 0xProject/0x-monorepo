@@ -65,7 +65,21 @@ export class Handler {
             const web3Wrapper = new Web3Wrapper(providerObj);
             // tslint:disable-next-line:custom-no-magic-numbers
             const networkId = parseInt(networkIdString, 10);
-            const contractWrappers = new ContractWrappers(providerObj, { networkId });
+            const contractWrappersConfig = {
+                networkId,
+                // TODO(albrow): Load in real contract addresses here.
+                contractAddresses: {
+                    erc20Proxy: '',
+                    erc721Proxy: '',
+                    zrxToken: '',
+                    etherToken: '',
+                    exchange: '',
+                    assetProxyOwner: '',
+                    forwarder: '',
+                    orderValidator: '',
+                },
+            };
+            const contractWrappers = new ContractWrappers(providerObj, contractWrappersConfig);
             const dispatchQueue = new DispatchQueue();
             this._networkConfigByNetworkId[networkId] = {
                 dispatchQueue,
@@ -172,7 +186,7 @@ export class Handler {
             makerAssetData,
             takerAssetData,
             salt: generatePseudoRandomSalt(),
-            exchangeAddress: networkConfig.contractWrappers.exchange.getContractAddress(),
+            exchangeAddress: networkConfig.contractWrappers.exchange.address,
             feeRecipientAddress: NULL_ADDRESS,
             senderAddress: NULL_ADDRESS,
             // tslint:disable-next-line:custom-no-magic-numbers
