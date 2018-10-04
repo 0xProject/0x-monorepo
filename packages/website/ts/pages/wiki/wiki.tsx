@@ -84,7 +84,6 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         const sectionNameToLinks = _.isUndefined(this.state.articlesBySection)
             ? {}
             : this._getSectionNameToLinks(this.state.articlesBySection);
-        console.log('sectionNameToLinks', sectionNameToLinks);
         const mainContainersStyle: React.CSSProperties = {
             ...styles.mainContainers,
             overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',

@@ -425,7 +425,6 @@ export class Home extends React.Component<HomeProps, HomeState> {
                 pkg => pkg.link,
             ),
         };
-        console.log('sectionNameToLinks', sectionNameToLinks);
         return (
             <Container
                 className="flex items-center overflow-hidden"
