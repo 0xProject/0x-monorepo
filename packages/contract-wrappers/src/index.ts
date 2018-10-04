@@ -1,4 +1,27 @@
-import { wrappers } from '@0xproject/contracts';
+export {
+    WETH9Events,
+    WETH9WithdrawalEventArgs,
+    WETH9ApprovalEventArgs,
+    WETH9EventArgs,
+    WETH9DepositEventArgs,
+    WETH9TransferEventArgs,
+    ERC20TokenTransferEventArgs,
+    ERC20TokenApprovalEventArgs,
+    ERC20TokenEvents,
+    ERC20TokenEventArgs,
+    ERC721TokenApprovalEventArgs,
+    ERC721TokenApprovalForAllEventArgs,
+    ERC721TokenTransferEventArgs,
+    ERC721TokenEvents,
+    ERC721TokenEventArgs,
+    ExchangeCancelUpToEventArgs,
+    ExchangeAssetProxyRegisteredEventArgs,
+    ExchangeSignatureValidatorApprovalEventArgs,
+    ExchangeFillEventArgs,
+    ExchangeCancelEventArgs,
+    ExchangeEventArgs,
+    ExchangeEvents,
+} from '@0xproject/abi-gen-wrappers';
 
 export { ContractWrappers } from './contract_wrappers';
 export { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
@@ -55,32 +78,6 @@ export {
     ConstructorStateMutability,
     StateMutability,
 } from 'ethereum-types';
-
-export const WETH9Events = wrappers.WETH9Events;
-export type WETH9WithdrawalEventArgs = wrappers.WETH9WithdrawalEventArgs;
-export type WETH9ApprovalEventArgs = wrappers.WETH9ApprovalEventArgs;
-export type WETH9EventArgs = wrappers.WETH9EventArgs;
-export type WETH9DepositEventArgs = wrappers.WETH9DepositEventArgs;
-export type WETH9TransferEventArgs = wrappers.WETH9TransferEventArgs;
-
-export type ERC20TokenTransferEventArgs = wrappers.ERC20TokenTransferEventArgs;
-export type ERC20TokenApprovalEventArgs = wrappers.ERC20TokenApprovalEventArgs;
-export const ERC20TokenEvents = wrappers.ERC20TokenEvents;
-export type ERC20TokenEventArgs = wrappers.ERC20TokenEventArgs;
-
-export type ERC721TokenApprovalEventArgs = wrappers.ERC721TokenApprovalEventArgs;
-export type ERC721TokenApprovalForAllEventArgs = wrappers.ERC721TokenApprovalForAllEventArgs;
-export type ERC721TokenTransferEventArgs = wrappers.ERC721TokenTransferEventArgs;
-export const ERC721TokenEvents = wrappers.ERC721TokenEvents;
-export type ERC721TokenEventArgs = wrappers.ERC721TokenEventArgs;
-
-export type ExchangeCancelUpToEventArgs = wrappers.ExchangeCancelUpToEventArgs;
-export type ExchangeAssetProxyRegisteredEventArgs = wrappers.ExchangeAssetProxyRegisteredEventArgs;
-export type ExchangeSignatureValidatorApprovalEventArgs = wrappers.ExchangeSignatureValidatorApprovalEventArgs;
-export type ExchangeFillEventArgs = wrappers.ExchangeFillEventArgs;
-export type ExchangeCancelEventArgs = wrappers.ExchangeCancelEventArgs;
-export type ExchangeEventArgs = wrappers.ExchangeEventArgs;
-export const ExchangeEvents = wrappers.ExchangeEvents;
 
 export { AbstractBalanceAndProxyAllowanceFetcher, AbstractOrderFilledCancelledFetcher } from '@0xproject/order-utils';
 

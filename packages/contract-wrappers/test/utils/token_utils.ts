@@ -1,4 +1,5 @@
-import { artifacts, wrappers } from '@0xproject/contracts';
+import { DummyERC721TokenContract } from '@0xproject/abi-gen-wrappers';
+import { DummyERC721Token } from '@0xproject/contract-artifacts';
 import { generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { BigNumber } from '@0xproject/utils';
 
@@ -25,12 +26,7 @@ export const tokenUtils = {
         return DUMMY_ERC_721_ADRESSES;
     },
     async mintDummyERC721Async(address: string, tokenOwner: string): Promise<BigNumber> {
-        const erc721 = new wrappers.DummyERC721TokenContract(
-            artifacts.DummyERC721Token.compilerOutput.abi,
-            address,
-            provider,
-            txDefaults,
-        );
+        const erc721 = new DummyERC721TokenContract(DummyERC721Token.compilerOutput.abi, address, provider, txDefaults);
         const tokenId = generatePseudoRandomSalt();
         const txHash = await erc721.mint.sendTransactionAsync(tokenOwner, tokenId);
         web3Wrapper.awaitTransactionSuccessAsync(txHash);

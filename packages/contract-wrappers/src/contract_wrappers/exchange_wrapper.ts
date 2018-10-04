@@ -1,4 +1,5 @@
-import { artifacts, wrappers } from '@0xproject/contracts';
+import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from '@0xproject/abi-gen-wrappers';
+import { Exchange } from '@0xproject/contract-artifacts';
 import { schemas } from '@0xproject/json-schemas';
 import {
     assetDataUtils,
@@ -40,10 +41,10 @@ import { ERC721TokenWrapper } from './erc721_token_wrapper';
  * events of the 0x V2 Exchange smart contract.
  */
 export class ExchangeWrapper extends ContractWrapper {
-    public abi: ContractAbi = artifacts.Exchange.compilerOutput.abi;
+    public abi: ContractAbi = Exchange.compilerOutput.abi;
     public address: string;
     public zrxTokenAddress: string;
-    private _exchangeContractIfExists?: wrappers.ExchangeContract;
+    private _exchangeContractIfExists?: ExchangeContract;
     private _erc721TokenWrapper: ERC721TokenWrapper;
     private _erc20TokenWrapper: ERC20TokenWrapper;
     /**
@@ -1039,20 +1040,20 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
-    public subscribe<ArgsType extends wrappers.ExchangeEventArgs>(
-        eventName: wrappers.ExchangeEvents,
+    public subscribe<ArgsType extends ExchangeEventArgs>(
+        eventName: ExchangeEvents,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
         isVerbose: boolean = false,
     ): string {
-        assert.doesBelongToStringEnum('eventName', eventName, wrappers.ExchangeEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const subscriptionToken = this._subscribe<ArgsType>(
             this.address,
             eventName,
             indexFilterValues,
-            artifacts.Exchange.compilerOutput.abi,
+            Exchange.compilerOutput.abi,
             callback,
             isVerbose,
         );
@@ -1079,12 +1080,12 @@ export class ExchangeWrapper extends ContractWrapper {
      *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
      * @return  Array of logs that match the parameters
      */
-    public async getLogsAsync<ArgsType extends wrappers.ExchangeEventArgs>(
-        eventName: wrappers.ExchangeEvents,
+    public async getLogsAsync<ArgsType extends ExchangeEventArgs>(
+        eventName: ExchangeEvents,
         blockRange: BlockRange,
         indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
-        assert.doesBelongToStringEnum('eventName', eventName, wrappers.ExchangeEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const logs = await this._getLogsAsync<ArgsType>(
@@ -1092,7 +1093,7 @@ export class ExchangeWrapper extends ContractWrapper {
             eventName,
             blockRange,
             indexFilterValues,
-            artifacts.Exchange.compilerOutput.abi,
+            Exchange.compilerOutput.abi,
         );
         return logs;
     }
@@ -1178,11 +1179,11 @@ export class ExchangeWrapper extends ContractWrapper {
         delete this._exchangeContractIfExists;
     }
     // tslint:enable:no-unused-variable
-    private async _getExchangeContractAsync(): Promise<wrappers.ExchangeContract> {
+    private async _getExchangeContractAsync(): Promise<ExchangeContract> {
         if (!_.isUndefined(this._exchangeContractIfExists)) {
             return this._exchangeContractIfExists;
         }
-        const contractInstance = new wrappers.ExchangeContract(
+        const contractInstance = new ExchangeContract(
             this.abi,
             this.address,
             this._web3Wrapper.getProvider(),

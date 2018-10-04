@@ -1,4 +1,5 @@
-import { artifacts, wrappers } from '@0xproject/contracts';
+import { ForwarderContract } from '@0xproject/abi-gen-wrappers';
+import { Forwarder } from '@0xproject/contract-artifacts';
 import { schemas } from '@0xproject/json-schemas';
 import { AssetProxyId, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -21,11 +22,11 @@ import { ContractWrapper } from './contract_wrapper';
  * This class includes the functionality related to interacting with the Forwarder contract.
  */
 export class ForwarderWrapper extends ContractWrapper {
-    public abi: ContractAbi = artifacts.Forwarder.compilerOutput.abi;
+    public abi: ContractAbi = Forwarder.compilerOutput.abi;
     public address: string;
     public zrxTokenAddress: string;
     public etherTokenAddress: string;
-    private _forwarderContractIfExists?: wrappers.ForwarderContract;
+    private _forwarderContractIfExists?: ForwarderContract;
     // TODO(albrow): Make addresses optional?
     constructor(web3Wrapper: Web3Wrapper, address: string, zrxTokenAddress: string, etherTokenAddress: string) {
         super(web3Wrapper);
@@ -215,11 +216,11 @@ export class ForwarderWrapper extends ContractWrapper {
     private _invalidateContractInstance(): void {
         delete this._forwarderContractIfExists;
     }
-    private async _getForwarderContractAsync(): Promise<wrappers.ForwarderContract> {
+    private async _getForwarderContractAsync(): Promise<ForwarderContract> {
         if (!_.isUndefined(this._forwarderContractIfExists)) {
             return this._forwarderContractIfExists;
         }
-        const contractInstance = new wrappers.ForwarderContract(
+        const contractInstance = new ForwarderContract(
             this.abi,
             this.address,
             this._web3Wrapper.getProvider(),

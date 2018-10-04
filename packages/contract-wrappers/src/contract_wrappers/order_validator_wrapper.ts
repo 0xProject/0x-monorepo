@@ -1,4 +1,5 @@
-import { artifacts, wrappers } from '@0xproject/contracts';
+import { OrderValidatorContract } from '@0xproject/abi-gen-wrappers';
+import { OrderValidator } from '@0xproject/contract-artifacts';
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -15,9 +16,9 @@ import { ContractWrapper } from './contract_wrapper';
  * This class includes the functionality related to interacting with the OrderValidator contract.
  */
 export class OrderValidatorWrapper extends ContractWrapper {
-    public abi: ContractAbi = artifacts.OrderValidator.compilerOutput.abi;
+    public abi: ContractAbi = OrderValidator.compilerOutput.abi;
     public address: string;
-    private _orderValidatorContractIfExists?: wrappers.OrderValidatorContract;
+    private _orderValidatorContractIfExists?: OrderValidatorContract;
     /**
      * Instantiate OrderValidatorWrapper
      * @param web3Wrapper Web3Wrapper instance to use.
@@ -172,11 +173,11 @@ export class OrderValidatorWrapper extends ContractWrapper {
     private _invalidateContractInstance(): void {
         delete this._orderValidatorContractIfExists;
     }
-    private async _getOrderValidatorContractAsync(): Promise<wrappers.OrderValidatorContract> {
+    private async _getOrderValidatorContractAsync(): Promise<OrderValidatorContract> {
         if (!_.isUndefined(this._orderValidatorContractIfExists)) {
             return this._orderValidatorContractIfExists;
         }
-        const contractInstance = new wrappers.OrderValidatorContract(
+        const contractInstance = new OrderValidatorContract(
             this.abi,
             this.address,
             this._web3Wrapper.getProvider(),

@@ -1,4 +1,13 @@
-import { wrappers } from '@0xproject/contracts';
+import {
+    ERC20TokenEventArgs,
+    ERC20TokenEvents,
+    ERC721TokenEventArgs,
+    ERC721TokenEvents,
+    ExchangeEventArgs,
+    ExchangeEvents,
+    WETH9EventArgs,
+    WETH9Events,
+} from '@0xproject/abi-gen-wrappers';
 import { ContractAddresses, OrderState, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
@@ -56,11 +65,7 @@ export interface ContractEvent {
     args: ContractEventArgs;
 }
 
-export type ContractEventArgs =
-    | wrappers.ExchangeEventArgs
-    | wrappers.ERC20TokenEventArgs
-    | wrappers.ERC721TokenEventArgs
-    | wrappers.WETH9EventArgs;
+export type ContractEventArgs = ExchangeEventArgs | ERC20TokenEventArgs | ERC721TokenEventArgs | WETH9EventArgs;
 
 //                          [address, name, symbol, decimals, ipfsHash, swarmHash]
 export type TokenMetadata = [string, string, string, number, string, string];
@@ -83,11 +88,7 @@ export interface TokenAddressBySymbol {
     [symbol: string]: string;
 }
 
-export type ContractEvents =
-    | wrappers.ERC20TokenEvents
-    | wrappers.ERC721TokenEvents
-    | wrappers.ExchangeEvents
-    | wrappers.WETH9Events;
+export type ContractEvents = ERC20TokenEvents | ERC721TokenEvents | ExchangeEvents | WETH9Events;
 
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;

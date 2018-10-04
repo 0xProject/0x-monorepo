@@ -1,4 +1,5 @@
-import { artifacts, wrappers } from '@0xproject/contracts';
+import { ERC721TokenContract, ERC721TokenEventArgs, ERC721TokenEvents } from '@0xproject/abi-gen-wrappers';
+import { ERC721Token } from '@0xproject/contract-artifacts';
 import { schemas } from '@0xproject/json-schemas';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
@@ -29,8 +30,8 @@ const removeUndefinedProperties = _.pickBy;
  * to the 0x ERC721 Proxy smart contract.
  */
 export class ERC721TokenWrapper extends ContractWrapper {
-    public abi: ContractAbi = artifacts.ERC721Token.compilerOutput.abi;
-    private _tokenContractsByAddress: { [address: string]: wrappers.ERC721TokenContract };
+    public abi: ContractAbi = ERC721Token.compilerOutput.abi;
+    private _tokenContractsByAddress: { [address: string]: ERC721TokenContract };
     private _erc721ProxyWrapper: ERC721ProxyWrapper;
     /**
      * Instantiate ERC721TokenWrapper
@@ -377,15 +378,15 @@ export class ERC721TokenWrapper extends ContractWrapper {
      * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
-    public subscribe<ArgsType extends wrappers.ERC721TokenEventArgs>(
+    public subscribe<ArgsType extends ERC721TokenEventArgs>(
         tokenAddress: string,
-        eventName: wrappers.ERC721TokenEvents,
+        eventName: ERC721TokenEvents,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
         isVerbose: boolean = false,
     ): string {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        assert.doesBelongToStringEnum('eventName', eventName, wrappers.ERC721TokenEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, ERC721TokenEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
@@ -393,7 +394,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
             normalizedTokenAddress,
             eventName,
             indexFilterValues,
-            artifacts.ERC721Token.compilerOutput.abi,
+            ERC721Token.compilerOutput.abi,
             callback,
             isVerbose,
         );
@@ -422,14 +423,14 @@ export class ERC721TokenWrapper extends ContractWrapper {
      *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
      * @return  Array of logs that match the parameters
      */
-    public async getLogsAsync<ArgsType extends wrappers.ERC721TokenEventArgs>(
+    public async getLogsAsync<ArgsType extends ERC721TokenEventArgs>(
         tokenAddress: string,
-        eventName: wrappers.ERC721TokenEvents,
+        eventName: ERC721TokenEvents,
         blockRange: BlockRange,
         indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        assert.doesBelongToStringEnum('eventName', eventName, wrappers.ERC721TokenEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, ERC721TokenEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
@@ -438,7 +439,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
             eventName,
             blockRange,
             indexFilterValues,
-            artifacts.ERC721Token.compilerOutput.abi,
+            ERC721Token.compilerOutput.abi,
         );
         return logs;
     }
@@ -449,7 +450,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         this.unsubscribeAll();
         this._tokenContractsByAddress = {};
     }
-    private async _getTokenContractAsync(tokenAddress: string): Promise<wrappers.ERC721TokenContract> {
+    private async _getTokenContractAsync(tokenAddress: string): Promise<ERC721TokenContract> {
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         let tokenContract = this._tokenContractsByAddress[normalizedTokenAddress];
         if (!_.isUndefined(tokenContract)) {
@@ -461,7 +462,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         if (!doesContractExist) {
             throw new Error(ContractWrappersError.ERC721TokenContractDoesNotExist);
         }
-        const contractInstance = new wrappers.ERC721TokenContract(
+        const contractInstance = new ERC721TokenContract(
             this.abi,
             normalizedTokenAddress,
             this._web3Wrapper.getProvider(),

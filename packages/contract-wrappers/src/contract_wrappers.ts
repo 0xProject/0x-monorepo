@@ -1,4 +1,13 @@
-import { artifacts } from '@0xproject/contracts';
+import {
+    ERC20Proxy,
+    ERC20Token,
+    ERC721Proxy,
+    ERC721Token,
+    Exchange,
+    Forwarder,
+    OrderValidator,
+    WETH9,
+} from '@0xproject/contract-artifacts';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -71,14 +80,22 @@ export class ContractWrappers {
             contractWrappersPrivateNetworkConfigSchema,
             contractWrappersPublicNetworkConfigSchema,
         ]);
-        const artifactJSONs = _.values(artifacts);
-        const abiArrays = _.map(artifactJSONs, artifact => artifact.compilerOutput.abi);
         const txDefaults = {
             gasPrice: config.gasPrice,
         };
         this._web3Wrapper = new Web3Wrapper(provider, txDefaults);
-        _.forEach(abiArrays, abi => {
-            this._web3Wrapper.abiDecoder.addABI(abi);
+        const artifactsArray = [
+            ERC20Proxy,
+            ERC20Token,
+            ERC721Proxy,
+            ERC721Token,
+            Exchange,
+            Forwarder,
+            OrderValidator,
+            WETH9,
+        ];
+        _.forEach(artifactsArray, artifact => {
+            this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi);
         });
         const blockPollingIntervalMs = _.isUndefined(config.blockPollingIntervalMs)
             ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
@@ -114,7 +131,6 @@ export class ContractWrappers {
      * @param   networkId   The id of the network your provider is connected to
      */
     public setProvider(provider: Provider): void {
-        // TODO(albrow): Make sure all contract wrappers are called below.
         this._web3Wrapper.setProvider(provider);
         (this.exchange as any)._invalidateContractInstances();
         (this.erc20Token as any)._invalidateContractInstances();

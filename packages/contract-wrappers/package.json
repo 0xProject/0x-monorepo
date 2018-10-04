@@ -67,9 +67,10 @@
         "web3-provider-engine": "14.0.6"
     },
     "dependencies": {
-        "@0xproject/contracts": "^2.1.48",
+        "@0xproject/abi-gen-wrappers": "^1.0.0",
         "@0xproject/assert": "^1.0.13",
         "@0xproject/base-contract": "^3.0.1",
+        "@0xproject/contract-artifacts": "^1.0.0",
         "@0xproject/fill-scenarios": "^1.0.7",
         "@0xproject/json-schemas": "^1.0.7",
         "@0xproject/order-utils": "^1.0.7",

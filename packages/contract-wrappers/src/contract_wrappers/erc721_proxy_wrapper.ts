@@ -1,4 +1,5 @@
-import { artifacts, wrappers } from '@0xproject/contracts';
+import { ERC721ProxyContract } from '@0xproject/abi-gen-wrappers';
+import { ERC721Proxy } from '@0xproject/contract-artifacts';
 import { AssetProxyId } from '@0xproject/types';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
@@ -12,9 +13,9 @@ import { ContractWrapper } from './contract_wrapper';
  * This class includes the functionality related to interacting with the ERC721Proxy contract.
  */
 export class ERC721ProxyWrapper extends ContractWrapper {
-    public abi: ContractAbi = artifacts.ERC20Proxy.compilerOutput.abi;
+    public abi: ContractAbi = ERC721Proxy.compilerOutput.abi;
     public address: string;
-    private _erc721ProxyContractIfExists?: wrappers.ERC721ProxyContract;
+    private _erc721ProxyContractIfExists?: ERC721ProxyContract;
     /**
      * Instantiate ERC721ProxyWrapper
      * @param web3Wrapper Web3Wrapper instance to use
@@ -62,11 +63,11 @@ export class ERC721ProxyWrapper extends ContractWrapper {
     private _invalidateContractInstance(): void {
         delete this._erc721ProxyContractIfExists;
     }
-    private _getERC721ProxyContract(): wrappers.ERC721ProxyContract {
+    private _getERC721ProxyContract(): ERC721ProxyContract {
         if (!_.isUndefined(this._erc721ProxyContractIfExists)) {
             return this._erc721ProxyContractIfExists;
         }
-        const contractInstance = new wrappers.ERC721ProxyContract(
+        const contractInstance = new ERC721ProxyContract(
             this.abi,
             this.address,
             this._web3Wrapper.getProvider(),
