@@ -103,11 +103,17 @@ describe('buyQuoteCalculator', () => {
             expect(buyQuote.feeOrders).to.deep.equal([smallFeeOrderAndFillableAmount.orders[0]]);
             // test if rates are correct
             // 50 eth to fill the first order + 100 eth for fees
-            const expectedMinEthToFill = new BigNumber(150);
-            const expectedMinRate = assetBuyAmount.div(expectedMinEthToFill.mul(feePercentage + 1));
-            expect(buyQuote.minRate).to.bignumber.equal(expectedMinRate);
+            const expectedFillEthAmount = new BigNumber(150);
+            const expectedTotalEthAmount = expectedFillEthAmount.mul(feePercentage + 1);
+            const expectedFeeEthAmount = expectedTotalEthAmount.minus(expectedFillEthAmount);
+            const expectedEthPerAssetPrice = expectedFillEthAmount.div(assetBuyAmount);
+            expect(buyQuote.bestCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
+            expect(buyQuote.bestCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
+            expect(buyQuote.bestCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedEthPerAssetPrice);
             // because we have no slippage protection, minRate is equal to maxRate
-            expect(buyQuote.maxRate).to.bignumber.equal(expectedMinRate);
+            expect(buyQuote.worstCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
+            expect(buyQuote.worstCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
+            expect(buyQuote.worstCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedEthPerAssetPrice);
             // test if feePercentage gets passed through
             expect(buyQuote.feePercentage).to.equal(feePercentage);
         });
@@ -132,13 +138,21 @@ describe('buyQuoteCalculator', () => {
             expect(buyQuote.feeOrders).to.deep.equal(allFeeOrdersAndFillableAmounts.orders);
             // test if rates are correct
             // 50 eth to fill the first order + 100 eth for fees
-            const expectedMinEthToFill = new BigNumber(150);
-            const expectedMinRate = assetBuyAmount.div(expectedMinEthToFill.mul(feePercentage + 1));
-            expect(buyQuote.minRate).to.bignumber.equal(expectedMinRate);
+            const expectedFillEthAmount = new BigNumber(150);
+            const expectedTotalEthAmount = expectedFillEthAmount.mul(feePercentage + 1);
+            const expectedFeeEthAmount = expectedTotalEthAmount.minus(expectedFillEthAmount);
+            const expectedEthPerAssetPrice = expectedFillEthAmount.div(assetBuyAmount);
+            expect(buyQuote.bestCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
+            expect(buyQuote.bestCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
+            expect(buyQuote.bestCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedEthPerAssetPrice);
             // 100 eth to fill the first order + 200 eth for fees
-            const expectedMaxEthToFill = new BigNumber(300);
-            const expectedMaxRate = assetBuyAmount.div(expectedMaxEthToFill.mul(feePercentage + 1));
-            expect(buyQuote.maxRate).to.bignumber.equal(expectedMaxRate);
+            const expectedWorstFillEthAmount = new BigNumber(300);
+            const expectedWorstTotalEthAmount = expectedWorstFillEthAmount.mul(feePercentage + 1);
+            const expectedWorstFeeEthAmount = expectedWorstTotalEthAmount.minus(expectedWorstFillEthAmount);
+            const expectedWorstEthPerAssetPrice = expectedWorstFillEthAmount.div(assetBuyAmount);
+            expect(buyQuote.worstCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedWorstFeeEthAmount);
+            expect(buyQuote.worstCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedWorstTotalEthAmount);
+            expect(buyQuote.worstCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedWorstEthPerAssetPrice);
             // test if feePercentage gets passed through
             expect(buyQuote.feePercentage).to.equal(feePercentage);
         });

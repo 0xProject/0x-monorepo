@@ -3,7 +3,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { AssetBuyerError, BuyQuote, OrdersAndFillableAmounts } from '../types';
+import { AssetBuyerError, BuyQuote, BuyQuoteInfo, OrdersAndFillableAmounts } from '../types';
 
 // Calculates a buy quote for orders that have WETH as the takerAsset
 export const buyQuoteCalculator = {
@@ -59,37 +59,38 @@ export const buyQuoteCalculator = {
             orders: resultFeeOrders,
             remainingFillableMakerAssetAmounts: feeOrdersRemainingFillableMakerAssetAmounts,
         };
-        const minRate = calculateRate(
+        const bestCaseQuoteInfo = calculateQuoteInfo(
             trimmedOrdersAndFillableAmounts,
             trimmedFeeOrdersAndFillableAmounts,
             assetBuyAmount,
             feePercentage,
         );
         // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
-        const maxRate = calculateRate(
+        const worstCaseQuoteInfo = calculateQuoteInfo(
             reverseOrdersAndFillableAmounts(trimmedOrdersAndFillableAmounts),
             reverseOrdersAndFillableAmounts(trimmedFeeOrdersAndFillableAmounts),
             assetBuyAmount,
             feePercentage,
         );
+
         return {
             assetData,
             orders: resultOrders,
             feeOrders: resultFeeOrders,
-            minRate,
-            maxRate,
+            bestCaseQuoteInfo,
+            worstCaseQuoteInfo,
             assetBuyAmount,
             feePercentage,
         };
     },
 };
 
-function calculateRate(
+function calculateQuoteInfo(
     ordersAndFillableAmounts: OrdersAndFillableAmounts,
     feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
     assetBuyAmount: BigNumber,
     feePercentage: number,
-): BigNumber {
+): BuyQuoteInfo {
     // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
     const [ethAmountToBuyAsset, zrxAmountToBuyAsset] = findEthAndZrxAmountNeededToBuyAsset(
         ordersAndFillableAmounts,
@@ -97,10 +98,15 @@ function calculateRate(
     );
     // find the total eth needed to buy fees
     const ethAmountToBuyFees = findEthAmountNeededToBuyFees(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
-    const ethAmount = ethAmountToBuyAsset.plus(ethAmountToBuyFees).mul(feePercentage + 1);
+    const ethAmountBeforeAffiliateFee = ethAmountToBuyAsset.plus(ethAmountToBuyFees);
+    const totalEthAmount = ethAmountBeforeAffiliateFee.mul(feePercentage + 1);
     // divide into the assetBuyAmount in order to find rate of makerAsset / WETH
-    const result = assetBuyAmount.div(ethAmount);
-    return result;
+    const ethPerAssetPrice = ethAmountBeforeAffiliateFee.div(assetBuyAmount);
+    return {
+        totalEthAmount,
+        feeEthAmount: totalEthAmount.minus(ethAmountBeforeAffiliateFee),
+        ethPerAssetPrice,
+    };
 }
 
 // given an OrdersAndFillableAmounts, reverse the orders and remainingFillableMakerAssetAmounts properties
