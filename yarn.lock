@@ -1209,7 +1209,7 @@
 
 "@types/react-redux@^6.0.9":
   version "6.0.9"
-  resolved "http://localhost:4873/@types%2freact-redux/-/react-redux-6.0.9.tgz#96aa7f5b0716bcc3bfb36ceaa1223118d509f79a"
+  resolved "https://registry.npmjs.org/@types/react-redux/-/react-redux-6.0.9.tgz#96aa7f5b0716bcc3bfb36ceaa1223118d509f79a"
   dependencies:
     "@types/react" "*"
     redux "^4.0.0"
@@ -1266,7 +1266,7 @@
 
 "@types/redux@^3.6.0":
   version "3.6.0"
-  resolved "http://localhost:4873/@types%2fredux/-/redux-3.6.0.tgz#f1ebe1e5411518072e4fdfca5c76e16e74c1399a"
+  resolved "https://registry.npmjs.org/@types/redux/-/redux-3.6.0.tgz#f1ebe1e5411518072e4fdfca5c76e16e74c1399a"
   dependencies:
     redux "*"
 
@@ -11676,7 +11676,7 @@ polished@^1.9.3:
 
 polished@^2.2.0:
   version "2.2.0"
-  resolved "http://localhost:4873/polished/-/polished-2.2.0.tgz#5ca7e178cc5352bd7fd1efc45342f7c6d59cc982"
+  resolved "https://registry.npmjs.org/polished/-/polished-2.2.0.tgz#5ca7e178cc5352bd7fd1efc45342f7c6d59cc982"
   dependencies:
     "@babel/runtime" "^7.0.0"
 
@@ -12642,7 +12642,7 @@ react-popper@^1.0.0-beta.6:
 
 react-redux@^5.0.3, react-redux@^5.0.7:
   version "5.0.7"
-  resolved "http://localhost:4873/react-redux/-/react-redux-5.0.7.tgz#0dc1076d9afb4670f993ffaef44b8f8c1155a4c8"
+  resolved "http://registry.npmjs.org/react-redux/-/react-redux-5.0.7.tgz#0dc1076d9afb4670f993ffaef44b8f8c1155a4c8"
   dependencies:
     hoist-non-react-statics "^2.5.0"
     invariant "^2.0.0"
@@ -13021,7 +13021,7 @@ redux-devtools-extension@^2.13.2:
 
 redux@*, redux@^4.0.0:
   version "4.0.0"
-  resolved "http://localhost:4873/redux/-/redux-4.0.0.tgz#aa698a92b729315d22b34a0553d7e6533555cc03"
+  resolved "https://registry.npmjs.org/redux/-/redux-4.0.0.tgz#aa698a92b729315d22b34a0553d7e6533555cc03"
   dependencies:
     loose-envify "^1.1.0"
     symbol-observable "^1.2.0"
@@ -14618,7 +14618,7 @@ styled-components@^3.3.3:
 
 styled-components@^3.4.9:
   version "3.4.9"
-  resolved "http://localhost:4873/styled-components/-/styled-components-3.4.9.tgz#519abeb351b37be5b7de6a15ff9e4efeb9d772da"
+  resolved "https://registry.npmjs.org/styled-components/-/styled-components-3.4.9.tgz#519abeb351b37be5b7de6a15ff9e4efeb9d772da"
   dependencies:
     buffer "^5.0.3"
     css-to-react-native "^2.0.3"
