@@ -33,6 +33,7 @@
         "shx": "^0.2.2"
     },
     "dependencies": {
+        "@0xproject/base-contract": "^3.0.1"
     },
     "publishConfig": {
         "access": "public"
