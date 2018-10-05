@@ -8,7 +8,7 @@ import { colors } from '../utils/colors';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
-import { Link } from './Link';
+import { Link } from './link';
 import { VersionDropDown } from './version_drop_down';
 
 export interface NestedSidebarMenuProps {
