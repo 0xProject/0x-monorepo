@@ -6,7 +6,6 @@ import { Text } from 'ts/components/ui/text';
 import { Deco, Key, TutorialInfo } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
-import { darken, saturate } from 'polished';
 import { styled } from 'ts/style/theme';
 
 export interface TutorialButtonProps {
