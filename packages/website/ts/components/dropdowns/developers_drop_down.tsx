@@ -64,6 +64,7 @@ const usefulLinksToLinkInfo: ALink[] = [
 ];
 
 interface DevelopersDropDownProps {
+    location: Location;
     translate: Translate;
     menuItemStyles: React.CSSProperties;
     menuIconStyle: React.CSSProperties;
@@ -165,17 +166,20 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
         const numLinks = links.length;
         let i = 0;
         const renderLinks = _.map(links, (link: ALink) => {
+            const isWikiLink = _.startsWith(link.to, WebsitePaths.Wiki) && _.includes(link.to, '#');
+            const isOnWiki = this.props.location.pathname === WebsitePaths.Wiki;
+            let to = link.to;
+            let type = link.type;
+            if (isWikiLink && isOnWiki) {
+                to = `${link.to.split('#')[1]}`;
+                type = LinkType.ReactScroll;
+            }
             i++;
             const isLast = i === numLinks;
             const linkText = this.props.translate.get(link.title as Key, Deco.Cap);
             return (
                 <div className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${link.title}`}>
-                    <Link
-                        to={link.to}
-                        type={link.type}
-                        shouldOpenInNewTab={!!link.shouldOpenInNewTab}
-                        style={linkStyle}
-                    >
+                    <Link to={to} type={type} shouldOpenInNewTab={!!link.shouldOpenInNewTab} style={linkStyle}>
                         {linkText}
                     </Link>
                 </div>
