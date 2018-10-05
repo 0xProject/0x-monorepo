@@ -7,7 +7,7 @@ import { Button, Container, Text } from './ui';
 export interface BuyButtonProps {}
 
 export const BuyButton: React.StatelessComponent<BuyButtonProps> = props => (
-    <Container backgroundColor={ColorOption.white} padding="20px" width="100%">
+    <Container padding="20px" width="100%">
         <Button width="100%">
             <Text fontColor={ColorOption.white} fontWeight={600} fontSize="20px">
                 Buy

@@ -18,7 +18,6 @@ export interface ContainerProps {
     marginBottom?: string;
     marginLeft?: string;
     padding?: string;
-    boxShadow?: string;
     borderRadius?: string;
     border?: string;
     borderColor?: ColorOption;
@@ -33,6 +32,7 @@ const PlainContainer: React.StatelessComponent<ContainerProps> = ({ children, cl
 );
 
 export const Container = styled(PlainContainer)`
+    box-sizing: border-box;
     ${props => cssRuleIfExists(props, 'display')}
     ${props => cssRuleIfExists(props, 'position')}
     ${props => cssRuleIfExists(props, 'top')}
@@ -47,7 +47,6 @@ export const Container = styled(PlainContainer)`
     ${props => cssRuleIfExists(props, 'margin-bottom')}
     ${props => cssRuleIfExists(props, 'margin-left')}
     ${props => cssRuleIfExists(props, 'padding')}
-    ${props => cssRuleIfExists(props, 'box-shadow')}
     ${props => cssRuleIfExists(props, 'border-radius')}
     ${props => cssRuleIfExists(props, 'border')}
     ${props => cssRuleIfExists(props, 'border-top')}

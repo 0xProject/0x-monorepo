@@ -7,7 +7,7 @@ import { Container, Flex, Text } from './ui';
 export interface OrderDetailsProps {}
 
 export const OrderDetails: React.StatelessComponent<OrderDetailsProps> = props => (
-    <Container backgroundColor={ColorOption.white} padding="20px" width="100%">
+    <Container padding="20px" width="100%">
         <Container marginBottom="10px">
             <Text
                 letterSpacing="1px"

@@ -10,9 +10,11 @@ import { Container, Flex, Text } from './ui';
 export interface ZeroExInstantContainerProps {}
 
 export const ZeroExInstantContainer: React.StatelessComponent<ZeroExInstantContainerProps> = props => (
-    <Flex direction="column" width="350px" justify="flex-start">
-        <InstantHeading />
-        <OrderDetails />
-        <BuyButton />
-    </Flex>
+    <Container hasBoxShadow={true} width="350px" backgroundColor={ColorOption.white}>
+        <Flex direction="column" justify="flex-start">
+            <InstantHeading />
+            <OrderDetails />
+            <BuyButton />
+        </Flex>
+    </Container>
 );
