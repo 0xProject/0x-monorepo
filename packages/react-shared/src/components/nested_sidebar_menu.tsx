@@ -5,7 +5,6 @@ import * as React from 'react';
 
 import { ALink, Styles } from '../types';
 import { colors } from '../utils/colors';
-import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
 import { Link } from './link';
