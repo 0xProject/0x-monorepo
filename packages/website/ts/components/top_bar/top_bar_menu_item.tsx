@@ -1,4 +1,4 @@
-import { colors, Link, LinkType } from '@0xproject/react-shared';
+import { colors, Link } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -12,7 +12,7 @@ interface TopBarMenuItemProps {
     title: string;
     path?: string;
     isPrimary?: boolean;
-    linkType: LinkType;
+    shouldOpenInNewTab?: boolean;
     style?: React.CSSProperties;
     className?: string;
     isNightVersion?: boolean;
@@ -25,6 +25,7 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
         isPrimary: false,
         style: DEFAULT_STYLE,
         className: '',
+        shouldOpenInNewTab: false,
         isNightVersion: false,
     };
     public render(): React.ReactNode {
@@ -37,7 +38,7 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
         );
         return (
             <div className={`center ${this.props.className}`} style={{ ...this.props.style, color: menuItemColor }}>
-                <Link to={this.props.path} type={this.props.linkType} fontColor={linkColor}>
+                <Link to={this.props.path} shouldOpenInNewTab={this.props.shouldOpenInNewTab} fontColor={linkColor}>
                     {itemContent}
                 </Link>
             </div>

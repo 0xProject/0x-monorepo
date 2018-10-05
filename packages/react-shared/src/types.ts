@@ -30,5 +30,4 @@ export interface ALink {
     title: string;
     to: string;
     shouldOpenInNewTab?: boolean;
-    type?: LinkType;
 }

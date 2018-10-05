@@ -2,6 +2,7 @@ import {
     colors,
     constants as sharedConstants,
     EtherscanLinkSuffixes,
+    Link,
     MarkdownSection,
     NestedSidebarMenu,
     Networks,
@@ -319,9 +320,9 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 <div className="pt2" key={`external-export-${exportName}`}>
                     <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
                         {`import { `}
-                        <a href={link} target="_blank" style={{ color: colors.lightBlueA700, textDecoration: 'none' }}>
+                        <Link to={link} shouldOpenInNewTab={true} fontColor={colors.lightBlueA700}>
                             {exportName}
-                        </a>
+                        </Link>
                         {` } from '${this.props.docsInfo.packageName}'`}
                     </code>
                 </div>
@@ -350,14 +351,16 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     EtherscanLinkSuffixes.Address,
                 );
                 return (
-                    <a
-                        key={`badge-${networkName}-${sectionName}`}
-                        href={linkIfExists}
-                        target="_blank"
-                        style={{ color: colors.white, textDecoration: 'none', marginTop: 8 }}
-                    >
-                        <Badge title={networkName} backgroundColor={networkNameToColor[networkName]} />
-                    </a>
+                    <div style={{ marginTop: 8 }}>
+                        <Link
+                            key={`badge-${networkName}-${sectionName}`}
+                            to={linkIfExists}
+                            shouldOpenInNewTab={true}
+                            fontColor={colors.white}
+                        >
+                            <Badge title={networkName} backgroundColor={networkNameToColor[networkName]} />
+                        </Link>
+                    </div>
                 );
             },
         );

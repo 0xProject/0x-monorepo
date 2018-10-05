@@ -1,13 +1,5 @@
 import { DocsInfo } from '@0xproject/react-docs';
-import {
-    ALink,
-    colors,
-    constants as sharedConstants,
-    Link,
-    LinkType,
-    NestedSidebarMenu,
-    Styles,
-} from '@0xproject/react-shared';
+import { ALink, colors, constants as sharedConstants, Link, NestedSidebarMenu, Styles } from '@0xproject/react-shared';
 import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
@@ -177,7 +169,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                     path={constants.URL_BLOG}
                                     style={styles.menuItem}
                                     isNightVersion={isNightVersion}
-                                    linkType={LinkType.External}
+                                    shouldOpenInNewTab={true}
                                 />
                                 <TopBarMenuItem
                                     title={this.props.translate.get(Key.About, Deco.Cap)}
@@ -285,7 +277,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             </MenuItem>
                         </Link>
                     )}
-                    <Link to={WebsitePaths.Whitepaper} type={LinkType.External} shouldOpenInNewTab={true}>
+                    <Link to={WebsitePaths.Whitepaper} shouldOpenInNewTab={true}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Whitepaper, Deco.Cap)}</MenuItem>
                     </Link>
                     <Link to={WebsitePaths.About}>
@@ -294,7 +286,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     <Link to={WebsitePaths.Careers}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Careers, Deco.Cap)}</MenuItem>
                     </Link>
-                    <Link to={constants.URL_BLOG} type={LinkType.External} shouldOpenInNewTab={true}>
+                    <Link to={constants.URL_BLOG} shouldOpenInNewTab={true}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Blog, Deco.Cap)}</MenuItem>
                     </Link>
                     <Link to={WebsitePaths.FAQ}>

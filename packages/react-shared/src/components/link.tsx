@@ -2,13 +2,13 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Link as ReactRounterLink } from 'react-router-dom';
 import { Link as ScrollLink } from 'react-scroll';
+import * as validUrl from 'valid-url';
 
 import { LinkType } from '../types';
 import { constants } from '../utils/constants';
 
 interface LinkProps {
     to: string;
-    type?: LinkType;
     shouldOpenInNewTab?: boolean;
     className?: string;
     onMouseOver?: (event: React.MouseEvent<HTMLElement>) => void;
@@ -28,7 +28,6 @@ export interface LinkState {}
  */
 export class Link extends React.Component<LinkProps, LinkState> {
     public static defaultProps: Partial<LinkProps> = {
-        type: LinkType.ReactRoute,
         shouldOpenInNewTab: false,
         className: '',
         onMouseOver: _.noop.bind(_),
@@ -43,7 +42,18 @@ export class Link extends React.Component<LinkProps, LinkState> {
         this._outerReactScrollSpan = null;
     }
     public render(): React.ReactNode {
-        if (this.props.type === LinkType.ReactScroll && this.props.shouldOpenInNewTab) {
+        let type: LinkType;
+        const isReactRoute = _.startsWith(this.props.to, '/');
+        const isExternal = validUrl.isWebUri(this.props.to) || _.startsWith(this.props.to, 'mailto:');
+        if (isReactRoute) {
+            type = LinkType.ReactRoute;
+        } else if (isExternal) {
+            type = LinkType.External;
+        } else {
+            type = LinkType.ReactScroll;
+        }
+
+        if (type === LinkType.ReactScroll && this.props.shouldOpenInNewTab) {
             throw new Error(`Cannot open LinkType.ReactScroll links in new tab. link.to: ${this.props.to}`);
         }
 
@@ -53,9 +63,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
             color: this.props.fontColor,
         };
 
-        console.log('styleWithDefault', styleWithDefault);
-
-        switch (this.props.type) {
+        switch (type) {
             case LinkType.External:
                 return (
                     <a
@@ -108,7 +116,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
                     </span>
                 );
             default:
-                throw new Error(`Unrecognized LinkType: ${this.props.type}`);
+                throw new Error(`Unrecognized LinkType: ${type}`);
         }
     }
     // HACK(fabio): For some reason, the react-scroll link decided to stop the propagation of click events.

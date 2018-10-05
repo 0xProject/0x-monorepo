@@ -6,7 +6,7 @@ export { NestedSidebarMenu } from './components/nested_sidebar_menu';
 export { SectionHeader } from './components/section_header';
 export { Link } from './components/link';
 
-export { HeaderSizes, Styles, EtherscanLinkSuffixes, Networks, LinkType, ALink } from './types';
+export { HeaderSizes, Styles, EtherscanLinkSuffixes, Networks, ALink } from './types';
 
 export { utils } from './utils/utils';
 export { constants } from './utils/constants';

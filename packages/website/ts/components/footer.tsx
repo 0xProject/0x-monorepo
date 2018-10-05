@@ -1,4 +1,4 @@
-import { ALink, colors, Link, LinkType } from '@0xproject/react-shared';
+import { ALink, colors, Link } from '@0xproject/react-shared';
 import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import DropDownMenu from 'material-ui/DropDownMenu';
@@ -54,7 +54,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                 {
                     title: this.props.translate.get(Key.Whitepaper, Deco.Cap),
                     to: WebsitePaths.Whitepaper,
-                    type: LinkType.External,
+                    shouldOpenInNewTab: true,
                 },
                 {
                     title: this.props.translate.get(Key.Wiki, Deco.Cap),
@@ -68,28 +68,28 @@ export class Footer extends React.Component<FooterProps, FooterState> {
             [Key.Community]: [
                 {
                     title: this.props.translate.get(Key.RocketChat, Deco.Cap),
-                    type: LinkType.External,
                     to: constants.URL_ZEROEX_CHAT,
+                    shouldOpenInNewTab: true,
                 },
                 {
                     title: this.props.translate.get(Key.Blog, Deco.Cap),
-                    type: LinkType.External,
                     to: constants.URL_BLOG,
+                    shouldOpenInNewTab: true,
                 },
                 {
                     title: 'Twitter',
-                    type: LinkType.External,
                     to: constants.URL_TWITTER,
+                    shouldOpenInNewTab: true,
                 },
                 {
                     title: 'Reddit',
-                    type: LinkType.External,
                     to: constants.URL_REDDIT,
+                    shouldOpenInNewTab: true,
                 },
                 {
                     title: this.props.translate.get(Key.Forum, Deco.Cap),
-                    type: LinkType.External,
                     to: constants.URL_DISCOURSE_FORUM,
+                    shouldOpenInNewTab: true,
                 },
             ],
             [Key.Organization]: [
@@ -103,8 +103,8 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                 },
                 {
                     title: this.props.translate.get(Key.Contact, Deco.Cap),
-                    type: LinkType.External,
                     to: 'mailto:team@0xproject.com',
+                    shouldOpenInNewTab: true,
                 },
             ],
         };
@@ -182,7 +182,12 @@ export class Footer extends React.Component<FooterProps, FooterState> {
         const iconIfExists = titleToIcon[link.title];
         return (
             <div key={link.title} className="sm-center" style={{ fontSize: 13, paddingTop: 25 }}>
-                <Link to={link.to} type={link.type} fontColor={colors.white} className="text-decoration-none">
+                <Link
+                    to={link.to}
+                    shouldOpenInNewTab={link.shouldOpenInNewTab}
+                    fontColor={colors.white}
+                    className="text-decoration-none"
+                >
                     <div>
                         {!_.isUndefined(iconIfExists) ? (
                             <div className="inline-block">

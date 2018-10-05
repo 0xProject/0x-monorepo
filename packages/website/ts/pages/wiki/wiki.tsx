@@ -3,7 +3,6 @@ import {
     colors,
     constants as sharedConstants,
     HeaderSizes,
-    LinkType,
     MarkdownSection,
     NestedSidebarMenu,
     Styles,
@@ -234,7 +233,6 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                 return {
                     to: sharedUtils.getIdFromName(article.title),
                     title: article.title,
-                    type: LinkType.ReactScroll,
                 };
             });
             sectionNameToLinks[sectionName] = articleLinks;

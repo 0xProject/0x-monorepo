@@ -94,7 +94,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                 : link.title;
             return (
                 <div key={`menuItem-${finalMenuItemName}`}>
-                    <Link to={link.to} type={link.type} shouldOpenInNewTab={link.shouldOpenInNewTab}>
+                    <Link to={link.to} shouldOpenInNewTab={link.shouldOpenInNewTab}>
                         <MenuItem
                             style={menuItemStyles}
                             innerDivStyle={menuItemInnerDivStyles}
@@ -131,7 +131,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                     const name = `${menuItemName}-${link.title}`;
                     return (
                         <li key={`menuSubsectionItem-${name}`}>
-                            <Link to={link.to} type={link.type} shouldOpenInNewTab={link.shouldOpenInNewTab}>
+                            <Link to={link.to} shouldOpenInNewTab={link.shouldOpenInNewTab}>
                                 <MenuItem
                                     style={{ minHeight: 35 }}
                                     innerDivStyle={{

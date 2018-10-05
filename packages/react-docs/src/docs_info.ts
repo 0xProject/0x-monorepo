@@ -1,4 +1,4 @@
-import { ALink, LinkType, utils as sharedUtils } from '@0xproject/react-shared';
+import { ALink, utils as sharedUtils } from '@0xproject/react-shared';
 import { DocAgnosticFormat, ObjectMap, TypeDefinitionByName } from '@0xproject/types';
 import * as _ from 'lodash';
 
@@ -62,7 +62,6 @@ export class DocsInfo {
                     return {
                         to: `${sectionName}-${typeName}`,
                         title: typeName,
-                        type: LinkType.ReactScroll,
                     };
                 });
                 subsectionNameToLinks[sectionName] = typeLinks;
@@ -86,7 +85,6 @@ export class DocsInfo {
                     return {
                         to: `${sectionName}-${name}`,
                         title: name,
-                        type: LinkType.ReactScroll,
                     };
                 });
 
@@ -114,7 +112,6 @@ export class DocsInfo {
                 links.push({
                     title: linkTitle,
                     to,
-                    type: LinkType.ReactScroll,
                 });
             });
         });

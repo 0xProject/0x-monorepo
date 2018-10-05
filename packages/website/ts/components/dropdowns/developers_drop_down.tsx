@@ -1,4 +1,4 @@
-import { ALink, colors, Link, LinkType } from '@0xproject/react-shared';
+import { ALink, colors, Link } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
@@ -46,19 +46,16 @@ const usefulLinksToLinkInfo: ALink[] = [
     {
         title: Key.Github,
         to: constants.URL_GITHUB_ORG,
-        type: LinkType.External,
         shouldOpenInNewTab: true,
     },
     {
         title: Key.Whitepaper,
         to: WebsitePaths.Whitepaper,
-        type: LinkType.External,
         shouldOpenInNewTab: true,
     },
     {
         title: Key.Sandbox,
         to: constants.URL_SANDBOX,
-        type: LinkType.External,
         shouldOpenInNewTab: true,
     },
 ];
@@ -160,17 +157,16 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
             const isWikiLink = _.startsWith(link.to, WebsitePaths.Wiki) && _.includes(link.to, '#');
             const isOnWiki = this.props.location.pathname === WebsitePaths.Wiki;
             let to = link.to;
-            let type = link.type;
+            const type = link.type;
             if (isWikiLink && isOnWiki) {
                 to = `${link.to.split('#')[1]}`;
-                type = LinkType.ReactScroll;
             }
             i++;
             const isLast = i === numLinks;
             const linkText = this.props.translate.get(link.title as Key, Deco.Cap);
             return (
                 <div className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${link.title}`}>
-                    <Link to={to} type={type} shouldOpenInNewTab={!!link.shouldOpenInNewTab}>
+                    <Link to={to} shouldOpenInNewTab={!!link.shouldOpenInNewTab}>
                         <Text fontFamily="Roboto, Roboto Mono" fontColor={colors.lightBlueA700}>
                             {linkText}
                         </Text>

@@ -3,7 +3,6 @@ import {
     colors,
     constants as sharedConstants,
     Link,
-    LinkType,
     MarkdownLinkBlock,
     NestedSidebarMenu,
     utils as sharedUtils,
@@ -89,7 +88,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 title: '0x starter project',
                 to: 'https://github.com/0xProject/0x-starter-project',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -144,7 +142,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 title: '@0xproject/sra-spec',
                 to: 'https://github.com/0xProject/0x-monorepo/tree/development/packages/sra-spec',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
     ],
@@ -156,7 +153,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 title: 'abi-gen',
                 to: 'https://github.com/0xProject/0x-monorepo/tree/development/packages/abi-gen',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -213,7 +209,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 title: '0x Event Extractor',
                 to: 'https://github.com/0xTracker/0x-event-extractor',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -223,7 +218,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 title: '0x Tracker Worker',
                 to: 'https://github.com/0xTracker/0x-tracker-worker',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -233,7 +227,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 title: 'Aquaduct',
                 to: 'https://www.npmjs.com/package/aqueduct',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -243,7 +236,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 title: 'Aquaduct Server SDK',
                 to: 'https://github.com/ERCdEX/aqueduct-server-sdk',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -252,7 +244,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 to: 'https://www.npmjs.com/package/ddex-api',
                 title: 'DDEX Node.js SDK',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -261,7 +252,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 to: 'https://github.com/ERCdEX/widget',
                 title: 'ERCdex Widget',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -270,7 +260,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 to: 'https://github.com/ERCdEX/java',
                 title: 'ERCdex Java SDK',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -279,7 +268,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 to: 'https://github.com/ERCdEX/python',
                 title: 'ERCdex Python SDK',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -289,7 +277,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 title: 'Massive',
                 to: 'https://github.com/NoteGio/massive',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -298,7 +285,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 to: 'https://github.com/NoteGio/openrelay',
                 title: 'OpenRelay',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -308,7 +294,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 title: 'OpenRelay.js',
                 to: 'https://github.com/NoteGio/openrelay.js',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -318,7 +303,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 title: 'Radar SDK',
                 to: 'https://github.com/RadarRelay/sdk',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -328,7 +312,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 title: 'The Ocean Javascript SDK',
                 to: 'https://github.com/TheOceanTrade/theoceanx-javascript',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -337,7 +320,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 to: 'https://www.npmjs.com/package/tokenlon-sdk',
                 title: 'Tokenlon Javascript SDK',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
         {
@@ -346,7 +328,6 @@ const CATEGORY_TO_PACKAGES: { [category: string]: Package[] } = {
                 to: 'https://github.com/wildnothing/asset-data-decoder',
                 title: 'AssetData decoder library in Java',
                 shouldOpenInNewTab: true,
-                type: LinkType.External,
             },
         },
     ],
@@ -560,7 +541,6 @@ export class Home extends React.Component<HomeProps, HomeState> {
                             <Link
                                 to={pkg.link.to}
                                 fontColor={colors.lightLinkBlue}
-                                type={pkg.link.type}
                                 shouldOpenInNewTab={!!pkg.link.shouldOpenInNewTab}
                             >
                                 <Text Tag="div" fontColor={colors.lightLinkBlue} fontWeight="bold">
@@ -584,7 +564,6 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                 <Link
                                     to={pkg.link.to}
                                     fontColor={colors.lightLinkBlue}
-                                    type={pkg.link.type}
                                     shouldOpenInNewTab={!!pkg.link.shouldOpenInNewTab}
                                 >
                                     <Container className="flex">
