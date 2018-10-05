@@ -111,7 +111,8 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
                     Insufficient allowance.{' '}
                     <Link
                         to={`${WebsitePaths.Portal}/account`}
-                        style={{ cursor: 'pointer', color: colors.darkestGrey, textDecoration: 'underline' }}
+                        textDecoration="underline"
+                        fontColor={colors.darkestGrey}
                     >
                         Set allowance
                     </Link>

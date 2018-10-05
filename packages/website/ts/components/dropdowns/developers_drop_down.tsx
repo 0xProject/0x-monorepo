@@ -119,14 +119,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                         <div>{this._renderLinkSection(usefulLinksToLinkInfo)}</div>
                     </div>
                 </div>
-                <Link
-                    to={WebsitePaths.Docs}
-                    style={{
-                        color: colors.lightBlueA700,
-                        fontWeight: 'bold',
-                        fontSize: 14,
-                    }}
-                >
+                <Link to={WebsitePaths.Docs} fontColor={colors.lightBlueA700}>
                     <div
                         style={{
                             padding: '0.9rem',
@@ -134,6 +127,8 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                             backgroundColor: colors.lightBgGrey,
                             borderBottomLeftRadius: 4,
                             borderBottomRightRadius: 4,
+                            fontWeight: 'bold',
+                            fontSize: 14,
                         }}
                     >
                         {this.props.translate.get(Key.ViewAllDocumentation, Deco.Upper)}
@@ -159,10 +154,6 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
         );
     }
     private _renderLinkSection(links: ALink[]): React.ReactNode {
-        const linkStyle: React.CSSProperties = {
-            color: colors.lightBlueA700,
-            fontFamily: 'Roboto, Roboto Mono',
-        };
         const numLinks = links.length;
         let i = 0;
         const renderLinks = _.map(links, (link: ALink) => {
@@ -179,8 +170,10 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
             const linkText = this.props.translate.get(link.title as Key, Deco.Cap);
             return (
                 <div className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${link.title}`}>
-                    <Link to={to} type={type} shouldOpenInNewTab={!!link.shouldOpenInNewTab} style={linkStyle}>
-                        {linkText}
+                    <Link to={to} type={type} shouldOpenInNewTab={!!link.shouldOpenInNewTab}>
+                        <Text fontFamily="Roboto, Roboto Mono" fontColor={colors.lightBlueA700}>
+                            {linkText}
+                        </Text>
                     </Link>
                 </div>
             );

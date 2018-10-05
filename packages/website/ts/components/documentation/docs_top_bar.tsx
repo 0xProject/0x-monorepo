@@ -68,7 +68,7 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                     <Container className="col col-2 sm-hide xs-hide">
                         <Link
                             to={WebsitePaths.Home}
-                            style={{ color: colors.linkSectionGrey }}
+                            fontColor={colors.linkSectionGrey}
                             className="flex items-center text-decoration-none"
                         >
                             <i className="zmdi zmdi-chevron-left bold" style={{ fontSize: 16 }} />
@@ -86,7 +86,9 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                         </Container>
                     </Container>
                     <Container className="lg-hide md-hide">
-                        <DocsLogo height={30} containerStyle={{ paddingTop: 6, paddingLeft: 18 }} />
+                        <Container paddingTop="6px" paddingLeft="18px">
+                            <DocsLogo height={30} />
+                        </Container>
                     </Container>
                     <Container className="md-hide lg-hide absolute" right="18px" top="12px">
                         <i

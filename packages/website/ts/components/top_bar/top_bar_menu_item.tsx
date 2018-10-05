@@ -37,7 +37,7 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
         );
         return (
             <div className={`center ${this.props.className}`} style={{ ...this.props.style, color: menuItemColor }}>
-                <Link to={this.props.path} type={this.props.linkType} style={{ color: linkColor }}>
+                <Link to={this.props.path} type={this.props.linkType} fontColor={linkColor}>
                     {itemContent}
                 </Link>
             </div>

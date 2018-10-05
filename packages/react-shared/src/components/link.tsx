@@ -10,11 +10,12 @@ interface LinkProps {
     to: string;
     type?: LinkType;
     shouldOpenInNewTab?: boolean;
-    style?: React.CSSProperties;
     className?: string;
     onMouseOver?: (event: React.MouseEvent<HTMLElement>) => void;
     onMouseLeave?: (event: React.MouseEvent<HTMLElement>) => void;
     onMouseEnter?: (event: React.MouseEvent<HTMLElement>) => void;
+    textDecoration?: string;
+    fontColor?: string;
 }
 
 export interface LinkState {}
@@ -29,11 +30,12 @@ export class Link extends React.Component<LinkProps, LinkState> {
     public static defaultProps: Partial<LinkProps> = {
         type: LinkType.ReactRoute,
         shouldOpenInNewTab: false,
-        style: {},
         className: '',
         onMouseOver: _.noop.bind(_),
         onMouseLeave: _.noop.bind(_),
         onMouseEnter: _.noop.bind(_),
+        textDecoration: 'none',
+        fontColor: 'inherit',
     };
     private _outerReactScrollSpan: HTMLSpanElement | null;
     constructor(props: LinkProps) {
@@ -46,10 +48,12 @@ export class Link extends React.Component<LinkProps, LinkState> {
         }
 
         const styleWithDefault = {
-            textDecoration: 'none',
+            textDecoration: this.props.textDecoration,
             cursor: 'pointer',
-            ...this.props.style,
+            color: this.props.fontColor,
         };
+
+        console.log('styleWithDefault', styleWithDefault);
 
         switch (this.props.type) {
             case LinkType.External:

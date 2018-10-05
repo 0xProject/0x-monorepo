@@ -12,11 +12,6 @@ import { Translate } from 'ts/utils/translate';
 
 const ICON_DIMENSION = 16;
 
-const linkStyle = {
-    color: colors.white,
-    cursor: 'pointer',
-};
-
 const languageToMenuTitle = {
     [Language.English]: 'English',
     [Language.Russian]: 'Русский',
@@ -187,7 +182,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
         const iconIfExists = titleToIcon[link.title];
         return (
             <div key={link.title} className="sm-center" style={{ fontSize: 13, paddingTop: 25 }}>
-                <Link to={link.to} type={link.type} style={linkStyle} className="text-decoration-none">
+                <Link to={link.to} type={link.type} fontColor={colors.white} className="text-decoration-none">
                     <div>
                         {!_.isUndefined(iconIfExists) ? (
                             <div className="inline-block">

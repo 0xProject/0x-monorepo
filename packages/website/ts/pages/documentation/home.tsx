@@ -446,12 +446,14 @@ export class Home extends React.Component<HomeProps, HomeState> {
                         <Container
                             borderBottom={this.state.isSidebarScrolling ? `1px solid ${colors.grey300}` : 'none'}
                         >
-                            <DocsLogo height={36} containerStyle={{ paddingTop: 30, paddingBottom: 10 }} />
+                            <Container paddingTop="30px" paddingLeft="10px" paddingBottom="8px">
+                                <DocsLogo height={36} />
+                            </Container>
                         </Container>
                         <div
                             style={{
                                 ...scrollableContainerStyles,
-                                paddingTop: 35,
+                                paddingTop: 27,
                                 overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
                             }}
                             onMouseEnter={this._onSidebarHover.bind(this, true)}
@@ -557,7 +559,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                         <Container className="md-col lg-col md-col-4 lg-col-4">
                             <Link
                                 to={pkg.link.to}
-                                style={{ color: colors.lightLinkBlue }}
+                                fontColor={colors.lightLinkBlue}
                                 type={pkg.link.type}
                                 shouldOpenInNewTab={!!pkg.link.shouldOpenInNewTab}
                             >
@@ -578,23 +580,24 @@ export class Home extends React.Component<HomeProps, HomeState> {
                             </Text>
                         </Container>
                         <Container className="md-col lg-col md-col-2 lg-col-2 sm-pb2 relative">
-                            <Link
-                                to={pkg.link.to}
-                                className="absolute"
-                                style={{ right: 0, color: colors.lightLinkBlue }}
-                                type={pkg.link.type}
-                                shouldOpenInNewTab={!!pkg.link.shouldOpenInNewTab}
-                            >
-                                <Container className="flex">
-                                    <Container>{this.props.translate.get(Key.More, Deco.Cap)}</Container>
-                                    <Container paddingTop="1px" paddingLeft="6px">
-                                        <i
-                                            className="zmdi zmdi-chevron-right bold"
-                                            style={{ fontSize: 18, color: colors.lightLinkBlue }}
-                                        />
+                            <Container position="absolute" right="0px">
+                                <Link
+                                    to={pkg.link.to}
+                                    fontColor={colors.lightLinkBlue}
+                                    type={pkg.link.type}
+                                    shouldOpenInNewTab={!!pkg.link.shouldOpenInNewTab}
+                                >
+                                    <Container className="flex">
+                                        <Container>{this.props.translate.get(Key.More, Deco.Cap)}</Container>
+                                        <Container paddingTop="1px" paddingLeft="6px">
+                                            <i
+                                                className="zmdi zmdi-chevron-right bold"
+                                                style={{ fontSize: 18, color: colors.lightLinkBlue }}
+                                            />
+                                        </Container>
                                     </Container>
-                                </Container>
-                            </Link>
+                                </Link>
+                            </Container>
                         </Container>
                     </Container>
                 </Container>

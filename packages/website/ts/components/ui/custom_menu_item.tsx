@@ -4,7 +4,6 @@ import * as React from 'react';
 
 interface CustomMenuItemProps {
     to: string;
-    style?: React.CSSProperties;
     onClick?: () => void;
     className?: string;
 }
@@ -30,7 +29,7 @@ export class CustomMenuItem extends React.Component<CustomMenuItemProps, CustomM
             opacity: this.state.isHovering ? 0.5 : 1,
         };
         return (
-            <Link to={this.props.to} style={this.props.style}>
+            <Link to={this.props.to}>
                 <div
                     onClick={this.props.onClick.bind(this)}
                     className={`mx-auto ${this.props.className}`}

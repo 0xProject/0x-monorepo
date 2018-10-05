@@ -317,10 +317,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         }}
                     >
                         {this.props.translate.get(Key.FullListPrompt)}{' '}
-                        <Link
-                            to={WebsitePaths.Portal}
-                            style={{ color: colors.landingLinkGrey, textDecoration: 'underline' }}
-                        >
+                        <Link to={WebsitePaths.Portal} textDecoration="underline" fontColor={colors.landingLinkGrey}>
                             {this.props.translate.get(Key.FullListLink)}
                         </Link>
                     </div>

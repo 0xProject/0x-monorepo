@@ -323,7 +323,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         return (
             <div>
                 Order successfully filled. See the trade details in your{' '}
-                <Link to={`${WebsitePaths.Portal}/trades`} style={{ color: colors.white }}>
+                <Link to={`${WebsitePaths.Portal}/trades`} fontColor={colors.white}>
                     trade history
                 </Link>
             </div>
