@@ -7,7 +7,7 @@ import { Container, Flex, Text } from './ui';
 export interface InstantHeadingProps {}
 
 export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = props => (
-    <Container backgroundColor={ColorOption.primaryColor} padding="20px" width="100%">
+    <Container backgroundColor={ColorOption.primaryColor} padding="20px" width="100%" borderRadius="3px 3px 0px 0px">
         <Container marginBottom="5px">
             <Text
                 letterSpacing="1px"
