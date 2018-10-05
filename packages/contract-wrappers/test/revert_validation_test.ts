@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, web3Factory } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
 import { getContractAddresses } from '@0xproject/migrations';
 import { assetDataUtils } from '@0xproject/order-utils';

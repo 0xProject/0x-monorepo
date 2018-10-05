@@ -22,7 +22,6 @@ import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
-import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();

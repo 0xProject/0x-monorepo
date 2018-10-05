@@ -1,7 +1,7 @@
 import { getContractAddresses } from '@0xproject/migrations';
 import * as chai from 'chai';
 
-import { ContractWrappers, ContractWrappersConfig } from '../src';
+import { ContractWrappers } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
