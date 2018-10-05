@@ -2,8 +2,6 @@ import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
 
-import { Container, Flex, Text } from '../ui';
-
 export interface InputProps {
     className?: string;
     value?: string;

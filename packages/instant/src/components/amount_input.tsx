@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 
-import { Container, Flex, Input, Text } from './ui';
+import { Container, Input } from './ui';
 
 export interface AmountInputProps {
     fontColor?: ColorOption;
@@ -29,10 +29,10 @@ export class AmountInput extends React.Component<AmountInputProps> {
             </Container>
         );
     }
-    private _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const bigNumberValue = new BigNumber(event.target.value);
         if (!_.isUndefined(this.props.onChange)) {
             this.props.onChange(bigNumberValue);
         }
-    };
+    }
 }

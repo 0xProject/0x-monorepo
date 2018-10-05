@@ -1,5 +1,4 @@
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -8,7 +7,7 @@ import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { Action, ActionTypes } from '../types';
 
-import { AmountInput, AmountInputProps } from '../components/amount_input';
+import { AmountInput } from '../components/amount_input';
 
 export interface SelectedAssetAmountInputProps {
     fontColor?: ColorOption;
@@ -31,6 +30,7 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): ConnectedDispatch => ({
     onChange: value => dispatch({ type: ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT, data: value }),
 });
 
-export const SelectedAssetAmountInput: React.ComponentClass<SelectedAssetAmountInputProps> = connect(mapStateToProps)(
-    AmountInput,
-);
+export const SelectedAssetAmountInput: React.ComponentClass<SelectedAssetAmountInputProps> = connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(AmountInput);

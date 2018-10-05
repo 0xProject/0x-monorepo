@@ -1,4 +1,3 @@
-import { BigNumber } from '@0xproject/utils';
 import * as React from 'react';
 
 import { SelectedAssetAmountInput } from '../containers/selected_asset_amount_input';
