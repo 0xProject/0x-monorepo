@@ -1,9 +1,9 @@
 import { BigNumber } from '@0xproject/utils';
 import * as React from 'react';
 
+import { SelectedAssetAmountInput } from '../containers/selected_asset_amount_input';
 import { ColorOption } from '../style/theme';
 
-import { AmountInput } from './amount_input';
 import { Container, Flex, Text } from './ui';
 
 export interface InstantHeadingProps {}
@@ -24,7 +24,7 @@ export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = pro
         </Container>
         <Flex direction="row" justify="space-between">
             <Container>
-                <AmountInput fontSize="45px" />
+                <SelectedAssetAmountInput fontSize="45px" />
                 <Container display="inline-block" marginLeft="10px">
                     <Text fontSize="45px" fontColor={ColorOption.white} textTransform="uppercase">
                         rep
