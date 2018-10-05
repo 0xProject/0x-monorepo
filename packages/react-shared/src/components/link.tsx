@@ -93,7 +93,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
                             offset={0}
                             hashSpy={true}
                             duration={constants.DOCS_SCROLL_DURATION_MS}
-                            containerId={constants.DOCS_CONTAINER_ID}
+                            containerId={constants.SCROLL_CONTAINER_ID}
                             className={this.props.className}
                             style={styleWithDefault}
                         >

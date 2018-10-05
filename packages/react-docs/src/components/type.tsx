@@ -228,7 +228,7 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
                 offset={0}
                 hashSpy={true}
                 duration={sharedConstants.DOCS_SCROLL_DURATION_MS}
-                containerId={sharedConstants.DOCS_CONTAINER_ID}
+                containerId={sharedConstants.SCROLL_CONTAINER_ID}
             >
                 {sharedUtils.isUserOnMobile() || props.isInPopover || isExportedClassReference ? (
                     <span style={{ color: colors.lightBlueA700, cursor: 'pointer' }}>{typeName}</span>
