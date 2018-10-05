@@ -77,6 +77,8 @@ export interface BuyQuoteRequestOpts {
 /**
  * ethAmount: The desired amount of eth to spend. Defaults to buyQuote.worstCaseQuoteInfo.totalEthAmount.
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
+ * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
+ * gasPrice: Gas price in Wei to use for a transaction
  * feeRecipient: The address where affiliate fees are sent. Defaults to null address (0x000...000).
  */
 export interface BuyQuoteExecutionOpts {
