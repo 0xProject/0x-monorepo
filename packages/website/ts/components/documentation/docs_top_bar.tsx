@@ -24,7 +24,8 @@ interface MenuItemInfo {
     title: string;
     url: string;
     iconUrl: string;
-    textStyle: React.CSSProperties;
+    fontColor: string;
+    fontWeight?: string;
 }
 
 export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState> {
@@ -47,19 +48,20 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                 title: this.props.translate.get(Key.Github, Deco.Cap),
                 url: constants.URL_GITHUB_ORG,
                 iconUrl: '/images/developers/github_icon.svg',
-                textStyle: { color: colors.linkSectionGrey },
+                fontColor: colors.linkSectionGrey,
             },
             {
                 title: this.props.translate.get(Key.Forum, Deco.Cap),
                 url: constants.URL_FORUM,
                 iconUrl: '/images/developers/forum_icon.svg',
-                textStyle: { color: colors.linkSectionGrey },
+                fontColor: colors.linkSectionGrey,
             },
             {
                 title: this.props.translate.get(Key.LiveChat, Deco.Cap),
                 url: constants.URL_ZEROEX_CHAT,
                 iconUrl: '/images/developers/chat_icon.svg',
-                textStyle: { color: colors.lightLinkBlue, fontWeight: 'bold' },
+                fontColor: colors.lightLinkBlue,
+                fontWeight: 'bold',
             },
         ];
         return (
@@ -118,9 +120,15 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                 >
                     <Container className="flex">
                         <img src={menuItemInfo.iconUrl} width="18" />
-                        <div className="flex items-center" style={{ ...menuItemInfo.textStyle, paddingLeft: 4 }}>
-                            <Text fontSize="16px">{menuItemInfo.title}</Text>
-                        </div>
+                        <Container className="flex items-center" paddingLeft="4px">
+                            <Text
+                                fontSize="16px"
+                                fontWeight={menuItemInfo.fontWeight || 'normal'}
+                                fontColor={menuItemInfo.fontColor}
+                            >
+                                {menuItemInfo.title}
+                            </Text>
+                        </Container>
                     </Container>
                 </a>
             );

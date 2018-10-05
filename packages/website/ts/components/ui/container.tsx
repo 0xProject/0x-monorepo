@@ -17,6 +17,8 @@ export interface ContainerProps {
     backgroundColor?: string;
     background?: string;
     borderRadius?: StringOrNum;
+    borderBottomLeftRadius?: StringOrNum;
+    borderBottomRightRadius?: StringOrNum;
     borderBottom?: StringOrNum;
     maxWidth?: StringOrNum;
     maxHeight?: StringOrNum;

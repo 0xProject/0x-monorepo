@@ -91,63 +91,50 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
     }
     private _renderDropdownMenu(): React.ReactNode {
         const dropdownMenu = (
-            <div>
+            <Container>
                 <Container padding="1.75rem">
                     {this._renderTitle('Getting started')}
-                    <div className="flex">
-                        <div className="pr4 mr2">{this._renderLinkSection(gettingStartedKeyToLinkInfo1)}</div>
-                        <div>{this._renderLinkSection(gettingStartedKeyToLinkInfo2)}</div>
-                    </div>
+                    <Container className="flex">
+                        <Container className="pr4 mr2">
+                            {this._renderLinkSection(gettingStartedKeyToLinkInfo1)}
+                        </Container>
+                        <Container>{this._renderLinkSection(gettingStartedKeyToLinkInfo2)}</Container>
+                    </Container>
                 </Container>
-                <div
-                    style={{
-                        width: '100%',
-                        height: 1,
-                        backgroundColor: colors.grey300,
-                    }}
-                />
-                <div className="flex" style={{ padding: '1.75rem' }}>
-                    <div className="pr4 mr2">
-                        <div>{this._renderTitle('Popular docs')}</div>
-                        <div>{this._renderLinkSection(popularDocsToLinkInfos)}</div>
-                    </div>
-                    <div>
-                        <div>{this._renderTitle('Useful links')}</div>
-                        <div>{this._renderLinkSection(usefulLinksToLinkInfo)}</div>
-                    </div>
-                </div>
+                <Container width="100%" height="1px" backgroundColor={colors.grey300} />
+                <Container className="flex" padding="1.75rem">
+                    <Container className="pr4 mr2">
+                        <Container>{this._renderTitle('Popular docs')}</Container>
+                        <Container>{this._renderLinkSection(popularDocsToLinkInfos)}</Container>
+                    </Container>
+                    <Container>
+                        <Container>{this._renderTitle('Useful links')}</Container>
+                        <Container>{this._renderLinkSection(usefulLinksToLinkInfo)}</Container>
+                    </Container>
+                </Container>
                 <Link to={WebsitePaths.Docs} fontColor={colors.lightBlueA700}>
-                    <div
-                        style={{
-                            padding: '0.9rem',
-                            textAlign: 'center',
-                            backgroundColor: colors.lightBgGrey,
-                            borderBottomLeftRadius: 4,
-                            borderBottomRightRadius: 4,
-                            fontWeight: 'bold',
-                            fontSize: 14,
-                        }}
+                    <Container
+                        padding="0.9rem"
+                        backgroundColor={colors.lightBgGrey}
+                        borderBottomLeftRadius={4}
+                        borderBottomRightRadius={4}
                     >
-                        {this.props.translate.get(Key.ViewAllDocumentation, Deco.Upper)}
-                    </div>
+                        <Text fontColor={colors.lightBlueA700} fontWeight="bold" fontSize="14px" textAlign="center">
+                            {this.props.translate.get(Key.ViewAllDocumentation, Deco.Upper)}
+                        </Text>
+                    </Container>
                 </Link>
-            </div>
+            </Container>
         );
         return dropdownMenu;
     }
     private _renderTitle(title: string): React.ReactNode {
         return (
-            <div
-                style={{
-                    color: colors.linkSectionGrey,
-                    fontSize: 14,
-                    paddingBottom: 12,
-                    fontWeight: 600,
-                    letterSpacing: 1,
-                }}
-            >
-                {title.toUpperCase()}
-            </div>
+            <Container paddingBottom="12px">
+                <Text letterSpacing={1} fontColor={colors.linkSectionGrey} fontSize="14px" fontWeight={600}>
+                    {title.toUpperCase()}
+                </Text>
+            </Container>
         );
     }
     private _renderLinkSection(links: ALink[]): React.ReactNode {
@@ -157,7 +144,6 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
             const isWikiLink = _.startsWith(link.to, WebsitePaths.Wiki) && _.includes(link.to, '#');
             const isOnWiki = this.props.location.pathname === WebsitePaths.Wiki;
             let to = link.to;
-            const type = link.type;
             if (isWikiLink && isOnWiki) {
                 to = `${link.to.split('#')[1]}`;
             }
@@ -165,15 +151,15 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
             const isLast = i === numLinks;
             const linkText = this.props.translate.get(link.title as Key, Deco.Cap);
             return (
-                <div className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${link.title}`}>
+                <Container className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${link.title}`}>
                     <Link to={to} shouldOpenInNewTab={!!link.shouldOpenInNewTab}>
                         <Text fontFamily="Roboto, Roboto Mono" fontColor={colors.lightBlueA700}>
                             {linkText}
                         </Text>
                     </Link>
-                </div>
+                </Container>
             );
         });
-        return <div>{renderLinks}</div>;
+        return <Container>{renderLinks}</Container>;
     }
 }
