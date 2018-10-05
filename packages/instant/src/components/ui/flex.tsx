@@ -9,6 +9,7 @@ export interface FlexProps {
     justify?: 'flex-start' | 'center' | 'space-around' | 'space-between' | 'space-evenly' | 'flex-end';
     align?: 'flex-start' | 'center' | 'space-around' | 'space-between' | 'space-evenly' | 'flex-end';
     width?: string;
+    height?: string;
     backgroundColor?: ColorOption;
     className?: string;
 }
@@ -24,6 +25,7 @@ export const Flex = styled(PlainFlex)`
     justify-content: ${props => props.justify};
     align-items: ${props => props.align};
     ${props => cssRuleIfExists(props, 'width')}
+    ${props => cssRuleIfExists(props, 'height')}
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
 `;
 
