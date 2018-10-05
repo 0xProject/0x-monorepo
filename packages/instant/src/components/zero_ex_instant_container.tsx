@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 
+import { BuyButton } from './buy_button';
 import { InstantHeading } from './instant_heading';
 import { OrderDetails } from './order_details';
 import { Container, Flex, Text } from './ui';
@@ -12,5 +13,6 @@ export const ZeroExInstantContainer: React.StatelessComponent<ZeroExInstantConta
     <Flex direction="column" width="350px" justify="flex-start">
         <InstantHeading />
         <OrderDetails />
+        <BuyButton />
     </Flex>
 );

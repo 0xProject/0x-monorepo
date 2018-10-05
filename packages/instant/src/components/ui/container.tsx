@@ -25,6 +25,7 @@ export interface ContainerProps {
     borderTop?: string;
     className?: string;
     backgroundColor?: ColorOption;
+    hasBoxShadow?: boolean;
 }
 
 const PlainContainer: React.StatelessComponent<ContainerProps> = ({ children, className }) => (
@@ -50,6 +51,7 @@ export const Container = styled(PlainContainer)`
     ${props => cssRuleIfExists(props, 'border-radius')}
     ${props => cssRuleIfExists(props, 'border')}
     ${props => cssRuleIfExists(props, 'border-top')}
+    ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
     border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
 `;
