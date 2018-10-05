@@ -20,6 +20,9 @@ export interface ContainerProps {
     padding?: string;
     boxShadow?: string;
     borderRadius?: string;
+    border?: string;
+    borderColor?: ColorOption;
+    borderTop?: string;
     className?: string;
     backgroundColor?: ColorOption;
 }
@@ -45,11 +48,14 @@ export const Container = styled(PlainContainer)`
     ${props => cssRuleIfExists(props, 'padding')}
     ${props => cssRuleIfExists(props, 'box-shadow')}
     ${props => cssRuleIfExists(props, 'border-radius')}
+    ${props => cssRuleIfExists(props, 'border')}
+    ${props => cssRuleIfExists(props, 'border-top')}
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
+    border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
 `;
 
 Container.defaultProps = {
-    display: 'inline-block',
+    display: 'block',
 };
 
 Container.displayName = 'Container';

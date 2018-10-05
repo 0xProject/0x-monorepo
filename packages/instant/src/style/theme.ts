@@ -8,6 +8,8 @@ export enum ColorOption {
     primaryColor = 'primaryColor',
     black = 'black',
     lightGrey = 'lightGrey',
+    grey = 'grey',
+    feintGrey = 'feintGrey',
     darkGrey = 'darkGrey',
     white = 'white',
 }
@@ -16,6 +18,8 @@ export const theme: Theme = {
     primaryColor: '#512D80',
     black: 'black',
     lightGrey: '#999999',
+    grey: '#666666',
+    feintGrey: '#DEDEDE',
     darkGrey: '#333333',
     white: 'white',
 };
