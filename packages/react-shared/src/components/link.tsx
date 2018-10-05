@@ -6,7 +6,7 @@ import { Link as ScrollLink } from 'react-scroll';
 import { LinkType } from '../types';
 import { constants } from '../utils/constants';
 
-export interface LinkProps {
+interface LinkProps {
     to: string;
     type?: LinkType;
     shouldOpenInNewTab?: boolean;
@@ -15,7 +15,6 @@ export interface LinkProps {
     onMouseOver?: (event: React.MouseEvent<HTMLElement>) => void;
     onMouseLeave?: (event: React.MouseEvent<HTMLElement>) => void;
     onMouseEnter?: (event: React.MouseEvent<HTMLElement>) => void;
-    containerId?: string;
 }
 
 export interface LinkState {}
@@ -35,7 +34,6 @@ export class Link extends React.Component<LinkProps, LinkState> {
         onMouseOver: _.noop.bind(_),
         onMouseLeave: _.noop.bind(_),
         onMouseEnter: _.noop.bind(_),
-        containerId: constants.DOCS_CONTAINER_ID,
     };
     private _outerReactScrollSpan: HTMLSpanElement | null;
     constructor(props: LinkProps) {
@@ -43,6 +41,10 @@ export class Link extends React.Component<LinkProps, LinkState> {
         this._outerReactScrollSpan = null;
     }
     public render(): React.ReactNode {
+        if (this.props.type === LinkType.ReactScroll && this.props.shouldOpenInNewTab) {
+            throw new Error(`Cannot open LinkType.ReactScroll links in new tab. link.to: ${this.props.to}`);
+        }
+
         const styleWithDefault = {
             textDecoration: 'none',
             cursor: 'pointer',
@@ -91,7 +93,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
                             offset={0}
                             hashSpy={true}
                             duration={constants.DOCS_SCROLL_DURATION_MS}
-                            containerId={this.props.containerId}
+                            containerId={constants.DOCS_CONTAINER_ID}
                             className={this.props.className}
                             style={styleWithDefault}
                         >
