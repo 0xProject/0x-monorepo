@@ -82,6 +82,8 @@ export interface BuyQuoteRequestOpts {
 export interface BuyQuoteExecutionOpts {
     ethAmount?: BigNumber;
     takerAddress?: string;
+    gasLimit?: number;
+    gasPrice?: BigNumber;
     feeRecipient: string;
 }
 
