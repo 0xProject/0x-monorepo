@@ -1,5 +1,5 @@
 import { schemas } from '@0xproject/json-schemas';
-import { EIP712_DOMAIN_NAME, EIP712_DOMAIN_SCHEMA, EIP712_DOMAIN_VERSION } from '@0xproject/order-utils';
+import { eip712Utils } from '@0xproject/order-utils';
 import { Order, SignedOrder } from '@0xproject/types';
 import { BigNumber, signTypedDataUtils } from '@0xproject/utils';
 import _ = require('lodash');
@@ -7,15 +7,6 @@ import _ = require('lodash');
 import { ExchangeContract } from '../contract_wrappers/generated/exchange';
 
 import { assert } from './assert';
-
-const EIP712_ZEROEX_TRANSACTION_SCHEMA = {
-    name: 'ZeroExTransaction',
-    parameters: [
-        { name: 'salt', type: 'uint256' },
-        { name: 'signerAddress', type: 'address' },
-        { name: 'data', type: 'bytes' },
-    ],
-};
 
 /**
  * Transaction Encoder. Transaction messages exist for the purpose of calling methods on the Exchange contract
@@ -37,23 +28,11 @@ export class TransactionEncoder {
     public getTransactionHex(data: string, salt: BigNumber, signerAddress: string): string {
         const exchangeAddress = this._getExchangeContract().address;
         const executeTransactionData = {
-            salt: salt.toString(),
+            salt,
             signerAddress,
             data,
         };
-        const typedData = {
-            types: {
-                EIP712Domain: EIP712_DOMAIN_SCHEMA.parameters,
-                ZeroExTransaction: EIP712_ZEROEX_TRANSACTION_SCHEMA.parameters,
-            },
-            domain: {
-                name: EIP712_DOMAIN_NAME,
-                version: EIP712_DOMAIN_VERSION,
-                verifyingContract: exchangeAddress,
-            },
-            message: executeTransactionData,
-            primaryType: EIP712_ZEROEX_TRANSACTION_SCHEMA.name,
-        };
+        const typedData = eip712Utils.createZeroExTransactionTypedData(executeTransactionData, exchangeAddress);
         const eip712MessageBuffer = signTypedDataUtils.signTypedDataHash(typedData);
         const messageHex = `0x${eip712MessageBuffer.toString('hex')}`;
         return messageHex;

@@ -1,7 +1,8 @@
 import * as ethUtil from 'ethereumjs-util';
 import * as ethers from 'ethers';
+import * as _ from 'lodash';
 
-import { EIP712TypedData, EIP712Types } from '@0xproject/types';
+import { EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Types } from '@0xproject/types';
 
 export const signTypedDataUtils = {
     /**
@@ -42,32 +43,40 @@ export const signTypedDataUtils = {
         }
         return result;
     },
-    _encodeData(primaryType: string, data: any, types: EIP712Types): string {
+    _encodeData(primaryType: string, data: EIP712Object, types: EIP712Types): string {
         const encodedTypes = ['bytes32'];
-        const encodedValues = [signTypedDataUtils._typeHash(primaryType, types)];
+        const encodedValues: Array<Buffer | EIP712ObjectValue> = [signTypedDataUtils._typeHash(primaryType, types)];
         for (const field of types[primaryType]) {
-            let value = data[field.name];
+            const value = data[field.name];
             if (field.type === 'string' || field.type === 'bytes') {
-                value = ethUtil.sha3(value);
+                const hashValue = ethUtil.sha3(value as string);
                 encodedTypes.push('bytes32');
-                encodedValues.push(value);
+                encodedValues.push(hashValue);
             } else if (types[field.type] !== undefined) {
                 encodedTypes.push('bytes32');
-                value = ethUtil.sha3(signTypedDataUtils._encodeData(field.type, value, types));
-                encodedValues.push(value);
+                const hashValue = ethUtil.sha3(
+                    // tslint:disable-next-line:no-unnecessary-type-assertion
+                    signTypedDataUtils._encodeData(field.type, value as EIP712Object, types),
+                );
+                encodedValues.push(hashValue);
             } else if (field.type.lastIndexOf(']') === field.type.length - 1) {
                 throw new Error('Arrays currently unimplemented in encodeData');
             } else {
                 encodedTypes.push(field.type);
-                encodedValues.push(value);
+                const normalizedValue = signTypedDataUtils._normalizeValue(field.type, value);
+                encodedValues.push(normalizedValue);
             }
         }
         return ethers.utils.defaultAbiCoder.encode(encodedTypes, encodedValues);
     },
+    _normalizeValue(type: string, value: any): EIP712ObjectValue {
+        const normalizedValue = type === 'uint256' && _.isObject(value) && value.isBigNumber ? value.toString() : value;
+        return normalizedValue;
+    },
     _typeHash(primaryType: string, types: EIP712Types): Buffer {
         return ethUtil.sha3(signTypedDataUtils._encodeType(primaryType, types));
     },
-    _structHash(primaryType: string, data: any, types: EIP712Types): Buffer {
+    _structHash(primaryType: string, data: EIP712Object, types: EIP712Types): Buffer {
         return ethUtil.sha3(signTypedDataUtils._encodeData(primaryType, data, types));
     },
 };

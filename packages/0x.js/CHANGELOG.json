@@ -12,7 +12,7 @@
             },
             {
                 "note":
-                    "Removed `SignerType` (including `SignerType.Metamask`). Please use the `MetamaskSubprovider` to wrap web3.currentProvider.",
+                    "Removed `SignerType` (including `SignerType.Metamask`). Please use the `MetamaskSubprovider` to wrap `web3.currentProvider`.",
                 "pr": 1102
             }
         ]

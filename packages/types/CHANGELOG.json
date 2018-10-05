@@ -5,6 +5,10 @@
             {
                 "note": "Added `EIP712Parameter` `EIP712Types` `EIP712TypedData` for EIP712 signing",
                 "pr": 1102
+            },
+            {
+                "note": "Added `ZeroExTransaction` type for Exchange executeTransaction",
+                "pr": 1102
             }
         ]
     },

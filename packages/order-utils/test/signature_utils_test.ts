@@ -152,14 +152,14 @@ describe('Signature utils', () => {
                 ethUtil.toBuffer(SignatureType.EIP712),
             ]);
             const signatureHex = `0x${signatureBuffer.toString('hex')}`;
-            const eip712Signature = await signatureUtils.ecSignOrderAsync(provider, order, makerAddress);
+            const signedOrder = await signatureUtils.ecSignOrderAsync(provider, order, makerAddress);
             const isValidSignature = await signatureUtils.isValidSignatureAsync(
                 provider,
                 orderHashHex,
-                eip712Signature,
+                signedOrder.signature,
                 makerAddress,
             );
-            expect(signatureHex).to.eq(eip712Signature);
+            expect(signatureHex).to.eq(signedOrder.signature);
             expect(isValidSignature).to.eq(true);
         });
     });
@@ -236,6 +236,51 @@ describe('Signature utils', () => {
                 makerAddress,
             );
             expect(isValidSignature).to.be.true();
+        });
+    });
+    describe('#ecSignTypedDataOrderAsync', () => {
+        let makerAddress: string;
+        const fakeExchangeContractAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
+        let order: Order;
+        before(async () => {
+            const availableAddreses = await web3Wrapper.getAvailableAddressesAsync();
+            makerAddress = availableAddreses[0];
+            order = {
+                makerAddress,
+                takerAddress: constants.NULL_ADDRESS,
+                senderAddress: constants.NULL_ADDRESS,
+                feeRecipientAddress: constants.NULL_ADDRESS,
+                makerAssetData: constants.NULL_ADDRESS,
+                takerAssetData: constants.NULL_ADDRESS,
+                exchangeAddress: fakeExchangeContractAddress,
+                salt: new BigNumber(0),
+                makerFee: new BigNumber(0),
+                takerFee: new BigNumber(0),
+                makerAssetAmount: new BigNumber(0),
+                takerAssetAmount: new BigNumber(0),
+                expirationTimeSeconds: new BigNumber(0),
+            };
+        });
+        it('should return the correct Signature for signatureHex concatenated as R + S + V', async () => {
+            const expectedSignature =
+                '0x1cd472c439833774b55d248c31b6585f21aea1b9363ebb4ec58549e46b62eb5a6f696f5781f62de008ee7f77650ef940d99c97ec1dee67b3f5cea1bbfdfeb2eba602';
+            const fakeProvider = {
+                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
+                    if (payload.method === 'eth_signTypedData') {
+                        const [address, typedData] = payload.params;
+                        const signature = await web3Wrapper.signTypedDataAsync(address, typedData);
+                        callback(null, {
+                            id: 42,
+                            jsonrpc: '2.0',
+                            result: signature,
+                        });
+                    } else {
+                        callback(null, { id: 42, jsonrpc: '2.0', result: [makerAddress] });
+                    }
+                },
+            };
+            const signedOrder = await signatureUtils.ecSignTypedDataOrderAsync(fakeProvider, order, makerAddress);
+            expect(signedOrder.signature).to.equal(expectedSignature);
         });
     });
     describe('#convertECSignatureToSignatureHex', () => {

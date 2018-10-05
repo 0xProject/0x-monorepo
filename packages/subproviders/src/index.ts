@@ -48,6 +48,13 @@ export {
     LedgerGetAddressResult,
 } from './types';
 
-export { ECSignature } from '@0xproject/types';
+export {
+    ECSignature,
+    EIP712Object,
+    EIP712ObjectValue,
+    EIP712TypedData,
+    EIP712Types,
+    EIP712Parameter,
+} from '@0xproject/types';
 
 export { JSONRPCRequestPayload, Provider, JSONRPCResponsePayload, JSONRPCErrorCallback } from 'ethereum-types';

@@ -18,7 +18,7 @@ export class MetamaskSubprovider extends Subprovider {
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _provider: Provider;
     /**
-     * Instantiates a new SignerSubprovider
+     * Instantiates a new MetamaskSubprovider
      * @param provider Web3 provider that should handle  all user account related requests
      */
     constructor(provider: Provider) {
@@ -83,7 +83,9 @@ export class MetamaskSubprovider extends Subprovider {
             case 'eth_signTypedData_v3':
                 [address, message] = payload.params;
                 try {
-                    // Metamask has namespaced signTypedData to v3 for an indeterminate period of time.
+                    // Metamask supports multiple versions and has namespaced signTypedData to v3 for an indeterminate period of time.
+                    // eth_signTypedData is mapped to an older implementation before the spec was finalized.
+                    // Source: https://github.com/MetaMask/metamask-extension/blob/c49d854b55b3efd34c7fd0414b76f7feaa2eec7c/app/scripts/metamask-controller.js#L1262
                     // and expects message to be serialised as JSON
                     const messageJSON = JSON.stringify(message);
                     const signature = await this._web3Wrapper.sendRawPayloadAsync<string>({

@@ -1,4 +1,5 @@
 import { assert } from '@0xproject/assert';
+import { EIP712TypedData } from '@0xproject/types';
 import { addressUtils } from '@0xproject/utils';
 import * as bip39 from 'bip39';
 import HDNode = require('hdkey');
@@ -90,10 +91,10 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     }
     /**
      * Sign a personal Ethereum signed message. The signing account will be the account
-     * associated with the provided address.
-     * If you've added the MnemonicWalletSubprovider to your app's provider, you can simply send an `eth_sign`
-     * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
-     * If you are not using this via a ProviderEngine instance, you can call it directly.
+     * associated with the provided address. If you've added the MnemonicWalletSubprovider to
+     * your app's provider, you can simply send an `eth_sign` or `personal_sign` JSON RPC request,
+     * and this method will be called auto-magically. If you are not using this via a ProviderEngine
+     * instance, you can call it directly.
      * @param data Hex string message to sign
      * @param address Address of the account to sign with
      * @return Signature hex string (order: rsv)
@@ -109,16 +110,16 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
         return sig;
     }
     /**
-     * Sign an EIP712 Typed Data message.  The signing account will be the account
-     * associated with the provided address.
-     * If you've added this MnemonicWalletSubprovider to your app's provider, you can simply send an `eth_signTypedData`
-     * JSON RPC request, and this method will be called auto-magically.
-     * If you are not using this via a ProviderEngine instance, you can call it directly.
+     * Sign an EIP712 Typed Data message. The signing account will be the account
+     * associated with the provided address. If you've added this MnemonicWalletSubprovider to
+     * your app's provider, you can simply send an `eth_signTypedData` JSON RPC request, and
+     * this method will be called auto-magically. If you are not using this via a ProviderEngine
+     *  instance, you can call it directly.
      * @param address Address of the account to sign with
      * @param data the typed data object
      * @return Signature hex string (order: rsv)
      */
-    public async signTypedDataAsync(address: string, typedData: any): Promise<string> {
+    public async signTypedDataAsync(address: string, typedData: EIP712TypedData): Promise<string> {
         if (_.isUndefined(typedData)) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
         }

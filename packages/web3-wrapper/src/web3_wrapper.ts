@@ -318,9 +318,9 @@ export class Web3Wrapper {
      * Sign an EIP712 typed data message with a specific address's private key (`eth_signTypedData`)
      * @param address Address of signer
      * @param typedData Typed data message to sign
-     * @returns Signature string (might be VRS or RSV depending on the Signer)
+     * @returns Signature string (as RSV)
      */
-    public async signTypedDataAsync(address: string, typedData: object): Promise<string> {
+    public async signTypedDataAsync(address: string, typedData: any): Promise<string> {
         assert.isETHAddressHex('address', address);
         assert.doesConformToSchema('typedData', typedData, schemas.eip712TypedData);
         const signData = await this.sendRawPayloadAsync<string>({

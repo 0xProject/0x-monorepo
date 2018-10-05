@@ -1,5 +1,5 @@
 export const eip712TypedData = {
-    id: 'eip712TypedData',
+    id: '/eip712TypedData',
     type: 'object',
     properties: {
         types: {

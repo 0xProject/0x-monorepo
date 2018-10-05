@@ -1,4 +1,5 @@
 import { assert } from '@0xproject/assert';
+import { EIP712TypedData } from '@0xproject/types';
 import { signTypedDataUtils } from '@0xproject/utils';
 import EthereumTx = require('ethereumjs-tx');
 import * as ethUtil from 'ethereumjs-util';
@@ -95,7 +96,7 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
      * @param data the typed data object
      * @return Signature hex string (order: rsv)
      */
-    public async signTypedDataAsync(address: string, typedData: any): Promise<string> {
+    public async signTypedDataAsync(address: string, typedData: EIP712TypedData): Promise<string> {
         if (_.isUndefined(typedData)) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignTypedData);
         }

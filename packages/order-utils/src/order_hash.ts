@@ -4,27 +4,9 @@ import { signTypedDataUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
-import { EIP712_DOMAIN_NAME, EIP712_DOMAIN_SCHEMA, EIP712_DOMAIN_VERSION } from './constants';
+import { eip712Utils } from './eip712_utils';
 
 const INVALID_TAKER_FORMAT = 'instance.takerAddress is not of a type(s) string';
-
-export const EIP712_ORDER_SCHEMA = {
-    name: 'Order',
-    parameters: [
-        { name: 'makerAddress', type: 'address' },
-        { name: 'takerAddress', type: 'address' },
-        { name: 'feeRecipientAddress', type: 'address' },
-        { name: 'senderAddress', type: 'address' },
-        { name: 'makerAssetAmount', type: 'uint256' },
-        { name: 'takerAssetAmount', type: 'uint256' },
-        { name: 'makerFee', type: 'uint256' },
-        { name: 'takerFee', type: 'uint256' },
-        { name: 'expirationTimeSeconds', type: 'uint256' },
-        { name: 'salt', type: 'uint256' },
-        { name: 'makerAssetData', type: 'bytes' },
-        { name: 'takerAssetData', type: 'bytes' },
-    ],
-};
 
 export const orderHashUtils = {
     /**
@@ -45,7 +27,7 @@ export const orderHashUtils = {
     /**
      * Computes the orderHash for a supplied order.
      * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
-     * @return  The resulting orderHash from hashing the supplied order.
+     * @return  Hex encoded string orderHash from hashing the supplied order.
      */
     getOrderHashHex(order: SignedOrder | Order): string {
         try {
@@ -64,27 +46,12 @@ export const orderHashUtils = {
         return orderHashHex;
     },
     /**
-     * Computes the orderHash for a supplied order and returns it as a Buffer
+     * Computes the orderHash for a supplied order
      * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
-     * @return  The resulting orderHash from hashing the supplied order as a Buffer
+     * @return  A Buffer containing the resulting orderHash from hashing the supplied order
      */
     getOrderHashBuffer(order: SignedOrder | Order): Buffer {
-        const normalizedOrder = _.mapValues(order, value => {
-            return _.isObject(value) ? value.toString() : value;
-        });
-        const typedData = {
-            types: {
-                EIP712Domain: EIP712_DOMAIN_SCHEMA.parameters,
-                Order: EIP712_ORDER_SCHEMA.parameters,
-            },
-            domain: {
-                name: EIP712_DOMAIN_NAME,
-                version: EIP712_DOMAIN_VERSION,
-                verifyingContract: order.exchangeAddress,
-            },
-            message: normalizedOrder,
-            primaryType: EIP712_ORDER_SCHEMA.name,
-        };
+        const typedData = eip712Utils.createOrderTypedData(order);
         const orderHashBuff = signTypedDataUtils.signTypedDataHash(typedData);
         return orderHashBuff;
     },

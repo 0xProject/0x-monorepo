@@ -13,16 +13,39 @@ export const constants = {
     BASE_16: 16,
     INFINITE_TIMESTAMP_SEC: new BigNumber(2524604400), // Close to infinite
     ZERO_AMOUNT: new BigNumber(0),
-};
-
-export const EIP712_DOMAIN_NAME = '0x Protocol';
-export const EIP712_DOMAIN_VERSION = '2';
-
-export const EIP712_DOMAIN_SCHEMA = {
-    name: 'EIP712Domain',
-    parameters: [
-        { name: 'name', type: 'string' },
-        { name: 'version', type: 'string' },
-        { name: 'verifyingContract', type: 'address' },
-    ],
+    EIP712_DOMAIN_NAME: '0x Protocol',
+    EIP712_DOMAIN_VERSION: '2',
+    EIP712_DOMAIN_SCHEMA: {
+        name: 'EIP712Domain',
+        parameters: [
+            { name: 'name', type: 'string' },
+            { name: 'version', type: 'string' },
+            { name: 'verifyingContract', type: 'address' },
+        ],
+    },
+    EIP712_ORDER_SCHEMA: {
+        name: 'Order',
+        parameters: [
+            { name: 'makerAddress', type: 'address' },
+            { name: 'takerAddress', type: 'address' },
+            { name: 'feeRecipientAddress', type: 'address' },
+            { name: 'senderAddress', type: 'address' },
+            { name: 'makerAssetAmount', type: 'uint256' },
+            { name: 'takerAssetAmount', type: 'uint256' },
+            { name: 'makerFee', type: 'uint256' },
+            { name: 'takerFee', type: 'uint256' },
+            { name: 'expirationTimeSeconds', type: 'uint256' },
+            { name: 'salt', type: 'uint256' },
+            { name: 'makerAssetData', type: 'bytes' },
+            { name: 'takerAssetData', type: 'bytes' },
+        ],
+    },
+    EIP712_ZEROEX_TRANSACTION_SCHEMA: {
+        name: 'ZeroExTransaction',
+        parameters: [
+            { name: 'salt', type: 'uint256' },
+            { name: 'signerAddress', type: 'address' },
+            { name: 'data', type: 'bytes' },
+        ],
+    },
 };
