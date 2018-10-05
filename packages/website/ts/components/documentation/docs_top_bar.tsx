@@ -115,14 +115,11 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                     href={menuItemInfo.url}
                     target="_blank"
                     className="text-decoration-none"
-                    style={{
-                        fontSize: 16,
-                    }}
                 >
                     <Container className="flex">
                         <img src={menuItemInfo.iconUrl} width="18" />
                         <div className="flex items-center" style={{ ...menuItemInfo.textStyle, paddingLeft: 4 }}>
-                            {menuItemInfo.title}
+                            <Text fontSize="16px">{menuItemInfo.title}</Text>
                         </div>
                     </Container>
                 </a>
