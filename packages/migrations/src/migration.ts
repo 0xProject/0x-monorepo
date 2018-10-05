@@ -1,4 +1,5 @@
-import { artifacts, wrappers } from '@0xproject/contracts';
+import * as wrappers from '@0xproject/abi-gen-wrappers';
+import * as artifacts from '@0xproject/contract-artifacts';
 import { assetDataUtils } from '@0xproject/order-utils';
 import { ContractAddresses } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -29,7 +30,7 @@ let _cachedContractAddresses: ContractAddresses | undefined;
  * @param provider  Web3 provider instance.
  * @param txDefaults Default transaction values to use when deploying contracts.
  */
-export async function runMigrationsAsync(provider: Provider, txDefaults: Partial<TxData>): Promise<MigrationsResult> {
+export async function runMigrationsAsync(provider: Provider, txDefaults: Partial<TxData>): Promise<void> {
     const web3Wrapper = new Web3Wrapper(provider);
 
     // Proxies
@@ -60,7 +61,6 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         artifacts.Exchange,
         provider,
         txDefaults,
-        zrxAssetData,
     );
 
     // Multisigs
@@ -165,9 +165,13 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         orderValidator,
     };
     _cachedMigrationsResult = migrationsResult;
-    return migrationsResult;
 }
 
+/**
+ * Returns the addresses of all contracts that were deployed during migrations.
+ * Throws if migrations have not been run yet.
+ * @returns Addresses of all contracts that were deployed.
+ */
 export function getContractAddresses(): ContractAddresses {
     if (!_.isUndefined(_cachedContractAddresses)) {
         return _cachedContractAddresses;
