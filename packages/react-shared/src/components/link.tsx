@@ -121,7 +121,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
     }
     // HACK(fabio): For some reason, the react-scroll link decided to stop the propagation of click events.
     // We do however rely on these events being propagated in certain scenarios (e.g when the link
-    // is within a dropdown we want to close upon being clicked). Because of this, we registry the
+    // is within a dropdown we want to close upon being clicked). Because of this, we register the
     // click event of an inner span, and pass it around the react-scroll link to an outer span.
     private _onClickPropagateClickEventAroundScrollLink(): void {
         if (!_.isNull(this._outerReactScrollSpan)) {
