@@ -572,6 +572,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                                     source={pkg.description}
                                     renderers={{
                                         link: MarkdownLinkBlock,
+                                        paragraph: 'span',
                                     }}
                                 />
                             </Text>
