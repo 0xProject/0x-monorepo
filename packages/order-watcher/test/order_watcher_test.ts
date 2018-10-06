@@ -140,6 +140,23 @@ describe('OrderWatcher', () => {
             expect(() => orderWatcher.subscribe(_.noop.bind(_))).to.throw(OrderWatcherError.SubscriptionAlreadyPresent);
         });
     });
+    describe('#getWatchCount', async () => {
+        it('should increment and decrement order counts', async() => {
+            signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerAssetData,
+                takerAssetData,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
+            );
+            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            expect(orderWatcher.getWatchCount()).to.be.eq(0);
+            await orderWatcher.addOrderAsync(signedOrder);
+            expect(orderWatcher.getWatchCount()).to.be.eq(1);
+            orderWatcher.removeOrder(orderHash);
+            expect(orderWatcher.getWatchCount()).to.be.eq(0);
+        });
+    });
     describe('tests with cleanup', async () => {
         afterEach(async () => {
             orderWatcher.unsubscribe();

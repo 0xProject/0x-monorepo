@@ -213,6 +213,9 @@ export class OrderWatcher {
         this._expirationWatcher.unsubscribe();
         intervalUtils.clearAsyncExcludingInterval(this._cleanupJobIntervalIdIfExists);
     }
+    public getWatchCount(): number {
+        return _.size(this._orderByOrderHash);
+    }
     private async _cleanupAsync(): Promise<void> {
         for (const orderHash of _.keys(this._orderByOrderHash)) {
             this._cleanupOrderRelatedState(orderHash);
