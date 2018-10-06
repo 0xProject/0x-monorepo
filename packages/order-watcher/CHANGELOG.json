@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.2",
+        "changes": [
+            {
+                "note": "Added getWatchCounts function"
+            }
+        ],
+        "timestamp": 1538836030
+    },
+    {
         "version": "2.1.1",
         "changes": [
             {
