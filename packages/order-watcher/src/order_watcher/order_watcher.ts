@@ -213,6 +213,10 @@ export class OrderWatcher {
         this._expirationWatcher.unsubscribe();
         intervalUtils.clearAsyncExcludingInterval(this._cleanupJobIntervalIdIfExists);
     }
+    /**
+     * Gets number of orderHashes currently being watched by the order watcher instance.
+     * @returns {number}
+     */
     public getWatchCount(): number {
         return _.size(this._orderByOrderHash);
     }
