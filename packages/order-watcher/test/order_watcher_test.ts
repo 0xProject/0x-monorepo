@@ -141,7 +141,7 @@ describe('OrderWatcher', () => {
         });
     });
     describe('#getWatchCount', async () => {
-        it('should increment and decrement order counts', async() => {
+        it('should increment and decrement order counts', async () => {
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerAssetData,
                 takerAssetData,

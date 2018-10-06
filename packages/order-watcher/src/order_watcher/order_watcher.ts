@@ -215,7 +215,6 @@ export class OrderWatcher {
     }
     /**
      * Gets number of orderHashes currently being watched by the order watcher instance.
-     * @returns {number} Number of hashes in _orderByOrderHash
      */
     public getWatchCount(): number {
         return _.size(this._orderByOrderHash);
