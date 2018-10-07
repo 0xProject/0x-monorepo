@@ -3,7 +3,7 @@
         "version": "2.1.2",
         "changes": [
             {
-                "note": "Added getWatchCounts function"
+                "note": "Added getStats function and returns a Stats object"
             }
         ],
         "timestamp": 1538836030

@@ -140,8 +140,8 @@ describe('OrderWatcher', () => {
             expect(() => orderWatcher.subscribe(_.noop.bind(_))).to.throw(OrderWatcherError.SubscriptionAlreadyPresent);
         });
     });
-    describe('#getWatchCount', async () => {
-        it('should increment and decrement order counts', async () => {
+    describe('#getStats', async () => {
+        it('orderCount should increment and decrement with order additions and removals', async () => {
             signedOrder = await fillScenarios.createFillableSignedOrderAsync(
                 makerAssetData,
                 takerAssetData,
@@ -150,11 +150,11 @@ describe('OrderWatcher', () => {
                 fillableAmount,
             );
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            expect(orderWatcher.getWatchCount()).to.be.eq(0);
+            expect(orderWatcher.getStats().orderCount).to.be.eq(0);
             await orderWatcher.addOrderAsync(signedOrder);
-            expect(orderWatcher.getWatchCount()).to.be.eq(1);
+            expect(orderWatcher.getStats().orderCount).to.be.eq(1);
             orderWatcher.removeOrder(orderHash);
-            expect(orderWatcher.getWatchCount()).to.be.eq(0);
+            expect(orderWatcher.getStats().orderCount).to.be.eq(0);
         });
     });
     describe('tests with cleanup', async () => {

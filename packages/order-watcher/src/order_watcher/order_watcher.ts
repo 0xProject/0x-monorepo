@@ -57,6 +57,10 @@ interface OrderStateByOrderHash {
     [orderHash: string]: OrderState;
 }
 
+export interface Stats {
+    orderCount: number;
+}
+
 const DEFAULT_ORDER_WATCHER_CONFIG: OrderWatcherConfig = {
     orderExpirationCheckingIntervalMs: 50,
     eventPollingIntervalMs: 200,
@@ -214,10 +218,12 @@ export class OrderWatcher {
         intervalUtils.clearAsyncExcludingInterval(this._cleanupJobIntervalIdIfExists);
     }
     /**
-     * Gets number of orderHashes currently being watched by the order watcher instance.
+     * Gets statistics of the OrderWatcher Instance.
      */
-    public getWatchCount(): number {
-        return _.size(this._orderByOrderHash);
+    public getStats(): Stats {
+        return {
+            orderCount : _.size(this._orderByOrderHash),
+        };
     }
     private async _cleanupAsync(): Promise<void> {
         for (const orderHash of _.keys(this._orderByOrderHash)) {
