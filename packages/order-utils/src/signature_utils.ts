@@ -228,25 +228,30 @@ export const signatureUtils = {
         assert.isETHAddressHex('signerAddress', signerAddress);
         const web3Wrapper = new Web3Wrapper(provider);
         await assert.isSenderAddressAsync('signerAddress', signerAddress, web3Wrapper);
-        // Detect if Metamask to transition users to the MetamaskSubprovider
-        if ((provider as any).isMetaMask) {
-            throw new Error('Unsupported Provider, please use MetamaskSubprovider.');
-        }
         const normalizedSignerAddress = signerAddress.toLowerCase();
         const typedData = eip712Utils.createOrderTypedData(order);
-        const signature = await web3Wrapper.signTypedDataAsync(normalizedSignerAddress, typedData);
-        const ecSignatureRSV = parseSignatureHexAsRSV(signature);
-        const signatureBuffer = Buffer.concat([
-            ethUtil.toBuffer(ecSignatureRSV.v),
-            ethUtil.toBuffer(ecSignatureRSV.r),
-            ethUtil.toBuffer(ecSignatureRSV.s),
-            ethUtil.toBuffer(SignatureType.EIP712),
-        ]);
-        const signatureHex = `0x${signatureBuffer.toString('hex')}`;
-        return {
-            ...order,
-            signature: signatureHex,
-        };
+        try {
+            const signature = await web3Wrapper.signTypedDataAsync(normalizedSignerAddress, typedData);
+            const ecSignatureRSV = parseSignatureHexAsRSV(signature);
+            const signatureBuffer = Buffer.concat([
+                ethUtil.toBuffer(ecSignatureRSV.v),
+                ethUtil.toBuffer(ecSignatureRSV.r),
+                ethUtil.toBuffer(ecSignatureRSV.s),
+                ethUtil.toBuffer(SignatureType.EIP712),
+            ]);
+            const signatureHex = `0x${signatureBuffer.toString('hex')}`;
+            return {
+                ...order,
+                signature: signatureHex,
+            };
+        } catch (err) {
+            // Detect if Metamask to transition users to the MetamaskSubprovider
+            if ((provider as any).isMetaMask) {
+                throw new Error(`Unsupported Provider, please use MetamaskSubprovider: ${err.message}`);
+            } else {
+                throw err;
+            }
+        }
     },
     /**
      * Signs a hash and returns its elliptic curve signature and signature type.
@@ -262,11 +267,6 @@ export const signatureUtils = {
         const web3Wrapper = new Web3Wrapper(provider);
         await assert.isSenderAddressAsync('signerAddress', signerAddress, web3Wrapper);
         const normalizedSignerAddress = signerAddress.toLowerCase();
-        // Detect if Metamask to transition users to the MetamaskSubprovider
-        if ((provider as any).isMetaMask) {
-            throw new Error('Unsupported Provider, please use MetamaskSubprovider.');
-        }
-
         const signature = await web3Wrapper.signMessageAsync(normalizedSignerAddress, msgHash);
         const prefixedMsgHashHex = signatureUtils.addSignedMessagePrefix(msgHash);
 
@@ -301,8 +301,12 @@ export const signatureUtils = {
                 return convertedSignatureHex;
             }
         }
-
-        throw new Error(OrderError.InvalidSignature);
+        // Detect if Metamask to transition users to the MetamaskSubprovider
+        if ((provider as any).isMetaMask) {
+            throw new Error('Unsupported Provider, please use MetamaskSubprovider.');
+        } else {
+            throw new Error(OrderError.InvalidSignature);
+        }
     },
     /**
      * Combines ECSignature with V,R,S and the EthSign signature type for use in 0x protocol
