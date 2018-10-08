@@ -1,4 +1,5 @@
 import {
+    ALink,
     colors,
     constants as sharedConstants,
     HeaderSizes,
@@ -7,6 +8,7 @@ import {
     Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
+import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -78,9 +80,9 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
     public render(): React.ReactNode {
-        const menuSubsectionsBySection = _.isUndefined(this.state.articlesBySection)
+        const sectionNameToLinks = _.isUndefined(this.state.articlesBySection)
             ? {}
-            : this._getMenuSubsectionsBySection(this.state.articlesBySection);
+            : this._getSectionNameToLinks(this.state.articlesBySection);
         const mainContainersStyle: React.CSSProperties = {
             ...styles.mainContainers,
             overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
@@ -92,7 +94,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
-                    menuSubsectionsBySection={menuSubsectionsBySection}
+                    sectionNameToLinks={sectionNameToLinks}
                     translate={this.props.translate}
                     sidebarHeader={sidebarHeader}
                 />
@@ -131,8 +133,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                                     onMouseLeave={this._onSidebarHoverOff.bind(this)}
                                 >
                                     <NestedSidebarMenu
-                                        topLevelMenu={menuSubsectionsBySection}
-                                        menuSubsectionsBySection={menuSubsectionsBySection}
+                                        sectionNameToLinks={sectionNameToLinks}
                                         sidebarHeader={sidebarHeader}
                                     />
                                 </div>
@@ -223,15 +224,20 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             }
         }
     }
-    private _getMenuSubsectionsBySection(articlesBySection: ArticlesBySection): { [section: string]: string[] } {
+    private _getSectionNameToLinks(articlesBySection: ArticlesBySection): ObjectMap<ALink[]> {
         const sectionNames = _.keys(articlesBySection);
-        const menuSubsectionsBySection: { [section: string]: string[] } = {};
+        const sectionNameToLinks: ObjectMap<ALink[]> = {};
         for (const sectionName of sectionNames) {
             const articles = articlesBySection[sectionName];
-            const articleNames = _.map(articles, article => article.title);
-            menuSubsectionsBySection[sectionName] = articleNames;
+            const articleLinks = _.map(articles, article => {
+                return {
+                    to: sharedUtils.getIdFromName(article.title),
+                    title: article.title,
+                };
+            });
+            sectionNameToLinks[sectionName] = articleLinks;
         }
-        return menuSubsectionsBySection;
+        return sectionNameToLinks;
     }
     private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
         this.setState({

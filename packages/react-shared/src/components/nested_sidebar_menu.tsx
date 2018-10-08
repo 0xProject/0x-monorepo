@@ -1,24 +1,25 @@
+import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
-import { Link as ScrollLink } from 'react-scroll';
 
-import { MenuSubsectionsBySection, Styles } from '../types';
+import { ALink, Styles } from '../types';
 import { colors } from '../utils/colors';
-import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
+import { Link } from './link';
 import { VersionDropDown } from './version_drop_down';
 
 export interface NestedSidebarMenuProps {
-    topLevelMenu: { [topLevel: string]: string[] };
-    menuSubsectionsBySection: MenuSubsectionsBySection;
+    sectionNameToLinks: ObjectMap<ALink[]>;
+    subsectionNameToLinks?: ObjectMap<ALink[]>;
     sidebarHeader?: React.ReactNode;
     shouldDisplaySectionHeaders?: boolean;
     onMenuItemClick?: () => void;
     selectedVersion?: string;
     versions?: string[];
     onVersionSelected?: (semver: string) => void;
+    shouldReformatMenuItemNames?: boolean;
 }
 
 export interface NestedSidebarMenuState {}
@@ -42,23 +43,24 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
     public static defaultProps: Partial<NestedSidebarMenuProps> = {
         shouldDisplaySectionHeaders: true,
         onMenuItemClick: _.noop.bind(_),
+        shouldReformatMenuItemNames: true,
+        subsectionNameToLinks: {},
     };
     public render(): React.ReactNode {
-        const navigation = _.map(this.props.topLevelMenu, (menuItems: string[], sectionName: string) => {
+        const navigation = _.map(this.props.sectionNameToLinks, (links: ALink[], sectionName: string) => {
             const finalSectionName = utils.convertCamelCaseToSpaces(sectionName);
             if (this.props.shouldDisplaySectionHeaders) {
                 // tslint:disable-next-line:no-unused-variable
-                const id = utils.getIdFromName(sectionName);
                 return (
-                    <div key={`section-${sectionName}`} className="py1" style={{ color: colors.grey800 }}>
-                        <div style={{ fontWeight: 'bold', fontSize: 15 }} className="py1">
+                    <div key={`section-${sectionName}`} className="py1" style={{ color: colors.linkSectionGrey }}>
+                        <div style={{ fontWeight: 'bold', fontSize: 15, letterSpacing: 0.5 }} className="py1">
                             {finalSectionName.toUpperCase()}
                         </div>
-                        {this._renderMenuItems(menuItems)}
+                        {this._renderMenuItems(links)}
                     </div>
                 );
             } else {
-                return <div key={`section-${sectionName}`}>{this._renderMenuItems(menuItems)}</div>;
+                return <div key={`section-${sectionName}`}>{this._renderMenuItems(links)}</div>;
             }
         });
         const maxWidthWithScrollbar = 307;
@@ -80,55 +82,55 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             </div>
         );
     }
-    private _renderMenuItems(menuItemNames: string[]): React.ReactNode[] {
+    private _renderMenuItems(links: ALink[]): React.ReactNode[] {
         const menuItemStyles = this.props.shouldDisplaySectionHeaders
             ? styles.menuItemWithHeaders
             : styles.menuItemWithoutHeaders;
         const menuItemInnerDivStyles = this.props.shouldDisplaySectionHeaders ? styles.menuItemInnerDivWithHeaders : {};
-        const menuItems = _.map(menuItemNames, menuItemName => {
-            const finalMenuItemName = utils.convertDashesToSpaces(menuItemName);
-            const id = utils.getIdFromName(menuItemName);
+        const menuItems = _.map(links, link => {
+            const finalMenuItemName = this.props.shouldReformatMenuItemNames
+                ? utils.convertDashesToSpaces(link.title)
+                : link.title;
             return (
-                <div key={menuItemName}>
-                    <ScrollLink
-                        key={`menuItem-${menuItemName}`}
-                        to={id}
-                        offset={0}
-                        hashSpy={true}
-                        duration={constants.DOCS_SCROLL_DURATION_MS}
-                        containerId={constants.DOCS_CONTAINER_ID}
-                    >
-                        <MenuItem style={menuItemStyles} innerDivStyle={menuItemInnerDivStyles}>
-                            <span style={{ textTransform: 'capitalize' }}>{finalMenuItemName}</span>
+                <div key={`menuItem-${finalMenuItemName}`}>
+                    <Link to={link.to} shouldOpenInNewTab={link.shouldOpenInNewTab}>
+                        <MenuItem
+                            style={menuItemStyles}
+                            innerDivStyle={menuItemInnerDivStyles}
+                            onClick={this._onMenuItemClick.bind(this)}
+                        >
+                            <span
+                                style={{
+                                    textTransform: this.props.shouldReformatMenuItemNames ? 'capitalize' : 'none',
+                                }}
+                            >
+                                {finalMenuItemName}
+                            </span>
                         </MenuItem>
-                    </ScrollLink>
-                    {this._renderMenuItemSubsections(menuItemName)}
+                    </Link>
+                    {this._renderMenuItemSubsections(link.title)}
                 </div>
             );
         });
         return menuItems;
     }
     private _renderMenuItemSubsections(menuItemName: string): React.ReactNode {
-        if (_.isUndefined(this.props.menuSubsectionsBySection[menuItemName])) {
+        if (
+            _.isUndefined(this.props.subsectionNameToLinks) ||
+            _.isUndefined(this.props.subsectionNameToLinks[menuItemName])
+        ) {
             return null;
         }
-        return this._renderMenuSubsectionsBySection(menuItemName, this.props.menuSubsectionsBySection[menuItemName]);
+        return this._renderSubsectionLinks(menuItemName, this.props.subsectionNameToLinks[menuItemName]);
     }
-    private _renderMenuSubsectionsBySection(menuItemName: string, entityNames: string[]): React.ReactNode {
+    private _renderSubsectionLinks(menuItemName: string, links: ALink[]): React.ReactNode {
         return (
             <ul style={{ margin: 0, listStyleType: 'none', paddingLeft: 0 }} key={menuItemName}>
-                {_.map(entityNames, entityName => {
-                    const name = `${menuItemName}-${entityName}`;
-                    const id = utils.getIdFromName(name);
+                {_.map(links, link => {
+                    const name = `${menuItemName}-${link.title}`;
                     return (
                         <li key={`menuSubsectionItem-${name}`}>
-                            <ScrollLink
-                                to={id}
-                                offset={0}
-                                hashSpy={true}
-                                duration={constants.DOCS_SCROLL_DURATION_MS}
-                                containerId={constants.DOCS_CONTAINER_ID}
-                            >
+                            <Link to={link.to} shouldOpenInNewTab={link.shouldOpenInNewTab}>
                                 <MenuItem
                                     style={{ minHeight: 35 }}
                                     innerDivStyle={{
@@ -136,14 +138,20 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                                         fontSize: 14,
                                         lineHeight: '35px',
                                     }}
+                                    onClick={this._onMenuItemClick.bind(this)}
                                 >
-                                    {entityName}
+                                    {link.title}
                                 </MenuItem>
-                            </ScrollLink>
+                            </Link>
                         </li>
                     );
                 })}
             </ul>
         );
+    }
+    private _onMenuItemClick(): void {
+        if (!_.isUndefined(this.props.onMenuItemClick)) {
+            this.props.onMenuItemClick();
+        }
     }
 }

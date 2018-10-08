@@ -71,7 +71,7 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
                     hashSpy={true}
                     offset={headerSizeToScrollOffset[this.props.headerSize]}
                     duration={constants.DOCS_SCROLL_DURATION_MS}
-                    containerId={constants.DOCS_CONTAINER_ID}
+                    containerId={constants.SCROLL_CONTAINER_ID}
                 >
                     <i
                         className="zmdi zmdi-link"

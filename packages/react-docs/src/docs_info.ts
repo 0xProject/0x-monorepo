@@ -1,5 +1,5 @@
-import { MenuSubsectionsBySection } from '@0xproject/react-shared';
-import { DocAgnosticFormat, TypeDefinitionByName } from '@0xproject/types';
+import { ALink, utils as sharedUtils } from '@0xproject/react-shared';
+import { DocAgnosticFormat, ObjectMap, TypeDefinitionByName } from '@0xproject/types';
 import * as _ from 'lodash';
 
 import {
@@ -34,10 +34,10 @@ export class DocsInfo {
         this.sectionNameToMarkdownByVersion = config.sectionNameToMarkdownByVersion;
         this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
     }
-    public getMenuSubsectionsBySection(docAgnosticFormat?: DocAgnosticFormat): MenuSubsectionsBySection {
-        const menuSubsectionsBySection = {} as MenuSubsectionsBySection;
+    public getSubsectionNameToLinks(docAgnosticFormat?: DocAgnosticFormat): ObjectMap<ALink[]> {
+        const subsectionNameToLinks: ObjectMap<ALink[]> = {};
         if (_.isUndefined(docAgnosticFormat)) {
-            return menuSubsectionsBySection;
+            return subsectionNameToLinks;
         }
 
         const docSections = _.keys(this.sections);
@@ -58,7 +58,13 @@ export class DocsInfo {
             if (sectionName === this.typeSectionName) {
                 const sortedTypesNames = _.sortBy(docSection.types, 'name');
                 const typeNames = _.map(sortedTypesNames, t => t.name);
-                menuSubsectionsBySection[sectionName] = typeNames;
+                const typeLinks = _.map(typeNames, typeName => {
+                    return {
+                        to: `${sectionName}-${typeName}`,
+                        title: typeName,
+                    };
+                });
+                subsectionNameToLinks[sectionName] = typeLinks;
             } else if (isExportedFunctionSection) {
                 // Noop so that we don't have the method listed underneath itself.
             } else {
@@ -73,15 +79,19 @@ export class DocsInfo {
                 const methodNames = _.map(methodsSortedByName, m => m.name);
                 const sortedFunctionNames = _.sortBy(docSection.functions, 'name');
                 const functionNames = _.map(sortedFunctionNames, m => m.name);
-                menuSubsectionsBySection[sectionName] = [
-                    ...eventNames,
-                    ...propertyNames,
-                    ...functionNames,
-                    ...methodNames,
-                ];
+                const names = [...eventNames, ...propertyNames, ...functionNames, ...methodNames];
+
+                const links = _.map(names, name => {
+                    return {
+                        to: `${sectionName}-${name}`,
+                        title: name,
+                    };
+                });
+
+                subsectionNameToLinks[sectionName] = links;
             }
         });
-        return menuSubsectionsBySection;
+        return subsectionNameToLinks;
     }
     public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat): { [name: string]: TypeDefinitionByName } {
         if (_.isUndefined(docAgnosticFormat[this.typeSectionName])) {
@@ -91,5 +101,20 @@ export class DocsInfo {
         const section = docAgnosticFormat[this.typeSectionName];
         const typeDefinitionByName = _.keyBy(section.types, 'name') as any;
         return typeDefinitionByName;
+    }
+    public getSectionNameToLinks(): ObjectMap<ALink[]> {
+        const sectionNameToLinks: ObjectMap<ALink[]> = {};
+        _.each(this.menu, (linkTitles, sectionName) => {
+            sectionNameToLinks[sectionName] = [];
+            _.each(linkTitles, linkTitle => {
+                const to = sharedUtils.getIdFromName(linkTitle);
+                const links = sectionNameToLinks[sectionName];
+                links.push({
+                    title: linkTitle,
+                    to,
+                });
+            });
+        });
+        return sectionNameToLinks;
     }
 }

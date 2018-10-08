@@ -2,8 +2,7 @@ import { Networks } from '../types';
 
 export const constants = {
     DOCS_SCROLL_DURATION_MS: 0,
-    DOCS_CONTAINER_ID: 'documentation',
-    SCROLL_CONTAINER_ID: 'documentation',
+    SCROLL_CONTAINER_ID: 'scroll_container',
     SCROLL_TOP_ID: 'pageScrollTop',
     NETWORK_NAME_BY_ID: {
         1: Networks.Mainnet,

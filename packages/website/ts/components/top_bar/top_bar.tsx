@@ -1,16 +1,10 @@
-import { DocsInfo, DocsMenu } from '@0xproject/react-docs';
-import {
-    colors,
-    constants as sharedConstants,
-    MenuSubsectionsBySection,
-    NestedSidebarMenu,
-    Styles,
-} from '@0xproject/react-shared';
+import { DocsInfo } from '@0xproject/react-docs';
+import { ALink, colors, constants as sharedConstants, Link, NestedSidebarMenu, Styles } from '@0xproject/react-shared';
+import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
 import { DevelopersDropDown } from 'ts/components/dropdowns/developers_drop_down';
 import { DrawerMenu } from 'ts/components/portal/drawer_menu';
@@ -40,8 +34,8 @@ export interface TopBarProps {
     translate: Translate;
     docsVersion?: string;
     availableDocVersions?: string[];
-    menu?: DocsMenu;
-    menuSubsectionsBySection?: MenuSubsectionsBySection;
+    sectionNameToLinks?: ObjectMap<ALink[]>;
+    subsectionNameToLinks?: ObjectMap<ALink[]>;
     displayType?: TopBarDisplayType;
     docsInfo?: DocsInfo;
     style?: React.CSSProperties;
@@ -151,7 +145,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     paddingLeft={this.props.paddingLeft}
                     paddingRight={this.props.paddingRight}
                 >
-                    <Link to={`${WebsitePaths.Home}`} className="text-decoration-none">
+                    <Link to={WebsitePaths.Home}>
                         <img src={logoUrl} height="30" />
                     </Link>
                     <div className="flex-auto" />
@@ -159,46 +153,43 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         <div className={menuClasses}>
                             <div className="flex items-center justify-between">
                                 <DevelopersDropDown
+                                    location={this.props.location}
                                     menuItemStyles={styles.menuItem}
                                     translate={this.props.translate}
                                     menuIconStyle={menuIconStyle}
                                 />
                                 <TopBarMenuItem
                                     title={this.props.translate.get(Key.Wiki, Deco.Cap)}
-                                    path={`${WebsitePaths.Wiki}`}
+                                    path={WebsitePaths.Wiki}
                                     style={styles.menuItem}
                                     isNightVersion={isNightVersion}
-                                    isExternal={false}
                                 />
                                 <TopBarMenuItem
                                     title={this.props.translate.get(Key.Blog, Deco.Cap)}
                                     path={constants.URL_BLOG}
                                     style={styles.menuItem}
                                     isNightVersion={isNightVersion}
-                                    isExternal={true}
+                                    shouldOpenInNewTab={true}
                                 />
                                 <TopBarMenuItem
                                     title={this.props.translate.get(Key.About, Deco.Cap)}
-                                    path={`${WebsitePaths.About}`}
+                                    path={WebsitePaths.About}
                                     style={styles.menuItem}
                                     isNightVersion={isNightVersion}
-                                    isExternal={false}
                                 />
                                 <TopBarMenuItem
                                     title={this.props.translate.get(Key.Careers, Deco.Cap)}
-                                    path={`${WebsitePaths.Careers}`}
+                                    path={WebsitePaths.Careers}
                                     style={styles.menuItem}
                                     isNightVersion={isNightVersion}
-                                    isExternal={false}
                                 />
                                 <TopBarMenuItem
                                     title={this.props.translate.get(Key.TradeCallToAction, Deco.Cap)}
-                                    path={`${WebsitePaths.Portal}`}
+                                    path={WebsitePaths.Portal}
                                     isPrimary={true}
                                     style={styles.menuItem}
                                     className={`${isExpandedDisplayType && 'md-hide'}`}
                                     isNightVersion={isNightVersion}
-                                    isExternal={false}
                                 />
                             </div>
                         </div>
@@ -260,20 +251,16 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     <div className="pl1 py1 mt3" style={{ backgroundColor: colors.lightGrey }}>
                         {this.props.translate.get(Key.Website, Deco.Cap)}
                     </div>
-                    <Link to={WebsitePaths.Home} className="text-decoration-none">
+                    <Link to={WebsitePaths.Home}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Home, Deco.Cap)}</MenuItem>
                     </Link>
-                    <Link to={`${WebsitePaths.Wiki}`} className="text-decoration-none">
+                    <Link to={WebsitePaths.Wiki}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Wiki, Deco.Cap)}</MenuItem>
                     </Link>
                     {_.map(DOC_WEBSITE_PATHS_TO_KEY, (key, websitePath) => {
                         if (!this._doesUrlInclude(websitePath)) {
                             return (
-                                <Link
-                                    key={`drawer-menu-item-${websitePath}`}
-                                    to={websitePath}
-                                    className="text-decoration-none"
-                                >
+                                <Link key={`drawer-menu-item-${websitePath}`} to={websitePath}>
                                     <MenuItem className="py2">
                                         {this.props.translate.get(key, Deco.Cap)}{' '}
                                         {this.props.translate.get(Key.Docs, Deco.Cap)}
@@ -284,25 +271,25 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         return null;
                     })}
                     {!this._isViewingPortal() && (
-                        <Link to={`${WebsitePaths.Portal}`} className="text-decoration-none">
+                        <Link to={WebsitePaths.Portal}>
                             <MenuItem className="py2">
                                 {this.props.translate.get(Key.PortalDApp, Deco.CapWords)}
                             </MenuItem>
                         </Link>
                     )}
-                    <a className="text-decoration-none" target="_blank" href={`${WebsitePaths.Whitepaper}`}>
+                    <Link to={WebsitePaths.Whitepaper} shouldOpenInNewTab={true}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Whitepaper, Deco.Cap)}</MenuItem>
-                    </a>
-                    <Link to={`${WebsitePaths.About}`} className="text-decoration-none">
+                    </Link>
+                    <Link to={WebsitePaths.About}>
                         <MenuItem className="py2">{this.props.translate.get(Key.About, Deco.Cap)}</MenuItem>
                     </Link>
-                    <Link to={`${WebsitePaths.Careers}`} className="text-decoration-none">
+                    <Link to={WebsitePaths.Careers}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Careers, Deco.Cap)}</MenuItem>
                     </Link>
-                    <a className="text-decoration-none" target="_blank" href={constants.URL_BLOG}>
+                    <Link to={constants.URL_BLOG} shouldOpenInNewTab={true}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Blog, Deco.Cap)}</MenuItem>
-                    </a>
-                    <Link to={`${WebsitePaths.FAQ}`} className="text-decoration-none">
+                    </Link>
+                    <Link to={WebsitePaths.FAQ}>
                         <MenuItem className="py2" onClick={this._onMenuButtonClick.bind(this)}>
                             {this.props.translate.get(Key.Faq, Deco.Cap)}
                         </MenuItem>
@@ -319,14 +306,14 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         // because the sidebar renders `react-scroll` links which depend on the scroll container already
         // being rendered.
         const documentationContainer = document.getElementById(sharedConstants.SCROLL_CONTAINER_ID);
-        if (!isViewingDocsPage || _.isUndefined(this.props.menu) || _.isNull(documentationContainer)) {
+        if (!isViewingDocsPage || _.isUndefined(this.props.sectionNameToLinks) || _.isNull(documentationContainer)) {
             return undefined;
         }
         return (
             <div className="lg-hide md-hide">
                 <NestedSidebarMenu
-                    topLevelMenu={this.props.menu}
-                    menuSubsectionsBySection={this.props.menuSubsectionsBySection}
+                    sectionNameToLinks={this.props.sectionNameToLinks}
+                    subsectionNameToLinks={this.props.subsectionNameToLinks}
                     sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
@@ -345,8 +332,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         return (
             <div className="lg-hide md-hide">
                 <NestedSidebarMenu
-                    topLevelMenu={this.props.menuSubsectionsBySection}
-                    menuSubsectionsBySection={this.props.menuSubsectionsBySection}
+                    sectionNameToLinks={this.props.sectionNameToLinks}
+                    subsectionNameToLinks={this.props.subsectionNameToLinks}
                     sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}

@@ -1,5 +1,5 @@
 import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { colors } from '@0xproject/react-shared';
+import { colors, Link } from '@0xproject/react-shared';
 import { BigNumber, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as accounting from 'accounting';
@@ -8,7 +8,6 @@ import { Card, CardHeader, CardText } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
 import { TrackTokenConfirmationDialog } from 'ts/components/dialogs/track_token_confirmation_dialog';
 import { FillOrderJSON } from 'ts/components/fill_order_json';
@@ -324,7 +323,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         return (
             <div>
                 Order successfully filled. See the trade details in your{' '}
-                <Link to={`${WebsitePaths.Portal}/trades`} style={{ color: colors.white }}>
+                <Link to={`${WebsitePaths.Portal}/trades`} fontColor={colors.white}>
                     trade history
                 </Link>
             </div>

@@ -1,69 +1,67 @@
-import { colors } from '@0xproject/react-shared';
+import { ALink, colors, Link } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Text } from 'ts/components/ui/text';
-import { Deco, Key, ObjectMap, WebsitePaths } from 'ts/types';
+import { Deco, Key, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
-interface LinkInfo {
-    link: string;
-    shouldOpenNewTab: boolean;
-}
-
-const gettingStartedKeyToLinkInfo1: ObjectMap<LinkInfo> = {
-    [Key.BuildARelayer]: {
-        link: `${WebsitePaths.Wiki}#Build-A-Relayer`,
-        shouldOpenNewTab: false,
+const gettingStartedKeyToLinkInfo1: ALink[] = [
+    {
+        title: Key.BuildARelayer,
+        to: `${WebsitePaths.Wiki}#Build-A-Relayer`,
     },
-    [Key.IntroTutorial]: {
-        link: `${WebsitePaths.Wiki}#Create,-Validate,-Fill-Order`,
-        shouldOpenNewTab: false,
+    {
+        title: Key.OrderBasics,
+        to: `${WebsitePaths.Wiki}#Create,-Validate,-Fill-Order`,
     },
-};
-const gettingStartedKeyToLinkInfo2: ObjectMap<LinkInfo> = {
-    [Key.TradingTutorial]: {
-        link: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
-        shouldOpenNewTab: false,
+];
+const gettingStartedKeyToLinkInfo2: ALink[] = [
+    {
+        title: Key.DevelopOnEthereum,
+        to: `${WebsitePaths.Wiki}#Ethereum-Development`,
     },
-    [Key.EthereumDevelopment]: {
-        link: `${WebsitePaths.Wiki}#Ethereum-Development`,
-        shouldOpenNewTab: false,
+    {
+        title: Key.UseSharedLiquidity,
+        to: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
     },
-};
-const popularDocsToLinkInfos: ObjectMap<LinkInfo> = {
-    [Key.ZeroExJs]: {
-        link: WebsitePaths.ZeroExJs,
-        shouldOpenNewTab: false,
+];
+const popularDocsToLinkInfos: ALink[] = [
+    {
+        title: Key.ZeroExJs,
+        to: WebsitePaths.ZeroExJs,
     },
-    [Key.Connect]: {
-        link: WebsitePaths.Connect,
-        shouldOpenNewTab: false,
+    {
+        title: Key.Connect,
+        to: WebsitePaths.Connect,
     },
-    [Key.SmartContract]: {
-        link: WebsitePaths.SmartContracts,
-        shouldOpenNewTab: false,
+    {
+        title: Key.SmartContract,
+        to: WebsitePaths.SmartContracts,
     },
-};
-const usefulLinksToLinkInfo: ObjectMap<LinkInfo> = {
-    [Key.Github]: {
-        link: constants.URL_GITHUB_ORG,
-        shouldOpenNewTab: true,
+];
+const usefulLinksToLinkInfo: ALink[] = [
+    {
+        title: Key.Github,
+        to: constants.URL_GITHUB_ORG,
+        shouldOpenInNewTab: true,
     },
-    [Key.Whitepaper]: {
-        link: WebsitePaths.Whitepaper,
-        shouldOpenNewTab: true,
+    {
+        title: Key.Whitepaper,
+        to: WebsitePaths.Whitepaper,
+        shouldOpenInNewTab: true,
     },
-    [Key.Sandbox]: {
-        link: constants.URL_SANDBOX,
-        shouldOpenNewTab: true,
+    {
+        title: Key.Sandbox,
+        to: constants.URL_SANDBOX,
+        shouldOpenInNewTab: true,
     },
-};
+];
 
 interface DevelopersDropDownProps {
+    location: Location;
     translate: Translate;
     menuItemStyles: React.CSSProperties;
     menuIconStyle: React.CSSProperties;
@@ -93,96 +91,75 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
     }
     private _renderDropdownMenu(): React.ReactNode {
         const dropdownMenu = (
-            <div>
+            <Container>
                 <Container padding="1.75rem">
                     {this._renderTitle('Getting started')}
-                    <div className="flex">
-                        <div className="pr4 mr2">{this._renderLinkSection(gettingStartedKeyToLinkInfo1)}</div>
-                        <div>{this._renderLinkSection(gettingStartedKeyToLinkInfo2)}</div>
-                    </div>
+                    <Container className="flex">
+                        <Container className="pr4 mr2">
+                            {this._renderLinkSection(gettingStartedKeyToLinkInfo1)}
+                        </Container>
+                        <Container>{this._renderLinkSection(gettingStartedKeyToLinkInfo2)}</Container>
+                    </Container>
                 </Container>
-                <div
-                    style={{
-                        width: '100%',
-                        height: 1,
-                        backgroundColor: colors.grey300,
-                    }}
-                />
-                <div className="flex" style={{ padding: '1.75rem' }}>
-                    <div className="pr4 mr2">
-                        <div>{this._renderTitle('Popular docs')}</div>
-                        <div>{this._renderLinkSection(popularDocsToLinkInfos)}</div>
-                    </div>
-                    <div>
-                        <div>{this._renderTitle('Useful links')}</div>
-                        <div>{this._renderLinkSection(usefulLinksToLinkInfo)}</div>
-                    </div>
-                </div>
-                <div
-                    style={{
-                        padding: '0.8rem',
-                        textAlign: 'center',
-                        backgroundColor: colors.lightBgGrey,
-                        borderBottomLeftRadius: 4,
-                        borderBottomRightRadius: 4,
-                    }}
-                >
-                    <Link
-                        to={WebsitePaths.ZeroExJs}
-                        className="text-decoration-none"
-                        style={{
-                            color: colors.lightBlueA700,
-                            fontWeight: 'bold',
-                            fontSize: 14,
-                        }}
+                <Container width="100%" height="1px" backgroundColor={colors.grey300} />
+                <Container className="flex" padding="1.75rem">
+                    <Container className="pr4 mr2">
+                        <Container>{this._renderTitle('Popular docs')}</Container>
+                        <Container>{this._renderLinkSection(popularDocsToLinkInfos)}</Container>
+                    </Container>
+                    <Container>
+                        <Container>{this._renderTitle('Useful links')}</Container>
+                        <Container>{this._renderLinkSection(usefulLinksToLinkInfo)}</Container>
+                    </Container>
+                </Container>
+                <Link to={WebsitePaths.Docs} fontColor={colors.lightBlueA700}>
+                    <Container
+                        padding="0.9rem"
+                        backgroundColor={colors.lightBgGrey}
+                        borderBottomLeftRadius={4}
+                        borderBottomRightRadius={4}
                     >
-                        {this.props.translate.get(Key.ViewAllDocumentation, Deco.Upper)}
-                    </Link>
-                </div>
-            </div>
+                        <Text fontColor={colors.lightBlueA700} fontWeight="bold" fontSize="14px" textAlign="center">
+                            {this.props.translate.get(Key.ViewAllDocumentation, Deco.Upper)}
+                        </Text>
+                    </Container>
+                </Link>
+            </Container>
         );
         return dropdownMenu;
     }
     private _renderTitle(title: string): React.ReactNode {
         return (
-            <div
-                style={{
-                    color: colors.linkSectionGrey,
-                    fontSize: 14,
-                    paddingBottom: 12,
-                    fontWeight: 600,
-                    letterSpacing: 1,
-                }}
-            >
-                {title.toUpperCase()}
-            </div>
+            <Container paddingBottom="12px">
+                <Text letterSpacing={1} fontColor={colors.linkSectionGrey} fontSize="14px" fontWeight={600}>
+                    {title.toUpperCase()}
+                </Text>
+            </Container>
         );
     }
-    private _renderLinkSection(keyToLinkInfo: ObjectMap<LinkInfo>): React.ReactNode {
-        const linkStyle: React.CSSProperties = {
-            color: colors.lightBlueA700,
-            fontFamily: 'Roboto, Roboto Mono',
-        };
-        const numLinks = _.size(keyToLinkInfo);
+    private _renderLinkSection(links: ALink[]): React.ReactNode {
+        const numLinks = links.length;
         let i = 0;
-        const links = _.map(keyToLinkInfo, (linkInfo: LinkInfo, key: string) => {
+        const renderLinks = _.map(links, (link: ALink) => {
+            const isWikiLink = _.startsWith(link.to, WebsitePaths.Wiki) && _.includes(link.to, '#');
+            const isOnWiki = this.props.location.pathname === WebsitePaths.Wiki;
+            let to = link.to;
+            if (isWikiLink && isOnWiki) {
+                to = `${link.to.split('#')[1]}`;
+            }
             i++;
             const isLast = i === numLinks;
-            const linkText = this.props.translate.get(key as Key, Deco.CapWords);
+            const linkText = this.props.translate.get(link.title as Key, Deco.Cap);
             return (
-                <div className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${key}`}>
-                    {linkInfo.shouldOpenNewTab ? (
-                        <a target="_blank" className="text-decoration-none" style={linkStyle} href={linkInfo.link}>
+                <Container className={`pr1 pt1 ${!isLast && 'pb1'}`} key={`dev-dropdown-link-${link.title}`}>
+                    <Link to={to} shouldOpenInNewTab={!!link.shouldOpenInNewTab}>
+                        <Text fontFamily="Roboto, Roboto Mono" fontColor={colors.lightBlueA700}>
                             {linkText}
-                        </a>
-                    ) : (
-                        <Link to={linkInfo.link} className="text-decoration-none" style={linkStyle}>
-                            {linkText}
-                        </Link>
-                    )}
-                </div>
+                        </Text>
+                    </Link>
+                </Container>
             );
         });
-        return <div>{links}</div>;
+        return <Container>{renderLinks}</Container>;
     }
 }

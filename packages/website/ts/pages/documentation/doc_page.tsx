@@ -79,9 +79,9 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         this._isUnmounted = true;
     }
     public render(): React.ReactNode {
-        const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
+        const subsectionNameToLinks = _.isUndefined(this.state.docAgnosticFormat)
             ? {}
-            : this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
+            : this.props.docsInfo.getSubsectionNameToLinks(this.state.docAgnosticFormat);
         const sourceUrl = this._getSourceUrl();
         const iconFileName = idToIcon[this.props.docsInfo.id] || DEFAULT_ICON;
         const iconUrl = `/images/doc_icons/${iconFileName}`;
@@ -93,8 +93,8 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                     location={this.props.location}
                     docsVersion={this.props.docsVersion}
                     availableDocVersions={this.props.availableDocVersions}
-                    menu={this.props.docsInfo.menu}
-                    menuSubsectionsBySection={menuSubsectionsBySection}
+                    sectionNameToLinks={this.props.docsInfo.getSectionNameToLinks()}
+                    subsectionNameToLinks={subsectionNameToLinks}
                     docsInfo={this.props.docsInfo}
                     translate={this.props.translate}
                     onVersionSelected={this._onVersionSelected.bind(this)}

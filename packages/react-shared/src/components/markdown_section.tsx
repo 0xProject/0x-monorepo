@@ -8,6 +8,7 @@ import { colors } from '../utils/colors';
 import { utils } from '../utils/utils';
 
 import { AnchorTitle } from './anchor_title';
+import { Link } from './link';
 import { MarkdownCodeBlock } from './markdown_code_block';
 import { MarkdownLinkBlock } from './markdown_link_block';
 
@@ -63,13 +64,11 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                         </div>
                         <div className="col col-4 sm-hide xs-hide right-align pr3" style={{ height: 28 }}>
                             {!_.isUndefined(githubLink) && (
-                                <a
-                                    href={githubLink}
-                                    target="_blank"
-                                    style={{ color: colors.linkBlue, textDecoration: 'none', lineHeight: 2.1 }}
-                                >
-                                    Edit on Github
-                                </a>
+                                <div style={{ lineHeight: 2.1 }}>
+                                    <Link to={githubLink} shouldOpenInNewTab={true} fontColor={colors.linkBlue}>
+                                        Edit on Github
+                                    </Link>
+                                </div>
                             )}
                         </div>
                     </div>

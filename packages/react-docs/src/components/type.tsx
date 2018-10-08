@@ -1,4 +1,4 @@
-import { colors, constants as sharedConstants, utils as sharedUtils } from '@0xproject/react-shared';
+import { colors, constants as sharedConstants, Link, utils as sharedUtils } from '@0xproject/react-shared';
 import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '@0xproject/types';
 import { errorUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
@@ -205,14 +205,9 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
     const typeNameUrlIfExists = !_.isUndefined(props.type.externalLink) ? props.type.externalLink : undefined;
     if (!_.isUndefined(typeNameUrlIfExists)) {
         typeName = (
-            <a
-                href={typeNameUrlIfExists}
-                target="_blank"
-                className="text-decoration-none"
-                style={{ color: colors.lightBlueA700 }}
-            >
+            <Link to={typeNameUrlIfExists} shouldOpenInNewTab={true} fontColor={colors.lightBlueA700}>
                 {typeName}
-            </a>
+            </Link>
         );
     } else if (
         (isReference || isArray) &&
@@ -228,7 +223,7 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
                 offset={0}
                 hashSpy={true}
                 duration={sharedConstants.DOCS_SCROLL_DURATION_MS}
-                containerId={sharedConstants.DOCS_CONTAINER_ID}
+                containerId={sharedConstants.SCROLL_CONTAINER_ID}
             >
                 {sharedUtils.isUserOnMobile() || props.isInPopover || isExportedClassReference ? (
                     <span style={{ color: colors.lightBlueA700, cursor: 'pointer' }}>{typeName}</span>
