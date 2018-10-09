@@ -1,5 +1,18 @@
 [
     {
+        "version": "1.2.0",
+        "changes": [
+            {
+                "note": "Added `EIP712Parameter` `EIP712Types` `EIP712TypedData` for EIP712 signing",
+                "pr": 1102
+            },
+            {
+                "note": "Added `ZeroExTransaction` type for Exchange executeTransaction",
+                "pr": 1102
+            }
+        ]
+    },
+    {
         "timestamp": 1538693146,
         "version": "1.1.4",
         "changes": [

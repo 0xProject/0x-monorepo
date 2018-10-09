@@ -1,18 +1,10 @@
-import { EIP712Schema, EIP712Types, eip712Utils, generatePseudoRandomSalt } from '@0xproject/order-utils';
+import { eip712Utils, generatePseudoRandomSalt } from '@0xproject/order-utils';
 import { SignatureType } from '@0xproject/types';
+import { signTypedDataUtils } from '@0xproject/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { signingUtils } from './signing_utils';
 import { SignedTransaction } from './types';
-
-const EIP712_ZEROEX_TRANSACTION_SCHEMA: EIP712Schema = {
-    name: 'ZeroExTransaction',
-    parameters: [
-        { name: 'salt', type: EIP712Types.Uint256 },
-        { name: 'signerAddress', type: EIP712Types.Address },
-        { name: 'data', type: EIP712Types.Bytes },
-    ],
-};
 
 export class TransactionFactory {
     private readonly _signerBuff: Buffer;
@@ -31,12 +23,10 @@ export class TransactionFactory {
             signerAddress,
             data,
         };
-        const executeTransactionHashBuff = eip712Utils.structHash(
-            EIP712_ZEROEX_TRANSACTION_SCHEMA,
-            executeTransactionData,
-        );
-        const txHash = eip712Utils.createEIP712Message(executeTransactionHashBuff, this._exchangeAddress);
-        const signature = signingUtils.signMessage(txHash, this._privateKey, signatureType);
+
+        const typedData = eip712Utils.createZeroExTransactionTypedData(executeTransactionData, this._exchangeAddress);
+        const eip712MessageBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
+        const signature = signingUtils.signMessage(eip712MessageBuffer, this._privateKey, signatureType);
         const signedTx = {
             exchangeAddress: this._exchangeAddress,
             signature: `0x${signature.toString('hex')}`,

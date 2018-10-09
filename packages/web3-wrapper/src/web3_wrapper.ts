@@ -315,6 +315,21 @@ export class Web3Wrapper {
         return signData;
     }
     /**
+     * Sign an EIP712 typed data message with a specific address's private key (`eth_signTypedData`)
+     * @param address Address of signer
+     * @param typedData Typed data message to sign
+     * @returns Signature string (as RSV)
+     */
+    public async signTypedDataAsync(address: string, typedData: any): Promise<string> {
+        assert.isETHAddressHex('address', address);
+        assert.doesConformToSchema('typedData', typedData, schemas.eip712TypedDataSchema);
+        const signData = await this.sendRawPayloadAsync<string>({
+            method: 'eth_signTypedData',
+            params: [address, typedData],
+        });
+        return signData;
+    }
+    /**
      * Fetches the latest block number
      * @returns Block number
      */
@@ -654,6 +669,9 @@ export class Web3Wrapper {
             ...payload,
         };
         const response = await promisify<JSONRPCResponsePayload>(sendAsync)(payloadWithDefaults);
+        if (response.error) {
+            throw new Error(response.error.message);
+        }
         const result = response.result;
         return result;
     }

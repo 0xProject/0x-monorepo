@@ -53,7 +53,13 @@ export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0
 
 export import Web3ProviderEngine = require('web3-provider-engine');
 
-export { RPCSubprovider, Callback, JSONRPCRequestPayloadWithMethod, ErrorCallback } from '@0xproject/subproviders';
+export {
+    RPCSubprovider,
+    Callback,
+    JSONRPCRequestPayloadWithMethod,
+    ErrorCallback,
+    MetamaskSubprovider,
+} from '@0xproject/subproviders';
 
 export { AbiDecoder } from '@0xproject/utils';
 
@@ -68,7 +74,6 @@ export {
     OrderStateInvalid,
     OrderState,
     AssetProxyId,
-    SignerType,
     ERC20AssetData,
     ERC721AssetData,
     SignatureType,
@@ -85,6 +90,7 @@ export {
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
     JSONRPCErrorCallback,
+    JSONRPCResponseError,
     LogEntry,
     DecodedLogArgs,
     LogEntryEvent,
