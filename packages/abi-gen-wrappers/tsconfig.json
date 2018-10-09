@@ -2,7 +2,7 @@
     "extends": "../../tsconfig",
     "compilerOptions": {
         "outDir": "lib",
-        "rootDir": ".",
+        "rootDir": "."
     },
-    "include": ["./src/**/*", "./wrappers/**/*"],
+    "include": ["./src/**/*", "./wrappers/**/*"]
 }

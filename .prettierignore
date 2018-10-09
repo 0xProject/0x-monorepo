@@ -2,6 +2,8 @@ lib
 .nyc_output
 /packages/contracts/generated-wrappers
 /packages/contracts/generated-artifacts
+/packages/abi-gen-wrappers/wrappers
+/packages/contract-artifacts/artifacts
 /packages/metacoin/src/contract_wrappers
 /packages/0x.js/src/generated_contract_wrappers/
 /packages/fill-scenarios/src/generated_contract_wrappers/

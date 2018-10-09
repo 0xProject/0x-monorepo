@@ -109,7 +109,7 @@ describe('Revert Validation ExchangeWrapper', () => {
                 makerTokenBalance,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-            await expect(
+            return expect(
                 contractWrappers.exchange.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress, {
                     shouldValidate: true,
                 }),
