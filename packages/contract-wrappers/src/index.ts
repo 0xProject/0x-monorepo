@@ -39,6 +39,7 @@ export {
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
     JSONRPCErrorCallback,
+    JSONRPCResponseError,
     AbiDefinition,
     LogWithDecodedArgs,
     FunctionAbi,
