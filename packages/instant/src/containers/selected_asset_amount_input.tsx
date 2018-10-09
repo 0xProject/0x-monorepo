@@ -19,7 +19,7 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    onChange?: (value: BigNumber) => void;
+    onChange?: (value?: BigNumber) => void;
 }
 
 const mapStateToProps = (state: State, _ownProps: SelectedAssetAmountInputProps): ConnectedState => ({
