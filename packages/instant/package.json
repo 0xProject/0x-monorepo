@@ -1,6 +1,6 @@
 {
     "name": "@0xproject/instant",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -44,17 +44,17 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/instant/README.md",
     "dependencies": {
         "@0xproject/connect": "^2.0.4",
-        "@0xproject/types": "^1.1.1",
+        "@0xproject/types": "^1.1.4",
         "@0xproject/typescript-typings": "^2.0.2",
         "@0xproject/utils": "^1.0.11",
-        "@0xproject/web3-wrapper": "^3.0.1",
-        "ethereum-types": "^1.0.8",
+        "@0xproject/web3-wrapper": "^3.0.3",
+        "ethereum-types": "^1.0.11",
         "lodash": "^4.17.10",
         "react": "^16.5.2",
         "react-dom": "^16.5.2"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.7",
+        "@0xproject/tslint-config": "^1.0.8",
         "@types/enzyme": "^3.1.14",
         "@types/enzyme-adapter-react-16": "^1.0.3",
         "@types/lodash": "^4.14.116",

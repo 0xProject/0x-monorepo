@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.7 - _October 4, 2018_
+
+    * Dependencies updated
+
 ## v1.0.6 - _October 2, 2018_
 
     * Dependencies updated
@@ -37,7 +41,7 @@ CHANGELOG
 
     * Update incorrect relayer api fee recipients response schema (#974)
 
-## v1.0.1-rc.4 - _August 14, 2018_
+## v1.0.1-rc.4 - _August 13, 2018_
 
     * Allow for additional properties in txData schema (#938)
     * Change hexSchema to match `0x` (#937)
@@ -59,7 +63,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0-rc.1 - _July 20, 2018_
+## v1.0.0-rc.1 - _July 19, 2018_
 
     * Update schemas for V2 or 0x Protocol (#615)
     * Added CallData schema (#821)
@@ -85,7 +89,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.7.23 - _May 5, 2018_
+## v0.7.23 - _May 4, 2018_
 
     * Dependencies updated
 

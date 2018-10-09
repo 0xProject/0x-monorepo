@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _October 4, 2018_
+
+    * Expand AssetBuyer to work with multiple assets at once (#1086)
+    * Fix minRate and maxRate calculation (#1113)
+
 ## v1.0.3 - _October 2, 2018_
 
     * Dependencies updated

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.2 - _October 4, 2018_
+
+    * Dependencies updated
+
 ## v3.0.1 - _October 2, 2018_
 
     * Dependencies updated
@@ -29,7 +33,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.4 - _August 14, 2018_
+## v1.0.4 - _August 13, 2018_
 
     * Dependencies updated
 
@@ -45,7 +49,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 20, 2018_
+## v1.0.0 - _July 19, 2018_
 
     * Add types for `eth-lightwallet` (#775)
     * Improve 'web3-provider-engine' typings (#768)
@@ -70,7 +74,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.3.1 - _May 5, 2018_
+## v0.3.1 - _May 4, 2018_
 
     * Dependencies updated
 

@@ -5,7 +5,7 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v3.0.1 - _October 2, 2018_
+## v3.0.1 - _October 4, 2018_
 
     * Dependencies updated
 
@@ -42,7 +42,7 @@ CHANGELOG
     * Updated for SRA v2 (#974)
     * Stopped exporting `Order` type (#924)
 
-## v1.0.5 - _August 14, 2018_
+## v1.0.5 - _August 13, 2018_
 
     * Dependencies updated
 
@@ -62,7 +62,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.0 - _July 20, 2018_
+## v1.0.0 - _July 19, 2018_
 
     * Remove `WebSocketOrderbookChannel` from the public interface and replace with `orderbookChannelFactory`
 
@@ -86,7 +86,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.6.12 - _May 5, 2018_
+## v0.6.12 - _May 4, 2018_
 
     * Dependencies updated
 
