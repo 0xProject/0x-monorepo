@@ -3,15 +3,16 @@
         "version": "2.0.0",
         "changes": [
             {
-                "note": "Added `ecSignOrderAsync` to first sign an order as EIP712 and fallback to EthSign",
+                "note":
+                    "Added `ecSignOrderAsync` to first sign an order using `eth_signTypedData` and fallback to `eth_sign`.",
                 "pr": 1102
             },
             {
-                "note": "Added `ecSignTypedDataOrderAsync` to sign an order exclusively as EIP712",
+                "note": "Added `ecSignTypedDataOrderAsync` to sign an order exclusively using `eth_signTypedData`.",
                 "pr": 1102
             },
             {
-                "note": "Rename `ecSignOrderHashAsync` to `ecSignHashAsync` removing `SignerType` parameter",
+                "note": "Rename `ecSignOrderHashAsync` to `ecSignHashAsync` removing `SignerType` parameter.",
                 "pr": 1102
             }
         ]

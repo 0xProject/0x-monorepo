@@ -210,7 +210,8 @@ export const signatureUtils = {
             // HACK: We are unable to handle specific errors thrown since provider is not an object
             //       under our control. It could be Metamask Web3, Ethers, or any general RPC provider.
             //       We check for a user denying the signature request in a way that supports Metamask and
-            //       Coinbase Wallet
+            //       Coinbase Wallet. Unfortunately for signers with a different error message,
+            //       they will receive two signature requests.
             if (err.message.includes('User denied message signature')) {
                 throw err;
             }
@@ -255,9 +256,7 @@ export const signatureUtils = {
         } catch (err) {
             // Detect if Metamask to transition users to the MetamaskSubprovider
             if ((provider as any).isMetaMask) {
-                throw new Error(
-                    `MetaMask provider must be wrapped in a MetamaskSubprovider (from the '@0xproject/subproviders' package) in order to work with this method.`,
-                );
+                throw new Error(OrderError.InvalidMetamaskSigner);
             } else {
                 throw err;
             }
@@ -313,9 +312,7 @@ export const signatureUtils = {
         }
         // Detect if Metamask to transition users to the MetamaskSubprovider
         if ((provider as any).isMetaMask) {
-            throw new Error(
-                `MetaMask provider must be wrapped in a MetamaskSubprovider (from the '@0xproject/subproviders' package) in order to work with this method.`,
-            );
+            throw new Error(OrderError.InvalidMetamaskSigner);
         } else {
             throw new Error(OrderError.InvalidSignature);
         }
