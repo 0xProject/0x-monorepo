@@ -1,6 +1,6 @@
-import { BlockchainLifecycle, web3Factory } from '@0xproject/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { getContractAddresses } from '@0xproject/migrations';
+import { runMigrationsAsync } from '@0xproject/migrations';
 import { assetDataUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -17,8 +17,7 @@ import { tokenUtils } from './utils/token_utils';
 chaiSetup.configure();
 const expect = chai.expect;
 
-// TODO(albrow): Re-enable these tests after @0xproject/fill-scenarios is updated.
-describe.skip('Revert Validation ExchangeWrapper', () => {
+describe('Revert Validation ExchangeWrapper', () => {
     let contractWrappers: ContractWrappers;
     let userAddresses: string[];
     let zrxTokenAddress: string;
@@ -26,13 +25,10 @@ describe.skip('Revert Validation ExchangeWrapper', () => {
     let exchangeContractAddress: string;
     let makerTokenAddress: string;
     let takerTokenAddress: string;
-    let coinbase: string;
     let makerAddress: string;
-    let anotherMakerAddress: string;
     let takerAddress: string;
     let makerAssetData: string;
     let takerAssetData: string;
-    let feeRecipient: string;
     let txHash: string;
     let blockchainLifecycle: BlockchainLifecycle;
     let web3Wrapper: Web3Wrapper;
@@ -52,10 +48,15 @@ describe.skip('Revert Validation ExchangeWrapper', () => {
         // Re-deploy the artifacts in this provider, rather than in the default provider exposed in
         // the beforeAll hook. This is due to the fact that the default provider enabled vmErrorsOnRPCResponse
         // and we are explicity testing with vmErrorsOnRPCResponse disabled.
+        const txDefaults = {
+            gas: devConstants.GAS_LIMIT,
+            from: devConstants.TESTRPC_FIRST_ADDRESS,
+        };
         await blockchainLifecycle.startAsync();
+        const contractAddresses = await runMigrationsAsync(provider, txDefaults);
         const config = {
             networkId: constants.TESTRPC_NETWORK_ID,
-            contractAddresses: getContractAddresses(),
+            contractAddresses,
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);
@@ -70,7 +71,7 @@ describe.skip('Revert Validation ExchangeWrapper', () => {
             contractWrappers.erc20Proxy.address,
             contractWrappers.erc721Proxy.address,
         );
-        [coinbase, makerAddress, takerAddress, feeRecipient, anotherMakerAddress] = userAddresses;
+        [, makerAddress, takerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData] = [
             assetDataUtils.encodeERC20AssetData(makerTokenAddress),
@@ -108,7 +109,7 @@ describe.skip('Revert Validation ExchangeWrapper', () => {
                 makerTokenBalance,
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-            expect(
+            await expect(
                 contractWrappers.exchange.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress, {
                     shouldValidate: true,
                 }),

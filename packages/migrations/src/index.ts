@@ -1,1 +1,1 @@
-export { runMigrationsAsync, getContractAddresses } from './migration';
+export { runMigrationsAsync, runMigrationsOnceAsync } from './migration';

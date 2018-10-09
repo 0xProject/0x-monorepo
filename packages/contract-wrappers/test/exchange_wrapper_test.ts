@@ -1,6 +1,5 @@
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { getContractAddresses } from '@0xproject/migrations';
 import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import { DoneCallback, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -13,6 +12,7 @@ import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -42,10 +42,11 @@ describe('ExchangeWrapper', () => {
     let anotherSignedOrder: SignedOrder;
 
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
         const config = {
             networkId: constants.TESTRPC_NETWORK_ID,
-            contractAddresses: getContractAddresses(),
+            contractAddresses,
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);
@@ -359,9 +360,7 @@ describe('ExchangeWrapper', () => {
         });
     });
     describe('#getVersionAsync', () => {
-        // TODO(albrow): getVersionAsync is returning 2.0.1-alpha. How can we
-        // resolve this?
-        it.skip('should return version the hash', async () => {
+        it('should return version the hash', async () => {
             const version = await contractWrappers.exchange.getVersionAsync();
             const VERSION = '2.0.0';
             expect(version).to.be.equal(VERSION);

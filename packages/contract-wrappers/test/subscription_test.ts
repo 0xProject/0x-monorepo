@@ -1,5 +1,4 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { getContractAddresses } from '@0xproject/migrations';
 import { DoneCallback } from '@0xproject/types';
 import * as _ from 'lodash';
 import 'mocha';
@@ -15,6 +14,7 @@ import {
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -26,9 +26,10 @@ describe('SubscriptionTest', () => {
     let config: ContractWrappersConfig;
 
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
         config = {
             networkId: constants.TESTRPC_NETWORK_ID,
-            contractAddresses: getContractAddresses(),
+            contractAddresses,
         };
         contractWrappers = new ContractWrappers(provider, config);
     });

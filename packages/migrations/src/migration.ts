@@ -9,28 +9,15 @@ import * as _ from 'lodash';
 
 import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
 
-interface MigrationsResult {
-    erc20Proxy: wrappers.ERC20ProxyContract;
-    erc721Proxy: wrappers.ERC721ProxyContract;
-    zrxToken: wrappers.ZRXTokenContract;
-    etherToken: wrappers.WETH9Contract;
-    exchange: wrappers.ExchangeContract;
-    assetProxyOwner: wrappers.AssetProxyOwnerContract;
-    forwarder: wrappers.ForwarderContract;
-    orderValidator: wrappers.OrderValidatorContract;
-}
-
-let _cachedMigrationsResult: MigrationsResult | undefined;
-let _cachedContractAddresses: ContractAddresses | undefined;
-
 /**
- * Custom migrations should be defined in this function. This will be called with the CLI 'migrate:v2' command.
- * Migrations could be written to run in parallel, but if you want contract addresses to be created deterministically,
- * the migration should be written to run synchronously.
+ * Creates and deploys all the contracts that are required for the latest
+ * version of the 0x protocol. Custom migrations can be defined here. This will
+ * be called with the CLI 'migrate:v2' command.
  * @param provider  Web3 provider instance.
  * @param txDefaults Default transaction values to use when deploying contracts.
+ * @returns The addresses of the contracts that were deployed.
  */
-export async function runMigrationsAsync(provider: Provider, txDefaults: Partial<TxData>): Promise<void> {
+export async function runMigrationsAsync(provider: Provider, txDefaults: Partial<TxData>): Promise<ContractAddresses> {
     const web3Wrapper = new Web3Wrapper(provider);
 
     // Proxies
@@ -154,43 +141,35 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         zrxAssetData,
     );
 
-    const migrationsResult = {
-        erc20Proxy,
-        erc721Proxy,
-        zrxToken,
-        etherToken,
-        exchange,
-        assetProxyOwner,
-        forwarder,
-        orderValidator,
+    return {
+        erc20Proxy: erc20Proxy.address,
+        erc721Proxy: erc721Proxy.address,
+        zrxToken: zrxToken.address,
+        etherToken: etherToken.address,
+        exchange: exchange.address,
+        assetProxyOwner: assetProxyOwner.address,
+        forwarder: forwarder.address,
+        orderValidator: orderValidator.address,
     };
-    _cachedMigrationsResult = migrationsResult;
 }
 
+let _cachedContractAddresses: ContractAddresses;
+
 /**
- * Returns the addresses of all contracts that were deployed during migrations.
- * Throws if migrations have not been run yet.
- * @returns Addresses of all contracts that were deployed.
+ * Exactly like runMigrationsAsync but will only run the migrations the first
+ * time it is called. Any subsequent calls will return the cached contract
+ * addresses.
+ * @param provider  Web3 provider instance.
+ * @param txDefaults Default transaction values to use when deploying contracts.
+ * @returns The addresses of the contracts that were deployed.
  */
-export function getContractAddresses(): ContractAddresses {
+export async function runMigrationsOnceAsync(
+    provider: Provider,
+    txDefaults: Partial<TxData>,
+): Promise<ContractAddresses> {
     if (!_.isUndefined(_cachedContractAddresses)) {
         return _cachedContractAddresses;
     }
-    if (_.isUndefined(_cachedMigrationsResult)) {
-        throw new Error(
-            'Migrations have not been run! You need to call runMigrationsAsync before getContractAddresses',
-        );
-    }
-    const contractAddresses = {
-        erc20Proxy: _cachedMigrationsResult.erc20Proxy.address,
-        erc721Proxy: _cachedMigrationsResult.erc721Proxy.address,
-        zrxToken: _cachedMigrationsResult.zrxToken.address,
-        etherToken: _cachedMigrationsResult.etherToken.address,
-        exchange: _cachedMigrationsResult.exchange.address,
-        assetProxyOwner: _cachedMigrationsResult.assetProxyOwner.address,
-        forwarder: _cachedMigrationsResult.forwarder.address,
-        orderValidator: _cachedMigrationsResult.orderValidator.address,
-    };
-    _cachedContractAddresses = contractAddresses;
-    return contractAddresses;
+    _cachedContractAddresses = await runMigrationsAsync(provider, txDefaults);
+    return _cachedContractAddresses;
 }

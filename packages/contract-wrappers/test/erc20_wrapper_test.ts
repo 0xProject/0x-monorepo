@@ -1,7 +1,6 @@
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
-import { getContractAddresses } from '@0xproject/migrations';
 import { EmptyWalletSubprovider, Web3ProviderEngine } from '@0xproject/subproviders';
-import { DoneCallback } from '@0xproject/types';
+import { ContractAddresses, DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { Provider } from 'ethereum-types';
@@ -21,6 +20,7 @@ import {
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -30,6 +30,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('ERC20Wrapper', () => {
     let contractWrappers: ContractWrappers;
+    let contractAddresses: ContractAddresses;
     let userAddresses: string[];
     let tokens: string[];
     let coinbase: string;
@@ -37,9 +38,10 @@ describe('ERC20Wrapper', () => {
     let config: ContractWrappersConfig;
 
     before(async () => {
+        contractAddresses = await migrateOnceAsync();
         config = {
             networkId: constants.TESTRPC_NETWORK_ID,
-            contractAddresses: getContractAddresses(),
+            contractAddresses,
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);
@@ -299,7 +301,7 @@ describe('ERC20Wrapper', () => {
         });
         it('should reduce the gas cost for transfers including tokens with unlimited allowance support', async () => {
             const transferAmount = new BigNumber(5);
-            const zrxAddress = getContractAddresses().zrxToken;
+            const zrxAddress = contractAddresses.zrxToken;
             const [, userWithNormalAllowance, userWithUnlimitedAllowance] = userAddresses;
             await contractWrappers.erc20Token.setAllowanceAsync(
                 zrxAddress,

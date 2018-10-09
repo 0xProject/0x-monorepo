@@ -1,6 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { getContractAddresses } from '@0xproject/migrations';
 import { assetDataUtils } from '@0xproject/order-utils';
 import { ContractAddresses, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -13,6 +12,7 @@ import { OrderInfo, TraderInfo } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -42,8 +42,8 @@ describe('OrderValidator', () => {
     let contractAddresses: ContractAddresses;
 
     before(async () => {
+        contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
-        contractAddresses = getContractAddresses();
         const config = {
             networkId: constants.TESTRPC_NETWORK_ID,
             contractAddresses,

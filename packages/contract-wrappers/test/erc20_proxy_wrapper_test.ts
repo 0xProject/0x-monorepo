@@ -1,10 +1,10 @@
-import { getContractAddresses } from '@0xproject/migrations';
 import * as chai from 'chai';
 
 import { ContractWrappers } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { provider } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -13,9 +13,10 @@ const expect = chai.expect;
 describe('ERC20ProxyWrapper', () => {
     let contractWrappers: ContractWrappers;
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
         const config = {
             networkId: constants.TESTRPC_NETWORK_ID,
-            contractAddresses: getContractAddresses(),
+            contractAddresses,
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);

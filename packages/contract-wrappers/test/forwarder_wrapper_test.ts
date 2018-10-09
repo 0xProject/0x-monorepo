@@ -1,6 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { getContractAddresses } from '@0xproject/migrations';
 import { assetDataUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -11,6 +10,7 @@ import { ContractWrappers, OrderStatus } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -26,11 +26,8 @@ describe('ForwarderWrapper', () => {
     let exchangeContractAddress: string;
     let zrxTokenAddress: string;
     let userAddresses: string[];
-    let coinbase: string;
     let makerAddress: string;
     let takerAddress: string;
-    let feeRecipient: string;
-    let anotherMakerAddress: string;
     let makerTokenAddress: string;
     let takerTokenAddress: string;
     let makerAssetData: string;
@@ -38,10 +35,11 @@ describe('ForwarderWrapper', () => {
     let signedOrder: SignedOrder;
     let anotherSignedOrder: SignedOrder;
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
         const config = {
             networkId: constants.TESTRPC_NETWORK_ID,
-            contractAddresses: getContractAddresses(),
+            contractAddresses,
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);
@@ -56,7 +54,7 @@ describe('ForwarderWrapper', () => {
             contractWrappers.erc20Proxy.address,
             contractWrappers.erc721Proxy.address,
         );
-        [coinbase, makerAddress, takerAddress, feeRecipient, anotherMakerAddress] = userAddresses;
+        [, makerAddress, takerAddress ] = userAddresses;
         [makerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         takerTokenAddress = contractWrappers.forwarder.etherTokenAddress;
         [makerAssetData, takerAssetData] = [

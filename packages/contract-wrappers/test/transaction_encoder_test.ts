@@ -1,6 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { getContractAddresses } from '@0xproject/migrations';
 import { assetDataUtils, generatePseudoRandomSalt, orderHashUtils, signatureUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -10,6 +9,7 @@ import { ContractWrappers } from '../src';
 import { TransactionEncoder } from '../src/utils/transaction_encoder';
 
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -34,10 +34,11 @@ describe('TransactionEncoder', () => {
     let signedOrder: SignedOrder;
 
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
         const config = {
             networkId: constants.TESTRPC_NETWORK_ID,
-            contractAddresses: getContractAddresses(),
+            contractAddresses,
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);
