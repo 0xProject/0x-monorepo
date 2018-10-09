@@ -106,7 +106,7 @@ export class OrderValidationUtils {
                 TransferType.Fee,
             );
         } catch (err) {
-            throw new Error(RevertReason.TransferFailed);
+            throw new Error(`${RevertReason.TransferFailed} ${err.message}`);
         }
     }
     private static async _validateSignatureIsValidOrThrowAsync(
