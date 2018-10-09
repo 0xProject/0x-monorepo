@@ -17,7 +17,6 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0xproject/abi-gen": "^1.0.13",
         "@0xproject/dev-utils": "^1.0.12",
         "@0xproject/tslint-config": "^1.0.8",
         "@0xproject/types": "^1.1.4",
