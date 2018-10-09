@@ -21,7 +21,14 @@ export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_la
 export { constants } from './constants';
 export { eip712Utils } from './eip712_utils';
 
-export { Provider, JSONRPCRequestPayload, JSONRPCErrorCallback, JSONRPCResponsePayload } from 'ethereum-types';
+export {
+    Provider,
+    JSONRPCRequestPayload,
+    JSONRPCErrorCallback,
+    JSONRPCResponsePayload,
+    JSONRPCResponseError,
+} from 'ethereum-types';
+
 export {
     SignedOrder,
     Order,
