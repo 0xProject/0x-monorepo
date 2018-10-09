@@ -90,6 +90,7 @@ export {
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
     JSONRPCErrorCallback,
+    JSONRPCResponseError,
     LogEntry,
     DecodedLogArgs,
     LogEntryEvent,

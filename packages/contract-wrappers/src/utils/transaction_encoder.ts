@@ -33,7 +33,7 @@ export class TransactionEncoder {
             data,
         };
         const typedData = eip712Utils.createZeroExTransactionTypedData(executeTransactionData, exchangeAddress);
-        const eip712MessageBuffer = signTypedDataUtils.signTypedDataHash(typedData);
+        const eip712MessageBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
         const messageHex = `0x${eip712MessageBuffer.toString('hex')}`;
         return messageHex;
     }

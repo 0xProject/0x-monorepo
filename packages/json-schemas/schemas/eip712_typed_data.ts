@@ -1,4 +1,4 @@
-export const eip712TypedData = {
+export const eip712TypedDataSchema = {
     id: '/eip712TypedData',
     type: 'object',
     properties: {

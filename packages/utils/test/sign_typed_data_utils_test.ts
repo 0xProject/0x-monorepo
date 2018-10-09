@@ -127,12 +127,12 @@ describe('signTypedDataUtils', () => {
             primaryType: 'Order',
         };
         it('creates a hash of the test sign typed data', () => {
-            const hash = signTypedDataUtils.signTypedDataHash(simpleSignTypedData).toString('hex');
+            const hash = signTypedDataUtils.generateTypedDataHash(simpleSignTypedData).toString('hex');
             const hashHex = `0x${hash}`;
             expect(hashHex).to.be.eq(simpleSignTypedDataHashHex);
         });
         it('creates a hash of the order sign typed data', () => {
-            const hash = signTypedDataUtils.signTypedDataHash(orderSignTypedData).toString('hex');
+            const hash = signTypedDataUtils.generateTypedDataHash(orderSignTypedData).toString('hex');
             const hashHex = `0x${hash}`;
             expect(hashHex).to.be.eq(orderSignTypedDataHashHex);
         });

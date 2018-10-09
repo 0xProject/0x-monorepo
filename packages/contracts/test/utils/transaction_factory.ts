@@ -25,7 +25,7 @@ export class TransactionFactory {
         };
 
         const typedData = eip712Utils.createZeroExTransactionTypedData(executeTransactionData, this._exchangeAddress);
-        const eip712MessageBuffer = signTypedDataUtils.signTypedDataHash(typedData);
+        const eip712MessageBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
         const signature = signingUtils.signMessage(eip712MessageBuffer, this._privateKey, signatureType);
         const signedTx = {
             exchangeAddress: this._exchangeAddress,

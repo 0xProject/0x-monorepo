@@ -57,4 +57,10 @@ export {
     EIP712Parameter,
 } from '@0xproject/types';
 
-export { JSONRPCRequestPayload, Provider, JSONRPCResponsePayload, JSONRPCErrorCallback } from 'ethereum-types';
+export {
+    JSONRPCRequestPayload,
+    Provider,
+    JSONRPCResponsePayload,
+    JSONRPCErrorCallback,
+    JSONRPCResponseError,
+} from 'ethereum-types';

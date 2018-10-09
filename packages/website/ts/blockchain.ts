@@ -17,6 +17,7 @@ import {
     MetamaskSubprovider,
     RedundantSubprovider,
     RPCSubprovider,
+    SignerSubprovider,
     Web3ProviderEngine,
 } from '@0xproject/subproviders';
 import { SignedOrder, Token as ZeroExToken } from '@0xproject/types';
@@ -27,8 +28,6 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
 import contract = require('truffle-contract');
-import { tokenAddressOverrides } from 'ts/utils/token_address_overrides';
-
 import { BlockchainWatcher } from 'ts/blockchain_watcher';
 import { AssetSendCompleted } from 'ts/components/flash_messages/asset_send_completed';
 import { TransactionSubmitted } from 'ts/components/flash_messages/transaction_submitted';
@@ -54,6 +53,7 @@ import { backendClient } from 'ts/utils/backend_client';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
+import { tokenAddressOverrides } from 'ts/utils/token_address_overrides';
 import { utils } from 'ts/utils/utils';
 import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
 
@@ -161,7 +161,13 @@ export class Blockchain {
             // We catch all requests involving a users account and send it to the injectedWeb3
             // instance. All other requests go to the public hosted node.
             const provider = new Web3ProviderEngine();
-            provider.addProvider(new MetamaskSubprovider(injectedWeb3.currentProvider));
+            const providerName = this._getNameGivenProvider(injectedWeb3.currentProvider);
+            // Wrap Metamask in a compatability wrapper MetamaskSubprovider (to handle inconsistencies)
+            const signerSubprovider =
+                providerName === Providers.Metamask
+                    ? new MetamaskSubprovider(injectedWeb3.currentProvider)
+                    : new SignerSubprovider(injectedWeb3.currentProvider);
+            provider.addProvider(signerSubprovider);
             provider.addProvider(new FilterSubprovider());
             const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
                 return new RPCSubprovider(publicNodeUrl);

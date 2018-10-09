@@ -1,3 +1,5 @@
+import { assert } from '@0xproject/assert';
+import { schemas } from '@0xproject/json-schemas';
 import { EIP712Object, EIP712TypedData, EIP712Types, Order, ZeroExTransaction } from '@0xproject/types';
 import * as _ from 'lodash';
 
@@ -18,6 +20,8 @@ export const eip712Utils = {
         message: EIP712Object,
         exchangeAddress: string,
     ): EIP712TypedData => {
+        assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+        assert.isString('primaryType', primaryType);
         const typedData = {
             types: {
                 EIP712Domain: constants.EIP712_DOMAIN_SCHEMA.parameters,
@@ -31,6 +35,7 @@ export const eip712Utils = {
             message,
             primaryType,
         };
+        assert.doesConformToSchema('typedData', typedData, schemas.eip712TypedDataSchema);
         return typedData;
     },
     /**
@@ -39,6 +44,7 @@ export const eip712Utils = {
      * @return  A typed data object
      */
     createOrderTypedData: (order: Order): EIP712TypedData => {
+        assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
         const normalizedOrder = _.mapValues(order, value => {
             return !_.isString(value) ? value.toString() : value;
         });
@@ -61,6 +67,8 @@ export const eip712Utils = {
         zeroExTransaction: ZeroExTransaction,
         exchangeAddress: string,
     ): EIP712TypedData => {
+        assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+        assert.doesConformToSchema('zeroExTransaction', zeroExTransaction, schemas.zeroExTransactionSchema);
         const normalizedTransaction = _.mapValues(zeroExTransaction, value => {
             return !_.isString(value) ? value.toString() : value;
         });

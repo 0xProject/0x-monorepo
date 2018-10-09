@@ -6,11 +6,11 @@ import { EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Types } from '@
 
 export const signTypedDataUtils = {
     /**
-     * Computes the Sign Typed Data hash
+     * Generates the EIP712 Typed Data hash for signing
      * @param   typedData An object that conforms to the EIP712TypedData interface
-     * @return  A Buffer containing the hash of the sign typed data.
+     * @return  A Buffer containing the hash of the typed data.
      */
-    signTypedDataHash(typedData: EIP712TypedData): Buffer {
+    generateTypedDataHash(typedData: EIP712TypedData): Buffer {
         return ethUtil.sha3(
             Buffer.concat([
                 Buffer.from('1901', 'hex'),

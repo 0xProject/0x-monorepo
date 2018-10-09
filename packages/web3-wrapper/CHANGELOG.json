@@ -1,5 +1,19 @@
 [
     {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Add `signTypedData` to perform EIP712 `eth_signTypedData`.",
+                "pr": 1102
+            },
+            {
+                "note":
+                    "Web3Wrapper now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned.",
+                "pr": 1102
+            }
+        ]
+    },
+    {
         "version": "3.0.3",
         "changes": [
             {

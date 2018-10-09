@@ -52,7 +52,7 @@ export const orderHashUtils = {
      */
     getOrderHashBuffer(order: SignedOrder | Order): Buffer {
         const typedData = eip712Utils.createOrderTypedData(order);
-        const orderHashBuff = signTypedDataUtils.signTypedDataHash(typedData);
+        const orderHashBuff = signTypedDataUtils.generateTypedDataHash(typedData);
         return orderHashBuff;
     },
 };

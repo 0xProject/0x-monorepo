@@ -194,7 +194,7 @@ export const signatureUtils = {
         }
     },
     /**
-     * Signs an order and returns its elliptic curve signature and signature type. First `eth_signTypedData` is requested
+     * Signs an order and returns a SignedOrder. First `eth_signTypedData` is requested
      * then a fallback to `eth_sign` if not available on the supplied provider.
      * @param   order The Order to sign.
      * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
@@ -202,11 +202,18 @@ export const signatureUtils = {
      * @return  A SignedOrder containing the order and Elliptic curve signature with Signature Type.
      */
     async ecSignOrderAsync(provider: Provider, order: Order, signerAddress: string): Promise<SignedOrder> {
+        assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
         try {
-            const signedOrder = signatureUtils.ecSignTypedDataOrderAsync(provider, order, signerAddress);
+            const signedOrder = await signatureUtils.ecSignTypedDataOrderAsync(provider, order, signerAddress);
             return signedOrder;
         } catch (err) {
-            // Fallback to using EthSign when ethSignTypedData is not supported
+            // HACK: We are unable to handle specific errors thrown since provider is not an object
+            //       under our control. It could be Metamask Web3, Ethers, or any general RPC provider.
+            //       We check for a user denying the signature request in a way that supports Metamask and
+            //       Coinbase Wallet
+            if (err.message.includes('User denied message signature')) {
+                throw err;
+            }
             const orderHash = orderHashUtils.getOrderHashHex(order);
             const signatureHex = await signatureUtils.ecSignHashAsync(provider, orderHash, signerAddress);
             const signedOrder = {
@@ -217,7 +224,7 @@ export const signatureUtils = {
         }
     },
     /**
-     * Signs an order using `eth_signTypedData` and returns its elliptic curve signature and signature type.
+     * Signs an order using `eth_signTypedData` and returns a SignedOrder.
      * @param   order The Order to sign.
      * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
      *          must be available via the supplied Provider.
@@ -226,6 +233,7 @@ export const signatureUtils = {
     async ecSignTypedDataOrderAsync(provider: Provider, order: Order, signerAddress: string): Promise<SignedOrder> {
         assert.isWeb3Provider('provider', provider);
         assert.isETHAddressHex('signerAddress', signerAddress);
+        assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
         const web3Wrapper = new Web3Wrapper(provider);
         await assert.isSenderAddressAsync('signerAddress', signerAddress, web3Wrapper);
         const normalizedSignerAddress = signerAddress.toLowerCase();
@@ -247,14 +255,16 @@ export const signatureUtils = {
         } catch (err) {
             // Detect if Metamask to transition users to the MetamaskSubprovider
             if ((provider as any).isMetaMask) {
-                throw new Error(`Unsupported Provider, please use MetamaskSubprovider: ${err.message}`);
+                throw new Error(
+                    `MetaMask provider must be wrapped in a MetamaskSubprovider (from the '@0xproject/subproviders' package) in order to work with this method.`,
+                );
             } else {
                 throw err;
             }
         }
     },
     /**
-     * Signs a hash and returns its elliptic curve signature and signature type.
+     * Signs a hash using `eth_sign` and returns its elliptic curve signature and signature type.
      * @param   msgHash       Hex encoded message to sign.
      * @param   signerAddress   The hex encoded Ethereum address you wish to sign it with. This address
      *          must be available via the supplied Provider.
@@ -303,7 +313,9 @@ export const signatureUtils = {
         }
         // Detect if Metamask to transition users to the MetamaskSubprovider
         if ((provider as any).isMetaMask) {
-            throw new Error('Unsupported Provider, please use MetamaskSubprovider.');
+            throw new Error(
+                `MetaMask provider must be wrapped in a MetamaskSubprovider (from the '@0xproject/subproviders' package) in order to work with this method.`,
+            );
         } else {
             throw new Error(OrderError.InvalidSignature);
         }

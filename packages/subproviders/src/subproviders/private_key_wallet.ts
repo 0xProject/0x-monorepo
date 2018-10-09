@@ -106,7 +106,7 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
                 `Requested to sign message with address: ${address}, instantiated with address: ${this._address}`,
             );
         }
-        const dataBuff = signTypedDataUtils.signTypedDataHash(typedData);
+        const dataBuff = signTypedDataUtils.generateTypedDataHash(typedData);
         const sig = ethUtil.ecsign(dataBuff, this._privateKeyBuffer);
         const rpcSig = ethUtil.toRpcSig(sig.v, sig.r, sig.s);
         return rpcSig;

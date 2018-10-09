@@ -33,7 +33,7 @@ describe('EIP712 Utils', () => {
                 {
                     salt: new BigNumber('0'),
                     data: constants.NULL_BYTES,
-                    signerAddress: constants.NULL_BYTES,
+                    signerAddress: constants.NULL_ADDRESS,
                 },
                 constants.NULL_ADDRESS,
             );

@@ -2,7 +2,7 @@ import { addressSchema, hexSchema, numberSchema } from '../schemas/basic_type_sc
 import { blockParamSchema, blockRangeSchema } from '../schemas/block_range_schema';
 import { callDataSchema } from '../schemas/call_data_schema';
 import { ecSignatureParameterSchema, ecSignatureSchema } from '../schemas/ec_signature_schema';
-import { eip712TypedData } from '../schemas/eip712_typed_data';
+import { eip712TypedDataSchema } from '../schemas/eip712_typed_data';
 import { indexFilterValuesSchema } from '../schemas/index_filter_values_schema';
 import { orderCancellationRequestsSchema } from '../schemas/order_cancel_schema';
 import { orderFillOrKillRequestsSchema } from '../schemas/order_fill_or_kill_requests_schema';
@@ -32,6 +32,7 @@ import { relayerApiOrdersSchema } from '../schemas/relayer_api_orders_schema';
 import { signedOrdersSchema } from '../schemas/signed_orders_schema';
 import { tokenSchema } from '../schemas/token_schema';
 import { jsNumber, txDataSchema } from '../schemas/tx_data_schema';
+import { zeroExTransactionSchema } from '../schemas/zero_ex_transaction_schema';
 
 export const schemas = {
     numberSchema,
@@ -40,7 +41,7 @@ export const schemas = {
     hexSchema,
     ecSignatureParameterSchema,
     ecSignatureSchema,
-    eip712TypedData,
+    eip712TypedDataSchema,
     indexFilterValuesSchema,
     orderCancellationRequestsSchema,
     orderFillOrKillRequestsSchema,
@@ -70,4 +71,5 @@ export const schemas = {
     relayerApiOrdersChannelUpdateSchema,
     relayerApiOrdersResponseSchema,
     relayerApiAssetDataPairsSchema,
+    zeroExTransactionSchema,
 };

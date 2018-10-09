@@ -322,7 +322,7 @@ export class Web3Wrapper {
      */
     public async signTypedDataAsync(address: string, typedData: any): Promise<string> {
         assert.isETHAddressHex('address', address);
-        assert.doesConformToSchema('typedData', typedData, schemas.eip712TypedData);
+        assert.doesConformToSchema('typedData', typedData, schemas.eip712TypedDataSchema);
         const signData = await this.sendRawPayloadAsync<string>({
             method: 'eth_signTypedData',
             params: [address, typedData],
@@ -669,6 +669,9 @@ export class Web3Wrapper {
             ...payload,
         };
         const response = await promisify<JSONRPCResponsePayload>(sendAsync)(payloadWithDefaults);
+        if (response.error) {
+            throw new Error(response.error.message);
+        }
         const result = response.result;
         return result;
     }

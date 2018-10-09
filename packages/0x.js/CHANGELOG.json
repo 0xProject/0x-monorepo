@@ -7,7 +7,8 @@
                 "pr": 1102
             },
             {
-                "note": "Added `MetamaskSubprovider` to handle inconsistencies with signing.",
+                "note":
+                    "Added `MetamaskSubprovider` to handle inconsistencies in Metamask's signing JSON RPC endpoints.",
                 "pr": 1102
             },
             {
