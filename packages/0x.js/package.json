@@ -84,7 +84,7 @@
         "@0xproject/utils": "^2.0.2",
         "@0xproject/web3-wrapper": "^3.0.3",
         "ethereum-types": "^1.0.11",
-        "ethers": "4.0.0-beta.14",
+        "ethers": "~4.0.4",
         "lodash": "^4.17.5",
         "web3-provider-engine": "14.0.6"
     },

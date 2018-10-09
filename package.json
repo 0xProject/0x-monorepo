@@ -55,7 +55,8 @@
             }
         ],
         "ci": {
-            "trackBranches": ["master", "development"]
+            "trackBranches": ["master", "development"],
+            "repoBranchBase": "development"
         }
     },
     "devDependencies": {

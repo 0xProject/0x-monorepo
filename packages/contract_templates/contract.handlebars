@@ -65,7 +65,7 @@ export class {{contractName}}Contract extends BaseContract {
             [{{> params inputs=ctor.inputs}}],
             BaseContract._bigNumberToString,
         );
-        const iface = new ethers.Interface(abi);
+        const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
         const web3Wrapper = new Web3Wrapper(provider);
