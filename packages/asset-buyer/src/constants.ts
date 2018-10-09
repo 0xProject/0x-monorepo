@@ -8,7 +8,7 @@ const MAINNET_NETWORK_ID = 1;
 const DEFAULT_ASSET_BUYER_OPTS: AssetBuyerOpts = {
     networkId: MAINNET_NETWORK_ID,
     orderRefreshIntervalMs: 10000, // 10 seconds
-    expiryBufferSeconds: 300,
+    expiryBufferSeconds: 300, // 5 minutes
 };
 
 const DEFAULT_BUY_QUOTE_REQUEST_OPTS: BuyQuoteRequestOpts = {
