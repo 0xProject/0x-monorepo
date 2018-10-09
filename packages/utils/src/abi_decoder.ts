@@ -9,7 +9,8 @@ import {
     RawLog,
     SolidityTypes,
 } from 'ethereum-types';
-import * as ethers from 'ethers';
+import { ethers } from 'ethers';
+import { Interface } from 'ethers/utils/interface';
 import * as _ from 'lodash';
 
 import { addressUtils } from './address_utils';
@@ -41,7 +42,7 @@ export class AbiDecoder {
             return log;
         }
         const event = this._methodIds[methodId][numIndexedArgs];
-        const ethersInterface = new ethers.Interface([event]);
+        const ethersInterface = new Interface([event]);
         const decodedParams: DecodedLogArgs = {};
         let topicsIndex = 1;
 
@@ -96,7 +97,7 @@ export class AbiDecoder {
         if (_.isUndefined(abiArray)) {
             return;
         }
-        const ethersInterface = new ethers.Interface(abiArray);
+        const ethersInterface = new Interface(abiArray);
         _.map(abiArray, (abi: AbiDefinition) => {
             if (abi.type === AbiType.Event) {
                 const topic = ethersInterface.events[abi.name].topic;

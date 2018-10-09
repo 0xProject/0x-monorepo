@@ -5671,9 +5671,9 @@ ethers@3.0.22:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@4.0.0-beta.14:
-  version "4.0.0-beta.14"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.0-beta.14.tgz#76aa9257b9c93a7604ff4dc11f2a445d07f6459d"
+ethers@~4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.4.tgz#d3f85e8b27f4b59537e06526439b0fb15b44dc65"
   dependencies:
     "@types/node" "^10.3.2"
     aes-js "3.0.0"
@@ -5681,7 +5681,7 @@ ethers@4.0.0-beta.14:
     elliptic "6.3.3"
     hash.js "1.1.3"
     js-sha3 "0.5.7"
-    scrypt-js "2.0.3"
+    scrypt-js "2.0.4"
     setimmediate "1.0.4"
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
@@ -6470,45 +6470,6 @@ ganache-core@0xProject/ganache-core#monorepo-dep:
     ethereumjs-util "^5.2.0"
     ethereumjs-vm "2.3.5"
     ethereumjs-wallet "~0.6.0"
-    fake-merkle-patricia-tree "~1.0.1"
-    heap "~0.2.6"
-    js-scrypt "^0.2.0"
-    level-sublevel "^6.6.1"
-    levelup "^1.1.0"
-    localstorage-down "^0.6.7"
-    lodash "^4.17.5"
-    merkle-patricia-tree "^2.2.0"
-    pify "^3.0.0"
-    prepend-file "^1.3.1"
-    seedrandom "~2.4.2"
-    shebang-loader "0.0.1"
-    solc "0.4.24"
-    temp "^0.8.3"
-    tmp "0.0.31"
-    web3 "^1.0.0-beta.34"
-    web3-provider-engine "^14.0.6"
-    websocket "^1.0.24"
-    yargs "^7.0.2"
-
-ganache-core@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/ganache-core/-/ganache-core-2.2.1.tgz#c0125d77d3e28d627a812dd002dac21e1d2cc8b7"
-  dependencies:
-    abstract-leveldown "^3.0.0"
-    async "^2.5.0"
-    bip39 "~2.4.0"
-    bn.js "4.11.6"
-    cachedown "^1.0.0"
-    chai "^3.5.0"
-    clone "^2.1.1"
-    eth-sig-util "^2.0.2"
-    ethereumjs-abi "^0.6.5"
-    ethereumjs-account "~2.0.4"
-    ethereumjs-block "~1.2.2"
-    ethereumjs-tx "1.3.4"
-    ethereumjs-util "^5.2.0"
-    ethereumjs-vm "2.3.5"
-    ethereumjs-wallet "0.6.0"
     fake-merkle-patricia-tree "~1.0.1"
     heap "~0.2.6"
     js-scrypt "^0.2.0"
@@ -13199,6 +13160,10 @@ scrypt-async@^1.2.0:
 scrypt-js@2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/scrypt-js/-/scrypt-js-2.0.3.tgz#bb0040be03043da9a012a2cea9fc9f852cfc87d4"
+
+scrypt-js@2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/scrypt-js/-/scrypt-js-2.0.4.tgz#32f8c5149f0797672e551c07e230f834b6af5f16"
 
 scrypt.js@0.2.0, scrypt.js@^0.2.0:
   version "0.2.0"

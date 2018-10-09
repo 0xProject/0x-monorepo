@@ -5,7 +5,7 @@ import { BaseContract } from '@0xproject/base-contract';
 import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, Provider, TxData, TxDataPayable } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import * as ethers from 'ethers';
+import { Interface } from 'ethers/utils/interface';
 import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
 
@@ -65,7 +65,7 @@ export class {{contractName}}Contract extends BaseContract {
             [{{> params inputs=ctor.inputs}}],
             BaseContract._bigNumberToString,
         );
-        const iface = new ethers.Interface(abi);
+        const iface = new Interface(abi);
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
         const web3Wrapper = new Web3Wrapper(provider);
