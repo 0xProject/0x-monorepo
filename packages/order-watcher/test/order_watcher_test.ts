@@ -3,7 +3,6 @@ import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { tokenUtils } from '@0xproject/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { getContractAddresses } from '@0xproject/migrations';
 import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import {
     DoneCallback,
@@ -28,6 +27,7 @@ import { OrderWatcherError } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 const TIMEOUT_MS = 150;
@@ -54,9 +54,9 @@ describe('OrderWatcher', () => {
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
         const networkId = constants.TESTRPC_NETWORK_ID;
-        const contractAddresses = getContractAddresses();
         const config = {
             networkId,
             contractAddresses,

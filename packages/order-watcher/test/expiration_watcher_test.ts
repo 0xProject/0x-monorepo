@@ -1,7 +1,6 @@
 import { tokenUtils } from '@0xproject/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
-import { getContractAddresses } from '@0xproject/migrations';
 import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
@@ -14,6 +13,7 @@ import { ExpirationWatcher } from '../src/order_watcher/expiration_watcher';
 import { utils } from '../src/utils/utils';
 
 import { chaiSetup } from './utils/chai_setup';
+import { migrateOnceAsync } from './utils/migrate';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -35,8 +35,8 @@ describe('ExpirationWatcher', () => {
     let timer: Sinon.SinonFakeTimers;
     let expirationWatcher: ExpirationWatcher;
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
-        const contractAddresses = getContractAddresses();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         fillScenarios = new FillScenarios(
             provider,
