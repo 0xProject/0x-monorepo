@@ -191,26 +191,5 @@
             }
         }
     },
-    "networks": {
-        "1": {
-            "address": "0x208e41fb445f1bb1b6780d58356e81405f3e6127",
-            "links": {},
-            "constructorArgs": "[]"
-        },
-        "3": {
-            "address": "0xe654aac058bfbf9f83fcaee7793311dd82f6ddb4",
-            "links": {},
-            "constructorArgs": "[]"
-        },
-        "42": {
-            "address": "0x2a9127c745688a165106c11cd4d647d2220af821",
-            "links": {},
-            "constructorArgs": "[]"
-        },
-        "50": {
-            "address": "0x1d7022f5b17d2f8b695918fb48fa1089c9f85401",
-            "links": {},
-            "constructorArgs": "[]"
-        }
-    }
+    "networks": {}
 }

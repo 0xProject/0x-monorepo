@@ -324,22 +324,5 @@
             }
         }
     },
-    "networks": {
-        "3": {
-            "address": "0xff67881f8d12f372d91baae9752eb3631ff0ed00",
-            "links": {},
-            "constructorArgs": "[\"0x Protocol Token\",\"ZRX\",\"18\",\"1000000000000000000000000000\"]"
-        },
-        "42": {
-            "address": "0x2002d3812f58e35f0ea1ffbf80a75a38c32175fa",
-            "links": {},
-            "constructorArgs": "[\"0x Protocol Token\",\"ZRX\",\"18\",\"1000000000000000000000000000\"]"
-        },
-        "50": {
-            "address": "0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c",
-            "links": {},
-            "constructorArgs":
-                "[\"0x Protocol Token\",\"ZRX\",\"18\",\"115792089237316195423570985008687907853269984665640564039457584007913129639935\"]"
-        }
-    }
+    "networks": {}
 }
