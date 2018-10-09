@@ -46,10 +46,12 @@
     "bundlewatch" : {
         "files": [
             {
-                "path": "packages/0x.js/_bundles/index.min.js"
+                "path": "packages/0x.js/_bundles/index.min.js",
+                "maxSize": "700kB"
             },
             {
-                "path": "packages/instant/public/main.bundle.js"
+                "path": "packages/instant/public/main.bundle.js",
+                "maxSize": "150kB"
             }
         ],
         "ci": {
