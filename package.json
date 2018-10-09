@@ -55,7 +55,7 @@
             }
         ],
         "ci": {
-            "trackBranches": ["master", "develop"]
+            "trackBranches": ["master", "development"]
         }
     },
     "devDependencies": {
