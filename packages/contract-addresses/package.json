@@ -24,11 +24,11 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-addresses/README.md",
     "devDependencies": {
+        "@types/lodash": "4.14.104",
         "typescript": "3.0.1",
         "shx": "^0.2.2"
     },
     "dependencies": {
-        "@0xproject/types": "1.1.4",
         "lodash": "^4.17.5"
     },
     "publishConfig": {

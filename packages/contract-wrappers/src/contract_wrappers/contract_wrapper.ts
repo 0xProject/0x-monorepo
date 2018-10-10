@@ -113,6 +113,7 @@ export abstract class ContractWrapper {
         return logWithDecodedArgs;
     }
     protected _getDefaultContractAddresses(): ContractAddresses {
+        // TODO(albrow): Figure out better error handling here.
         return getContractAddressesForNetwork(this._networkId);
     }
     private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, rawLog: RawLogEntry): void {

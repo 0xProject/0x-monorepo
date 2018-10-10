@@ -53,6 +53,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
 /**
  * Used to get addresses of contracts that have been deployed to either the
  * Ethereum mainnet or a supported testnet.
+ * @param networkId The desired networkId.
  * @returns The set of addresses for contracts which have been deployed on the
  * given networkId.
  */

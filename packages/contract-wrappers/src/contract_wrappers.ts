@@ -70,7 +70,7 @@ export class ContractWrappers {
     private readonly _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new ContractWrappers instance.
-     * @param   provider    The Provider instance you would like the 0x.js library to use for interacting with
+     * @param   provider    The Provider instance you would like the contract-wrappers library to use for interacting with
      *                      the Ethereum network.
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the ContractWrappers class.
@@ -147,9 +147,9 @@ export class ContractWrappers {
         );
     }
     /**
-     * Sets a new web3 provider for 0x.js. Updating the provider will stop all
+     * Sets a new web3 provider for contract-wrappers. Updating the provider will stop all
      * subscriptions so you will need to re-subscribe to all events relevant to your app after this call.
-     * @param   provider    The Web3Provider you would like the 0x.js library to use from now on.
+     * @param   provider    The Web3Provider you would like the contract-wrappers library to use from now on.
      * @param   networkId   The id of the network your provider is connected to
      */
     public setProvider(provider: Provider): void {
@@ -164,7 +164,7 @@ export class ContractWrappers {
         (this.orderValidator as any)._invalidateContractInstance();
     }
     /**
-     * Get the provider instance currently used by 0x.js
+     * Get the provider instance currently used by contract-wrappers
      * @return  Web3 provider instance
      */
     public getProvider(): Provider {

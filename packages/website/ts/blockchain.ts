@@ -1,5 +1,4 @@
 import { ZeroEx } from '0x.js';
-import { getContractAddressesForNetwork } from '@0xproject/contract-addresses';
 import {
     BlockRange,
     ContractWrappers,
@@ -864,7 +863,6 @@ export class Blockchain {
         } else {
             const contractWrappersConfig = {
                 networkId,
-                contractAddresses: getContractAddressesForNetwork(networkId),
             };
             this._contractWrappers = new ContractWrappers(provider, contractWrappersConfig);
         }

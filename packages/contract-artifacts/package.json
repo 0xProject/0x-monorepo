@@ -4,7 +4,7 @@
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Smart contract components of 0x protocol",
+    "description": "0x smart contract compilation artifacts",
     "main": "lib/src/index.js",
     "directories": {
         "test": "test"
@@ -26,8 +26,6 @@
     "devDependencies": {
         "typescript": "3.0.1",
         "shx": "^0.2.2"
-    },
-    "dependencies": {
     },
     "publishConfig": {
         "access": "public"

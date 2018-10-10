@@ -1,4 +1,3 @@
-import { getContractAddressesForNetwork } from '@0xproject/contract-addresses';
 import { ContractWrappers } from '@0xproject/contract-wrappers';
 import { schemas } from '@0xproject/json-schemas';
 import { SignedOrder } from '@0xproject/order-utils';
@@ -110,7 +109,6 @@ export class AssetBuyer {
         this.expiryBufferSeconds = expiryBufferSeconds;
         this._contractWrappers = new ContractWrappers(this.provider, {
             networkId,
-            contractAddresses: getContractAddressesForNetwork(networkId),
         });
     }
     /**

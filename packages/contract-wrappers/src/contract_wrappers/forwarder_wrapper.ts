@@ -32,15 +32,14 @@ export class ForwarderWrapper extends ContractWrapper {
      * Instantiate ForwarderWrapper
      * @param web3Wrapper Web3Wrapper instance to use.
      * @param networkId Desired networkId.
-     * @param address (Optional) The address of the Exchange contract. If
+     * @param address The address of the Exchange contract. If undefined, will
+     * default to the known address corresponding to the networkId.
+     * @param zrxTokenAddress The address of the ZRXToken contract. If
      * undefined, will default to the known address corresponding to the
      * networkId.
-     * @param zrxTokenAddress (Optional) The address of the ZRXToken contract.
-     * If undefined, will default to the known address corresponding to the
+     * @param etherTokenAddress The address of a WETH (Ether token) contract. If
+     * undefined, will default to the known address corresponding to the
      * networkId.
-     * @param etherTokenAddress (Optional) The address of a WETH (Ether token)
-     * contract. If undefined, will default to the known address corresponding
-     * to the networkId.
      */
     constructor(
         web3Wrapper: Web3Wrapper,

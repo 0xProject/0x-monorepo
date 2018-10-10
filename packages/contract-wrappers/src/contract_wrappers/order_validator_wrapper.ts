@@ -23,9 +23,8 @@ export class OrderValidatorWrapper extends ContractWrapper {
      * Instantiate OrderValidatorWrapper
      * @param web3Wrapper Web3Wrapper instance to use.
      * @param networkId Desired networkId.
-     * @param address (Optional) The address of the OrderValidator contract. If
-     * undefined, will default to the known address corresponding to the
-     * networkId.
+     * @param address The address of the OrderValidator contract. If undefined,
+     * will default to the known address corresponding to the networkId.
      */
     constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);

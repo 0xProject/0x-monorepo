@@ -20,9 +20,8 @@ export class ERC721ProxyWrapper extends ContractWrapper {
      * Instantiate ERC721ProxyWrapper
      * @param web3Wrapper Web3Wrapper instance to use
      * @param networkId Desired networkId
-     * @param address (Optional) The address of the ERC721Proxy contract. If
-     * undefined, will default to the known address corresponding to the
-     * networkId.
+     * @param address The address of the ERC721Proxy contract. If undefined,
+     * will default to the known address corresponding to the networkId.
      */
     constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);

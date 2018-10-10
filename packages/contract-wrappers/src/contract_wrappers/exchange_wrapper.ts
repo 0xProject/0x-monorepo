@@ -53,11 +53,10 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param networkId Desired networkId.
      * @param erc20TokenWrapper ERC20TokenWrapper instance to use.
      * @param erc721TokenWrapper ERC721TokenWrapper instance to use.
-     * @param address (Optional) The address of the Exchange contract. If
+     * @param address The address of the Exchange contract. If undefined, will
+     * default to the known address corresponding to the networkId.
+     * @param zrxTokenAddress The address of the ZRXToken contract. If
      * undefined, will default to the known address corresponding to the
-     * networkId.
-     * @param zrxTokenAddress (Optional) The address of the ZRXToken contract.
-     * If undefined, will default to the known address corresponding to the
      * networkId.
      * @param blockPollingIntervalMs The block polling interval to use for active subscriptions.
      */
