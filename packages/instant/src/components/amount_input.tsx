@@ -22,7 +22,7 @@ export class AmountInput extends React.Component<AmountInputProps> {
                     fontColor={fontColor}
                     fontSize={fontSize}
                     onChange={this._handleChange}
-                    value={value ? value.toString() : ''}
+                    value={!_.isUndefined(value) ? value.toString() : ''}
                     placeholder="0.00"
                     width="2em"
                 />
