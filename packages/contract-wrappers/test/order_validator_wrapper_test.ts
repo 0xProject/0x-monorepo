@@ -1,7 +1,8 @@
+import { ContractAddresses } from '@0xproject/contract-addresses';
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
 import { FillScenarios } from '@0xproject/fill-scenarios';
 import { assetDataUtils } from '@0xproject/order-utils';
-import { ContractAddresses, SignedOrder } from '@0xproject/types';
+import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';

@@ -1,3 +1,4 @@
+import { getContractAddressesForNetwork } from '@0xproject/contract-addresses';
 import {
     ERC20Proxy,
     ERC20Token,
@@ -100,29 +101,50 @@ export class ContractWrappers {
         const blockPollingIntervalMs = _.isUndefined(config.blockPollingIntervalMs)
             ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
             : config.blockPollingIntervalMs;
-        if (_.isUndefined(config.contractAddresses.erc20Proxy)) {
-            throw new Error('config.contractAddresses.erc20Proxy is required for testing');
-        }
-        this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.contractAddresses.erc20Proxy);
-        this.erc721Proxy = new ERC721ProxyWrapper(this._web3Wrapper, config.contractAddresses.erc721Proxy);
-        this.erc20Token = new ERC20TokenWrapper(this._web3Wrapper, this.erc20Proxy, blockPollingIntervalMs);
-        this.erc721Token = new ERC721TokenWrapper(this._web3Wrapper, this.erc721Proxy, blockPollingIntervalMs);
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.erc20Token, blockPollingIntervalMs);
+        const contractAddresses = _.isUndefined(config.contractAddresses)
+            ? getContractAddressesForNetwork(config.networkId)
+            : config.contractAddresses;
+        this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc20Proxy);
+        this.erc721Proxy = new ERC721ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc721Proxy);
+        this.erc20Token = new ERC20TokenWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            this.erc20Proxy,
+            blockPollingIntervalMs,
+        );
+        this.erc721Token = new ERC721TokenWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            this.erc721Proxy,
+            blockPollingIntervalMs,
+        );
+        this.etherToken = new EtherTokenWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            this.erc20Token,
+            blockPollingIntervalMs,
+        );
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
+            config.networkId,
             this.erc20Token,
             this.erc721Token,
-            config.contractAddresses.exchange,
-            config.contractAddresses.zrxToken,
+            contractAddresses.exchange,
+            contractAddresses.zrxToken,
             blockPollingIntervalMs,
         );
         this.forwarder = new ForwarderWrapper(
             this._web3Wrapper,
-            config.contractAddresses.forwarder,
-            config.contractAddresses.zrxToken,
-            config.contractAddresses.etherToken,
+            config.networkId,
+            contractAddresses.forwarder,
+            contractAddresses.zrxToken,
+            contractAddresses.etherToken,
         );
-        this.orderValidator = new OrderValidatorWrapper(this._web3Wrapper, config.contractAddresses.orderValidator);
+        this.orderValidator = new OrderValidatorWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            contractAddresses.orderValidator,
+        );
     }
     /**
      * Sets a new web3 provider for 0x.js. Updating the provider will stop all

@@ -1,6 +1,7 @@
+import { ContractAddresses } from '@0xproject/contract-addresses';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
 import { EmptyWalletSubprovider, Web3ProviderEngine } from '@0xproject/subproviders';
-import { ContractAddresses, DoneCallback } from '@0xproject/types';
+import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { Provider } from 'ethereum-types';

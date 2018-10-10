@@ -1,4 +1,3 @@
-// TODO(albrow): Do we need to export all of these?
 export * from '../../generated-wrappers/asset_proxy_owner';
 export * from '../../generated-wrappers/dummy_erc20_token';
 export * from '../../generated-wrappers/dummy_erc721_receiver';

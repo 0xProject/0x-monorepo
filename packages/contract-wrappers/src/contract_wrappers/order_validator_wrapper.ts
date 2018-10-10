@@ -22,12 +22,14 @@ export class OrderValidatorWrapper extends ContractWrapper {
     /**
      * Instantiate OrderValidatorWrapper
      * @param web3Wrapper Web3Wrapper instance to use.
-     * @param address The address of the OrderValidator contract.
+     * @param networkId Desired networkId.
+     * @param address (Optional) The address of the OrderValidator contract. If
+     * undefined, will default to the known address corresponding to the
+     * networkId.
      */
-    // TODO(albrow): Make address optional?
-    constructor(web3Wrapper: Web3Wrapper, address: string) {
-        super(web3Wrapper);
-        this.address = address;
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
+        super(web3Wrapper, networkId);
+        this.address = _.isUndefined(address) ? this._getDefaultContractAddresses().exchange : address;
     }
     /**
      * Get an object conforming to OrderAndTraderInfo containing on-chain information of the provided order and address

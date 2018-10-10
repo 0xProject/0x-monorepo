@@ -1,0 +1,37 @@
+{
+    "name": "@0xproject/contract-addresses",
+    "version": "1.0.0",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Addresses of deployed 0x contracts on Ethereum mainnet and testnets",
+    "main": "lib/src/index.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "build": "yarn tsc -b",
+        "build:ci": "yarn build",
+        "clean": "shx rm -rf lib"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-addresses/README.md",
+    "devDependencies": {
+        "typescript": "3.0.1",
+        "shx": "^0.2.2"
+    },
+    "dependencies": {
+        "@0xproject/types": "1.1.4",
+        "lodash": "^4.17.5"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

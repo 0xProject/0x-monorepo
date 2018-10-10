@@ -8,7 +8,8 @@ import {
     WETH9EventArgs,
     WETH9Events,
 } from '@0xproject/abi-gen-wrappers';
-import { ContractAddresses, OrderState, SignedOrder } from '@0xproject/types';
+import { ContractAddresses } from '@0xproject/contract-addresses';
+import { OrderState, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 
 import { BlockParam, ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
@@ -110,18 +111,13 @@ export type SyncMethod = (...args: any[]) => any;
 /**
  * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 3-ropsten, 4-rinkeby, 42-kovan, 50-testrpc)
  * gasPrice: Gas price to use with every transaction
- * exchangeContractAddress: The address of an exchange contract to use
- * zrxContractAddress: The address of the ZRX contract to use
- * erc20ProxyContractAddress: The address of the erc20 token transfer proxy contract to use
- * erc721ProxyContractAddress: The address of the erc721 token transfer proxy contract to use
- * forwarderContractAddress: The address of the forwarder contract to use
- * orderWatcherConfig: All the configs related to the orderWatcher
+ * contractAddresses: The address of all contracts to use. Defaults to the known addresses based on networkId.
  * blockPollingIntervalMs: The interval to use for block polling in event watching methods (defaults to 1000)
  */
 export interface ContractWrappersConfig {
     networkId: number;
     gasPrice?: BigNumber;
-    contractAddresses: ContractAddresses;
+    contractAddresses?: ContractAddresses;
     blockPollingIntervalMs?: number;
 }
 

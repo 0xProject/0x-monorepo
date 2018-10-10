@@ -1,4 +1,5 @@
 import { ZeroEx } from '0x.js';
+import { getContractAddressesForNetwork } from '@0xproject/contract-addresses';
 import {
     BlockRange,
     ContractWrappers,
@@ -863,17 +864,7 @@ export class Blockchain {
         } else {
             const contractWrappersConfig = {
                 networkId,
-                // TODO(albrow): Load in real contract addresses here.
-                contractAddresses: {
-                    erc20Proxy: '',
-                    erc721Proxy: '',
-                    zrxToken: '',
-                    etherToken: '',
-                    exchange: '',
-                    assetProxyOwner: '',
-                    forwarder: '',
-                    orderValidator: '',
-                },
+                contractAddresses: getContractAddressesForNetwork(networkId),
             };
             this._contractWrappers = new ContractWrappers(provider, contractWrappersConfig);
         }

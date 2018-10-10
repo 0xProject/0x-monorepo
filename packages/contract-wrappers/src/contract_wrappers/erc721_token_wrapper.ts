@@ -36,11 +36,17 @@ export class ERC721TokenWrapper extends ContractWrapper {
     /**
      * Instantiate ERC721TokenWrapper
      * @param web3Wrapper Web3Wrapper instance to use
+     * @param networkId Desired networkId
      * @param erc721ProxyWrapper The ERC721ProxyWrapper instance to use
      * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
      */
-    constructor(web3Wrapper: Web3Wrapper, erc721ProxyWrapper: ERC721ProxyWrapper, blockPollingIntervalMs?: number) {
-        super(web3Wrapper, blockPollingIntervalMs);
+    constructor(
+        web3Wrapper: Web3Wrapper,
+        networkId: number,
+        erc721ProxyWrapper: ERC721ProxyWrapper,
+        blockPollingIntervalMs?: number,
+    ) {
+        super(web3Wrapper, networkId, blockPollingIntervalMs);
         this._tokenContractsByAddress = {};
         this._erc721ProxyWrapper = erc721ProxyWrapper;
     }

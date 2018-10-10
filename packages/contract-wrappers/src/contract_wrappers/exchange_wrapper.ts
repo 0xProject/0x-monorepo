@@ -50,26 +50,33 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Instantiate ExchangeWrapper
      * @param web3Wrapper Web3Wrapper instance to use.
+     * @param networkId Desired networkId.
      * @param erc20TokenWrapper ERC20TokenWrapper instance to use.
      * @param erc721TokenWrapper ERC721TokenWrapper instance to use.
-     * @param address The address of the Exchange contract.
-     * @param zrxTokenAddress The address of the ZRX Token contract.
+     * @param address (Optional) The address of the Exchange contract. If
+     * undefined, will default to the known address corresponding to the
+     * networkId.
+     * @param zrxTokenAddress (Optional) The address of the ZRXToken contract.
+     * If undefined, will default to the known address corresponding to the
+     * networkId.
      * @param blockPollingIntervalMs The block polling interval to use for active subscriptions.
      */
     constructor(
         web3Wrapper: Web3Wrapper,
+        networkId: number,
         erc20TokenWrapper: ERC20TokenWrapper,
         erc721TokenWrapper: ERC721TokenWrapper,
-        // TODO(albrow): Make address optional?
-        address: string,
-        zrxTokenAddress: string,
+        address?: string,
+        zrxTokenAddress?: string,
         blockPollingIntervalMs?: number,
     ) {
-        super(web3Wrapper, blockPollingIntervalMs);
+        super(web3Wrapper, networkId, blockPollingIntervalMs);
         this._erc20TokenWrapper = erc20TokenWrapper;
         this._erc721TokenWrapper = erc721TokenWrapper;
-        this.address = address;
-        this.zrxTokenAddress = zrxTokenAddress;
+        this.address = _.isUndefined(address) ? this._getDefaultContractAddresses().exchange : address;
+        this.zrxTokenAddress = _.isUndefined(zrxTokenAddress)
+            ? this._getDefaultContractAddresses().zrxToken
+            : zrxTokenAddress;
     }
     /**
      * Retrieve the address of an asset proxy by signature.

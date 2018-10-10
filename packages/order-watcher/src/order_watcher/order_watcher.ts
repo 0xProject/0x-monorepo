@@ -1,4 +1,5 @@
 // tslint:disable:no-unnecessary-type-assertion
+import { ContractAddresses } from '@0xproject/contract-addresses';
 import * as artifacts from '@0xproject/contract-artifacts';
 import {
     AssetBalanceAndProxyAllowanceFetcher,
@@ -31,14 +32,7 @@ import {
     orderHashUtils,
     OrderStateUtils,
 } from '@0xproject/order-utils';
-import {
-    AssetProxyId,
-    ContractAddresses,
-    ExchangeContractErrs,
-    OrderState,
-    SignedOrder,
-    Stats,
-} from '@0xproject/types';
+import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder, Stats } from '@0xproject/types';
 import { errorUtils, intervalUtils } from '@0xproject/utils';
 import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -98,12 +92,14 @@ export class OrderWatcher {
      * Instantiate a new OrderWatcher
      * @param provider Web3 provider to use for JSON RPC calls
      * @param networkId NetworkId to watch orders on
+     * @param contractAddresses Optional contract addresses. Defaults to known
+     * addresses based on networkId.
      * @param partialConfig Optional configurations
      */
     constructor(
         provider: Provider,
         networkId: number,
-        contractAddresses: ContractAddresses,
+        contractAddresses?: ContractAddresses,
         partialConfig: Partial<OrderWatcherConfig> = DEFAULT_ORDER_WATCHER_CONFIG,
     ) {
         assert.isWeb3Provider('provider', provider);
@@ -122,7 +118,8 @@ export class OrderWatcher {
         );
         const contractWrappers = new ContractWrappers(provider, {
             networkId,
-            // TODO(albrow): Make contract addresses optional.
+            // Note(albrow): We let the contract-wrappers package handle
+            // default values for contractAddresses.
             contractAddresses,
         });
         this._eventWatcher = new EventWatcher(provider, config.eventPollingIntervalMs, STATE_LAYER, config.isVerbose);

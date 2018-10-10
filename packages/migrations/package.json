@@ -31,6 +31,7 @@
     "dependencies": {
         "@0xproject/abi-gen-wrappers": "^1.0.0",
         "@0xproject/base-contract": "^3.0.1",
+        "@0xproject/contract-addresses": "^1.0.0",
         "@0xproject/contract-artifacts": "^1.0.0",
         "@0xproject/order-utils": "^1.0.7",
         "@0xproject/sol-compiler": "^1.1.7",

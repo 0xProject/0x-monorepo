@@ -31,8 +31,13 @@ export class EtherTokenWrapper extends ContractWrapper {
      * @param erc20TokenWrapper The ERC20TokenWrapper instance to use
      * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
      */
-    constructor(web3Wrapper: Web3Wrapper, erc20TokenWrapper: ERC20TokenWrapper, blockPollingIntervalMs?: number) {
-        super(web3Wrapper, blockPollingIntervalMs);
+    constructor(
+        web3Wrapper: Web3Wrapper,
+        networkId: number,
+        erc20TokenWrapper: ERC20TokenWrapper,
+        blockPollingIntervalMs?: number,
+    ) {
+        super(web3Wrapper, networkId, blockPollingIntervalMs);
         this._erc20TokenWrapper = erc20TokenWrapper;
     }
     /**

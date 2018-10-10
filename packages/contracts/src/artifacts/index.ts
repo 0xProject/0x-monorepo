@@ -37,7 +37,6 @@ import * as WETH9 from '../../generated-artifacts/WETH9.json';
 import * as Whitelist from '../../generated-artifacts/Whitelist.json';
 import * as ZRXToken from '../../generated-artifacts/ZRXToken.json';
 
-// TODO(albrow): Do we need to export all of these?
 export const artifacts = {
     AssetProxyOwner: (AssetProxyOwner as any) as ContractArtifact,
     DummyERC20Token: (DummyERC20Token as any) as ContractArtifact,

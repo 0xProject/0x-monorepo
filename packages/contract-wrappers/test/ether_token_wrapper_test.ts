@@ -1,5 +1,6 @@
+import { ContractAddresses } from '@0xproject/contract-addresses';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
-import { ContractAddresses, DoneCallback } from '@0xproject/types';
+import { DoneCallback } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -16,7 +17,6 @@ import {
     WETH9TransferEventArgs,
     WETH9WithdrawalEventArgs,
 } from '../src';
-
 import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';

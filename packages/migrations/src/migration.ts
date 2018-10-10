@@ -1,7 +1,7 @@
 import * as wrappers from '@0xproject/abi-gen-wrappers';
+import { ContractAddresses } from '@0xproject/contract-addresses';
 import * as artifacts from '@0xproject/contract-artifacts';
 import { assetDataUtils } from '@0xproject/order-utils';
-import { ContractAddresses } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';

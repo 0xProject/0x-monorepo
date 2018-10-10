@@ -1,3 +1,4 @@
+import { ContractAddresses, getContractAddressesForNetwork } from '@0xproject/contract-addresses';
 import { AbiDecoder, intervalUtils, logUtils } from '@0xproject/utils';
 import { marshaller, Web3Wrapper } from '@0xproject/web3-wrapper';
 import {
@@ -25,6 +26,7 @@ import { filterUtils } from '../utils/filter_utils';
 
 export abstract class ContractWrapper {
     public abstract abi: ContractAbi;
+    protected _networkId: number;
     protected _web3Wrapper: Web3Wrapper;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
     private _blockPollingIntervalMs: number;
@@ -42,8 +44,9 @@ export abstract class ContractWrapper {
             logUtils.warn(err);
         }
     }
-    constructor(web3Wrapper: Web3Wrapper, blockPollingIntervalMs?: number) {
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, blockPollingIntervalMs?: number) {
         this._web3Wrapper = web3Wrapper;
+        this._networkId = networkId;
         this._blockPollingIntervalMs = _.isUndefined(blockPollingIntervalMs)
             ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
             : blockPollingIntervalMs;
@@ -108,6 +111,9 @@ export abstract class ContractWrapper {
         const abiDecoder = new AbiDecoder([this.abi]);
         const logWithDecodedArgs = abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
+    }
+    protected _getDefaultContractAddresses(): ContractAddresses {
+        return getContractAddressesForNetwork(this._networkId);
     }
     private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, rawLog: RawLogEntry): void {
         const log: LogEntry = marshaller.unmarshalLog(rawLog);

@@ -27,12 +27,36 @@ export class ForwarderWrapper extends ContractWrapper {
     public zrxTokenAddress: string;
     public etherTokenAddress: string;
     private _forwarderContractIfExists?: ForwarderContract;
-    // TODO(albrow): Make addresses optional?
-    constructor(web3Wrapper: Web3Wrapper, address: string, zrxTokenAddress: string, etherTokenAddress: string) {
-        super(web3Wrapper);
-        this.address = address;
-        this.zrxTokenAddress = zrxTokenAddress;
-        this.etherTokenAddress = etherTokenAddress;
+
+    /**
+     * Instantiate ForwarderWrapper
+     * @param web3Wrapper Web3Wrapper instance to use.
+     * @param networkId Desired networkId.
+     * @param address (Optional) The address of the Exchange contract. If
+     * undefined, will default to the known address corresponding to the
+     * networkId.
+     * @param zrxTokenAddress (Optional) The address of the ZRXToken contract.
+     * If undefined, will default to the known address corresponding to the
+     * networkId.
+     * @param etherTokenAddress (Optional) The address of a WETH (Ether token)
+     * contract. If undefined, will default to the known address corresponding
+     * to the networkId.
+     */
+    constructor(
+        web3Wrapper: Web3Wrapper,
+        networkId: number,
+        address?: string,
+        zrxTokenAddress?: string,
+        etherTokenAddress?: string,
+    ) {
+        super(web3Wrapper, networkId);
+        this.address = _.isUndefined(address) ? this._getDefaultContractAddresses().exchange : address;
+        this.zrxTokenAddress = _.isUndefined(zrxTokenAddress)
+            ? this._getDefaultContractAddresses().zrxToken
+            : zrxTokenAddress;
+        this.etherTokenAddress = _.isUndefined(etherTokenAddress)
+            ? this._getDefaultContractAddresses().etherToken
+            : etherTokenAddress;
     }
     /**
      * Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.

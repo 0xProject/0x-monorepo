@@ -19,13 +19,14 @@ export class ERC20ProxyWrapper extends ContractWrapper {
     /**
      * Instantiate ERC20ProxyWrapper
      * @param web3Wrapper Web3Wrapper instance to use
-     * @param address The address of the ERC20Proxy contract
+     * @param networkId Desired networkId
+     * @param address (Optional) The address of the ERC20Proxy contract. If
+     * undefined, will default to the known address corresponding to the
+     * networkId.
      */
-    // TODO(albrow): Make address optional and default to looking up the address
-    // based in a hard-coded mapping based on web3Wrapper network id.
-    constructor(web3Wrapper: Web3Wrapper, address: string) {
-        super(web3Wrapper);
-        this.address = address;
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
+        super(web3Wrapper, networkId);
+        this.address = _.isUndefined(address) ? this._getDefaultContractAddresses().erc20Proxy : address;
     }
     /**
      * Get the 4 bytes ID of this asset proxy
