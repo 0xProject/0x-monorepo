@@ -4,6 +4,10 @@ import styled from 'styled-components';
 
 import { Container } from './container';
 
+/**
+ * AN EXAMPLE OF HOW TO CREATE A STYLED COMPONENT USING STYLED-COMPONENTS
+ * SEE: https://www.styled-components.com/docs/basics#coming-from-css
+ */
 export interface ButtonProps {
     backgroundColor?: string;
     borderColor?: string;
