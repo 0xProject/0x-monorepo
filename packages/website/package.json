@@ -59,6 +59,7 @@
         "react-typist": "^2.0.4",
         "redux": "^3.6.0",
         "redux-devtools-extension": "^2.13.2",
+        "rollbar": "^2.4.7",
         "semver-sort": "0.0.4",
         "styled-components": "^3.3.0",
         "thenby": "^1.2.3",
