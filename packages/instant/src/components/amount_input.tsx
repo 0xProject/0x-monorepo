@@ -29,11 +29,16 @@ export class AmountInput extends React.Component<AmountInputProps> {
             </Container>
         );
     }
-    private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    private _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value;
         let bigNumberValue;
         if (!_.isEmpty(value)) {
-            bigNumberValue = new BigNumber(event.target.value);
+            try {
+                bigNumberValue = new BigNumber(event.target.value);
+            } catch {
+                // We don't want to allow values that can't be a BigNumber, so don't even call onChange.
+                return;
+            }
         }
         if (!_.isUndefined(this.props.onChange)) {
             this.props.onChange(bigNumberValue);
