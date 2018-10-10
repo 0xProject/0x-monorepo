@@ -23,6 +23,7 @@ export abstract class BaseWalletSubprovider extends Subprovider {
     public abstract async getAccountsAsync(): Promise<string[]>;
     public abstract async signTransactionAsync(txParams: PartialTxParams): Promise<string>;
     public abstract async signPersonalMessageAsync(data: string, address: string): Promise<string>;
+    public abstract async signTypedDataAsync(address: string, typedData: any): Promise<string>;
 
     /**
      * This method conforms to the web3-provider-engine interface.
@@ -36,6 +37,8 @@ export abstract class BaseWalletSubprovider extends Subprovider {
     public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback): Promise<void> {
         let accounts;
         let txParams;
+        let address;
+        let typedData;
         switch (payload.method) {
             case 'eth_coinbase':
                 try {
@@ -86,10 +89,19 @@ export abstract class BaseWalletSubprovider extends Subprovider {
             case 'eth_sign':
             case 'personal_sign':
                 const data = payload.method === 'eth_sign' ? payload.params[1] : payload.params[0];
-                const address = payload.method === 'eth_sign' ? payload.params[0] : payload.params[1];
+                address = payload.method === 'eth_sign' ? payload.params[0] : payload.params[1];
                 try {
                     const ecSignatureHex = await this.signPersonalMessageAsync(data, address);
                     end(null, ecSignatureHex);
+                } catch (err) {
+                    end(err);
+                }
+                return;
+            case 'eth_signTypedData':
+                [address, typedData] = payload.params;
+                try {
+                    const signature = await this.signTypedDataAsync(address, typedData);
+                    end(null, signature);
                 } catch (err) {
                     end(err);
                 }

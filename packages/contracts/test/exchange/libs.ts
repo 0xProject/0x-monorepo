@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetDataUtils, eip712Utils, orderHashUtils } from '@0xproject/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
 import { SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
@@ -126,22 +126,6 @@ describe('Exchange libs', () => {
     });
 
     describe('LibOrder', () => {
-        describe('getOrderSchema', () => {
-            it('should output the correct order schema hash', async () => {
-                const orderSchema = await libs.getOrderSchemaHash.callAsync();
-                const schemaHashBuffer = orderHashUtils._getOrderSchemaBuffer();
-                const schemaHashHex = `0x${schemaHashBuffer.toString('hex')}`;
-                expect(schemaHashHex).to.be.equal(orderSchema);
-            });
-        });
-        describe('getDomainSeparatorSchema', () => {
-            it('should output the correct domain separator schema hash', async () => {
-                const domainSeparatorSchema = await libs.getDomainSeparatorSchemaHash.callAsync();
-                const domainSchemaBuffer = eip712Utils._getDomainSeparatorSchemaBuffer();
-                const schemaHashHex = `0x${domainSchemaBuffer.toString('hex')}`;
-                expect(schemaHashHex).to.be.equal(domainSeparatorSchema);
-            });
-        });
         describe('getOrderHash', () => {
             it('should output the correct orderHash', async () => {
                 signedOrder = await orderFactory.newSignedOrderAsync();

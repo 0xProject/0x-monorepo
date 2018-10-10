@@ -172,7 +172,7 @@ jobs:
       - run: yarn lerna run lint
       - run: yarn prettier:ci
       - run: cd packages/0x.js && yarn build:umd:prod
-      - run: yarn bundlesize
+      - run: yarn bundlewatch
   submit-coverage:
     docker:
       - image: circleci/node:9
