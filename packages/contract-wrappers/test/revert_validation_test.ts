@@ -60,16 +60,14 @@ describe('Revert Validation ExchangeWrapper', () => {
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);
-        exchangeContractAddress = contractWrappers.exchange.address;
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        zrxTokenAddress = contractWrappers.exchange.zrxTokenAddress;
         fillScenarios = new FillScenarios(
             provider,
             userAddresses,
-            zrxTokenAddress,
-            exchangeContractAddress,
-            contractWrappers.erc20Proxy.address,
-            contractWrappers.erc721Proxy.address,
+            contractAddresses.zrxToken,
+            contractAddresses.exchange,
+            contractAddresses.erc20Proxy,
+            contractAddresses.erc721Proxy,
         );
         [, makerAddress, takerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
