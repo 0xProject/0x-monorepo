@@ -29,6 +29,7 @@ import {
     ValidateOrderFillableOpts,
 } from '../types';
 import { assert } from '../utils/assert';
+import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 import { decorators } from '../utils/decorators';
 import { TransactionEncoder } from '../utils/transaction_encoder';
 
@@ -72,9 +73,9 @@ export class ExchangeWrapper extends ContractWrapper {
         super(web3Wrapper, networkId, blockPollingIntervalMs);
         this._erc20TokenWrapper = erc20TokenWrapper;
         this._erc721TokenWrapper = erc721TokenWrapper;
-        this.address = _.isUndefined(address) ? this._getDefaultContractAddresses().exchange : address;
+        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
         this.zrxTokenAddress = _.isUndefined(zrxTokenAddress)
-            ? this._getDefaultContractAddresses().zrxToken
+            ? _getDefaultContractAddresses(networkId).zrxToken
             : zrxTokenAddress;
     }
     /**

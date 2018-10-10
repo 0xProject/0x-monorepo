@@ -7,12 +7,12 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
 import { OrderTransactionOpts } from '../types';
 import { assert } from '../utils/assert';
 import { calldataOptimizationUtils } from '../utils/calldata_optimization_utils';
 import { constants } from '../utils/constants';
+import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 import { decorators } from '../utils/decorators';
 import { utils } from '../utils/utils';
 
@@ -49,12 +49,12 @@ export class ForwarderWrapper extends ContractWrapper {
         etherTokenAddress?: string,
     ) {
         super(web3Wrapper, networkId);
-        this.address = _.isUndefined(address) ? this._getDefaultContractAddresses().exchange : address;
+        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
         this.zrxTokenAddress = _.isUndefined(zrxTokenAddress)
-            ? this._getDefaultContractAddresses().zrxToken
+            ? _getDefaultContractAddresses(networkId).zrxToken
             : zrxTokenAddress;
         this.etherTokenAddress = _.isUndefined(etherTokenAddress)
-            ? this._getDefaultContractAddresses().etherToken
+            ? _getDefaultContractAddresses(networkId).etherToken
             : etherTokenAddress;
     }
     /**

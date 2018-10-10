@@ -28,13 +28,11 @@ describe('ExchangeWrapper', () => {
     let exchangeContractAddress: string;
     let makerTokenAddress: string;
     let takerTokenAddress: string;
-    let coinbase: string;
     let makerAddress: string;
     let anotherMakerAddress: string;
     let takerAddress: string;
     let makerAssetData: string;
     let takerAssetData: string;
-    let feeRecipient: string;
     let txHash: string;
     const fillableAmount = new BigNumber(5);
     const takerTokenFillAmount = new BigNumber(5);
@@ -61,7 +59,7 @@ describe('ExchangeWrapper', () => {
             contractWrappers.erc20Proxy.address,
             contractWrappers.erc721Proxy.address,
         );
-        [coinbase, makerAddress, takerAddress, feeRecipient, anotherMakerAddress] = userAddresses;
+        [, makerAddress, takerAddress, , anotherMakerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData] = [
             assetDataUtils.encodeERC20AssetData(makerTokenAddress),

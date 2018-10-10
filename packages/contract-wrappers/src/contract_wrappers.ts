@@ -27,6 +27,8 @@ import { contractWrappersPublicNetworkConfigSchema } from './schemas/contract_wr
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
+import { _getDefaultContractAddresses } from './utils/contract_addresses';
+
 /**
  * The ContractWrappers class contains smart contract wrappers helpful when building on 0x protocol.
  */
@@ -102,7 +104,7 @@ export class ContractWrappers {
             ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
             : config.blockPollingIntervalMs;
         const contractAddresses = _.isUndefined(config.contractAddresses)
-            ? getContractAddressesForNetwork(config.networkId)
+            ? _getDefaultContractAddresses(config.networkId)
             : config.contractAddresses;
         this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc20Proxy);
         this.erc721Proxy = new ERC721ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc721Proxy);

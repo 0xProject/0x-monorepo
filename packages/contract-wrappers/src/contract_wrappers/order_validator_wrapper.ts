@@ -9,6 +9,7 @@ import * as _ from 'lodash';
 
 import { BalanceAndAllowance, OrderAndTraderInfo, TraderInfo } from '../types';
 import { assert } from '../utils/assert';
+import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 
 import { ContractWrapper } from './contract_wrapper';
 
@@ -28,7 +29,7 @@ export class OrderValidatorWrapper extends ContractWrapper {
      */
     constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);
-        this.address = _.isUndefined(address) ? this._getDefaultContractAddresses().exchange : address;
+        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
     }
     /**
      * Get an object conforming to OrderAndTraderInfo containing on-chain information of the provided order and address

@@ -6,6 +6,7 @@ import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { assert } from '../utils/assert';
+import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 
 import { ContractWrapper } from './contract_wrapper';
 
@@ -25,7 +26,7 @@ export class ERC20ProxyWrapper extends ContractWrapper {
      */
     constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);
-        this.address = _.isUndefined(address) ? this._getDefaultContractAddresses().erc20Proxy : address;
+        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).erc20Proxy : address;
     }
     /**
      * Get the 4 bytes ID of this asset proxy
