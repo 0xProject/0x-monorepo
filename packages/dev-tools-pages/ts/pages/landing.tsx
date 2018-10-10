@@ -3,6 +3,7 @@ import * as React from 'react';
 
 import { Button } from '../components/ui/button';
 import { Container } from '../components/ui/container';
+import { Text } from '../components/ui/text';
 
 interface LandingProps {}
 
@@ -15,7 +16,11 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     public render(): React.ReactNode {
         return (
             <Container id="landing" className="clearfix">
-                <Button>Click me!</Button>
+                <Container className="mx-auto p4" width="200px">
+                    <Button>
+                        <Text fontColor="white">Click me!</Text>
+                    </Button>
+                </Container>
             </Container>
         );
     }

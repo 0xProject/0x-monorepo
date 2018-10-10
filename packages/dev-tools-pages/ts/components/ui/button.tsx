@@ -31,28 +31,25 @@ export const Button = styled(PlainButton)`
     border-radius: 3px;
     outline: none;
     width: ${props => props.width};
-    background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
-    border: ${props => (props.borderColor ? `1px solid ${props.theme[props.borderColor]}` : 'none')};
+    background-color: ${props => (props.backgroundColor ? props.backgroundColor : 'none')};
+    border: ${props => (props.borderColor ? `1px solid ${props.backgroundColor}` : 'none')};
     &:hover {
         background-color: ${props =>
-            !props.isDisabled
-                ? darken(darkenOnHoverAmount, props.theme[props.backgroundColor || 'white'])
-                : ''} !important;
+            !props.isDisabled ? darken(darkenOnHoverAmount, props.backgroundColor) : ''} !important;
     }
     &:active {
-        background-color: ${props =>
-            !props.isDisabled ? darken(darkenOnActiveAmount, props.theme[props.backgroundColor || 'white']) : ''};
+        background-color: ${props => (!props.isDisabled ? darken(darkenOnActiveAmount, props.backgroundColor) : '')};
     }
     &:disabled {
         opacity: 0.5;
     }
     &:focus {
-        background-color: ${props => saturate(saturateOnFocusAmount, props.theme[props.backgroundColor || 'white'])};
+        background-color: ${props => saturate(saturateOnFocusAmount, props.backgroundColor)};
     }
 `;
 
 Button.defaultProps = {
-    backgroundColor: 'black',
+    backgroundColor: 'red',
     width: 'auto',
     isDisabled: false,
     padding: '1em 2.2em',
