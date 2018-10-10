@@ -77,18 +77,22 @@ export interface BuyQuoteRequestOpts {
 /**
  * ethAmount: The desired amount of eth to spend. Defaults to buyQuote.worstCaseQuoteInfo.totalEthAmount.
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
+ * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
+ * gasPrice: Gas price in Wei to use for a transaction
  * feeRecipient: The address where affiliate fees are sent. Defaults to null address (0x000...000).
  */
 export interface BuyQuoteExecutionOpts {
     ethAmount?: BigNumber;
     takerAddress?: string;
+    gasLimit?: number;
+    gasPrice?: BigNumber;
     feeRecipient: string;
 }
 
 /**
  * networkId: The ethereum network id. Defaults to 1 (mainnet).
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
- * expiryBufferSeconds: The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+ * expiryBufferSeconds: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  */
 export interface AssetBuyerOpts {
     networkId: number;
