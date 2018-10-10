@@ -109,3 +109,12 @@ packages/sol-compiler/solc_bin/
 
 # Monorepo scripts
 packages/*/scripts/
+
+# python stuff
+.eggs
+.mypy_cache
+.tox
+python-packages/*/build
+__pycache__
+python-packages/*/src/*.egg-info
+python-packages/*/.coverage
