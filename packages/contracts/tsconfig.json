@@ -5,7 +5,7 @@
         "rootDir": ".",
         "resolveJsonModule": true
     },
-    "include": ["./globals.d.ts", "./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
+    "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "./generated-artifacts/AssetProxyOwner.json",
         "./generated-artifacts/DummyERC20Token.json",
