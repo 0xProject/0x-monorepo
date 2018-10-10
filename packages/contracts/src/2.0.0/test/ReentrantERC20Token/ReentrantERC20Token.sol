@@ -92,53 +92,53 @@ contract ReentrantERC20Token is
         LibOrder.Order[] memory orders;
         uint256[] memory takerAssetFillAmounts;
         bytes[] memory signatures;
-        bytes memory calldata;
+        bytes memory cdata;
 
-        // Create calldata for function that corresponds to currentFunctionId
+        // Create cdata for function that corresponds to currentFunctionId
         if (currentFunctionId == uint8(ExchangeFunction.FILL_ORDER)) {
-            calldata = abi.encodeWithSelector(
+            cdata = abi.encodeWithSelector(
                 EXCHANGE.fillOrder.selector,
                 order,
                 0,
                 signature
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.FILL_OR_KILL_ORDER)) {
-            calldata = abi.encodeWithSelector(
+            cdata = abi.encodeWithSelector(
                 EXCHANGE.fillOrKillOrder.selector,
                 order,
                 0,
                 signature
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_ORDERS)) {
-            calldata = abi.encodeWithSelector(
+            cdata = abi.encodeWithSelector(
                 EXCHANGE.batchFillOrders.selector,
                 orders,
                 takerAssetFillAmounts,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_FILL_OR_KILL_ORDERS)) {
-            calldata = abi.encodeWithSelector(
+            cdata = abi.encodeWithSelector(
                 EXCHANGE.batchFillOrKillOrders.selector,
                 orders,
                 takerAssetFillAmounts,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_BUY_ORDERS)) {
-            calldata = abi.encodeWithSelector(
+            cdata = abi.encodeWithSelector(
                 EXCHANGE.marketBuyOrders.selector,
                 orders,
                 0,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MARKET_SELL_ORDERS)) {
-            calldata = abi.encodeWithSelector(
+            cdata = abi.encodeWithSelector(
                 EXCHANGE.marketSellOrders.selector,
                 orders,
                 0,
                 signatures
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.MATCH_ORDERS)) {
-            calldata = abi.encodeWithSelector(
+            cdata = abi.encodeWithSelector(
                 EXCHANGE.matchOrders.selector,
                 order,
                 order,
@@ -146,22 +146,22 @@ contract ReentrantERC20Token is
                 signature
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.CANCEL_ORDER)) {
-            calldata = abi.encodeWithSelector(
+            cdata = abi.encodeWithSelector(
                 EXCHANGE.cancelOrder.selector,
                 order
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_CANCEL_ORDERS)) {
-            calldata = abi.encodeWithSelector(
+            cdata = abi.encodeWithSelector(
                 EXCHANGE.batchCancelOrders.selector,
                 orders
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.CANCEL_ORDERS_UP_TO)) {
-            calldata = abi.encodeWithSelector(
+            cdata = abi.encodeWithSelector(
                 EXCHANGE.cancelOrdersUpTo.selector,
                 0
             );
         } else if (currentFunctionId == uint8(ExchangeFunction.SET_SIGNATURE_VALIDATOR_APPROVAL)) {
-            calldata = abi.encodeWithSelector(
+            cdata = abi.encodeWithSelector(
                 EXCHANGE.setSignatureValidatorApproval.selector,
                 address(0),
                 false
@@ -169,7 +169,7 @@ contract ReentrantERC20Token is
         }
 
         // Call Exchange function, swallow error
-        address(EXCHANGE).call(calldata);
+        address(EXCHANGE).call(cdata);
 
         // Revert reason is 100 bytes
         bytes memory returnData = new bytes(100);
