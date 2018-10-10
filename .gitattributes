@@ -1,4 +1,5 @@
 *.sol linguist-language=Solidity
 
 # Automatically collapse generated files in GitHub.
-packages/contracts/generated-artifacts/*json linguist-generated
+packages/contract-artifacts/artifacts/*json linguist-generated
+packages/abi-gen-wrappers/wrappers/*.ts liguist-generated
