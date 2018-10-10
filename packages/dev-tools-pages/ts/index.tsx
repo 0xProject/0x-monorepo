@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import { MetaTags } from 'ts/components/meta_tags';
-import { Landing } from 'ts/pages/landing/landing';
+import { Landing } from 'ts/pages/landing';
+
+import 'basscss/css/basscss.css';
 
 const DOCUMENT_TITLE = '';
 const DOCUMENT_DESCRIPTION = '';

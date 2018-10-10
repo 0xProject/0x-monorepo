@@ -5,13 +5,14 @@
         "outDir": "./transpiled/",
         "jsx": "react",
         "baseUrl": "./",
+        "allowJs": true,
+        "strictNullChecks": false,
+        "noImplicitThis": false,
         // tsconfig.json at the monorepo root contains some options required for
         // project references which do not work for website. We override those
         // options here.
         "declaration": false,
         "declarationMap": false,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
         "composite": false,
         "paths": {
             "*": ["node_modules/@types/*", "*"]

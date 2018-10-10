@@ -39,6 +39,15 @@ const config = {
                 test: /\.md$/,
                 use: 'raw-loader',
             },
+            {
+                test: /\.less$/,
+                loader: 'style-loader!css-loader!less-loader',
+                exclude: /node_modules/,
+            },
+            {
+                test: /\.css$/,
+                loaders: ['style-loader', 'css-loader'],
+            },
         ],
     },
     optimization: {
