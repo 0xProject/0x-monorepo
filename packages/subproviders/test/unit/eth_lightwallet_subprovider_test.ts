@@ -73,6 +73,13 @@ describe('EthLightwalletSubprovider', () => {
                 const txHex = await ethLightwalletSubprovider.signTransactionAsync(fixtureData.TX_DATA);
                 expect(txHex).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
             });
+            it('signs an EIP712 sign typed data message', async () => {
+                const signature = await ethLightwalletSubprovider.signTypedDataAsync(
+                    fixtureData.TEST_RPC_ACCOUNT_0,
+                    fixtureData.EIP712_TEST_TYPED_DATA,
+                );
+                expect(signature).to.be.equal(fixtureData.EIP712_TEST_TYPED_DATA_SIGNED_RESULT);
+            });
         });
     });
     describe('calls through a provider', () => {
@@ -125,6 +132,20 @@ describe('EthLightwalletSubprovider', () => {
                 const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
                     expect(err).to.be.a('null');
                     expect(response.result.raw).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
+                    done();
+                });
+                provider.sendAsync(payload, callback);
+            });
+            it('signs an EIP712 sign typed data message with eth_signTypedData', (done: DoneCallback) => {
+                const payload = {
+                    jsonrpc: '2.0',
+                    method: 'eth_signTypedData',
+                    params: [fixtureData.TEST_RPC_ACCOUNT_0, fixtureData.EIP712_TEST_TYPED_DATA],
+                    id: 1,
+                };
+                const callback = reportCallbackErrors(done)((err: Error, response: JSONRPCResponsePayload) => {
+                    expect(err).to.be.a('null');
+                    expect(response.result).to.be.equal(fixtureData.EIP712_TEST_TYPED_DATA_SIGNED_RESULT);
                     done();
                 });
                 provider.sendAsync(payload, callback);

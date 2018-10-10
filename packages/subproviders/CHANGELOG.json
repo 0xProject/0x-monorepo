@@ -1,5 +1,18 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Add `MetamaskSubprovider` to handle inconsistent JSON RPC behaviour",
+                "pr": 1102
+            },
+            {
+                "note": "Add support for `eth_signTypedData` in wallets Mnemonic, Private and EthLightWallet",
+                "pr": 1102
+            }
+        ]
+    },
+    {
         "version": "2.0.7",
         "changes": [
             {

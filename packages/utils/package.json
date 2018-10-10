@@ -50,7 +50,7 @@
         "detect-node": "2.0.3",
         "ethereum-types": "^1.0.11",
         "ethereumjs-util": "^5.1.1",
-        "ethers": "4.0.0-beta.14",
+        "ethers": "~4.0.4",
         "isomorphic-fetch": "^2.2.1",
         "js-sha3": "^0.7.0",
         "lodash": "^4.17.5"

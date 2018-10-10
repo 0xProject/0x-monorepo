@@ -41,7 +41,7 @@
         "@types/mocha": "^5.2.2",
         "copyfiles": "^2.0.0",
         "ethereum-types": "^1.0.11",
-        "ethers": "4.0.0-beta.14",
+        "ethers": "~4.0.4",
         "lodash": "^4.17.5",
         "run-s": "^0.0.0"
     },

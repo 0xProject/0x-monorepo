@@ -60,7 +60,7 @@
         "@0xproject/utils": "^2.0.2",
         "ethereum-types": "^1.0.11",
         "ethereumjs-util": "^5.1.1",
-        "ethers": "4.0.0-beta.14",
+        "ethers": "~4.0.4",
         "lodash": "^4.17.5"
     },
     "publishConfig": {

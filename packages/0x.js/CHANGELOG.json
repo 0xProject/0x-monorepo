@@ -1,5 +1,24 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Add support for `eth_signTypedData`.",
+                "pr": 1102
+            },
+            {
+                "note":
+                    "Added `MetamaskSubprovider` to handle inconsistencies in Metamask's signing JSON RPC endpoints.",
+                "pr": 1102
+            },
+            {
+                "note":
+                    "Removed `SignerType` (including `SignerType.Metamask`). Please use the `MetamaskSubprovider` to wrap `web3.currentProvider`.",
+                "pr": 1102
+            }
+        ]
+    },
+    {
         "version": "1.0.8",
         "changes": [
             {
