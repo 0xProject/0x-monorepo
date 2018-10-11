@@ -183,7 +183,7 @@ export class AssetBuyer {
         buyQuote: BuyQuote,
         options: Partial<BuyQuoteExecutionOpts> = {},
     ): Promise<string> {
-        const { ethAmount, takerAddress, feeRecipient } = {
+        const { ethAmount, takerAddress, feeRecipient, gasLimit, gasPrice } = {
             ...constants.DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
             ...options,
         };
@@ -219,6 +219,10 @@ export class AssetBuyer {
             feeOrders,
             feePercentage,
             feeRecipient,
+            {
+                gasLimit,
+                gasPrice,
+            },
         );
         return txHash;
     }

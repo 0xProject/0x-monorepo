@@ -2,7 +2,6 @@ export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
 export { generatePseudoRandomSalt } from './salt';
 export { assetDataUtils } from './asset_data_utils';
-export { eip712Utils } from './eip712_utils';
 export { marketUtils } from './market_utils';
 export { rateUtils } from './rate_utils';
 export { sortingUtils } from './sorting_utils';
@@ -19,7 +18,17 @@ export { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 export { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_allowance_lazy_store';
 export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_lazy_store';
 
-export { Provider, JSONRPCRequestPayload, JSONRPCErrorCallback, JSONRPCResponsePayload } from 'ethereum-types';
+export { constants } from './constants';
+export { eip712Utils } from './eip712_utils';
+
+export {
+    Provider,
+    JSONRPCRequestPayload,
+    JSONRPCErrorCallback,
+    JSONRPCResponsePayload,
+    JSONRPCResponseError,
+} from 'ethereum-types';
+
 export {
     SignedOrder,
     Order,
@@ -29,17 +38,19 @@ export {
     ERC20AssetData,
     ERC721AssetData,
     AssetProxyId,
-    SignerType,
     SignatureType,
     OrderStateValid,
     OrderStateInvalid,
     ExchangeContractErrs,
+    EIP712Parameter,
+    EIP712TypedData,
+    EIP712Types,
+    EIP712Object,
+    EIP712ObjectValue,
+    ZeroExTransaction,
 } from '@0xproject/types';
 export {
     OrderError,
-    EIP712Parameter,
-    EIP712Schema,
-    EIP712Types,
     TradeSide,
     TransferType,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,

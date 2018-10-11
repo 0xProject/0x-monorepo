@@ -30,6 +30,7 @@ export {
     OpCode,
     TxDataPayable,
     JSONRPCResponsePayload,
+    JSONRPCResponseError,
     RawLogEntry,
     DecodedLogEntryEvent,
     LogWithDecodedArgs,

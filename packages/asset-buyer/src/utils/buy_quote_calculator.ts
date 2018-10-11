@@ -72,7 +72,6 @@ export const buyQuoteCalculator = {
             assetBuyAmount,
             feePercentage,
         );
-
         return {
             assetData,
             orders: resultOrders,
@@ -98,13 +97,14 @@ function calculateQuoteInfo(
     );
     // find the total eth needed to buy fees
     const ethAmountToBuyFees = findEthAmountNeededToBuyFees(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
-    const ethAmountBeforeAffiliateFee = ethAmountToBuyAsset.plus(ethAmountToBuyFees);
-    const totalEthAmount = ethAmountBeforeAffiliateFee.mul(feePercentage + 1);
+    const affiliateFeeEthAmount = ethAmountToBuyAsset.mul(feePercentage);
+    const totalEthAmountWithoutAffiliateFee = ethAmountToBuyAsset.plus(ethAmountToBuyFees);
+    const totalEthAmount = totalEthAmountWithoutAffiliateFee.plus(affiliateFeeEthAmount);
     // divide into the assetBuyAmount in order to find rate of makerAsset / WETH
-    const ethPerAssetPrice = ethAmountBeforeAffiliateFee.div(assetBuyAmount);
+    const ethPerAssetPrice = totalEthAmountWithoutAffiliateFee.div(assetBuyAmount);
     return {
         totalEthAmount,
-        feeEthAmount: totalEthAmount.minus(ethAmountBeforeAffiliateFee),
+        feeEthAmount: affiliateFeeEthAmount,
         ethPerAssetPrice,
     };
 }
