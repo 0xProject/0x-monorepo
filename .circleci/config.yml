@@ -23,6 +23,7 @@ jobs:
           paths:
             - ~/repo
   build-website:
+    resource_class: medium+
     docker:
       - image: circleci/node:9
     working_directory: ~/repo
