@@ -30,6 +30,19 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetAmountInputProps)
     value: state.selectedAssetAmount,
 });
 
+const updateBuyQuote = async (dispatch: Dispatch<Action>, assetAmount?: BigNumber): Promise<void> => {
+    if (_.isUndefined(assetAmount)) {
+        return;
+    }
+    // get a new buy quote.
+    const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetAmount, zrxDecimals);
+    const newBuyQuote = await assetBuyer.getBuyQuoteForERC20TokenAddressAsync(zrxContractAddress, baseUnitValue);
+    // invalidate the last buy quote.
+    dispatch({ type: ActionTypes.UPDATE_LATEST_BUY_QUOTE, data: newBuyQuote });
+};
+
+const debouncedUpdateBuyQuote = _.debounce(updateBuyQuote, 200, { trailing: true });
+
 const mapDispatchToProps = (dispatch: Dispatch<Action>): ConnectedDispatch => ({
     onChange: async value => {
         // Update the input
@@ -38,16 +51,7 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): ConnectedDispatch => ({
         dispatch({ type: ActionTypes.UPDATE_LATEST_BUY_QUOTE, data: undefined });
         // reset our buy state
         dispatch({ type: ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE, data: AsyncProcessState.NONE });
-        if (!_.isUndefined(value)) {
-            // get a new buy quote.
-            const baseUnitValue = Web3Wrapper.toBaseUnitAmount(value, zrxDecimals);
-            const newBuyQuote = await assetBuyer.getBuyQuoteForERC20TokenAddressAsync(
-                zrxContractAddress,
-                baseUnitValue,
-            );
-            // invalidate the last buy quote.
-            dispatch({ type: ActionTypes.UPDATE_LATEST_BUY_QUOTE, data: newBuyQuote });
-        }
+        debouncedUpdateBuyQuote(dispatch, value);
     },
 });
 
