@@ -2,8 +2,6 @@ import { darken, saturate } from 'polished';
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { Container } from './container';
-
 /**
  * AN EXAMPLE OF HOW TO CREATE A STYLED COMPONENT USING STYLED-COMPONENTS
  * SEE: https://www.styled-components.com/docs/basics#coming-from-css
