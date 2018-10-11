@@ -1,6 +1,9 @@
 import fs = require('fs');
 import { parse } from './parser';
 import { unparse } from './unparser';
+import { expose } from './exposer';
+
+import * as util from 'util'; // DEBUG
 
 export interface CompilerOptions {
     contractsDir: string;
@@ -19,14 +22,17 @@ export class Compiler {
     }
 
     public async compileAsync() {
-        console.log(this.opts.contracts[0]);
-        const source = fs.readFileSync(this.opts.contracts[0], 'utf8');
+        const filePath = this.opts.contracts[0];
+        const source = fs.readFileSync(filePath, 'utf8');
         try {
             const ast = parse(source);
-            console.log(unparse(ast));
+            //console.log(util.inspect(ast, {depth: 4}));
+            //console.log(unparse(ast));
+            const astp = expose(filePath, ast);
+            //console.log(util.inspect(astp, {depth: 4}));
+            console.log(unparse(astp));
         } catch (e) {
             console.log(e);
         }
-        console.log('Compiling');
     }
 }
