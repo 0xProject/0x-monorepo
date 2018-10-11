@@ -10,7 +10,7 @@ export const orderUtils = {
     willOrderExpire(order: SignedOrder, secondsFromNow: number): boolean {
         const millisecondsInSecond = 1000;
         const currentUnixTimestampSec = new BigNumber(Date.now() / millisecondsInSecond).round();
-        return order.expirationTimeSeconds.lessThan(currentUnixTimestampSec.minus(secondsFromNow));
+        return order.expirationTimeSeconds.lessThan(currentUnixTimestampSec.plus(secondsFromNow));
     },
     calculateRemainingMakerAssetAmount(order: SignedOrder, remainingTakerAssetAmount: BigNumber): BigNumber {
         if (remainingTakerAssetAmount.eq(0)) {

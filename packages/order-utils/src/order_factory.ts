@@ -1,4 +1,4 @@
-import { Order, SignedOrder, SignerType } from '@0xproject/types';
+import { Order, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -71,12 +71,7 @@ export const orderFactory = {
             createOrderOpts,
         );
         const orderHash = orderHashUtils.getOrderHashHex(order);
-        const signature = await signatureUtils.ecSignOrderHashAsync(
-            provider,
-            orderHash,
-            makerAddress,
-            SignerType.Default,
-        );
+        const signature = await signatureUtils.ecSignHashAsync(provider, orderHash, makerAddress);
         const signedOrder: SignedOrder = _.assign(order, { signature });
         return signedOrder;
     },

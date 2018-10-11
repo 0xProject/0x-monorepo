@@ -1,5 +1,5 @@
 import * as chai from 'chai';
-import { BlockParamLiteral } from 'ethereum-types';
+import { BlockParamLiteral, JSONRPCErrorCallback, JSONRPCRequestPayload } from 'ethereum-types';
 import * as Ganache from 'ganache-core';
 import * as _ from 'lodash';
 import 'mocha';
@@ -77,6 +77,19 @@ describe('Web3Wrapper tests', () => {
             const signature = await web3Wrapper.signMessageAsync(signer, message);
             const signatureLength = 132;
             expect(signature.length).to.be.equal(signatureLength);
+        });
+        it('should throw if the provider returns an error', async () => {
+            const message = '0xdeadbeef';
+            const signer = addresses[1];
+            const fakeProvider = {
+                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
+                    callback(new Error('User denied message signature'));
+                },
+            };
+            const errorWeb3Wrapper = new Web3Wrapper(fakeProvider);
+            expect(errorWeb3Wrapper.signMessageAsync(signer, message)).to.be.rejectedWith(
+                'User denied message signature',
+            );
         });
     });
     describe('#getBlockNumberAsync', () => {

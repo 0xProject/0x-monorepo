@@ -1,0 +1,134 @@
+/* Basscss Responsive Padding */
+/* Modified by Fabio Berger to include xs prefix */
+
+@media (max-width: 52em) { /* Modified by Fabio Berger to max-width from min-width */
+
+  .sm-p0  { padding:        0 }
+  .sm-pt0 { padding-top:    0 }
+  .sm-pr0 { padding-right:  0 }
+  .sm-pb0 { padding-bottom: 0 }
+  .sm-pl0 { padding-left:   0 }
+  .sm-px0 { padding-left:   0; padding-right:  0 }
+  .sm-py0 { padding-top:    0; padding-bottom: 0 }
+
+  .sm-p1  { padding:        .5rem }
+  .sm-pt1 { padding-top:        .5rem }
+  .sm-pr1 { padding-right:        .5rem }
+  .sm-pb1 { padding-bottom:        .5rem }
+  .sm-pl1 { padding-left:        .5rem }
+  .sm-px1 { padding-left:        .5rem; padding-right:        .5rem }
+  .sm-py1 { padding-top:        .5rem; padding-bottom:        .5rem }
+
+  .sm-p2  { padding:        1rem }
+  .sm-pt2 { padding-top:        1rem }
+  .sm-pr2 { padding-right:        1rem }
+  .sm-pb2 { padding-bottom:        1rem }
+  .sm-pl2 { padding-left:        1rem }
+  .sm-px2 { padding-left:        1rem; padding-right:        1rem }
+  .sm-py2 { padding-top:        1rem; padding-bottom:        1rem }
+
+  .sm-p3  { padding:        2rem }
+  .sm-pt3 { padding-top:        2rem }
+  .sm-pr3 { padding-right:        2rem }
+  .sm-pb3 { padding-bottom:        2rem }
+  .sm-pl3 { padding-left:        2rem }
+  .sm-px3 { padding-left:        2rem; padding-right:        2rem }
+  .sm-py3 { padding-top:        2rem; padding-bottom:        2rem }
+
+  .sm-p4  { padding:        4rem }
+  .sm-pt4 { padding-top:        4rem }
+  .sm-pr4 { padding-right:        4rem }
+  .sm-pb4 { padding-bottom:        4rem }
+  .sm-pl4 { padding-left:        4rem }
+  .sm-px4 { padding-left:        4rem; padding-right:        4rem }
+  .sm-py4 { padding-top:        4rem; padding-bottom:        4rem }
+
+}
+
+@media (min-width: 52em) {
+
+  .md-p0  { padding:        0 }
+  .md-pt0 { padding-top:    0 }
+  .md-pr0 { padding-right:  0 }
+  .md-pb0 { padding-bottom: 0 }
+  .md-pl0 { padding-left:   0 }
+  .md-px0 { padding-left:   0; padding-right:  0 }
+  .md-py0 { padding-top:    0; padding-bottom: 0 }
+
+  .md-p1  { padding:        .5rem }
+  .md-pt1 { padding-top:        .5rem }
+  .md-pr1 { padding-right:        .5rem }
+  .md-pb1 { padding-bottom:        .5rem }
+  .md-pl1 { padding-left:        .5rem }
+  .md-px1 { padding-left:        .5rem; padding-right:        .5rem }
+  .md-py1 { padding-top:        .5rem; padding-bottom:        .5rem }
+
+  .md-p2  { padding:        1rem }
+  .md-pt2 { padding-top:        1rem }
+  .md-pr2 { padding-right:        1rem }
+  .md-pb2 { padding-bottom:        1rem }
+  .md-pl2 { padding-left:        1rem }
+  .md-px2 { padding-left:        1rem; padding-right:        1rem }
+  .md-py2 { padding-top:        1rem; padding-bottom:        1rem }
+
+  .md-p3  { padding:        2rem }
+  .md-pt3 { padding-top:        2rem }
+  .md-pr3 { padding-right:        2rem }
+  .md-pb3 { padding-bottom:        2rem }
+  .md-pl3 { padding-left:        2rem }
+  .md-px3 { padding-left:        2rem; padding-right:        2rem }
+  .md-py3 { padding-top:        2rem; padding-bottom:        2rem }
+
+  .md-p4  { padding:        4rem }
+  .md-pt4 { padding-top:        4rem }
+  .md-pr4 { padding-right:        4rem }
+  .md-pb4 { padding-bottom:        4rem }
+  .md-pl4 { padding-left:        4rem }
+  .md-px4 { padding-left:        4rem; padding-right:        4rem }
+  .md-py4 { padding-top:        4rem; padding-bottom:        4rem }
+
+}
+
+@media (min-width: 64em) {
+
+  .lg-p0  { padding:        0 }
+  .lg-pt0 { padding-top:    0 }
+  .lg-pr0 { padding-right:  0 }
+  .lg-pb0 { padding-bottom: 0 }
+  .lg-pl0 { padding-left:   0 }
+  .lg-px0 { padding-left:   0; padding-right:  0 }
+  .lg-py0 { padding-top:    0; padding-bottom: 0 }
+
+  .lg-p1  { padding:        .5rem }
+  .lg-pt1 { padding-top:        .5rem }
+  .lg-pr1 { padding-right:        .5rem }
+  .lg-pb1 { padding-bottom:        .5rem }
+  .lg-pl1 { padding-left:        .5rem }
+  .lg-px1 { padding-left:        .5rem; padding-right:        .5rem }
+  .lg-py1 { padding-top:        .5rem; padding-bottom:        .5rem }
+
+  .lg-p2  { padding:        1rem }
+  .lg-pt2 { padding-top:        1rem }
+  .lg-pr2 { padding-right:        1rem }
+  .lg-pb2 { padding-bottom:        1rem }
+  .lg-pl2 { padding-left:        1rem }
+  .lg-px2 { padding-left:        1rem; padding-right:        1rem }
+  .lg-py2 { padding-top:        1rem; padding-bottom:        1rem }
+
+  .lg-p3  { padding:        2rem }
+  .lg-pt3 { padding-top:        2rem }
+  .lg-pr3 { padding-right:        2rem }
+  .lg-pb3 { padding-bottom:        2rem }
+  .lg-pl3 { padding-left:        2rem }
+  .lg-px3 { padding-left:        2rem; padding-right:        2rem }
+  .lg-py3 { padding-top:        2rem; padding-bottom:        2rem }
+
+  .lg-p4  { padding:        4rem }
+  .lg-pt4 { padding-top:        4rem }
+  .lg-pr4 { padding-right:        4rem }
+  .lg-pb4 { padding-bottom:        4rem }
+  .lg-pl4 { padding-left:        4rem }
+  .lg-px4 { padding-left:        4rem; padding-right:        4rem }
+  .lg-py4 { padding-top:        4rem; padding-bottom:        4rem }
+
+}
