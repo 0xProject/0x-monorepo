@@ -53,11 +53,14 @@ const visitor = {
         `modifier ${name}${Array.isArray(parameters) ? '' : unparse(parameters)} ${unparse(body)}`,
         // Note: when there is no parameter block, instead of an ASTNode there is a []
 
-    FunctionDefinition: ({visibility, name, parameters, body, modifiers, isConstructor, stateMutability}) =>
+    FunctionDefinition: ({visibility, name, parameters, body, modifiers, isConstructor, stateMutability, returnParameters}) => // TODO Return type
         (isConstructor ? 'constructor' : `function ${name}`) +
-        unparse(parameters) + ' ' +
-        (visibility && visibility != 'default' ? visibility + ' ' : '') + (stateMutability || '') + '\n' +
-        indent(modifiers.map(unparse).join('\n')) + '\n' +
+        unparse(parameters) + '\n' +
+        indent(
+            (visibility && visibility != 'default' ? visibility + ' ' : '') + (stateMutability || '') +
+            modifiers.map(unparse).join('\n') +
+            (returnParameters ? `\nreturns ${unparse(returnParameters)}` : '')
+        ) + '\n' +
         (body ? unparse(body) : ';'),
 
     ParameterList: ({parameters}) =>
@@ -79,7 +82,7 @@ const visitor = {
         (initialValue ? ` = ${unparse(initialValue)};` : ';'),
     
     ExpressionStatement: ({expression}) =>
-        `${unparse(expression)};`,
+        `${unparen(unparse(expression))};`,
 
     EmitStatement: ({eventCall}) =>
         `emit ${unparen(unparse(eventCall))};`,
@@ -195,7 +198,7 @@ const visitor = {
         `switch ${unparse(expression)}\n${cases.map(unparse).join('\n')}`,
     
     AssemblyCase: ({value, block}) =>
-        `case ${unparse(value)} ${unparse(block)}`
+        `case ${unparse(value)} ${unparse(block)}`,
     
     DecimalNumber: ({ value }) =>
         value,
