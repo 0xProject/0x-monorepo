@@ -451,7 +451,7 @@ export class Home extends React.Component<HomeProps, HomeState> {
                     </Container>
                     <Container
                         className="relative"
-                        width={isSmallScreen ? '100vw' : 716}
+                        width={isSmallScreen ? '100vw' : 786}
                         paddingBottom="100px"
                         backgroundColor={colors.white}
                     >
