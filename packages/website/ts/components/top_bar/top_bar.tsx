@@ -154,7 +154,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                             <div className="flex items-center justify-between">
                                 <DevelopersDropDown
                                     location={this.props.location}
-                                    menuItemStyles={styles.menuItem}
+                                    menuItemStyles={{ ...styles.menuItem, paddingBottom: 12, paddingTop: 12 }}
                                     translate={this.props.translate}
                                     menuIconStyle={menuIconStyle}
                                 />
