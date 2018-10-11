@@ -24,7 +24,7 @@ export class AmountInput extends React.Component<AmountInputProps> {
                     onChange={this._handleChange}
                     value={!_.isUndefined(value) ? value.toString() : ''}
                     placeholder="0.00"
-                    width="2em"
+                    width="2.2em"
                 />
             </Container>
         );
