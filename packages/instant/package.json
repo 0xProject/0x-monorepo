@@ -44,10 +44,10 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/instant/README.md",
     "dependencies": {
         "@0xproject/asset-buyer": "^2.0.0",
-        "@0xproject/types": "^1.1.1",
+        "@0xproject/types": "^1.1.4",
         "@0xproject/typescript-typings": "^2.0.2",
         "@0xproject/utils": "^2.0.2",
-        "@0xproject/web3-wrapper": "^3.0.1",
+        "@0xproject/web3-wrapper": "^3.0.3",
         "ethereum-types": "^1.0.8",
         "lodash": "^4.17.10",
         "polished": "^2.2.0",

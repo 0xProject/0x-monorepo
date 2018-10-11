@@ -29,7 +29,7 @@ export class AmountInput extends React.Component<AmountInputProps> {
             </Container>
         );
     }
-    private _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value;
         let bigNumberValue;
         if (!_.isEmpty(value)) {
