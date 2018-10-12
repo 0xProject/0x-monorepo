@@ -209,7 +209,7 @@ export interface FunctionTypeParameter extends BaseASTNode {
 }
 export interface VariableDeclaration extends BaseASTNode {
     type: NodeType.VariableDeclaration;
-    visibility: 'public' | 'private';
+    visibility: 'public' | 'private' | 'default' | 'internal';
     isStateVar: boolean;
 }
 export interface TypeName extends BaseASTNode {
