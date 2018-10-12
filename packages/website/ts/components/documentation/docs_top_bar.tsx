@@ -13,7 +13,7 @@ import { Translate } from 'ts/utils/translate';
 export interface DocsTopBarProps {
     location: Location;
     translate: Translate;
-    sectionNameToLinks?: ObjectMap<ALink[]>;
+    sidebar?: React.ReactNode;
 }
 
 interface DocsTopBarState {
@@ -143,13 +143,8 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                 openSecondary={true}
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
-                <Container className="clearfix pl1">
-                    <NestedSidebarMenu
-                        sectionNameToLinks={this.props.sectionNameToLinks}
-                        shouldDisplaySectionHeaders={true}
-                        shouldReformatMenuItemNames={false}
-                        onMenuItemClick={this._onMenuButtonClick.bind(this)}
-                    />
+                <Container className="clearfix pl1" onClick={this._onMenuButtonClick.bind(this)}>
+                    {this.props.sidebar}
                 </Container>
             </Drawer>
         );

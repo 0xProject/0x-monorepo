@@ -1,4 +1,4 @@
-import { ALink } from '@0xproject/react-shared';
+import { ALink, NestedSidebarMenu } from '@0xproject/react-shared';
 import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -330,10 +330,13 @@ export class DocsHome extends React.Component<DocsHomeProps, DocsHomeState> {
                 categoryToPackages={CATEGORY_TO_PACKAGES}
             />
         );
+        const sidebar = (
+            <NestedSidebarMenu sectionNameToLinks={sectionNameToLinks} shouldReformatMenuItemNames={false} />
+        );
         return (
             <DevelopersPage
                 mainContent={mainContent}
-                sectionNameToLinks={sectionNameToLinks}
+                sidebar={sidebar}
                 location={this.props.location}
                 screenWidth={this.props.screenWidth}
                 translate={this.props.translate}

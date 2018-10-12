@@ -6,6 +6,7 @@ import {
     SupportedDocJson,
     TypeDocUtils,
 } from '@0xproject/react-docs';
+import { NestedSidebarMenu } from '@0xproject/react-shared';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -87,10 +88,13 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                 sourceUrl={sourceUrl}
             />
         );
+        const sidebar = (
+            <NestedSidebarMenu sectionNameToLinks={sectionNameToLinks} shouldReformatMenuItemNames={false} />
+        );
         return (
             <DevelopersPage
+                sidebar={sidebar}
                 mainContent={mainContent}
-                sectionNameToLinks={sectionNameToLinks}
                 location={this.props.location}
                 screenWidth={this.props.screenWidth}
                 translate={this.props.translate}

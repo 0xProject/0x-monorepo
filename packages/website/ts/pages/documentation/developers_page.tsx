@@ -1,5 +1,4 @@
-import { ALink, colors, constants as sharedConstants, NestedSidebarMenu } from '@0xproject/react-shared';
-import { ObjectMap } from '@0xproject/types';
+import { colors, constants as sharedConstants } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
@@ -21,7 +20,7 @@ export interface DevelopersPageProps {
     screenWidth: ScreenWidths;
     dispatcher: Dispatcher;
     mainContent: React.ReactNode;
-    sectionNameToLinks: ObjectMap<ALink[]>;
+    sidebar: React.ReactNode;
 }
 
 export interface DevelopersPageState {
@@ -107,10 +106,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                             onWheel={this._throttledSidebarScrolling}
                         >
                             <Container paddingLeft="22px" paddingRight="22px" paddingBottom="100px">
-                                <NestedSidebarMenu
-                                    sectionNameToLinks={this.props.sectionNameToLinks}
-                                    shouldReformatMenuItemNames={false}
-                                />
+                                {this.props.sidebar}
                             </Container>
                         </div>
                     </Container>
@@ -124,7 +120,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                             <DocsTopBar
                                 location={this.props.location}
                                 translate={this.props.translate}
-                                sectionNameToLinks={this.props.sectionNameToLinks}
+                                sidebar={this.props.sidebar}
                             />
                         </Container>
                         <div
