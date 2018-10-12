@@ -12,7 +12,6 @@ import { VersionDropDown } from './version_drop_down';
 
 export interface NestedSidebarMenuProps {
     sectionNameToLinks: ObjectMap<ALink[]>;
-    subsectionNameToLinks?: ObjectMap<ALink[]>;
     sidebarHeader?: React.ReactNode;
     shouldDisplaySectionHeaders?: boolean;
     onMenuItemClick?: () => void;
@@ -44,7 +43,6 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
         shouldDisplaySectionHeaders: true,
         onMenuItemClick: _.noop.bind(_),
         shouldReformatMenuItemNames: true,
-        subsectionNameToLinks: {},
     };
     public render(): React.ReactNode {
         const navigation = _.map(this.props.sectionNameToLinks, (links: ALink[], sectionName: string) => {
@@ -108,46 +106,10 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                             </span>
                         </MenuItem>
                     </Link>
-                    {this._renderMenuItemSubsections(link.title)}
                 </div>
             );
         });
         return menuItems;
-    }
-    private _renderMenuItemSubsections(menuItemName: string): React.ReactNode {
-        if (
-            _.isUndefined(this.props.subsectionNameToLinks) ||
-            _.isUndefined(this.props.subsectionNameToLinks[menuItemName])
-        ) {
-            return null;
-        }
-        return this._renderSubsectionLinks(menuItemName, this.props.subsectionNameToLinks[menuItemName]);
-    }
-    private _renderSubsectionLinks(menuItemName: string, links: ALink[]): React.ReactNode {
-        return (
-            <ul style={{ margin: 0, listStyleType: 'none', paddingLeft: 0 }} key={menuItemName}>
-                {_.map(links, link => {
-                    const name = `${menuItemName}-${link.title}`;
-                    return (
-                        <li key={`menuSubsectionItem-${name}`}>
-                            <Link to={link.to} shouldOpenInNewTab={link.shouldOpenInNewTab}>
-                                <MenuItem
-                                    style={{ minHeight: 35 }}
-                                    innerDivStyle={{
-                                        paddingLeft: 16,
-                                        fontSize: 14,
-                                        lineHeight: '35px',
-                                    }}
-                                    onClick={this._onMenuItemClick.bind(this)}
-                                >
-                                    {link.title}
-                                </MenuItem>
-                            </Link>
-                        </li>
-                    );
-                })}
-            </ul>
-        );
     }
     private _onMenuItemClick(): void {
         if (!_.isUndefined(this.props.onMenuItemClick)) {

@@ -1,34 +1,26 @@
 import {
     DocAgnosticFormat,
+    DocReference,
     DocsInfo,
-    Documentation,
     GeneratedDocJson,
     SupportedDocJson,
     TypeDocUtils,
 } from '@0xproject/react-docs';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
-import DocumentTitle = require('react-document-title');
 import semverSort = require('semver-sort');
-import { SidebarHeader } from 'ts/components/sidebar_header';
-import { TopBar } from 'ts/components/top_bar/top_bar';
+import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { DocPackages } from 'ts/types';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 const isDevelopmentOrStaging = utils.isDevelopment() || utils.isStaging();
-const DEFAULT_ICON = 'docs.png';
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
-
-const idToIcon: { [id: string]: string } = {
-    [DocPackages.ZeroExJs]: 'zeroExJs.png',
-    [DocPackages.Connect]: 'connect.png',
-    [DocPackages.SmartContracts]: 'contracts.png',
-};
 
 const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.ZeroExJs]: '0x.js',
@@ -52,6 +44,7 @@ export interface DocPageProps {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface DocPageState {
@@ -79,37 +72,50 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         this._isUnmounted = true;
     }
     public render(): React.ReactNode {
-        const subsectionNameToLinks = _.isUndefined(this.state.docAgnosticFormat)
-            ? {}
-            : this.props.docsInfo.getSubsectionNameToLinks(this.state.docAgnosticFormat);
         const sourceUrl = this._getSourceUrl();
-        const iconFileName = idToIcon[this.props.docsInfo.id] || DEFAULT_ICON;
-        const iconUrl = `/images/doc_icons/${iconFileName}`;
+        const sectionNameToLinks = _.isUndefined(this.state.docAgnosticFormat)
+            ? {}
+            : this.props.docsInfo.getSectionNameToLinks(this.state.docAgnosticFormat);
+        const mainContent = (
+            <DocReference
+                selectedVersion={this.props.docsVersion}
+                availableVersions={this.props.availableDocVersions}
+                docsInfo={this.props.docsInfo}
+                docAgnosticFormat={this.state.docAgnosticFormat}
+                sourceUrl={sourceUrl}
+            />
+        );
         return (
             <div>
-                <DocumentTitle title={`${this.props.docsInfo.displayName} Documentation`} />
-                <TopBar
-                    blockchainIsLoaded={false}
-                    location={this.props.location}
-                    docsVersion={this.props.docsVersion}
-                    availableDocVersions={this.props.availableDocVersions}
-                    sectionNameToLinks={this.props.docsInfo.getSectionNameToLinks()}
-                    subsectionNameToLinks={subsectionNameToLinks}
-                    docsInfo={this.props.docsInfo}
-                    translate={this.props.translate}
-                    onVersionSelected={this._onVersionSelected.bind(this)}
-                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} iconUrl={iconUrl} />}
-                />
-                <Documentation
-                    selectedVersion={this.props.docsVersion}
-                    availableVersions={this.props.availableDocVersions}
-                    docsInfo={this.props.docsInfo}
-                    docAgnosticFormat={this.state.docAgnosticFormat}
-                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} iconUrl={iconUrl} />}
-                    sourceUrl={sourceUrl}
-                    topBarHeight={60}
-                    onVersionSelected={this._onVersionSelected.bind(this)}
-                />
+                {_.isUndefined(this.state.docAgnosticFormat) ? (
+                    this._renderLoading()
+                ) : (
+                    <DevelopersPage
+                        mainContent={mainContent}
+                        sectionNameToLinks={sectionNameToLinks}
+                        location={this.props.location}
+                        screenWidth={this.props.screenWidth}
+                        translate={this.props.translate}
+                        dispatcher={this.props.dispatcher}
+                    />
+                )}
+            </div>
+        );
+    }
+    private _renderLoading(): React.ReactNode {
+        return (
+            <div className="col col-12">
+                <div
+                    className="relative sm-px2 sm-pt2 sm-m1"
+                    style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
+                >
+                    <div className="center pb2">
+                        <CircularProgress size={40} thickness={5} />
+                    </div>
+                    <div className="center pt2" style={{ paddingBottom: 11 }}>
+                        Loading documentation...
+                    </div>
+                </div>
             </div>
         );
     }
@@ -145,10 +151,10 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             // documenting solidity.
             docAgnosticFormat = versionDocObj as DocAgnosticFormat;
             // HACK: need to modify docsInfo like convertToDocAgnosticFormat() would do
-            this.props.docsInfo.menu.Contracts = [];
+            this.props.docsInfo.markdownMenu.Contracts = [];
             _.each(docAgnosticFormat, (_docObj, sectionName) => {
                 this.props.docsInfo.sections[sectionName] = sectionName;
-                this.props.docsInfo.menu.Contracts.push(sectionName);
+                this.props.docsInfo.markdownMenu.Contracts.push(sectionName);
             });
         }
 

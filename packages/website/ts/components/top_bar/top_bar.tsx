@@ -35,7 +35,6 @@ export interface TopBarProps {
     docsVersion?: string;
     availableDocVersions?: string[];
     sectionNameToLinks?: ObjectMap<ALink[]>;
-    subsectionNameToLinks?: ObjectMap<ALink[]>;
     displayType?: TopBarDisplayType;
     docsInfo?: DocsInfo;
     style?: React.CSSProperties;
@@ -313,7 +312,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             <div className="lg-hide md-hide">
                 <NestedSidebarMenu
                     sectionNameToLinks={this.props.sectionNameToLinks}
-                    subsectionNameToLinks={this.props.subsectionNameToLinks}
                     sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}
@@ -333,7 +331,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             <div className="lg-hide md-hide">
                 <NestedSidebarMenu
                     sectionNameToLinks={this.props.sectionNameToLinks}
-                    subsectionNameToLinks={this.props.subsectionNameToLinks}
                     sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
                     onMenuItemClick={this._onMenuButtonClick.bind(this)}

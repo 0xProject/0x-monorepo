@@ -624,4 +624,15 @@ export interface TutorialInfo {
     description: string;
     link: ALink;
 }
+
+export enum Categories {
+    ZeroExProtocol = '0x Protocol',
+    Ethereum = 'Ethereum',
+    CommunityMaintained = 'Community Maintained',
+}
+
+export interface Package {
+    description: string;
+    link: ALink;
+}
 // tslint:disable:max-file-line-count

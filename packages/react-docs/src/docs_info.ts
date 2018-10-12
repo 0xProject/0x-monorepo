@@ -17,7 +17,7 @@ export class DocsInfo {
     public displayName: string;
     public packageName: string;
     public packageUrl: string;
-    public menu: DocsMenu;
+    public markdownMenu: DocsMenu;
     public typeSectionName: string;
     public sections: SectionsMap;
     public sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
@@ -25,7 +25,7 @@ export class DocsInfo {
     constructor(config: DocsInfoConfig) {
         this.id = config.id;
         this.type = config.type;
-        this.menu = config.markdownMenu;
+        this.markdownMenu = config.markdownMenu;
         this.displayName = config.displayName;
         this.packageName = config.packageName;
         this.packageUrl = config.packageUrl;
@@ -34,10 +34,31 @@ export class DocsInfo {
         this.sectionNameToMarkdownByVersion = config.sectionNameToMarkdownByVersion;
         this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
     }
-    public getSubsectionNameToLinks(docAgnosticFormat?: DocAgnosticFormat): ObjectMap<ALink[]> {
-        const subsectionNameToLinks: ObjectMap<ALink[]> = {};
+    public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat): { [name: string]: TypeDefinitionByName } {
+        if (_.isUndefined(docAgnosticFormat[this.typeSectionName])) {
+            return {};
+        }
+
+        const section = docAgnosticFormat[this.typeSectionName];
+        const typeDefinitionByName = _.keyBy(section.types, 'name') as any;
+        return typeDefinitionByName;
+    }
+    public getSectionNameToLinks(docAgnosticFormat: DocAgnosticFormat): ObjectMap<ALink[]> {
+        const sectionNameToLinks: ObjectMap<ALink[]> = {};
+        _.each(this.markdownMenu, (linkTitles, sectionName) => {
+            sectionNameToLinks[sectionName] = [];
+            _.each(linkTitles, linkTitle => {
+                const to = sharedUtils.getIdFromName(linkTitle);
+                const links = sectionNameToLinks[sectionName];
+                links.push({
+                    title: linkTitle,
+                    to,
+                });
+            });
+        });
+
         if (_.isUndefined(docAgnosticFormat)) {
-            return subsectionNameToLinks;
+            return sectionNameToLinks;
         }
 
         const docSections = _.keys(this.sections);
@@ -64,7 +85,7 @@ export class DocsInfo {
                         title: typeName,
                     };
                 });
-                subsectionNameToLinks[sectionName] = typeLinks;
+                sectionNameToLinks[sectionName] = typeLinks;
             } else if (isExportedFunctionSection) {
                 // Noop so that we don't have the method listed underneath itself.
             } else {
@@ -88,32 +109,8 @@ export class DocsInfo {
                     };
                 });
 
-                subsectionNameToLinks[sectionName] = links;
+                sectionNameToLinks[sectionName] = links;
             }
-        });
-        return subsectionNameToLinks;
-    }
-    public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat): { [name: string]: TypeDefinitionByName } {
-        if (_.isUndefined(docAgnosticFormat[this.typeSectionName])) {
-            return {};
-        }
-
-        const section = docAgnosticFormat[this.typeSectionName];
-        const typeDefinitionByName = _.keyBy(section.types, 'name') as any;
-        return typeDefinitionByName;
-    }
-    public getSectionNameToLinks(): ObjectMap<ALink[]> {
-        const sectionNameToLinks: ObjectMap<ALink[]> = {};
-        _.each(this.menu, (linkTitles, sectionName) => {
-            sectionNameToLinks[sectionName] = [];
-            _.each(linkTitles, linkTitle => {
-                const to = sharedUtils.getIdFromName(linkTitle);
-                const links = sectionNameToLinks[sectionName];
-                links.push({
-                    title: linkTitle,
-                    to,
-                });
-            });
         });
         return sectionNameToLinks;
     }
