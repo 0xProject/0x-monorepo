@@ -172,6 +172,7 @@ export interface ModifierInvocation extends BaseASTNode {
 export interface FunctionDefinition extends BaseASTNode {
     type: NodeType.FunctionDefinition;
     name: string;
+    body: Block | null;
 }
 export interface ReturnParameters extends BaseASTNode {
     type: NodeType.ReturnParameters;
