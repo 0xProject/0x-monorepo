@@ -9,7 +9,7 @@ import { Action, ActionTypes, AsyncProcessState } from '../types';
 import { assetBuyer } from '../util/asset_buyer';
 import { web3Wrapper } from '../util/web3_wrapper';
 
-import { BuyButton } from '../components/buy_button';
+import { BuyButton, BuyButtonProps } from '../components/buy_button';
 
 export interface SelectedAssetBuyButtonProps {}
 

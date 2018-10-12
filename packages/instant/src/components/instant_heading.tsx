@@ -6,6 +6,7 @@ import * as React from 'react';
 import { ethDecimals } from '../constants';
 import { SelectedAssetAmountInput } from '../containers/selected_asset_amount_input';
 import { ColorOption } from '../style/theme';
+import { format } from '../util/format';
 
 import { Container, Flex, Text } from './ui';
 
@@ -19,23 +20,14 @@ const displaytotalEthBaseAmount = ({ selectedAssetAmount, totalEthBaseAmount }: 
     if (_.isUndefined(selectedAssetAmount)) {
         return '0 ETH';
     }
-    if (_.isUndefined(totalEthBaseAmount)) {
-        return '...loading';
-    }
-    const ethUnitAmount = Web3Wrapper.toUnitAmount(totalEthBaseAmount, ethDecimals);
-    const roundedAmount = ethUnitAmount.round(4);
-    return `${roundedAmount} ETH`;
+    return format.ethBaseAmount(totalEthBaseAmount, 4, '...loading');
 };
 
 const displayUsdAmount = ({ totalEthBaseAmount, selectedAssetAmount, ethUsdPrice }: InstantHeadingProps): string => {
     if (_.isUndefined(selectedAssetAmount)) {
         return '$0.00';
     }
-    if (_.isUndefined(totalEthBaseAmount) || _.isUndefined(ethUsdPrice)) {
-        return '...loading';
-    }
-    const ethUnitAmount = Web3Wrapper.toUnitAmount(totalEthBaseAmount, ethDecimals);
-    return `$${ethUnitAmount.mul(ethUsdPrice).round(2)}`;
+    return format.ethBaseAmountInUsd(totalEthBaseAmount, ethUsdPrice, 2, '...loading');
 };
 
 export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = props => (
