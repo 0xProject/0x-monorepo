@@ -19,7 +19,6 @@ export interface SlideAnimationProps {
     animationType: string;
     animationDirection?: string;
 }
-
 export const SlideAnimation =
     styled.div <
     SlideAnimationProps >
