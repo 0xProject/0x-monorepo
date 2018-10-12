@@ -132,6 +132,7 @@ async function testInstallPackageAsync(
             noImplicitReturns: true,
             pretty: true,
             strict: true,
+            resolveJsonModule: true,
         },
         include: ['index.ts'],
     };
