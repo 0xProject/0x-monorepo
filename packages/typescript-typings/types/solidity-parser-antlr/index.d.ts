@@ -14,7 +14,6 @@ export interface Location {
     start: LineColumn;
     end: LineColumn;
 }
-
 export enum NodeType {
     SourceUnit = 'SourceUnit',
     PragmaDirective = 'PragmaDirective',
@@ -53,7 +52,6 @@ export enum NodeType {
     StorageLocation = 'StorageLocation',
     StateMutability = 'StateMutability',
     Block = 'Block',
-    Statement = 'Statement',
     ExpressionStatement = 'ExpressionStatement',
     IfStatement = 'IfStatement',
     WhileStatement = 'WhileStatement',
@@ -69,7 +67,6 @@ export enum NodeType {
     VariableDeclarationStatement = 'VariableDeclarationStatement',
     IdentifierList = 'IdentifierList',
     ElementaryTypeName = 'ElementaryTypeName',
-    Expression = 'Expression',
     PrimaryExpression = 'PrimaryExpression',
     ExpressionList = 'ExpressionList',
     NameValueList = 'NameValueList',
@@ -109,7 +106,7 @@ export interface BaseASTNode {
 }
 export interface SourceUnit extends BaseASTNode {
     type: NodeType.SourceUnit;
-    children: ASTNode[];
+    children: SourceMembers[];
 }
 export interface PragmaDirective extends BaseASTNode {
     type: NodeType.PragmaDirective;
@@ -142,8 +139,8 @@ export interface ContractDefinition extends BaseASTNode {
     type: NodeType.ContractDefinition;
     name: string;
     kind: string;
-    baseContracts: [string];
-    subNodes: [string];
+    baseContracts: InheritanceSpecifier[];
+    subNodes: ContractMembers[]
 }
 export interface InheritanceSpecifier extends BaseASTNode {
     type: NodeType.InheritanceSpecifier;
@@ -190,7 +187,7 @@ export interface EnumValue extends BaseASTNode {
 export interface EnumDefinition extends BaseASTNode {
     type: NodeType.EnumDefinition;
     name: string;
-    members: [ASTNode];
+    members: ASTNode[];
 }
 export interface ParameterList extends BaseASTNode {
     type: NodeType.ParameterList;
@@ -235,9 +232,6 @@ export interface StateMutability extends BaseASTNode {
 }
 export interface Block extends BaseASTNode {
     type: NodeType.Block;
-}
-export interface Statement extends BaseASTNode {
-    type: NodeType.Statement;
 }
 export interface ExpressionStatement extends BaseASTNode {
     type: NodeType.ExpressionStatement;
@@ -416,7 +410,30 @@ export interface Conditional extends BaseASTNode {
     trueExpression: ASTNode;
     falseExpression: ASTNode;
 }
-
+export type SourceMembers =
+    | PragmaDirective
+    | ImportDirective
+    | ContractDefinition;
+export type ContractMembers =
+    | UsingForDeclaration
+    | StateVariableDeclaration
+    | StructDefinition
+    | EnumDefinition
+    | EventDefinition
+    | ModifierDefinition
+    | FunctionDefinition;
+export type Statement =
+    | Block
+    | VariableDeclarationStatement
+    | ExpressionStatement
+    | EmitStatement
+    | ReturnStatement
+    | BreakStatement
+    | ContinueStatement
+    | ThrowStatement
+    | IfStatement
+    | ForStatement
+    | InlineAssemblyStatement
 export type ASTNode =
     | SourceUnit
     | PragmaDirective
@@ -540,7 +557,6 @@ export interface Visitor<T> {
     StorageLocation?: (node: StorageLocation) => T;
     StateMutability?: (node: StateMutability) => T;
     Block?: (node: Block) => T;
-    Statement?: (node: Statement) => T;
     ExpressionStatement?: (node: ExpressionStatement) => T;
     IfStatement?: (node: IfStatement) => T;
     WhileStatement?: (node: WhileStatement) => T;
