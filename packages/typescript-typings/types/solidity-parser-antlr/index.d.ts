@@ -107,7 +107,7 @@ export interface BaseASTNode {
 }
 export interface SourceUnit extends BaseASTNode {
     type: NodeType.SourceUnit;
-    children: [ASTNode];
+    children: ASTNode[];
 }
 export interface PragmaDirective extends BaseASTNode {
     type: NodeType.PragmaDirective;
