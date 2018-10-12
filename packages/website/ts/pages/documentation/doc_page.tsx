@@ -76,7 +76,9 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         const sectionNameToLinks = _.isUndefined(this.state.docAgnosticFormat)
             ? {}
             : this.props.docsInfo.getSectionNameToLinks(this.state.docAgnosticFormat);
-        const mainContent = (
+        const mainContent = _.isUndefined(this.state.docAgnosticFormat) ? (
+            <div className="flex justify-center">{this._renderLoading()}</div>
+        ) : (
             <DocReference
                 selectedVersion={this.props.docsVersion}
                 availableVersions={this.props.availableDocVersions}
@@ -86,35 +88,24 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             />
         );
         return (
-            <div>
-                {_.isUndefined(this.state.docAgnosticFormat) ? (
-                    this._renderLoading()
-                ) : (
-                    <DevelopersPage
-                        mainContent={mainContent}
-                        sectionNameToLinks={sectionNameToLinks}
-                        location={this.props.location}
-                        screenWidth={this.props.screenWidth}
-                        translate={this.props.translate}
-                        dispatcher={this.props.dispatcher}
-                    />
-                )}
-            </div>
+            <DevelopersPage
+                mainContent={mainContent}
+                sectionNameToLinks={sectionNameToLinks}
+                location={this.props.location}
+                screenWidth={this.props.screenWidth}
+                translate={this.props.translate}
+                dispatcher={this.props.dispatcher}
+            />
         );
     }
     private _renderLoading(): React.ReactNode {
         return (
-            <div className="col col-12">
-                <div
-                    className="relative sm-px2 sm-pt2 sm-m1"
-                    style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
-                >
-                    <div className="center pb2">
-                        <CircularProgress size={40} thickness={5} />
-                    </div>
-                    <div className="center pt2" style={{ paddingBottom: 11 }}>
-                        Loading documentation...
-                    </div>
+            <div className="pt4">
+                <div className="center pb2">
+                    <CircularProgress size={40} thickness={5} />
+                </div>
+                <div className="center pt2" style={{ paddingBottom: 11 }}>
+                    Loading documentation...
                 </div>
             </div>
         );
