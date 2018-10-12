@@ -94,10 +94,49 @@ export enum NodeType {
     ElementaryTypeNameExpression = 'ElementaryTypeNameExpression',
     BooleanLiteral = 'BooleanLiteral',
     NumberLiteral = 'NumberLiteral',
+    StringLiteral = 'StringLiteral',
     Identifier = 'Identifier',
+    UnaryOperation = 'UnaryOperation',
     BinaryOperation = 'BinaryOperation',
     Conditional = 'Conditional',
 }
+export type UnOp =
+    | '++'
+    | '--'
+    | '-'
+    | '+'
+    | '!';
+export type BinOp =
+    | '+'
+    | '-'
+    | '*'
+    | '/'
+    | '**'
+    | '%'
+    | '<<'
+    | '>>'
+    | '&&'
+    | '||'
+    | '&'
+    | '|'
+    | '^'
+    | '<'
+    | '>'
+    | '<='
+    | '>='
+    | '=='
+    | '!='
+    | '='
+    | '|='
+    | '^='
+    | '&='
+    | '<<='
+    | '>>='
+    | '+='
+    | '-='
+    | '*='
+    | '/='
+    | '%=';
 
 export interface BaseASTNode {
     type: NodeType;
@@ -281,9 +320,6 @@ export interface IdentifierList extends BaseASTNode {
 export interface ElementaryTypeName extends BaseASTNode {
     type: NodeType.ElementaryTypeName;
 }
-export interface Expression extends BaseASTNode {
-    type: NodeType.Expression;
-}
 export interface PrimaryExpression extends BaseASTNode {
     type: NodeType.PrimaryExpression;
 }
@@ -365,40 +401,17 @@ export interface BooleanLiteral extends BaseASTNode {
 export interface NumberLiteral extends BaseASTNode {
     type: NodeType.NumberLiteral;
 }
+export interface StringLiteral extends BaseASTNode {
+    type: NodeType.StringLiteral;
+}
 export interface Identifier extends BaseASTNode {
     type: NodeType.Identifier;
 }
-export type BinOp =
-    | '+'
-    | '-'
-    | '*'
-    | '/'
-    | '**'
-    | '%'
-    | '<<'
-    | '>>'
-    | '&&'
-    | '||'
-    | '&'
-    | '|'
-    | '^'
-    | '<'
-    | '>'
-    | '<='
-    | '>='
-    | '=='
-    | '!='
-    | '='
-    | '|='
-    | '^='
-    | '&='
-    | '<<='
-    | '>>='
-    | '+='
-    | '-='
-    | '*='
-    | '/='
-    | '%=';
+export interface UnaryOperation extends BaseASTNode {
+    type: NodeType.BinaryOperation;
+    subExrpession: Expression;
+    operator: UnOp;
+}
 export interface BinaryOperation extends BaseASTNode {
     type: NodeType.BinaryOperation;
     left: ASTNode;
@@ -599,7 +612,9 @@ export interface Visitor<T> {
     ElementaryTypeNameExpression?: (node: ElementaryTypeNameExpression) => T;
     BooleanLiteral?: (node: BooleanLiteral) => T;
     NumberLiteral?: (node: NumberLiteral) => T;
+    StringLiteral?: (node: StringLiteral) => T;
     Identifier?: (node: Identifier) => T;
+    UnaryOperation?: (node: UnaryOperation) => T;
     BinaryOperation?: (node: BinaryOperation) => T;
     Conditional?: (node: Conditional) => T;
 }
