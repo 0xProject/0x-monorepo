@@ -95,6 +95,7 @@ export enum NodeType {
     SubAssembly = 'SubAssembly',
     TupleExpression = 'TupleExpression',
     ElementaryTypeNameExpression = 'ElementaryTypeNameExpression',
+    BooleanLiteral = 'BooleanLiteral',
     NumberLiteral = 'NumberLiteral',
     Identifier = 'Identifier',
     BinaryOperation = 'BinaryOperation',
@@ -363,6 +364,9 @@ export interface TupleExpression extends BaseASTNode {
 export interface ElementaryTypeNameExpression extends BaseASTNode {
     type: NodeType.ElementaryTypeNameExpression;
 }
+export interface BooleanLiteral extends BaseASTNode {
+    type: NodeType.BooleanLiteral;
+}
 export interface NumberLiteral extends BaseASTNode {
     type: NodeType.NumberLiteral;
 }
@@ -492,6 +496,7 @@ export type ASTNode =
     | SubAssembly
     | TupleExpression
     | ElementaryTypeNameExpression
+    | BooleanLiteral
     | NumberLiteral
     | Identifier
     | BinaryOperation
