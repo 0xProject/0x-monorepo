@@ -65,6 +65,7 @@ export enum NodeType {
     BreakStatement = 'BreakStatement',
     ReturnStatement = 'ReturnStatement',
     ThrowStatement = 'ThrowStatement',
+    EmitStatement = 'EmitStatement',
     VariableDeclarationStatement = 'VariableDeclarationStatement',
     IdentifierList = 'IdentifierList',
     ElementaryTypeName = 'ElementaryTypeName',
@@ -272,6 +273,9 @@ export interface ReturnStatement extends BaseASTNode {
 export interface ThrowStatement extends BaseASTNode {
     type: NodeType.ThrowStatement;
 }
+export interface EmitStatement extends BaseASTNode {
+    type: NodeType.EmitStatement;
+}
 export interface VariableDeclarationStatement extends BaseASTNode {
     type: NodeType.VariableDeclarationStatement;
 }
@@ -458,6 +462,7 @@ export type ASTNode =
     | BreakStatement
     | ReturnStatement
     | ThrowStatement
+    | EmitStatement
     | VariableDeclarationStatement
     | IdentifierList
     | ElementaryTypeName
