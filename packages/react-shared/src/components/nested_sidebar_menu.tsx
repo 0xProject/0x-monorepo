@@ -14,7 +14,6 @@ export interface NestedSidebarMenuProps {
     sectionNameToLinks: ObjectMap<ALink[]>;
     sidebarHeader?: React.ReactNode;
     shouldDisplaySectionHeaders?: boolean;
-    onMenuItemClick?: () => void;
     selectedVersion?: string;
     versions?: string[];
     onVersionSelected?: (semver: string) => void;
@@ -41,7 +40,6 @@ const styles: Styles = {
 export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, NestedSidebarMenuState> {
     public static defaultProps: Partial<NestedSidebarMenuProps> = {
         shouldDisplaySectionHeaders: true,
-        onMenuItemClick: _.noop.bind(_),
         shouldReformatMenuItemNames: true,
     };
     public render(): React.ReactNode {
@@ -92,11 +90,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             return (
                 <div key={`menuItem-${finalMenuItemName}`}>
                     <Link to={link.to} shouldOpenInNewTab={link.shouldOpenInNewTab}>
-                        <MenuItem
-                            style={menuItemStyles}
-                            innerDivStyle={menuItemInnerDivStyles}
-                            onClick={this._onMenuItemClick.bind(this)}
-                        >
+                        <MenuItem style={menuItemStyles} innerDivStyle={menuItemInnerDivStyles}>
                             <span
                                 style={{
                                     textTransform: this.props.shouldReformatMenuItemNames ? 'capitalize' : 'none',
@@ -110,10 +104,5 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             );
         });
         return menuItems;
-    }
-    private _onMenuItemClick(): void {
-        if (!_.isUndefined(this.props.onMenuItemClick)) {
-            this.props.onMenuItemClick();
-        }
     }
 }

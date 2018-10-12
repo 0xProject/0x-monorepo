@@ -309,12 +309,11 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             return undefined;
         }
         return (
-            <div className="lg-hide md-hide">
+            <div className="lg-hide md-hide" onClick={this._onMenuButtonClick.bind(this)}>
                 <NestedSidebarMenu
                     sectionNameToLinks={this.props.sectionNameToLinks}
                     sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
-                    onMenuItemClick={this._onMenuButtonClick.bind(this)}
                     selectedVersion={this.props.docsVersion}
                     versions={this.props.availableDocVersions}
                     onVersionSelected={this.props.onVersionSelected}
@@ -328,12 +327,11 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         }
 
         return (
-            <div className="lg-hide md-hide">
+            <div className="lg-hide md-hide" onClick={this._onMenuButtonClick.bind(this)}>
                 <NestedSidebarMenu
                     sectionNameToLinks={this.props.sectionNameToLinks}
                     sidebarHeader={this.props.sidebarHeader}
                     shouldDisplaySectionHeaders={false}
-                    onMenuItemClick={this._onMenuButtonClick.bind(this)}
                 />
             </div>
         );
