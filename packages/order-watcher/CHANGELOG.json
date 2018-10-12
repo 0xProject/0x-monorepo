@@ -3,10 +3,10 @@
         "version": "2.1.2",
         "changes": [
             {
-                "note": "Added getStats function and returns a Stats object"
+                "note": "Added getStats function and returns a Stats object",
+                "pr": 1118
             }
-        ],
-        "timestamp": 1538836030
+        ]
     },
     {
         "version": "2.1.1",

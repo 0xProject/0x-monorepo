@@ -599,3 +599,7 @@ export interface Metadata {
     externalTypeToLink: ExternalTypeToLink;
     externalExportToLink: ExternalExportToLink;
 }
+
+export interface Stats {
+    orderCount: number;
+}
