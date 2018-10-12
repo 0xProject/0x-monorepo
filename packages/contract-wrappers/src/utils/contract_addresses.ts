@@ -1,8 +1,10 @@
 import { ContractAddresses, getContractAddressesForNetwork, NetworkId } from '@0xproject/contract-addresses';
 import * as _ from 'lodash';
 
-// Returns the default contract addresses for the given networkId or throws with
-// a context-specific error message if the networkId is not recognized.
+/**
+ * Returns the default contract addresses for the given networkId or throws with
+ * a context-specific error message if the networkId is not recognized.
+ */
 export function _getDefaultContractAddresses(networkId: number): ContractAddresses {
     if (!(networkId in NetworkId)) {
         throw new Error(

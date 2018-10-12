@@ -20,9 +20,7 @@ const expect = chai.expect;
 describe('Revert Validation ExchangeWrapper', () => {
     let contractWrappers: ContractWrappers;
     let userAddresses: string[];
-    let zrxTokenAddress: string;
     let fillScenarios: FillScenarios;
-    let exchangeContractAddress: string;
     let makerTokenAddress: string;
     let takerTokenAddress: string;
     let makerAddress: string;

@@ -1,4 +1,3 @@
-import { getContractAddressesForNetwork } from '@0xproject/contract-addresses';
 import {
     ERC20Proxy,
     ERC20Token,
