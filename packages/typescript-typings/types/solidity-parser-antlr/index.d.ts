@@ -73,7 +73,7 @@ export enum NodeType {
     ExpressionList = 'ExpressionList',
     NameValueList = 'NameValueList',
     NameValue = 'NameValue',
-    FunctionCallArguments = 'FunctionCallArguments',
+    FunctionCall = 'FunctionCall',
     AssemblyBlock = 'AssemblyBlock',
     AssemblyItem = 'AssemblyItem',
     AssemblyExpression = 'AssemblyExpression',
@@ -296,8 +296,8 @@ export interface NameValueList extends BaseASTNode {
 export interface NameValue extends BaseASTNode {
     type: NodeType.NameValue;
 }
-export interface FunctionCallArguments extends BaseASTNode {
-    type: NodeType.FunctionCallArguments;
+export interface FunctionCall extends BaseASTNode {
+    type: NodeType.FunctionCall;
 }
 export interface AssemblyBlock extends BaseASTNode {
     type: NodeType.AssemblyBlock;
@@ -466,7 +466,7 @@ export type ASTNode =
     | ExpressionList
     | NameValueList
     | NameValue
-    | FunctionCallArguments
+    | FunctionCall
     | AssemblyBlock
     | AssemblyItem
     | AssemblyExpression
