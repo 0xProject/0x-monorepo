@@ -4,12 +4,11 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
+import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { Action, ActionTypes, AsyncProcessState } from '../types';
-import { assetBuyer } from '../util/asset_buyer';
-import { web3Wrapper } from '../util/web3_wrapper';
+import { AsyncProcessState } from '../types';
 
-import { BuyButton, BuyButtonProps } from '../components/buy_button';
+import { BuyButton } from '../components/buy_button';
 
 export interface SelectedAssetBuyButtonProps {}
 
@@ -45,12 +44,9 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): 
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetBuyButtonProps): ConnectedDispatch => ({
-    onClick: buyQuote =>
-        dispatch({ type: ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE, data: AsyncProcessState.PENDING }),
-    onBuySuccess: buyQuote =>
-        dispatch({ type: ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE, data: AsyncProcessState.SUCCESS }),
-    onBuyFailure: buyQuote =>
-        dispatch({ type: ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE, data: AsyncProcessState.FAILURE }),
+    onClick: buyQuote => dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.PENDING)),
+    onBuySuccess: buyQuote => dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.SUCCESS)),
+    onBuyFailure: buyQuote => dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.FAILURE)),
 });
 
 export const SelectedAssetBuyButton: React.ComponentClass<SelectedAssetBuyButtonProps> = connect(

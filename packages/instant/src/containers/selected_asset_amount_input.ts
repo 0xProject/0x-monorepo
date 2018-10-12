@@ -6,9 +6,10 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
 import { zrxContractAddress, zrxDecimals } from '../constants';
+import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
-import { Action, ActionTypes, AsyncProcessState } from '../types';
+import { AsyncProcessState } from '../types';
 import { assetBuyer } from '../util/asset_buyer';
 
 import { AmountInput } from '../components/amount_input';
@@ -38,7 +39,7 @@ const updateBuyQuote = async (dispatch: Dispatch<Action>, assetAmount?: BigNumbe
     const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetAmount, zrxDecimals);
     const newBuyQuote = await assetBuyer.getBuyQuoteForERC20TokenAddressAsync(zrxContractAddress, baseUnitValue);
     // invalidate the last buy quote.
-    dispatch({ type: ActionTypes.UPDATE_LATEST_BUY_QUOTE, data: newBuyQuote });
+    dispatch(actions.updateLatestBuyQuote(newBuyQuote));
 };
 
 const debouncedUpdateBuyQuote = _.debounce(updateBuyQuote, 200, { trailing: true });
@@ -46,11 +47,12 @@ const debouncedUpdateBuyQuote = _.debounce(updateBuyQuote, 200, { trailing: true
 const mapDispatchToProps = (dispatch: Dispatch<Action>): ConnectedDispatch => ({
     onChange: async value => {
         // Update the input
-        dispatch({ type: ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT, data: value });
+        dispatch(actions.updateSelectedAssetAmount(value));
         // invalidate the last buy quote.
-        dispatch({ type: ActionTypes.UPDATE_LATEST_BUY_QUOTE, data: undefined });
+        dispatch(actions.updateLatestBuyQuote(undefined));
         // reset our buy state
-        dispatch({ type: ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE, data: AsyncProcessState.NONE });
+        dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.NONE));
+        // tslint:disable-next-line:no-floating-promises
         debouncedUpdateBuyQuote(dispatch, value);
     },
 });

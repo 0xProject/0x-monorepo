@@ -9,6 +9,7 @@ import { theme, ThemeProvider } from '../style/theme';
 import { ZeroExInstantContainer } from './zero_ex_instant_container';
 
 fonts.include();
+// tslint:disable-next-line:no-floating-promises
 asyncData.fetchAndDispatchToStore();
 
 export interface ZeroExInstantProps {}

@@ -1,8 +1,7 @@
-import { BigNumber } from '@0xproject/utils';
-
 import { BIG_NUMBER_ZERO } from '../constants';
-import { ActionTypes } from '../types';
 import { coinbaseApi } from '../util/coinbase_api';
+
+import { ActionTypes } from './actions';
 
 import { store } from './store';
 

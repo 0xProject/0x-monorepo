@@ -2,7 +2,9 @@ import { BuyQuote } from '@0xproject/asset-buyer';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { Action, ActionTypes, AsyncProcessState } from '../types';
+import { AsyncProcessState } from '../types';
+
+import { Action, ActionTypes } from './actions';
 
 export interface State {
     selectedAssetAmount?: BigNumber;

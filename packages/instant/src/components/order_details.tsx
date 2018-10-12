@@ -1,10 +1,7 @@
 import { BuyQuoteInfo } from '@0xproject/asset-buyer';
 import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
-
-import { BIG_NUMBER_ZERO, ethDecimals } from '../constants';
 
 import { ColorOption } from '../style/theme';
 import { format } from '../util/format';
