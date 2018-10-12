@@ -14,7 +14,7 @@ export interface Location {
     start: LineColumn;
     end: LineColumn;
 }
-export enum NodeType {
+export const enum NodeType {
     SourceUnit = 'SourceUnit',
     PragmaDirective = 'PragmaDirective',
     PragmaName = 'PragmaName',
@@ -100,6 +100,17 @@ export enum NodeType {
     BinaryOperation = 'BinaryOperation',
     Conditional = 'Conditional',
 }
+export const enum Visibility {
+    Default = 'default',
+    Public = 'public',
+    Internal = 'internal',
+    Private = 'private',
+}
+export const enum StateMutability {
+    Default = null,
+    View = 'view',
+    Pure = 'pure'
+}
 export type UnOp =
     | '++'
     | '--'
@@ -179,10 +190,11 @@ export interface ContractDefinition extends BaseASTNode {
     name: string;
     kind: string;
     baseContracts: InheritanceSpecifier[];
-    subNodes: ContractMembers[]
+    subNodes: ContractMember[]
 }
 export interface InheritanceSpecifier extends BaseASTNode {
     type: NodeType.InheritanceSpecifier;
+    baseName: UserDefinedTypeName;
 }
 export interface ContractPart extends BaseASTNode {
     type: NodeType.ContractPart;
@@ -190,6 +202,7 @@ export interface ContractPart extends BaseASTNode {
 export interface StateVariableDeclaration extends BaseASTNode {
     type: NodeType.StateVariableDeclaration;
     variables: VariableDeclaration[];
+    initialValue: Expression | null;
 }
 export interface UsingForDeclaration extends BaseASTNode {
     type: NodeType.UsingForDeclaration;
@@ -208,7 +221,14 @@ export interface ModifierInvocation extends BaseASTNode {
 export interface FunctionDefinition extends BaseASTNode {
     type: NodeType.FunctionDefinition;
     name: string;
+    parameters: ParameterList;
+    returnParameters: ParameterList | null;
     body: Block | null;
+    visibility: Visibility;
+    modifiers: ModifierInvocation[];
+    isConstructor: boolean;
+    stateMutability: StateMutability;
+
 }
 export interface ReturnParameters extends BaseASTNode {
     type: NodeType.ReturnParameters;
@@ -218,6 +238,9 @@ export interface ModifierList extends BaseASTNode {
 }
 export interface EventDefinition extends BaseASTNode {
     type: NodeType.EventDefinition;
+    name: string;
+    parameters: ParameterList;
+    isAnonymous: boolean;
 }
 export interface EnumValue extends BaseASTNode {
     type: NodeType.EnumValue;
@@ -248,14 +271,20 @@ export interface FunctionTypeParameter extends BaseASTNode {
 }
 export interface VariableDeclaration extends BaseASTNode {
     type: NodeType.VariableDeclaration;
-    visibility: 'public' | 'private' | 'default' | 'internal';
+    name: string;
+    visibility: Visibility;
+    typeName: Type;
+    expression: Expression;
     isStateVar: boolean;
+    isDeclaredConst: boolean;
+    isIndexed: boolean;
 }
 export interface TypeName extends BaseASTNode {
     type: NodeType.TypeName;
 }
 export interface UserDefinedTypeName extends BaseASTNode {
     type: NodeType.UserDefinedTypeName;
+    namePath: string;
 }
 export interface Mapping extends BaseASTNode {
     type: NodeType.Mapping;
@@ -271,15 +300,17 @@ export interface StateMutability extends BaseASTNode {
 }
 export interface Block extends BaseASTNode {
     type: NodeType.Block;
+    statements: Statement[];
 }
 export interface ExpressionStatement extends BaseASTNode {
     type: NodeType.ExpressionStatement;
-    expression: ASTNode;
+    expression: Expression;
 }
 export interface IfStatement extends BaseASTNode {
     type: NodeType.IfStatement;
-    trueBody: ASTNode;
-    falseBody: ASTNode;
+    condition: Expression;
+    trueBody: Statement;
+    falseBody: Statement;
 }
 export interface WhileStatement extends BaseASTNode {
     type: NodeType.WhileStatement;
@@ -304,12 +335,14 @@ export interface BreakStatement extends BaseASTNode {
 }
 export interface ReturnStatement extends BaseASTNode {
     type: NodeType.ReturnStatement;
+    expression: Expression | null;
 }
 export interface ThrowStatement extends BaseASTNode {
     type: NodeType.ThrowStatement;
 }
 export interface EmitStatement extends BaseASTNode {
     type: NodeType.EmitStatement;
+    eventCall: FunctionCall;
 }
 export interface VariableDeclarationStatement extends BaseASTNode {
     type: NodeType.VariableDeclarationStatement;
@@ -319,6 +352,7 @@ export interface IdentifierList extends BaseASTNode {
 }
 export interface ElementaryTypeName extends BaseASTNode {
     type: NodeType.ElementaryTypeName;
+    name: string;
 }
 export interface PrimaryExpression extends BaseASTNode {
     type: NodeType.PrimaryExpression;
@@ -334,6 +368,9 @@ export interface NameValue extends BaseASTNode {
 }
 export interface FunctionCall extends BaseASTNode {
     type: NodeType.FunctionCall;
+    expression: Expression;
+    arguments: Expression[];
+    names: [];
 }
 export interface AssemblyBlock extends BaseASTNode {
     type: NodeType.AssemblyBlock;
@@ -391,21 +428,27 @@ export interface SubAssembly extends BaseASTNode {
 }
 export interface TupleExpression extends BaseASTNode {
     type: NodeType.TupleExpression;
+    components: Expression[];
 }
 export interface ElementaryTypeNameExpression extends BaseASTNode {
     type: NodeType.ElementaryTypeNameExpression;
+    typeName: Type;
 }
 export interface BooleanLiteral extends BaseASTNode {
     type: NodeType.BooleanLiteral;
+    value: boolean;
 }
 export interface NumberLiteral extends BaseASTNode {
     type: NodeType.NumberLiteral;
+    number: string;
 }
 export interface StringLiteral extends BaseASTNode {
     type: NodeType.StringLiteral;
+    value: string;
 }
 export interface Identifier extends BaseASTNode {
     type: NodeType.Identifier;
+    name: string;
 }
 export interface UnaryOperation extends BaseASTNode {
     type: NodeType.BinaryOperation;
@@ -414,20 +457,20 @@ export interface UnaryOperation extends BaseASTNode {
 }
 export interface BinaryOperation extends BaseASTNode {
     type: NodeType.BinaryOperation;
-    left: ASTNode;
-    right: ASTNode;
+    left: Expression;
+    right: Expression;
     operator: BinOp;
 }
 export interface Conditional extends BaseASTNode {
     type: NodeType.Conditional;
-    trueExpression: ASTNode;
-    falseExpression: ASTNode;
+    trueExpression: Expression;
+    falseExpression: Expression;
 }
-export type SourceMembers =
+export type SourceMember =
     | PragmaDirective
     | ImportDirective
     | ContractDefinition;
-export type ContractMembers =
+export type ContractMember =
     | UsingForDeclaration
     | StateVariableDeclaration
     | StructDefinition
@@ -447,6 +490,23 @@ export type Statement =
     | IfStatement
     | ForStatement
     | InlineAssemblyStatement
+export type Expression =
+    | BooleanLiteral
+    | NumberLiteral
+    | StringLiteral
+    | Identifier
+    | FunctionCall
+    | Conditional
+    | UnaryOperation
+    | BinaryOperation
+    | MemberAccess
+    | IndexAccess
+    | ElementaryTypeNameExpression
+    | VariableDeclaration // TODO: Is this really an expression?
+    | NewExpression
+    | TupleExpression
+export type Type =
+    | ElementaryType
 export type ASTNode =
     | SourceUnit
     | PragmaDirective
@@ -584,7 +644,6 @@ export interface Visitor<T> {
     VariableDeclarationStatement?: (node: VariableDeclarationStatement) => T;
     IdentifierList?: (node: IdentifierList) => T;
     ElementaryTypeName?: (node: ElementaryTypeName) => T;
-    Expression?: (node: Expression) => T;
     PrimaryExpression?: (node: PrimaryExpression) => T;
     ExpressionList?: (node: ExpressionList) => T;
     NameValueList?: (node: NameValueList) => T;
