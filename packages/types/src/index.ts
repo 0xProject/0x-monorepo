@@ -158,15 +158,17 @@ export enum AssetProxyId {
 }
 
 export interface ERC20AssetData {
-    assetProxyId: string;
+    assetProxyId: AssetProxyId.ERC20;
     tokenAddress: string;
 }
 
 export interface ERC721AssetData {
-    assetProxyId: string;
+    assetProxyId: AssetProxyId.ERC721;
     tokenAddress: string;
     tokenId: BigNumber;
 }
+
+export type AssetData = ERC20AssetData | ERC721AssetData;
 
 // TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {
