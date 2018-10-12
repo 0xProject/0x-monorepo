@@ -5,14 +5,14 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import { zrxContractAddress, zrxDecimals } from '../constants';
+import { zrxDecimals } from '../constants';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { AsyncProcessState } from '../types';
 import { assetBuyer } from '../util/asset_buyer';
 
-import { AmountInput } from '../components/amount_input';
+import { AssetAmountInput } from '../components/asset_amount_input';
 
 export interface SelectedAssetAmountInputProps {
     fontColor?: ColorOption;
@@ -21,31 +21,40 @@ export interface SelectedAssetAmountInputProps {
 
 interface ConnectedState {
     value?: BigNumber;
+    assetData?: string;
 }
 
 interface ConnectedDispatch {
-    onChange?: (value?: BigNumber) => void;
+    onChange: (value?: BigNumber, assetData?: string) => void;
 }
 
 const mapStateToProps = (state: State, _ownProps: SelectedAssetAmountInputProps): ConnectedState => ({
     value: state.selectedAssetAmount,
+    assetData: state.selectedAssetData,
 });
 
-const updateBuyQuote = async (dispatch: Dispatch<Action>, assetAmount?: BigNumber): Promise<void> => {
-    if (_.isUndefined(assetAmount)) {
+const updateBuyQuoteAsync = async (
+    dispatch: Dispatch<Action>,
+    assetData?: string,
+    assetAmount?: BigNumber,
+): Promise<void> => {
+    if (_.isUndefined(assetAmount) || _.isUndefined(assetData)) {
         return;
     }
     // get a new buy quote.
     const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetAmount, zrxDecimals);
-    const newBuyQuote = await assetBuyer.getBuyQuoteForERC20TokenAddressAsync(zrxContractAddress, baseUnitValue);
+    const newBuyQuote = await assetBuyer.getBuyQuoteAsync(assetData, baseUnitValue);
     // invalidate the last buy quote.
     dispatch(actions.updateLatestBuyQuote(newBuyQuote));
 };
 
-const debouncedUpdateBuyQuote = _.debounce(updateBuyQuote, 200, { trailing: true });
+const debouncedUpdateBuyQuoteAsync = _.debounce(updateBuyQuoteAsync, 200, { trailing: true });
 
-const mapDispatchToProps = (dispatch: Dispatch<Action>): ConnectedDispatch => ({
-    onChange: async value => {
+const mapDispatchToProps = (
+    dispatch: Dispatch<Action>,
+    _ownProps: SelectedAssetAmountInputProps,
+): ConnectedDispatch => ({
+    onChange: (value, assetData) => {
         // Update the input
         dispatch(actions.updateSelectedAssetAmount(value));
         // invalidate the last buy quote.
@@ -53,11 +62,11 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): ConnectedDispatch => ({
         // reset our buy state
         dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.NONE));
         // tslint:disable-next-line:no-floating-promises
-        debouncedUpdateBuyQuote(dispatch, value);
+        debouncedUpdateBuyQuoteAsync(dispatch, assetData, value);
     },
 });
 
 export const SelectedAssetAmountInput: React.ComponentClass<SelectedAssetAmountInputProps> = connect(
     mapStateToProps,
     mapDispatchToProps,
-)(AmountInput);
+)(AssetAmountInput);

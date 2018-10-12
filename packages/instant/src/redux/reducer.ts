@@ -2,11 +2,13 @@ import { BuyQuote } from '@0xproject/asset-buyer';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
+import { zrxAssetData } from '../constants';
 import { AsyncProcessState } from '../types';
 
 import { Action, ActionTypes } from './actions';
 
 export interface State {
+    selectedAssetData?: string;
     selectedAssetAmount?: BigNumber;
     selectedAssetBuyState: AsyncProcessState;
     ethUsdPrice?: BigNumber;
@@ -14,9 +16,11 @@ export interface State {
 }
 
 export const INITIAL_STATE: State = {
-    ethUsdPrice: undefined,
-    selectedAssetBuyState: AsyncProcessState.NONE,
+    // TODO: Remove hardcoded zrxAssetData
+    selectedAssetData: zrxAssetData,
     selectedAssetAmount: undefined,
+    selectedAssetBuyState: AsyncProcessState.NONE,
+    ethUsdPrice: undefined,
     latestBuyQuote: undefined,
 };
 

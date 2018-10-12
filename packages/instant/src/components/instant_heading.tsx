@@ -43,14 +43,7 @@ export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = pro
             </Text>
         </Container>
         <Flex direction="row" justify="space-between">
-            <Container>
-                <SelectedAssetAmountInput fontSize="45px" />
-                <Container display="inline-block" marginLeft="10px">
-                    <Text fontSize="45px" fontColor={ColorOption.white} textTransform="uppercase">
-                        zrx
-                    </Text>
-                </Container>
-            </Container>
+            <SelectedAssetAmountInput fontSize="45px" />
             <Flex direction="column" justify="space-between">
                 <Container marginBottom="5px">
                     <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>

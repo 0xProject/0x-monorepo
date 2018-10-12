@@ -10,10 +10,13 @@ export interface AmountInputProps {
     fontColor?: ColorOption;
     fontSize?: string;
     value?: BigNumber;
-    onChange?: (value?: BigNumber) => void;
+    onChange: (value?: BigNumber) => void;
 }
 
 export class AmountInput extends React.Component<AmountInputProps> {
+    public static defaultProps = {
+        onChange: _.noop.bind(_),
+    };
     public render(): React.ReactNode {
         const { fontColor, fontSize, value } = this.props;
         return (
@@ -40,8 +43,6 @@ export class AmountInput extends React.Component<AmountInputProps> {
                 return;
             }
         }
-        if (!_.isUndefined(this.props.onChange)) {
-            this.props.onChange(bigNumberValue);
-        }
+        this.props.onChange(bigNumberValue);
     };
 }
