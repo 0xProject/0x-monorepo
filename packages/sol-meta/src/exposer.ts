@@ -1,20 +1,6 @@
 import * as S from 'solidity-parser-antlr';
-
-// Replace with Array.flatMap https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatMap
-
-const flatMap = (a, f) => [].concat(...a.map(f));
-
-const pragmaNodes = (ast: S.SourceUnit): S.PragmaDirective[] =>
-    (ast as any).children.filter(({type}) => type == 'PragmaDirective');
-
-const contracts = (ast: S.SourceUnit): S.ContractDefinition[] =>
-    (ast as any).children.filter(({type}) => type == 'ContractDefinition');
-
-const identifier = (name: string): S.ASTNode =>
-    (<S.Identifier> {
-        type: 'Identifier',
-        name,
-    })
+import * as utils from './utils';
+import {identifier} from './utils';
 
 // Creates a public getter for a state variable
 const getter = (stateVar: S.StateVariableDeclaration): S.ASTNode => {
