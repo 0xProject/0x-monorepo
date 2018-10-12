@@ -27,9 +27,7 @@ const docsInfoConfig: DocsInfoConfig = {
     displayName: 'Subproviders',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     markdownMenu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        ['ledger-node-hid-issue']: [docSections.ledgerNodeHid],
+        'getting-started': [docSections.introduction, docSections.installation, docSections.ledgerNodeHid],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {

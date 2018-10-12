@@ -26,9 +26,7 @@ const docsInfoConfig: DocsInfoConfig = {
     displayName: 'Ethereum Types',
     packageUrl: 'https://github.com/0xProject/0x-monorepo/packages/ethereum-types',
     markdownMenu: {
-        introduction: [markdownSections.introduction],
-        install: [markdownSections.installation],
-        types: [markdownSections.types],
+        'getting-started': [markdownSections.introduction, markdownSections.installation],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {

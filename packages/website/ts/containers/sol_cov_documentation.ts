@@ -27,9 +27,7 @@ const docsInfoConfig: DocsInfoConfig = {
     displayName: 'Sol-cov',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     markdownMenu: {
-        introduction: [markdownSections.introduction],
-        install: [markdownSections.installation],
-        usage: [markdownSections.usage],
+        'getting-started': [markdownSections.introduction, markdownSections.installation, markdownSections.usage],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {

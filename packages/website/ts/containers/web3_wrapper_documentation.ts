@@ -13,7 +13,7 @@ const IntroMarkdownV1 = require('md/docs/web3_wrapper/introduction');
 const InstallationMarkdownV1 = require('md/docs/web3_wrapper/installation');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
 };
@@ -25,16 +25,15 @@ const docsInfoConfig: DocsInfoConfig = {
     displayName: 'Web3Wrapper',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     markdownMenu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
+        'getting-started': [markdownSections.introduction, markdownSections.installation],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
         },
     },
-    markdownSections: docSections,
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 
