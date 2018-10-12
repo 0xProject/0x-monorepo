@@ -12,6 +12,8 @@ export enum ColorOption {
     feintGrey = 'feintGrey',
     darkGrey = 'darkGrey',
     white = 'white',
+    lightOrange = 'lightOrange',
+    darkOrange = 'darkOrange',
 }
 
 export const theme: Theme = {
@@ -22,6 +24,8 @@ export const theme: Theme = {
     feintGrey: '#DEDEDE',
     darkGrey: '#333333',
     white: 'white',
+    lightOrange: '#F9F2ED',
+    darkOrange: '#F2994C',
 };
 
 export { styled, css, injectGlobal, keyframes, ThemeProvider };
