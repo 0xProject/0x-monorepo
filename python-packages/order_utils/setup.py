@@ -63,7 +63,8 @@ class CleanCommandExtension(clean):
         # delete all .pyc files
         for root, _, files in walk("."):
             for file in files:
-                if file[-4:] == ".pyc":
+                (_, extension) = path.splitext(file)
+                if extension == '.pyc':
                     remove(path.join(root, file))
 
 
