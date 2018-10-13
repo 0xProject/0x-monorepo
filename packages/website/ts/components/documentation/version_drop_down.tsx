@@ -16,7 +16,7 @@ interface ActiveNodeProps {
 }
 
 const PlainActiveNode: React.StatelessComponent<ActiveNodeProps> = ({ className, selectedVersion }) => (
-    <Container className={className} width="70px">
+    <Container className={className}>
         <Container className="flex justify-center">
             <Text fontColor={colors.grey700} fontSize="12px">
                 v {selectedVersion}
