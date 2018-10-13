@@ -70,6 +70,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
         };
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const mainContentPadding = isSmallScreen ? 20 : 50;
+        const sidebarPadding = 22;
         return (
             <Container
                 className="flex items-center overflow-hidden"
@@ -105,9 +106,17 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                             onMouseLeave={this._onSidebarHover.bind(this, false)}
                             onWheel={this._throttledSidebarScrolling}
                         >
-                            <Container paddingLeft="22px" paddingRight="22px" paddingBottom="100px">
+                            <div
+                                style={{
+                                    paddingBottom: 100,
+                                    paddingLeft: sidebarPadding,
+                                    paddingRight: this.state.isHoveringSidebar
+                                        ? sidebarPadding - SCROLLER_WIDTH
+                                        : sidebarPadding,
+                                }}
+                            >
                                 {this.props.sidebar}
-                            </Container>
+                            </div>
                         </div>
                     </Container>
                     <Container
