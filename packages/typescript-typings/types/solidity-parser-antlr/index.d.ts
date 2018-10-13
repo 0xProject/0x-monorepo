@@ -100,6 +100,11 @@ export const enum NodeType {
     BinaryOperation = 'BinaryOperation',
     Conditional = 'Conditional',
 }
+export const enum ContractKind {
+    Contract = 'contract',
+    Interface = 'interface',
+    Library = 'library'
+}
 export const enum Visibility {
     Default = 'default',
     Public = 'public',
@@ -110,6 +115,12 @@ export const enum StateMutability {
     Default = null,
     View = 'view',
     Pure = 'pure'
+}
+export const enum StorageLocation {
+    Default = null,
+    Memory = 'memory',
+    Storage = 'storage',
+    Calldata = 'calldata'
 }
 export type UnOp =
     | '++'
@@ -188,7 +199,7 @@ export interface ImportDirective extends BaseASTNode {
 export interface ContractDefinition extends BaseASTNode {
     type: NodeType.ContractDefinition;
     name: string;
-    kind: string;
+    kind: ContractKind;
     baseContracts: InheritanceSpecifier[];
     subNodes: ContractMember[]
 }
@@ -217,6 +228,7 @@ export interface ModifierDefinition extends BaseASTNode {
 export interface ModifierInvocation extends BaseASTNode {
     type: NodeType.ModifierInvocation;
     name: string;
+    arguments: Expression[];
 }
 export interface FunctionDefinition extends BaseASTNode {
     type: NodeType.FunctionDefinition;
@@ -253,9 +265,13 @@ export interface EnumDefinition extends BaseASTNode {
 }
 export interface ParameterList extends BaseASTNode {
     type: NodeType.ParameterList;
+    parameters: Parameter[];
 }
 export interface Parameter extends BaseASTNode {
     type: NodeType.Parameter;
+    name: string | null;
+    typeName: Type;
+    storageLocation: StorageLocation | null;
 }
 export interface EventParameterList extends BaseASTNode {
     type: NodeType.EventParameterList;
