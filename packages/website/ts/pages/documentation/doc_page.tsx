@@ -91,7 +91,9 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
                 sourceUrl={sourceUrl}
             />
         );
-        const sidebar = (
+        const sidebar = _.isUndefined(this.state.docAgnosticFormat) ? (
+            <div />
+        ) : (
             <NestedSidebarMenu sidebarHeader={this._renderSidebarHeader()} sectionNameToLinks={sectionNameToLinks} />
         );
         return (
