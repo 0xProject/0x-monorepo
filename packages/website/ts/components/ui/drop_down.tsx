@@ -100,7 +100,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
     private _onActiveNodeClick(event: React.FormEvent<HTMLInputElement>): void {
         if (this.props.activateEvent === DropdownMouseEvent.Click) {
             this.setState({
-                isDropDownOpen: true,
+                isDropDownOpen: !this.state.isDropDownOpen,
                 anchorEl: event.currentTarget,
             });
         }
