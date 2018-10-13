@@ -108,19 +108,19 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
     private _renderSidebarHeader(): React.ReactNode {
         return (
             <Container>
-                <Container className="clearfix relative">
-                    <Container className="pl1 absolute" bottom="0">
+                <Container className="flex justify-bottom">
+                    <Container className="left pl1" width="150px">
                         <Text fontColor={colors.lightLinkBlue} fontSize="22px" fontWeight="bold">
-                            0x.js
+                            {this.props.docsInfo.displayName}
                         </Text>
                     </Container>
-                    <Container className="right">
+                    <div className="right" style={{ alignSelf: 'flex-end' }}>
                         <VersionDropDown
                             selectedVersion={this.props.docsVersion}
                             versions={this.props.availableDocVersions}
                             onVersionSelected={this._onVersionSelected.bind(this)}
                         />
-                    </Container>
+                    </div>
                 </Container>
                 <Container
                     width={'100%'}
