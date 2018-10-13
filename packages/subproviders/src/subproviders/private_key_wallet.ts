@@ -1,4 +1,6 @@
 import { assert } from '@0xproject/assert';
+import { EIP712TypedData } from '@0xproject/types';
+import { signTypedDataUtils } from '@0xproject/utils';
 import EthereumTx = require('ethereumjs-tx');
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -23,7 +25,7 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
     constructor(privateKey: string) {
         assert.isString('privateKey', privateKey);
         super();
-        this._privateKeyBuffer = new Buffer(privateKey, 'hex');
+        this._privateKeyBuffer = Buffer.from(privateKey, 'hex');
         this._address = `0x${ethUtil.privateToAddress(this._privateKeyBuffer).toString('hex')}`;
     }
     /**
@@ -81,6 +83,31 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
         const dataBuff = ethUtil.toBuffer(data);
         const msgHashBuff = ethUtil.hashPersonalMessage(dataBuff);
         const sig = ethUtil.ecsign(msgHashBuff, this._privateKeyBuffer);
+        const rpcSig = ethUtil.toRpcSig(sig.v, sig.r, sig.s);
+        return rpcSig;
+    }
+    /**
+     * Sign an EIP712 Typed Data message. The signing address will be calculated from the private key.
+     * The address must be provided it must match the address calculated from the private key.
+     * If you've added this Subprovider to your app's provider, you can simply send an `eth_signTypedData`
+     * JSON RPC request, and this method will be called auto-magically.
+     * If you are not using this via a ProviderEngine instance, you can call it directly.
+     * @param address Address of the account to sign with
+     * @param data the typed data object
+     * @return Signature hex string (order: rsv)
+     */
+    public async signTypedDataAsync(address: string, typedData: EIP712TypedData): Promise<string> {
+        if (_.isUndefined(typedData)) {
+            throw new Error(WalletSubproviderErrors.DataMissingForSignTypedData);
+        }
+        assert.isETHAddressHex('address', address);
+        if (address !== this._address) {
+            throw new Error(
+                `Requested to sign message with address: ${address}, instantiated with address: ${this._address}`,
+            );
+        }
+        const dataBuff = signTypedDataUtils.generateTypedDataHash(typedData);
+        const sig = ethUtil.ecsign(dataBuff, this._privateKeyBuffer);
         const rpcSig = ethUtil.toRpcSig(sig.v, sig.r, sig.s);
         return rpcSig;
     }

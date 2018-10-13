@@ -72,6 +72,7 @@ TODO.md
 .vscode
 
 packages/website/public/bundle*
+packages/dev-tools-pages/public/bundle*
 packages/react-docs/example/public/bundle*
 
 # server cli
@@ -108,3 +109,12 @@ packages/sol-compiler/solc_bin/
 
 # Monorepo scripts
 packages/*/scripts/
+
+# python stuff
+.eggs
+.mypy_cache
+.tox
+python-packages/*/build
+__pycache__
+python-packages/*/src/*.egg-info
+python-packages/*/.coverage

@@ -84,7 +84,7 @@
         "ethereum-types": "^1.0.11",
         "ethereumjs-blockstream": "6.0.0",
         "ethereumjs-util": "^5.1.1",
-        "ethers": "4.0.0-beta.14",
+        "ethers": "~4.0.4",
         "js-sha3": "^0.7.0",
         "lodash": "^4.17.5",
         "uuid": "^3.1.0"

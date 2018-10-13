@@ -14,7 +14,7 @@ import { Subprovider } from './subprovider';
 export class SignerSubprovider extends Subprovider {
     private readonly _web3Wrapper: Web3Wrapper;
     /**
-     * Instantiates a new SignerSubprovider
+     * Instantiates a new SignerSubprovider.
      * @param provider Web3 provider that should handle  all user account related requests
      */
     constructor(provider: Provider) {
@@ -31,6 +31,8 @@ export class SignerSubprovider extends Subprovider {
      */
     // tslint:disable-next-line:prefer-function-over-method async-suffix
     public async handleRequest(payload: JSONRPCRequestPayload, next: Callback, end: ErrorCallback): Promise<void> {
+        let message;
+        let address;
         switch (payload.method) {
             case 'web3_clientVersion':
                 try {
@@ -59,9 +61,18 @@ export class SignerSubprovider extends Subprovider {
                 }
                 return;
             case 'eth_sign':
-                const [address, message] = payload.params;
+                [address, message] = payload.params;
                 try {
                     const signature = await this._web3Wrapper.signMessageAsync(address, message);
+                    end(null, signature);
+                } catch (err) {
+                    end(err);
+                }
+                return;
+            case 'eth_signTypedData':
+                [address, message] = payload.params;
+                try {
+                    const signature = await this._web3Wrapper.signTypedDataAsync(address, message);
                     end(null, signature);
                 } catch (err) {
                     end(err);

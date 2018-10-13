@@ -9,7 +9,6 @@ import {
     RPCSubprovider,
     signatureUtils,
     SignedOrder,
-    SignerType,
     Web3ProviderEngine,
 } from '0x.js';
 import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0xproject/subproviders';
@@ -180,11 +179,10 @@ export class Handler {
             expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS).div(1000).floor(),
         };
         const orderHash = orderHashUtils.getOrderHashHex(order);
-        const signature = await signatureUtils.ecSignOrderHashAsync(
+        const signature = await signatureUtils.ecSignHashAsync(
             networkConfig.web3Wrapper.getProvider(),
             orderHash,
             configs.DISPENSER_ADDRESS,
-            SignerType.Default,
         );
         const signedOrder: SignedOrder = {
             ...order,

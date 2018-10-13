@@ -113,10 +113,16 @@ export interface JSONRPCRequestPayload {
     jsonrpc: string;
 }
 
+export interface JSONRPCResponseError {
+    message: string;
+    code: number;
+}
+
 export interface JSONRPCResponsePayload {
     result: any;
     id: number;
     jsonrpc: string;
+    error?: JSONRPCResponseError;
 }
 
 export interface AbstractBlock {

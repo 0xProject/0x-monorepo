@@ -187,6 +187,16 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             throw err;
         }
     }
+    /**
+     * eth_signTypedData is currently not supported on Ledger devices.
+     * @param address Address of the account to sign with
+     * @param data the typed data object
+     * @return Signature hex string (order: rsv)
+     */
+    // tslint:disable-next-line:prefer-function-over-method
+    public async signTypedDataAsync(address: string, typedData: any): Promise<string> {
+        throw new Error(WalletSubproviderErrors.MethodNotSupported);
+    }
     private async _createLedgerClientAsync(): Promise<LedgerEthereumClient> {
         await this._connectionLock.acquire();
         if (!_.isUndefined(this._ledgerClientIfExists)) {

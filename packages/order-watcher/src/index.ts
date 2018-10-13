@@ -13,4 +13,10 @@ export {
 export { OnOrderStateChangeCallback, OrderWatcherConfig } from './types';
 
 export { SignedOrder } from '@0xproject/types';
-export { JSONRPCRequestPayload, JSONRPCErrorCallback, Provider, JSONRPCResponsePayload } from 'ethereum-types';
+export {
+    JSONRPCRequestPayload,
+    JSONRPCErrorCallback,
+    Provider,
+    JSONRPCResponsePayload,
+    JSONRPCResponseError,
+} from 'ethereum-types';

@@ -8,7 +8,13 @@ export { ProfilerSubprovider } from './profiler_subprovider';
 export { RevertTraceSubprovider } from './revert_trace_subprovider';
 
 export { ContractData } from './types';
-export { JSONRPCRequestPayload, Provider, JSONRPCErrorCallback, JSONRPCResponsePayload } from 'ethereum-types';
+export {
+    JSONRPCRequestPayload,
+    Provider,
+    JSONRPCErrorCallback,
+    JSONRPCResponsePayload,
+    JSONRPCResponseError,
+} from 'ethereum-types';
 
 export {
     JSONRPCRequestPayloadWithMethod,

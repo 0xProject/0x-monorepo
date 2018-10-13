@@ -30,4 +30,35 @@ export const fixtureData = {
         '0xf85f8080822710940000000000000000000000000000000000000000808078a0712854c73c69445cc1b22a7c3d7312ff9a97fe4ffba35fd636e8236b211b6e7ca0647cee031615e52d916c7c707025bc64ad525d8f1b9876c3435a863b42743178',
     TX_DATA_ACCOUNT_1_SIGNED_RESULT:
         '0xf85f8080822710940000000000000000000000000000000000000000808078a04b02af7ff3f18ce114b601542cc8ebdc50921354f75dd510d31793453a0710e6a0540082a01e475465801b8186a2edc79ec1a2dcf169b9781c25a58a417023c9ca',
+    EIP712_TEST_TYPED_DATA: {
+        types: {
+            EIP712Domain: [
+                {
+                    name: 'name',
+                    type: 'string',
+                },
+            ],
+            Test: [
+                {
+                    name: 'testAddress',
+                    type: 'address',
+                },
+                {
+                    name: 'testNumber',
+                    type: 'uint256',
+                },
+            ],
+        },
+        domain: {
+            name: 'Test',
+        },
+        message: {
+            testAddress: '0x0000000000000000000000000000000000000000',
+            testNumber: '12345',
+        },
+        primaryType: 'Test',
+    },
+    EIP712_TEST_TYPED_DATA_HASH: '0xb460d69ca60383293877cd765c0f97bd832d66bca720f7e32222ce1118832493',
+    EIP712_TEST_TYPED_DATA_SIGNED_RESULT:
+        '0x20af5b6bfc3658942198d6eeda159b4ed589f90cee6eac3ba117818ffba5fd7e354a353aad93faabd6eb6c66e17921c92bd1cd09c92a770f554470dc3e254ce701',
 };

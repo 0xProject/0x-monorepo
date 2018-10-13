@@ -1,21 +1,12 @@
 import { schemas } from '@0xproject/json-schemas';
-import { EIP712Schema, EIP712Types, eip712Utils } from '@0xproject/order-utils';
+import { eip712Utils } from '@0xproject/order-utils';
 import { Order, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber, signTypedDataUtils } from '@0xproject/utils';
 import _ = require('lodash');
 
 import { ExchangeContract } from '../contract_wrappers/generated/exchange';
 
 import { assert } from './assert';
-
-const EIP712_ZEROEX_TRANSACTION_SCHEMA: EIP712Schema = {
-    name: 'ZeroExTransaction',
-    parameters: [
-        { name: 'salt', type: EIP712Types.Uint256 },
-        { name: 'signerAddress', type: EIP712Types.Address },
-        { name: 'data', type: EIP712Types.Bytes },
-    ],
-};
 
 /**
  * Transaction Encoder. Transaction messages exist for the purpose of calling methods on the Exchange contract
@@ -41,12 +32,9 @@ export class TransactionEncoder {
             signerAddress,
             data,
         };
-        const executeTransactionHashBuff = eip712Utils.structHash(
-            EIP712_ZEROEX_TRANSACTION_SCHEMA,
-            executeTransactionData,
-        );
-        const eip721MessageBuffer = eip712Utils.createEIP712Message(executeTransactionHashBuff, exchangeAddress);
-        const messageHex = `0x${eip721MessageBuffer.toString('hex')}`;
+        const typedData = eip712Utils.createZeroExTransactionTypedData(executeTransactionData, exchangeAddress);
+        const eip712MessageBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
+        const messageHex = `0x${eip712MessageBuffer.toString('hex')}`;
         return messageHex;
     }
     /**
