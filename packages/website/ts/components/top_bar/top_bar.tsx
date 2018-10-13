@@ -72,20 +72,6 @@ const styles: Styles = {
     },
 };
 
-const DOC_WEBSITE_PATHS_TO_KEY = {
-    [WebsitePaths.SolCov]: Key.SolCov,
-    [WebsitePaths.SmartContracts]: Key.SmartContracts,
-    [WebsitePaths.Web3Wrapper]: Key.Web3Wrapper,
-    [WebsitePaths.SolCompiler]: Key.SolCompiler,
-    [WebsitePaths.JSONSchemas]: Key.JsonSchemas,
-    [WebsitePaths.Subproviders]: Key.Subproviders,
-    [WebsitePaths.ContractWrappers]: Key.ContractWrappers,
-    [WebsitePaths.Connect]: Key.Connect,
-    [WebsitePaths.ZeroExJs]: Key.ZeroExJs,
-    [WebsitePaths.OrderUtils]: Key.OrderUtils,
-    [WebsitePaths.OrderWatcher]: Key.OrderWatcher,
-};
-
 const DEFAULT_HEIGHT = 68;
 const EXPANDED_HEIGHT = 75;
 
@@ -245,7 +231,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
                 <div className="clearfix">
-                    {this._renderDocsMenu()}
                     {this._renderWiki()}
                     <div className="pl1 py1 mt3" style={{ backgroundColor: colors.lightGrey }}>
                         {this.props.translate.get(Key.Website, Deco.Cap)}
@@ -253,22 +238,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     <Link to={WebsitePaths.Home}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Home, Deco.Cap)}</MenuItem>
                     </Link>
+                    <Link to={WebsitePaths.Docs}>
+                        <MenuItem className="py2">{this.props.translate.get(Key.Documentation, Deco.Cap)}</MenuItem>
+                    </Link>
                     <Link to={WebsitePaths.Wiki}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Wiki, Deco.Cap)}</MenuItem>
                     </Link>
-                    {_.map(DOC_WEBSITE_PATHS_TO_KEY, (key, websitePath) => {
-                        if (!this._doesUrlInclude(websitePath)) {
-                            return (
-                                <Link key={`drawer-menu-item-${websitePath}`} to={websitePath}>
-                                    <MenuItem className="py2">
-                                        {this.props.translate.get(key, Deco.Cap)}{' '}
-                                        {this.props.translate.get(Key.Docs, Deco.Cap)}
-                                    </MenuItem>
-                                </Link>
-                            );
-                        }
-                        return null;
-                    })}
                     {!this._isViewingPortal() && (
                         <Link to={WebsitePaths.Portal}>
                             <MenuItem className="py2">
@@ -297,30 +272,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </Drawer>
         );
     }
-    private _renderDocsMenu(): React.ReactNode {
-        const isViewingDocsPage = _.some(DOC_WEBSITE_PATHS_TO_KEY, (_key, websitePath) => {
-            return this._doesUrlInclude(websitePath);
-        });
-        // HACK: We need to make sure the SCROLL_CONTAINER is loaded before rendering the Sidebar
-        // because the sidebar renders `react-scroll` links which depend on the scroll container already
-        // being rendered.
-        const documentationContainer = document.getElementById(sharedConstants.SCROLL_CONTAINER_ID);
-        if (!isViewingDocsPage || _.isUndefined(this.props.sectionNameToLinks) || _.isNull(documentationContainer)) {
-            return undefined;
-        }
-        return (
-            <div className="lg-hide md-hide" onClick={this._onMenuButtonClick.bind(this)}>
-                <NestedSidebarMenu
-                    sectionNameToLinks={this.props.sectionNameToLinks}
-                    sidebarHeader={this.props.sidebarHeader}
-                    shouldDisplaySectionHeaders={false}
-                    selectedVersion={this.props.docsVersion}
-                    versions={this.props.availableDocVersions}
-                    onVersionSelected={this.props.onVersionSelected}
-                />
-            </div>
-        );
-    }
     private _renderWiki(): React.ReactNode {
         if (!this._isViewingWiki()) {
             return undefined;
@@ -344,9 +295,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private _isViewingPortal(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Portal);
     }
-    private _isViewingDocs(): boolean {
-        return _.includes(this.props.location.pathname, WebsitePaths.Docs);
-    }
     private _isViewingFAQ(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.FAQ);
     }
@@ -357,15 +305,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
         return _.includes(this.props.location.pathname, WebsitePaths.Wiki);
     }
     private _shouldDisplayBottomBar(): boolean {
-        const isViewingDocsPage = _.some(DOC_WEBSITE_PATHS_TO_KEY, (_key, websitePath) => {
-            return this._doesUrlInclude(websitePath);
-        });
-        return (
-            isViewingDocsPage ||
-            this._isViewingWiki() ||
-            this._isViewingFAQ() ||
-            this._isViewingDocs() ||
-            this._isViewingPortal()
-        );
+        return this._isViewingWiki() || this._isViewingFAQ() || this._isViewingPortal();
     }
 } // tslint:disable:max-file-line-count
