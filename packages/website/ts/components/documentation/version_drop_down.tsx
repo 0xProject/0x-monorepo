@@ -1,4 +1,4 @@
-import { ALink, colors, Link } from '@0xproject/react-shared';
+import { colors } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Button } from 'ts/components/ui/button';
@@ -6,9 +6,6 @@ import { Container } from 'ts/components/ui/container';
 import { DropDown, DropdownMouseEvent } from 'ts/components/ui/drop_down';
 import { Text } from 'ts/components/ui/text';
 import { styled } from 'ts/style/theme';
-import { Deco, Key, WebsitePaths } from 'ts/types';
-import { constants } from 'ts/utils/constants';
-import { Translate } from 'ts/utils/translate';
 
 interface ActiveNodeProps {
     className?: string;
@@ -51,8 +48,8 @@ export class VersionDropDown extends React.Component<VersionDropDownProps, Versi
                 activateEvent={DropdownMouseEvent.Click}
                 activeNode={activeNode}
                 popoverContent={this._renderDropdownMenu()}
-                anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-                targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'middle', vertical: 'bottom' }}
+                targetOrigin={{ horizontal: 'middle', vertical: 'top' }}
                 popoverStyle={{ borderRadius: 4 }}
             />
         );
