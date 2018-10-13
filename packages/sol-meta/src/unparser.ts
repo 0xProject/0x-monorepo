@@ -1,3 +1,5 @@
+// TODO: instead use https://github.com/prettier-solidity/prettier-plugin-solidity/blob/master/src/printer.js
+
 import { ASTNode } from 'solidity-parser-antlr';
 
 const stresc = (s: string) => `\"${s}\"`;
@@ -6,6 +8,7 @@ const block = (s: string) => `{\n${indent(s)}\n}`;
 const unparen = (s: string) => s.replace(/^\((.*)\)$/, '$1');
 
 const visitor = {
+    
     // Source level
     
     SourceUnit: ({children}) =>
@@ -53,7 +56,7 @@ const visitor = {
         `modifier ${name}${Array.isArray(parameters) ? '' : unparse(parameters)} ${unparse(body)}`,
         // Note: when there is no parameter block, instead of an ASTNode there is a []
 
-    FunctionDefinition: ({visibility, name, parameters, body, modifiers, isConstructor, stateMutability, returnParameters}) => // TODO Return type
+    FunctionDefinition: ({visibility, name, parameters, body, modifiers, isConstructor, stateMutability, returnParameters}) =>
         (isConstructor ? 'constructor' : `function ${name}`) +
         unparse(parameters) + '\n' +
         indent(

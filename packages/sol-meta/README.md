@@ -2,9 +2,13 @@
 
 Sol-meta is a Solidity to Solidity compiler to automatically generate testing contracts. It has two modes:
 
-**Mock generation.** Given an interface contract (either a public interface or a mixin), it can generate a mock implementation.
+**Mocking.** Given an interface contract (either a public interface or a mixin), it can generate a mock implementation.
 
 **Exposing.** Given an implemented contract it generates a contract that exposes all internal functions with public wrappers.
+
+**Flattening.** Given a contract it will pull in all inherited contracts and flatten them into a single contract without inheritance.
+
+**Combined.** Flatten a contract and then generate a wrapper that adds mocks for all unimplemented functions and exposes all internal members.
 
 ## Architecture
 
