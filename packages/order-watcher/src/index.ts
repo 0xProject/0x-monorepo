@@ -7,6 +7,7 @@ export {
     OrderState,
     ExchangeContractErrs,
     OrderRelevantState,
+    Stats,
 } from '@0xproject/types';
 
 export { OnOrderStateChangeCallback, OrderWatcherConfig } from './types';
