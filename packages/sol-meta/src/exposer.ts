@@ -3,33 +3,32 @@ import * as utils from './utils';
 import {identifier} from './utils';
 
 // Creates a public getter for a state variable
-const getter = (stateVar: S.StateVariableDeclaration): S.ASTNode => {
+const getter = (stateVar: S.StateVariableDeclaration): S.FunctionDefinition => {
     const [{name, typeName }] = (stateVar as any).variables;
-    return <S.FunctionDefinition> {
-        type: 'FunctionDefinition',
+    return {
+        type: S.NodeType.FunctionDefinition,
         name: `get_${name}`,
-        visibility: 'public',
+        visibility: S.Visibility.Public,
         isConstructor: false,
-        stateMutability: 'view',
-        parameters: <S.ParameterList> {
-            type: 'ParameterList',
+        stateMutability: S.StateMutability.View,
+        parameters: {
+            type: S.NodeType.ParameterList,
             parameters: []
         },
-        returnParameters: <S.ParameterList> {
-            type: 'ParameterList',
-            parameters: [
-                <S.Parameter> {
-                    type: 'Parameter',
-                    typeName,
-                    name: null
-                }
-            ]
+        returnParameters: {
+            type: S.NodeType.ParameterList,
+            parameters: [{
+                type: S.NodeType.Parameter,
+                typeName,
+                name: null,
+                storageLocation: S.StorageLocation.Default,
+            }]
         },
         modifiers: [],
-        body: <S.Block> {
-            type: 'Block',
-            statements: [<S.ReturnStatement> {
-                type: 'ReturnStatement',
+        body: {
+            type: S.NodeType.Block,
+            statements: [{
+                type: S.NodeType.ReturnStatement,
                 expression: identifier(name)
             }]
         },
@@ -37,32 +36,31 @@ const getter = (stateVar: S.StateVariableDeclaration): S.ASTNode => {
 }
 
 // Creates a public getter for a state variable
-const setter = (stateVar: S.StateVariableDeclaration): S.ASTNode => {
+const setter = (stateVar: S.StateVariableDeclaration): S.FunctionDefinition => {
     const [{name, typeName }] = (stateVar as any).variables;
-    return <S.FunctionDefinition> {
-        type: 'FunctionDefinition',
+    return {
+        type: S.NodeType.FunctionDefinition,
         name: `set_${name}`,
-        visibility: 'public',
+        visibility: S.Visibility.Public,
         isConstructor: false,
-        stateMutability: '',
-        parameters: <S.ParameterList> {
-            type: 'ParameterList',
-            parameters: [
-                <S.Parameter> {
-                    type: 'Parameter',
-                    typeName,
-                    name: 'setterNewValue'
-                },
-            ],
+        stateMutability: S.StateMutability.Default,
+        parameters: {
+            type: S.NodeType.ParameterList,
+            parameters: [{
+                type: S.NodeType.Parameter,
+                typeName,
+                name: 'setterNewValue',
+                storageLocation: S.StorageLocation.Default,
+            }],
         },
         returnParameters: null,
         modifiers: [],
-        body: <S.Block> {
-            type: 'Block',
-            statements: [<S.ExpressionStatement> {
-                type: 'ExpressionStatement',
-                expression: <S.BinaryOperation> {
-                    type: 'BinaryOperation',
+        body: {
+            type: S.NodeType.Block,
+            statements: [{
+                type: S.NodeType.ExpressionStatement,
+                expression: {
+                    type: S.NodeType.BinaryOperation,
                     operator: '=',
                     left: identifier(name),
                     right: identifier('setterNewValue')
@@ -74,28 +72,28 @@ const setter = (stateVar: S.StateVariableDeclaration): S.ASTNode => {
 
 // Creates a public wrapper for a function
 const wrapFunction = (func: S.FunctionDefinition): S.FunctionDefinition => {
-    const call = /*<S.FunctionCall>*/ <S.ASTNode> {
-        type: 'FunctionCall',
+    const call = {
+        type: S.NodeType.FunctionCall,
         expression: identifier(func.name),
         arguments: (func as any).parameters.parameters.map(
             ({name}) => identifier(name)
         )
     };
-    return <S.FunctionDefinition> {
+    return {
         ...func,
         name: `public_${func.name}`,
-        visibility: 'public',
+        visibility: S.Visibility.Public,
         modifiers: [],
-        body: <S.Block> {
-            type: 'Block',
+        body: {
+            type: S.NodeType.Block,
             statements: [
                 (func as any).returnParameters ?
-                <S.ReturnStatement> {
-                    type: 'ReturnStatement',
+                {
+                    type: S.NodeType.ReturnStatement,
                     expression: call
                 } :
-                <S.ExpressionStatement> {
-                    type: 'ExpressionStatement',
+                {
+                    type: S.NodeType.ExpressionStatement,
                     expression: call
                 }
             ]
@@ -106,14 +104,14 @@ const wrapFunction = (func: S.FunctionDefinition): S.FunctionDefinition => {
 // Creates a public function that triggers a log event
 const emitEvent = (event: S.EventDefinition): S.FunctionDefinition => {
     const {name, parameters} = event as any;
-    return <S.FunctionDefinition> {
-        type: 'FunctionDefinition',
+    return {
+        type: S.NodeType.FunctionDefinition,
         name: `emit_${name}`,
-        visibility: 'public',
+        visibility: S.Visibility.Public,
         isConstructor: false,
-        stateMutability: '',
-        parameters: <S.ParameterList> {
-            type: 'ParameterList',
+        stateMutability: S.StateMutability.Default,
+        parameters: {
+            type: S.NodeType.ParameterList,
             parameters: parameters.parameters.map(param => ({
                 ...param,
                 isIndexed: false
@@ -121,16 +119,17 @@ const emitEvent = (event: S.EventDefinition): S.FunctionDefinition => {
         },
         returnParameters: null,
         modifiers: [],
-        body: <S.Block> {
-            type: 'Block',
-            statements: [/* <S.EmitStatement> */ <S.ASTNode> {
-                type: 'EmitStatement',
-                eventCall: /*<S.FunctionCall>*/ <S.ASTNode> {
-                    type: 'FunctionCall',
+        body: {
+            type: S.NodeType.Block,
+            statements: [/* */ {
+                type: S.NodeType.EmitStatement,
+                eventCall: /*<S.FunctionCall>*/ {
+                    type: S.NodeType.FunctionCall,
                     expression: identifier(name),
                     arguments: parameters.parameters.map(
                         ({name}) => identifier(name)
-                    )
+                    ),
+                    names: []
                 }
             }]
         },
@@ -140,31 +139,32 @@ const emitEvent = (event: S.EventDefinition): S.FunctionDefinition => {
 // Creates a public function that has modifier
 const testModifier = (modifier: S.ModifierDefinition): S.FunctionDefinition => {
     const {name, parameters} = modifier as any;
-    return <S.FunctionDefinition> {
-        type: 'FunctionDefinition',
+    return {
+        type: S.NodeType.FunctionDefinition,
         name: `modifier_${name}`,
-        visibility: 'public',
+        visibility: S.Visibility.Public,
         isConstructor: false,
-        stateMutability: '',
+        stateMutability: S.StateMutability.Default,
         parameters: Array.isArray(parameters) ?
-            <S.ParameterList> {
-                type: 'ParameterList',
+            {
+                type: S.NodeType.ParameterList,
                 parameters: []
             } :
             parameters,
-        returnParameters: <S.ParameterList> {
-            type: 'ParameterList',
-            parameters: [<S.Parameter> {
-                type: 'Parameter',
-                typeName: <S.ElementaryTypeName> {
-                    type: 'ElementaryTypeName',
+        returnParameters: {
+            type: S.NodeType.ParameterList,
+            parameters: [{
+                type: S.NodeType.Parameter,
+                typeName: {
+                    type: S.NodeType.ElementaryTypeName,
                     name: 'bool'
                 },
-                name: 'executed'
+                name: 'executed',
+                storageLocation: S.StorageLocation.Default
             }]
         },
-        modifiers: [<S.ModifierInvocation> {
-            type: 'ModifierInvocation',
+        modifiers: [{
+            type: S.NodeType.ModifierInvocation,
             name,
             arguments: Array.isArray(parameters) ?
                 [] :
@@ -172,13 +172,13 @@ const testModifier = (modifier: S.ModifierDefinition): S.FunctionDefinition => {
                     ({name}) => identifier(name)
                 )
         }],
-        body: <S.Block> {
-            type: 'Block',
+        body: {
+            type: S.NodeType.Block,
             statements: [
-                <S.ReturnStatement> {
-                    type: 'ReturnStatement',
-                    expression: /*<S.BooleanLiteral>*/ <S.ASTNode> {
-                        type: 'BooleanLiteral',
+                {
+                    type: S.NodeType.ReturnStatement,
+                    expression: {
+                        type: S.NodeType.BooleanLiteral,
                         value: true,
                     }
                 }
@@ -187,7 +187,7 @@ const testModifier = (modifier: S.ModifierDefinition): S.FunctionDefinition => {
     };
 }
 
-const exposeNode = (ast: S.ASTNode): S.ASTNode[] => {
+const exposeNode = (ast: S.ContractMember): S.ContractMember[] => {
     switch (ast.type) {
         default: {
             return [];
@@ -226,27 +226,26 @@ export function expose(filePath: string, ast: S.SourceUnit): S.SourceUnit {
     // we probably want a separate `flattenInheritance` function or something
     // that traces the imports and does a fairly simple concatenation.
     
-    return <S.SourceUnit> {
-        type: 'SourceUnit',
-        children: <S.ASTNode[]> [
-            ...pragmaNodes(ast),
-            <S.ImportDirective> {
-                type: 'ImportDirective',
+    return {
+        type: S.NodeType.SourceUnit,
+        children: [
+            ...utils.pragmaNodes(ast), {
+                type: S.NodeType.ImportDirective,
                 path:  filePath,
                 unitAliases: null,
                 symbolAliases: null
             },
-            ...contracts(ast).map((ctr: any) => (<S.ContractDefinition> {
-                type: 'ContractDefinition',
+            ...utils.contracts(ast).map((ctr: any) => ({
+                type: S.NodeType.ContractDefinition,
                 kind: 'contract',
                 name: `${ctr.name}Exposed`,
-                baseContracts: [<S.InheritanceSpecifier> {
-                    type: 'InheritanceSpecifier',
+                baseContracts: [{
+                    type: S.NodeType.InheritanceSpecifier,
                     baseName: {
                         namePath: ctr.name,
                     }
                 }],
-                subNodes: flatMap(ctr.subNodes, exposeNode),
+                subNodes: utils.flatMap(ctr.subNodes, exposeNode),
             }))
         ]
     }

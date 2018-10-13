@@ -4,16 +4,15 @@ import * as S from 'solidity-parser-antlr';
 export const flatMap = (a, f) => [].concat(...a.map(f));
 
 export const pragmaNodes = (ast: S.SourceUnit): S.PragmaDirective[] =>
-    (ast as any).children.filter(({type}) => type == 'PragmaDirective');
+    ast.children.filter(({type}) => type == S.NodeType.PragmaDirective);
     
 export const importNodes = (ast: S.SourceUnit): S.PragmaDirective[] =>
-    (ast as any).children.filter(({type}) => type == 'ImportDirective');
+    ast.children.filter(({type}) => type == S.NodeType.ImportDirective);
 
 export const contracts = (ast: S.SourceUnit): S.ContractDefinition[] =>
-    (ast as any).children.filter(({type}) => type == 'ContractDefinition');
+    ast.children.filter(({type}) => type == S.NodeType.ContractDefinition);
 
-export const identifier = (name: string): S.ASTNode =>
-    (<S.Identifier> {
-        type: 'Identifier',
-        name,
-    })
+export const identifier = (name: string): S.Identifier => ({
+    type: S.NodeType.Identifier,
+    name,
+})
