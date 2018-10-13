@@ -6,12 +6,15 @@ import {
     SupportedDocJson,
     TypeDocUtils,
 } from '@0xproject/react-docs';
-import { NestedSidebarMenu } from '@0xproject/react-shared';
+import { colors, NestedSidebarMenu } from '@0xproject/react-shared';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import semverSort = require('semver-sort');
+import { VersionDropDown } from 'ts/components/documentation/version_drop_down';
+import { Container } from 'ts/components/ui/container';
+import { Text } from 'ts/components/ui/text';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { DocPackages, ScreenWidths } from 'ts/types';
@@ -89,7 +92,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             />
         );
         const sidebar = (
-            <NestedSidebarMenu sectionNameToLinks={sectionNameToLinks} shouldReformatMenuItemNames={false} />
+            <NestedSidebarMenu sidebarHeader={this._renderSidebarHeader()} sectionNameToLinks={sectionNameToLinks} />
         );
         return (
             <DevelopersPage
@@ -102,16 +105,43 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             />
         );
     }
+    private _renderSidebarHeader(): React.ReactNode {
+        return (
+            <Container>
+                <Container className="clearfix relative">
+                    <Container className="pl1 absolute" bottom="0">
+                        <Text fontColor={colors.lightLinkBlue} fontSize="22px" fontWeight="bold">
+                            0x.js
+                        </Text>
+                    </Container>
+                    <Container className="right">
+                        <VersionDropDown
+                            selectedVersion={this.props.docsVersion}
+                            versions={this.props.availableDocVersions}
+                            onVersionSelected={this._onVersionSelected.bind(this)}
+                        />
+                    </Container>
+                </Container>
+                <Container
+                    width={'100%'}
+                    height={'1px'}
+                    backgroundColor={colors.grey300}
+                    marginTop="20px"
+                    marginBottom="27px"
+                />
+            </Container>
+        );
+    }
     private _renderLoading(): React.ReactNode {
         return (
-            <div className="pt4">
-                <div className="center pb2">
+            <Container className="pt4">
+                <Container className="center pb2">
                     <CircularProgress size={40} thickness={5} />
-                </div>
-                <div className="center pt2" style={{ paddingBottom: 11 }}>
+                </Container>
+                <Container className="center pt2" paddingBottom="11px">
                     Loading documentation...
-                </div>
-            </div>
+                </Container>
+            </Container>
         );
     }
     private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {

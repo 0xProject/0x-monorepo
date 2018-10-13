@@ -8,15 +8,11 @@ import { colors } from '../utils/colors';
 import { utils } from '../utils/utils';
 
 import { Link } from './link';
-import { VersionDropDown } from './version_drop_down';
 
 export interface NestedSidebarMenuProps {
     sectionNameToLinks: ObjectMap<ALink[]>;
     sidebarHeader?: React.ReactNode;
     shouldDisplaySectionHeaders?: boolean;
-    selectedVersion?: string;
-    versions?: string[];
-    onVersionSelected?: (semver: string) => void;
     shouldReformatMenuItemNames?: boolean;
 }
 
@@ -59,21 +55,9 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                 return <div key={`section-${sectionName}`}>{this._renderMenuItems(links)}</div>;
             }
         });
-        const maxWidthWithScrollbar = 307;
         return (
             <div>
                 {this.props.sidebarHeader}
-                {!_.isUndefined(this.props.versions) &&
-                    !_.isUndefined(this.props.selectedVersion) &&
-                    !_.isUndefined(this.props.onVersionSelected) && (
-                        <div style={{ maxWidth: maxWidthWithScrollbar }}>
-                            <VersionDropDown
-                                selectedVersion={this.props.selectedVersion}
-                                versions={this.props.versions}
-                                onVersionSelected={this.props.onVersionSelected}
-                            />
-                        </div>
-                    )}
                 <div className="pl1">{navigation}</div>
             </div>
         );
