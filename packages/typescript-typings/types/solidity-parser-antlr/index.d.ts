@@ -6,6 +6,8 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.1
 
+// See: https://solidity.readthedocs.io/en/develop/miscellaneous.html#language-grammar
+
 export interface LineColumn {
     line: number;
     column: number;
@@ -48,6 +50,7 @@ export const enum NodeType {
     TypeName = 'TypeName',
     UserDefinedTypeName = 'UserDefinedTypeName',
     Mapping = 'Mapping',
+    ArrayTypeName = 'ArrayTypeName',
     FunctionTypeName = 'FunctionTypeName',
     StorageLocation = 'StorageLocation',
     StateMutability = 'StateMutability',
@@ -99,6 +102,11 @@ export const enum NodeType {
     UnaryOperation = 'UnaryOperation',
     BinaryOperation = 'BinaryOperation',
     Conditional = 'Conditional',
+    IndexAccess = 'IndexAccess',
+    MemberAccess = 'MemberAccess',
+    NewExpression = 'NewExpression',
+    DecimalNumber = 'DecimalNumber',
+    HexNumber = 'HexNumber',
 }
 export const enum ContractKind {
     Contract = 'contract',
@@ -174,6 +182,7 @@ export interface PragmaDirective extends BaseASTNode {
     name: string;
     value: string;
 }
+/*
 export interface PragmaName extends BaseASTNode {
     type: NodeType.PragmaName;
 }
@@ -192,9 +201,11 @@ export interface VersionConstraint extends BaseASTNode {
 export interface ImportDeclaration extends BaseASTNode {
     type: NodeType.ImportDeclaration;
 }
+*/
 export interface ImportDirective extends BaseASTNode {
     type: NodeType.ImportDirective;
     path: string;
+    symbolAliases: [string, string][];
 }
 export interface ContractDefinition extends BaseASTNode {
     type: NodeType.ContractDefinition;
@@ -207,28 +218,46 @@ export interface InheritanceSpecifier extends BaseASTNode {
     type: NodeType.InheritanceSpecifier;
     baseName: UserDefinedTypeName;
 }
+/*
 export interface ContractPart extends BaseASTNode {
     type: NodeType.ContractPart;
+}
+*/
+export interface UsingForDeclaration extends BaseASTNode {
+    type: NodeType.UsingForDeclaration;
+    typeName: Type;
+    libraryName: string;
 }
 export interface StateVariableDeclaration extends BaseASTNode {
     type: NodeType.StateVariableDeclaration;
     variables: VariableDeclaration[];
-    initialValue: Expression | null;
-}
-export interface UsingForDeclaration extends BaseASTNode {
-    type: NodeType.UsingForDeclaration;
+    initialValue: Expression | null; // TODO check if exists
 }
 export interface StructDefinition extends BaseASTNode {
     type: NodeType.StructDefinition;
+    name: string;
+    members: VariableDeclaration[];
+}
+export interface EnumDefinition extends BaseASTNode {
+    type: NodeType.EnumDefinition;
+    name: string;
+    members: EnumValue[];
+}
+export interface EnumValue extends BaseASTNode {
+    type: NodeType.EnumValue;
+    name: string;
+}
+export interface EventDefinition extends BaseASTNode {
+    type: NodeType.EventDefinition;
+    name: string;
+    parameters: ParameterList;
+    isAnonymous: boolean;
 }
 export interface ModifierDefinition extends BaseASTNode {
     type: NodeType.ModifierDefinition;
     name: string;
-}
-export interface ModifierInvocation extends BaseASTNode {
-    type: NodeType.ModifierInvocation;
-    name: string;
-    arguments: Expression[];
+    parameters: ParameterList;
+    body: Block;
 }
 export interface FunctionDefinition extends BaseASTNode {
     type: NodeType.FunctionDefinition;
@@ -240,28 +269,11 @@ export interface FunctionDefinition extends BaseASTNode {
     modifiers: ModifierInvocation[];
     isConstructor: boolean;
     stateMutability: StateMutability;
-
 }
-export interface ReturnParameters extends BaseASTNode {
-    type: NodeType.ReturnParameters;
-}
-export interface ModifierList extends BaseASTNode {
-    type: NodeType.ModifierList;
-}
-export interface EventDefinition extends BaseASTNode {
-    type: NodeType.EventDefinition;
+export interface ModifierInvocation extends BaseASTNode {
+    type: NodeType.ModifierInvocation;
     name: string;
-    parameters: ParameterList;
-    isAnonymous: boolean;
-}
-export interface EnumValue extends BaseASTNode {
-    type: NodeType.EnumValue;
-    name: string;
-}
-export interface EnumDefinition extends BaseASTNode {
-    type: NodeType.EnumDefinition;
-    name: string;
-    members: ASTNode[];
+    arguments: Expression[];
 }
 export interface ParameterList extends BaseASTNode {
     type: NodeType.ParameterList;
@@ -273,6 +285,7 @@ export interface Parameter extends BaseASTNode {
     typeName: Type;
     storageLocation: StorageLocation | null;
 }
+/*
 export interface EventParameterList extends BaseASTNode {
     type: NodeType.EventParameterList;
 }
@@ -285,6 +298,11 @@ export interface FunctionTypeParameterList extends BaseASTNode {
 export interface FunctionTypeParameter extends BaseASTNode {
     type: NodeType.FunctionTypeParameter;
 }
+*/
+export interface Block extends BaseASTNode {
+    type: NodeType.Block;
+    statements: Statement[];
+}
 export interface VariableDeclaration extends BaseASTNode {
     type: NodeType.VariableDeclaration;
     name: string;
@@ -295,18 +313,9 @@ export interface VariableDeclaration extends BaseASTNode {
     isDeclaredConst: boolean;
     isIndexed: boolean;
 }
+/*
 export interface TypeName extends BaseASTNode {
     type: NodeType.TypeName;
-}
-export interface UserDefinedTypeName extends BaseASTNode {
-    type: NodeType.UserDefinedTypeName;
-    namePath: string;
-}
-export interface Mapping extends BaseASTNode {
-    type: NodeType.Mapping;
-}
-export interface FunctionTypeName extends BaseASTNode {
-    type: NodeType.FunctionTypeName;
 }
 export interface StorageLocation extends BaseASTNode {
     type: NodeType.StorageLocation;
@@ -314,10 +323,7 @@ export interface StorageLocation extends BaseASTNode {
 export interface StateMutability extends BaseASTNode {
     type: NodeType.StateMutability;
 }
-export interface Block extends BaseASTNode {
-    type: NodeType.Block;
-    statements: Statement[];
-}
+*/
 export interface ExpressionStatement extends BaseASTNode {
     type: NodeType.ExpressionStatement;
     expression: Expression;
@@ -330,18 +336,23 @@ export interface IfStatement extends BaseASTNode {
 }
 export interface WhileStatement extends BaseASTNode {
     type: NodeType.WhileStatement;
-}
-export interface SimpleStatement extends BaseASTNode {
-    type: NodeType.SimpleStatement;
+    // TODO
 }
 export interface ForStatement extends BaseASTNode {
     type: NodeType.ForStatement;
+    initExpression: Expression;
+    conditionExpression: Expression;
+    loopExpression: Expression;
+    body: Statement;
 }
 export interface InlineAssemblyStatement extends BaseASTNode {
     type: NodeType.InlineAssemblyStatement;
+    language: string;
+    body: AssemblyBlock;
 }
 export interface DoWhileStatement extends BaseASTNode {
     type: NodeType.DoWhileStatement;
+    // TODO
 }
 export interface ContinueStatement extends BaseASTNode {
     type: NodeType.ContinueStatement;
@@ -362,85 +373,77 @@ export interface EmitStatement extends BaseASTNode {
 }
 export interface VariableDeclarationStatement extends BaseASTNode {
     type: NodeType.VariableDeclarationStatement;
+    variables: VariableDeclaration[];
+    initialValue: Expression;
 }
-export interface IdentifierList extends BaseASTNode {
-    type: NodeType.IdentifierList;
+export interface NewExpression extends BaseASTNode {
+    type: NodeType.NewExpression;
+    typeName: Type;
 }
+
+// Types
 export interface ElementaryTypeName extends BaseASTNode {
     type: NodeType.ElementaryTypeName;
     name: string;
 }
+export interface UserDefinedTypeName extends BaseASTNode {
+    type: NodeType.UserDefinedTypeName;
+    namePath: string;
+}
+export interface Mapping extends BaseASTNode {
+    type: NodeType.Mapping;
+    keyType: Type;
+    valueType: Type;
+}
+export interface ArrayTypeName extends BaseASTNode {
+    type: NodeType.Mapping;
+    baseTypeName: Type;
+    length: Expression | null;
+}
+export interface FunctionTypeName extends BaseASTNode {
+    type: NodeType.FunctionTypeName;
+    // TODO
+}
+/*
 export interface PrimaryExpression extends BaseASTNode {
     type: NodeType.PrimaryExpression;
 }
 export interface ExpressionList extends BaseASTNode {
     type: NodeType.ExpressionList;
 }
+*/
 export interface NameValueList extends BaseASTNode {
     type: NodeType.NameValueList;
+    // TODO
 }
 export interface NameValue extends BaseASTNode {
     type: NodeType.NameValue;
+    // TODO
+}
+
+// Expressions
+export interface Identifier extends BaseASTNode {
+    type: NodeType.Identifier;
+    name: string;
+}
+export interface BooleanLiteral extends BaseASTNode {
+    type: NodeType.BooleanLiteral;
+    value: boolean;
+}
+export interface NumberLiteral extends BaseASTNode {
+    type: NodeType.NumberLiteral;
+    number: string;
+    subdenomination: any; // TODO
+}
+export interface StringLiteral extends BaseASTNode {
+    type: NodeType.StringLiteral;
+    value: string;
 }
 export interface FunctionCall extends BaseASTNode {
     type: NodeType.FunctionCall;
     expression: Expression;
     arguments: Expression[];
     names: [];
-}
-export interface AssemblyBlock extends BaseASTNode {
-    type: NodeType.AssemblyBlock;
-}
-export interface AssemblyItem extends BaseASTNode {
-    type: NodeType.AssemblyItem;
-}
-export interface AssemblyExpression extends BaseASTNode {
-    type: NodeType.AssemblyExpression;
-}
-export interface AssemblyCall extends BaseASTNode {
-    type: NodeType.AssemblyCall;
-}
-export interface AssemblyLocalDefinition extends BaseASTNode {
-    type: NodeType.AssemblyLocalDefinition;
-}
-export interface AssemblyAssignment extends BaseASTNode {
-    type: NodeType.AssemblyAssignment;
-}
-export interface AssemblyIdentifierOrList extends BaseASTNode {
-    type: NodeType.AssemblyIdentifierOrList;
-}
-export interface AssemblyIdentifierList extends BaseASTNode {
-    type: NodeType.AssemblyIdentifierList;
-}
-export interface AssemblyStackAssignment extends BaseASTNode {
-    type: NodeType.AssemblyStackAssignment;
-}
-export interface LabelDefinition extends BaseASTNode {
-    type: NodeType.LabelDefinition;
-}
-export interface AssemblySwitch extends BaseASTNode {
-    type: NodeType.AssemblySwitch;
-}
-export interface AssemblyCase extends BaseASTNode {
-    type: NodeType.AssemblyCase;
-}
-export interface AssemblyFunctionDefinition extends BaseASTNode {
-    type: NodeType.AssemblyFunctionDefinition;
-}
-export interface AssemblyFunctionReturns extends BaseASTNode {
-    type: NodeType.AssemblyFunctionReturns;
-}
-export interface AssemblyFor extends BaseASTNode {
-    type: NodeType.AssemblyFor;
-}
-export interface AssemblyIf extends BaseASTNode {
-    type: NodeType.AssemblyIf;
-}
-export interface AssemblyLiteral extends BaseASTNode {
-    type: NodeType.AssemblyLiteral;
-}
-export interface SubAssembly extends BaseASTNode {
-    type: NodeType.SubAssembly;
 }
 export interface TupleExpression extends BaseASTNode {
     type: NodeType.TupleExpression;
@@ -450,38 +453,126 @@ export interface ElementaryTypeNameExpression extends BaseASTNode {
     type: NodeType.ElementaryTypeNameExpression;
     typeName: Type;
 }
-export interface BooleanLiteral extends BaseASTNode {
-    type: NodeType.BooleanLiteral;
-    value: boolean;
-}
-export interface NumberLiteral extends BaseASTNode {
-    type: NodeType.NumberLiteral;
-    number: string;
-}
-export interface StringLiteral extends BaseASTNode {
-    type: NodeType.StringLiteral;
-    value: string;
-}
-export interface Identifier extends BaseASTNode {
-    type: NodeType.Identifier;
-    name: string;
-}
 export interface UnaryOperation extends BaseASTNode {
-    type: NodeType.BinaryOperation;
-    subExrpession: Expression;
+    type: NodeType.UnaryOperation;
     operator: UnOp;
+    isPrefix: boolean;
+    subExpression: Expression;
 }
 export interface BinaryOperation extends BaseASTNode {
     type: NodeType.BinaryOperation;
+    operator: BinOp;
     left: Expression;
     right: Expression;
-    operator: BinOp;
 }
 export interface Conditional extends BaseASTNode {
     type: NodeType.Conditional;
+    condition: Expression;
     trueExpression: Expression;
     falseExpression: Expression;
 }
+export interface IndexAccess extends BaseASTNode {
+    type: NodeType.IndexAccess;
+    base: Expression;
+    index: Expression;
+}
+export interface MemberAccess extends BaseASTNode {
+    type: NodeType.MemberAccess;
+    expression: Expression;
+    memberName: string;
+}
+
+
+export interface AssemblyBlock extends BaseASTNode {
+    type: NodeType.AssemblyBlock;
+    operations: AssemblyStatement[];
+}
+/*
+export interface AssemblyItem extends BaseASTNode {
+    type: NodeType.AssemblyItem;
+}
+export interface AssemblyExpression extends BaseASTNode {
+    type: NodeType.AssemblyExpression;
+}
+*/
+export interface AssemblyCall extends BaseASTNode {
+    type: NodeType.AssemblyCall;
+    functionName: string;
+    arguments: AssemblyExpression[];
+}
+export interface AssemblyLocalDefinition extends BaseASTNode {
+    type: NodeType.AssemblyLocalDefinition;
+    names: Identifier[];
+    expression: AssemblyExpression;
+}
+export interface AssemblyAssignment extends BaseASTNode {
+    type: NodeType.AssemblyAssignment;
+    names: Identifier[];
+    expression: AssemblyExpression;
+}
+/*
+export interface AssemblyIdentifierOrList extends BaseASTNode {
+    type: NodeType.AssemblyIdentifierOrList;
+}
+export interface AssemblyIdentifierList extends BaseASTNode {
+    type: NodeType.AssemblyIdentifierList;
+}
+export interface AssemblyStackAssignment extends BaseASTNode {
+    type: NodeType.AssemblyStackAssignment;
+}
+*/
+export interface LabelDefinition extends BaseASTNode {
+    type: NodeType.LabelDefinition;
+    // TODO
+}
+export interface AssemblySwitch extends BaseASTNode {
+    type: NodeType.AssemblySwitch;
+    expression: Expression;
+    cases: AssemblyCase[];
+}
+export interface AssemblyCase extends BaseASTNode {
+    type: NodeType.AssemblyCase;
+    value: Expression;
+    block: AssemblyBlock;
+}
+export interface AssemblyFunctionDefinition extends BaseASTNode {
+    type: NodeType.AssemblyFunctionDefinition;
+    // TODO
+}
+export interface AssemblyFunctionReturns extends BaseASTNode {
+    type: NodeType.AssemblyFunctionReturns;
+    // TODO
+}
+export interface AssemblyFor extends BaseASTNode {
+    type: NodeType.AssemblyFor;
+    pre: AssemblyBlock | AssemblyExpression;
+    condition: AssemblyExpression;
+    post: AssemblyBlock | AssemblyExpression;
+    body: AssemblyBlock;
+}
+export interface AssemblyIf extends BaseASTNode {
+    type: NodeType.AssemblyIf;
+    condition: AssemblyExpression;
+    body: AssemblyBlock;
+}
+export interface DecimalNumber extends BaseASTNode {
+    type: NodeType.AssemblyIf;
+    value: string;
+}
+export interface HexNumber extends BaseASTNode {
+    type: NodeType.AssemblyIf;
+    value: string;
+}
+
+
+/*
+export interface AssemblyLiteral extends BaseASTNode {
+    type: NodeType.AssemblyLiteral;
+}
+export interface SubAssembly extends BaseASTNode {
+    type: NodeType.SubAssembly;
+}
+*/
 export type SourceMember =
     | PragmaDirective
     | ImportDirective
@@ -521,8 +612,22 @@ export type Expression =
     | VariableDeclaration // TODO: Is this really an expression?
     | NewExpression
     | TupleExpression
+    | IndexAccess
+    | MemberAccess
 export type Type =
     | ElementaryType
+export type AssemblyStatement =
+    | AssemblyCall
+    | AssemblyAssignment
+    | AssemblyLocalDefinition
+    | AssemblyIf
+    | AssemblyFor
+    | AssemblySwitch
+    | AssemblyCase
+export type AssemblyExpression =
+    | AssemblyCall
+    | DecimalNumber
+    | HexNumber
 export type ASTNode =
     | SourceUnit
     | PragmaDirective
@@ -585,7 +690,6 @@ export type ASTNode =
     | FunctionCall
     | AssemblyBlock
     | AssemblyItem
-    | AssemblyExpression
     | AssemblyCall
     | AssemblyLocalDefinition
     | AssemblyAssignment
@@ -642,6 +746,7 @@ export interface Visitor<T> {
     TypeName?: (node: TypeName) => T;
     UserDefinedTypeName?: (node: UserDefinedTypeName) => T;
     Mapping?: (node: Mapping) => T;
+    ArrayTypeName?: (node: ArrayTypeName) => T;
     FunctionTypeName?: (node: FunctionTypeName) => T;
     StorageLocation?: (node: StorageLocation) => T;
     StateMutability?: (node: StateMutability) => T;
@@ -657,6 +762,7 @@ export interface Visitor<T> {
     BreakStatement?: (node: BreakStatement) => T;
     ReturnStatement?: (node: ReturnStatement) => T;
     ThrowStatement?: (node: ThrowStatement) => T;
+    EmitStatement?: (node: EmitStatement) => T;
     VariableDeclarationStatement?: (node: VariableDeclarationStatement) => T;
     IdentifierList?: (node: IdentifierList) => T;
     ElementaryTypeName?: (node: ElementaryTypeName) => T;
@@ -692,6 +798,11 @@ export interface Visitor<T> {
     UnaryOperation?: (node: UnaryOperation) => T;
     BinaryOperation?: (node: BinaryOperation) => T;
     Conditional?: (node: Conditional) => T;
+    MemberAccess?: (node: MemberAccess) => T;
+    IndexAccess?: (node: IndexAccess) => T;
+    NewExpression?: (node: NewExpression) => T;
+    DecimalNumber?: (node: DecimalNumber) => T;
+    HexNumber?: (node: HexNumber) => T;
 }
 export interface ParserOpts {
     tolerant?: boolean;
