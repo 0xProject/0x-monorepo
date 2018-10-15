@@ -44,7 +44,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
             if (this.props.shouldDisplaySectionHeaders) {
                 // tslint:disable-next-line:no-unused-variable
                 return (
-                    <div key={`section-${sectionName}`} className="py1" style={{ color: colors.linkSectionGrey }}>
+                    <div key={`section-${sectionName}`} className="py1" style={{ color: colors.greyTheme }}>
                         <div style={{ fontSize: 14, letterSpacing: 0.5 }} className="py1">
                             {finalSectionName.toUpperCase()}
                         </div>
