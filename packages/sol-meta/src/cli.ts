@@ -1,9 +1,6 @@
-#!/usr/bin/env node
-// We need the above pragma since this script will be run as a command-line tool.
-
+import 'source-map-support/register';
 import { logUtils } from '@0xproject/utils';
 import * as _ from 'lodash';
-import 'source-map-support/register';
 import * as yargs from 'yargs';
 
 import { Compiler } from './compiler';
