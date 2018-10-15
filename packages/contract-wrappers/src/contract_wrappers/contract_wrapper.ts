@@ -1,4 +1,3 @@
-import { ContractAddresses, getContractAddressesForNetwork, NetworkId } from '@0xproject/contract-addresses';
 import { AbiDecoder, intervalUtils, logUtils } from '@0xproject/utils';
 import { marshaller, Web3Wrapper } from '@0xproject/web3-wrapper';
 import {

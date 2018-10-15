@@ -1,4 +1,4 @@
-import { ContractAddresses, getContractAddressesForNetwork, NetworkId } from '@0xproject/contract-addresses';
+import { ContractAddresses, getContractAddressesForNetworkOrThrow, NetworkId } from '@0xproject/contract-addresses';
 import * as _ from 'lodash';
 
 /**
@@ -11,5 +11,5 @@ export function _getDefaultContractAddresses(networkId: number): ContractAddress
             `No default contract addresses found for the given network id (${networkId}). If you want to use ContractWrappers on this network, you must manually pass in the contract address(es) to the constructor.`,
         );
     }
-    return getContractAddressesForNetwork(networkId);
+    return getContractAddressesForNetworkOrThrow(networkId);
 }

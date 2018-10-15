@@ -12,13 +12,14 @@ yarn add @0xproject/contract-addresses
 **Import**
 
 ```typescript
-import { getContractAddressesForNetwork } from '@0xproject/contract-addresses';
+import { getContractAddressesForNetworkOrThrow } from '@0xproject/contract-addresses';
 ```
 
 or
 
 ```javascript
-var getContractAddressesForNetwork = require('@0xproject/contract-addresses').getContractAddressesForNetwork;
+var getContractAddressesForNetworkOrThrow = require('@0xproject/contract-addresses')
+    .getContractAddressesForNetworkOrThrow;
 ```
 
 ## Contributing
