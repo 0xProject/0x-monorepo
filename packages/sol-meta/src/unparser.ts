@@ -173,8 +173,10 @@ const visitor: S.Visitor<string> = {
     NewExpression: ({typeName}) =>
         `(new ${unparse(typeName)})`,
     
-    TupleExpression: ({components}) =>
-        `[${components.map(unparse).join(', ')}]`,
+    TupleExpression: ({isArray, components}) =>
+        isArray
+        ? `[${components.map(unparse).join(', ')}]`
+        : `(${components.map(unparse).join(', ')})`,
     
     // Assembly
     
