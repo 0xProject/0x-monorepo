@@ -20,6 +20,7 @@ export interface MarkdownSectionProps {
     headerSize?: HeaderSizes;
     githubLink?: string;
     shouldReformatTitle?: boolean;
+    alternativeSectionTitle?: string;
 }
 
 interface DefaultMarkdownSectionProps {
@@ -47,22 +48,25 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
         const { sectionName, markdownContent, headerSize, githubLink } = this.props as PropsWithDefaults;
 
         const id = utils.getIdFromName(sectionName);
-        const finalSectionName = this.props.shouldReformatTitle
+        const formattedSectionName = this.props.shouldReformatTitle
             ? utils.convertCamelCaseToSpaces(sectionName)
             : sectionName;
+        const title = !_.isUndefined(this.props.alternativeSectionTitle)
+            ? this.props.alternativeSectionTitle
+            : formattedSectionName;
         return (
             <div
                 className="md-px1 sm-px2 overflow-hidden"
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
-                <ScrollElement name={id}>
-                    <Container className="clearfix" marginBottom="20px">
+                <ScrollElement name={id} style={{ paddingBottom: 20 }}>
+                    <Container className="clearfix" paddingTop="30px" paddingBottom="20px">
                         <div className="col lg-col-8 md-col-8 sm-col-12">
                             <span style={{ color: colors.grey700 }}>
                                 <AnchorTitle
                                     headerSize={headerSize}
-                                    title={_.capitalize(finalSectionName)}
+                                    title={_.capitalize(title)}
                                     id={id}
                                     shouldShowAnchor={this.state.shouldShowAnchor}
                                 />
@@ -87,13 +91,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                             paragraph: MarkdownParagraphBlock,
                         }}
                     />
-                    <Container
-                        width={'100%'}
-                        height={'1px'}
-                        backgroundColor={colors.grey300}
-                        marginTop={'32px'}
-                        marginBottom={'32px'}
-                    />
+                    <Container width={'100%'} height={'1px'} backgroundColor={colors.grey300} marginTop={'32px'} />
                 </ScrollElement>
             </div>
         );

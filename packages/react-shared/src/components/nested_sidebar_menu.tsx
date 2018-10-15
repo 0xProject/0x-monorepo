@@ -14,9 +14,12 @@ export interface NestedSidebarMenuProps {
     sidebarHeader?: React.ReactNode;
     shouldDisplaySectionHeaders?: boolean;
     shouldReformatMenuItemNames?: boolean;
+    parentName?: string;
 }
 
-export interface NestedSidebarMenuState {}
+export interface NestedSidebarMenuState {
+    scrolledToId: string;
+}
 
 const styles: Styles = {
     menuItemWithHeaders: {
@@ -40,7 +43,28 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
     public static defaultProps: Partial<NestedSidebarMenuProps> = {
         shouldDisplaySectionHeaders: true,
         shouldReformatMenuItemNames: true,
+        parentName: 'default',
     };
+    private _urlIntervalCheckId: number;
+    constructor(props: NestedSidebarMenuProps) {
+        super(props);
+        this.state = {
+            scrolledToId: '',
+        };
+    }
+    public componentDidMount(): void {
+        this._urlIntervalCheckId = window.setInterval(() => {
+            const scrollId = location.hash.slice(1);
+            if (scrollId !== this.state.scrolledToId) {
+                this.setState({
+                    scrolledToId: scrollId,
+                });
+            }
+        }, 200);
+    }
+    public componentWillUnmount(): void {
+        window.clearInterval(this._urlIntervalCheckId);
+    }
     public render(): React.ReactNode {
         const navigation = _.map(this.props.sectionNameToLinks, (links: ALink[], sectionName: string) => {
             const finalSectionName = utils.convertCamelCaseToSpaces(sectionName);
@@ -48,7 +72,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
                 // tslint:disable-next-line:no-unused-variable
                 return (
                     <div key={`section-${sectionName}`} className="py1" style={{ color: colors.greyTheme }}>
-                        <div style={{ fontSize: 14, letterSpacing: 0.5 }} className="py1">
+                        <div style={{ fontSize: 14, letterSpacing: 0.5 }} className="py1 pl1">
                             {finalSectionName.toUpperCase()}
                         </div>
                         {this._renderMenuItems(links)}
@@ -61,23 +85,37 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
         return (
             <div>
                 {this.props.sidebarHeader}
-                <div className="pl1">{navigation}</div>
+                <div>{navigation}</div>
             </div>
         );
     }
     private _renderMenuItems(links: ALink[]): React.ReactNode[] {
+        const scrolledToId = this.state.scrolledToId;
         const menuItemStyles = this.props.shouldDisplaySectionHeaders
             ? styles.menuItemWithHeaders
             : styles.menuItemWithoutHeaders;
         const menuItemInnerDivStyles = this.props.shouldDisplaySectionHeaders ? styles.menuItemInnerDivWithHeaders : {};
         const menuItems = _.map(links, link => {
+            const isScrolledTo = link.to === scrolledToId;
             const finalMenuItemName = this.props.shouldReformatMenuItemNames
                 ? utils.convertDashesToSpaces(link.title)
                 : link.title;
             return (
                 <div key={`menuItem-${finalMenuItemName}`}>
                     <Link to={link.to} shouldOpenInNewTab={link.shouldOpenInNewTab}>
-                        <MenuItem style={menuItemStyles} innerDivStyle={menuItemInnerDivStyles}>
+                        <MenuItem
+                            style={{
+                                ...menuItemStyles,
+                                paddingLeft: 8,
+                                borderRadius: 6,
+                                backgroundColor: isScrolledTo ? colors.lightLinkBlue : 'inherit',
+                            }}
+                            innerDivStyle={{
+                                ...menuItemInnerDivStyles,
+                                color: isScrolledTo ? colors.white : 'inherit',
+                                fontWeight: isScrolledTo ? 'bold' : 'inherit',
+                            }}
+                        >
                             <span
                                 style={{
                                     textTransform: this.props.shouldReformatMenuItemNames ? 'capitalize' : 'none',

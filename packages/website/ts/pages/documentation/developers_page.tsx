@@ -138,7 +138,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                             className="absolute"
                             style={{
                                 ...scrollableContainerStyles,
-                                paddingTop: 30,
+                                paddingTop: 0,
                                 paddingLeft: mainContentPadding,
                                 paddingRight: this.state.isHoveringMainContent
                                     ? mainContentPadding - SCROLLER_WIDTH

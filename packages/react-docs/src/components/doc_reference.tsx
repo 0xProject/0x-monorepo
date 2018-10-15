@@ -97,15 +97,15 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
         if (!_.isUndefined(markdownFileIfExists)) {
             // Special-case replace the `introduction` sectionName with the package name
             const isIntroductionSection = sectionName === 'introduction';
-            const finalSectionName = isIntroductionSection ? this.props.docsInfo.displayName : sectionName;
             const headerSize = isIntroductionSection ? HeaderSizes.H1 : HeaderSizes.H3;
             return (
                 <MarkdownSection
                     key={`markdown-section-${sectionName}`}
-                    sectionName={finalSectionName}
+                    sectionName={sectionName}
                     headerSize={headerSize}
                     markdownContent={markdownFileIfExists}
                     shouldReformatTitle={false}
+                    alternativeSectionTitle={isIntroductionSection ? this.props.docsInfo.displayName : undefined}
                 />
             );
         }
@@ -196,7 +196,9 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
                 )}
                 {!_.isEmpty(docSection.functions) && (
                     <div>
-                        {!isExportedFunctionSection && <h2 style={headerStyle}>Functions</h2>}
+                        {!isExportedFunctionSection && (
+                            <div style={{ ...headerStyle, fontSize: '1.5em' }}>Functions</div>
+                        )}
                         <div>{functionDefs}</div>
                     </div>
                 )}
