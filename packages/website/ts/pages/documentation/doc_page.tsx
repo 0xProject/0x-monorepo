@@ -112,7 +112,11 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             <Container>
                 <Container className="flex justify-bottom">
                     <Container className="left pl1" width="150px">
-                        <Text fontColor={colors.lightLinkBlue} fontSize="22px" fontWeight="bold">
+                        <Text
+                            fontColor={colors.lightLinkBlue}
+                            fontSize={this.props.screenWidth === ScreenWidths.Sm ? '20px' : '22px'}
+                            fontWeight="bold"
+                        >
                             {this.props.docsInfo.displayName}
                         </Text>
                     </Container>

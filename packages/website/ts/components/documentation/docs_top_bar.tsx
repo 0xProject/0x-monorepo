@@ -143,7 +143,7 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                 openSecondary={true}
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
-                <Container className="clearfix pl1" onClick={this._onMenuButtonClick.bind(this)}>
+                <Container className="clearfix pl1 pt2" onClick={this._onMenuButtonClick.bind(this)}>
                     {this.props.sidebar}
                 </Container>
             </Drawer>
