@@ -50,17 +50,9 @@ export interface DocReferenceProps {
     docAgnosticFormat?: DocAgnosticFormat;
 }
 
-export interface DocReferenceState {
-    isHoveringSidebar: boolean;
-}
+export interface DocReferenceState {}
 
 export class DocReference extends React.Component<DocReferenceProps, DocReferenceState> {
-    constructor(props: DocReferenceProps) {
-        super(props);
-        this.state = {
-            isHoveringSidebar: false,
-        };
-    }
     public componentDidMount(): void {
         window.addEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
@@ -328,16 +320,6 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
                 sourceUrl={this.props.sourceUrl}
             />
         );
-    }
-    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
-        this.setState({
-            isHoveringSidebar: true,
-        });
-    }
-    private _onSidebarHoverOff(): void {
-        this.setState({
-            isHoveringSidebar: false,
-        });
     }
     private _onHashChanged(_event: any): void {
         const hash = window.location.hash.slice(1);
