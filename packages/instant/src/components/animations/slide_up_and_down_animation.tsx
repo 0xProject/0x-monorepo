@@ -90,9 +90,9 @@ export class SlideUpAndDownAnimation extends React.Component<SlideUpAndDownAnima
             window.clearTimeout(this._timeoutId);
         }
     }
-    private readonly _renderSlide = (): React.ReactNode => {
+    private _renderSlide(): React.ReactNode {
         const SlideComponent = this.state.slideState === 'up' ? SlideUpAnimationComponent : SlideDownAnimationComponent;
 
         return <SlideComponent downY={this.props.downY}>{this.props.children}</SlideComponent>;
-    };
+    }
 }
