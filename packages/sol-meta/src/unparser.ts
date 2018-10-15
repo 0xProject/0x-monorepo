@@ -1,13 +1,13 @@
 // TODO: instead use https://github.com/prettier-solidity/prettier-plugin-solidity/blob/master/src/printer.js
 
-import { ASTNode } from 'solidity-parser-antlr';
+import * as S from 'solidity-parser-antlr';
 
 const stresc = (s: string) => `\"${s}\"`;
 const indent = (s: string) => `\t${s.replace(/\n/g, '\n\t')}`;
 const block = (s: string) => `{\n${indent(s)}\n}`;
 const unparen = (s: string) => s.replace(/^\((.*)\)$/, '$1');
 
-const visitor = {
+const visitor: S.Visitor<string> = {
     
     // Source level
     
@@ -185,7 +185,7 @@ const visitor = {
     
     AssemblyLocalDefinition: ({names, expression}) =>
         `let ${names.map(unparse).join(', ')} := ${unparse(expression)}`,
-        
+    
     AssemblyCall: ({functionName, arguments: args}) =>
         args.length == 0 ?
             functionName :
@@ -210,7 +210,7 @@ const visitor = {
         value,
 }
 
-export function unparse(ast: ASTNode): string {
+export function unparse(ast: S.ASTNode): string {
     return (visitor[ast.type] || (a => {
         console.log(a);
         console.trace();
