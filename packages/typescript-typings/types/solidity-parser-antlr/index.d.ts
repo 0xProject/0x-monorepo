@@ -8,6 +8,8 @@
 
 // See: https://solidity.readthedocs.io/en/develop/miscellaneous.html#language-grammar
 
+// TODO: Parameter and VariableDeclaration are the same node
+
 export interface LineColumn {
     line: number;
     column: number;
@@ -205,7 +207,7 @@ export interface ImportDeclaration extends BaseASTNode {
 export interface ImportDirective extends BaseASTNode {
     type: NodeType.ImportDirective;
     path: string;
-    symbolAliases: [string, string][];
+    symbolAliases: [string, string][] | null;
 }
 export interface ContractDefinition extends BaseASTNode {
     type: NodeType.ContractDefinition;
@@ -283,7 +285,12 @@ export interface Parameter extends BaseASTNode {
     type: NodeType.Parameter;
     name: string | null;
     typeName: Type;
-    storageLocation: StorageLocation | null;
+    visibility?: Visibility;
+    storageLocation?: StorageLocation | null;
+    expression?: Expression;
+    isStateVar?: boolean;
+    isDeclaredConst?: boolean;
+    isIndexed?: boolean;
 }
 /*
 export interface EventParameterList extends BaseASTNode {
@@ -306,11 +313,12 @@ export interface Block extends BaseASTNode {
 export interface VariableDeclaration extends BaseASTNode {
     type: NodeType.VariableDeclaration;
     name: string;
-    visibility: Visibility;
+    visibility?: Visibility;
+    storageLocation?: StorageLocation;
     typeName: Type;
-    expression: Expression;
+    expression?: Expression;
     isStateVar: boolean;
-    isDeclaredConst: boolean;
+    isDeclaredConst?: boolean;
     isIndexed: boolean;
 }
 /*
@@ -448,6 +456,7 @@ export interface FunctionCall extends BaseASTNode {
 export interface TupleExpression extends BaseASTNode {
     type: NodeType.TupleExpression;
     components: Expression[];
+    isArray: boolean
 }
 export interface ElementaryTypeNameExpression extends BaseASTNode {
     type: NodeType.ElementaryTypeNameExpression;
@@ -616,6 +625,10 @@ export type Expression =
     | MemberAccess
 export type Type =
     | ElementaryType
+    | UserDefinedTypeName
+    | Mapping
+    | ArrayTypeName
+    | FunctionTypeName
 export type AssemblyStatement =
     | AssemblyCall
     | AssemblyAssignment
