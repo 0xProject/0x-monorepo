@@ -1,10 +1,10 @@
 import * as S from 'solidity-parser-antlr';
 import * as utils from './utils';
-import {identifier} from './utils';
+import {identifier, nameParameters, argumentExpressions} from './utils';
 
 // Creates a public getter for a state variable
 const getter = (stateVar: S.StateVariableDeclaration): S.FunctionDefinition => {
-    const [{name, typeName }] = (stateVar as any).variables;
+    const [{name, typeName }] = stateVar.variables;
     return {
         type: S.NodeType.FunctionDefinition,
         name: `get_${name}`,
@@ -37,7 +37,7 @@ const getter = (stateVar: S.StateVariableDeclaration): S.FunctionDefinition => {
 
 // Creates a public getter for a state variable
 const setter = (stateVar: S.StateVariableDeclaration): S.FunctionDefinition => {
-    const [{name, typeName }] = (stateVar as any).variables;
+    const [{name, typeName }] = stateVar.variables;
     return {
         type: S.NodeType.FunctionDefinition,
         name: `set_${name}`,
@@ -72,27 +72,26 @@ const setter = (stateVar: S.StateVariableDeclaration): S.FunctionDefinition => {
 
 // Creates a public wrapper for a function
 const wrapFunction = (func: S.FunctionDefinition): S.FunctionDefinition => {
-    const call = {
+    const params = nameParameters(func.parameters);
+    const call: S.FunctionCall = {
         type: S.NodeType.FunctionCall,
         expression: identifier(func.name),
-        arguments: (func as any).parameters.parameters.map(
-            ({name}) => identifier(name)
-        )
+        arguments: argumentExpressions(params),
+        names: []
     };
     return {
         ...func,
         name: `public_${func.name}`,
         visibility: S.Visibility.Public,
+        parameters: params,
         modifiers: [],
         body: {
             type: S.NodeType.Block,
             statements: [
-                (func as any).returnParameters ?
-                {
+                func.returnParameters ? {
                     type: S.NodeType.ReturnStatement,
                     expression: call
-                } :
-                {
+                } : {
                     type: S.NodeType.ExpressionStatement,
                     expression: call
                 }
@@ -103,7 +102,7 @@ const wrapFunction = (func: S.FunctionDefinition): S.FunctionDefinition => {
 
 // Creates a public function that triggers a log event
 const emitEvent = (event: S.EventDefinition): S.FunctionDefinition => {
-    const {name, parameters} = event as any;
+    const {name, parameters} = event;
     return {
         type: S.NodeType.FunctionDefinition,
         name: `emit_${name}`,
@@ -121,14 +120,12 @@ const emitEvent = (event: S.EventDefinition): S.FunctionDefinition => {
         modifiers: [],
         body: {
             type: S.NodeType.Block,
-            statements: [/* */ {
+            statements: [{
                 type: S.NodeType.EmitStatement,
-                eventCall: /*<S.FunctionCall>*/ {
+                eventCall: {
                     type: S.NodeType.FunctionCall,
                     expression: identifier(name),
-                    arguments: parameters.parameters.map(
-                        ({name}) => identifier(name)
-                    ),
+                    arguments: argumentExpressions(parameters),
                     names: []
                 }
             }]
@@ -138,19 +135,20 @@ const emitEvent = (event: S.EventDefinition): S.FunctionDefinition => {
 
 // Creates a public function that has modifier
 const testModifier = (modifier: S.ModifierDefinition): S.FunctionDefinition => {
-    const {name, parameters} = modifier as any;
+    const {name, parameters} = modifier;
     return {
         type: S.NodeType.FunctionDefinition,
         name: `modifier_${name}`,
         visibility: S.Visibility.Public,
         isConstructor: false,
         stateMutability: S.StateMutability.Default,
-        parameters: Array.isArray(parameters) ?
-            {
+        parameters: 
+            parameters === null
+            ? {
                 type: S.NodeType.ParameterList,
                 parameters: []
-            } :
-            parameters,
+            } 
+            : parameters,
         returnParameters: {
             type: S.NodeType.ParameterList,
             parameters: [{
@@ -166,11 +164,10 @@ const testModifier = (modifier: S.ModifierDefinition): S.FunctionDefinition => {
         modifiers: [{
             type: S.NodeType.ModifierInvocation,
             name,
-            arguments: Array.isArray(parameters) ?
-                [] :
-                parameters.parameters.map(
-                    ({name}) => identifier(name)
-                )
+            arguments:
+                Array.isArray(parameters)
+                ? argumentExpressions(parameters)
+                : []
         }],
         body: {
             type: S.NodeType.Block,
@@ -193,7 +190,7 @@ const exposeNode = (ast: S.ContractMember): S.ContractMember[] => {
             return [];
         }
         case 'StateVariableDeclaration': {
-            const [vardecl] = (ast as any).variables;
+            const [vardecl] = ast.variables;
             if (vardecl.visibility !== 'internal') {
                 return [];
             }
@@ -211,7 +208,7 @@ const exposeNode = (ast: S.ContractMember): S.ContractMember[] => {
             return [testModifier(ast as S.ModifierDefinition)];
         }
         case 'FunctionDefinition': {
-            const func = ast as any;
+            const func = ast;
             if (func.visibility !== 'internal') {
                 return [];
             }
@@ -235,7 +232,7 @@ export function expose(filePath: string, ast: S.SourceUnit): S.SourceUnit {
                 unitAliases: null,
                 symbolAliases: null
             },
-            ...utils.contracts(ast).map((ctr: any) => ({
+            ...utils.contracts(ast).map((ctr) => ({
                 type: S.NodeType.ContractDefinition,
                 kind: 'contract',
                 name: `${ctr.name}Exposed`,
