@@ -5,12 +5,12 @@ import { keyframes, styled } from '../../style/theme';
 const slideKeyframeGenerator = (fromY: string, toY: string) => keyframes`
     from {
         position: relative;
-        top: ${fromY}
+        top: ${fromY};
     }
 
     to {
         position: relative;
-        top: ${toY}
+        top: ${toY};
     }
 `;
 
