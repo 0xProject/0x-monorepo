@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 
-import { SlideUpAndDownAnimationComponent } from './animations/slide_up_and_down_animation';
+import { SlideUpAndDownAnimation } from './animations/slide_up_and_down_animation';
 
 import { Container, Text } from './ui';
 
@@ -30,7 +30,7 @@ export const Error: React.StatelessComponent<ErrorProps> = props => (
 );
 
 export const SlidingError: React.StatelessComponent<ErrorProps> = props => (
-    <SlideUpAndDownAnimationComponent downY="120px" delayMs={5000}>
+    <SlideUpAndDownAnimation downY="120px" delayMs={5000}>
         <Error icon={props.icon} message={props.message} />
-    </SlideUpAndDownAnimationComponent>
+    </SlideUpAndDownAnimation>
 );

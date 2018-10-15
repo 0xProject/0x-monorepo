@@ -19,6 +19,7 @@ export interface SlideAnimationProps {
     animationType: string;
     animationDirection?: string;
 }
+
 export const SlideAnimation =
     styled.div <
     SlideAnimationProps >
@@ -33,13 +34,17 @@ export const SlideAnimation =
     z-index: -1;
 `;
 
-export const SlideUpAnimationComponent: React.StatelessComponent<{ downY: string }> = props => (
+export interface SlideAnimationComponentProps {
+    downY: string;
+}
+
+export const SlideUpAnimationComponent: React.StatelessComponent<SlideAnimationComponentProps> = props => (
     <SlideAnimation animationType="ease-in" keyframes={slideKeyframeGenerator(props.downY, '0px')}>
         {props.children}
     </SlideAnimation>
 );
 
-export const SlideDownAnimationComponent: React.StatelessComponent<{ downY: string }> = props => (
+export const SlideDownAnimationComponent: React.StatelessComponent<SlideAnimationComponentProps> = props => (
     <SlideAnimation
         animationDirection="forwards"
         animationType="cubic-bezier(0.25, 0.1, 0.25, 1)"
@@ -49,35 +54,28 @@ export const SlideDownAnimationComponent: React.StatelessComponent<{ downY: stri
     </SlideAnimation>
 );
 
-export interface SlideUpAndDownAnimationProps {
+export interface SlideUpAndDownAnimationProps extends SlideAnimationComponentProps {
     delayMs: number;
-    downY: string;
 }
 
 interface SlideUpAndDownState {
     slideState: 'up' | 'down';
 }
 
-export class SlideUpAndDownAnimationComponent extends React.Component<
-    SlideUpAndDownAnimationProps,
-    SlideUpAndDownState
-> {
-    private _timeoutNumber: number | undefined;
-
+export class SlideUpAndDownAnimation extends React.Component<SlideUpAndDownAnimationProps, SlideUpAndDownState> {
+    private _timeoutId: number | undefined;
     constructor(props: SlideUpAndDownAnimationProps) {
         super(props);
-        this._timeoutNumber = undefined;
+        this._timeoutId = undefined;
         this.state = {
             slideState: 'up',
         };
     }
-
-    public render(): JSX.Element {
+    public render(): React.ReactNode {
         return this._renderSlide();
     }
-
     public componentDidMount(): void {
-        this._timeoutNumber = window.setTimeout(() => {
+        this._timeoutId = window.setTimeout(() => {
             this.setState({
                 slideState: 'down',
             });
@@ -85,14 +83,12 @@ export class SlideUpAndDownAnimationComponent extends React.Component<
 
         return;
     }
-
     public componentWillUnmount(): void {
-        if (this._timeoutNumber) {
-            window.clearTimeout(this._timeoutNumber);
+        if (this._timeoutId) {
+            window.clearTimeout(this._timeoutId);
         }
     }
-
-    private readonly _renderSlide = (): JSX.Element => {
+    private readonly _renderSlide = (): React.ReactNode => {
         const SlideComponent = this.state.slideState === 'up' ? SlideUpAnimationComponent : SlideDownAnimationComponent;
 
         return <SlideComponent downY={this.props.downY}>{this.props.children}</SlideComponent>;
