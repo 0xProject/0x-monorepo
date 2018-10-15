@@ -17,6 +17,10 @@
             {
                 "note": "Add `docs:json` command to package.json",
                 "pr": 1139
+            },
+            {
+                "note": "Add missing types to public interface",
+                "pr": 1139
             }
         ]
     },
