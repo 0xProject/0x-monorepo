@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.2",
+        "changes": [
+            {
+                "note": "Added getStats function and returns a Stats object",
+                "pr": 1118
+            }
+        ]
+    },
+    {
         "version": "2.1.1",
         "changes": [
             {

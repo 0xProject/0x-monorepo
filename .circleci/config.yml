@@ -23,6 +23,7 @@ jobs:
           paths:
             - ~/repo
   build-website:
+    resource_class: medium+
     docker:
       - image: circleci/node:9
     working_directory: ~/repo
@@ -161,6 +162,90 @@ jobs:
           key: coverage-web3-wrapper-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/repo/packages/web3-wrapper/coverage/lcov.info
+  test-python:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - restore_cache:
+          key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          command: |
+            cd python-packages/order_utils
+            python -m ensurepip
+            python -m pip install -e .[dev]
+      - save_cache:
+          key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.7/site-packages"
+            - ".eggs"
+            - ".mypy_cache"
+            - ".pytest_cache"
+            - ".tox"
+      - run:
+          command: |
+            cd python-packages/order_utils
+            coverage run setup.py test
+      - save_cache:
+          key: coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/repo/python-packages/order_utils/.coverage
+  test-rest-python:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - restore_cache:
+          key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          command: |
+            cd python-packages/order_utils
+            python -m ensurepip
+            python -m pip install -e .[dev]
+      - save_cache:
+          key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.7/site-packages"
+            - ".eggs"
+            - ".mypy_cache"
+            - ".pytest_cache"
+            - ".tox"
+      - run:
+          command: |
+            cd python-packages/order_utils
+            tox
+  static-tests-python:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/python
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - restore_cache:
+          key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          command: |
+            cd python-packages/order_utils
+            python -m ensurepip
+            python -m pip install -e .[dev]
+      - save_cache:
+          key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.7/site-packages"
+      - run:
+          command: |
+            cd python-packages/order_utils
+            python setup.py lint
   static-tests:
     working_directory: ~/repo
     docker:
@@ -232,6 +317,9 @@ jobs:
       - restore_cache:
           keys:
             - coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
       - run: yarn report_coverage
 workflows:
   version: 2
@@ -262,3 +350,8 @@ workflows:
       - submit-coverage:
           requires:
             - test-rest
+            - test-python
+      - test-python
+      - static-tests-python
+      # skip python tox run for now, as we don't yet have multiple test environments to support.
+      #- test-rest-python

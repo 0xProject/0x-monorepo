@@ -78,6 +78,7 @@ export {
     ERC721AssetData,
     SignatureType,
     OrderRelevantState,
+    Stats,
 } from '@0xproject/types';
 
 export {

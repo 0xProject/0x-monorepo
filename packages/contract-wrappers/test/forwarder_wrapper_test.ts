@@ -17,6 +17,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
+// tslint:disable:custom-no-magic-numbers
 describe('ForwarderWrapper', () => {
     const contractWrappersConfig = {
         networkId: constants.TESTRPC_NETWORK_ID,
@@ -99,6 +100,25 @@ describe('ForwarderWrapper', () => {
             expect(ordersInfo[0].orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             expect(ordersInfo[1].orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
         });
+        it('should throw when invalid transaction and shouldValidate is true', async () => {
+            const signedOrders = [signedOrder];
+            // request more makerAsset than what is available
+            const makerAssetFillAmount = signedOrder.makerAssetAmount.plus(100);
+            return expect(
+                contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+                    signedOrders,
+                    makerAssetFillAmount,
+                    takerAddress,
+                    makerAssetFillAmount,
+                    [],
+                    0,
+                    constants.NULL_ADDRESS,
+                    {
+                        shouldValidate: true,
+                    },
+                ),
+            ).to.be.rejectedWith('COMPLETE_FILL_FAILED');
+        });
     });
     describe('#marketSellOrdersWithEthAsync', () => {
         it('should market sell orders with eth', async () => {
@@ -114,6 +134,34 @@ describe('ForwarderWrapper', () => {
             expect(ordersInfo[0].orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             expect(ordersInfo[1].orderStatus).to.be.equal(OrderStatus.FILLABLE);
             expect(ordersInfo[1].orderTakerAssetFilledAmount).to.be.bignumber.equal(new BigNumber(4)); // only 95% of ETH is sold
+        });
+        it('should throw when invalid transaction and shouldValidate is true', async () => {
+            // create an order with fees, we try to fill it but we do not provide enough ETH to cover the fees
+            const signedOrderWithFee = await fillScenarios.createFillableSignedOrderWithFeesAsync(
+                makerAssetData,
+                takerAssetData,
+                constants.ZERO_AMOUNT,
+                new BigNumber(100),
+                makerAddress,
+                constants.NULL_ADDRESS,
+                fillableAmount,
+                constants.NULL_ADDRESS,
+            );
+            const signedOrders = [signedOrderWithFee];
+            const makerAssetFillAmount = signedOrder.makerAssetAmount;
+            return expect(
+                contractWrappers.forwarder.marketSellOrdersWithEthAsync(
+                    signedOrders,
+                    takerAddress,
+                    makerAssetFillAmount,
+                    [],
+                    0,
+                    constants.NULL_ADDRESS,
+                    {
+                        shouldValidate: true,
+                    },
+                ),
+            ).to.be.rejectedWith('COMPLETE_FILL_FAILED');
         });
     });
 });
