@@ -204,7 +204,9 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
     const isExportedClassReference = !!props.type.isExportedClassReference;
     const typeNameUrlIfExists = !_.isUndefined(props.type.externalLink) ? props.type.externalLink : undefined;
     if (!_.isUndefined(typeNameUrlIfExists)) {
-        typeName = (
+        typeName = props.isInPopover ? (
+            <span style={{ color: colors.lightBlueA700, cursor: 'pointer' }}>{typeName}</span>
+        ) : (
             <Link to={typeNameUrlIfExists} shouldOpenInNewTab={true} fontColor={colors.lightBlueA700}>
                 {typeName}
             </Link>
@@ -218,39 +220,41 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
             ? props.type.name
             : `${props.docsInfo.typeSectionName}-${typeName}`;
         typeName = (
-            <ScrollLink
-                to={typeDefinitionAnchorId}
-                offset={0}
-                hashSpy={true}
-                duration={sharedConstants.DOCS_SCROLL_DURATION_MS}
-                containerId={sharedConstants.SCROLL_CONTAINER_ID}
-            >
+            <span>
                 {sharedUtils.isUserOnMobile() || props.isInPopover || isExportedClassReference ? (
                     <span style={{ color: colors.lightBlueA700, cursor: 'pointer' }}>{typeName}</span>
                 ) : (
-                    <span
-                        data-tip={true}
-                        data-for={id}
-                        style={{
-                            color: colors.lightBlueA700,
-                            cursor: 'pointer',
-                            display: 'inline-block',
-                        }}
+                    <ScrollLink
+                        to={typeDefinitionAnchorId}
+                        offset={0}
+                        hashSpy={true}
+                        duration={sharedConstants.DOCS_SCROLL_DURATION_MS}
+                        containerId={sharedConstants.SCROLL_CONTAINER_ID}
                     >
-                        {typeName}
-                        <ReactTooltip type="light" effect="solid" id={id} className="typeTooltip">
-                            <TypeDefinition
-                                sectionName={props.sectionName}
-                                customType={props.typeDefinitionByName[typeName as string]}
-                                shouldAddId={false}
-                                docsInfo={props.docsInfo}
-                                typeDefinitionByName={props.typeDefinitionByName}
-                                isInPopover={true}
-                            />
-                        </ReactTooltip>
-                    </span>
+                        <span
+                            data-tip={true}
+                            data-for={id}
+                            style={{
+                                color: colors.lightBlueA700,
+                                cursor: 'pointer',
+                                display: 'inline-block',
+                            }}
+                        >
+                            {typeName}
+                            <ReactTooltip type="light" effect="solid" id={id} className="typeTooltip">
+                                <TypeDefinition
+                                    sectionName={props.sectionName}
+                                    customType={props.typeDefinitionByName[typeName as string]}
+                                    shouldAddId={false}
+                                    docsInfo={props.docsInfo}
+                                    typeDefinitionByName={props.typeDefinitionByName}
+                                    isInPopover={true}
+                                />
+                            </ReactTooltip>
+                        </span>
+                    </ScrollLink>
                 )}
-            </ScrollLink>
+            </span>
         );
     }
     return (
