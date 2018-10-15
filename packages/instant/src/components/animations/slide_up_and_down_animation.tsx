@@ -36,6 +36,7 @@ export const SlideAnimation =
 
 export interface SlideAnimationComponentProps {
     downY: string;
+    children?: React.ReactNode;
 }
 
 export const SlideUpAnimationComponent: React.StatelessComponent<SlideAnimationComponentProps> = props => (
@@ -58,26 +59,27 @@ export interface SlideUpAndDownAnimationProps extends SlideAnimationComponentPro
     delayMs: number;
 }
 
+enum SlideState {
+    Up = 'up',
+    Down = 'down',
+}
 interface SlideUpAndDownState {
-    slideState: 'up' | 'down';
+    slideState: SlideState;
 }
 
 export class SlideUpAndDownAnimation extends React.Component<SlideUpAndDownAnimationProps, SlideUpAndDownState> {
+    public state = {
+        slideState: SlideState.Up,
+    };
+
     private _timeoutId?: number;
-    constructor(props: SlideUpAndDownAnimationProps) {
-        super(props);
-        this._timeoutId = undefined;
-        this.state = {
-            slideState: 'up',
-        };
-    }
     public render(): React.ReactNode {
         return this._renderSlide();
     }
     public componentDidMount(): void {
         this._timeoutId = window.setTimeout(() => {
             this.setState({
-                slideState: 'down',
+                slideState: SlideState.Down,
             });
         }, this.props.delayMs);
 
