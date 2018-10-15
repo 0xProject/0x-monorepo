@@ -1,5 +1,15 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note":
+                    "Contract artifacts have been moved to the new @0xproject/contract-artifacts package. v1 migrations have been removed. `runMigrationsAsync` returns the addresses of the contracts that were deployed.",
+                "pr": 1105
+            }
+        ]
+    },
+    {
         "version": "1.0.14",
         "changes": [
             {

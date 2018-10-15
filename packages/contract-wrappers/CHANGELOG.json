@@ -1,9 +1,19 @@
 [
     {
-        "version": "2.1.0",
+        "version": "3.0.0",
         "changes": [
             {
                 "note": "Add optional validation to the forwarder wrapper methods"
+            },
+            {
+                "note":
+                    "Updated to use new modularized artifacts. Top-level `ContractWrappers` class has a new optional `contractAddresses` parameter. Contract addresses are no longer stored in artifacts and are instead loaded from the `@0xproject/contract-addresses` package. Most contract addresses are now defined at instantiation time and are available as properties (e.g., `exchangeWrapper.address`) instead of methods (e.g., `exchangeWrapper.getContractAddress()`). Some properties and methods have been renamed.",
+                "pr": 1105
+            },
+            {
+                "note":
+                    "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers",
+                "pr": 1105
             }
         ]
     },
