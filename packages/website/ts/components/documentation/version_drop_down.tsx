@@ -58,7 +58,7 @@ export class VersionDropDown extends React.Component<VersionDropDownProps, Versi
         const items = _.map(this.props.versions, version => {
             const isSelected = version === this.props.selectedVersion;
             return (
-                <Container>
+                <Container key={`dropdown-items-${version}`}>
                     <Button
                         borderRadius="0px"
                         padding="0.8em 0em"
