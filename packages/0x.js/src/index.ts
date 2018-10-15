@@ -49,7 +49,7 @@ export {
     ValidateOrderFillableOpts,
 } from '@0xproject/contract-wrappers';
 
-export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
+export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig, Stats } from '@0xproject/order-watcher';
 
 export import Web3ProviderEngine = require('web3-provider-engine');
 
