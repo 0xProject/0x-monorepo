@@ -30,6 +30,9 @@ const styles: Styles = {
         fontSize: 14,
         lineHeight: 2,
         padding: 0,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
 };
 
