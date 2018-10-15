@@ -1,7 +1,9 @@
 import {
     colors,
     constants as sharedConstants,
+    Container,
     EtherscanLinkSuffixes,
+    HeaderSizes,
     Link,
     MarkdownSection,
     Networks,
@@ -101,11 +103,17 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
         const closestVersion = sortedEligibleVersions[0];
         const markdownFileIfExists = this.props.docsInfo.sectionNameToMarkdownByVersion[closestVersion][sectionName];
         if (!_.isUndefined(markdownFileIfExists)) {
+            // Special-case replace the `introduction` sectionName with the package name
+            const isIntroductionSection = sectionName === 'introduction';
+            const finalSectionName = isIntroductionSection ? this.props.docsInfo.displayName : sectionName;
+            const headerSize = isIntroductionSection ? HeaderSizes.H1 : HeaderSizes.H3;
             return (
                 <MarkdownSection
                     key={`markdown-section-${sectionName}`}
-                    sectionName={sectionName}
+                    sectionName={finalSectionName}
+                    headerSize={headerSize}
                     markdownContent={markdownFileIfExists}
+                    shouldReformatTitle={false}
                 />
             );
         }
@@ -215,6 +223,13 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
                             <div>{typeDefs}</div>
                         </div>
                     )}
+                <Container
+                    width={'100%'}
+                    height={'1px'}
+                    backgroundColor={colors.grey300}
+                    marginTop={'32px'}
+                    marginBottom={'12px'}
+                />
             </div>
         );
     }

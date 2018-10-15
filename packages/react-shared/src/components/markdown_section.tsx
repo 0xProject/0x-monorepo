@@ -8,15 +8,18 @@ import { colors } from '../utils/colors';
 import { utils } from '../utils/utils';
 
 import { AnchorTitle } from './anchor_title';
+import { Container } from './container';
 import { Link } from './link';
 import { MarkdownCodeBlock } from './markdown_code_block';
 import { MarkdownLinkBlock } from './markdown_link_block';
+import { MarkdownParagraphBlock } from './markdown_paragraph_block';
 
 export interface MarkdownSectionProps {
     sectionName: string;
     markdownContent: string;
     headerSize?: HeaderSizes;
     githubLink?: string;
+    shouldReformatTitle?: boolean;
 }
 
 interface DefaultMarkdownSectionProps {
@@ -32,6 +35,7 @@ export interface MarkdownSectionState {
 export class MarkdownSection extends React.Component<MarkdownSectionProps, MarkdownSectionState> {
     public static defaultProps: Partial<MarkdownSectionProps> = {
         headerSize: HeaderSizes.H3,
+        shouldReformatTitle: true,
     };
     constructor(props: MarkdownSectionProps) {
         super(props);
@@ -43,7 +47,9 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
         const { sectionName, markdownContent, headerSize, githubLink } = this.props as PropsWithDefaults;
 
         const id = utils.getIdFromName(sectionName);
-        const finalSectionName = utils.convertCamelCaseToSpaces(sectionName);
+        const finalSectionName = this.props.shouldReformatTitle
+            ? utils.convertCamelCaseToSpaces(sectionName)
+            : sectionName;
         return (
             <div
                 className="md-px1 sm-px2 overflow-hidden"
@@ -51,12 +57,12 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 <ScrollElement name={id}>
-                    <div className="clearfix pt3">
+                    <Container className="clearfix" marginBottom="20px">
                         <div className="col lg-col-8 md-col-8 sm-col-12">
-                            <span style={{ textTransform: 'capitalize', color: colors.grey700 }}>
+                            <span style={{ color: colors.grey700 }}>
                                 <AnchorTitle
                                     headerSize={headerSize}
-                                    title={finalSectionName}
+                                    title={_.capitalize(finalSectionName)}
                                     id={id}
                                     shouldShowAnchor={this.state.shouldShowAnchor}
                                 />
@@ -71,15 +77,22 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                                 </div>
                             )}
                         </div>
-                    </div>
-                    <hr style={{ border: `1px solid ${colors.lightestGrey}` }} />
+                    </Container>
                     <ReactMarkdown
                         source={markdownContent}
                         escapeHtml={false}
                         renderers={{
                             code: MarkdownCodeBlock,
                             link: MarkdownLinkBlock,
+                            paragraph: MarkdownParagraphBlock,
                         }}
+                    />
+                    <Container
+                        width={'100%'}
+                        height={'1px'}
+                        backgroundColor={colors.grey300}
+                        marginTop={'32px'}
+                        marginBottom={'32px'}
                     />
                 </ScrollElement>
             </div>

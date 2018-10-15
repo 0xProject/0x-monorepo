@@ -5,6 +5,7 @@ export { MarkdownSection } from './components/markdown_section';
 export { NestedSidebarMenu } from './components/nested_sidebar_menu';
 export { SectionHeader } from './components/section_header';
 export { Link } from './components/link';
+export { Container } from './components/container';
 
 export { HeaderSizes, Styles, EtherscanLinkSuffixes, Networks, ALink } from './types';
 

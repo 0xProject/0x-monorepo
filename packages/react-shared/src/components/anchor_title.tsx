@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Link as ScrollLink } from 'react-scroll';
 
 import { HeaderSizes, Styles } from '../types';
+import { colors } from '../utils/colors';
 import { constants } from '../utils/constants';
 
 const headerSizeToScrollOffset: { [headerSize: string]: number } = {
@@ -27,7 +28,7 @@ const styles: Styles = {
         cursor: 'pointer',
     },
     h1: {
-        fontSize: '1.8em',
+        fontSize: '30px',
     },
     h2: {
         fontSize: '1.5em',
@@ -63,7 +64,7 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
                     } as any
                 }
             >
-                <div className="inline-block" style={{ paddingRight: 4 }}>
+                <div className="inline-block" style={{ paddingRight: 4, color: colors.darkestGrey }}>
                     {this.props.title}
                 </div>
                 <ScrollLink
