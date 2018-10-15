@@ -43,7 +43,13 @@ export const docGenConfigs: DocGenConfigs = {
     // Some types are not explicitly part of the public interface like params, return values, etc... But we still
     // want them exported. E.g error enum types that can be thrown by methods. These must be manually added to this
     // config
-    IGNORED_EXCESSIVE_TYPES: ['NonceSubproviderErrors', 'Web3WrapperErrors', 'ContractWrappersError', 'OrderError'],
+    IGNORED_EXCESSIVE_TYPES: [
+        'NonceSubproviderErrors',
+        'Web3WrapperErrors',
+        'ContractWrappersError',
+        'OrderError',
+        'AssetBuyerError',
+    ],
     // Some libraries only export types. In those cases, we cannot check if the exported types are part of the
     // "exported public interface". Thus we add them here and skip those checks.
     TYPES_ONLY_LIBRARIES: ['ethereum-types', 'types'],
