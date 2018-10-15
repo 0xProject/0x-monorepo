@@ -161,9 +161,10 @@ const visitor: S.Visitor<string> = {
     ElementaryTypeNameExpression: ({typeName}) =>
         `(${unparse(typeName)})`,
 
-    VariableDeclaration: ({typeName, name, visibility, isDeclaredConst, isIndexed, expression}) =>
+    VariableDeclaration: ({typeName, name, visibility, isDeclaredConst, isIndexed, expression, storageLocation}) =>
         `${unparse(typeName)} ` +
         (isIndexed ? 'indexed ' : '') +
+        (storageLocation ? storageLocation + ' ' : '') +
         (visibility && visibility != 'default' ? visibility + ' ' : '') +
         (isDeclaredConst ? 'constant ' : '') +
         `${name}` +
