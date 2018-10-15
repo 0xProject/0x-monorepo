@@ -117,9 +117,11 @@ export class OverviewContent extends React.Component<OverviewContentProps, Overv
     }
     private _renderSectionTitle(text: string): React.ReactNode {
         return (
-            <Text fontColor={colors.projectsGrey} fontSize="30px" fontWeight="bold">
-                {text}
-            </Text>
+            <Container paddingTop="30px">
+                <Text fontColor={colors.projectsGrey} fontSize="30px" fontWeight="bold">
+                    {text}
+                </Text>
+            </Container>
         );
     }
     private _renderSectionDescription(text: string): React.ReactNode {
