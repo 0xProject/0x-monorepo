@@ -4,6 +4,10 @@
         "changes": [
             {
                 "note": "Add `gasLimit` and `gasPrice` as optional properties on `BuyQuoteExecutionOpts`"
+            },
+            {
+                "note": "Export `BuyQuoteInfo` type",
+                "pr": 1131
             }
         ]
     },
