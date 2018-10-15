@@ -63,7 +63,7 @@ interface SlideUpAndDownState {
 }
 
 export class SlideUpAndDownAnimation extends React.Component<SlideUpAndDownAnimationProps, SlideUpAndDownState> {
-    private _timeoutId: number | undefined;
+    private _timeoutId?: number;
     constructor(props: SlideUpAndDownAnimationProps) {
         super(props);
         this._timeoutId = undefined;
