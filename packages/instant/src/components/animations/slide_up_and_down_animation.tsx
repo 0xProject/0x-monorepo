@@ -31,7 +31,6 @@ export const SlideAnimation =
     animation-iteration-count: 1;
     animation-fill-mode: ${props => props.animationDirection || 'none'};
     position: relative;
-    z-index: -1;
 `;
 
 export interface SlideAnimationComponentProps {
