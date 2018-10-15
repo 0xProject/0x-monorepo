@@ -115,7 +115,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                                         : sidebarPadding,
                                 }}
                             >
-                                {this.props.sidebar}
+                                {this.props.screenWidth !== ScreenWidths.Sm && this.props.sidebar}
                             </div>
                         </div>
                     </Container>
@@ -128,6 +128,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                         <Container paddingLeft={mainContentPadding} paddingRight={mainContentPadding}>
                             <DocsTopBar
                                 location={this.props.location}
+                                screenWidth={this.props.screenWidth}
                                 translate={this.props.translate}
                                 sidebar={this.props.sidebar}
                             />

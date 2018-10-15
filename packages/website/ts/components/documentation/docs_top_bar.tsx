@@ -6,12 +6,13 @@ import * as React from 'react';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
-import { Deco, Key, WebsitePaths } from 'ts/types';
+import { Deco, Key, ScreenWidths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 export interface DocsTopBarProps {
     location: Location;
+    screenWidth: ScreenWidths;
     translate: Translate;
     sidebar?: React.ReactNode;
 }
@@ -105,7 +106,7 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                     </Container>
                 </Container>
                 <Container width={'100%'} height={'1px'} backgroundColor={colors.grey300} marginTop={'11px'} />
-                {this._renderDrawer()}
+                {this.props.screenWidth === ScreenWidths.Sm && this._renderDrawer()}
             </Container>
         );
     }
