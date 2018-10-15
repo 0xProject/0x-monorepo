@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
@@ -103,6 +103,9 @@ export class DocGenerateAndUploadUtils {
             switch (node.kind) {
                 case ts.SyntaxKind.ExportDeclaration: {
                     const exportClause = (node as any).exportClause;
+                    if (_.isUndefined(exportClause)) {
+                        return;
+                    }
                     const exportPath = exportClause.parent.moduleSpecifier.text;
                     _.each(exportClause.elements, element => {
                         const exportItem = element.name.escapedText;
@@ -187,7 +190,11 @@ export class DocGenerateAndUploadUtils {
         const typeDocExtraFileIncludes: string[] = this._getTypeDocFileIncludesForPackage();
 
         // In order to avoid TS errors, we need to pass TypeDoc the package's global.d.ts file
-        typeDocExtraFileIncludes.push(path.join(this._packagePath, 'src', 'globals.d.ts'));
+        // if it exists.
+        const globalTypeDefinitionsPath = path.join(this._packagePath, 'src', 'globals.d.ts');
+        if (existsSync(globalTypeDefinitionsPath)) {
+            typeDocExtraFileIncludes.push(globalTypeDefinitionsPath);
+        }
 
         utils.log(`GENERATE_UPLOAD_DOCS: Generating Typedoc JSON for ${this._packageName}...`);
         const jsonFilePath = path.join(this._packagePath, 'generated_docs', 'index.json');

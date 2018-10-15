@@ -14,7 +14,6 @@
         "report_coverage": "lcov-result-merger './{packages/*/coverage/lcov.info,python-packages/*/.coverage}' | coveralls",
         "test:installation": "node ./packages/monorepo-scripts/lib/test_installation.js",
         "test:installation:local": "IS_LOCAL_PUBLISH=true node ./packages/monorepo-scripts/lib/test_installation.js",
-        "test:publish:circleci:comment": "HACK(albrow) We need an automated way to login to npm and echo+sleep piped to stdin was the only way I could find to do it.",
         "test:publish:circleci": "yarn npm-cli-login -u test -p test -e test@example.com -r http://localhost:4873 && IS_LOCAL_PUBLISH=true run-s script:publish test:installation:local",
         "run:publish": "run-s install:all build:monorepo_scripts script:prepublish_checks rebuild:no_website script:publish",
         "run:publish:local": "IS_LOCAL_PUBLISH=true yarn run:publish",

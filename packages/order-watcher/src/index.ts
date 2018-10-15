@@ -12,6 +12,7 @@ export {
 
 export { OnOrderStateChangeCallback, OrderWatcherConfig } from './types';
 
+export { ContractAddresses } from '@0xproject/contract-addresses';
 export { SignedOrder } from '@0xproject/types';
 export {
     JSONRPCRequestPayload,

@@ -1,3 +1,5 @@
+export { ContractAddresses } from '@0xproject/contract-addresses';
+
 export {
     WETH9Events,
     WETH9WithdrawalEventArgs,

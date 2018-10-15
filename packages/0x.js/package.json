@@ -42,7 +42,9 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
+        "@0xproject/contract-addresses": "^1.0.0",
         "@0xproject/abi-gen": "^1.0.13",
+        "@0xproject/abi-gen-wrappers": "^1.0.0",
         "@0xproject/dev-utils": "^1.0.12",
         "@0xproject/migrations": "^1.0.14",
         "@0xproject/monorepo-scripts": "^1.0.11",
