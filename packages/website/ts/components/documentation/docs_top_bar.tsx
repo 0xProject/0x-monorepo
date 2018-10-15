@@ -22,11 +22,10 @@ interface DocsTopBarState {
 }
 
 interface MenuItemInfo {
-    title: string;
-    url: string;
     iconUrl: string;
     fontColor: string;
     fontWeight?: string;
+    link: ALink;
 }
 
 export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState> {
@@ -46,20 +45,28 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
     public render(): React.ReactNode {
         const menuItemInfos: MenuItemInfo[] = [
             {
-                title: this.props.translate.get(Key.Github, Deco.Cap),
-                url: constants.URL_GITHUB_ORG,
+                link: {
+                    title: this.props.translate.get(Key.Wiki, Deco.Cap),
+                    to: WebsitePaths.Wiki,
+                },
                 iconUrl: '/images/developers/github_icon.svg',
                 fontColor: colors.linkSectionGrey,
             },
             {
-                title: this.props.translate.get(Key.Forum, Deco.Cap),
-                url: constants.URL_FORUM,
+                link: {
+                    title: this.props.translate.get(Key.Forum, Deco.Cap),
+                    to: constants.URL_FORUM,
+                    shouldOpenInNewTab: true,
+                },
                 iconUrl: '/images/developers/forum_icon.svg',
                 fontColor: colors.linkSectionGrey,
             },
             {
-                title: this.props.translate.get(Key.LiveChat, Deco.Cap),
-                url: constants.URL_ZEROEX_CHAT,
+                link: {
+                    title: this.props.translate.get(Key.LiveChat, Deco.Cap),
+                    to: constants.URL_ZEROEX_CHAT,
+                    shouldOpenInNewTab: true,
+                },
                 iconUrl: '/images/developers/chat_icon.svg',
                 fontColor: colors.lightLinkBlue,
                 fontWeight: 'bold',
@@ -113,11 +120,10 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
     private _renderMenuItems(menuItemInfos: MenuItemInfo[]): React.ReactNode {
         const menuItems = _.map(menuItemInfos, menuItemInfo => {
             return (
-                <a
-                    key={`menu-item-${menuItemInfo.title}`}
-                    href={menuItemInfo.url}
-                    target="_blank"
-                    className="text-decoration-none"
+                <Link
+                    key={`menu-item-${menuItemInfo.link.title}`}
+                    to={menuItemInfo.link.to}
+                    shouldOpenInNewTab={menuItemInfo.link.shouldOpenInNewTab}
                 >
                     <Container className="flex">
                         <img src={menuItemInfo.iconUrl} width="18" />
@@ -127,11 +133,11 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                                 fontWeight={menuItemInfo.fontWeight || 'normal'}
                                 fontColor={menuItemInfo.fontColor}
                             >
-                                {menuItemInfo.title}
+                                {menuItemInfo.link.title}
                             </Text>
                         </Container>
                     </Container>
-                </a>
+                </Link>
             );
         });
         return menuItems;
