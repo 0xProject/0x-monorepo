@@ -1,5 +1,13 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Add optional validation to the forwarder wrapper methods"
+            }
+        ]
+    },
+    {
         "version": "2.0.2",
         "changes": [
             {
