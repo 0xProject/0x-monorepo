@@ -16,3 +16,21 @@ export const identifier = (name: string): S.Identifier => ({
     type: S.NodeType.Identifier,
     name,
 })
+
+export const nameParameters = (params: S.ParameterList, prefix:string = '_arg'): S.ParameterList => ({
+    ...params,
+    parameters: params.parameters.map((param, i) => ({
+        ...param,
+        name: param.name || `${prefix}${i}`
+    }))
+})
+
+export const argumentExpressions = (params: S.ParameterList): S.Expression[] => 
+    params.parameters.map(({name}) => {
+        // TODO: rewrite using throw expressions or do notation
+        if (name !== null) {
+            return identifier(name)
+        } else {
+            throw new Error("Anonymous parameter");
+        }
+    });
