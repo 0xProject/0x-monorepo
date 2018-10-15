@@ -21,8 +21,6 @@ export interface TextProps {
     hoverColor?: string;
     noWrap?: boolean;
     display?: string;
-    marginRight?: string;
-    marginLeft?: string;
 }
 
 const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick }) => (
@@ -49,8 +47,6 @@ export const Text = styled(PlainText)`
     ${props => (props.display ? `display: ${props.display}` : '')};
     ${props => (props.letterSpacing ? `letter-spacing: ${props.letterSpacing}` : '')};
     ${props => (props.textTransform ? `text-transform: ${props.textTransform}` : '')};
-    ${props => (props.marginRight ? `margin-right: ${props.marginRight}` : '')};
-    ${props => (props.marginLeft ? `margin-right: ${props.marginLeft}` : '')};
     &:hover {
         ${props =>
             props.onClick
