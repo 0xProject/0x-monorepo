@@ -124,7 +124,7 @@ export class TypeDefinition extends React.Component<TypeDefinitionProps, TypeDef
                     title={`${typePrefix} ${customType.name}`}
                     id={this.props.shouldAddId ? typeDefinitionAnchorId : ''}
                     shouldShowAnchor={this.state.shouldShowAnchor}
-                    isDisabled={this.props.isInPopover ? true : false}
+                    isDisabled={this.props.isInPopover}
                 />
                 <div style={{ fontSize: 16 }}>
                     <pre>
