@@ -92,6 +92,7 @@ const DOC_WEBSITE_PATHS_TO_KEY = {
     [WebsitePaths.ZeroExJs]: Key.ZeroExJs,
     [WebsitePaths.OrderUtils]: Key.OrderUtils,
     [WebsitePaths.OrderWatcher]: Key.OrderWatcher,
+    [WebsitePaths.AssetBuyer]: Key.AssetBuyer,
 };
 
 const DEFAULT_HEIGHT = 68;
@@ -212,6 +213,12 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 <MenuItem
                     style={{ fontSize: styles.menuItem.fontSize }}
                     primaryText={this.props.translate.get(Key.EthereumTypes, Deco.CapWords)}
+                />
+            </Link>,
+            <Link key="subMenuItem-asset-buyer" to={WebsitePaths.AssetBuyer} className="text-decoration-none">
+                <MenuItem
+                    style={{ fontSize: styles.menuItem.fontSize }}
+                    primaryText={this.props.translate.get(Key.AssetBuyer, Deco.CapWords)}
                 />
             </Link>,
             <a
