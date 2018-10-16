@@ -68,6 +68,11 @@ export const EthAmountRow: React.StatelessComponent<EthAmountRowProps> = ({
     const fontWeight = shouldEmphasize ? 700 : 400;
     const usdFormatter = isEthAmountInBaseUnits ? format.ethBaseAmountInUsd : format.ethUnitAmountInUsd;
     const ethFormatter = isEthAmountInBaseUnits ? format.ethBaseAmount : format.ethUnitAmount;
+    const usdPriceSection = _.isUndefined(ethUsdPrice) ? null : (
+        <Container marginRight="3px" display="inline-block">
+            <Text fontColor={ColorOption.lightGrey}>({usdFormatter(ethAmount, ethUsdPrice)})</Text>
+        </Container>
+    );
     return (
         <Container padding="10px 0px" borderTop="1px dashed" borderColor={ColorOption.feintGrey}>
             <Flex justify="space-between">
@@ -75,9 +80,7 @@ export const EthAmountRow: React.StatelessComponent<EthAmountRowProps> = ({
                     {rowLabel}
                 </Text>
                 <Container>
-                    <Container marginRight="3px" display="inline-block">
-                        <Text fontColor={ColorOption.lightGrey}>({usdFormatter(ethAmount, ethUsdPrice)})</Text>
-                    </Container>
+                    {usdPriceSection}
                     <Text fontWeight={fontWeight} fontColor={ColorOption.grey}>
                         {ethFormatter(ethAmount)}
                     </Text>
