@@ -20,13 +20,6 @@ interface DocsTopBarState {
     isDrawerOpen: boolean;
 }
 
-interface MenuItemInfo {
-    iconUrl: string;
-    fontColor: string;
-    fontWeight?: string;
-    link: ALink;
-}
-
 export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState> {
     constructor(props: DocsTopBarProps) {
         super(props);
@@ -42,56 +35,32 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
         }
     }
     public render(): React.ReactNode {
-        const menuItemInfos: MenuItemInfo[] = [
+        const menuItemLinks: ALink[] = [
             {
-                link: {
-                    title: this.props.translate.get(Key.Wiki, Deco.Cap),
-                    to: WebsitePaths.Wiki,
-                },
-                iconUrl: '/images/developers/github_icon.svg',
-                fontColor: colors.linkSectionGrey,
+                title: this.props.translate.get(Key.Home, Deco.Cap),
+                to: WebsitePaths.Home,
             },
             {
-                link: {
-                    title: this.props.translate.get(Key.Forum, Deco.Cap),
-                    to: constants.URL_FORUM,
-                    shouldOpenInNewTab: true,
-                },
-                iconUrl: '/images/developers/forum_icon.svg',
-                fontColor: colors.linkSectionGrey,
+                title: this.props.translate.get(Key.Wiki, Deco.Cap),
+                to: WebsitePaths.Wiki,
             },
             {
-                link: {
-                    title: this.props.translate.get(Key.LiveChat, Deco.Cap),
-                    to: constants.URL_ZEROEX_CHAT,
-                    shouldOpenInNewTab: true,
-                },
-                iconUrl: '/images/developers/chat_icon.svg',
-                fontColor: colors.lightLinkBlue,
-                fontWeight: 'bold',
+                title: this.props.translate.get(Key.Forum, Deco.Cap),
+                to: constants.URL_FORUM,
+                shouldOpenInNewTab: true,
+            },
+            {
+                title: this.props.translate.get(Key.LiveChat, Deco.Cap),
+                to: constants.URL_ZEROEX_CHAT,
+                shouldOpenInNewTab: true,
             },
         ];
         return (
             <Container height={80}>
-                <Container className="flex items-center lg-pt3 md-pt3 sm-pt1 relative" width="100%">
-                    <Container className="col col-2 sm-hide xs-hide">
-                        <Link
-                            to={WebsitePaths.Home}
-                            fontColor={colors.linkSectionGrey}
-                            className="flex items-center text-decoration-none"
-                        >
-                            <i className="zmdi zmdi-chevron-left bold" style={{ fontSize: 16 }} />
-                            <Container paddingLeft="8px">
-                                <Text fontSize="16px" fontColor={colors.linkSectionGrey}>
-                                    0xproject.com
-                                </Text>
-                            </Container>
-                        </Link>
-                    </Container>
-                    <Container className="col col-4 md-hide sm-hide xs-hide" />
-                    <Container className="col col-6 md-pl4 md-ml4 sm-hide xs-hide">
+                <Container className="flex items-center lg-pt3 md-pt3 sm-pt1 justify-end" width="100%">
+                    <Container className="sm-hide xs-hide">
                         <Container className="flex items-center justify-between right" width="300px">
-                            {this._renderMenuItems(menuItemInfos)}
+                            {this._renderMenuItems(menuItemLinks)}
                         </Container>
                     </Container>
                     <Container className="lg-hide md-hide">
@@ -116,25 +85,18 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
             </Container>
         );
     }
-    private _renderMenuItems(menuItemInfos: MenuItemInfo[]): React.ReactNode {
-        const menuItems = _.map(menuItemInfos, menuItemInfo => {
+    private _renderMenuItems(menuItemLinks: ALink[]): React.ReactNode {
+        const menuItems = _.map(menuItemLinks, menuItemInfo => {
             return (
                 <Link
-                    key={`menu-item-${menuItemInfo.link.title}`}
-                    to={menuItemInfo.link.to}
-                    shouldOpenInNewTab={menuItemInfo.link.shouldOpenInNewTab}
+                    key={`menu-item-${menuItemInfo.title}`}
+                    to={menuItemInfo.to}
+                    shouldOpenInNewTab={menuItemInfo.shouldOpenInNewTab}
                 >
-                    <Container className="flex">
-                        <img src={menuItemInfo.iconUrl} width="18" />
-                        <Container className="flex items-center" paddingLeft="4px">
-                            <Text
-                                fontSize="16px"
-                                fontWeight={menuItemInfo.fontWeight || 'normal'}
-                                fontColor={menuItemInfo.fontColor}
-                            >
-                                {menuItemInfo.link.title}
-                            </Text>
-                        </Container>
+                    <Container className="flex items-center" paddingLeft="4px">
+                        <Text fontSize="16px" fontColor={colors.lightLinkBlue} fontWeight="bold">
+                            {menuItemInfo.title}
+                        </Text>
                     </Container>
                 </Link>
             );
