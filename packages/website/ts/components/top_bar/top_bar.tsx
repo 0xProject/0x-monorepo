@@ -232,7 +232,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                         <MenuItem className="py2">{this.props.translate.get(Key.Home, Deco.Cap)}</MenuItem>
                     </Link>
                     <Link to={WebsitePaths.Docs}>
-                        <MenuItem className="py2">{this.props.translate.get(Key.Documentation, Deco.Cap)}</MenuItem>
+                        <MenuItem className="py2">{this.props.translate.get(Key.Docs, Deco.Cap)}</MenuItem>
                     </Link>
                     {!this._isViewingPortal() && (
                         <Link to={WebsitePaths.Portal}>
