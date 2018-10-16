@@ -1,6 +1,5 @@
 import {
     ALink,
-    colors,
     constants as sharedConstants,
     HeaderSizes,
     MarkdownSection,
@@ -11,11 +10,11 @@ import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
+import { SidebarHeader } from 'ts/components/documentation/sidebar_header';
 import { Container } from 'ts/components/ui/container';
-import { Text } from 'ts/components/ui/text';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Article, ArticlesBySection, ScreenWidths } from 'ts/types';
+import { Article, ArticlesBySection, Deco, Key, ScreenWidths } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -88,28 +87,8 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         );
     }
     private _renderSidebarHeader(): React.ReactNode {
-        return (
-            <Container>
-                <Container className="flex justify-bottom">
-                    <Container className="left pl1" width="150px">
-                        <Text
-                            fontColor={colors.lightLinkBlue}
-                            fontSize={this.props.screenWidth === ScreenWidths.Sm ? '20px' : '22px'}
-                            fontWeight="bold"
-                        >
-                            Wiki
-                        </Text>
-                    </Container>
-                </Container>
-                <Container
-                    width={'100%'}
-                    height={'1px'}
-                    backgroundColor={colors.grey300}
-                    marginTop="20px"
-                    marginBottom="27px"
-                />
-            </Container>
-        );
+        const wikiTitle = this.props.translate.get(Key.Wiki, Deco.Cap);
+        return <SidebarHeader screenWidth={this.props.screenWidth} title={wikiTitle} />;
     }
     private _renderLoading(): React.ReactNode {
         return (

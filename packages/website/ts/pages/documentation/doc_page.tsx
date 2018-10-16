@@ -6,15 +6,14 @@ import {
     SupportedDocJson,
     TypeDocUtils,
 } from '@0xproject/react-docs';
-import { colors, NestedSidebarMenu } from '@0xproject/react-shared';
+import { NestedSidebarMenu } from '@0xproject/react-shared';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import semverSort = require('semver-sort');
-import { VersionDropDown } from 'ts/components/documentation/version_drop_down';
+import { SidebarHeader } from 'ts/components/documentation/sidebar_header';
 import { Container } from 'ts/components/ui/container';
-import { Text } from 'ts/components/ui/text';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { DocPackages, ScreenWidths } from 'ts/types';
@@ -109,33 +108,13 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
     }
     private _renderSidebarHeader(): React.ReactNode {
         return (
-            <Container>
-                <Container className="flex justify-bottom">
-                    <Container className="left pl1" width="150px">
-                        <Text
-                            fontColor={colors.lightLinkBlue}
-                            fontSize={this.props.screenWidth === ScreenWidths.Sm ? '20px' : '22px'}
-                            fontWeight="bold"
-                        >
-                            {this.props.docsInfo.displayName}
-                        </Text>
-                    </Container>
-                    <div className="right" style={{ alignSelf: 'flex-end' }}>
-                        <VersionDropDown
-                            selectedVersion={this.props.docsVersion}
-                            versions={this.props.availableDocVersions}
-                            onVersionSelected={this._onVersionSelected.bind(this)}
-                        />
-                    </div>
-                </Container>
-                <Container
-                    width={'100%'}
-                    height={'1px'}
-                    backgroundColor={colors.grey300}
-                    marginTop="20px"
-                    marginBottom="27px"
-                />
-            </Container>
+            <SidebarHeader
+                screenWidth={this.props.screenWidth}
+                title={this.props.docsInfo.displayName}
+                docsVersion={this.props.docsVersion}
+                availableDocVersions={this.props.availableDocVersions}
+                onVersionSelected={this._onVersionSelected.bind(this)}
+            />
         );
     }
     private _renderLoading(): React.ReactNode {
