@@ -5,10 +5,6 @@ import { colors } from '../utils/colors';
 
 export interface MarkdownParagraphBlockProps {}
 
-export interface MarkdownParagraphBlockState {}
-
-export class MarkdownParagraphBlock extends React.Component<MarkdownParagraphBlockProps, MarkdownParagraphBlockState> {
-    public render(): React.ReactNode {
-        return <span style={{ color: colors.greyTheme, lineHeight: '26px' }}>{this.props.children}</span>;
-    }
-}
+export const MarkdownParagraphBlock: React.StatelessComponent<MarkdownParagraphBlockProps> = ({ children }) => {
+    return <span style={{ color: colors.greyTheme, lineHeight: '26px' }}>{children}</span>;
+};
