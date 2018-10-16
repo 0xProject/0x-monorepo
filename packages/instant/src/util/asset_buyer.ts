@@ -6,6 +6,4 @@ import { getProvider } from './provider';
 
 const provider = getProvider();
 
-export const assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(provider, sraApiUrl, {
-    expiryBufferSeconds: 300,
-});
+export const assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(provider, sraApiUrl);
