@@ -104,13 +104,7 @@ async function testInstallPackageAsync(
     const packageName = installablePackage.packageJson.name;
     utils.log(`Testing ${packageName}@${lastChangelogVersion}`);
     const packageDirName = path.join(...(packageName + '-test').split('/'));
-    const testDirectory = path.join(
-        monorepoRootPath,
-        'packages',
-        'monorepo-scripts',
-        '.installation-test',
-        packageDirName,
-    );
+    const testDirectory = path.join(monorepoRootPath, '..', '.installation-test', packageDirName);
     await rimrafAsync(testDirectory);
     await mkdirpAsync(testDirectory);
     await execAsync('yarn init --yes', { cwd: testDirectory });
