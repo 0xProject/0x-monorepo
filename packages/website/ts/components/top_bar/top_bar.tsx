@@ -1,5 +1,5 @@
 import { DocsInfo } from '@0xproject/react-docs';
-import { ALink, colors, constants as sharedConstants, Link, NestedSidebarMenu, Styles } from '@0xproject/react-shared';
+import { ALink, colors, Link, Styles } from '@0xproject/react-shared';
 import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
