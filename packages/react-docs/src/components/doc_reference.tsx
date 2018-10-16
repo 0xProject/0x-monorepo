@@ -1,7 +1,6 @@
 import {
     colors,
     constants as sharedConstants,
-    Container,
     EtherscanLinkSuffixes,
     HeaderSizes,
     Link,
@@ -216,12 +215,14 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
                             <div>{typeDefs}</div>
                         </div>
                     )}
-                <Container
-                    width={'100%'}
-                    height={'1px'}
-                    backgroundColor={colors.grey300}
-                    marginTop={'32px'}
-                    marginBottom={'12px'}
+                <div
+                    style={{
+                        width: '100%',
+                        height: 1,
+                        backgroundColor: colors.grey300,
+                        marginTop: 32,
+                        marginBottom: 12,
+                    }}
                 />
             </div>
         );

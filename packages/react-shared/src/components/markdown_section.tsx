@@ -8,7 +8,6 @@ import { colors } from '../utils/colors';
 import { utils } from '../utils/utils';
 
 import { AnchorTitle } from './anchor_title';
-import { Container } from './container';
 import { Link } from './link';
 import { MarkdownCodeBlock } from './markdown_code_block';
 import { MarkdownLinkBlock } from './markdown_link_block';
@@ -57,7 +56,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
                 <ScrollElement name={id} style={{ paddingBottom: 20 }}>
-                    <Container className="clearfix" paddingTop="30px" paddingBottom="20px">
+                    <div className="clearfix" style={{ paddingTop: 30, paddingBottom: 20 }}>
                         <div className="col lg-col-8 md-col-8 sm-col-12">
                             <span style={{ color: colors.grey700 }}>
                                 <AnchorTitle
@@ -77,7 +76,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                                 </div>
                             )}
                         </div>
-                    </Container>
+                    </div>
                     <ReactMarkdown
                         source={markdownContent}
                         escapeHtml={false}
@@ -87,7 +86,14 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                             paragraph: MarkdownParagraphBlock,
                         }}
                     />
-                    <Container width={'100%'} height={'1px'} backgroundColor={colors.grey300} marginTop={'32px'} />
+                    <div
+                        style={{
+                            width: '100%',
+                            height: 1,
+                            backgroundColor: colors.grey300,
+                            marginTop: 32,
+                        }}
+                    />
                 </ScrollElement>
             </div>
         );
