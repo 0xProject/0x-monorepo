@@ -40,7 +40,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
     public static defaultProps: Partial<NestedSidebarMenuProps> = {
         shouldReformatMenuItemNames: true,
     };
-    private _urlIntervalCheckId: number;
+    private _urlIntervalCheckId: number | undefined = undefined;
     constructor(props: NestedSidebarMenuProps) {
         super(props);
         this.state = {
