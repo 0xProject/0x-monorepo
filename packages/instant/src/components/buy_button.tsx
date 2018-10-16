@@ -11,8 +11,8 @@ import { Button, Container, Text } from './ui';
 export interface BuyButtonProps {
     buyQuote?: BuyQuote;
     onClick: (buyQuote: BuyQuote) => void;
-    onBuySuccess: (buyQuote: BuyQuote) => void;
-    onBuyFailure: (buyQuote: BuyQuote) => void;
+    onBuySuccess: (buyQuote: BuyQuote, txnHash: string) => void;
+    onBuyFailure: (buyQuote: BuyQuote, tnxHash?: string) => void;
     text: string;
 }
 
@@ -42,15 +42,13 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             return;
         }
         this.props.onClick(this.props.buyQuote);
+        let txnHash;
         try {
-            const txnHash = await assetBuyer.executeBuyQuoteAsync(this.props.buyQuote, {
-                // HACK: There is a calculation issue in asset-buyer. ETH is refunded anyway so just over-estimate.
-                ethAmount: this.props.buyQuote.worstCaseQuoteInfo.totalEthAmount.mul(2),
-            });
+            txnHash = await assetBuyer.executeBuyQuoteAsync(this.props.buyQuote);
             await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
+            this.props.onBuySuccess(this.props.buyQuote, txnHash);
         } catch {
-            this.props.onBuyFailure(this.props.buyQuote);
+            this.props.onBuyFailure(this.props.buyQuote, txnHash);
         }
-        this.props.onBuySuccess(this.props.buyQuote);
     };
 }

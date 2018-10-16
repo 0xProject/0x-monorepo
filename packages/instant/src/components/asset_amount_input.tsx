@@ -25,13 +25,13 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps> {
                 <AmountInput {...rest} onChange={this._handleChange} />
                 <Container display="inline-block" marginLeft="10px">
                     <Text fontSize={rest.fontSize} fontColor={ColorOption.white} textTransform="uppercase">
-                        {this._getLabel()}
+                        {this._getAssetSymbolLabel()}
                     </Text>
                 </Container>
             </Container>
         );
     }
-    private readonly _getLabel = (): string => {
+    private readonly _getAssetSymbolLabel = (): string => {
         const unknownLabel = '???';
         if (_.isUndefined(this.props.assetData)) {
             return unknownLabel;
