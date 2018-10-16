@@ -32,6 +32,11 @@
                 "note":
                     "Some properties and methods have been renamed. For example, some methods that previously could throw no longer can, and so their names have been updated accordingly.",
                 "pr": 1105
+            },
+            {
+                "note":
+                    "Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from web3-wrapper, which we feel provides enough information.",
+                "pr": 1105
             }
         ]
     },

@@ -115,12 +115,6 @@ describe('ERC721Wrapper', () => {
                 tokenCount = await contractWrappers.erc721Token.getTokenCountAsync(tokenAddress, ownerAddress);
                 expect(tokenCount).to.be.bignumber.equal(1);
             });
-            it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
-                const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
-                return expect(
-                    contractWrappers.erc721Token.getTokenCountAsync(nonExistentTokenAddress, ownerAddress),
-                ).to.be.rejectedWith(ContractWrappersError.ERC721TokenContractDoesNotExist);
-            });
             it('should return a balance of 0 for a non-existent owner address', async () => {
                 const nonExistentOwner = '0x198c6ad858f213fb31b6fe809e25040e6b964593';
                 const balance = await contractWrappers.erc721Token.getTokenCountAsync(tokenAddress, nonExistentOwner);
@@ -148,13 +142,6 @@ describe('ERC721Wrapper', () => {
             const tokenId = await tokenUtils.mintDummyERC721Async(tokenAddress, ownerAddress);
             const tokenOwner = await contractWrappers.erc721Token.getOwnerOfAsync(tokenAddress, tokenId);
             expect(tokenOwner).to.be.bignumber.equal(ownerAddress);
-        });
-        it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
-            const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
-            const fakeTokenId = new BigNumber(42);
-            return expect(
-                contractWrappers.erc721Token.getOwnerOfAsync(nonExistentTokenAddress, fakeTokenId),
-            ).to.be.rejectedWith(ContractWrappersError.ERC721TokenContractDoesNotExist);
         });
         it('should return undefined not 0 for a non-existent ERC721', async () => {
             const fakeTokenId = new BigNumber(42);

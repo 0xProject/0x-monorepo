@@ -80,19 +80,6 @@ describe('ERC20Wrapper', () => {
                 contractWrappers.erc20Token.transferAsync(tokenAddress, fromAddress, toAddress, transferAmount),
             ).to.be.rejectedWith(ContractWrappersError.InsufficientBalanceForTransfer);
         });
-        it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
-            const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
-            const fromAddress = coinbase;
-            const toAddress = coinbase;
-            return expect(
-                contractWrappers.erc20Token.transferAsync(
-                    nonExistentTokenAddress,
-                    fromAddress,
-                    toAddress,
-                    transferAmount,
-                ),
-            ).to.be.rejectedWith(ContractWrappersError.ERC20TokenContractDoesNotExist);
-        });
     });
     describe('#transferFromAsync', () => {
         let tokenAddress: string;
@@ -197,19 +184,6 @@ describe('ERC20Wrapper', () => {
             const postBalance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, toAddress);
             return expect(postBalance).to.be.bignumber.equal(transferAmount);
         });
-        it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
-            const fromAddress = coinbase;
-            const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
-            return expect(
-                contractWrappers.erc20Token.transferFromAsync(
-                    nonExistentTokenAddress,
-                    fromAddress,
-                    toAddress,
-                    senderAddress,
-                    new BigNumber(42),
-                ),
-            ).to.be.rejectedWith(ContractWrappersError.ERC20TokenContractDoesNotExist);
-        });
     });
     describe('#getBalanceAsync', () => {
         describe('With provider with accounts', () => {
@@ -219,13 +193,6 @@ describe('ERC20Wrapper', () => {
                 const balance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, ownerAddress);
                 const expectedBalance = new BigNumber('1000000000000000000000000000');
                 return expect(balance).to.be.bignumber.equal(expectedBalance);
-            });
-            it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
-                const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
-                const ownerAddress = coinbase;
-                return expect(
-                    contractWrappers.erc20Token.getBalanceAsync(nonExistentTokenAddress, ownerAddress),
-                ).to.be.rejectedWith(ContractWrappersError.ERC20TokenContractDoesNotExist);
             });
             it('should return a balance of 0 for a non-existent owner address', async () => {
                 const tokenAddress = tokens[0];

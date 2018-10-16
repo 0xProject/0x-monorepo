@@ -197,13 +197,6 @@ export class EtherTokenWrapper extends ContractWrapper {
         if (!_.isUndefined(etherTokenContract)) {
             return etherTokenContract;
         }
-        // TODO(albrow): Do we really still need this check? The default error
-        // looks okay to me.
-        // TODO(albrow): Should we normalize the token address here?
-        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(etherTokenAddress);
-        if (!doesContractExist) {
-            throw new Error(ContractWrappersError.EtherTokenContractDoesNotExist);
-        }
         const contractInstance = new WETH9Contract(
             this.abi,
             etherTokenAddress,

@@ -455,12 +455,6 @@ export class ERC721TokenWrapper extends ContractWrapper {
         if (!_.isUndefined(tokenContract)) {
             return tokenContract;
         }
-        // TODO(albrow): Do we really still need this check? The default error
-        // looks okay to me.
-        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(tokenAddress);
-        if (!doesContractExist) {
-            throw new Error(ContractWrappersError.ERC721TokenContractDoesNotExist);
-        }
         const contractInstance = new ERC721TokenContract(
             this.abi,
             normalizedTokenAddress,

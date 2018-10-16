@@ -19,13 +19,6 @@ export enum ExchangeWrapperError {
 }
 
 export enum ContractWrappersError {
-    ExchangeContractDoesNotExist = 'EXCHANGE_CONTRACT_DOES_NOT_EXIST',
-    ZRXContractDoesNotExist = 'ZRX_CONTRACT_DOES_NOT_EXIST',
-    EtherTokenContractDoesNotExist = 'ETHER_TOKEN_CONTRACT_DOES_NOT_EXIST',
-    ERC20ProxyContractDoesNotExist = 'ERC20_PROXY_CONTRACT_DOES_NOT_EXIST',
-    ERC721ProxyContractDoesNotExist = 'ERC721_PROXY_CONTRACT_DOES_NOT_EXIST',
-    ERC20TokenContractDoesNotExist = 'ERC20_TOKEN_CONTRACT_DOES_NOT_EXIST',
-    ERC721TokenContractDoesNotExist = 'ERC721_TOKEN_CONTRACT_DOES_NOT_EXIST',
     ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
     InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
     InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',
