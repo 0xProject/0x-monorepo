@@ -1,9 +1,8 @@
+import { Exchange } from '@0xproject/contract-artifacts';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import { DecodedLogArgs, LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import 'mocha';
-
-import { artifacts } from '../../../src/artifacts';
 
 import { EventsResponseResult } from '../../../src/data_sources/etherscan';
 import { convertResponseToLogEntry, decodeLogEntry } from '../../../src/data_types/events/event_utils';
@@ -80,7 +79,7 @@ describe('event_utils', () => {
                     takerAssetData: '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
                 },
             };
-            const actual = decodeLogEntry(artifacts.Exchange.compilerOutput.abi, input);
+            const actual = decodeLogEntry(Exchange.compilerOutput.abi, input);
             expect(actual).deep.equal(expected);
         });
     });
