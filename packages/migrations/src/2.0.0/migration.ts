@@ -59,7 +59,7 @@ export const runV2MigrationsAsync = async (provider: Provider, artifactsDir: str
     const owners = [accounts[0], accounts[1]];
     const confirmationsRequired = new BigNumber(2);
     const secondsRequired = new BigNumber(0);
-    const owner = accounts[0];
+    const owner = process.env.V2_OWNER_ACCOUNT || accounts[0];
 
     // AssetProxyOwner
     const assetProxyOwner = await AssetProxyOwnerContract.deployFrom0xArtifactAsync(
