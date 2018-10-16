@@ -70,7 +70,6 @@
         "@types/react-redux": "^6.0.9",
         "@types/redux": "^3.6.0",
         "awesome-typescript-loader": "^5.2.1",
-        "copyfiles": "^1.2.0",
         "enzyme": "^3.6.0",
         "enzyme-adapter-react-16": "^1.5.0",
         "jest": "^23.6.0",

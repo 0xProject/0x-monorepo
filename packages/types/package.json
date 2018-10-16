@@ -24,7 +24,6 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/types/README.md",
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.8",
-        "copyfiles": "^2.0.0",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "5.11.0",

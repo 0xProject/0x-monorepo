@@ -15,6 +15,15 @@
                 "note":
                     "Removed `SignerType` (including `SignerType.Metamask`). Please use the `MetamaskSubprovider` to wrap `web3.currentProvider`.",
                 "pr": 1102
+            },
+            {
+                "note":
+                    "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers",
+                "pr": 1105
+            },
+            {
+                "note": "Make web3-provider-engine types a 'dependency' so it's available to users of the library",
+                "pr": 1105
             }
         ]
     },

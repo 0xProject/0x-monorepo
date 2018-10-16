@@ -6,12 +6,12 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
-import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
-import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
-import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
-import { WETH9Contract } from '../../generated_contract_wrappers/weth9';
-import { artifacts } from '../utils/artifacts';
+import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
+import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
+import { ExchangeContract } from '../../generated-wrappers/exchange';
+import { ForwarderContract } from '../../generated-wrappers/forwarder';
+import { WETH9Contract } from '../../generated-wrappers/weth9';
+import { artifacts } from '../../src/artifacts';
 import {
     expectContractCreationFailedAsync,
     expectTransactionFailedAsync,
@@ -91,7 +91,7 @@ describe(ContractName.Forwarder, () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
 
-        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.EtherToken, provider, txDefaults);
+        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults);
         weth = new DummyERC20TokenContract(wethContract.abi, wethContract.address, provider);
         erc20Wrapper.addDummyTokenContract(weth);
 

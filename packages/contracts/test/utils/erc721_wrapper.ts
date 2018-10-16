@@ -4,10 +4,10 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
-import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
+import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
+import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
+import { artifacts } from '../../src/artifacts';
 
-import { artifacts } from './artifacts';
 import { constants } from './constants';
 import { ERC721TokenIdsByOwner } from './types';
 import { txDefaults } from './web3_wrapper';

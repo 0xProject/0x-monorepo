@@ -1,15 +1,13 @@
+import { DummyERC20TokenContract, ERC20ProxyContract, ERC20TokenContract } from '@0xproject/abi-gen-wrappers';
+import * as artifacts from '@0xproject/contract-artifacts';
 import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
 import { ExchangeContractErrs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 
-import { artifacts } from '../src/artifacts';
 import { assetDataUtils } from '../src/asset_data_utils';
 import { constants } from '../src/constants';
 import { ExchangeTransferSimulator } from '../src/exchange_transfer_simulator';
-import { DummyERC20TokenContract } from '../src/generated_contract_wrappers/dummy_erc20_token';
-import { ERC20ProxyContract } from '../src/generated_contract_wrappers/erc20_proxy';
-import { ERC20TokenContract } from '../src/generated_contract_wrappers/erc20_token';
 import { BalanceAndProxyAllowanceLazyStore } from '../src/store/balance_and_proxy_allowance_lazy_store';
 import { TradeSide, TransferType } from '../src/types';
 

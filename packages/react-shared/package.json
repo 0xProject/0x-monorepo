@@ -27,7 +27,6 @@
     "devDependencies": {
         "@0xproject/dev-utils": "^1.0.12",
         "@0xproject/tslint-config": "^1.0.8",
-        "copyfiles": "^2.0.0",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "^5.9.1",

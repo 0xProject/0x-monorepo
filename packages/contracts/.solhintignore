@@ -1,0 +1,3 @@
+contracts/tokens/ZRXToken/ERC20Token_v1.sol
+contracts/tokens/ZRXToken/Token_v1.sol
+contracts/tokens/ZRXToken/UnlimitedAllowanceToken_v1.sol

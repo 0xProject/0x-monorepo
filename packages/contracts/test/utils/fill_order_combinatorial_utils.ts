@@ -14,10 +14,10 @@ import { LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
-import { ExchangeContract, ExchangeFillEventArgs } from '../../generated_contract_wrappers/exchange';
-import { TestLibsContract } from '../../generated_contract_wrappers/test_libs';
+import { ExchangeContract, ExchangeFillEventArgs } from '../../generated-wrappers/exchange';
+import { TestLibsContract } from '../../generated-wrappers/test_libs';
+import { artifacts } from '../../src/artifacts';
 
-import { artifacts } from './artifacts';
 import { expectTransactionFailedAsync } from './assertions';
 import { AssetWrapper } from './asset_wrapper';
 import { chaiSetup } from './chai_setup';

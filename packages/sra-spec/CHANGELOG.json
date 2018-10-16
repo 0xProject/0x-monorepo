@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.7",
+        "changes": [
+            {
+                "note": "Make @loopback/openapi-v3-types a 'dependency' so it's available to users of the library",
+                "pr": 1105
+            }
+        ]
+    },
+    {
         "version": "1.0.6",
         "changes": [
             {
