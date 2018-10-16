@@ -9,6 +9,10 @@
             {
                 "note": "Add support for `eth_signTypedData` in wallets Mnemonic, Private and EthLightWallet",
                 "pr": 1102
+            },
+            {
+                "note": "Make web3-provider-engine types a 'dependency' so it's available to users of the library",
+                "pr": 1105
             }
         ]
     },

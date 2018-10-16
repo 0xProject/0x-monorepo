@@ -3,8 +3,8 @@ import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
 
-import { ZRXTokenContract } from '../../generated_contract_wrappers/zrx_token';
-import { artifacts } from '../utils/artifacts';
+import { ZRXTokenContract } from '../../generated-wrappers/zrx_token';
+import { artifacts } from '../../src/artifacts';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
@@ -29,7 +29,7 @@ describe('ZRXToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
-        zrxToken = await ZRXTokenContract.deployFrom0xArtifactAsync(artifacts.ZRX, provider, txDefaults);
+        zrxToken = await ZRXTokenContract.deployFrom0xArtifactAsync(artifacts.ZRXToken, provider, txDefaults);
         MAX_UINT = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     });
     beforeEach(async () => {

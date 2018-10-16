@@ -1,3 +1,30 @@
+export { ContractAddresses } from '@0xproject/contract-addresses';
+
+export {
+    WETH9Events,
+    WETH9WithdrawalEventArgs,
+    WETH9ApprovalEventArgs,
+    WETH9EventArgs,
+    WETH9DepositEventArgs,
+    WETH9TransferEventArgs,
+    ERC20TokenTransferEventArgs,
+    ERC20TokenApprovalEventArgs,
+    ERC20TokenEvents,
+    ERC20TokenEventArgs,
+    ERC721TokenApprovalEventArgs,
+    ERC721TokenApprovalForAllEventArgs,
+    ERC721TokenTransferEventArgs,
+    ERC721TokenEvents,
+    ERC721TokenEventArgs,
+    ExchangeCancelUpToEventArgs,
+    ExchangeAssetProxyRegisteredEventArgs,
+    ExchangeSignatureValidatorApprovalEventArgs,
+    ExchangeFillEventArgs,
+    ExchangeCancelEventArgs,
+    ExchangeEventArgs,
+    ExchangeEvents,
+} from '@0xproject/abi-gen-wrappers';
+
 export { ContractWrappers } from './contract_wrappers';
 export { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
 export { ERC721TokenWrapper } from './contract_wrappers/erc721_token_wrapper';
@@ -53,40 +80,6 @@ export {
     ConstructorStateMutability,
     StateMutability,
 } from 'ethereum-types';
-
-export {
-    WETH9Events,
-    WETH9WithdrawalEventArgs,
-    WETH9ApprovalEventArgs,
-    WETH9EventArgs,
-    WETH9DepositEventArgs,
-    WETH9TransferEventArgs,
-} from './contract_wrappers/generated/weth9';
-
-export {
-    ERC20TokenTransferEventArgs,
-    ERC20TokenApprovalEventArgs,
-    ERC20TokenEvents,
-    ERC20TokenEventArgs,
-} from './contract_wrappers/generated/erc20_token';
-
-export {
-    ERC721TokenApprovalEventArgs,
-    ERC721TokenApprovalForAllEventArgs,
-    ERC721TokenTransferEventArgs,
-    ERC721TokenEvents,
-    ERC721TokenEventArgs,
-} from './contract_wrappers/generated/erc721_token';
-
-export {
-    ExchangeCancelUpToEventArgs,
-    ExchangeAssetProxyRegisteredEventArgs,
-    ExchangeSignatureValidatorApprovalEventArgs,
-    ExchangeFillEventArgs,
-    ExchangeCancelEventArgs,
-    ExchangeEventArgs,
-    ExchangeEvents,
-} from './contract_wrappers/generated/exchange';
 
 export { AbstractBalanceAndProxyAllowanceFetcher, AbstractOrderFilledCancelledFetcher } from '@0xproject/order-utils';
 

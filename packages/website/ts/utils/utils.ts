@@ -231,13 +231,6 @@ export const utils = {
     },
     zeroExErrToHumanReadableErrMsg(error: ContractWrappersError | ExchangeContractErrs, takerAddress: string): string {
         const ContractWrappersErrorToHumanReadableError: { [error: string]: string } = {
-            [ContractWrappersError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
-            [ContractWrappersError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
-            [ContractWrappersError.ERC20ProxyContractDoesNotExist]: 'ERC20 proxy contract des not exist',
-            [ContractWrappersError.ERC721ProxyContractDoesNotExist]: 'ERC721 proxy contract des not exist',
-            [ContractWrappersError.ERC20TokenContractDoesNotExist]: 'ERC20 token contract does not exist',
-            [ContractWrappersError.ERC721TokenContractDoesNotExist]: 'ERC721 token contract does not exist',
-            [ContractWrappersError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
             [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
             [OrderError.InvalidSignature]: 'Order signature is not valid',
             [ContractWrappersError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
