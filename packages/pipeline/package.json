@@ -4,21 +4,17 @@
     "private": true,
     "description": "Data pipeline for offline analysis",
     "scripts": {
-        "build": "yarn pre_build && tsc -b",
-        "pre_build": "run-s update_artifacts copy_artifacts",
-        "copy_artifacts": "copyfiles -u 2 './src/artifacts/**/*.json' ./lib/src/artifacts",
-        "update_artifacts": "for i in ${npm_package_config_contracts_v2}; do copyfiles -u 4 ../migrations/artifacts/2.0.0/$i.json src/artifacts; done;",
+        "build": "yarn tsc -b",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "clean": "shx rm -rf lib src/artifacts",
-        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*"
+        "clean": "shx rm -rf lib",
+        "lint": "tslint --project ."
     },
     "config": {
-        "contracts_v2": "Exchange",
         "postpublish": {
             "assets": []
         }
@@ -39,6 +35,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
+        "@0xproject/contract-artifacts": "^1.0.0",
         "@0xproject/connect": "^2.0.4",
         "@0xproject/contract-wrappers": "^1.0.1",
         "@0xproject/order-utils": "^1.0.2",
