@@ -144,12 +144,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                                     menuIconStyle={menuIconStyle}
                                 />
                                 <TopBarMenuItem
-                                    title={this.props.translate.get(Key.Wiki, Deco.Cap)}
-                                    path={WebsitePaths.Wiki}
-                                    style={styles.menuItem}
-                                    isNightVersion={isNightVersion}
-                                />
-                                <TopBarMenuItem
                                     title={this.props.translate.get(Key.Blog, Deco.Cap)}
                                     path={constants.URL_BLOG}
                                     style={styles.menuItem}
@@ -231,7 +225,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
                 <div className="clearfix">
-                    {this._renderWiki()}
                     <div className="pl1 py1 mt3" style={{ backgroundColor: colors.lightGrey }}>
                         {this.props.translate.get(Key.Website, Deco.Cap)}
                     </div>
@@ -240,9 +233,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     </Link>
                     <Link to={WebsitePaths.Docs}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Documentation, Deco.Cap)}</MenuItem>
-                    </Link>
-                    <Link to={WebsitePaths.Wiki}>
-                        <MenuItem className="py2">{this.props.translate.get(Key.Wiki, Deco.Cap)}</MenuItem>
                     </Link>
                     {!this._isViewingPortal() && (
                         <Link to={WebsitePaths.Portal}>
@@ -272,21 +262,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             </Drawer>
         );
     }
-    private _renderWiki(): React.ReactNode {
-        if (!this._isViewingWiki()) {
-            return undefined;
-        }
-
-        return (
-            <div className="lg-hide md-hide" onClick={this._onMenuButtonClick.bind(this)}>
-                <NestedSidebarMenu
-                    sectionNameToLinks={this.props.sectionNameToLinks}
-                    sidebarHeader={this.props.sidebarHeader}
-                    shouldDisplaySectionHeaders={false}
-                />
-            </div>
-        );
-    }
     private _onMenuButtonClick(): void {
         this.setState({
             isDrawerOpen: !this.state.isDrawerOpen,
@@ -298,13 +273,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private _isViewingFAQ(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.FAQ);
     }
-    private _doesUrlInclude(aPath: string): boolean {
-        return _.includes(this.props.location.pathname, aPath);
-    }
-    private _isViewingWiki(): boolean {
-        return _.includes(this.props.location.pathname, WebsitePaths.Wiki);
-    }
     private _shouldDisplayBottomBar(): boolean {
-        return this._isViewingWiki() || this._isViewingFAQ() || this._isViewingPortal();
+        return this._isViewingFAQ() || this._isViewingPortal();
     }
 } // tslint:disable:max-file-line-count
