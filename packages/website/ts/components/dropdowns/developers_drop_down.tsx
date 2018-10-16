@@ -44,6 +44,10 @@ const popularDocsToLinkInfos: ALink[] = [
 ];
 const usefulLinksToLinkInfo: ALink[] = [
     {
+        title: Key.Wiki,
+        to: WebsitePaths.Wiki,
+    },
+    {
         title: Key.Github,
         to: constants.URL_GITHUB_ORG,
         shouldOpenInNewTab: true,
@@ -51,11 +55,6 @@ const usefulLinksToLinkInfo: ALink[] = [
     {
         title: Key.Whitepaper,
         to: WebsitePaths.Whitepaper,
-        shouldOpenInNewTab: true,
-    },
-    {
-        title: Key.Sandbox,
-        to: constants.URL_SANDBOX,
         shouldOpenInNewTab: true,
     },
 ];
