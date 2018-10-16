@@ -13,7 +13,6 @@ export interface NestedSidebarMenuProps {
     sectionNameToLinks: ObjectMap<ALink[]>;
     sidebarHeader?: React.ReactNode;
     shouldReformatMenuItemNames?: boolean;
-    parentName?: string;
 }
 
 export interface NestedSidebarMenuState {
@@ -40,7 +39,6 @@ const styles: Styles = {
 export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, NestedSidebarMenuState> {
     public static defaultProps: Partial<NestedSidebarMenuProps> = {
         shouldReformatMenuItemNames: true,
-        parentName: 'default',
     };
     private _urlIntervalCheckId: number;
     constructor(props: NestedSidebarMenuProps) {
