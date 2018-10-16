@@ -87,7 +87,6 @@
         "@types/redux": "^3.6.0",
         "@types/web3-provider-engine": "^14.0.0",
         "awesome-typescript-loader": "^5.2.1",
-        "copyfiles": "^2.0.0",
         "css-loader": "0.23.x",
         "less-loader": "^4.1.0",
         "make-promises-safe": "^1.1.0",

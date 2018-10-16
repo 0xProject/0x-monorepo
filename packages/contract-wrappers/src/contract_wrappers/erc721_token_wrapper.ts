@@ -1,10 +1,11 @@
+import { ERC721TokenContract, ERC721TokenEventArgs, ERC721TokenEvents } from '@0xproject/abi-gen-wrappers';
+import { ERC721Token } from '@0xproject/contract-artifacts';
 import { schemas } from '@0xproject/json-schemas';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
 import { methodOptsSchema } from '../schemas/method_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
 import {
@@ -20,7 +21,6 @@ import { constants } from '../utils/constants';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ERC721ProxyWrapper } from './erc721_proxy_wrapper';
-import { ERC721TokenContract, ERC721TokenEventArgs, ERC721TokenEvents } from './generated/erc721_token';
 
 const removeUndefinedProperties = _.pickBy;
 
@@ -30,7 +30,7 @@ const removeUndefinedProperties = _.pickBy;
  * to the 0x ERC721 Proxy smart contract.
  */
 export class ERC721TokenWrapper extends ContractWrapper {
-    public abi: ContractAbi = artifacts.ERC721Token.compilerOutput.abi;
+    public abi: ContractAbi = ERC721Token.compilerOutput.abi;
     private _tokenContractsByAddress: { [address: string]: ERC721TokenContract };
     private _erc721ProxyWrapper: ERC721ProxyWrapper;
     /**
@@ -150,7 +150,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         ownerAddress: string,
         methodOpts: MethodOpts = {},
     ): Promise<boolean> {
-        const proxyAddress = this._erc721ProxyWrapper.getContractAddress();
+        const proxyAddress = this._erc721ProxyWrapper.address;
         const isProxyApprovedForAll = await this.isApprovedForAllAsync(
             tokenAddress,
             ownerAddress,
@@ -199,7 +199,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         tokenId: BigNumber,
         methodOpts: MethodOpts = {},
     ): Promise<boolean> {
-        const proxyAddress = this._erc721ProxyWrapper.getContractAddress();
+        const proxyAddress = this._erc721ProxyWrapper.address;
         const approvedAddress = await this.getApprovedIfExistsAsync(tokenAddress, tokenId, methodOpts);
         const isProxyApproved = approvedAddress === proxyAddress;
         return isProxyApproved;
@@ -260,7 +260,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         isApproved: boolean,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
-        const proxyAddress = this._erc721ProxyWrapper.getContractAddress();
+        const proxyAddress = this._erc721ProxyWrapper.address;
         const txHash = await this.setApprovalForAllAsync(tokenAddress, ownerAddress, proxyAddress, isApproved, txOpts);
         return txHash;
     }
@@ -318,7 +318,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         tokenId: BigNumber,
         txOpts: TransactionOpts = {},
     ): Promise<string> {
-        const proxyAddress = this._erc721ProxyWrapper.getContractAddress();
+        const proxyAddress = this._erc721ProxyWrapper.address;
         const txHash = await this.setApprovalAsync(tokenAddress, proxyAddress, tokenId, txOpts);
         return txHash;
     }
@@ -400,7 +400,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
             normalizedTokenAddress,
             eventName,
             indexFilterValues,
-            artifacts.ERC721Token.compilerOutput.abi,
+            ERC721Token.compilerOutput.abi,
             callback,
             isVerbose,
         );
@@ -445,16 +445,9 @@ export class ERC721TokenWrapper extends ContractWrapper {
             eventName,
             blockRange,
             indexFilterValues,
-            artifacts.ERC721Token.compilerOutput.abi,
+            ERC721Token.compilerOutput.abi,
         );
         return logs;
-    }
-    // HACK: We don't want this method to be visible to the other units within that package but not to the end user.
-    // TS doesn't give that possibility and therefore we make it private and access it over an any cast. Because of that tslint sees it as unused.
-    // tslint:disable-next-line:no-unused-variable
-    private _invalidateContractInstances(): void {
-        this.unsubscribeAll();
-        this._tokenContractsByAddress = {};
     }
     private async _getTokenContractAsync(tokenAddress: string): Promise<ERC721TokenContract> {
         const normalizedTokenAddress = tokenAddress.toLowerCase();
@@ -462,13 +455,9 @@ export class ERC721TokenWrapper extends ContractWrapper {
         if (!_.isUndefined(tokenContract)) {
             return tokenContract;
         }
-        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
-            artifacts.ERC721Token,
-            normalizedTokenAddress,
-        );
         const contractInstance = new ERC721TokenContract(
-            abi,
-            address,
+            this.abi,
+            normalizedTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

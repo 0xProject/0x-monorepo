@@ -1,0 +1,25 @@
+{
+    "extends": "../../tsconfig",
+    "compilerOptions": {
+        "outDir": "lib",
+        "rootDir": ".",
+        "resolveJsonModule": true
+    },
+    "include": ["./src/**/*"],
+    "files": [
+        "./artifacts/AssetProxyOwner.json",
+        "./artifacts/DummyERC20Token.json",
+        "./artifacts/DummyERC721Token.json",
+        "./artifacts/ERC20Proxy.json",
+        "./artifacts/ERC20Token.json",
+        "./artifacts/ERC721Proxy.json",
+        "./artifacts/ERC721Token.json",
+        "./artifacts/Exchange.json",
+        "./artifacts/Forwarder.json",
+        "./artifacts/IValidator.json",
+        "./artifacts/IWallet.json",
+        "./artifacts/OrderValidator.json",
+        "./artifacts/WETH9.json",
+        "./artifacts/ZRXToken.json"
+    ]
+}

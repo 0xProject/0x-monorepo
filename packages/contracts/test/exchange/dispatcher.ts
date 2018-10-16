@@ -6,14 +6,14 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
-import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
-import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
+import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
+import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
+import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import {
     TestAssetProxyDispatcherAssetProxyRegisteredEventArgs,
     TestAssetProxyDispatcherContract,
-} from '../../generated_contract_wrappers/test_asset_proxy_dispatcher';
-import { artifacts } from '../utils/artifacts';
+} from '../../generated-wrappers/test_asset_proxy_dispatcher';
+import { artifacts } from '../../src/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';

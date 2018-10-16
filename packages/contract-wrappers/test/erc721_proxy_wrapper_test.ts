@@ -4,6 +4,7 @@ import { ContractWrappers } from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { provider } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -11,10 +12,13 @@ const expect = chai.expect;
 
 describe('ERC721ProxyWrapper', () => {
     let contractWrappers: ContractWrappers;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
+        const config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+            contractAddresses,
+            blockPollingIntervalMs: 10,
+        };
         contractWrappers = new ContractWrappers(provider, config);
     });
     describe('#isAuthorizedAsync', () => {

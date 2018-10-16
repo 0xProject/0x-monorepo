@@ -1,10 +1,10 @@
+import { ExchangeContract } from '@0xproject/abi-gen-wrappers';
+
 import { schemas } from '@0xproject/json-schemas';
 import { eip712Utils } from '@0xproject/order-utils';
 import { Order, SignedOrder } from '@0xproject/types';
 import { BigNumber, signTypedDataUtils } from '@0xproject/utils';
 import _ = require('lodash');
-
-import { ExchangeContract } from '../contract_wrappers/generated/exchange';
 
 import { assert } from './assert';
 

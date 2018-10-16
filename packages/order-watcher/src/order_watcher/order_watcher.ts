@@ -1,4 +1,6 @@
 // tslint:disable:no-unnecessary-type-assertion
+import { ContractAddresses } from '@0xproject/contract-addresses';
+import * as artifacts from '@0xproject/contract-artifacts';
 import {
     AssetBalanceAndProxyAllowanceFetcher,
     ContractWrappers,
@@ -30,12 +32,11 @@ import {
     orderHashUtils,
     OrderStateUtils,
 } from '@0xproject/order-utils';
-import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder } from '@0xproject/types';
+import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder, Stats } from '@0xproject/types';
 import { errorUtils, intervalUtils } from '@0xproject/utils';
 import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
 import { orderWatcherPartialConfigSchema } from '../schemas/order_watcher_partial_config_schema';
 import { OnOrderStateChangeCallback, OrderWatcherConfig, OrderWatcherError } from '../types';
 import { assert } from '../utils/assert';
@@ -91,11 +92,14 @@ export class OrderWatcher {
      * Instantiate a new OrderWatcher
      * @param provider Web3 provider to use for JSON RPC calls
      * @param networkId NetworkId to watch orders on
+     * @param contractAddresses Optional contract addresses. Defaults to known
+     * addresses based on networkId.
      * @param partialConfig Optional configurations
      */
     constructor(
         provider: Provider,
         networkId: number,
+        contractAddresses?: ContractAddresses,
         partialConfig: Partial<OrderWatcherConfig> = DEFAULT_ORDER_WATCHER_CONFIG,
     ) {
         assert.isWeb3Provider('provider', provider);
@@ -110,9 +114,14 @@ export class OrderWatcher {
         this._collisionResistantAbiDecoder = new CollisionResistanceAbiDecoder(
             artifacts.ERC20Token.compilerOutput.abi,
             artifacts.ERC721Token.compilerOutput.abi,
-            [artifacts.EtherToken.compilerOutput.abi, artifacts.Exchange.compilerOutput.abi],
+            [artifacts.WETH9.compilerOutput.abi, artifacts.Exchange.compilerOutput.abi],
         );
-        const contractWrappers = new ContractWrappers(provider, { networkId });
+        const contractWrappers = new ContractWrappers(provider, {
+            networkId,
+            // Note(albrow): We let the contract-wrappers package handle
+            // default values for contractAddresses.
+            contractAddresses,
+        });
         this._eventWatcher = new EventWatcher(provider, config.eventPollingIntervalMs, STATE_LAYER, config.isVerbose);
         const balanceAndProxyAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
             contractWrappers.erc20Token,
@@ -212,6 +221,14 @@ export class OrderWatcher {
         this._eventWatcher.unsubscribe();
         this._expirationWatcher.unsubscribe();
         intervalUtils.clearAsyncExcludingInterval(this._cleanupJobIntervalIdIfExists);
+    }
+    /**
+     * Gets statistics of the OrderWatcher Instance.
+     */
+    public getStats(): Stats {
+        return {
+            orderCount: _.size(this._orderByOrderHash),
+        };
     }
     private async _cleanupAsync(): Promise<void> {
         for (const orderHash of _.keys(this._orderByOrderHash)) {

@@ -11,7 +11,8 @@ import {
 } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from './artifacts';
+import { artifacts } from '../../src/artifacts';
+
 import { constants } from './constants';
 
 export class LogDecoder {

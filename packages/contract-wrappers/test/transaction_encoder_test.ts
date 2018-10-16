@@ -9,6 +9,7 @@ import { ContractWrappers } from '../src';
 import { TransactionEncoder } from '../src/utils/transaction_encoder';
 
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -31,23 +32,26 @@ describe('TransactionEncoder', () => {
     const fillableAmount = new BigNumber(5);
     const takerTokenFillAmount = new BigNumber(5);
     let signedOrder: SignedOrder;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-        blockPollingIntervalMs: 0,
-    };
+
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
+        const config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+            contractAddresses,
+            blockPollingIntervalMs: 10,
+        };
         contractWrappers = new ContractWrappers(provider, config);
-        exchangeContractAddress = contractWrappers.exchange.getContractAddress();
+        exchangeContractAddress = contractWrappers.exchange.address;
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        const zrxTokenAddress = tokenUtils.getProtocolTokenAddress();
+        const zrxTokenAddress = contractWrappers.exchange.zrxTokenAddress;
         fillScenarios = new FillScenarios(
             provider,
             userAddresses,
             zrxTokenAddress,
             exchangeContractAddress,
-            contractWrappers.erc20Proxy.getContractAddress(),
-            contractWrappers.erc721Proxy.getContractAddress(),
+            contractWrappers.erc20Proxy.address,
+            contractWrappers.erc721Proxy.address,
         );
         [coinbase, makerAddress, takerAddress, senderAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
