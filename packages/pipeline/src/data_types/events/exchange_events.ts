@@ -1,3 +1,4 @@
+import { Exchange } from '@0xproject/contract-artifacts';
 import {
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
@@ -9,7 +10,6 @@ import { AssetProxyId, ERC721AssetData } from '@0xproject/types';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as R from 'ramda';
 
-import { artifacts } from '../../artifacts';
 import { EventsResponse } from '../../data_sources/etherscan';
 import { ExchangeCancelEvent } from '../../entities/ExchangeCancelEvent';
 import { ExchangeCancelUpToEvent } from '../../entities/ExchangeCancelUpToEvent';
@@ -20,12 +20,10 @@ import { convertResponseToLogEntry, decodeLogEntry } from './event_utils';
 
 export type ExchangeEventEntity = ExchangeFillEvent | ExchangeCancelEvent | ExchangeCancelUpToEvent;
 
-const exchangeContractAbi = artifacts.Exchange.compilerOutput.abi;
-
 export function parseExchangeEvents(rawEventsResponse: EventsResponse): ExchangeEventEntity[] {
     const logEntries = R.map(convertResponseToLogEntry, rawEventsResponse.result);
     const decodedLogEntries = R.map(
-        eventResponse => decodeLogEntry<ExchangeEventArgs>(exchangeContractAbi, eventResponse),
+        eventResponse => decodeLogEntry<ExchangeEventArgs>(Exchange.compilerOutput.abi, eventResponse),
         logEntries,
     );
     const filteredLogEntries = R.filter(shouldIncludeLogEntry, decodedLogEntries);
