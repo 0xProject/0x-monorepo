@@ -40,6 +40,6 @@ export const format = {
         if (_.isUndefined(ethUnitAmount) || _.isUndefined(ethUsdPrice)) {
             return defaultText;
         }
-        return `$${ethUnitAmount.mul(ethUsdPrice).round(decimalPlaces)}`;
+        return `$${ethUnitAmount.mul(ethUsdPrice).toFixed(decimalPlaces)}`;
     },
 };
