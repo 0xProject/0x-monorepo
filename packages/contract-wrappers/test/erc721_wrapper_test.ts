@@ -326,7 +326,7 @@ describe('ERC721Wrapper', () => {
                 );
             })().catch(done);
         });
-        it('Outstanding subscriptions are cancelled when contractWrappers.setProvider called', (done: DoneCallback) => {
+        it('Outstanding subscriptions are cancelled when contractWrappers.unsubscribeAll called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
                     (logEvent: DecodedLogEvent<ERC721TokenApprovalEventArgs>) => {
@@ -340,7 +340,7 @@ describe('ERC721Wrapper', () => {
                     callbackNeverToBeCalled,
                 );
                 const callbackToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)();
-                contractWrappers.setProvider(provider);
+                contractWrappers.unsubscribeAll();
                 contractWrappers.erc721Token.subscribe(
                     tokenAddress,
                     ERC721TokenEvents.Approval,

@@ -410,7 +410,7 @@ describe('ExchangeWrapper', () => {
                 await contractWrappers.exchange.cancelOrderAsync(signedOrder);
             })().catch(done);
         });
-        it('Outstanding subscriptions are cancelled when contractWrappers.setProvider called', (done: DoneCallback) => {
+        it('Outstanding subscriptions are cancelled when contractWrappers.unsubscribeAll called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
                     (logEvent: DecodedLogEvent<ExchangeFillEventArgs>) => {
@@ -419,7 +419,7 @@ describe('ExchangeWrapper', () => {
                 );
                 contractWrappers.exchange.subscribe(ExchangeEvents.Fill, indexFilterValues, callbackNeverToBeCalled);
 
-                contractWrappers.setProvider(provider);
+                contractWrappers.unsubscribeAll();
 
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)(
                     (logEvent: DecodedLogEvent<ExchangeFillEventArgs>) => {

@@ -1180,11 +1180,6 @@ export class ExchangeWrapper extends ContractWrapper {
         const encoder = new TransactionEncoder(exchangeInstance);
         return encoder;
     }
-    // tslint:disable:no-unused-variable
-    private _invalidateContractInstances(): void {
-        this.unsubscribeAll();
-        delete this._exchangeContractIfExists;
-    }
     // tslint:enable:no-unused-variable
     private async _getExchangeContractAsync(): Promise<ExchangeContract> {
         if (!_.isUndefined(this._exchangeContractIfExists)) {

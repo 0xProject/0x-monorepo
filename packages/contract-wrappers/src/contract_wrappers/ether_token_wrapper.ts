@@ -192,11 +192,6 @@ export class EtherTokenWrapper extends ContractWrapper {
     public unsubscribeAll(): void {
         super._unsubscribeAll();
     }
-    // tslint:disable-next-line:no-unused-variable
-    private _invalidateContractInstance(): void {
-        this.unsubscribeAll();
-        this._etherTokenContractsByAddress = {};
-    }
     private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<WETH9Contract> {
         let etherTokenContract = this._etherTokenContractsByAddress[etherTokenAddress];
         if (!_.isUndefined(etherTokenContract)) {

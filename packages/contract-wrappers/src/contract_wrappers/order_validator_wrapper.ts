@@ -169,12 +169,6 @@ export class OrderValidatorWrapper extends ContractWrapper {
         const result = await OrderValidatorContractInstance.getERC721TokenOwner.callAsync(tokenAddress, tokenId);
         return result;
     }
-    // HACK: We don't want this method to be visible to the other units within that package but not to the end user.
-    // TS doesn't give that possibility and therefore we make it private and access it over an any cast. Because of that tslint sees it as unused.
-    // tslint:disable-next-line:no-unused-variable
-    private _invalidateContractInstance(): void {
-        delete this._orderValidatorContractIfExists;
-    }
     private async _getOrderValidatorContractAsync(): Promise<OrderValidatorContract> {
         if (!_.isUndefined(this._orderValidatorContractIfExists)) {
             return this._orderValidatorContractIfExists;

@@ -143,21 +143,13 @@ export class ContractWrappers {
         );
     }
     /**
-     * Sets a new web3 provider for contract-wrappers. Updating the provider will stop all
-     * subscriptions so you will need to re-subscribe to all events relevant to your app after this call.
-     * @param   provider    The Web3Provider you would like the contract-wrappers library to use from now on.
-     * @param   networkId   The id of the network your provider is connected to
+     * Unsubscribes from all subscriptions for all contracts.
      */
-    public setProvider(provider: Provider): void {
-        this._web3Wrapper.setProvider(provider);
-        (this.exchange as any)._invalidateContractInstances();
-        (this.erc20Token as any)._invalidateContractInstances();
-        (this.erc20Proxy as any)._invalidateContractInstance();
-        (this.erc721Token as any)._invalidateContractInstances();
-        (this.erc721Proxy as any)._invalidateContractInstance();
-        (this.etherToken as any)._invalidateContractInstance();
-        (this.forwarder as any)._invalidateContractInstance();
-        (this.orderValidator as any)._invalidateContractInstance();
+    public unsubscribeAll(): void {
+        this.exchange.unsubscribeAll();
+        this.erc20Token.unsubscribeAll();
+        this.erc721Token.unsubscribeAll();
+        this.etherToken.unsubscribeAll();
     }
     /**
      * Get the provider instance currently used by contract-wrappers

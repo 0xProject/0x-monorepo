@@ -283,7 +283,7 @@ describe('EtherTokenWrapper', () => {
                 await contractWrappers.etherToken.withdrawAsync(etherTokenAddress, withdrawalAmount, addressWithETH);
             })().catch(done);
         });
-        it('should cancel outstanding subscriptions when ZeroEx.setProvider is called', (done: DoneCallback) => {
+        it('should cancel outstanding subscriptions when contractWrappers.unsubscribeAll is called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
                     (_logEvent: DecodedLogEvent<WETH9ApprovalEventArgs>) => {
@@ -297,7 +297,7 @@ describe('EtherTokenWrapper', () => {
                     callbackNeverToBeCalled,
                 );
                 const callbackToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)();
-                contractWrappers.setProvider(provider);
+                contractWrappers.unsubscribeAll();
                 await contractWrappers.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
                 contractWrappers.etherToken.subscribe(
                     etherTokenAddress,

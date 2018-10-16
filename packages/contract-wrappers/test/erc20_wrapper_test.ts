@@ -533,7 +533,7 @@ describe('ERC20Wrapper', () => {
                 );
             })().catch(done);
         });
-        it('Outstanding subscriptions are cancelled when contractWrappers.setProvider called', (done: DoneCallback) => {
+        it('Outstanding subscriptions are cancelled when contractWrappers.unsubscribeAll called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
                     (_logEvent: DecodedLogEvent<ERC20TokenApprovalEventArgs>) => {
@@ -547,7 +547,7 @@ describe('ERC20Wrapper', () => {
                     callbackNeverToBeCalled,
                 );
                 const callbackToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)();
-                contractWrappers.setProvider(provider);
+                contractWrappers.unsubscribeAll();
                 contractWrappers.erc20Token.subscribe(
                     tokenAddress,
                     ERC20TokenEvents.Transfer,
