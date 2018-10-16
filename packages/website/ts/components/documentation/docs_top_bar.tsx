@@ -58,7 +58,7 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
         return (
             <Container height={80}>
                 <Container
-                    className="flex items-center lg-pt3 md-pt3 sm-pt1 lg-mt1 md-mt1 sm-mt0 justify-end"
+                    className="flex items-center lg-pt3 md-pt3 sm-pt1 lg-mt1 md-mt1 sm-mt0 lg-justify-end md-justify-end sm-justify-start"
                     width="100%"
                 >
                     <Container className="sm-hide xs-hide">
@@ -67,7 +67,7 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                         </Container>
                     </Container>
                     <Container className="lg-hide md-hide">
-                        <Container paddingTop="6px" paddingLeft="18px">
+                        <Container paddingTop="6px">
                             <DocsLogo height={30} />
                         </Container>
                     </Container>
