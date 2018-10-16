@@ -35,7 +35,6 @@ export const SlideAnimation =
 
 export interface SlideAnimationComponentProps {
     downY: string;
-    children?: React.ReactNode;
 }
 
 export const SlideUpAnimationComponent: React.StatelessComponent<SlideAnimationComponentProps> = props => (
