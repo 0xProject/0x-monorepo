@@ -1,3 +1,5 @@
+import { DummyERC20TokenContract, DummyERC721TokenContract, ExchangeContract } from '@0xproject/abi-gen-wrappers';
+import * as artifacts from '@0xproject/contract-artifacts';
 import { assetDataUtils } from '@0xproject/order-utils';
 import { orderFactory } from '@0xproject/order-utils/lib/src/order_factory';
 import { AssetProxyId, ERC721AssetData, OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
@@ -6,11 +8,7 @@ import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from './artifacts';
 import { constants } from './constants';
-import { DummyERC20TokenContract } from './generated_contract_wrappers/dummy_erc20_token';
-import { DummyERC721TokenContract } from './generated_contract_wrappers/dummy_erc721_token';
-import { ExchangeContract } from './generated_contract_wrappers/exchange';
 
 export class FillScenarios {
     private readonly _web3Wrapper: Web3Wrapper;

@@ -7,13 +7,13 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import {
     DummyERC721ReceiverContract,
     DummyERC721ReceiverTokenReceivedEventArgs,
-} from '../../generated_contract_wrappers/dummy_erc721_receiver';
+} from '../../generated-wrappers/dummy_erc721_receiver';
 import {
     DummyERC721TokenContract,
     DummyERC721TokenTransferEventArgs,
-} from '../../generated_contract_wrappers/dummy_erc721_token';
-import { InvalidERC721ReceiverContract } from '../../generated_contract_wrappers/invalid_erc721_receiver';
-import { artifacts } from '../utils/artifacts';
+} from '../../generated-wrappers/dummy_erc721_token';
+import { InvalidERC721ReceiverContract } from '../../generated-wrappers/invalid_erc721_receiver';
+import { artifacts } from '../../src/artifacts';
 import { expectTransactionFailedAsync, expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';

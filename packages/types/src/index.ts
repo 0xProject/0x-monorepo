@@ -620,3 +620,7 @@ export interface EIP712TypedData {
     message: EIP712Object;
     primaryType: string;
 }
+
+export interface Stats {
+    orderCount: number;
+}

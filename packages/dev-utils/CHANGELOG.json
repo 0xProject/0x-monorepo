@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.13",
+        "changes": [
+            {
+                "note": "Make web3-provider-engine types a 'dependency' so it's available to users of the library",
+                "pr": 1105
+            }
+        ]
+    },
+    {
         "version": "1.0.12",
         "changes": [
             {

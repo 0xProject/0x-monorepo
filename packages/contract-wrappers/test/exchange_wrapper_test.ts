@@ -12,6 +12,7 @@ import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -27,37 +28,38 @@ describe('ExchangeWrapper', () => {
     let exchangeContractAddress: string;
     let makerTokenAddress: string;
     let takerTokenAddress: string;
-    let coinbase: string;
     let makerAddress: string;
     let anotherMakerAddress: string;
     let takerAddress: string;
     let makerAssetData: string;
     let takerAssetData: string;
-    let feeRecipient: string;
     let txHash: string;
     const fillableAmount = new BigNumber(5);
     const takerTokenFillAmount = new BigNumber(5);
     let signedOrder: SignedOrder;
     let anotherSignedOrder: SignedOrder;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-        blockPollingIntervalMs: 0,
-    };
+
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
+        const config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+            contractAddresses,
+            blockPollingIntervalMs: 10,
+        };
         contractWrappers = new ContractWrappers(provider, config);
-        exchangeContractAddress = contractWrappers.exchange.getContractAddress();
+        exchangeContractAddress = contractWrappers.exchange.address;
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        zrxTokenAddress = tokenUtils.getProtocolTokenAddress();
+        zrxTokenAddress = contractWrappers.exchange.zrxTokenAddress;
         fillScenarios = new FillScenarios(
             provider,
             userAddresses,
             zrxTokenAddress,
             exchangeContractAddress,
-            contractWrappers.erc20Proxy.getContractAddress(),
-            contractWrappers.erc721Proxy.getContractAddress(),
+            contractWrappers.erc20Proxy.address,
+            contractWrappers.erc721Proxy.address,
         );
-        [coinbase, makerAddress, takerAddress, feeRecipient, anotherMakerAddress] = userAddresses;
+        [, makerAddress, takerAddress, , anotherMakerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData] = [
             assetDataUtils.encodeERC20AssetData(makerTokenAddress),
@@ -329,11 +331,11 @@ describe('ExchangeWrapper', () => {
         it('should fill or kill a valid order', async () => {
             const erc20ProxyId = await contractWrappers.erc20Proxy.getProxyIdAsync();
             const erc20ProxyAddressById = await contractWrappers.exchange.getAssetProxyBySignatureAsync(erc20ProxyId);
-            const erc20ProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
+            const erc20ProxyAddress = contractWrappers.erc20Proxy.address;
             expect(erc20ProxyAddressById).to.be.equal(erc20ProxyAddress);
             const erc721ProxyId = await contractWrappers.erc721Proxy.getProxyIdAsync();
             const erc721ProxyAddressById = await contractWrappers.exchange.getAssetProxyBySignatureAsync(erc721ProxyId);
-            const erc721ProxyAddress = contractWrappers.erc721Proxy.getContractAddress();
+            const erc721ProxyAddress = contractWrappers.erc721Proxy.address;
             expect(erc721ProxyAddressById).to.be.equal(erc721ProxyAddress);
         });
     });
@@ -408,7 +410,7 @@ describe('ExchangeWrapper', () => {
                 await contractWrappers.exchange.cancelOrderAsync(signedOrder);
             })().catch(done);
         });
-        it('Outstanding subscriptions are cancelled when contractWrappers.setProvider called', (done: DoneCallback) => {
+        it('Outstanding subscriptions are cancelled when contractWrappers.unsubscribeAll called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
                     (logEvent: DecodedLogEvent<ExchangeFillEventArgs>) => {
@@ -417,7 +419,7 @@ describe('ExchangeWrapper', () => {
                 );
                 contractWrappers.exchange.subscribe(ExchangeEvents.Fill, indexFilterValues, callbackNeverToBeCalled);
 
-                contractWrappers.setProvider(provider, constants.TESTRPC_NETWORK_ID);
+                contractWrappers.unsubscribeAll();
 
                 const callback = callbackErrorReporter.reportNodeCallbackErrors(done)(
                     (logEvent: DecodedLogEvent<ExchangeFillEventArgs>) => {
@@ -452,13 +454,6 @@ describe('ExchangeWrapper', () => {
                 );
                 done();
             })().catch(done);
-        });
-    });
-    describe('#getZRXTokenAddressAsync', () => {
-        it('gets the same token as is in token registry', () => {
-            const zrxAddressFromExchangeWrapper = contractWrappers.exchange.getZRXTokenAddress();
-            const zrxAddress = tokenUtils.getProtocolTokenAddress();
-            expect(zrxAddressFromExchangeWrapper).to.equal(zrxAddress);
         });
     });
     describe('#getLogsAsync', () => {

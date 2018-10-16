@@ -1,16 +1,16 @@
+import { WETH9Contract, WETH9EventArgs, WETH9Events } from '@0xproject/abi-gen-wrappers';
+import { WETH9 } from '@0xproject/contract-artifacts';
 import { schemas } from '@0xproject/json-schemas';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
 import { BlockRange, ContractWrappersError, EventCallback, IndexedFilterValues, TransactionOpts } from '../types';
 import { assert } from '../utils/assert';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ERC20TokenWrapper } from './erc20_token_wrapper';
-import { WETH9Contract, WETH9EventArgs, WETH9Events } from './generated/weth9';
 
 const removeUndefinedProperties = _.pickBy;
 
@@ -19,7 +19,7 @@ const removeUndefinedProperties = _.pickBy;
  * The caller can convert ETH into the equivalent number of wrapped ETH ERC20 tokens and back.
  */
 export class EtherTokenWrapper extends ContractWrapper {
-    public abi: ContractAbi = artifacts.EtherToken.compilerOutput.abi;
+    public abi: ContractAbi = WETH9.compilerOutput.abi;
     private _etherTokenContractsByAddress: {
         [address: string]: WETH9Contract;
     } = {};
@@ -142,7 +142,7 @@ export class EtherTokenWrapper extends ContractWrapper {
             eventName,
             blockRange,
             indexFilterValues,
-            artifacts.EtherToken.compilerOutput.abi,
+            WETH9.compilerOutput.abi,
         );
         return logs;
     }
@@ -172,7 +172,7 @@ export class EtherTokenWrapper extends ContractWrapper {
             normalizedEtherTokenAddress,
             eventName,
             indexFilterValues,
-            artifacts.EtherToken.compilerOutput.abi,
+            WETH9.compilerOutput.abi,
             callback,
             isVerbose,
         );
@@ -192,36 +192,14 @@ export class EtherTokenWrapper extends ContractWrapper {
     public unsubscribeAll(): void {
         super._unsubscribeAll();
     }
-    /**
-     * Retrieves the Ethereum address of the EtherToken contract deployed on the network
-     * that the user-passed web3 provider is connected to. If it's not Kovan, Ropsten, Rinkeby, Mainnet or TestRPC
-     * (networkId: 50), it will return undefined (e.g a private network).
-     * @returns The Ethereum address of the EtherToken contract or undefined.
-     */
-    public getContractAddressIfExists(): string | undefined {
-        const networkSpecificArtifact = artifacts.EtherToken.networks[this._networkId];
-        const contractAddressIfExists = _.isUndefined(networkSpecificArtifact)
-            ? undefined
-            : networkSpecificArtifact.address;
-        return contractAddressIfExists;
-    }
-    // tslint:disable-next-line:no-unused-variable
-    private _invalidateContractInstance(): void {
-        this.unsubscribeAll();
-        this._etherTokenContractsByAddress = {};
-    }
     private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<WETH9Contract> {
         let etherTokenContract = this._etherTokenContractsByAddress[etherTokenAddress];
         if (!_.isUndefined(etherTokenContract)) {
             return etherTokenContract;
         }
-        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
-            artifacts.EtherToken,
-            etherTokenAddress,
-        );
         const contractInstance = new WETH9Contract(
-            abi,
-            address,
+            this.abi,
+            etherTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

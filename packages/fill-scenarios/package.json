@@ -5,17 +5,10 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
-        "build": "yarn pre_build && tsc -b",
+        "build": "yarn tsc -b",
         "build:ci": "yarn build",
-        "pre_build": "run-s update_artifacts generate_contract_wrappers",
-        "update_artifacts": "for i in ${npm_package_config_contracts}; do copyfiles -u 4 ../migrations/artifacts/2.0.0-trimmed/$i.json lib/artifacts; done;",
-        "generate_contract_wrappers": "abi-gen --abis 'lib/artifacts/@(Exchange|DummyERC20Token|DummyERC721Token).json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated_contract_wrappers --backend ethers",
-        "copy_monorepo_scripts": "copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
         "clean": "shx rm -rf lib src/generated_contract_wrappers",
-        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*"
-    },
-    "config": {
-        "contracts": "Exchange DummyERC20Token DummyERC721Token"
+        "lint": "tslint --project ."
     },
     "license": "Apache-2.0",
     "repository": {
@@ -27,18 +20,17 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/fill-scenarios/README.md",
     "devDependencies": {
-        "@0xproject/abi-gen": "^1.0.13",
         "@0xproject/tslint-config": "^1.0.8",
         "@types/lodash": "4.14.104",
-        "copyfiles": "^2.0.0",
         "make-promises-safe": "^1.1.0",
-        "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
         "typescript": "3.0.1"
     },
     "dependencies": {
+        "@0xproject/abi-gen-wrappers": "^1.0.0",
         "@0xproject/base-contract": "^3.0.1",
+        "@0xproject/contract-artifacts": "^1.0.0",
         "@0xproject/order-utils": "^1.0.7",
         "@0xproject/types": "^1.1.4",
         "@0xproject/typescript-typings": "^3.0.2",

@@ -374,7 +374,7 @@ export class Blockchain {
         return unavailableTakerAmount;
     }
     public getExchangeContractAddressIfExists(): string | undefined {
-        return this._contractWrappers.exchange.getContractAddress();
+        return this._contractWrappers.exchange.address;
     }
     public async validateFillOrderThrowIfInvalidAsync(
         signedOrder: SignedOrder,
@@ -859,10 +859,12 @@ export class Blockchain {
             shouldUserLedgerProvider,
         );
         if (!_.isUndefined(this._contractWrappers)) {
-            this._contractWrappers.setProvider(provider, networkId);
-        } else {
-            this._contractWrappers = new ContractWrappers(provider, { networkId });
+            this._contractWrappers.unsubscribeAll();
         }
+        const contractWrappersConfig = {
+            networkId,
+        };
+        this._contractWrappers = new ContractWrappers(provider, contractWrappersConfig);
         if (!_.isUndefined(this._zeroEx)) {
             this._zeroEx.setProvider(provider, networkId);
         } else {

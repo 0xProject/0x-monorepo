@@ -1,3 +1,5 @@
+export { ContractAddresses } from '@0xproject/contract-addresses';
+
 export { assetDataUtils, signatureUtils, generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils';
 
 export {
@@ -18,6 +20,16 @@ export {
     TransactionOpts,
     OrderStatus,
     OrderInfo,
+    EventCallback,
+    DecodedLogEvent,
+    TransactionEncoder,
+    BalanceAndAllowance,
+    OrderAndTraderInfo,
+    TraderInfo,
+    ValidateOrderFillableOpts,
+} from '@0xproject/contract-wrappers';
+
+export {
     WETH9Events,
     WETH9WithdrawalEventArgs,
     WETH9ApprovalEventArgs,
@@ -38,16 +50,9 @@ export {
     ExchangeSignatureValidatorApprovalEventArgs,
     ExchangeFillEventArgs,
     ExchangeCancelEventArgs,
-    ExchangeEvents,
-    EventCallback,
-    DecodedLogEvent,
     ExchangeEventArgs,
-    TransactionEncoder,
-    BalanceAndAllowance,
-    OrderAndTraderInfo,
-    TraderInfo,
-    ValidateOrderFillableOpts,
-} from '@0xproject/contract-wrappers';
+    ExchangeEvents,
+} from '@0xproject/abi-gen-wrappers';
 
 export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
 
@@ -78,6 +83,7 @@ export {
     ERC721AssetData,
     SignatureType,
     OrderRelevantState,
+    Stats,
 } from '@0xproject/types';
 
 export {
