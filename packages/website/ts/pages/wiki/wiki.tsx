@@ -1,7 +1,9 @@
 import {
     ALink,
+    colors,
     constants as sharedConstants,
     HeaderSizes,
+    Link,
     MarkdownSection,
     NestedSidebarMenu,
     utils as sharedUtils,
@@ -11,6 +13,7 @@ import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import { SidebarHeader } from 'ts/components/documentation/sidebar_header';
+import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
@@ -87,8 +90,33 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         );
     }
     private _renderSidebarHeader(): React.ReactNode {
+        const menuItems = _.map(constants.DEVELOPER_TOPBAR_LINKS, menuItemInfo => {
+            return (
+                <Link
+                    key={`menu-item-${menuItemInfo.title}`}
+                    to={menuItemInfo.to}
+                    shouldOpenInNewTab={menuItemInfo.shouldOpenInNewTab}
+                >
+                    <Button
+                        borderRadius="4px"
+                        padding="0.4em 6px"
+                        width="100%"
+                        fontColor={colors.grey800}
+                        fontSize="14px"
+                        textAlign="left"
+                    >
+                        {this.props.translate.get(menuItemInfo.title as Key, Deco.Cap)}
+                    </Button>
+                </Link>
+            );
+        });
         const wikiTitle = this.props.translate.get(Key.Wiki, Deco.Cap);
-        return <SidebarHeader screenWidth={this.props.screenWidth} title={wikiTitle} />;
+        return (
+            <Container>
+                <SidebarHeader screenWidth={this.props.screenWidth} title={wikiTitle} />
+                {menuItems}
+            </Container>
+        );
     }
     private _renderLoading(): React.ReactNode {
         return (
