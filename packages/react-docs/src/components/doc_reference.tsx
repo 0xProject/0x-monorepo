@@ -104,7 +104,6 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
                     sectionName={sectionName}
                     headerSize={headerSize}
                     markdownContent={markdownFileIfExists}
-                    shouldReformatTitle={false}
                     alternativeSectionTitle={isIntroductionSection ? this.props.docsInfo.displayName : undefined}
                 />
             );

@@ -19,7 +19,6 @@ export interface MarkdownSectionProps {
     markdownContent: string;
     headerSize?: HeaderSizes;
     githubLink?: string;
-    shouldReformatTitle?: boolean;
     alternativeSectionTitle?: string;
 }
 
@@ -36,7 +35,6 @@ export interface MarkdownSectionState {
 export class MarkdownSection extends React.Component<MarkdownSectionProps, MarkdownSectionState> {
     public static defaultProps: Partial<MarkdownSectionProps> = {
         headerSize: HeaderSizes.H3,
-        shouldReformatTitle: true,
     };
     constructor(props: MarkdownSectionProps) {
         super(props);
@@ -48,9 +46,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
         const { sectionName, markdownContent, headerSize, githubLink } = this.props as PropsWithDefaults;
 
         const id = utils.getIdFromName(sectionName);
-        const formattedSectionName = this.props.shouldReformatTitle
-            ? utils.convertCamelCaseToSpaces(sectionName)
-            : sectionName;
+        const formattedSectionName = utils.convertCamelCaseToSpaces(sectionName);
         const title = !_.isUndefined(this.props.alternativeSectionTitle)
             ? this.props.alternativeSectionTitle
             : formattedSectionName;
