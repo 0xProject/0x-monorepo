@@ -1,3 +1,4 @@
+import { BuyQuote } from '@0xproject/asset-buyer';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -11,6 +12,7 @@ import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { AsyncProcessState } from '../types';
 import { assetBuyer } from '../util/asset_buyer';
+import { errorFlasher } from '../util/error_flasher';
 
 import { AssetAmountInput } from '../components/asset_amount_input';
 
@@ -43,7 +45,16 @@ const updateBuyQuoteAsync = async (
     }
     // get a new buy quote.
     const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetAmount, zrxDecimals);
-    const newBuyQuote = await assetBuyer.getBuyQuoteAsync(assetData, baseUnitValue);
+
+    let newBuyQuote: BuyQuote | undefined;
+    try {
+        newBuyQuote = await assetBuyer.getBuyQuoteAsync(assetData, baseUnitValue);
+        errorFlasher.clearError(dispatch);
+    } catch (error) {
+        errorFlasher.flashNewError(dispatch, error);
+        return;
+    }
+
     // invalidate the last buy quote.
     dispatch(actions.updateLatestBuyQuote(newBuyQuote));
 };

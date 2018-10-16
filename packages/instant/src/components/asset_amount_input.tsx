@@ -3,7 +3,8 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { assetMetaData } from '../data/asset_meta_data';
+import { bestNameForAsset } from '../util/asset_data';
+
 import { ColorOption } from '../style/theme';
 import { util } from '../util/util';
 
@@ -26,26 +27,12 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps> {
                 <AmountInput {...rest} onChange={this._handleChange} />
                 <Container display="inline-block" marginLeft="10px">
                     <Text fontSize={rest.fontSize} fontColor={ColorOption.white} textTransform="uppercase">
-                        {this._getAssetSymbolLabel()}
+                        {bestNameForAsset(this.props.assetData, '???')}
                     </Text>
                 </Container>
             </Container>
         );
     }
-    private readonly _getAssetSymbolLabel = (): string => {
-        const unknownLabel = '???';
-        if (_.isUndefined(this.props.assetData)) {
-            return unknownLabel;
-        }
-        const metaData = assetMetaData[this.props.assetData];
-        if (_.isUndefined(metaData)) {
-            return unknownLabel;
-        }
-        if (metaData.assetProxyId === AssetProxyId.ERC20) {
-            return metaData.symbol;
-        }
-        return unknownLabel;
-    };
     private readonly _handleChange = (value?: BigNumber): void => {
         this.props.onChange(value, this.props.assetData);
     };
