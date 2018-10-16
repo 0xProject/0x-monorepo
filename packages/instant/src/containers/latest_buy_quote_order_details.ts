@@ -3,6 +3,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { oc } from 'ts-optchain';
 
 import { State } from '../redux/reducer';
 
@@ -17,7 +18,7 @@ interface ConnectedState {
 
 const mapStateToProps = (state: State, _ownProps: LatestBuyQuoteOrderDetailsProps): ConnectedState => ({
     // use the worst case quote info
-    buyQuoteInfo: _.get(state, 'latestBuyQuote.worstCaseQuoteInfo'),
+    buyQuoteInfo: oc(state).latestBuyQuote.worstCaseQuoteInfo(),
     ethUsdPrice: state.ethUsdPrice,
 });
 

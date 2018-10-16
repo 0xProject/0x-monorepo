@@ -2,6 +2,7 @@ import { BuyQuoteInfo } from '@0xproject/asset-buyer';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { oc } from 'ts-optchain';
 
 import { ColorOption } from '../style/theme';
 import { format } from '../util/format';
@@ -16,9 +17,10 @@ export interface OrderDetailsProps {
 export class OrderDetails extends React.Component<OrderDetailsProps> {
     public render(): React.ReactNode {
         const { buyQuoteInfo, ethUsdPrice } = this.props;
-        const ethAssetPrice = _.get(buyQuoteInfo, 'ethPerAssetPrice');
-        const ethTokenFee = _.get(buyQuoteInfo, 'feeEthAmount');
-        const totalEthAmount = _.get(buyQuoteInfo, 'totalEthAmount');
+        const buyQuoteAccessor = oc(buyQuoteInfo);
+        const ethAssetPrice = buyQuoteAccessor.ethPerAssetPrice();
+        const ethTokenFee = buyQuoteAccessor.feeEthAmount();
+        const totalEthAmount = buyQuoteAccessor.totalEthAmount();
         return (
             <Container padding="20px" width="100%">
                 <Container marginBottom="10px">

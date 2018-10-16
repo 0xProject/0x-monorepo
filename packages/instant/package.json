@@ -56,7 +56,8 @@
         "react-dom": "^16.5.2",
         "react-redux": "^5.0.7",
         "redux": "^4.0.0",
-        "styled-components": "^3.4.9"
+        "styled-components": "^3.4.9",
+        "ts-optchain": "^0.1.1"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.8",

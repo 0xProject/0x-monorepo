@@ -2,6 +2,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { oc } from 'ts-optchain';
 
 import { State } from '../redux/reducer';
 
@@ -17,7 +18,7 @@ interface ConnectedState {
 
 const mapStateToProps = (state: State, _ownProps: InstantHeadingProps): ConnectedState => ({
     selectedAssetAmount: state.selectedAssetAmount,
-    totalEthBaseAmount: _.get(state, 'latestBuyQuote.worstCaseQuoteInfo.totalEthAmount'),
+    totalEthBaseAmount: oc(state).latestBuyQuote.worstCaseQuoteInfo.totalEthAmount(),
     ethUsdPrice: state.ethUsdPrice,
 });
 
