@@ -32,15 +32,15 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                         Order Details
                     </Text>
                 </Container>
-                <OrderDetailsRow
-                    name="Token Price"
+                <EthAmountRow
+                    rowLabel="Token Price"
                     ethAmount={ethAssetPrice}
                     ethUsdPrice={ethUsdPrice}
-                    shouldConvertEthToUnitAmount={false}
+                    isEthAmountInBaseUnits={false}
                 />
-                <OrderDetailsRow name="Fee" ethAmount={ethTokenFee} ethUsdPrice={ethUsdPrice} />
-                <OrderDetailsRow
-                    name="Total Cost"
+                <EthAmountRow rowLabel="Fee" ethAmount={ethTokenFee} ethUsdPrice={ethUsdPrice} />
+                <EthAmountRow
+                    rowLabel="Total Cost"
                     ethAmount={totalEthAmount}
                     ethUsdPrice={ethUsdPrice}
                     shouldEmphasize={true}
@@ -50,29 +50,29 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
     }
 }
 
-export interface OrderDetailsRowProps {
-    name: string;
+export interface EthAmountRowProps {
+    rowLabel: string;
     ethAmount?: BigNumber;
-    shouldConvertEthToUnitAmount?: boolean;
+    isEthAmountInBaseUnits?: boolean;
     ethUsdPrice?: BigNumber;
     shouldEmphasize?: boolean;
 }
 
-export const OrderDetailsRow: React.StatelessComponent<OrderDetailsRowProps> = ({
-    name,
+export const EthAmountRow: React.StatelessComponent<EthAmountRowProps> = ({
+    rowLabel,
     ethAmount,
-    shouldConvertEthToUnitAmount,
+    isEthAmountInBaseUnits,
     ethUsdPrice,
     shouldEmphasize,
 }) => {
     const fontWeight = shouldEmphasize ? 700 : 400;
-    const usdFormatter = shouldConvertEthToUnitAmount ? format.ethBaseAmountInUsd : format.ethUnitAmountInUsd;
-    const ethFormatter = shouldConvertEthToUnitAmount ? format.ethBaseAmount : format.ethUnitAmount;
+    const usdFormatter = isEthAmountInBaseUnits ? format.ethBaseAmountInUsd : format.ethUnitAmountInUsd;
+    const ethFormatter = isEthAmountInBaseUnits ? format.ethBaseAmount : format.ethUnitAmount;
     return (
         <Container padding="10px 0px" borderTop="1px dashed" borderColor={ColorOption.feintGrey}>
             <Flex justify="space-between">
                 <Text fontWeight={fontWeight} fontColor={ColorOption.grey}>
-                    {name}
+                    {rowLabel}
                 </Text>
                 <Container>
                     <Container marginRight="3px" display="inline-block">
@@ -87,9 +87,9 @@ export const OrderDetailsRow: React.StatelessComponent<OrderDetailsRowProps> = (
     );
 };
 
-OrderDetailsRow.defaultProps = {
+EthAmountRow.defaultProps = {
     shouldEmphasize: false,
-    shouldConvertEthToUnitAmount: true,
+    isEthAmountInBaseUnits: true,
 };
 
-OrderDetailsRow.displayName = 'OrderDetailsRow';
+EthAmountRow.displayName = 'EthAmountRow';
