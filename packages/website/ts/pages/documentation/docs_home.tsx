@@ -1,11 +1,13 @@
-import { ALink, NestedSidebarMenu } from '@0xproject/react-shared';
+import { ALink, colors, Link, NestedSidebarMenu } from '@0xproject/react-shared';
 import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { OverviewContent } from 'ts/components/documentation/overview_content';
+import { Button } from 'ts/components/ui/button';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Categories, Deco, Key, Package, ScreenWidths, TutorialInfo, WebsitePaths } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 const TUTORIALS: TutorialInfo[] = [
@@ -330,8 +332,13 @@ export class DocsHome extends React.Component<DocsHomeProps, DocsHomeState> {
                 categoryToPackages={CATEGORY_TO_PACKAGES}
             />
         );
+        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const sidebar = (
-            <NestedSidebarMenu sectionNameToLinks={sectionNameToLinks} shouldReformatMenuItemNames={false} />
+            <NestedSidebarMenu
+                sidebarHeader={isSmallScreen ? this._renderSidebarHeader() : undefined}
+                sectionNameToLinks={sectionNameToLinks}
+                shouldReformatMenuItemNames={false}
+            />
         );
         return (
             <DevelopersPage
@@ -343,5 +350,28 @@ export class DocsHome extends React.Component<DocsHomeProps, DocsHomeState> {
                 dispatcher={this.props.dispatcher}
             />
         );
+    }
+    private _renderSidebarHeader(): React.ReactNode {
+        const menuItems = _.map(constants.DEVELOPER_TOPBAR_LINKS, menuItemInfo => {
+            return (
+                <Link
+                    key={`menu-item-${menuItemInfo.title}`}
+                    to={menuItemInfo.to}
+                    shouldOpenInNewTab={menuItemInfo.shouldOpenInNewTab}
+                >
+                    <Button
+                        borderRadius="4px"
+                        padding="0.4em 6px"
+                        width="100%"
+                        fontColor={colors.grey800}
+                        fontSize="14px"
+                        textAlign="left"
+                    >
+                        {this.props.translate.get(menuItemInfo.title as Key, Deco.Cap)}
+                    </Button>
+                </Link>
+            );
+        });
+        return menuItems;
     }
 }

@@ -16,6 +16,7 @@ export interface ButtonProps {
     type?: string;
     isDisabled?: boolean;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+    textAlign?: string;
 }
 
 const PlainButton: React.StatelessComponent<ButtonProps> = ({ children, isDisabled, onClick, type, className }) => (
@@ -35,6 +36,7 @@ export const Button = styled(PlainButton)`
     outline: none;
     font-family: ${props => props.fontFamily};
     width: ${props => props.width};
+    text-align: ${props => props.textAlign};
     background-color: ${props => props.backgroundColor};
     border: ${props => (props.borderColor ? `1px solid ${props.borderColor}` : 'none')};
     &:hover {
@@ -59,6 +61,7 @@ Button.defaultProps = {
     fontFamily: 'Roboto',
     isDisabled: false,
     padding: '0.8em 2.2em',
+    textAlign: 'center',
 };
 
 Button.displayName = 'Button';

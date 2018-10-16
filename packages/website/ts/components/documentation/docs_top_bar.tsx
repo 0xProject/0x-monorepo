@@ -5,7 +5,7 @@ import * as React from 'react';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
-import { Deco, Key, ScreenWidths, WebsitePaths } from 'ts/types';
+import { Deco, Key, ScreenWidths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -35,26 +35,6 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
         }
     }
     public render(): React.ReactNode {
-        const menuItemLinks: ALink[] = [
-            {
-                title: this.props.translate.get(Key.Home, Deco.Cap),
-                to: WebsitePaths.Home,
-            },
-            {
-                title: this.props.translate.get(Key.Wiki, Deco.Cap),
-                to: WebsitePaths.Wiki,
-            },
-            {
-                title: this.props.translate.get(Key.Forum, Deco.Cap),
-                to: constants.URL_FORUM,
-                shouldOpenInNewTab: true,
-            },
-            {
-                title: this.props.translate.get(Key.LiveChat, Deco.Cap),
-                to: constants.URL_ZEROEX_CHAT,
-                shouldOpenInNewTab: true,
-            },
-        ];
         return (
             <Container height={80}>
                 <Container
@@ -63,7 +43,7 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                 >
                     <Container className="sm-hide xs-hide">
                         <Container className="flex items-center justify-between right" width="300px">
-                            {this._renderMenuItems(menuItemLinks)}
+                            {this._renderMenuItems(constants.DEVELOPER_TOPBAR_LINKS)}
                         </Container>
                     </Container>
                     <Container className="lg-hide md-hide">
@@ -98,7 +78,7 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                 >
                     <Container className="flex items-center" paddingLeft="4px">
                         <Text fontSize="16px" fontColor={colors.lightLinkBlue} fontWeight="bold">
-                            {menuItemInfo.title}
+                            {this.props.translate.get(menuItemInfo.title as Key, Deco.Cap)}
                         </Text>
                     </Container>
                 </Link>
