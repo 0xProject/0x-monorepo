@@ -1,5 +1,4 @@
-import { ALink, colors, Link, NestedSidebarMenu } from '@0xproject/react-shared';
-import { ObjectMap } from '@0xproject/types';
+import { ALink, colors, Link } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import * as React from 'react';
