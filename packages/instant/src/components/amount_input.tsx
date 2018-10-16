@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
+import { util } from '../util/util';
 
 import { Container, Input } from './ui';
 
@@ -15,7 +16,7 @@ export interface AmountInputProps {
 
 export class AmountInput extends React.Component<AmountInputProps> {
     public static defaultProps = {
-        onChange: _.noop.bind(_),
+        onChange: util.boundNoop,
     };
     public render(): React.ReactNode {
         const { fontColor, fontSize, value } = this.props;

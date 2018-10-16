@@ -5,6 +5,7 @@ import * as React from 'react';
 
 import { assetMetaData } from '../data/asset_meta_data';
 import { ColorOption } from '../style/theme';
+import { util } from '../util/util';
 
 import { AmountInput, AmountInputProps } from './amount_input';
 import { Container, Text } from './ui';
@@ -16,7 +17,7 @@ export interface AssetAmountInputProps extends AmountInputProps {
 
 export class AssetAmountInput extends React.Component<AssetAmountInputProps> {
     public static defaultProps = {
-        onChange: _.noop.bind(_),
+        onChange: util.boundNoop,
     };
     public render(): React.ReactNode {
         const { assetData, onChange, ...rest } = this.props;

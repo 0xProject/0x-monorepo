@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 import { assetBuyer } from '../util/asset_buyer';
+import { util } from '../util/util';
 import { web3Wrapper } from '../util/web3_wrapper';
 
 import { Button, Container, Text } from './ui';
@@ -16,13 +17,11 @@ export interface BuyButtonProps {
     text: string;
 }
 
-const boundNoop = _.noop.bind(_);
-
 export class BuyButton extends React.Component<BuyButtonProps> {
     public static defaultProps = {
-        onClick: boundNoop,
-        onBuySuccess: boundNoop,
-        onBuyFailure: boundNoop,
+        onClick: util.boundNoop,
+        onBuySuccess: util.boundNoop,
+        onBuyFailure: util.boundNoop,
     };
     public render(): React.ReactNode {
         const shouldDisableButton = _.isUndefined(this.props.buyQuote);
