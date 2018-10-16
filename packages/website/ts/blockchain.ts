@@ -859,13 +859,12 @@ export class Blockchain {
             shouldUserLedgerProvider,
         );
         if (!_.isUndefined(this._contractWrappers)) {
-            this._contractWrappers.setProvider(provider);
-        } else {
-            const contractWrappersConfig = {
-                networkId,
-            };
-            this._contractWrappers = new ContractWrappers(provider, contractWrappersConfig);
+            this._contractWrappers.unsubscribeAll();
         }
+        const contractWrappersConfig = {
+            networkId,
+        };
+        this._contractWrappers = new ContractWrappers(provider, contractWrappersConfig);
         if (!_.isUndefined(this._zeroEx)) {
             this._zeroEx.setProvider(provider, networkId);
         } else {
