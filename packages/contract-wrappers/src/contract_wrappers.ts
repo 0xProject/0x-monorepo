@@ -21,8 +21,6 @@ import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
 import { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
 import { OrderValidatorWrapper } from './contract_wrappers/order_validator_wrapper';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
-import { contractWrappersPrivateNetworkConfigSchema } from './schemas/contract_wrappers_private_network_config_schema';
-import { contractWrappersPublicNetworkConfigSchema } from './schemas/contract_wrappers_public_network_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
 import { constants } from './utils/constants';
@@ -78,10 +76,7 @@ export class ContractWrappers {
      */
     constructor(provider: Provider, config: ContractWrappersConfig) {
         assert.isWeb3Provider('provider', provider);
-        assert.doesConformToSchema('config', config, ContractWrappersConfigSchema, [
-            contractWrappersPrivateNetworkConfigSchema,
-            contractWrappersPublicNetworkConfigSchema,
-        ]);
+        assert.doesConformToSchema('config', config, ContractWrappersConfigSchema);
         const txDefaults = {
             gasPrice: config.gasPrice,
         };
