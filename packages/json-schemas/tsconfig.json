@@ -5,7 +5,7 @@
         "rootDir": ".",
         "resolveJsonModule": true
     },
-    "include": ["./src/**/*", "./test/**/*", "./schemas/**/*"],
+    "include": ["./src/**/*", "./test/**/*"],
     "files": [
         "./schemas/address_schema.json",
         "./schemas/number_schema.json",
