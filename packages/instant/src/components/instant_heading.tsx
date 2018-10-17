@@ -42,7 +42,7 @@ const displayUsdAmount = ({
     return format.ethBaseAmountInUsd(totalEthBaseAmount, ethUsdPrice, 2, <Placeholder />);
 };
 
-const loadingOrAmount = (quoteState: AsyncProcessState, amount: string): React.ReactNode => {
+const loadingOrAmount = (quoteState: AsyncProcessState, amount: React.ReactNode): React.ReactNode => {
     if (quoteState === AsyncProcessState.PENDING) {
         return (
             <Text fontWeight="bold" fontColor={ColorOption.white}>
