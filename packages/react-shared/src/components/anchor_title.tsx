@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Link as ScrollLink } from 'react-scroll';
+import styled from 'styled-components';
 
 import { HeaderSizes, Styles } from '../types';
 import { colors } from '../utils/colors';
@@ -15,12 +16,10 @@ export interface AnchorTitleProps {
     id: string;
     headerSize: HeaderSizes;
     shouldShowAnchor: boolean;
-    isDisabled?: boolean;
+    isDisabled: boolean;
 }
 
-export interface AnchorTitleState {
-    isHovering: boolean;
-}
+export interface AnchorTitleState {}
 
 const styles: Styles = {
     anchor: {
@@ -29,7 +28,7 @@ const styles: Styles = {
         cursor: 'pointer',
     },
     h1: {
-        fontSize: '30px',
+        fontSize: '1.875em',
     },
     h2: {
         fontSize: '1.5em',
@@ -44,17 +43,13 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
     public static defaultProps: Partial<AnchorTitleProps> = {
         isDisabled: false,
     };
-    constructor(props: AnchorTitleProps) {
-        super(props);
-        this.state = {
-            isHovering: false,
-        };
-    }
     public render(): React.ReactNode {
-        let opacity = 0;
-        if (this.props.shouldShowAnchor) {
-            opacity = this.state.isHovering ? 0.6 : 1;
-        }
+        const AnchorIcon = styled.i`
+            opacity: ${this.props.shouldShowAnchor ? 1 : 0};
+            &:hover {
+                opacity: ${this.props.shouldShowAnchor ? 0.6 : 0};
+            }
+        `;
         return (
             <div
                 className="relative flex"
@@ -79,20 +74,10 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
                         duration={constants.DOCS_SCROLL_DURATION_MS}
                         containerId={constants.SCROLL_CONTAINER_ID}
                     >
-                        <i
-                            className="zmdi zmdi-link"
-                            style={{ ...styles.anchor, opacity }}
-                            onMouseOver={this._setHoverState.bind(this, true)}
-                            onMouseOut={this._setHoverState.bind(this, false)}
-                        />
+                        <AnchorIcon className="zmdi zmdi-link" style={{ ...styles.anchor }} />
                     </ScrollLink>
                 )}
             </div>
         );
-    }
-    private _setHoverState(isHovering: boolean): void {
-        this.setState({
-            isHovering,
-        });
     }
 }
