@@ -10,6 +10,13 @@ order_utils.py
 .. automodule:: zero_ex.order_utils
    :members:
 
+.. automodule:: zero_ex.order_utils.asset_data_utils
+   :members:
+
+.. autoclass:: zero_ex.order_utils.asset_data_utils.ERC20AssetData
+
+See source for properties.  Sphinx does not easily generate class property docs; pull requests welcome.
+
 .. automodule:: zero_ex.order_utils.signature_utils
    :members:
 

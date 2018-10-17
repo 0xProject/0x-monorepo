@@ -79,7 +79,7 @@ setup(
         "test": TestCommandExtension,
     },
     include_package_data=True,
-    install_requires=["web3"],
+    install_requires=["eth-abi", "web3"],
     extras_require={
         "dev": [
             "bandit",
@@ -87,6 +87,7 @@ setup(
             "coverage",
             "coveralls",
             "mypy",
+            "mypy_extensions",
             "pycodestyle",
             "pydocstyle",
             "pylint",
