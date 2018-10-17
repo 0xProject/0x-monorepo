@@ -12,7 +12,7 @@ import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { AsyncProcessState } from '../types';
 import { assetBuyer } from '../util/asset_buyer';
-import { errorFlasher } from '../util/error_flasher';
+import { errorUtil } from '../util/error';
 
 import { AssetAmountInput } from '../components/asset_amount_input';
 
@@ -49,9 +49,9 @@ const updateBuyQuoteAsync = async (
     let newBuyQuote: BuyQuote | undefined;
     try {
         newBuyQuote = await assetBuyer.getBuyQuoteAsync(assetData, baseUnitValue);
-        errorFlasher.clearError(dispatch);
+        errorUtil.errorFlasher.clearError(dispatch);
     } catch (error) {
-        errorFlasher.flashNewError(dispatch, error);
+        errorUtil.errorFlasher.flashNewError(dispatch, error);
         return;
     }
 

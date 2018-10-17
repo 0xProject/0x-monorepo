@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { SlidingError } from '../components/sliding_error';
 import { LatestErrorDisplay, State } from '../redux/reducer';
-import { errorDescription } from '../util/error_description';
+import { errorUtil } from '../util/error';
 
 export interface LatestErrorComponentProps {
     assetData?: string;
@@ -16,7 +16,7 @@ export const LatestErrorComponent: React.StatelessComponent<LatestErrorComponent
     if (!props.latestError) {
         return <div />;
     }
-    const { icon, message } = errorDescription(props.latestError, props.assetData);
+    const { icon, message } = errorUtil.errorDescription(props.latestError, props.assetData);
     return <SlidingError direction={props.slidingDirection} icon={icon} message={message} />;
 };
 
