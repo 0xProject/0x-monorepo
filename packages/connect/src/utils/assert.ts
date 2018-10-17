@@ -14,7 +14,7 @@ export const assert = {
         sharedAssert.doesConformToSchema(
             variableName,
             subscriptionOpts,
-            schemas.relayerApiOrdersChannelSubscribePayload,
+            schemas.relayerApiOrdersChannelSubscribePayloadSchema,
         );
     },
     isOrdersChannelHandler(variableName: string, handler: any): void {
