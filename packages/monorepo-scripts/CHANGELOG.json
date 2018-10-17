@@ -5,6 +5,10 @@
             {
                 "note": "Render date formats in UTC to prevent conflicts when publishing in different timezones.",
                 "pr": 1143
+            },
+            {
+                "note": "Add AssetBuyerError to the IGNORED_EXCESSIVE_TYPES array",
+                "pr": 1139
             }
         ]
     },
