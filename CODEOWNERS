@@ -8,3 +8,16 @@
 packages/asset-buyer/  @BMillman19 @fragosti @steveklebanoff
 packages/instant/  @BMillman19 @fragosti @steveklebanoff
 packages/website/  @BMillman19 @fragosti @fabioberger @steveklebanoff
+
+# Dev tools & setup
+packages/abi-gen/ @LogvinovLeon
+packages/base-contract/ @LogvinovLeon
+packages/contract_templates/ @LogvinovLeon
+packages/dev-utils/ @LogvinovLeon
+packages/ethereum-types/ @LogvinovLeon
+packages/metacoin/ @LogvinovLeon
+packages/sol-compiler/ @LogvinovLeon
+packages/sol-cov/ @LogvinovLeon
+packages/sol-resolver/ @LogvinovLeon
+packages/web3-wrapper/ @LogvinovLeon
+.circleci/ @LogvinovLeon
