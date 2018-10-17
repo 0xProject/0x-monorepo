@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { SelectedAssetAmountInput } from '../containers/selected_asset_amount_input';
 import { ColorOption } from '../style/theme';
+import { AsyncProcessState } from '../types';
 import { format } from '../util/format';
 
 import { Container, Flex, Text } from './ui';
@@ -12,20 +13,33 @@ export interface InstantHeadingProps {
     selectedAssetAmount?: BigNumber;
     totalEthBaseAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
+    quoteState: AsyncProcessState;
 }
 
 const displaytotalEthBaseAmount = ({ selectedAssetAmount, totalEthBaseAmount }: InstantHeadingProps): string => {
     if (_.isUndefined(selectedAssetAmount)) {
         return '0 ETH';
     }
-    return format.ethBaseAmount(totalEthBaseAmount, 4, '...loading');
+    return format.ethBaseAmount(totalEthBaseAmount, 4, '-');
 };
 
 const displayUsdAmount = ({ totalEthBaseAmount, selectedAssetAmount, ethUsdPrice }: InstantHeadingProps): string => {
     if (_.isUndefined(selectedAssetAmount)) {
         return '$0.00';
     }
-    return format.ethBaseAmountInUsd(totalEthBaseAmount, ethUsdPrice, 2, '...loading');
+    return format.ethBaseAmountInUsd(totalEthBaseAmount, ethUsdPrice, 2, '-');
+};
+
+const loadingOrAmount = (quoteState: AsyncProcessState, amount: string): React.ReactNode => {
+    if (quoteState === AsyncProcessState.PENDING) {
+        return (
+            <Text fontWeight="bold" fontColor={ColorOption.white}>
+                &hellip;loading
+            </Text>
+        );
+    } else {
+        return amount;
+    }
 };
 
 export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = props => (
@@ -47,11 +61,11 @@ export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = pro
             <Flex direction="column" justify="space-between">
                 <Container marginBottom="5px">
                     <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
-                        {displaytotalEthBaseAmount(props)}
+                        {loadingOrAmount(props.quoteState, displaytotalEthBaseAmount(props))}
                     </Text>
                 </Container>
                 <Text fontSize="16px" fontColor={ColorOption.white} opacity={0.7}>
-                    {displayUsdAmount(props)}
+                    {loadingOrAmount(props.quoteState, displayUsdAmount(props))}
                 </Text>
             </Flex>
         </Flex>

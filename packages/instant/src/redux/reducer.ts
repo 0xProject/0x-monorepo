@@ -14,9 +14,10 @@ export enum LatestErrorDisplay {
 export interface State {
     selectedAssetData?: string;
     selectedAssetAmount?: BigNumber;
-    selectedAssetBuyState: AsyncProcessState;
+    selectedAssetBuyState: AsyncProcessState; // TODO: rename buyOrderState
     ethUsdPrice?: BigNumber;
     latestBuyQuote?: BuyQuote;
+    quoteState: AsyncProcessState;
     latestError?: any;
     latestErrorDisplay: LatestErrorDisplay;
 }
@@ -30,6 +31,7 @@ export const INITIAL_STATE: State = {
     latestBuyQuote: undefined,
     latestError: undefined,
     latestErrorDisplay: LatestErrorDisplay.Hidden,
+    quoteState: AsyncProcessState.NONE,
 };
 
 export const reducer = (state: State = INITIAL_STATE, action: Action): State => {
@@ -48,6 +50,19 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             return {
                 ...state,
                 latestBuyQuote: action.data,
+                quoteState: AsyncProcessState.SUCCESS,
+            };
+        case ActionTypes.UPDATE_BUY_QUOTE_STATE_PENDING:
+            return {
+                ...state,
+                latestBuyQuote: undefined,
+                quoteState: AsyncProcessState.PENDING,
+            };
+        case ActionTypes.UPDATE_BUY_QUOTE_STATE_FAILURE:
+            return {
+                ...state,
+                latestBuyQuote: undefined,
+                quoteState: AsyncProcessState.FAILURE,
             };
         case ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE:
             return {
