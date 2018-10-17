@@ -7,10 +7,6 @@ import { SelectedAssetInstantHeading } from '../containers/selected_asset_instan
 
 import { ColorOption } from '../style/theme';
 
-import { BuyButton } from './buy_button';
-import { InstantHeading } from './instant_heading';
-import { OrderDetails } from './order_details';
-import { SlidingError } from './sliding_error';
 import { Container, Flex } from './ui';
 
 export interface ZeroExInstantContainerProps {}
