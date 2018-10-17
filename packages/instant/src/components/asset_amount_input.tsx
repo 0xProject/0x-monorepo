@@ -2,7 +2,7 @@ import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { bestNameForAsset } from '../util/asset_data';
+import { assetDataUtil } from '../util/asset_data';
 
 import { ColorOption } from '../style/theme';
 import { util } from '../util/util';
@@ -26,7 +26,7 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps> {
                 <AmountInput {...rest} onChange={this._handleChange} />
                 <Container display="inline-block" marginLeft="10px">
                     <Text fontSize={rest.fontSize} fontColor={ColorOption.white} textTransform="uppercase">
-                        {bestNameForAsset(this.props.assetData, '???')}
+                        {assetDataUtil.bestNameForAsset(this.props.assetData, '???')}
                     </Text>
                 </Container>
             </Container>

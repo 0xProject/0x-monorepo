@@ -1,10 +1,10 @@
 import { AssetBuyerError } from '@0xproject/asset-buyer';
 
-import { bestNameForAsset } from '../util/asset_data';
+import { assetDataUtil } from '../util/asset_data';
 
 const humanReadableMessageForError = (error: Error, assetData?: string): string | undefined => {
     if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
-        const assetName = bestNameForAsset(assetData, 'of this asset');
+        const assetName = assetDataUtil.bestNameForAsset(assetData, 'of this asset');
         return `Not enough ${assetName} available`;
     }
 
