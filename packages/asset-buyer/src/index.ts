@@ -15,7 +15,6 @@ export {
     AssetBuyerError,
     AssetBuyerOpts,
     BuyQuote,
-    BuyQuoteInfo,
     BuyQuoteExecutionOpts,
     BuyQuoteInfo,
     BuyQuoteRequestOpts,
