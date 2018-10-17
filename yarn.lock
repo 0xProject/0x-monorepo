@@ -571,6 +571,12 @@
     jsonschema "1.2.2"
     lodash.values "4.3.0"
 
+"@0xproject/npm-cli-login@^0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@0xproject/npm-cli-login/-/npm-cli-login-0.0.11.tgz#3f1ec06112ce62aad300ff0575358f68aeecde2e"
+  dependencies:
+    npm-registry-client "7.0.9"
+
 "@0xproject/order-utils@^0.0.9":
   version "0.0.9"
   resolved "https://registry.yarnpkg.com/@0xproject/order-utils/-/order-utils-0.0.9.tgz#75225dfbd87335d18810abf995d8e077b9a84868"
@@ -10373,12 +10379,6 @@ now-and-later@^2.0.0:
 npm-bundled@^1.0.1:
   version "1.0.3"
   resolved "https://registry.npmjs.org/npm-bundled/-/npm-bundled-1.0.3.tgz#7e71703d973af3370a9591bafe3a63aca0be2308"
-
-npm-cli-login@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/npm-cli-login/-/npm-cli-login-0.0.10.tgz#b1e8b5b7405008e0a26ccc170443434a59c5364c"
-  dependencies:
-    npm-registry-client "7.0.9"
 
 npm-lifecycle@^2.0.0:
   version "2.0.3"
