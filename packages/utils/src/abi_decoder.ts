@@ -99,6 +99,7 @@ export class AbiDecoder {
         const ethersInterface = new ethers.utils.Interface(abiArray);
         _.map(abiArray, (abi: AbiDefinition) => {
             if (abi.type === AbiType.Event) {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const eventAbi = abi as EventAbi;
                 const topic = ethersInterface.events[eventAbi.name].topic;
                 const numIndexedArgs = _.reduce(eventAbi.inputs, (sum, input) => (input.indexed ? sum + 1 : sum), 0);

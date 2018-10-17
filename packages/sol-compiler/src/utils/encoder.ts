@@ -7,6 +7,7 @@ export const encoder = {
         const constructorTypes: string[] = [];
         _.each(abi, (element: AbiDefinition) => {
             if (element.type === AbiType.Constructor) {
+                // tslint:disable-next-line:no-unnecessary-type-assertion
                 const constuctorAbi = element as ConstructorAbi;
                 _.each(constuctorAbi.inputs, (input: DataItem) => {
                     constructorTypes.push(input.type);

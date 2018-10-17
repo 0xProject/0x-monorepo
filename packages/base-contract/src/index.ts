@@ -1,6 +1,5 @@
 import { abiUtils, BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { FunctionAbi } from 'ethereum-protocol';
 import {
     AbiDefinition,
     AbiType,
@@ -130,6 +129,7 @@ export class BaseContract {
             if (abiDefinition.type !== AbiType.Function) {
                 return false;
             }
+            // tslint:disable-next-line:no-unnecessary-type-assertion
             const abiFunctionSignature = abiUtils.getFunctionSignature(abiDefinition as MethodAbi);
             if (abiFunctionSignature === functionSignature) {
                 return true;
