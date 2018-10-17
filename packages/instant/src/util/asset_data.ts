@@ -1,14 +1,16 @@
+import * as _ from 'lodash';
+
 import { AssetProxyId } from '@0xproject/types';
 
 import { assetMetaData } from '../data/asset_meta_data';
 
 export const assetDataUtil = {
     bestNameForAsset: (assetData: string | undefined, defaultString: string) => {
-        if (assetData === undefined) {
+        if (_.isUndefined(assetData)) {
             return defaultString;
         }
         const metaData = assetMetaData[assetData];
-        if (metaData === undefined) {
+        if (_.isUndefined(metaData)) {
             return defaultString;
         }
         if (metaData.assetProxyId === AssetProxyId.ERC20) {
