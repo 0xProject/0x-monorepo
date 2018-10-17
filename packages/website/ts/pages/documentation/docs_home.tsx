@@ -45,7 +45,6 @@ const TUTORIALS: TutorialInfo[] = [
     },
 ];
 
-// TODO(fabio): Move this to it's own file
 const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
     [Categories.ZeroExProtocol]: [
         {
