@@ -34,7 +34,7 @@ export class DocsInfo {
         this.sectionNameToMarkdownByVersion = config.sectionNameToMarkdownByVersion;
         this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
     }
-    public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat): { [name: string]: TypeDefinitionByName } {
+    public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat): ObjectMap<TypeDefinitionByName> {
         if (_.isUndefined(docAgnosticFormat[this.typeSectionName])) {
             return {};
         }
