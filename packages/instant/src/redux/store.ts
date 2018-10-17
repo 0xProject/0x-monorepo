@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { createStore, Store as ReduxStore } from 'redux';
+import { devToolsEnhancer } from 'redux-devtools-extension/developmentOnly';
 
 import { reducer, State } from './reducer';
 
-const reduxDevTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__;
-export const store: ReduxStore<State> = createStore(reducer, reduxDevTools && reduxDevTools());
+export const store: ReduxStore<State> = createStore(reducer, devToolsEnhancer({}));
