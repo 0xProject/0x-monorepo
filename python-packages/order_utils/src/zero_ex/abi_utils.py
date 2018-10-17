@@ -42,16 +42,22 @@ def elementary_name(name: str) -> str:
     """Convert from short to canonical names; barely implemented.
 
     Modeled after ethereumjs-abi's ABI.elementaryName(), but only implemented
-    to support our particular use case.
+    to support our particular use case and a few other simple ones.
 
     >>> elementary_name("address")
     'address'
+    >>> elementary_name("uint")
+    'uint256'
     """
-    if name != "address":
-        raise Exception("Unsupported name " + name)
-    return name
     if not isinstance(name, str):
         raise TypeError("name should be str, not " + type(name).__name__)
+
+    return {
+        "int": "int256",
+        "uint": "uint256",
+        "fixed": "fixed128x128",
+        "ufixed": "ufixed128x128",
+    }.get(name, name)
 
 
 def event_id(name: str, types: List[str]) -> str:
