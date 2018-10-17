@@ -20,8 +20,8 @@ export const Error: React.StatelessComponent<ErrorProps> = props => (
         borderRadius="6px"
         marginBottom="10px"
     >
-        <Container marginRight="5px" display="inline">
-            {props.icon}
+        <Container marginRight="5px" display="inline" top="3px" position="relative">
+            <Text fontSize="20px">{props.icon}</Text>
         </Container>
         <Text fontWeight="500" fontColor={ColorOption.darkOrange}>
             {props.message}
