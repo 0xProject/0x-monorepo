@@ -9,6 +9,10 @@
             {
                 "note": "Added `ZeroExTransaction` type for Exchange executeTransaction",
                 "pr": 1102
+            },
+            {
+                "note": "Add `AssetData` union type (`type AssetData = ERC20AssetData | ERC721AssetData`)",
+                "pr": 1131
             }
         ]
     },

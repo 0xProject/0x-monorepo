@@ -3,7 +3,12 @@
         "version": "1.0.6",
         "changes": [
             {
-                "note": "Add AssetBuyerError to the IGNORED_EXCESSIVE_TYPES array"
+                "note": "Render date formats in UTC to prevent conflicts when publishing in different timezones.",
+                "pr": 1143
+            },
+            {
+                "note": "Add AssetBuyerError to the IGNORED_EXCESSIVE_TYPES array",
+                "pr": 1139
             }
         ]
     },

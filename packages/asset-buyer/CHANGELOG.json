@@ -6,6 +6,10 @@
                 "note": "Add `gasLimit` and `gasPrice` as optional properties on `BuyQuoteExecutionOpts`"
             },
             {
+                "note": "Export `BuyQuoteInfo` type",
+                "pr": 1131
+            },
+            {
                 "note":
                     "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers",
                 "pr": 1105

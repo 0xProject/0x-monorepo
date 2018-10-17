@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
+import { util } from '../util/util';
 
 import { Container, Input } from './ui';
 
@@ -10,10 +11,13 @@ export interface AmountInputProps {
     fontColor?: ColorOption;
     fontSize?: string;
     value?: BigNumber;
-    onChange?: (value?: BigNumber) => void;
+    onChange: (value?: BigNumber) => void;
 }
 
 export class AmountInput extends React.Component<AmountInputProps> {
+    public static defaultProps = {
+        onChange: util.boundNoop,
+    };
     public render(): React.ReactNode {
         const { fontColor, fontSize, value } = this.props;
         return (
@@ -24,7 +28,7 @@ export class AmountInput extends React.Component<AmountInputProps> {
                     onChange={this._handleChange}
                     value={!_.isUndefined(value) ? value.toString() : ''}
                     placeholder="0.00"
-                    width="2em"
+                    width="2.2em"
                 />
             </Container>
         );
@@ -40,8 +44,6 @@ export class AmountInput extends React.Component<AmountInputProps> {
                 return;
             }
         }
-        if (!_.isUndefined(this.props.onChange)) {
-            this.props.onChange(bigNumberValue);
-        }
+        this.props.onChange(bigNumberValue);
     };
 }
