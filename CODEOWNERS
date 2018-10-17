@@ -20,5 +20,5 @@ packages/metacoin/ @LogvinovLeon
 packages/sol-compiler/ @LogvinovLeon
 packages/sol-cov/ @LogvinovLeon
 packages/sol-resolver/ @LogvinovLeon
-packages/web3-wrapper/ @LogvinovLeon
+packages/web3-wrapper/ @LogvinovLeon @fabioberger
 .circleci/ @LogvinovLeon
