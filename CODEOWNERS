@@ -13,7 +13,8 @@ packages/website/  @BMillman19 @fragosti @fabioberger @steveklebanoff
 packages/abi-gen/ @LogvinovLeon
 packages/base-contract/ @LogvinovLeon
 packages/contract_templates/ @LogvinovLeon
-packages/dev-utils/ @LogvinovLeon
+packages/dev-utils/ @LogvinovLeon @fabioberger
+
 packages/ethereum-types/ @LogvinovLeon
 packages/metacoin/ @LogvinovLeon
 packages/sol-compiler/ @LogvinovLeon
