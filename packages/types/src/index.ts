@@ -158,12 +158,12 @@ export enum AssetProxyId {
 }
 
 export interface ERC20AssetData {
-    assetProxyId: AssetProxyId.ERC20;
+    assetProxyId: string;
     tokenAddress: string;
 }
 
 export interface ERC721AssetData {
-    assetProxyId: AssetProxyId.ERC721;
+    assetProxyId: string;
     tokenAddress: string;
     tokenId: BigNumber;
 }
