@@ -9,6 +9,7 @@ export {
     AssetBuyerError,
     AssetBuyerOpts,
     BuyQuote,
+    BuyQuoteInfo,
     BuyQuoteExecutionOpts,
     BuyQuoteRequestOpts,
     OrderProvider,

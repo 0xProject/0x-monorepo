@@ -50,7 +50,7 @@
             },
             {
                 "path": "packages/instant/public/main.bundle.js",
-                "maxSize": "350kB"
+                "maxSize": "500kB"
             }
         ],
         "ci": {

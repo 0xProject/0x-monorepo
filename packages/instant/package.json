@@ -55,12 +55,14 @@
         "react-dom": "^16.5.2",
         "react-redux": "^5.0.7",
         "redux": "^4.0.0",
-        "styled-components": "^3.4.9"
+        "styled-components": "^3.4.9",
+        "ts-optchain": "^0.1.1"
     },
     "devDependencies": {
         "@0xproject/tslint-config": "^1.0.8",
         "@types/enzyme": "^3.1.14",
         "@types/enzyme-adapter-react-16": "^1.0.3",
+        "@types/jest": "^23.3.5",
         "@types/lodash": "^4.14.116",
         "@types/node": "*",
         "@types/react": "^16.4.16",

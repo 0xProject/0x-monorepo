@@ -35,6 +35,7 @@ export {
     OrderRelevantState,
     OrderState,
     ECSignature,
+    AssetData,
     ERC20AssetData,
     ERC721AssetData,
     AssetProxyId,
