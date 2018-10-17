@@ -20,7 +20,9 @@ export type ConstructorStateMutability = 'nonpayable' | 'payable';
 export type StateMutability = 'pure' | 'view' | ConstructorStateMutability;
 
 export interface MethodAbi {
-    type: 'function'; // We hardcode this here b/c doc pages cannot render an enum value
+    // Ideally this would be set to: `'function'` but then TS complains when artifacts are loaded
+    // from JSON files, and this value has type `string` not type `'function'`
+    type: string;
     name: string;
     inputs: DataItem[];
     outputs: DataItem[];
@@ -30,14 +32,18 @@ export interface MethodAbi {
 }
 
 export interface ConstructorAbi {
-    type: 'constructor'; // We hardcode this here b/c doc pages cannot render an enum value
+    // Ideally this would be set to: `'constructor'` but then TS complains when artifacts are loaded
+    // from JSON files, and this value has type `string` not type `'constructor'`
+    type: string;
     inputs: DataItem[];
     payable: boolean;
     stateMutability: ConstructorStateMutability;
 }
 
 export interface FallbackAbi {
-    type: 'fallback'; // We hardcode this here b/c doc pages cannot render an enum value
+    // Ideally this would be set to: `'fallback'` but then TS complains when artifacts are loaded
+    // from JSON files, and this value has type `string` not type `'fallback'`
+    type: string;
     payable: boolean;
 }
 
@@ -46,7 +52,9 @@ export interface EventParameter extends DataItem {
 }
 
 export interface EventAbi {
-    type: 'event'; // We hardcode this here b/c doc pages cannot render an enum value
+    // Ideally this would be set to: `'event'` but then TS complains when artifacts are loaded
+    // from JSON files, and this value has type `string` not type `'event'`
+    type: string;
     name: string;
     inputs: EventParameter[];
     anonymous: boolean;
