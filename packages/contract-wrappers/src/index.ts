@@ -39,6 +39,7 @@ export { TransactionEncoder } from './utils/transaction_encoder';
 
 export {
     ContractWrappersError,
+    ForwarderWrapperError,
     IndexedFilterValues,
     BlockRange,
     ContractWrappersConfig,
