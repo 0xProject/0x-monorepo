@@ -3,6 +3,7 @@ export * from '../../generated-wrappers/erc20_proxy';
 export * from '../../generated-wrappers/erc721_proxy';
 export * from '../../generated-wrappers/exchange';
 export * from '../../generated-wrappers/mixin_authorizable';
+export * from '../../generated-wrappers/order_matcher';
 export * from '../../generated-wrappers/order_validator';
 export * from '../../generated-wrappers/test_asset_proxy_dispatcher';
 export * from '../../generated-wrappers/test_asset_proxy_owner';
