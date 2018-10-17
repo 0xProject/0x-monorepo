@@ -324,19 +324,25 @@ export class SolDoc {
             switch (abiDefinition.type) {
                 case 'constructor':
                     docSection.constructors.push(
-                        this._genConstructorDoc(contractName, abiDefinition, compiledContract.devdoc),
+                        // tslint:disable-next-line:no-unnecessary-type-assertion
+                        this._genConstructorDoc(contractName, abiDefinition as ConstructorAbi, compiledContract.devdoc),
                     );
                     break;
                 case 'event':
-                    (docSection.events as Event[]).push(SolDoc._genEventDoc(abiDefinition));
+                    // tslint:disable-next-line:no-unnecessary-type-assertion
+                    (docSection.events as Event[]).push(SolDoc._genEventDoc(abiDefinition as EventAbi));
                     // note that we're not sending devdoc to this._genEventDoc().
                     // that's because the type of the events array doesn't have any fields for documentation!
                     break;
                 case 'function':
-                    docSection.methods.push(this._genMethodDoc(abiDefinition, compiledContract.devdoc));
+                    // tslint:disable-next-line:no-unnecessary-type-assertion
+                    docSection.methods.push(this._genMethodDoc(abiDefinition as MethodAbi, compiledContract.devdoc));
                     break;
                 case 'fallback':
-                    docSection.methods.push(SolDoc._genFallbackDoc(abiDefinition, compiledContract.devdoc));
+                    // tslint:disable-next-line:no-unnecessary-type-assertion
+                    docSection.methods.push(
+                        SolDoc._genFallbackDoc(abiDefinition as FallbackAbi, compiledContract.devdoc),
+                    );
                     break;
                 default:
                     throw new Error(
