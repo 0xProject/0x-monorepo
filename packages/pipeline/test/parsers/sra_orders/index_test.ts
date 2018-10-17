@@ -2,13 +2,10 @@ import { APIOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import * as chai from 'chai';
 import 'mocha';
-import { Connection, createConnection } from 'typeorm';
 
-import { _convertToEntity } from '../../../src/data_types/sra_orders';
 import { SraOrder } from '../../../src/entities/SraOrder';
+import { _convertToEntity } from '../../../src/parsers/sra_orders';
 import { chaiSetup } from '../../utils/chai_setup';
-
-import { config } from '../../../src/ormconfig';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -16,12 +13,6 @@ const expect = chai.expect;
 // tslint:disable:custom-no-magic-numbers
 describe('sra_orders', () => {
     describe('_convertToEntity', () => {
-        before(async () => {
-            // HACK(albrow): We don't actually use this connection but it seems
-            // to be required because chai calls the inspect method of the
-            // entity and that method requires a "default" connection.
-            await createConnection(config);
-        });
         it('converts ApiOrder to SraOrder entity', () => {
             const input: APIOrder = {
                 order: {
