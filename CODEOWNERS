@@ -22,3 +22,7 @@ packages/sol-cov/ @LogvinovLeon
 packages/sol-resolver/ @LogvinovLeon
 packages/web3-wrapper/ @LogvinovLeon @fabioberger
 .circleci/ @LogvinovLeon
+packages/subproviders/ @fabioberger @dekz
+packages/connect/ @fragosti 
+packages/monorepo-scripts/ @fabioberger
+packages/order-utils/ @fabioberger @LogvinovLeon 
