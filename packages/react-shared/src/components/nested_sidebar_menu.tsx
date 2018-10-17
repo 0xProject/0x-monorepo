@@ -16,7 +16,7 @@ export interface NestedSidebarMenuProps {
 }
 
 export interface NestedSidebarMenuState {
-    scrolledToId: string;
+    scrolledToId?: string;
 }
 
 const styles: Styles = {
@@ -43,9 +43,7 @@ export class NestedSidebarMenu extends React.Component<NestedSidebarMenuProps, N
     private _urlIntervalCheckId: number | undefined = undefined;
     constructor(props: NestedSidebarMenuProps) {
         super(props);
-        this.state = {
-            scrolledToId: '',
-        };
+        this.state = {};
     }
     public componentDidMount(): void {
         this._urlIntervalCheckId = window.setInterval(() => {
