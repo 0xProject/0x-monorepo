@@ -363,6 +363,7 @@ export enum WebsitePaths {
     Subproviders = '/docs/subproviders',
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
+    AssetBuyer = '/docs/asset-buyer',
     Careers = '/careers',
 }
 
@@ -379,6 +380,7 @@ export enum DocPackages {
     EthereumTypes = 'ETHEREUM_TYPES',
     ContractWrappers = 'CONTRACT_WRAPPERS',
     OrderWatcher = 'ORDER_WATCHER',
+    AssetBuyer = 'ASSET_BUYER',
 }
 
 export enum Key {
@@ -440,6 +442,7 @@ export enum Key {
     ZeroExJs = '0X_JS',
     ContractWrappers = 'CONTRACT_WRAPPERS',
     OrderWatcher = 'ORDER_WATCHER',
+    AssetBuyer = 'ASSET_BUYER',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',

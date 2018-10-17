@@ -1,5 +1,15 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note":
+                    "Convert all schemas to JSON files so that they can be used with `json-schema` implemenations in other programming languages.",
+                "pr": 1145
+            }
+        ]
+    },
+    {
         "timestamp": 1538693146,
         "version": "1.0.7",
         "changes": [

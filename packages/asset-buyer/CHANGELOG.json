@@ -13,6 +13,18 @@
                 "note":
                     "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers",
                 "pr": 1105
+            },
+            {
+                "note": "Add `gasLimit` and `gasPrice` as optional properties on `BuyQuoteExecutionOpts`",
+                "pr": 1116
+            },
+            {
+                "note": "Add `docs:json` command to package.json",
+                "pr": 1139
+            },
+            {
+                "note": "Add missing types to public interface",
+                "pr": 1139
             }
         ]
     },
