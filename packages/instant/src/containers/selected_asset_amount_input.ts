@@ -72,7 +72,7 @@ const mapDispatchToProps = (
         // invalidate the last buy quote.
         dispatch(actions.updateLatestBuyQuote(undefined));
         // reset our buy state
-        dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.NONE));
+        dispatch(actions.updatebuyOrderState(AsyncProcessState.NONE));
 
         if (!_.isUndefined(value) && !_.isUndefined(assetData)) {
             // even if it's debounced, give them the illusion it's loading

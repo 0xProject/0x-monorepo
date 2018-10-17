@@ -39,14 +39,14 @@ const textForState = (state: AsyncProcessState): string => {
 };
 
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): ConnectedState => ({
-    text: textForState(state.selectedAssetBuyState),
+    text: textForState(state.buyOrderState),
     buyQuote: state.latestBuyQuote,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetBuyButtonProps): ConnectedDispatch => ({
-    onClick: buyQuote => dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.PENDING)),
-    onBuySuccess: buyQuote => dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.SUCCESS)),
-    onBuyFailure: buyQuote => dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.FAILURE)),
+    onClick: buyQuote => dispatch(actions.updatebuyOrderState(AsyncProcessState.PENDING)),
+    onBuySuccess: buyQuote => dispatch(actions.updatebuyOrderState(AsyncProcessState.SUCCESS)),
+    onBuyFailure: buyQuote => dispatch(actions.updatebuyOrderState(AsyncProcessState.FAILURE)),
 });
 
 export const SelectedAssetBuyButton: React.ComponentClass<SelectedAssetBuyButtonProps> = connect(

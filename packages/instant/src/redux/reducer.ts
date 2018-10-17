@@ -14,7 +14,7 @@ export enum LatestErrorDisplay {
 export interface State {
     selectedAssetData?: string;
     selectedAssetAmount?: BigNumber;
-    selectedAssetBuyState: AsyncProcessState; // TODO: rename buyOrderState
+    buyOrderState: AsyncProcessState;
     ethUsdPrice?: BigNumber;
     latestBuyQuote?: BuyQuote;
     quoteState: AsyncProcessState;
@@ -26,7 +26,7 @@ export const INITIAL_STATE: State = {
     // TODO: Remove hardcoded zrxAssetData
     selectedAssetData: zrxAssetData,
     selectedAssetAmount: undefined,
-    selectedAssetBuyState: AsyncProcessState.NONE,
+    buyOrderState: AsyncProcessState.NONE,
     ethUsdPrice: undefined,
     latestBuyQuote: undefined,
     latestError: undefined,
@@ -67,7 +67,7 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
         case ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE:
             return {
                 ...state,
-                selectedAssetBuyState: action.data,
+                buyOrderState: action.data,
             };
         case ActionTypes.SET_ERROR:
             return {

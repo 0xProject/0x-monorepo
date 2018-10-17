@@ -35,7 +35,7 @@ export enum ActionTypes {
 export const actions = {
     updateEthUsdPrice: (price?: BigNumber) => createAction(ActionTypes.UPDATE_ETH_USD_PRICE, price),
     updateSelectedAssetAmount: (amount?: BigNumber) => createAction(ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT, amount),
-    updateSelectedAssetBuyState: (buyState: AsyncProcessState) =>
+    updatebuyOrderState: (buyState: AsyncProcessState) =>
         createAction(ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE, buyState),
     updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UPDATE_LATEST_BUY_QUOTE, buyQuote),
     updateBuyQuoteStatePending: () => createAction(ActionTypes.UPDATE_BUY_QUOTE_STATE_PENDING),
