@@ -31,6 +31,12 @@ def encode_erc20_asset_data(token_address: str) -> str:
     >>> encode_erc20_asset_data('0x1dc4c1cefef38a777b15aa20260a54e584b16c48')
     '0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48'
     """
+    if not isinstance(token_address, str):
+        raise TypeError(
+            "token_address should be a str, not a "
+            + type(token_address).__name__
+        )
+
     return (
         "0x"
         + abi_utils.simple_encode("ERC20Token(address)", token_address).hex()
@@ -46,8 +52,13 @@ def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
     >>> decode_erc20_asset_data("0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48")
     {'asset_proxy_id': '0xf47261b0', 'token_address': '0x1dc4c1cefef38a777b15aa20260a54e584b16c48'}
     """  # noqa: E501 (line too long)
+    if not isinstance(asset_data, str):
+        raise TypeError(
+            "asset_data should be str, not " + type(asset_data).__name__
+        )
+
     if len(asset_data) < ERC20_ASSET_DATA_BYTE_LENGTH:
-        raise Exception(
+        raise ValueError(
             "Could not decode ERC20 Proxy Data. Expected length of encoded"
             + " data to be at least "
             + str(ERC20_ASSET_DATA_BYTE_LENGTH)
@@ -58,7 +69,7 @@ def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
 
     asset_proxy_id: str = asset_data[0:10]
     if asset_proxy_id != abi_utils.method_id("ERC20Token", ["address"]):
-        raise Exception(
+        raise ValueError(
             "Could not decode ERC20 Proxy Data. Expected Asset Proxy Id to be"
             + " ERC20 ("
             + abi_utils.method_id("ERC20Token", ["address"])
