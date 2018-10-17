@@ -112,6 +112,8 @@ export enum AssetBuyerError {
     NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
     InvalidOrderProviderResponse = 'INVALID_ORDER_PROVIDER_RESPONSE',
     AssetUnavailable = 'ASSET_UNAVAILABLE',
+    SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
+    TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
 }
 
 export interface OrdersAndFillableAmounts {
