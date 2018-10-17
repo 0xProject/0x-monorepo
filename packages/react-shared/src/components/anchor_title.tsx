@@ -22,11 +22,6 @@ export interface AnchorTitleProps {
 export interface AnchorTitleState {}
 
 const styles: Styles = {
-    anchor: {
-        fontSize: 20,
-        transform: 'rotate(45deg)',
-        cursor: 'pointer',
-    },
     h1: {
         fontSize: '1.875em',
     },
@@ -39,17 +34,28 @@ const styles: Styles = {
     },
 };
 
+interface AnchorIconProps {
+    shouldShowAnchor: boolean;
+}
+
+const AnchorIcon =
+    styled.i <
+    AnchorIconProps >
+    `
+            opacity: ${props => (props.shouldShowAnchor ? 1 : 0)};
+            &:hover {
+                opacity: ${props => (props.shouldShowAnchor ? 0.6 : 0)};
+            }
+            font-size: 20px;
+            transform: rotate(45deg);
+            cursor: pointer;
+        `;
+
 export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleState> {
     public static defaultProps: Partial<AnchorTitleProps> = {
         isDisabled: false,
     };
     public render(): React.ReactNode {
-        const AnchorIcon = styled.i`
-            opacity: ${this.props.shouldShowAnchor ? 1 : 0};
-            &:hover {
-                opacity: ${this.props.shouldShowAnchor ? 0.6 : 0};
-            }
-        `;
         return (
             <div
                 className="relative flex"
@@ -74,7 +80,7 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
                         duration={constants.DOCS_SCROLL_DURATION_MS}
                         containerId={constants.SCROLL_CONTAINER_ID}
                     >
-                        <AnchorIcon className="zmdi zmdi-link" style={{ ...styles.anchor }} />
+                        <AnchorIcon className="zmdi zmdi-link" shouldShowAnchor={this.props.shouldShowAnchor} />
                     </ScrollLink>
                 )}
             </div>
