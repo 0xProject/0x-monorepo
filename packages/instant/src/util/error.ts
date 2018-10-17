@@ -28,9 +28,20 @@ class ErrorFlasher {
 }
 
 const humanReadableMessageForError = (error: Error, assetData?: string): string | undefined => {
-    if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
+    const hasInsufficientLiquidity =
+        error.message === AssetBuyerError.InsufficientAssetLiquidity ||
+        error.message === AssetBuyerError.InsufficientZrxLiquidity;
+    if (hasInsufficientLiquidity) {
         const assetName = assetDataUtil.bestNameForAsset(assetData, 'of this asset');
         return `Not enough ${assetName} available`;
+    }
+
+    if (
+        error.message === AssetBuyerError.StandardRelayerApiError ||
+        error.message.startsWith(AssetBuyerError.AssetUnavailable)
+    ) {
+        const assetName = assetDataUtil.bestNameForAsset(assetData, 'This asset');
+        return `${assetName} is currently unavailable`;
     }
 
     return undefined;
