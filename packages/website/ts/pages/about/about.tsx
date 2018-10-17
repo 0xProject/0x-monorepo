@@ -244,9 +244,10 @@ const teamRow9: ProfileInfo[] = [
     {
         name: 'Steve Klebanoff',
         title: 'Senior Engineer',
-        description: ` Full-stack engineer. Previously Staff Software Engineer at Appfolio. Computer Science & Cognitive Psychology at Northeastern University.`,
+        description: ` Full-stack engineer. Previously Staff Software Engineer at AppFolio. Computer Science & Cognitive Psychology at Northeastern University.`,
         image: 'images/team/steve.png',
         linkedIn: 'https://www.linkedin.com/in/steveklebanoff/',
+        github: 'https://github.com/steveklebanoff',
     },
 ];
 
