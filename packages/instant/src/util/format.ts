@@ -5,14 +5,22 @@ import * as _ from 'lodash';
 import { ethDecimals } from '../constants';
 
 export const format = {
-    ethBaseAmount: (ethBaseAmount?: BigNumber, decimalPlaces: number = 4, defaultText: string = '0 ETH'): string => {
+    ethBaseAmount: (
+        ethBaseAmount?: BigNumber,
+        decimalPlaces: number = 4,
+        defaultText: React.ReactNode = '0 ETH',
+    ): React.ReactNode => {
         if (_.isUndefined(ethBaseAmount)) {
             return defaultText;
         }
         const ethUnitAmount = Web3Wrapper.toUnitAmount(ethBaseAmount, ethDecimals);
         return format.ethUnitAmount(ethUnitAmount, decimalPlaces);
     },
-    ethUnitAmount: (ethUnitAmount?: BigNumber, decimalPlaces: number = 4, defaultText: string = '0 ETH'): string => {
+    ethUnitAmount: (
+        ethUnitAmount?: BigNumber,
+        decimalPlaces: number = 4,
+        defaultText: React.ReactNode = '0 ETH',
+    ): React.ReactNode => {
         if (_.isUndefined(ethUnitAmount)) {
             return defaultText;
         }
@@ -23,8 +31,8 @@ export const format = {
         ethBaseAmount?: BigNumber,
         ethUsdPrice?: BigNumber,
         decimalPlaces: number = 2,
-        defaultText: string = '$0.00',
-    ): string => {
+        defaultText: React.ReactNode = '$0.00',
+    ): React.ReactNode => {
         if (_.isUndefined(ethBaseAmount) || _.isUndefined(ethUsdPrice)) {
             return defaultText;
         }
@@ -35,8 +43,8 @@ export const format = {
         ethUnitAmount?: BigNumber,
         ethUsdPrice?: BigNumber,
         decimalPlaces: number = 2,
-        defaultText: string = '$0.00',
-    ): string => {
+        defaultText: React.ReactNode = '$0.00',
+    ): React.ReactNode => {
         if (_.isUndefined(ethUnitAmount) || _.isUndefined(ethUsdPrice)) {
             return defaultText;
         }

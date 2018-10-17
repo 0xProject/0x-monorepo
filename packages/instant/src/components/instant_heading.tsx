@@ -16,18 +16,30 @@ export interface InstantHeadingProps {
     quoteState: AsyncProcessState;
 }
 
-const displaytotalEthBaseAmount = ({ selectedAssetAmount, totalEthBaseAmount }: InstantHeadingProps): string => {
+const Placeholder = () => (
+    <Text fontWeight="bold" fontColor={ColorOption.white}>
+        &mdash;
+    </Text>
+);
+const displaytotalEthBaseAmount = ({
+    selectedAssetAmount,
+    totalEthBaseAmount,
+}: InstantHeadingProps): React.ReactNode => {
     if (_.isUndefined(selectedAssetAmount)) {
         return '0 ETH';
     }
-    return format.ethBaseAmount(totalEthBaseAmount, 4, '-');
+    return format.ethBaseAmount(totalEthBaseAmount, 4, <Placeholder />);
 };
 
-const displayUsdAmount = ({ totalEthBaseAmount, selectedAssetAmount, ethUsdPrice }: InstantHeadingProps): string => {
+const displayUsdAmount = ({
+    totalEthBaseAmount,
+    selectedAssetAmount,
+    ethUsdPrice,
+}: InstantHeadingProps): React.ReactNode => {
     if (_.isUndefined(selectedAssetAmount)) {
         return '$0.00';
     }
-    return format.ethBaseAmountInUsd(totalEthBaseAmount, ethUsdPrice, 2, '-');
+    return format.ethBaseAmountInUsd(totalEthBaseAmount, ethUsdPrice, 2, <Placeholder />);
 };
 
 const loadingOrAmount = (quoteState: AsyncProcessState, amount: string): React.ReactNode => {
