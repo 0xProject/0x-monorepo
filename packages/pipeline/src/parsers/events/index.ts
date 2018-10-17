@@ -1,4 +1,3 @@
-import { Exchange } from '@0xproject/contract-artifacts';
 import {
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
@@ -10,34 +9,16 @@ import { AssetProxyId, ERC721AssetData } from '@0xproject/types';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as R from 'ramda';
 
-import { EventsResponse } from '../../data_sources/etherscan';
 import { ExchangeCancelEvent } from '../../entities/ExchangeCancelEvent';
 import { ExchangeCancelUpToEvent } from '../../entities/ExchangeCancelUpToEvent';
 import { ExchangeFillEvent } from '../../entities/ExchangeFillEvent';
 import { bigNumbertoStringOrNull } from '../../utils';
 
-import { convertResponseToLogEntry, decodeLogEntry } from './event_utils';
-
 export type ExchangeEventEntity = ExchangeFillEvent | ExchangeCancelEvent | ExchangeCancelUpToEvent;
 
-export function parseExchangeEvents(rawEventsResponse: EventsResponse): ExchangeEventEntity[] {
-    const logEntries = R.map(convertResponseToLogEntry, rawEventsResponse.result);
-    const decodedLogEntries = R.map(
-        eventResponse => decodeLogEntry<ExchangeEventArgs>(Exchange.compilerOutput.abi, eventResponse),
-        logEntries,
-    );
-    const filteredLogEntries = R.filter(shouldIncludeLogEntry, decodedLogEntries);
-    return R.map(_convertToEntity, filteredLogEntries);
-}
-
-export function shouldIncludeLogEntry(logEntry: LogWithDecodedArgs<ExchangeEventArgs>): boolean {
-    if (!R.contains(logEntry.event, ['Fill', 'Cancel', 'CancelUpTo'])) {
-        return false;
-    } else if (logEntry.logIndex == null || isNaN(logEntry.logIndex)) {
-        return false;
-    }
-    return true;
-}
+export const parseExchangeEvents: (
+    eventLogs: Array<LogWithDecodedArgs<ExchangeEventArgs>>,
+) => ExchangeEventEntity[] = R.map(_convertToEntity);
 
 export function _convertToEntity(eventLog: LogWithDecodedArgs<ExchangeEventArgs>): ExchangeEventEntity {
     switch (eventLog.event) {
