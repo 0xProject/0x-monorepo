@@ -99,11 +99,12 @@ export class AbiDecoder {
         const ethersInterface = new ethers.utils.Interface(abiArray);
         _.map(abiArray, (abi: AbiDefinition) => {
             if (abi.type === AbiType.Event) {
-                const topic = ethersInterface.events[abi.name].topic;
-                const numIndexedArgs = _.reduce(abi.inputs, (sum, input) => (input.indexed ? sum + 1 : sum), 0);
+                const eventAbi = abi as EventAbi;
+                const topic = ethersInterface.events[eventAbi.name].topic;
+                const numIndexedArgs = _.reduce(eventAbi.inputs, (sum, input) => (input.indexed ? sum + 1 : sum), 0);
                 this._methodIds[topic] = {
                     ...this._methodIds[topic],
-                    [numIndexedArgs]: abi,
+                    [numIndexedArgs]: eventAbi,
                 };
             }
         });
