@@ -46,6 +46,18 @@ The package is also available as a UMD module named `zeroExInstant`.
 </body>
 ```
 
+## Deploying
+
+You can deploy a work-in-progress version of 0x Instant at http://0x-instant-dogfood.s3-website-us-east-1.amazonaws.com for easy sharing.
+
+To build and deploy the site run
+
+```
+yarn deploy
+```
+
+**NOTE: On deploying the site, it will say the site is available at a non-existent URL. Please ignore and use the (now updated) URL above.**
+
 ## Contributing
 
 We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
