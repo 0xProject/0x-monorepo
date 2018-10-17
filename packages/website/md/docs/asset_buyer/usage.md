@@ -25,8 +25,8 @@ const erc20TokenAddress = '0x5fa3c....';
 const amountToBuy = new BigNumber(50000000000000000000);
 const buyQuote = await assetBuyer.getBuyQuoteForERC20TokenAddressAsync(erc20TokenAddress, amountToBuy);
 const quoteInfo = buyQuote.worstCaseQuoteInfo;
-console.log(quoteInfo.ethAmount); // the total amount the user needs to pay to buy the desired amount (including fees)
-console.log(quoteInfo.feeAmount); // a portion of the total ethAmount above that was used to buy fees
+console.log(quoteInfo.ethAmount); // the total amount the user needs to pay to buy the desired amount (including ZRX fees)
+console.log(quoteInfo.feeAmount); // a portion of the total ethAmount above that was used to buy affiliate fees
 console.log(quoteInfo.ethPerAssetPrice); // the rate that this quote provides (e.g. 0.0035ETH / REP)
 ```
 
