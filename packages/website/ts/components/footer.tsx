@@ -1,5 +1,5 @@
-import { ALink, colors, Link } from '@0xproject/react-shared';
-import { ObjectMap } from '@0xproject/types';
+import { ALink, colors, Link } from '@0x/react-shared';
+import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';

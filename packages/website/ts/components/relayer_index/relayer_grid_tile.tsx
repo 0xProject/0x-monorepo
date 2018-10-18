@@ -1,4 +1,4 @@
-import { Styles } from '@0xproject/react-shared';
+import { Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import { GridTile as PlainGridTile } from 'material-ui/GridList';
 import * as React from 'react';

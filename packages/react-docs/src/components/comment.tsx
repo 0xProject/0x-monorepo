@@ -1,4 +1,4 @@
-import { colors, MarkdownCodeBlock } from '@0xproject/react-shared';
+import { colors, MarkdownCodeBlock } from '@0x/react-shared';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 

@@ -1,6 +1,6 @@
-import { DocsInfo } from '@0xproject/react-docs';
-import { ALink, colors, Link, Styles } from '@0xproject/react-shared';
-import { ObjectMap } from '@0xproject/types';
+import { DocsInfo } from '@0x/react-docs';
+import { ALink, colors, Link, Styles } from '@0x/react-shared';
+import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';

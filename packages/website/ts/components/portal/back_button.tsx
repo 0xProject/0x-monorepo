@@ -1,4 +1,4 @@
-import { Link, Styles } from '@0xproject/react-shared';
+import { Link, Styles } from '@0x/react-shared';
 import * as React from 'react';
 import { Island } from 'ts/components/ui/island';
 import { colors } from 'ts/style/colors';

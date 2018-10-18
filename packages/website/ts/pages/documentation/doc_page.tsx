@@ -5,8 +5,8 @@ import {
     GeneratedDocJson,
     SupportedDocJson,
     TypeDocUtils,
-} from '@0xproject/react-docs';
-import { NestedSidebarMenu } from '@0xproject/react-shared';
+} from '@0x/react-docs';
+import { NestedSidebarMenu } from '@0x/react-shared';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -181,7 +181,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         let tagPrefix = pkg;
         const packagesWithNamespace = ['connect'];
         if (_.includes(packagesWithNamespace, pkg)) {
-            tagPrefix = `@0xproject/${pkg}`;
+            tagPrefix = `@0x/${pkg}`;
         }
         // HACK: The following three lines exist for backward compatibility reasons
         // Before exporting types from other packages as part of the 0x.js interface,
