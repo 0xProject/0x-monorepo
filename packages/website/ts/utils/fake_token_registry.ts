@@ -1,4 +1,11 @@
-export const fakeTokenRegistry = {
+export interface FakeTokenRegistryEntry {
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+}
+
+export const fakeTokenRegistry: { [networkId: string]: FakeTokenRegistryEntry[] } = {
     '1': [
         {
             address: '0xe41d2489571d322189246dafa5ebde1f4699f498',
