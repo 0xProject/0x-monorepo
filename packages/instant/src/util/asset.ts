@@ -19,14 +19,14 @@ export const assetUtils = {
     ): AssetMetaData => {
         let mainnetAssetData: string | undefined = assetData;
         if (network !== Network.Mainnet) {
-            mainnetAssetData = assetDataNetworkMapping.getAssociatedAssetDataIfExists(assetData, network);
+            mainnetAssetData = assetUtils.getAssociatedAssetDataIfExists(assetData, network);
         }
         if (_.isUndefined(mainnetAssetData)) {
             throw new Error(ZeroExInstantError.AssetMetaDataNotAvailable);
         }
         const metaData = metaDataMap[mainnetAssetData];
         if (_.isUndefined(metaData)) {
-            throw new Error();
+            throw new Error(ZeroExInstantError.AssetMetaDataNotAvailable);
         }
         return metaData;
     },
@@ -43,5 +43,12 @@ export const assetUtils = {
             default:
                 return defaultName;
         }
+    },
+    getAssociatedAssetDataIfExists: (assetData: string, network: Network): string | undefined => {
+        const assetDataGroupIfExists = _.find(assetDataNetworkMapping, value => value[network] === assetData);
+        if (_.isUndefined(assetDataGroupIfExists)) {
+            return;
+        }
+        return assetDataGroupIfExists[Network.Mainnet];
     },
 };
