@@ -17,6 +17,7 @@ export interface InstantHeadingProps {
     quoteRequestState: AsyncProcessState;
 }
 
+const placeholderColor = ColorOption.white;
 export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
         const placeholderAmountToAlwaysShow = this._placeholderAmountToAlwaysShow();
@@ -52,10 +53,10 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
 
     private _placeholderAmountToAlwaysShow(): React.ReactNode | undefined {
         if (this.props.quoteRequestState === AsyncProcessState.PENDING) {
-            return <AmountPlaceholder pulsating={true} />;
+            return <AmountPlaceholder pulsating={true} color={placeholderColor} />;
         }
         if (_.isUndefined(this.props.selectedAssetAmount)) {
-            return <AmountPlaceholder pulsating={false} />;
+            return <AmountPlaceholder pulsating={false} color={placeholderColor} />;
         }
         return undefined;
     }
@@ -63,7 +64,11 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     private _ethAmount(): React.ReactNode {
         return (
             <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
-                {format.ethBaseAmount(this.props.totalEthBaseAmount, 4, <AmountPlaceholder pulsating={false} />)}
+                {format.ethBaseAmount(
+                    this.props.totalEthBaseAmount,
+                    4,
+                    <AmountPlaceholder pulsating={false} color={placeholderColor} />,
+                )}
             </Text>
         );
     }
@@ -75,7 +80,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                     this.props.totalEthBaseAmount,
                     this.props.ethUsdPrice,
                     2,
-                    <AmountPlaceholder pulsating={false} />,
+                    <AmountPlaceholder pulsating={false} color={ColorOption.white} />,
                 )}
             </Text>
         );

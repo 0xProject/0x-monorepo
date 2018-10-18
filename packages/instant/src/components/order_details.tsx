@@ -7,11 +7,13 @@ import { oc } from 'ts-optchain';
 import { ColorOption } from '../style/theme';
 import { format } from '../util/format';
 
+import { AmountPlaceholder } from './amount_placeholder';
 import { Container, Flex, Text } from './ui';
 
 export interface OrderDetailsProps {
     buyQuoteInfo?: BuyQuoteInfo;
     ethUsdPrice?: BigNumber;
+    isLoading: boolean;
 }
 
 export class OrderDetails extends React.Component<OrderDetailsProps> {
@@ -39,13 +41,20 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                     ethAmount={ethAssetPrice}
                     ethUsdPrice={ethUsdPrice}
                     isEthAmountInBaseUnits={false}
+                    isLoading={this.props.isLoading}
                 />
-                <EthAmountRow rowLabel="Fee" ethAmount={ethTokenFee} ethUsdPrice={ethUsdPrice} />
+                <EthAmountRow
+                    rowLabel="Fee"
+                    ethAmount={ethTokenFee}
+                    ethUsdPrice={ethUsdPrice}
+                    isLoading={this.props.isLoading}
+                />
                 <EthAmountRow
                     rowLabel="Total Cost"
                     ethAmount={totalEthAmount}
                     ethUsdPrice={ethUsdPrice}
                     shouldEmphasize={true}
+                    isLoading={this.props.isLoading}
                 />
             </Container>
         );
@@ -58,6 +67,7 @@ export interface EthAmountRowProps {
     isEthAmountInBaseUnits?: boolean;
     ethUsdPrice?: BigNumber;
     shouldEmphasize?: boolean;
+    isLoading: boolean;
 }
 
 export const EthAmountRow: React.StatelessComponent<EthAmountRowProps> = ({
@@ -66,15 +76,19 @@ export const EthAmountRow: React.StatelessComponent<EthAmountRowProps> = ({
     isEthAmountInBaseUnits,
     ethUsdPrice,
     shouldEmphasize,
+    isLoading,
 }) => {
-    const fontWeight = shouldEmphasize ? 700 : 400;
+    // TODO: put in private function
     const usdFormatter = isEthAmountInBaseUnits ? format.ethBaseAmountInUsd : format.ethUnitAmountInUsd;
-    const ethFormatter = isEthAmountInBaseUnits ? format.ethBaseAmount : format.ethUnitAmount;
-    const usdPriceSection = _.isUndefined(ethUsdPrice) ? null : (
+    const shouldHideUsdPriceSection = _.isUndefined(ethUsdPrice) || _.isUndefined(ethAmount);
+    const usdPriceSection = shouldHideUsdPriceSection ? null : (
         <Container marginRight="3px" display="inline-block">
             <Text fontColor={ColorOption.lightGrey}>({usdFormatter(ethAmount, ethUsdPrice)})</Text>
         </Container>
     );
+
+    const fontWeight = shouldEmphasize ? 700 : 400;
+    const ethFormatter = isEthAmountInBaseUnits ? format.ethBaseAmount : format.ethUnitAmount;
     return (
         <Container padding="10px 0px" borderTop="1px dashed" borderColor={ColorOption.feintGrey}>
             <Flex justify="space-between">
@@ -84,7 +98,13 @@ export const EthAmountRow: React.StatelessComponent<EthAmountRowProps> = ({
                 <Container>
                     {usdPriceSection}
                     <Text fontWeight={fontWeight} fontColor={ColorOption.grey}>
-                        {ethFormatter(ethAmount)}
+                        {ethFormatter(
+                            ethAmount,
+                            4,
+                            <Container opacity={0.5}>
+                                <AmountPlaceholder color={ColorOption.lightGrey} pulsating={isLoading} />
+                            </Container>,
+                        )}
                     </Text>
                 </Container>
             </Flex>
