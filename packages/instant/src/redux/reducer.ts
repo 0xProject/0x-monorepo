@@ -52,13 +52,13 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 latestBuyQuote: action.data,
                 quoteRequestState: AsyncProcessState.SUCCESS,
             };
-        case ActionTypes.UPDATE_BUY_QUOTE_STATE_PENDING:
+        case ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING:
             return {
                 ...state,
                 latestBuyQuote: undefined,
                 quoteRequestState: AsyncProcessState.PENDING,
             };
-        case ActionTypes.UPDATE_BUY_QUOTE_STATE_FAILURE:
+        case ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE:
             return {
                 ...state,
                 latestBuyQuote: undefined,
