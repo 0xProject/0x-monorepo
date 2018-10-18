@@ -2,10 +2,10 @@ import { AssetProxyId, ObjectMap } from '@0xproject/types';
 
 // Reusable
 export enum AsyncProcessState {
-    NONE,
-    PENDING,
-    SUCCESS,
-    FAILURE,
+    NONE = 'None',
+    PENDING = 'Pending',
+    SUCCESS = 'Success',
+    FAILURE = 'Failure',
 }
 
 export type FunctionType = (...args: any[]) => any;

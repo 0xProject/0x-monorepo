@@ -1,3 +1,4 @@
+import { BuyQuote } from '@0xproject/asset-buyer';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
@@ -11,6 +12,7 @@ import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { AsyncProcessState } from '../types';
 import { assetBuyer } from '../util/asset_buyer';
+import { errorUtil } from '../util/error';
 
 import { AssetAmountInput } from '../components/asset_amount_input';
 
@@ -35,15 +37,25 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetAmountInputProps)
 
 const updateBuyQuoteAsync = async (
     dispatch: Dispatch<Action>,
-    assetData?: string,
-    assetAmount?: BigNumber,
+    assetData: string,
+    assetAmount: BigNumber,
 ): Promise<void> => {
-    if (_.isUndefined(assetAmount) || _.isUndefined(assetData)) {
-        return;
-    }
     // get a new buy quote.
     const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetAmount, zrxDecimals);
-    const newBuyQuote = await assetBuyer.getBuyQuoteAsync(assetData, baseUnitValue);
+
+    // mark quote as pending
+    dispatch(actions.updateBuyQuoteStatePending());
+
+    let newBuyQuote: BuyQuote | undefined;
+    try {
+        newBuyQuote = await assetBuyer.getBuyQuoteAsync(assetData, baseUnitValue);
+    } catch (error) {
+        dispatch(actions.updateBuyQuoteStateFailure());
+        errorUtil.errorFlasher.flashNewError(dispatch, error);
+        return;
+    }
+    // We have a successful new buy quote
+    errorUtil.errorFlasher.clearError(dispatch);
     // invalidate the last buy quote.
     dispatch(actions.updateLatestBuyQuote(newBuyQuote));
 };
@@ -60,9 +72,14 @@ const mapDispatchToProps = (
         // invalidate the last buy quote.
         dispatch(actions.updateLatestBuyQuote(undefined));
         // reset our buy state
-        dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.NONE));
-        // tslint:disable-next-line:no-floating-promises
-        debouncedUpdateBuyQuoteAsync(dispatch, assetData, value);
+        dispatch(actions.updatebuyOrderState(AsyncProcessState.NONE));
+
+        if (!_.isUndefined(value) && !_.isUndefined(assetData)) {
+            // even if it's debounced, give them the illusion it's loading
+            dispatch(actions.updateBuyQuoteStatePending());
+            // tslint:disable-next-line:no-floating-promises
+            debouncedUpdateBuyQuoteAsync(dispatch, assetData, value);
+        }
     },
 });
 
