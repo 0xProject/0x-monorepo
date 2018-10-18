@@ -1,5 +1,5 @@
-import { HttpClient } from '@0xproject/connect';
-import { web3Factory } from '@0xproject/dev-utils';
+import { HttpClient } from '@0x/connect';
+import { web3Factory } from '@0x/dev-utils';
 import 'reflect-metadata';
 import { Connection, createConnection } from 'typeorm';
 
