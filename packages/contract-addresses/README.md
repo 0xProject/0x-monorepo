@@ -1,4 +1,4 @@
-## @0xproject/contract-addresses
+## @0x/contract-addresses
 
 A tiny utility library for getting known deployed contract addresses for a
 particular network.
@@ -6,19 +6,19 @@ particular network.
 ## Installation
 
 ```bash
-yarn add @0xproject/contract-addresses
+yarn add @0x/contract-addresses
 ```
 
 **Import**
 
 ```typescript
-import { getContractAddressesForNetworkOrThrow } from '@0xproject/contract-addresses';
+import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 ```
 
 or
 
 ```javascript
-var getContractAddressesForNetworkOrThrow = require('@0xproject/contract-addresses')
+var getContractAddressesForNetworkOrThrow = require('@0x/contract-addresses')
     .getContractAddressesForNetworkOrThrow;
 ```
 
@@ -47,7 +47,7 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/contract-addresses yarn build
+PKG=@0x/contract-addresses yarn build
 ```
 
 ### Clean

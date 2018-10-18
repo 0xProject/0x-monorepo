@@ -1,29 +1,29 @@
-## @0xproject/abi-gen-wrappers
+## @0x/abi-gen-wrappers
 
-Low-level 0x smart contract wrappers generated using @0xproject/abi-gen. These
+Low-level 0x smart contract wrappers generated using @0x/abi-gen. These
 low-level wrappers are imported by other packages in the 0x monorepo and
 application developers are not expected to import this package directly.
 
 You may also be interested in the
-[@0xproject/contract-wrappers](../contract-wrappers/README.md) package which
+[@0x/contract-wrappers](../contract-wrappers/README.md) package which
 includes some higher-level features.
 
 ## Installation
 
 ```bash
-yarn add @0xproject/abi-gen-wrappers
+yarn add @0x/abi-gen-wrappers
 ```
 
 **Import**
 
 ```typescript
-import * as wrappers from '@0xproject/abi-gen-wrappers';
+import * as wrappers from '@0x/abi-gen-wrappers';
 ```
 
 or
 
 ```javascript
-var wrappers = require('@0xproject/abi-gen-wrappers');
+var wrappers = require('@0x/abi-gen-wrappers');
 ```
 
 ## Contributing
@@ -51,7 +51,7 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/abi-gen-wrappers yarn build
+PKG=@0x/abi-gen-wrappers yarn build
 ```
 
 ### Clean

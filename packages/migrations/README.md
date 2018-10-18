@@ -27,13 +27,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/migrations yarn build
+PKG=@0x/migrations yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/migrations yarn watch
+PKG=@0x/migrations yarn watch
 ```
 
 ### Clean

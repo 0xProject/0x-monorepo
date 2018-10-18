@@ -1,11 +1,11 @@
-## @0xproject/typescript-typings
+## @0x/typescript-typings
 
 Type repository for external packages used by 0x. This is like our small version of [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)
 
 ## Installation
 
 ```bash
-yarn add -D @0xproject/typescript-typings
+yarn add -D @0x/typescript-typings
 ```
 
 ## Usage
@@ -13,7 +13,7 @@ yarn add -D @0xproject/typescript-typings
 Add the following line within an `compilerOptions` section of your `tsconfig.json`
 
 ```json
-"typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"]
+"typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"]
 ```
 
 This will allow the TS compiler to first look into that repo and then fallback to DT types.
@@ -43,13 +43,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/typescript-typings yarn build
+PKG=@0x/typescript-typings yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/typescript-typings yarn watch
+PKG=@0x/typescript-typings yarn watch
 ```
 
 ### Clean

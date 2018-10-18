@@ -1,25 +1,25 @@
-## @0xproject/types
+## @0x/types
 
 Typescript types shared across 0x projects and packages
 
 ## Installation
 
 ```bash
-yarn add -D @0xproject/types
+yarn add -D @0x/types
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 
 ## Usage
 
 ```javascript
-import { TransactionReceipt, TxData, TxDataPayable } from '@0xproject/types';
+import { TransactionReceipt, TxData, TxDataPayable } from '@0x/types';
 ```
 
 ## Contributing
@@ -47,13 +47,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/types yarn build
+PKG=@0x/types yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/types yarn watch
+PKG=@0x/types yarn watch
 ```
 
 ### Clean
