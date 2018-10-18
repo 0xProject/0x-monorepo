@@ -1,5 +1,5 @@
-import { ExchangeFillEventArgs } from '@0xproject/contract-wrappers';
-import { BigNumber } from '@0xproject/utils';
+import { ExchangeFillEventArgs } from '@0x/contract-wrappers';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import 'mocha';

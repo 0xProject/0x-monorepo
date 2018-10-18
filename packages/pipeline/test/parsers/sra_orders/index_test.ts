@@ -1,5 +1,5 @@
-import { APIOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { APIOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
