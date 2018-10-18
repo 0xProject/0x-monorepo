@@ -51,14 +51,14 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         );
     }
 
-    private _placeholderAmountToAlwaysShow(): React.ReactNode | undefined {
+    private _placeholderAmountToAlwaysShow(): React.ReactNode | null {
         if (this.props.quoteRequestState === AsyncProcessState.PENDING) {
             return <AmountPlaceholder isPulsating={true} color={placeholderColor} />;
         }
         if (_.isUndefined(this.props.selectedAssetAmount)) {
             return <AmountPlaceholder isPulsating={false} color={placeholderColor} />;
         }
-        return undefined;
+        return null;
     }
 
     private _ethAmount(): React.ReactNode {
