@@ -29,8 +29,7 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
         additionalAssetMetaDataMap: {},
     };
     public store: Store;
-    constructor(props: ZeroExInstantProps) {
-        super(props);
+    private static _createPartialStoreStateFromProps(props: ZeroExInstantProps): Partial<State> {
         // TODO: Provider needs to not be hard-coded to injected web3.
         const assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(getProvider(), props.sraApiUrl);
         const completeAssetMetaDataMap = {
@@ -42,7 +41,11 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
             selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap),
             assetMetaDataMap: completeAssetMetaDataMap,
         };
-        this.store = store.create(storeStateFromProps);
+        return storeStateFromProps;
+    }
+    constructor(props: ZeroExInstantProps) {
+        super(props);
+        this.store = store.create(ZeroExInstant._createPartialStoreStateFromProps(this.props));
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchAndDispatchToStore(this.store);
     }

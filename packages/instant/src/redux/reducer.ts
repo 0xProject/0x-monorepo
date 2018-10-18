@@ -36,7 +36,6 @@ export const INITIAL_STATE: State = {
     quoteState: AsyncProcessState.NONE,
 };
 
-// TODO: Figure out why there is an INITIAL_STATE key in the store...
 export const reducer = (state: State = INITIAL_STATE, action: Action): State => {
     switch (action.type) {
         case ActionTypes.UPDATE_ETH_USD_PRICE:

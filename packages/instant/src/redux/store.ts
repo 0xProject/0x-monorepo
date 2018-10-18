@@ -9,10 +9,9 @@ export type Store = ReduxStore<State>;
 export const store = {
     create: (withState: Partial<State>): Store => {
         const allInitialState = {
-            INITIAL_STATE,
+            ...INITIAL_STATE,
             ...withState,
         };
         return createStore(reducer, allInitialState, devToolsEnhancer({}));
     },
 };
-
