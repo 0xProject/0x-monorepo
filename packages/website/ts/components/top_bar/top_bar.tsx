@@ -85,6 +85,7 @@ const DOC_WEBSITE_PATHS_TO_KEY = {
     [WebsitePaths.ZeroExJs]: Key.ZeroExJs,
     [WebsitePaths.OrderUtils]: Key.OrderUtils,
     [WebsitePaths.OrderWatcher]: Key.OrderWatcher,
+    [WebsitePaths.AssetBuyer]: Key.AssetBuyer,
 };
 
 const DEFAULT_HEIGHT = 68;

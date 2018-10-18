@@ -24,6 +24,10 @@
             {
                 "note": "Make web3-provider-engine types a 'dependency' so it's available to users of the library",
                 "pr": 1105
+            },
+            {
+                "note": "Export new `AssetData` type from types",
+                "pr": 1131
             }
         ]
     },
