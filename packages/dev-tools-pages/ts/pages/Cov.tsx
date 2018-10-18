@@ -9,11 +9,19 @@ import { Tabs, TabBlock } from 'ts/components/Tabs';
 import Code from 'ts/components/Code';
 import InlineCode from 'ts/components/InlineCode';
 import List from 'ts/components/List';
+import Intro from 'ts/components/Intro';
 
 function Cov(props: any) {
     return (
         <Base context={context}>
             <Container>
+                <Intro title="Measure your tests">
+                    <p>
+                        When it comes to writing smart contracts, testing is one of the most important steps of the
+                        process. In order to quantify the robustness of your Solidity testing suite, you need to measure
+                        its code coverage.
+                    </p>
+                </Intro>
                 <Main>
                     <ContentBlock title="Required steps">
                         <List items={['Step 1', 'Step 2']} />
