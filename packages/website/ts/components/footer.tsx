@@ -1,30 +1,16 @@
-import { colors } from '@0xproject/react-shared';
+import { ALink, colors, Link } from '@0xproject/react-shared';
+import { ObjectMap } from '@0xproject/types';
 import * as _ from 'lodash';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, Language, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
-interface MenuItemsBySection {
-    [sectionName: string]: FooterMenuItem[];
-}
-
-interface FooterMenuItem {
-    title: string;
-    path?: string;
-    isExternal?: boolean;
-}
-
 const ICON_DIMENSION = 16;
-
-const linkStyle = {
-    color: colors.white,
-    cursor: 'pointer',
-};
 
 const languageToMenuTitle = {
     [Language.English]: 'English',
@@ -51,76 +37,74 @@ export class Footer extends React.Component<FooterProps, FooterState> {
         };
     }
     public render(): React.ReactNode {
-        const menuItemsBySection: MenuItemsBySection = {
+        const sectionNameToLinks: ObjectMap<ALink[]> = {
             [Key.Documentation]: [
                 {
+                    title: 'Developer Home',
+                    to: WebsitePaths.Docs,
+                },
+                {
                     title: '0x.js',
-                    path: WebsitePaths.ZeroExJs,
+                    to: WebsitePaths.ZeroExJs,
                 },
                 {
                     title: this.props.translate.get(Key.SmartContracts, Deco.Cap),
-                    path: WebsitePaths.SmartContracts,
+                    to: WebsitePaths.SmartContracts,
                 },
                 {
                     title: this.props.translate.get(Key.Connect, Deco.Cap),
-                    path: WebsitePaths.Connect,
+                    to: WebsitePaths.Connect,
                 },
                 {
                     title: this.props.translate.get(Key.Whitepaper, Deco.Cap),
-                    path: WebsitePaths.Whitepaper,
-                    isExternal: true,
+                    to: WebsitePaths.Whitepaper,
+                    shouldOpenInNewTab: true,
                 },
                 {
                     title: this.props.translate.get(Key.Wiki, Deco.Cap),
-                    path: WebsitePaths.Wiki,
-                },
-                {
-                    title: this.props.translate.get(Key.Faq, Deco.Cap),
-                    path: WebsitePaths.FAQ,
+                    to: WebsitePaths.Wiki,
                 },
             ],
             [Key.Community]: [
                 {
                     title: this.props.translate.get(Key.RocketChat, Deco.Cap),
-                    isExternal: true,
-                    path: constants.URL_ZEROEX_CHAT,
+                    to: constants.URL_ZEROEX_CHAT,
+                    shouldOpenInNewTab: true,
                 },
                 {
                     title: this.props.translate.get(Key.Blog, Deco.Cap),
-                    isExternal: true,
-                    path: constants.URL_BLOG,
+                    to: constants.URL_BLOG,
+                    shouldOpenInNewTab: true,
                 },
                 {
                     title: 'Twitter',
-                    isExternal: true,
-                    path: constants.URL_TWITTER,
+                    to: constants.URL_TWITTER,
+                    shouldOpenInNewTab: true,
                 },
                 {
                     title: 'Reddit',
-                    isExternal: true,
-                    path: constants.URL_REDDIT,
+                    to: constants.URL_REDDIT,
+                    shouldOpenInNewTab: true,
                 },
                 {
                     title: this.props.translate.get(Key.Forum, Deco.Cap),
-                    isExternal: true,
-                    path: constants.URL_DISCOURSE_FORUM,
+                    to: constants.URL_DISCOURSE_FORUM,
+                    shouldOpenInNewTab: true,
                 },
             ],
             [Key.Organization]: [
                 {
                     title: this.props.translate.get(Key.About, Deco.Cap),
-                    isExternal: false,
-                    path: WebsitePaths.About,
+                    to: WebsitePaths.About,
                 },
                 {
                     title: this.props.translate.get(Key.Careers, Deco.Cap),
-                    isExternal: false,
-                    path: WebsitePaths.Careers,
+                    to: WebsitePaths.Careers,
                 },
                 {
                     title: this.props.translate.get(Key.Contact, Deco.Cap),
-                    isExternal: true,
-                    path: 'mailto:team@0xproject.com',
+                    to: 'mailto:team@0xproject.com',
+                    shouldOpenInNewTab: true,
                 },
             ],
         };
@@ -160,19 +144,19 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                         <div className="col lg-col-4 md-col-4 col-12">
                             <div className="lg-right md-right sm-center">
                                 {this._renderHeader(Key.Documentation)}
-                                {_.map(menuItemsBySection[Key.Documentation], this._renderMenuItem.bind(this))}
+                                {_.map(sectionNameToLinks[Key.Documentation], this._renderMenuItem.bind(this))}
                             </div>
                         </div>
                         <div className="col lg-col-4 md-col-4 col-12 lg-pr2 md-pr2">
                             <div className="lg-right md-right sm-center">
                                 {this._renderHeader(Key.Community)}
-                                {_.map(menuItemsBySection[Key.Community], this._renderMenuItem.bind(this))}
+                                {_.map(sectionNameToLinks[Key.Community], this._renderMenuItem.bind(this))}
                             </div>
                         </div>
                         <div className="col lg-col-4 md-col-4 col-12">
                             <div className="lg-right md-right sm-center">
                                 {this._renderHeader(Key.Organization)}
-                                {_.map(menuItemsBySection[Key.Organization], this._renderMenuItem.bind(this))}
+                                {_.map(sectionNameToLinks[Key.Organization], this._renderMenuItem.bind(this))}
                             </div>
                         </div>
                     </div>
@@ -187,7 +171,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
             </div>
         );
     }
-    private _renderMenuItem(item: FooterMenuItem): React.ReactNode {
+    private _renderMenuItem(link: ALink): React.ReactNode {
         const titleToIcon: { [title: string]: string } = {
             [this.props.translate.get(Key.RocketChat, Deco.Cap)]: 'rocketchat.png',
             [this.props.translate.get(Key.Blog, Deco.Cap)]: 'medium.png',
@@ -195,30 +179,26 @@ export class Footer extends React.Component<FooterProps, FooterState> {
             Reddit: 'reddit.png',
             [this.props.translate.get(Key.Forum, Deco.Cap)]: 'discourse.png',
         };
-        const iconIfExists = titleToIcon[item.title];
+        const iconIfExists = titleToIcon[link.title];
         return (
-            <div key={item.title} className="sm-center" style={{ fontSize: 13, paddingTop: 25 }}>
-                {item.isExternal ? (
-                    <a className="text-decoration-none" style={linkStyle} target="_blank" href={item.path}>
+            <div key={link.title} className="sm-center" style={{ fontSize: 13, paddingTop: 25 }}>
+                <Link
+                    to={link.to}
+                    shouldOpenInNewTab={link.shouldOpenInNewTab}
+                    fontColor={colors.white}
+                    className="text-decoration-none"
+                >
+                    <div>
                         {!_.isUndefined(iconIfExists) ? (
                             <div className="inline-block">
                                 <div className="pr1 table-cell">{this._renderIcon(iconIfExists)}</div>
-                                <div className="table-cell">{item.title}</div>
+                                <div className="table-cell">{link.title}</div>
                             </div>
                         ) : (
-                            item.title
+                            link.title
                         )}
-                    </a>
-                ) : (
-                    <Link to={item.path} style={linkStyle} className="text-decoration-none">
-                        <div>
-                            {!_.isUndefined(iconIfExists) && (
-                                <div className="pr1">{this._renderIcon(iconIfExists)}</div>
-                            )}
-                            {item.title}
-                        </div>
-                    </Link>
-                )}
+                    </div>
+                </Link>
             </div>
         );
     }

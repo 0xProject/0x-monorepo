@@ -5,7 +5,7 @@ export { DocAgnosticFormat, GeneratedDocJson } from '@0xproject/types';
 export { Badge } from './components/badge';
 export { Comment } from './components/comment';
 export { CustomEnum } from './components/custom_enum';
-export { Documentation } from './components/documentation';
+export { DocReference } from './components/doc_reference';
 export { Enum } from './components/enum';
 export { EventDefinition } from './components/event_definition';
 export { Interface } from './components/interface';

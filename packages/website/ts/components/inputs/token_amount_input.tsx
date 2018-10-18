@@ -1,9 +1,8 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, Link } from '@0xproject/react-shared';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { Blockchain } from 'ts/blockchain';
 import { BalanceBoundedInput } from 'ts/components/inputs/balance_bounded_input';
 import { Token, ValidatedBigNumberCallback, WebsitePaths } from 'ts/types';
@@ -112,7 +111,8 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
                     Insufficient allowance.{' '}
                     <Link
                         to={`${WebsitePaths.Portal}/account`}
-                        style={{ cursor: 'pointer', color: colors.darkestGrey }}
+                        textDecoration="underline"
+                        fontColor={colors.darkestGrey}
                     >
                         Set allowance
                     </Link>

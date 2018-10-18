@@ -1,7 +1,5 @@
-import { Styles } from '@0xproject/react-shared';
+import { Link, Styles } from '@0xproject/react-shared';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
-
 import { Island } from 'ts/components/ui/island';
 import { colors } from 'ts/style/colors';
 
@@ -27,7 +25,7 @@ const styles: Styles = {
 export const BackButton = (props: BackButtonProps) => {
     return (
         <div style={{ height: 65, paddingTop: 25 }}>
-            <Link to={props.to} style={{ textDecoration: 'none' }}>
+            <Link to={props.to}>
                 <Island className="flex right" style={styles.backButton}>
                     <div style={{ marginLeft: 12 }}>
                         <i style={styles.backButtonIcon} className={`zmdi zmdi-arrow-left`} />

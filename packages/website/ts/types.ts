@@ -1,3 +1,4 @@
+import { ALink } from '@0xproject/react-shared';
 import { ObjectMap, SignedOrder } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Provider } from 'ethereum-types';
@@ -461,6 +462,23 @@ export enum Key {
     RocketChat = 'ROCKETCHAT',
     TradeCallToAction = 'TRADE_CALL_TO_ACTION',
     OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
+    BuildARelayer = 'BUILD_A_RELAYER',
+    BuildARelayerDescription = 'BUILD_A_RELAYER_DESCRIPTION',
+    DevelopOnEthereum = 'DEVELOP_ON_ETHEREUM',
+    DevelopOnEthereumDescription = 'DEVELOP_ON_ETHEREUM_DESCRIPTION',
+    OrderBasics = 'ORDER_BASICS',
+    OrderBasicsDescription = 'ORDER_BASICS_DESCRIPTION',
+    UseSharedLiquidity = 'USE_SHARED_LIQUIDITY',
+    UseSharedLiquidityDescription = 'USE_SHARED_LIQUIDITY_DESCRIPTION',
+    ViewAllDocumentation = 'VIEW_ALL_DOCUMENTATION',
+    Sandbox = 'SANDBOX',
+    Github = 'GITHUB',
+    LiveChat = 'LIVE_CHAT',
+    LibrariesAndTools = 'LIBRARIES_AND_TOOLS',
+    LibrariesAndToolsDescription = 'LIBRARIES_AND_TOOLS_DESCRIPTION',
+    More = 'MORE',
+    StartBuildOn0x = 'START_BUILDING_ON_0X',
+    StartBuildOn0xDescription = 'START_BUILDING_ON_0X_DESCRIPTION',
 }
 
 export enum SmartContractDocSections {
@@ -602,5 +620,22 @@ export interface InjectedWeb3 {
     version: {
         getNetwork(cd: (err: Error, networkId: string) => void): void;
     };
+}
+
+export interface TutorialInfo {
+    iconUrl: string;
+    description: string;
+    link: ALink;
+}
+
+export enum Categories {
+    ZeroExProtocol = '0x Protocol',
+    Ethereum = 'Ethereum',
+    CommunityMaintained = 'Community Maintained',
+}
+
+export interface Package {
+    description: string;
+    link: ALink;
 }
 // tslint:disable:max-file-line-count

@@ -6,7 +6,7 @@ import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages, SmartContractDocSections as Sections } from 'ts/types';
+import { DocPackages, ScreenWidths, SmartContractDocSections as Sections } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
@@ -97,6 +97,7 @@ interface ConnectedState {
     docsVersion: string;
     availableDocVersions: string[];
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -108,6 +109,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

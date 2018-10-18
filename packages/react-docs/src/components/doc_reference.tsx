@@ -2,11 +2,11 @@ import {
     colors,
     constants as sharedConstants,
     EtherscanLinkSuffixes,
+    HeaderSizes,
+    Link,
     MarkdownSection,
-    NestedSidebarMenu,
     Networks,
     SectionHeader,
-    Styles,
     utils as sharedUtils,
 } from '@0xproject/react-shared';
 import {
@@ -20,7 +20,6 @@ import {
     TypescriptMethod,
 } from '@0xproject/types';
 import * as _ from 'lodash';
-import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import * as semver from 'semver';
 
@@ -42,142 +41,42 @@ const networkNameToColor: { [network: string]: string } = {
     [Networks.Rinkeby]: colors.darkYellow,
 };
 
-export interface DocumentationProps {
+export interface DocReferenceProps {
     selectedVersion: string;
     availableVersions: string[];
     docsInfo: DocsInfo;
     sourceUrl: string;
-    onVersionSelected: (semver: string) => void;
     docAgnosticFormat?: DocAgnosticFormat;
-    sidebarHeader?: React.ReactNode;
-    topBarHeight?: number;
 }
 
-export interface DocumentationState {
-    isHoveringSidebar: boolean;
-}
+export interface DocReferenceState {}
 
-export class Documentation extends React.Component<DocumentationProps, DocumentationState> {
-    public static defaultProps: Partial<DocumentationProps> = {
-        topBarHeight: 0,
-    };
-    constructor(props: DocumentationProps) {
-        super(props);
-        this.state = {
-            isHoveringSidebar: false,
-        };
-    }
+export class DocReference extends React.Component<DocReferenceProps, DocReferenceState> {
     public componentDidMount(): void {
         window.addEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
     public componentWillUnmount(): void {
         window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
-    public componentDidUpdate(prevProps: DocumentationProps, _prevState: DocumentationState): void {
+    public componentDidUpdate(prevProps: DocReferenceProps, _prevState: DocReferenceState): void {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
             const hash = window.location.hash.slice(1);
             sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
         }
     }
     public render(): React.ReactNode {
-        const styles: Styles = {
-            mainContainers: {
-                position: 'absolute',
-                top: 1,
-                left: 0,
-                bottom: 0,
-                right: 0,
-                overflowX: 'hidden',
-                overflowY: 'scroll',
-                minHeight: `calc(100vh - ${this.props.topBarHeight}px)`,
-                WebkitOverflowScrolling: 'touch',
-            },
-            menuContainer: {
-                borderColor: colors.grey300,
-                maxWidth: 330,
-                marginLeft: 20,
-            },
-        };
-        const menuSubsectionsBySection = this.props.docsInfo.getMenuSubsectionsBySection(this.props.docAgnosticFormat);
-        return (
-            <div>
-                {_.isUndefined(this.props.docAgnosticFormat) ? (
-                    this._renderLoading(styles.mainContainers)
-                ) : (
-                    <div style={{ width: '100%', height: '100%', backgroundColor: colors.gray40 }}>
-                        <div
-                            className="mx-auto max-width-4 flex"
-                            style={{ color: colors.grey800, height: `calc(100vh - ${this.props.topBarHeight}px)` }}
-                        >
-                            <div
-                                className="relative sm-hide xs-hide"
-                                style={{ width: '36%', height: `calc(100vh - ${this.props.topBarHeight}px)` }}
-                            >
-                                <div
-                                    className="border-right absolute"
-                                    style={{
-                                        ...styles.menuContainer,
-                                        ...styles.mainContainers,
-                                        height: `calc(100vh - ${this.props.topBarHeight}px)`,
-                                        overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
-                                    }}
-                                    onMouseEnter={this._onSidebarHover.bind(this)}
-                                    onMouseLeave={this._onSidebarHoverOff.bind(this)}
-                                >
-                                    <NestedSidebarMenu
-                                        selectedVersion={this.props.selectedVersion}
-                                        versions={this.props.availableVersions}
-                                        sidebarHeader={this.props.sidebarHeader}
-                                        topLevelMenu={this.props.docsInfo.menu}
-                                        menuSubsectionsBySection={menuSubsectionsBySection}
-                                        onVersionSelected={this.props.onVersionSelected}
-                                    />
-                                </div>
-                            </div>
-                            <div
-                                className="relative col lg-col-9 md-col-9 sm-col-12 col-12"
-                                style={{ backgroundColor: colors.white }}
-                            >
-                                <div
-                                    id={sharedConstants.SCROLL_CONTAINER_ID}
-                                    style={styles.mainContainers}
-                                    className="absolute px1"
-                                >
-                                    <div id={sharedConstants.SCROLL_TOP_ID} />
-                                    {this._renderDocumentation()}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-        );
-    }
-    private _renderLoading(mainContainersStyles: React.CSSProperties): React.ReactNode {
-        return (
-            <div className="col col-12" style={mainContainersStyles}>
-                <div
-                    className="relative sm-px2 sm-pt2 sm-m1"
-                    style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
-                >
-                    <div className="center pb2">
-                        <CircularProgress size={40} thickness={5} />
-                    </div>
-                    <div className="center pt2" style={{ paddingBottom: 11 }}>
-                        Loading documentation...
-                    </div>
-                </div>
-            </div>
-        );
-    }
-    private _renderDocumentation(): React.ReactNode {
-        const subMenus = _.values(this.props.docsInfo.menu);
+        const subMenus = _.values(this.props.docsInfo.markdownMenu);
         const orderedSectionNames = _.flatten(subMenus);
 
         const typeDefinitionByName = this.props.docsInfo.getTypeDefinitionsByName(this.props.docAgnosticFormat);
         const renderedSections = _.map(orderedSectionNames, this._renderSection.bind(this, typeDefinitionByName));
 
-        return renderedSections;
+        return (
+            <div>
+                <div id={sharedConstants.SCROLL_TOP_ID} />
+                {renderedSections}
+            </div>
+        );
     }
     private _renderSection(typeDefinitionByName: TypeDefinitionByName, sectionName: string): React.ReactNode {
         const markdownVersions = _.keys(this.props.docsInfo.sectionNameToMarkdownByVersion);
@@ -195,11 +94,16 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
         const closestVersion = sortedEligibleVersions[0];
         const markdownFileIfExists = this.props.docsInfo.sectionNameToMarkdownByVersion[closestVersion][sectionName];
         if (!_.isUndefined(markdownFileIfExists)) {
+            // Special-case replace the `introduction` sectionName with the package name
+            const isIntroductionSection = sectionName === 'introduction';
+            const headerSize = isIntroductionSection ? HeaderSizes.H1 : HeaderSizes.H3;
             return (
                 <MarkdownSection
                     key={`markdown-section-${sectionName}`}
                     sectionName={sectionName}
+                    headerSize={headerSize}
                     markdownContent={markdownFileIfExists}
+                    alternativeSectionTitle={isIntroductionSection ? this.props.docsInfo.displayName : undefined}
                 />
             );
         }
@@ -290,7 +194,9 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 )}
                 {!_.isEmpty(docSection.functions) && (
                     <div>
-                        {!isExportedFunctionSection && <h2 style={headerStyle}>Functions</h2>}
+                        {!isExportedFunctionSection && (
+                            <div style={{ ...headerStyle, fontSize: '1.5em' }}>Functions</div>
+                        )}
                         <div>{functionDefs}</div>
                     </div>
                 )}
@@ -309,6 +215,15 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                             <div>{typeDefs}</div>
                         </div>
                     )}
+                <div
+                    style={{
+                        width: '100%',
+                        height: 1,
+                        backgroundColor: colors.grey300,
+                        marginTop: 32,
+                        marginBottom: 12,
+                    }}
+                />
             </div>
         );
     }
@@ -318,9 +233,9 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 <div className="pt2" key={`external-export-${exportName}`}>
                     <code className={`hljs ${constants.TYPE_TO_SYNTAX[this.props.docsInfo.type]}`}>
                         {`import { `}
-                        <a href={link} target="_blank" style={{ color: colors.lightBlueA700, textDecoration: 'none' }}>
+                        <Link to={link} shouldOpenInNewTab={true} fontColor={colors.lightBlueA700}>
                             {exportName}
-                        </a>
+                        </Link>
                         {` } from '${this.props.docsInfo.packageName}'`}
                     </code>
                 </div>
@@ -349,14 +264,16 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                     EtherscanLinkSuffixes.Address,
                 );
                 return (
-                    <a
-                        key={`badge-${networkName}-${sectionName}`}
-                        href={linkIfExists}
-                        target="_blank"
-                        style={{ color: colors.white, textDecoration: 'none', marginTop: 8 }}
-                    >
-                        <Badge title={networkName} backgroundColor={networkNameToColor[networkName]} />
-                    </a>
+                    <div style={{ marginTop: 8 }}>
+                        <Link
+                            key={`badge-${networkName}-${sectionName}`}
+                            to={linkIfExists}
+                            shouldOpenInNewTab={true}
+                            fontColor={colors.white}
+                        >
+                            <Badge title={networkName} backgroundColor={networkNameToColor[networkName]} />
+                        </Link>
+                    </div>
                 );
             },
         );
@@ -405,16 +322,6 @@ export class Documentation extends React.Component<DocumentationProps, Documenta
                 sourceUrl={this.props.sourceUrl}
             />
         );
-    }
-    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
-        this.setState({
-            isHoveringSidebar: true,
-        });
-    }
-    private _onSidebarHoverOff(): void {
-        this.setState({
-            isHoveringSidebar: false,
-        });
     }
     private _onHashChanged(_event: any): void {
         const hash = window.location.hash.slice(1);
