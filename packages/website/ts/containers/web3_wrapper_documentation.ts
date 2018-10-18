@@ -9,8 +9,9 @@ import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/web3_wrapper/introduction');
-const InstallationMarkdownV1 = require('md/docs/web3_wrapper/installation');
+const IntroMarkdown1 = require('md/docs/web3_wrapper/1/introduction');
+const InstallationMarkdown1 = require('md/docs/web3_wrapper/1/installation');
+const InstallationMarkdown2 = require('md/docs/web3_wrapper/2/installation');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -29,8 +30,12 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [markdownSections.introduction]: IntroMarkdownV1,
-            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+        },
+        '3.1.0': {
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown2,
         },
     },
     markdownSections,

@@ -9,9 +9,11 @@ import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/sol-compiler/introduction');
-const InstallationMarkdownV1 = require('md/docs/sol-compiler/installation');
-const UsageMarkdown = require('md/docs/sol-compiler/usage');
+const IntroMarkdown1 = require('md/docs/sol-compiler/1/introduction');
+const InstallationMarkdown1 = require('md/docs/sol-compiler/1/installation');
+const InstallationMarkdown2 = require('md/docs/sol-compiler/2/installation');
+const UsageMarkdown1 = require('md/docs/sol-compiler/1/usage');
+const UsageMarkdown2 = require('md/docs/sol-compiler/2/usage');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -31,9 +33,14 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [markdownSections.introduction]: IntroMarkdownV1,
-            [markdownSections.installation]: InstallationMarkdownV1,
-            [markdownSections.usage]: UsageMarkdown,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+            [markdownSections.usage]: UsageMarkdown1,
+        },
+        '1.1.8': {
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown2,
+            [markdownSections.usage]: UsageMarkdown2,
         },
     },
     markdownSections,

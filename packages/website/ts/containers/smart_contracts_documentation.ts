@@ -10,8 +10,8 @@ import { DocPackages, ScreenWidths, SmartContractDocSections as Sections } from 
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/smart_contracts/1.0.0/introduction');
-const IntroMarkdownV2 = require('md/docs/smart_contracts/2.0.0/introduction');
+const IntroMarkdown1 = require('md/docs/smart_contracts/1/introduction');
+const IntroMarkdown2 = require('md/docs/smart_contracts/2/introduction');
 /* tslint:enable:no-var-requires */
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -25,10 +25,10 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [Sections.Introduction]: IntroMarkdownV1,
+            [Sections.Introduction]: IntroMarkdown1,
         },
         '2.0.0': {
-            [Sections.Introduction]: IntroMarkdownV2,
+            [Sections.Introduction]: IntroMarkdown2,
         },
     },
     markdownSections: {

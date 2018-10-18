@@ -9,9 +9,10 @@ import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/connect/1.0.0/introduction');
-const IntroMarkdownV2 = require('md/docs/connect/2.0.0/introduction');
-const InstallationMarkdownV1 = require('md/docs/connect/1.0.0/installation');
+const IntroMarkdown1 = require('md/docs/connect/1/introduction');
+const IntroMarkdown2 = require('md/docs/connect/2/introduction');
+const InstallationMarkdown1 = require('md/docs/connect/1/installation');
+const InstallationMarkdown3 = require('md/docs/connect/3/installation');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -30,12 +31,16 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [markdownSections.introduction]: IntroMarkdownV1,
-            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
         },
         '2.0.0-rc.1': {
-            [markdownSections.introduction]: IntroMarkdownV2,
-            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown2,
+            [markdownSections.installation]: InstallationMarkdown1,
+        },
+        '3.0.2': {
+            [markdownSections.introduction]: IntroMarkdown2,
+            [markdownSections.installation]: InstallationMarkdown3,
         },
     },
     markdownSections,

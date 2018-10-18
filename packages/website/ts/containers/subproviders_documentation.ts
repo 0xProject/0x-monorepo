@@ -9,9 +9,10 @@ import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/subproviders/introduction');
-const InstallationMarkdownV1 = require('md/docs/subproviders/installation');
-const LedgerNodeHidMarkdown = require('md/docs/subproviders/ledger_node_hid');
+const IntroMarkdown1 = require('md/docs/subproviders/1/introduction');
+const InstallationMarkdown1 = require('md/docs/subproviders/1/installation');
+const InstallationMarkdown2 = require('md/docs/subproviders/2/installation');
+const LedgerNodeHidMarkdown1 = require('md/docs/subproviders/1/ledger_node_hid');
 /* tslint:enable:no-var-requires */
 
 const docSections = {
@@ -31,9 +32,14 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
-            [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown,
+            [docSections.introduction]: IntroMarkdown1,
+            [docSections.installation]: InstallationMarkdown1,
+            [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown1,
+        },
+        '2.1.0': {
+            [docSections.introduction]: IntroMarkdown1,
+            [docSections.installation]: InstallationMarkdown2,
+            [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown1,
         },
     },
     markdownSections: docSections,
