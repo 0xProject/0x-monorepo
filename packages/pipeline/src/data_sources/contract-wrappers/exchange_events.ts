@@ -1,6 +1,6 @@
-import { ContractWrappers, ExchangeEvents, ExchangeFillEventArgs, ExchangeWrapper } from '@0xproject/contract-wrappers';
-import { Web3ProviderEngine } from '@0xproject/subproviders';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ContractWrappers, ExchangeEvents, ExchangeFillEventArgs, ExchangeWrapper } from '@0x/contract-wrappers';
+import { Web3ProviderEngine } from '@0x/subproviders';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 const BLOCK_FINALITY_THRESHOLD = 10; // When to consider blocks as final. Used to compute default toBlock.
