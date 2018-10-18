@@ -57,4 +57,3 @@ In order to migrate the V2 0x smart contracts to TestRPC/Ganache running at `htt
 ```bash
 yarn migrate:v2
 ```
-
