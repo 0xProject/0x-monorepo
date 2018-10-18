@@ -1,4 +1,4 @@
-import { ALink } from '@0x/react-shared';
+import { ALink, utils as sharedUtils } from '@0x/react-shared';
 import { DocAgnosticFormat, ObjectMap, TypeDefinitionByName } from '@0x/types';
 import * as _ from 'lodash';
 
