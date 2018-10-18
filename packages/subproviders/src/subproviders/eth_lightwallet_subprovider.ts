@@ -1,4 +1,4 @@
-import { EIP712TypedData } from '@0xproject/types';
+import { EIP712TypedData } from '@0x/types';
 import * as lightwallet from 'eth-lightwallet';
 
 import { PartialTxParams } from '../types';

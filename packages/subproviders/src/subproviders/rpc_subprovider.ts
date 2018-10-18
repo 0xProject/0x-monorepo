@@ -1,6 +1,6 @@
-import { assert } from '@0xproject/assert';
-import { StatusCodes } from '@0xproject/types';
-import { fetchAsync } from '@0xproject/utils';
+import { assert } from '@0x/assert';
+import { StatusCodes } from '@0x/types';
+import { fetchAsync } from '@0x/utils';
 import { JSONRPCRequestPayload } from 'ethereum-types';
 import JsonRpcError = require('json-rpc-error');
 

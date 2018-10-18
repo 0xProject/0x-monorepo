@@ -1,5 +1,5 @@
 {
-    "name": "@0xproject/typescript-typings",
+    "name": "@0x/typescript-typings",
     "version": "3.0.2",
     "engines": {
         "node": ">=6.12"

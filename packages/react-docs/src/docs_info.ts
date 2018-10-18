@@ -1,5 +1,5 @@
-import { ALink, utils as sharedUtils } from '@0xproject/react-shared';
-import { DocAgnosticFormat, ObjectMap, TypeDefinitionByName } from '@0xproject/types';
+import { MenuSubsectionsBySection } from '@0x/react-shared';
+import { DocAgnosticFormat, TypeDefinitionByName } from '@0x/types';
 import * as _ from 'lodash';
 
 import {

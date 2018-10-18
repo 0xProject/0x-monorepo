@@ -1,4 +1,4 @@
-import { promisify } from '@0xproject/utils';
+import { promisify } from '@0x/utils';
 import { stripHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';
 import { Collector } from 'istanbul';

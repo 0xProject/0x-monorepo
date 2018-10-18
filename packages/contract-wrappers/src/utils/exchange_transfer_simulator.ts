@@ -1,5 +1,5 @@
-import { ExchangeContractErrs } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { ExchangeContractErrs } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 import { AbstractBalanceAndProxyAllowanceLazyStore } from '../abstract/abstract_balance_and_proxy_allowance_lazy_store';
 import { TradeSide, TransferType } from '../types';

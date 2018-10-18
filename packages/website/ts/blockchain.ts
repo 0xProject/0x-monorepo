@@ -8,9 +8,9 @@ import {
     ExchangeEvents,
     ExchangeFillEventArgs,
     IndexedFilterValues,
-} from '@0xproject/contract-wrappers';
-import { assetDataUtils, orderHashUtils, signatureUtils } from '@0xproject/order-utils';
-import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
+} from '@0x/contract-wrappers';
+import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0x/react-shared';
 import {
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
@@ -19,10 +19,10 @@ import {
     RPCSubprovider,
     SignerSubprovider,
     Web3ProviderEngine,
-} from '@0xproject/subproviders';
-import { SignedOrder, Token as ZeroExToken } from '@0xproject/types';
-import { BigNumber, intervalUtils, logUtils, promisify } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+} from '@0x/subproviders';
+import { SignedOrder, Token as ZeroExToken } from '@0x/types';
+import { BigNumber, intervalUtils, logUtils, promisify } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { BlockParam, LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as moment from 'moment';

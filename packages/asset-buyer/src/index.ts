@@ -5,8 +5,8 @@ export {
     JSONRPCErrorCallback,
     Provider,
 } from 'ethereum-types';
-export { SignedOrder } from '@0xproject/types';
-export { BigNumber } from '@0xproject/utils';
+export { SignedOrder } from '@0x/types';
+export { BigNumber } from '@0x/utils';
 
 export { AssetBuyer } from './asset_buyer';
 export { BasicOrderProvider } from './order_providers/basic_order_provider';

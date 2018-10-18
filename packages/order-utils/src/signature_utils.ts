@@ -1,8 +1,8 @@
-import { ExchangeContract, IValidatorContract, IWalletContract } from '@0xproject/abi-gen-wrappers';
-import * as artifacts from '@0xproject/contract-artifacts';
-import { schemas } from '@0xproject/json-schemas';
-import { ECSignature, Order, SignatureType, SignedOrder, ValidatorSignature } from '@0xproject/types';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ExchangeContract, IValidatorContract, IWalletContract } from '@0x/abi-gen-wrappers';
+import * as artifacts from '@0x/contract-artifacts';
+import { schemas } from '@0x/json-schemas';
+import { ECSignature, Order, SignatureType, SignedOrder, ValidatorSignature } from '@0x/types';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';

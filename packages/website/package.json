@@ -1,5 +1,5 @@
 {
-    "name": "@0xproject/website",
+    "name": "@0x/website",
     "version": "0.0.54",
     "engines": {
         "node": ">=6.12"
@@ -20,16 +20,16 @@
     "license": "Apache-2.0",
     "dependencies": {
         "0x.js": "^0.38.6",
-        "@0xproject/contract-wrappers": "^2.0.2",
-        "@0xproject/json-schemas": "^1.0.7",
-        "@0xproject/order-utils": "^1.0.7",
-        "@0xproject/react-docs": "^1.0.13",
-        "@0xproject/react-shared": "^1.0.15",
-        "@0xproject/subproviders": "^2.0.7",
-        "@0xproject/types": "^1.1.4",
-        "@0xproject/typescript-typings": "^3.0.2",
-        "@0xproject/utils": "^2.0.2",
-        "@0xproject/web3-wrapper": "^3.0.3",
+        "@0x/contract-wrappers": "^2.0.2",
+        "@0x/json-schemas": "^1.0.7",
+        "@0x/order-utils": "^1.0.7",
+        "@0x/react-docs": "^1.0.13",
+        "@0x/react-shared": "^1.0.15",
+        "@0x/subproviders": "^2.0.7",
+        "@0x/types": "^1.1.4",
+        "@0x/typescript-typings": "^3.0.2",
+        "@0x/utils": "^2.0.2",
+        "@0x/web3-wrapper": "^3.0.3",
         "accounting": "^0.4.1",
         "basscss": "^8.0.3",
         "blockies": "^0.0.2",

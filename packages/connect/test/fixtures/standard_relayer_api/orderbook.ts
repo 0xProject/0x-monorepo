@@ -1,6 +1,6 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 
-import { OrderbookResponse } from '@0xproject/types';
+import { OrderbookResponse } from '@0x/types';
 
 export const orderbookResponse: OrderbookResponse = {
     bids: {

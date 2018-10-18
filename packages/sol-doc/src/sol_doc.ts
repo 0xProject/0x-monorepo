@@ -14,7 +14,7 @@ import {
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { Compiler, CompilerOptions } from '@0xproject/sol-compiler';
+import { Compiler, CompilerOptions } from '@0x/sol-compiler';
 import {
     CustomType,
     CustomTypeChild,
@@ -27,7 +27,7 @@ import {
     SolidityMethod,
     Type,
     TypeDocTypes,
-} from '@0xproject/types';
+} from '@0x/types';
 
 export class SolDoc {
     private _customTypeHashToName: ObjectMap<string> | undefined;

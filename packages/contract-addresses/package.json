@@ -1,5 +1,5 @@
 {
-    "name": "@0xproject/contract-addresses",
+    "name": "@0x/contract-addresses",
     "version": "1.0.0",
     "engines": {
         "node": ">=6.12"

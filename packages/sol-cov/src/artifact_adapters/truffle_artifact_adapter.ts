@@ -1,4 +1,4 @@
-import { Compiler, CompilerOptions } from '@0xproject/sol-compiler';
+import { Compiler, CompilerOptions } from '@0x/sol-compiler';
 import * as fs from 'fs';
 import * as glob from 'glob';
 import * as path from 'path';

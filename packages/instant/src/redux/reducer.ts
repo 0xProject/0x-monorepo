@@ -1,5 +1,5 @@
-import { BuyQuote } from '@0xproject/asset-buyer';
-import { BigNumber } from '@0xproject/utils';
+import { BuyQuote } from '@0x/asset-buyer';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { zrxAssetData } from '../constants';

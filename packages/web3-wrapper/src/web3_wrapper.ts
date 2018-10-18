@@ -1,6 +1,6 @@
-import { assert } from '@0xproject/assert';
-import { schemas } from '@0xproject/json-schemas';
-import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0xproject/utils';
+import { assert } from '@0x/assert';
+import { schemas } from '@0x/json-schemas';
+import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0x/utils';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -145,7 +145,7 @@ export class Web3Wrapper {
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
-            // We re-assign the send method so that Web3@1.0 providers work with @0xproject/web3-wrapper
+            // We re-assign the send method so that Web3@1.0 providers work with @0x/web3-wrapper
             (provider as any).sendAsync = (provider as any).send;
         }
         this.abiDecoder = new AbiDecoder([]);

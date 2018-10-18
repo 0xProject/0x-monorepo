@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';

@@ -5,10 +5,10 @@ import {
     orderHashUtils,
     OrderStateUtils,
     OrderValidationUtils,
-} from '@0xproject/order-utils';
-import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0xproject/types';
-import { BigNumber, errorUtils, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+} from '@0x/order-utils';
+import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0x/types';
+import { BigNumber, errorUtils, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';

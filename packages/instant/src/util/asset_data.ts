@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { AssetProxyId } from '@0xproject/types';
+import { AssetProxyId } from '@0x/types';
 
 import { assetMetaData } from '../data/asset_meta_data';
 

@@ -1,7 +1,7 @@
 // tslint:disable:no-unnecessary-type-assertion
-import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { AssetProxyId, ERC20AssetData, ERC721AssetData, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { AssetProxyId, ERC20AssetData, ERC721AssetData, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 export interface OrderHashesByMakerAddress {

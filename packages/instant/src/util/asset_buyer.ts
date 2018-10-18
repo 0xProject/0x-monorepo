@@ -1,4 +1,4 @@
-import { AssetBuyer } from '@0xproject/asset-buyer';
+import { AssetBuyer } from '@0x/asset-buyer';
 
 import { sraApiUrl } from '../constants';
 

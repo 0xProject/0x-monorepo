@@ -1,7 +1,7 @@
 export { Web3Wrapper } from './web3_wrapper';
 export { marshaller } from './marshaller';
 
-export { AbiDecoder } from '@0xproject/utils';
+export { AbiDecoder } from '@0x/utils';
 
 export {
     BlockParam,

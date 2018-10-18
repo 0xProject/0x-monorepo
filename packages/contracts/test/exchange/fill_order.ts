@@ -1,4 +1,4 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
 import * as _ from 'lodash';
 
 import { chaiSetup } from '../utils/chai_setup';

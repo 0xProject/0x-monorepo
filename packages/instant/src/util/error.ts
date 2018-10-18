@@ -1,4 +1,4 @@
-import { AssetBuyerError } from '@0xproject/asset-buyer';
+import { AssetBuyerError } from '@0x/asset-buyer';
 import { Dispatch } from 'redux';
 
 import { Action, actions } from '../redux/actions';

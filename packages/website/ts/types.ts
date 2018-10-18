@@ -1,6 +1,6 @@
-import { ALink } from '@0xproject/react-shared';
-import { ObjectMap, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { ALink } from '@0x/react-shared';
+import { ObjectMap, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import { Provider } from 'ethereum-types';
 import * as React from 'react';
 

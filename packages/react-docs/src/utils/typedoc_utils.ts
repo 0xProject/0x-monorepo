@@ -16,8 +16,8 @@ import {
     TypeParameter,
     TypescriptFunction,
     TypescriptMethod,
-} from '@0xproject/types';
-import { errorUtils } from '@0xproject/utils';
+} from '@0x/types';
+import { errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { DocsInfo } from '../docs_info';

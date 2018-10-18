@@ -1,8 +1,8 @@
-import { WETH9Contract, WETH9EventArgs, WETH9Events } from '@0xproject/abi-gen-wrappers';
-import { WETH9 } from '@0xproject/contract-artifacts';
-import { schemas } from '@0xproject/json-schemas';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { WETH9Contract, WETH9EventArgs, WETH9Events } from '@0x/abi-gen-wrappers';
+import { WETH9 } from '@0x/contract-artifacts';
+import { schemas } from '@0x/json-schemas';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 

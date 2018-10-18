@@ -1,5 +1,5 @@
-import { ALink } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { ALink } from '@0x/react-shared';
+import { BigNumber } from '@0x/utils';
 import { Key, WebsitePaths } from 'ts/types';
 
 const URL_FORUM = 'https://forum.0xproject.com';

@@ -55,7 +55,7 @@ export {
     EIP712TypedData,
     EIP712Types,
     EIP712Parameter,
-} from '@0xproject/types';
+} from '@0x/types';
 
 export {
     JSONRPCRequestPayload,

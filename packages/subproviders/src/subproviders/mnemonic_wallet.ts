@@ -1,6 +1,6 @@
-import { assert } from '@0xproject/assert';
-import { EIP712TypedData } from '@0xproject/types';
-import { addressUtils } from '@0xproject/utils';
+import { assert } from '@0x/assert';
+import { EIP712TypedData } from '@0x/types';
+import { addressUtils } from '@0x/utils';
 import * as bip39 from 'bip39';
 import HDNode = require('hdkey');
 import * as _ from 'lodash';

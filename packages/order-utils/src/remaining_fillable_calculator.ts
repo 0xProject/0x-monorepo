@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 
 export class RemainingFillableCalculator {
     private readonly _isTraderAssetZRX: boolean;
