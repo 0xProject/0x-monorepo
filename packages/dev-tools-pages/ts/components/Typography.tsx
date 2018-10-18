@@ -10,8 +10,12 @@ const Beta = styled.h3`
     line-height: 1.65;
 `;
 
+const Gamma = styled.h4`
+    font-size: 1rem;
+`;
+
 const Small = styled.p`
     font-size: 0.875rem;
 `;
 
-export { Alpha, Beta, Small };
+export { Alpha, Beta, Gamma, Small };

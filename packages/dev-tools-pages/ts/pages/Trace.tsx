@@ -9,10 +9,12 @@ import { Tabs, TabBlock } from 'ts/components/Tabs';
 import Code from 'ts/components/Code';
 import InlineCode from 'ts/components/InlineCode';
 import List from 'ts/components/List';
+import TraceComponent from 'ts/components/Trace';
 
 function Trace(props: any) {
     return (
         <Base context={context}>
+            <TraceComponent />
             <Container>
                 <Main>
                     <ContentBlock title="Required steps">
