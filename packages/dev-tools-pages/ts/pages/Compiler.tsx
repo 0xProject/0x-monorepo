@@ -9,11 +9,13 @@ import { Tabs, TabBlock } from 'ts/components/Tabs';
 import Code from 'ts/components/Code';
 import InlineCode from 'ts/components/InlineCode';
 import List from 'ts/components/List';
+import CompilerComponent from 'ts/components/Compiler';
 
 function Compiler(props: any) {
     return (
         <Base context={context}>
             <Container>
+                <CompilerComponent />
                 <Main>
                     <ContentBlock title="Required steps">
                         <List items={['Step 1', 'Step 2']} />
