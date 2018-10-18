@@ -9,8 +9,10 @@ import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/order_watcher/introduction');
-const InstallationMarkdown = require('md/docs/order_watcher/installation');
+const IntroMarkdown1 = require('md/docs/order_watcher/1/introduction');
+const InstallationMarkdown1 = require('md/docs/order_watcher/1/installation');
+const IntroMarkdown2 = require('md/docs/order_watcher/2/introduction');
+const InstallationMarkdown2 = require('md/docs/order_watcher/2/installation');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -29,8 +31,12 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [markdownSections.introduction]: IntroMarkdown,
-            [markdownSections.installation]: InstallationMarkdown,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+        },
+        '2.2.0': {
+            [markdownSections.introduction]: IntroMarkdown2,
+            [markdownSections.installation]: InstallationMarkdown2,
         },
     },
     markdownSections,

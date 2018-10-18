@@ -9,11 +9,14 @@ import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/json_schemas/1.0.0/introduction');
-const InstallationMarkdownV1 = require('md/docs/json_schemas/1.0.0/installation');
-const UsageMarkdownV1 = require('md/docs/json_schemas/1.0.0/usage');
-const SchemasMarkdownV1 = require('md/docs/json_schemas/1.0.0/schemas');
-const SchemasMarkdownV2 = require('md/docs/json_schemas/2.0.0/schemas');
+const IntroMarkdown1 = require('md/docs/json_schemas/1/introduction');
+const IntroMarkdown3 = require('md/docs/json_schemas/3/introduction');
+const InstallationMarkdown1 = require('md/docs/json_schemas/1/installation');
+const InstallationMarkdown3 = require('md/docs/json_schemas/3/installation');
+const usageMarkdown1 = require('md/docs/json_schemas/1/usage');
+const usageMarkdown3 = require('md/docs/json_schemas/3/usage');
+const SchemasMarkdownV1 = require('md/docs/json_schemas/1/schemas');
+const SchemasMarkdownV2 = require('md/docs/json_schemas/2/schemas');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -35,16 +38,22 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [markdownSections.introduction]: IntroMarkdownV1,
-            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
             [markdownSections.schemas]: SchemasMarkdownV1,
-            [markdownSections.usage]: UsageMarkdownV1,
+            [markdownSections.usage]: usageMarkdown1,
         },
         '1.0.0': {
-            [markdownSections.introduction]: IntroMarkdownV1,
-            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
             [markdownSections.schemas]: SchemasMarkdownV2,
-            [markdownSections.usage]: UsageMarkdownV1,
+            [markdownSections.usage]: usageMarkdown1,
+        },
+        '2.0.0': {
+            [markdownSections.introduction]: IntroMarkdown3,
+            [markdownSections.installation]: InstallationMarkdown3,
+            [markdownSections.schemas]: SchemasMarkdownV2,
+            [markdownSections.usage]: usageMarkdown3,
         },
     },
     markdownSections,

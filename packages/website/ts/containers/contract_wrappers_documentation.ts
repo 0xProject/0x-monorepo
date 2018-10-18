@@ -9,8 +9,9 @@ import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdown = require('md/docs/contract_wrappers/introduction');
-const InstallMarkdown = require('md/docs/contract_wrappers/installation');
+const IntroMarkdown1 = require('md/docs/contract_wrappers/1/introduction');
+const InstallMarkdownV1 = require('md/docs/contract_wrappers/1/installation');
+const InstallMarkdownV2 = require('md/docs/contract_wrappers/2/installation');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -29,8 +30,12 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [markdownSections.introduction]: IntroMarkdown,
-            [markdownSections.installation]: InstallMarkdown,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallMarkdownV1,
+        },
+        '3.0.0': {
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallMarkdownV2,
         },
     },
     markdownSections,

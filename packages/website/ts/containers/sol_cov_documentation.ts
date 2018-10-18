@@ -9,9 +9,12 @@ import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/sol_cov/introduction');
-const InstallationMarkdownV1 = require('md/docs/sol_cov/installation');
-const UsageMarkdown = require('md/docs/sol_cov/usage');
+const IntroMarkdown1 = require('md/docs/sol_cov/1/introduction');
+const InstallationMarkdown1 = require('md/docs/sol_cov/1/installation');
+const UsageMarkdown1 = require('md/docs/sol_cov/1/usage');
+const IntroMarkdown2 = require('md/docs/sol_cov/2/introduction');
+const InstallationMarkdown2 = require('md/docs/sol_cov/2/installation');
+const UsageMarkdown2 = require('md/docs/sol_cov/2/usage');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -31,9 +34,14 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [markdownSections.introduction]: IntroMarkdownV1,
-            [markdownSections.installation]: InstallationMarkdownV1,
-            [markdownSections.usage]: UsageMarkdown,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+            [markdownSections.usage]: UsageMarkdown1,
+        },
+        '2.1.8': {
+            [markdownSections.introduction]: IntroMarkdown2,
+            [markdownSections.installation]: InstallationMarkdown2,
+            [markdownSections.usage]: UsageMarkdown2,
         },
     },
     markdownSections,
