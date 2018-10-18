@@ -1,6 +1,16 @@
 import * as _ from 'lodash';
 import { createStore, Store as ReduxStore } from 'redux';
 
-import { reducer, State } from './reducer';
+import { INITIAL_STATE, reducer, State } from './reducer';
 
-export const store: ReduxStore<State> = createStore(reducer);
+export type Store = ReduxStore<State>;
+
+export const store = {
+    create: (withState: Partial<State>): Store => {
+        const allInitialState = {
+            INITIAL_STATE,
+            ...withState,
+        };
+        return createStore(reducer, allInitialState);
+    },
+};

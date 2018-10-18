@@ -25,6 +25,7 @@ export enum ActionTypes {
     UPDATE_SELECTED_ASSET_AMOUNT = 'UPDATE_SELECTED_ASSET_AMOUNT',
     UPDATE_SELECTED_ASSET_BUY_STATE = 'UPDATE_SELECTED_ASSET_BUY_STATE',
     UPDATE_LATEST_BUY_QUOTE = 'UPDATE_LATEST_BUY_QUOTE',
+    UPDATE_SELECTED_ASSET = 'UPDATE_SELECTED_ASSET',
 }
 
 export const actions = {
@@ -33,4 +34,5 @@ export const actions = {
     updateSelectedAssetBuyState: (buyState: AsyncProcessState) =>
         createAction(ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE, buyState),
     updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UPDATE_LATEST_BUY_QUOTE, buyQuote),
+    updateSelectedAsset: (assetData?: string) => createAction(ActionTypes.UPDATE_SELECTED_ASSET, assetData),
 };

@@ -1,10 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { ZeroExInstant } from './index';
+import { ZeroExInstant, ZeroExInstantProps } from './index';
 
-export interface ZeroExInstantOptions {}
-
-export const render = (props: ZeroExInstantOptions, selector: string = '#zeroExInstantContainer') => {
+export const render = (props: ZeroExInstantProps, selector: string = '#zeroExInstantContainer') => {
     ReactDOM.render(React.createElement(ZeroExInstant, props), document.querySelector(selector));
 };
