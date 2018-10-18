@@ -15,7 +15,6 @@ export interface OrderDetailsProps {
     ethUsdPrice?: BigNumber;
     isLoading: boolean;
 }
-
 export class OrderDetails extends React.Component<OrderDetailsProps> {
     public render(): React.ReactNode {
         const { buyQuoteInfo, ethUsdPrice } = this.props;
@@ -70,51 +69,48 @@ export interface EthAmountRowProps {
     isLoading: boolean;
 }
 
-export const EthAmountRow: React.StatelessComponent<EthAmountRowProps> = ({
-    rowLabel,
-    ethAmount,
-    isEthAmountInBaseUnits,
-    ethUsdPrice,
-    shouldEmphasize,
-    isLoading,
-}) => {
-    // TODO: put in private function
-    const usdFormatter = isEthAmountInBaseUnits ? format.ethBaseAmountInUsd : format.ethUnitAmountInUsd;
-    const shouldHideUsdPriceSection = _.isUndefined(ethUsdPrice) || _.isUndefined(ethAmount);
-    const usdPriceSection = shouldHideUsdPriceSection ? null : (
-        <Container marginRight="3px" display="inline-block">
-            <Text fontColor={ColorOption.lightGrey}>({usdFormatter(ethAmount, ethUsdPrice)})</Text>
-        </Container>
-    );
+export class EthAmountRow extends React.Component<EthAmountRowProps> {
+    public static defaultProps = {
+        shouldEmphasize: false,
+        isEthAmountInBaseUnits: true,
+    };
+    public static displayName = 'EthAmountRow';
+    public render(): React.ReactNode {
+        const { rowLabel, ethAmount, isEthAmountInBaseUnits, shouldEmphasize, isLoading } = this.props;
 
-    const fontWeight = shouldEmphasize ? 700 : 400;
-    const ethFormatter = isEthAmountInBaseUnits ? format.ethBaseAmount : format.ethUnitAmount;
-    return (
-        <Container padding="10px 0px" borderTop="1px dashed" borderColor={ColorOption.feintGrey}>
-            <Flex justify="space-between">
-                <Text fontWeight={fontWeight} fontColor={ColorOption.grey}>
-                    {rowLabel}
-                </Text>
-                <Container>
-                    {usdPriceSection}
+        const fontWeight = shouldEmphasize ? 700 : 400;
+        const ethFormatter = isEthAmountInBaseUnits ? format.ethBaseAmount : format.ethUnitAmount;
+        return (
+            <Container padding="10px 0px" borderTop="1px dashed" borderColor={ColorOption.feintGrey}>
+                <Flex justify="space-between">
                     <Text fontWeight={fontWeight} fontColor={ColorOption.grey}>
-                        {ethFormatter(
-                            ethAmount,
-                            4,
-                            <Container opacity={0.5}>
-                                <AmountPlaceholder color={ColorOption.lightGrey} pulsating={isLoading} />
-                            </Container>,
-                        )}
+                        {rowLabel}
                     </Text>
-                </Container>
-            </Flex>
-        </Container>
-    );
-};
-
-EthAmountRow.defaultProps = {
-    shouldEmphasize: false,
-    isEthAmountInBaseUnits: true,
-};
-
-EthAmountRow.displayName = 'EthAmountRow';
+                    <Container>
+                        {this._usdSection()}
+                        <Text fontWeight={fontWeight} fontColor={ColorOption.grey}>
+                            {ethFormatter(
+                                ethAmount,
+                                4,
+                                <Container opacity={0.5}>
+                                    <AmountPlaceholder color={ColorOption.lightGrey} pulsating={isLoading} />
+                                </Container>,
+                            )}
+                        </Text>
+                    </Container>
+                </Flex>
+            </Container>
+        );
+    }
+    private _usdSection(): React.ReactNode {
+        const usdFormatter = this.props.isEthAmountInBaseUnits ? format.ethBaseAmountInUsd : format.ethUnitAmountInUsd;
+        const shouldHideUsdPriceSection = _.isUndefined(this.props.ethUsdPrice) || _.isUndefined(this.props.ethAmount);
+        return shouldHideUsdPriceSection ? null : (
+            <Container marginRight="3px" display="inline-block">
+                <Text fontColor={ColorOption.lightGrey}>
+                    ({usdFormatter(this.props.ethAmount, this.props.ethUsdPrice)})
+                </Text>
+            </Container>
+        );
+    }
+}
