@@ -1,4 +1,4 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -25,7 +25,7 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.JSONSchemas,
-    packageName: '@0xproject/json-schemas',
+    packageName: '@0x/json-schemas',
     type: SupportedDocJson.TypeDoc,
     displayName: 'JSON Schemas',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',

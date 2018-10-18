@@ -12,7 +12,7 @@ import {
     PagedRequestOpts,
     PaginatedCollection,
     SignedOrder,
-} from '@0xproject/types';
+} from '@0x/types';
 
 export interface Client {
     getAssetPairsAsync: (

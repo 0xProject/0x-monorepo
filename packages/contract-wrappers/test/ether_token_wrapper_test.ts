@@ -1,8 +1,8 @@
-import { ContractAddresses } from '@0xproject/contract-addresses';
-import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
-import { DoneCallback } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ContractAddresses } from '@0x/contract-addresses';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
+import { DoneCallback } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import 'mocha';
 

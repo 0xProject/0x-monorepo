@@ -1,4 +1,4 @@
-## @0xproject/json-schemas
+## @0x/json-schemas
 
 Contains 0x-related json schemas
 
@@ -7,26 +7,26 @@ Contains 0x-related json schemas
 ## Installation
 
 ```bash
-yarn add @0xproject/json-schemas
+yarn add @0x/json-schemas
 ```
 
 **Import**
 
 ```typescript
-import { SchemaValidator, ValidatorResult, schemas } from '@0xproject/json-schemas';
+import { SchemaValidator, ValidatorResult, schemas } from '@0x/json-schemas';
 ```
 
 or
 
 ```javascript
-var schemas = require('@0xproject/json-schemas').schemas;
+var schemas = require('@0x/json-schemas').schemas;
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 
@@ -55,13 +55,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/json-schemas yarn build
+PKG=@0x/json-schemas yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/json-schemas yarn watch
+PKG=@0x/json-schemas yarn watch
 ```
 
 ### Clean

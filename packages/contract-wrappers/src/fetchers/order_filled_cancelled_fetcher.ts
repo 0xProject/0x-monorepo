@@ -1,6 +1,6 @@
 // tslint:disable:no-unnecessary-type-assertion
-import { AbstractOrderFilledCancelledFetcher } from '@0xproject/order-utils';
-import { BigNumber } from '@0xproject/utils';
+import { AbstractOrderFilledCancelledFetcher } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import { BlockParamLiteral } from 'ethereum-types';
 
 import { ExchangeWrapper } from '../contract_wrappers/exchange_wrapper';

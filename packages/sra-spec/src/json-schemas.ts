@@ -1,4 +1,4 @@
-import { schemas as jsonSchemas } from '@0xproject/json-schemas';
+import { schemas as jsonSchemas } from '@0x/json-schemas';
 
 // Only include schemas we actually need
 const {

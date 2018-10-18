@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { devConstants, web3Factory } from '@0xproject/dev-utils';
-import { logUtils } from '@0xproject/utils';
+import { devConstants, web3Factory } from '@0x/dev-utils';
+import { logUtils } from '@0x/utils';
 import { Provider } from 'ethereum-types';
 
 import { runMigrationsAsync } from './migration';

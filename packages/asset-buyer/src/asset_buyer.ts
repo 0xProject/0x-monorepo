@@ -1,9 +1,9 @@
-import { ContractWrappers } from '@0xproject/contract-wrappers';
-import { schemas } from '@0xproject/json-schemas';
-import { SignedOrder } from '@0xproject/order-utils';
-import { ObjectMap } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ContractWrappers } from '@0x/contract-wrappers';
+import { schemas } from '@0x/json-schemas';
+import { SignedOrder } from '@0x/order-utils';
+import { ObjectMap } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 

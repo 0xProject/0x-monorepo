@@ -1,5 +1,5 @@
-import { AssetData, AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { AssetData, AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import ethAbi = require('ethereumjs-abi');
 import ethUtil = require('ethereumjs-util');
 

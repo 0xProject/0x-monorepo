@@ -1,4 +1,4 @@
-import { ALink, colors, Link } from '@0xproject/react-shared';
+import { ALink, colors, Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import * as React from 'react';

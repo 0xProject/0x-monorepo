@@ -1,23 +1,23 @@
-## @0xproject/contract-artifacts
+## @0x/contract-artifacts
 
 Smart contract compilation artifacts for the latest version of the 0x Protocol.
 
 ## Installation
 
 ```bash
-yarn add @0xproject/contract-artifacts
+yarn add @0x/contract-artifacts
 ```
 
 **Import**
 
 ```typescript
-import * as artifacts from '@0xproject/contract-artifacts';
+import * as artifacts from '@0x/contract-artifacts';
 ```
 
 or
 
 ```javascript
-var artifacts = require('@0xproject/contract-artifacts');
+var artifacts = require('@0x/contract-artifacts');
 ```
 
 ## Contributing
@@ -45,7 +45,7 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/contract-artifacts yarn build
+PKG=@0x/contract-artifacts yarn build
 ```
 
 ### Clean

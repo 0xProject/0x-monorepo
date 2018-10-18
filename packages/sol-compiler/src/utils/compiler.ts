@@ -1,5 +1,5 @@
-import { ContractSource } from '@0xproject/sol-resolver';
-import { logUtils } from '@0xproject/utils';
+import { ContractSource } from '@0x/sol-resolver';
+import { logUtils } from '@0x/utils';
 import { ContractArtifact } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as path from 'path';

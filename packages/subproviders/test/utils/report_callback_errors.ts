@@ -1,4 +1,4 @@
-import { DoneCallback } from '@0xproject/types';
+import { DoneCallback } from '@0x/types';
 
 export const reportCallbackErrors = (done: DoneCallback) => {
     return (f: (...args: any[]) => void) => {

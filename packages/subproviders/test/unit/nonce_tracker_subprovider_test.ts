@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import FixtureSubprovider = require('web3-provider-engine/subproviders/fixture');
 
-import { promisify } from '@0xproject/utils';
+import { promisify } from '@0x/utils';
 import EthereumTx = require('ethereumjs-tx');
 
 import { NonceTrackerSubprovider, Web3ProviderEngine } from '../../src';

@@ -7,8 +7,8 @@ import {
     MarkdownSection,
     NestedSidebarMenu,
     utils as sharedUtils,
-} from '@0xproject/react-shared';
-import { ObjectMap } from '@0xproject/types';
+} from '@0x/react-shared';
+import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';

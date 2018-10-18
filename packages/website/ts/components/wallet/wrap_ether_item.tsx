@@ -1,6 +1,6 @@
-import { Styles } from '@0xproject/react-shared';
-import { BigNumber, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Styles } from '@0x/react-shared';
+import { BigNumber, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';

@@ -1,8 +1,8 @@
 // import { ECSignature, SignedOrder, ZeroEx } from '0x.js';
-// import { BlockchainLifecycle, devConstants, web3Factory } from '@0xproject/dev-utils';
+// import { BlockchainLifecycle, devConstants, web3Factory } from '@0x/dev-utils';
 // import { ExchangeContractErrs } from 'ethereum-types';
-// import { BigNumber } from '@0xproject/utils';
-// import { Web3Wrapper } from '@0xproject/web3-wrapper';
+// import { BigNumber } from '@0x/utils';
+// import { Web3Wrapper } from '@0x/web3-wrapper';
 // import * as chai from 'chai';
 // import ethUtil = require('ethereumjs-util');
 // import * as Web3 from 'web3';

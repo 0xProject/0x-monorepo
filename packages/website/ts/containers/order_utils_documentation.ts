@@ -1,4 +1,4 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -20,7 +20,7 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.OrderUtils,
-    packageName: '@0xproject/order-utils',
+    packageName: '@0x/order-utils',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Order utils',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',

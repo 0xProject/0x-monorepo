@@ -1,9 +1,9 @@
-import * as wrappers from '@0xproject/abi-gen-wrappers';
-import { ContractAddresses } from '@0xproject/contract-addresses';
-import * as artifacts from '@0xproject/contract-artifacts';
-import { assetDataUtils } from '@0xproject/order-utils';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import * as wrappers from '@0x/abi-gen-wrappers';
+import { ContractAddresses } from '@0x/contract-addresses';
+import * as artifacts from '@0x/contract-artifacts';
+import { assetDataUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 

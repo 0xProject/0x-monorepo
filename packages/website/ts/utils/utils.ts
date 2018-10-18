@@ -1,9 +1,9 @@
-import { ContractWrappersError } from '@0xproject/contract-wrappers';
-import { assetDataUtils, OrderError } from '@0xproject/order-utils';
-import { constants as sharedConstants, Networks } from '@0xproject/react-shared';
-import { ExchangeContractErrs } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ContractWrappersError } from '@0x/contract-wrappers';
+import { assetDataUtils, OrderError } from '@0x/order-utils';
+import { constants as sharedConstants, Networks } from '@0x/react-shared';
+import { ExchangeContractErrs } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as bowser from 'bowser';
 import deepEqual = require('deep-equal');
 import * as _ from 'lodash';

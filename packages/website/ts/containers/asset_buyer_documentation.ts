@@ -1,4 +1,4 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -22,7 +22,7 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.AssetBuyer,
-    packageName: '@0xproject/asset-buyer',
+    packageName: '@0x/asset-buyer',
     type: SupportedDocJson.TypeDoc,
     displayName: 'AssetBuyer',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',

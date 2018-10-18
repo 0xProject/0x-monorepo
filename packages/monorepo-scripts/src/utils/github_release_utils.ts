@@ -93,7 +93,7 @@ function adjustAssetPaths(assets: string[]): string[] {
 }
 
 function getReleaseNotesForPackage(packageName: string, version: string): string {
-    const packageNameWithoutNamespace = packageName.replace('@0xproject/', '');
+    const packageNameWithoutNamespace = packageName.replace('@0x/', '');
     const changelogJSONPath = path.join(
         constants.monorepoRootPath,
         'packages',

@@ -1,5 +1,5 @@
-import { colors, Link } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { colors, Link } from '@0x/react-shared';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';

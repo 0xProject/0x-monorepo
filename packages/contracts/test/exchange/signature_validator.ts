@@ -1,6 +1,6 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetDataUtils, orderHashUtils, signatureUtils } from '@0xproject/order-utils';
-import { RevertReason, SignatureType, SignedOrder } from '@0xproject/types';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');

@@ -1,6 +1,6 @@
 // tslint:disable:no-unnecessary-type-assertion
-import { ContractAddresses } from '@0xproject/contract-addresses';
-import * as artifacts from '@0xproject/contract-artifacts';
+import { ContractAddresses } from '@0x/contract-addresses';
+import * as artifacts from '@0x/contract-artifacts';
 import {
     AssetBalanceAndProxyAllowanceFetcher,
     ContractWrappers,
@@ -23,17 +23,17 @@ import {
     WETH9EventArgs,
     WETH9Events,
     WETH9WithdrawalEventArgs,
-} from '@0xproject/contract-wrappers';
-import { schemas } from '@0xproject/json-schemas';
+} from '@0x/contract-wrappers';
+import { schemas } from '@0x/json-schemas';
 import {
     assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
     OrderFilledCancelledLazyStore,
     orderHashUtils,
     OrderStateUtils,
-} from '@0xproject/order-utils';
-import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder, Stats } from '@0xproject/types';
-import { errorUtils, intervalUtils } from '@0xproject/utils';
+} from '@0x/order-utils';
+import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder, Stats } from '@0x/types';
+import { errorUtils, intervalUtils } from '@0x/utils';
 import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 

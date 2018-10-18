@@ -1,10 +1,10 @@
 {
-    "name": "@0xproject/abi-gen-wrappers",
+    "name": "@0x/abi-gen-wrappers",
     "version": "1.0.0",
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Low-level 0x smart contract wrappers generated using @0xproject/abi-gen",
+    "description": "Low-level 0x smart contract wrappers generated using @0x/abi-gen",
     "main": "lib/src/index.js",
     "directories": {
         "test": "test"
@@ -30,12 +30,17 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen-wrappers/README.md",
     "devDependencies": {
-        "@0xproject/abi-gen": "^1.0.12",
-        "@0xproject/tslint-config": "^1.0.8",
+        "@0x/abi-gen": "^1.0.12",
+        "@0x/tslint-config": "^1.0.8",
+        "@0x/utils": "^2.0.2",
+        "@0x/web3-wrapper": "^3.0.3",
+        "ethereum-types": "^1.0.11",
+        "ethers": "~4.0.4",
+        "lodash": "^4.17.5",
         "shx": "^0.2.2"
     },
     "dependencies": {
-        "@0xproject/base-contract": "^3.0.1"
+        "@0x/base-contract": "^3.0.1"
     },
     "publishConfig": {
         "access": "public"

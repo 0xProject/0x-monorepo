@@ -1,5 +1,5 @@
-import { ERC20TokenContract } from '@0xproject/abi-gen-wrappers';
-import { BigNumber } from '@0xproject/utils';
+import { ERC20TokenContract } from '@0x/abi-gen-wrappers';
+import { BigNumber } from '@0x/utils';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from '../../src/abstract/abstract_balance_and_proxy_allowance_fetcher';
 

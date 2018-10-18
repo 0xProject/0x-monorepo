@@ -1,7 +1,7 @@
-import { orderParsingUtils } from '@0xproject/order-utils';
+import { orderParsingUtils } from '@0x/order-utils';
 import * as _ from 'lodash';
 
-import { APIOrder } from '@0xproject/types';
+import { APIOrder } from '@0x/types';
 
 export const typeConverters = {
     convertOrderbookStringFieldsToBigNumber(orderbook: any): any {

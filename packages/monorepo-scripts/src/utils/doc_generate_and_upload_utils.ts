@@ -402,7 +402,7 @@ export class DocGenerateAndUploadUtils {
                 sanitizedExportPathToExportPath[sanitizedExportPath] = exportPath;
                 return sanitizedExportPath;
             }
-            const monorepoPrefix = '@0xproject/';
+            const monorepoPrefix = '@0x/';
             if (_.startsWith(exportPath, monorepoPrefix)) {
                 const sanitizedExportPath = exportPath.split(monorepoPrefix)[1];
                 sanitizedExportPathToExportPath[sanitizedExportPath] = exportPath;
@@ -478,7 +478,7 @@ export class DocGenerateAndUploadUtils {
                 });
             });
 
-            // @0xproject/types & ethereum-types are examples of packages where their index.ts exports types
+            // @0x/types & ethereum-types are examples of packages where their index.ts exports types
             // directly, meaning no internal paths will exist to follow. Other packages also have direct exports
             // in their index.ts, so we always add it to the source files passed to TypeDoc
             if (typeDocSourceIncludes.size === 0) {

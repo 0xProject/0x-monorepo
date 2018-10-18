@@ -1,4 +1,4 @@
-export { ContractAddresses } from '@0xproject/contract-addresses';
+export { ContractAddresses } from '@0x/contract-addresses';
 
 export {
     WETH9Events,
@@ -23,7 +23,7 @@ export {
     ExchangeCancelEventArgs,
     ExchangeEventArgs,
     ExchangeEvents,
-} from '@0xproject/abi-gen-wrappers';
+} from '@0x/abi-gen-wrappers';
 
 export { ContractWrappers } from './contract_wrappers';
 export { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
@@ -55,7 +55,7 @@ export {
     ValidateOrderFillableOpts,
 } from './types';
 
-export { Order, SignedOrder, AssetProxyId } from '@0xproject/types';
+export { Order, SignedOrder, AssetProxyId } from '@0x/types';
 
 export {
     BlockParamLiteral,
@@ -81,7 +81,7 @@ export {
     StateMutability,
 } from 'ethereum-types';
 
-export { AbstractBalanceAndProxyAllowanceFetcher, AbstractOrderFilledCancelledFetcher } from '@0xproject/order-utils';
+export { AbstractBalanceAndProxyAllowanceFetcher, AbstractOrderFilledCancelledFetcher } from '@0x/order-utils';
 
 export { AssetBalanceAndProxyAllowanceFetcher } from './fetchers/asset_balance_and_proxy_allowance_fetcher';
 export { OrderFilledCancelledFetcher } from './fetchers/order_filled_cancelled_fetcher';

@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 
 const baseEndpoint = 'https://api.coinbase.com/v2';
 export const coinbaseApi = {

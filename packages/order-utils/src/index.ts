@@ -48,7 +48,7 @@ export {
     EIP712Object,
     EIP712ObjectValue,
     ZeroExTransaction,
-} from '@0xproject/types';
+} from '@0x/types';
 export {
     OrderError,
     TradeSide,

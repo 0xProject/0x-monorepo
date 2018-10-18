@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 import * as combinatorics from 'js-combinatorics';
 
 import { testWithReferenceFuncAsync } from './test_with_reference';

@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 
 /**
  * An abstract class to be implemented in order to use OrderStateUtils. The class that

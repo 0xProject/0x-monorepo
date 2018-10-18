@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';

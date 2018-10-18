@@ -1,6 +1,6 @@
-import { ContractAddresses } from '@0xproject/contract-addresses';
-import { devConstants } from '@0xproject/dev-utils';
-import { runMigrationsOnceAsync } from '@0xproject/migrations';
+import { ContractAddresses } from '@0x/contract-addresses';
+import { devConstants } from '@0x/dev-utils';
+import { runMigrationsOnceAsync } from '@0x/migrations';
 
 import { provider } from './web3_wrapper';
 

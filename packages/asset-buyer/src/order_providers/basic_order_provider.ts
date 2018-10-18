@@ -1,5 +1,5 @@
-import { schemas } from '@0xproject/json-schemas';
-import { SignedOrder } from '@0xproject/types';
+import { schemas } from '@0x/json-schemas';
+import { SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
 import { OrderProvider, OrderProviderRequest, OrderProviderResponse } from '../types';

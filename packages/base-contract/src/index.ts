@@ -1,5 +1,5 @@
-import { abiUtils, BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { abiUtils, BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
     AbiType,

@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 
 export abstract class AbstractOrderFilledCancelledLazyStore {
     public abstract async getFilledTakerAmountAsync(orderHash: string): Promise<BigNumber>;
