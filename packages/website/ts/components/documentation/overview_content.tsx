@@ -1,5 +1,5 @@
-import { colors, Link, MarkdownLinkBlock, utils as sharedUtils } from '@0xproject/react-shared';
-import { ObjectMap } from '@0xproject/types';
+import { colors, Link, MarkdownLinkBlock, utils as sharedUtils } from '@0x/react-shared';
+import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';

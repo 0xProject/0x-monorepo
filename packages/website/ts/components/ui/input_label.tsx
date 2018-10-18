@@ -1,4 +1,4 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { colors, Styles } from '@0x/react-shared';
 import * as React from 'react';
 
 export interface InputLabelProps {

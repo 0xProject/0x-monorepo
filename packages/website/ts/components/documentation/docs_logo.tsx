@@ -1,4 +1,4 @@
-import { Link } from '@0xproject/react-shared';
+import { Link } from '@0x/react-shared';
 import * as React from 'react';
 import { WebsitePaths } from 'ts/types';
 

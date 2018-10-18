@@ -1,5 +1,5 @@
-import { ALink, colors, Link, NestedSidebarMenu } from '@0xproject/react-shared';
-import { ObjectMap } from '@0xproject/types';
+import { ALink, colors, Link, NestedSidebarMenu } from '@0x/react-shared';
+import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { OverviewContent } from 'ts/components/documentation/overview_content';
@@ -68,7 +68,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'An http & websocket client for interacting with relayers that have implemented the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api)',
             link: {
-                title: '@0xproject/connect',
+                title: '@0x/connect',
                 to: WebsitePaths.Connect,
             },
         },
@@ -76,7 +76,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'Typescript/Javascript wrappers of the 0x protocol Ethereum smart contracts. Use this library to call methods on the 0x smart contracts, subscribe to contract events and to fetch information stored in contracts.',
             link: {
-                title: '@0xproject/contract-wrappers',
+                title: '@0x/contract-wrappers',
                 to: WebsitePaths.ContractWrappers,
             },
         },
@@ -84,7 +84,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'A collection of 0x-related JSON-schemas (incl. SRA request/response schemas, 0x order message format schema, etc...)',
             link: {
-                title: '@0xproject/json-schemas',
+                title: '@0x/json-schemas',
                 to: WebsitePaths.JSONSchemas,
             },
         },
@@ -92,7 +92,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'A set of utils for working with 0x orders. It includes utilities for creating, signing, validating 0x orders, encoding/decoding assetData and much more.',
             link: {
-                title: '@0xproject/order-utils',
+                title: '@0x/order-utils',
                 to: WebsitePaths.OrderUtils,
             },
         },
@@ -100,7 +100,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 "A daemon that watches a set of 0x orders and emits events when an order's fillability has changed. Can be used by a relayer to prune their orderbook or by a trader to keep their view of the market up-to-date.",
             link: {
-                title: '@0xproject/order-watcher',
+                title: '@0x/order-watcher',
                 to: WebsitePaths.OrderWatcher,
             },
         },
@@ -108,7 +108,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'Contains the Standard Relayer API OpenAPI Spec. The package distributes both a javascript object version and a json version.',
             link: {
-                title: '@0xproject/sra-spec',
+                title: '@0x/sra-spec',
                 to: 'https://github.com/0xProject/0x-monorepo/tree/development/packages/sra-spec',
                 shouldOpenInNewTab: true,
             },
@@ -117,7 +117,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'Convenience package for buying assets represented on the Ethereum blockchain using 0x. In its simplest form, the package helps in the usage of the [0x forwarder contract](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md), which allows users to execute [Wrapped Ether](https://weth.io/) based 0x orders without having to set allowances, wrap Ether or own ZRX, meaning they can buy tokens with Ether alone. Given some liquidity (0x signed orders), it helps estimate the Ether cost of buying a certain asset (giving a range) and then buying that asset.',
             link: {
-                title: '@0xproject/asset-buyer',
+                title: '@0x/asset-buyer',
                 to: WebsitePaths.AssetBuyer,
             },
         },
@@ -144,7 +144,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'A wrapper around [solc-js](https://github.com/ethereum/solc-js) that adds smart re-compilation, ability to compile an entire project, Solidity version specific compilation, standard input description support and much more.',
             link: {
-                title: '@0xproject/sol-compiler',
+                title: '@0x/sol-compiler',
                 to: WebsitePaths.SolCompiler,
             },
         },
@@ -152,7 +152,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'A Solidity code coverage tool. Sol-cov uses transaction traces to figure out which lines of your code has been covered by your tests.',
             link: {
-                title: '@0xproject/sol-cov',
+                title: '@0x/sol-cov',
                 to: WebsitePaths.SolCov,
             },
         },
@@ -160,7 +160,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'A collection of subproviders to use with [web3-provider-engine](https://www.npmjs.com/package/web3-provider-engine) (e.g subproviders for interfacing with Ledger hardware wallet, Mnemonic wallet, private key wallet, etc...)',
             link: {
-                title: '@0xproject/subproviders',
+                title: '@0x/subproviders',
                 to: WebsitePaths.Subproviders,
             },
         },
@@ -168,7 +168,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'A raw Ethereum JSON RPC client to simplify interfacing with Ethereum nodes. Also includes some convenience functions for awaiting transactions to be mined, converting between token units, etc...',
             link: {
-                title: '@0xproject/web3-wrapper',
+                title: '@0x/web3-wrapper',
                 to: WebsitePaths.Web3Wrapper,
             },
         },

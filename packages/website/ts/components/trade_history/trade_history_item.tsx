@@ -1,6 +1,6 @@
-import { colors, EtherscanLinkSuffixes } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { colors, EtherscanLinkSuffixes } from '@0x/react-shared';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import * as moment from 'moment';

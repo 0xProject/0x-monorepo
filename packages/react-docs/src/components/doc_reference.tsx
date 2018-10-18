@@ -8,7 +8,7 @@ import {
     Networks,
     SectionHeader,
     utils as sharedUtils,
-} from '@0xproject/react-shared';
+} from '@0x/react-shared';
 import {
     DocAgnosticFormat,
     Event,
@@ -18,7 +18,7 @@ import {
     TypeDefinitionByName,
     TypescriptFunction,
     TypescriptMethod,
-} from '@0xproject/types';
+} from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as semver from 'semver';

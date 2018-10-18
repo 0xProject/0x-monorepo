@@ -1,5 +1,5 @@
-import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
-import { BigNumber, errorUtils } from '@0xproject/utils';
+import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0x/react-shared';
+import { BigNumber, errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';

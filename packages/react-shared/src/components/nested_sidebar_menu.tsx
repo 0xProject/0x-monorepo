@@ -1,4 +1,4 @@
-import { ObjectMap } from '@0xproject/types';
+import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
