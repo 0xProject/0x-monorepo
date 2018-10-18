@@ -1,6 +1,6 @@
-import { APIOrder, OrdersResponse } from '@0xproject/connect';
-import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { AssetProxyId, ERC721AssetData } from '@0xproject/types';
+import { APIOrder, OrdersResponse } from '@0x/connect';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { AssetProxyId, ERC721AssetData } from '@0x/types';
 import * as R from 'ramda';
 
 import { SraOrder } from '../../entities/SraOrder';

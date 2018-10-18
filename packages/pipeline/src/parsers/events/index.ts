@@ -3,9 +3,9 @@ import {
     ExchangeCancelUpToEventArgs,
     ExchangeEventArgs,
     ExchangeFillEventArgs,
-} from '@0xproject/contract-wrappers';
-import { assetDataUtils } from '@0xproject/order-utils';
-import { AssetProxyId, ERC721AssetData } from '@0xproject/types';
+} from '@0x/contract-wrappers';
+import { assetDataUtils } from '@0x/order-utils';
+import { AssetProxyId, ERC721AssetData } from '@0x/types';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as R from 'ramda';
 

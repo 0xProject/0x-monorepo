@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 
 export function bigNumbertoStringOrNull(n: BigNumber): string | null {
     if (n == null) {
