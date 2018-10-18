@@ -35,6 +35,10 @@ async function confirmAsync(message: string): Promise<void> {
     // Fetch public, updated Lerna packages
     const shouldIncludePrivate = true;
     const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
+    if (_.isEmpty(allUpdatedPackages)) {
+        utils.log('No packages need publishing');
+        process.exit(0);
+    }
     const packagesWithDocs = getPackagesWithDocs(allUpdatedPackages);
 
     if (!configs.IS_LOCAL_PUBLISH) {
