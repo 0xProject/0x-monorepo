@@ -48,7 +48,7 @@
         "@0x/typescript-typings": "^3.0.2",
         "@0x/utils": "^2.0.2",
         "@0x/web3-wrapper": "^3.0.3",
-        "ethereum-types": "^1.0.11",
+        "ethereum-types": "^1.1.0",
         "lodash": "^4.17.10",
         "polished": "^2.2.0",
         "react": "^16.5.2",

@@ -24,7 +24,7 @@
         "@0x/utils": "^2.0.2",
         "@0x/web3-wrapper": "^3.0.3",
         "body-parser": "^1.17.1",
-        "ethereum-types": "^1.0.11",
+        "ethereum-types": "^1.1.0",
         "ethereumjs-tx": "^1.3.5",
         "ethereumjs-util": "^5.1.1",
         "express": "^4.15.2",

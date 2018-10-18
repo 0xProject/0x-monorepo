@@ -76,7 +76,7 @@
         "@0x/typescript-typings": "^3.0.2",
         "@0x/utils": "^2.0.2",
         "@0x/web3-wrapper": "^3.0.3",
-        "ethereum-types": "^1.0.11",
+        "ethereum-types": "^1.1.0",
         "ethereumjs-blockstream": "6.0.0",
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",

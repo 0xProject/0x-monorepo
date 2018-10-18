@@ -48,7 +48,7 @@
         "@0x/web3-wrapper": "^3.0.3",
         "@types/web3-provider-engine": "^14.0.0",
         "chai": "^4.0.1",
-        "ethereum-types": "^1.0.11",
+        "ethereum-types": "^1.1.0",
         "lodash": "^4.17.5"
     },
     "publishConfig": {

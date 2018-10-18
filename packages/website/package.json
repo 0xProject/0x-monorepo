@@ -34,7 +34,7 @@
         "blockies": "^0.0.2",
         "bowser": "^1.9.3",
         "deep-equal": "^1.0.1",
-        "ethereum-types": "^1.0.11",
+        "ethereum-types": "^1.1.0",
         "ethereumjs-util": "^5.1.1",
         "find-versions": "^2.0.0",
         "jsonschema": "^1.2.0",

@@ -57,7 +57,7 @@
         "@0x/json-schemas": "^1.0.7",
         "@0x/typescript-typings": "^3.0.2",
         "@0x/utils": "^2.0.2",
-        "ethereum-types": "^1.0.11",
+        "ethereum-types": "^1.1.0",
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
         "lodash": "^4.17.5"

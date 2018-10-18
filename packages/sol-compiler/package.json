@@ -74,7 +74,7 @@
         "@0x/web3-wrapper": "^3.0.3",
         "@types/yargs": "^11.0.0",
         "chalk": "^2.3.0",
-        "ethereum-types": "^1.0.11",
+        "ethereum-types": "^1.1.0",
         "ethereumjs-util": "^5.1.1",
         "lodash": "^4.17.5",
         "mkdirp": "^0.5.1",
