@@ -9,8 +9,8 @@ function Header(props: Props) {
     const { icon, title, colors } = props;
 
     return (
-        <Container>
-            <StyledHeader>
+        <StyledHeader>
+            <Container>
                 <LogoMark>
                     <Logo as={icon} color={colors.main} />
                     <Title>{title}</Title>
@@ -19,17 +19,23 @@ function Header(props: Props) {
                 <Link as="a" href="#">
                     Built by 0x
                 </Link>
-            </StyledHeader>
-        </Container>
+            </Container>
+        </StyledHeader>
     );
 }
 
 const StyledHeader = styled.header`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     padding-top: 3.75rem;
     padding-bottom: 0.875rem;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    ${Container} {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 `;
 
 const LogoMark = styled.div`

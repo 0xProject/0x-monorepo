@@ -19,9 +19,14 @@ function Hero(props: Props) {
 }
 
 const StyledHero = styled.section`
-    margin: 0 auto;
     text-align: center;
+    margin: 0 auto;
+    padding-top: 9.375rem;
+    padding-bottom: 2rem;
     max-width: 590px;
+    min-height: min-content;
+    max-height: 37.5rem;
+    height: 80vh;
 `;
 
 const Subtitle = styled.h2`
