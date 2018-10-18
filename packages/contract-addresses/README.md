@@ -18,8 +18,7 @@ import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 or
 
 ```javascript
-var getContractAddressesForNetworkOrThrow = require('@0x/contract-addresses')
-    .getContractAddressesForNetworkOrThrow;
+var getContractAddressesForNetworkOrThrow = require('@0x/contract-addresses').getContractAddressesForNetworkOrThrow;
 ```
 
 ## Contributing
