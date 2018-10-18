@@ -1,17 +1,37 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-import { MetaTags } from 'ts/components/meta_tags';
-import { Landing } from 'ts/pages/landing';
+import { Router, Link } from '@reach/router';
 
-import 'basscss/css/basscss.css';
+import Trace from 'ts/pages/Trace';
+import Compiler from 'ts/pages/Compiler';
+import Cov from 'ts/pages/Cov';
+import Profiler from 'ts/pages/Profiler';
 
-const DOCUMENT_TITLE = '';
-const DOCUMENT_DESCRIPTION = '';
-
-render(
-    <div>
-        <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
-        <Landing />
-    </div>,
-    document.getElementById('app'),
+const Index = (props: any) => (
+    <ul>
+        <li>
+            <Link to="/trace">sol-trace</Link>
+        </li>
+        <li>
+            <Link to="/compiler">sol-compiler</Link>
+        </li>
+        <li>
+            <Link to="/cov">sol-cov</Link>
+        </li>
+        <li>
+            <Link to="/profiler">sol-profiler</Link>
+        </li>
+    </ul>
 );
+
+const App = () => (
+    <Router>
+        <Trace path="/trace" />
+        <Compiler path="/compiler" />
+        <Cov path="/cov" />
+        <Profiler path="/profiler" />
+        <Index default />
+    </Router>
+);
+
+render(<App />, document.getElementById('app'));

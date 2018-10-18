@@ -48,6 +48,10 @@ const config = {
                 test: /\.css$/,
                 loaders: ['style-loader', 'css-loader'],
             },
+            {
+                test: /\.svg$/,
+                loaders: ['react-svg-loader'],
+            },
         ],
     },
     optimization: {
@@ -60,6 +64,8 @@ const config = {
     devServer: {
         port: 3572,
         disableHostCheck: true,
+        overlay: true,
+        historyApiFallback: true,
     },
 };
 
