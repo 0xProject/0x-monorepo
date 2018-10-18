@@ -168,6 +168,8 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
 }
 
+export type AssetData = ERC20AssetData | ERC721AssetData;
+
 // TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {
     OrderUnfillable = 'ORDER_UNFILLABLE',

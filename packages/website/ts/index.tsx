@@ -69,6 +69,9 @@ const LazyOrderUtilsDocumentation = createLazyComponent('Documentation', async (
 const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
 );
+const LazyAssetBuyerDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "assetBuyerDocs" */ 'ts/containers/asset_buyer_documentation'),
+);
 
 const DOCUMENT_TITLE = '0x: The Protocol for Trading Tokens';
 const DOCUMENT_DESCRIPTION = 'An Open Protocol For Decentralized Exchange On The Ethereum Blockchain';
@@ -134,8 +137,11 @@ render(
                                     path={`${WebsitePaths.EthereumTypes}/:version?`}
                                     component={LazyEthereumTypesDocumentation}
                                 />
+                                <Route
+                                    path={`${WebsitePaths.AssetBuyer}/:version?`}
+                                    component={LazyAssetBuyerDocumentation}
+                                />
                                 <Route path={WebsitePaths.Docs} component={DocsHome as any} />
-
                                 {/* Legacy endpoints */}
                                 <Route
                                     path={`${WebsiteLegacyPaths.ZeroExJs}/:version?`}

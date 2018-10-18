@@ -5,7 +5,7 @@ import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages } from 'ts/types';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
@@ -13,7 +13,7 @@ const IntroMarkdownV1 = require('md/docs/web3_wrapper/introduction');
 const InstallationMarkdownV1 = require('md/docs/web3_wrapper/installation');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
 };
@@ -25,16 +25,15 @@ const docsInfoConfig: DocsInfoConfig = {
     displayName: 'Web3Wrapper',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     markdownMenu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
+        'getting-started': [markdownSections.introduction, markdownSections.installation],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdownV1,
+            [markdownSections.installation]: InstallationMarkdownV1,
         },
     },
-    markdownSections: docSections,
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 
@@ -43,6 +42,7 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -54,6 +54,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
     docsInfo,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

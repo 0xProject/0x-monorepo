@@ -129,7 +129,8 @@ export class BaseContract {
             if (abiDefinition.type !== AbiType.Function) {
                 return false;
             }
-            const abiFunctionSignature = abiUtils.getFunctionSignature(abiDefinition);
+            // tslint:disable-next-line:no-unnecessary-type-assertion
+            const abiFunctionSignature = abiUtils.getFunctionSignature(abiDefinition as MethodAbi);
             if (abiFunctionSignature === functionSignature) {
                 return true;
             }

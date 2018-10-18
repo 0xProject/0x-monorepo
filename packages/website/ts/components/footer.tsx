@@ -40,6 +40,10 @@ export class Footer extends React.Component<FooterProps, FooterState> {
         const sectionNameToLinks: ObjectMap<ALink[]> = {
             [Key.Documentation]: [
                 {
+                    title: 'Developer Home',
+                    to: WebsitePaths.Docs,
+                },
+                {
                     title: '0x.js',
                     to: WebsitePaths.ZeroExJs,
                 },
@@ -59,10 +63,6 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                 {
                     title: this.props.translate.get(Key.Wiki, Deco.Cap),
                     to: WebsitePaths.Wiki,
-                },
-                {
-                    title: this.props.translate.get(Key.Faq, Deco.Cap),
-                    to: WebsitePaths.FAQ,
                 },
             ],
             [Key.Community]: [

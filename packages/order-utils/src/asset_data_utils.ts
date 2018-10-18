@@ -1,4 +1,4 @@
-import { AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0xproject/types';
+import { AssetData, AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import ethAbi = require('ethereumjs-abi');
 import ethUtil = require('ethereumjs-util');
@@ -112,7 +112,7 @@ export const assetDataUtils = {
      * @param assetData Hex encoded assetData string to decode
      * @return Either a ERC20 or ERC721 assetData object
      */
-    decodeAssetDataOrThrow(assetData: string): ERC20AssetData | ERC721AssetData {
+    decodeAssetDataOrThrow(assetData: string): AssetData {
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20:

@@ -44,6 +44,10 @@ const popularDocsToLinkInfos: ALink[] = [
 ];
 const usefulLinksToLinkInfo: ALink[] = [
     {
+        title: Key.Wiki,
+        to: WebsitePaths.Wiki,
+    },
+    {
         title: Key.Github,
         to: constants.URL_GITHUB_ORG,
         shouldOpenInNewTab: true,
@@ -51,11 +55,6 @@ const usefulLinksToLinkInfo: ALink[] = [
     {
         title: Key.Whitepaper,
         to: WebsitePaths.Whitepaper,
-        shouldOpenInNewTab: true,
-    },
-    {
-        title: Key.Sandbox,
-        to: constants.URL_SANDBOX,
         shouldOpenInNewTab: true,
     },
 ];
@@ -85,7 +84,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                 anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
                 targetOrigin={{ horizontal: 'left', vertical: 'top' }}
                 style={this.props.menuItemStyles}
-                popoverStyle={{ borderRadius: 4, width: 427, height: 373, marginTop: 10 }}
+                popoverStyle={{ borderRadius: 4, width: 397, height: 373, marginTop: 0 }}
             />
         );
     }

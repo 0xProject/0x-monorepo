@@ -44,6 +44,7 @@
         "@types/react-router-dom": "^4.0.4",
         "@types/react-scroll": "1.5.3",
         "@types/valid-url": "^1.0.2",
+        "@types/styled-components": "^4.0.0",
         "basscss": "^8.0.3",
         "change-case": "^3.0.2",
         "is-mobile": "^0.2.2",
@@ -53,8 +54,9 @@
         "react-dom": "^16.4.2",
         "react-highlight": "0xproject/react-highlight#2f40a42e0a3f0ad126f9f42d505b97b603fc7162",
         "react-markdown": "^3.2.2",
-        "react-scroll": "0xproject/react-scroll#similar-to-pr-330",
+        "react-scroll": "0xproject/react-scroll#similar-to-pr-330-but-with-replace-state",
         "react-router-dom": "^4.1.1",
+        "styled-components": "^3.3.0",
         "valid-url": "^1.0.9"
     },
     "publishConfig": {

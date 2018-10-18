@@ -18,6 +18,7 @@ const baseColors = {
     darkGrey: '#818181',
     landingLinkGrey: '#919191',
     linkSectionGrey: '#999999',
+    greyTheme: '#666666',
     grey700: '#616161',
     grey750: '#515151',
     grey800: '#424242',

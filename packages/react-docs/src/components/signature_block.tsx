@@ -55,7 +55,7 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
             <div
                 id={`${this.props.sectionName}-${method.name}`}
                 style={{ overflow: 'hidden', width: '100%' }}
-                className="pb4"
+                className="pb4 pt2"
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >

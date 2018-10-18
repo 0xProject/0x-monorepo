@@ -1,10 +1,18 @@
 [
     {
-        "version": "1.0.0",
+        "version": "1.0.1",
         "changes": [
             {
                 "pr": 1105,
                 "note": "Initial release"
+            }
+        ]
+    },
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Unpublished Package"
             }
         ]
     }

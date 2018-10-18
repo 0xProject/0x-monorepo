@@ -1,53 +1,90 @@
+import { BuyQuoteInfo } from '@0xproject/asset-buyer';
+import { BigNumber } from '@0xproject/utils';
+import * as _ from 'lodash';
 import * as React from 'react';
+import { oc } from 'ts-optchain';
 
 import { ColorOption } from '../style/theme';
+import { format } from '../util/format';
 
 import { Container, Flex, Text } from './ui';
 
-export interface OrderDetailsProps {}
+export interface OrderDetailsProps {
+    buyQuoteInfo?: BuyQuoteInfo;
+    ethUsdPrice?: BigNumber;
+}
 
-export const OrderDetails: React.StatelessComponent<OrderDetailsProps> = props => (
-    <Container padding="20px" width="100%">
-        <Container marginBottom="10px">
-            <Text
-                letterSpacing="1px"
-                fontColor={ColorOption.primaryColor}
-                fontWeight={600}
-                textTransform="uppercase"
-                fontSize="14px"
-            >
-                Order Details
-            </Text>
-        </Container>
-        <OrderDetailsRow name="Token Price" primaryValue=".013 ETH" secondaryValue="$24.32" />
-        <OrderDetailsRow name="Fee" primaryValue=".005 ETH" secondaryValue="$1.04" />
-        <OrderDetailsRow name="Total Cost" primaryValue="1.66 ETH" secondaryValue="$589.56" shouldEmphasize={true} />
-    </Container>
-);
+export class OrderDetails extends React.Component<OrderDetailsProps> {
+    public render(): React.ReactNode {
+        const { buyQuoteInfo, ethUsdPrice } = this.props;
+        const buyQuoteAccessor = oc(buyQuoteInfo);
+        const ethAssetPrice = buyQuoteAccessor.ethPerAssetPrice();
+        const ethTokenFee = buyQuoteAccessor.feeEthAmount();
+        const totalEthAmount = buyQuoteAccessor.totalEthAmount();
+        return (
+            <Container padding="20px" width="100%">
+                <Container marginBottom="10px">
+                    <Text
+                        letterSpacing="1px"
+                        fontColor={ColorOption.primaryColor}
+                        fontWeight={600}
+                        textTransform="uppercase"
+                        fontSize="14px"
+                    >
+                        Order Details
+                    </Text>
+                </Container>
+                <EthAmountRow
+                    rowLabel="Token Price"
+                    ethAmount={ethAssetPrice}
+                    ethUsdPrice={ethUsdPrice}
+                    isEthAmountInBaseUnits={false}
+                />
+                <EthAmountRow rowLabel="Fee" ethAmount={ethTokenFee} ethUsdPrice={ethUsdPrice} />
+                <EthAmountRow
+                    rowLabel="Total Cost"
+                    ethAmount={totalEthAmount}
+                    ethUsdPrice={ethUsdPrice}
+                    shouldEmphasize={true}
+                />
+            </Container>
+        );
+    }
+}
 
-OrderDetails.displayName = 'OrderDetails';
-
-export interface OrderDetailsRowProps {
-    name: string;
-    primaryValue: string;
-    secondaryValue: string;
+export interface EthAmountRowProps {
+    rowLabel: string;
+    ethAmount?: BigNumber;
+    isEthAmountInBaseUnits?: boolean;
+    ethUsdPrice?: BigNumber;
     shouldEmphasize?: boolean;
 }
 
-export const OrderDetailsRow: React.StatelessComponent<OrderDetailsRowProps> = props => {
-    const fontWeight = props.shouldEmphasize ? 700 : 400;
+export const EthAmountRow: React.StatelessComponent<EthAmountRowProps> = ({
+    rowLabel,
+    ethAmount,
+    isEthAmountInBaseUnits,
+    ethUsdPrice,
+    shouldEmphasize,
+}) => {
+    const fontWeight = shouldEmphasize ? 700 : 400;
+    const usdFormatter = isEthAmountInBaseUnits ? format.ethBaseAmountInUsd : format.ethUnitAmountInUsd;
+    const ethFormatter = isEthAmountInBaseUnits ? format.ethBaseAmount : format.ethUnitAmount;
+    const usdPriceSection = _.isUndefined(ethUsdPrice) ? null : (
+        <Container marginRight="3px" display="inline-block">
+            <Text fontColor={ColorOption.lightGrey}>({usdFormatter(ethAmount, ethUsdPrice)})</Text>
+        </Container>
+    );
     return (
         <Container padding="10px 0px" borderTop="1px dashed" borderColor={ColorOption.feintGrey}>
             <Flex justify="space-between">
                 <Text fontWeight={fontWeight} fontColor={ColorOption.grey}>
-                    {props.name}
+                    {rowLabel}
                 </Text>
                 <Container>
-                    <Container marginRight="3px" display="inline-block">
-                        <Text fontColor={ColorOption.lightGrey}>({props.secondaryValue}) </Text>
-                    </Container>
+                    {usdPriceSection}
                     <Text fontWeight={fontWeight} fontColor={ColorOption.grey}>
-                        {props.primaryValue}
+                        {ethFormatter(ethAmount)}
                     </Text>
                 </Container>
             </Flex>
@@ -55,8 +92,9 @@ export const OrderDetailsRow: React.StatelessComponent<OrderDetailsRowProps> = p
     );
 };
 
-OrderDetailsRow.defaultProps = {
+EthAmountRow.defaultProps = {
     shouldEmphasize: false,
+    isEthAmountInBaseUnits: true,
 };
 
-OrderDetailsRow.displayName = 'OrderDetailsRow';
+EthAmountRow.displayName = 'EthAmountRow';

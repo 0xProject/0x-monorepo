@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import Popover from 'material-ui/Popover';
 import * as React from 'react';
 import { MaterialUIPosition } from 'ts/types';
@@ -75,7 +76,11 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
                     anchorEl={this.state.anchorEl}
                     anchorOrigin={this.props.anchorOrigin}
                     targetOrigin={this.props.targetOrigin}
-                    onRequestClose={this._closePopover.bind(this)}
+                    onRequestClose={
+                        this.props.closeEvent === DropdownMouseEvent.Click
+                            ? this._closePopover.bind(this)
+                            : _.noop.bind(_)
+                    }
                     useLayerForClickAway={this.props.closeEvent === DropdownMouseEvent.Click}
                     animated={false}
                     zDepth={this.props.zDepth}
@@ -95,7 +100,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
     private _onActiveNodeClick(event: React.FormEvent<HTMLInputElement>): void {
         if (this.props.activateEvent === DropdownMouseEvent.Click) {
             this.setState({
-                isDropDownOpen: true,
+                isDropDownOpen: !this.state.isDropDownOpen,
                 anchorEl: event.currentTarget,
             });
         }

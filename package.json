@@ -40,7 +40,7 @@
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
-        "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types"
+        "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types asset-buyer"
     },
     "bundlewatch" : {
         "files": [
@@ -50,7 +50,7 @@
             },
             {
                 "path": "packages/instant/public/main.bundle.js",
-                "maxSize": "350kB"
+                "maxSize": "500kB"
             }
         ],
         "ci": {
@@ -65,7 +65,7 @@
         "coveralls": "^3.0.0",
         "ganache-cli": "6.1.8",
         "lcov-result-merger": "^3.0.0",
-        "npm-cli-login": "^0.0.10",
+        "@0xproject/npm-cli-login": "^0.0.11",
         "npm-run-all": "^4.1.2",
         "prettier": "^1.11.1",
         "source-map-support": "^0.5.6",

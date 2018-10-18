@@ -1,31 +1,23 @@
-import { ALink, colors, Link, NestedSidebarMenu } from '@0xproject/react-shared';
-import { ObjectMap } from '@0xproject/types';
+import { ALink, colors, Link } from '@0xproject/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import * as React from 'react';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
-import { Deco, Key, WebsitePaths } from 'ts/types';
+import { Deco, Key, ScreenWidths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
 export interface DocsTopBarProps {
     location: Location;
+    screenWidth: ScreenWidths;
     translate: Translate;
-    sectionNameToLinks?: ObjectMap<ALink[]>;
+    sidebar?: React.ReactNode;
 }
 
 interface DocsTopBarState {
     isDrawerOpen: boolean;
-}
-
-interface MenuItemInfo {
-    title: string;
-    url: string;
-    iconUrl: string;
-    fontColor: string;
-    fontWeight?: string;
 }
 
 export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState> {
@@ -43,52 +35,19 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
         }
     }
     public render(): React.ReactNode {
-        const menuItemInfos: MenuItemInfo[] = [
-            {
-                title: this.props.translate.get(Key.Github, Deco.Cap),
-                url: constants.URL_GITHUB_ORG,
-                iconUrl: '/images/developers/github_icon.svg',
-                fontColor: colors.linkSectionGrey,
-            },
-            {
-                title: this.props.translate.get(Key.Forum, Deco.Cap),
-                url: constants.URL_FORUM,
-                iconUrl: '/images/developers/forum_icon.svg',
-                fontColor: colors.linkSectionGrey,
-            },
-            {
-                title: this.props.translate.get(Key.LiveChat, Deco.Cap),
-                url: constants.URL_ZEROEX_CHAT,
-                iconUrl: '/images/developers/chat_icon.svg',
-                fontColor: colors.lightLinkBlue,
-                fontWeight: 'bold',
-            },
-        ];
         return (
             <Container height={80}>
-                <Container className="flex items-center lg-pt3 md-pt3 sm-pt1 relative" width="100%">
-                    <Container className="col col-2 sm-hide xs-hide">
-                        <Link
-                            to={WebsitePaths.Home}
-                            fontColor={colors.linkSectionGrey}
-                            className="flex items-center text-decoration-none"
-                        >
-                            <i className="zmdi zmdi-chevron-left bold" style={{ fontSize: 16 }} />
-                            <Container paddingLeft="8px">
-                                <Text fontSize="16px" fontColor={colors.linkSectionGrey}>
-                                    0xproject.com
-                                </Text>
-                            </Container>
-                        </Link>
-                    </Container>
-                    <Container className="col col-4 md-hide sm-hide xs-hide" />
-                    <Container className="col col-6 md-pl4 md-ml4 sm-hide xs-hide">
+                <Container
+                    className="flex items-center lg-pt3 md-pt3 sm-pt1 lg-mt1 md-mt1 sm-mt0 lg-justify-end md-justify-end sm-justify-start"
+                    width="100%"
+                >
+                    <Container className="sm-hide xs-hide">
                         <Container className="flex items-center justify-between right" width="300px">
-                            {this._renderMenuItems(menuItemInfos)}
+                            {this._renderMenuItems(constants.DEVELOPER_TOPBAR_LINKS)}
                         </Container>
                     </Container>
                     <Container className="lg-hide md-hide">
-                        <Container paddingTop="6px" paddingLeft="18px">
+                        <Container paddingTop="6px">
                             <DocsLogo height={30} />
                         </Container>
                     </Container>
@@ -104,33 +63,25 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                         />
                     </Container>
                 </Container>
-                <Container width={'100%'} height={'1px'} backgroundColor={colors.grey300} marginTop={'11px'} />
-                {this._renderDrawer()}
+                <Container width={'100%'} height={'1px'} backgroundColor={colors.grey300} marginTop={'13px'} />
+                {this.props.screenWidth === ScreenWidths.Sm && this._renderDrawer()}
             </Container>
         );
     }
-    private _renderMenuItems(menuItemInfos: MenuItemInfo[]): React.ReactNode {
-        const menuItems = _.map(menuItemInfos, menuItemInfo => {
+    private _renderMenuItems(menuItemLinks: ALink[]): React.ReactNode {
+        const menuItems = _.map(menuItemLinks, menuItemInfo => {
             return (
-                <a
+                <Link
                     key={`menu-item-${menuItemInfo.title}`}
-                    href={menuItemInfo.url}
-                    target="_blank"
-                    className="text-decoration-none"
+                    to={menuItemInfo.to}
+                    shouldOpenInNewTab={menuItemInfo.shouldOpenInNewTab}
                 >
-                    <Container className="flex">
-                        <img src={menuItemInfo.iconUrl} width="18" />
-                        <Container className="flex items-center" paddingLeft="4px">
-                            <Text
-                                fontSize="16px"
-                                fontWeight={menuItemInfo.fontWeight || 'normal'}
-                                fontColor={menuItemInfo.fontColor}
-                            >
-                                {menuItemInfo.title}
-                            </Text>
-                        </Container>
+                    <Container className="flex items-center" paddingLeft="4px">
+                        <Text fontSize="16px" fontColor={colors.lightLinkBlue} fontWeight="bold">
+                            {this.props.translate.get(menuItemInfo.title as Key, Deco.Cap)}
+                        </Text>
                     </Container>
-                </a>
+                </Link>
             );
         });
         return menuItems;
@@ -143,13 +94,8 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                 openSecondary={true}
                 onRequestChange={this._onMenuButtonClick.bind(this)}
             >
-                <Container className="clearfix pl1">
-                    <NestedSidebarMenu
-                        sectionNameToLinks={this.props.sectionNameToLinks}
-                        shouldDisplaySectionHeaders={true}
-                        shouldReformatMenuItemNames={false}
-                        onMenuItemClick={this._onMenuButtonClick.bind(this)}
-                    />
+                <Container className="clearfix pl1 pt2" onClick={this._onMenuButtonClick.bind(this)}>
+                    {this.props.sidebar}
                 </Container>
             </Drawer>
         );
