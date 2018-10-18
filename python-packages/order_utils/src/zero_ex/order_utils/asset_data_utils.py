@@ -5,6 +5,7 @@ from mypy_extensions import TypedDict
 import eth_abi  # type: ignore
 
 from zero_ex import abi_utils
+from zero_ex.type_assertions import string_or_type_error
 
 
 ERC20_ASSET_DATA_BYTE_LENGTH = 36
@@ -31,11 +32,7 @@ def encode_erc20_asset_data(token_address: str) -> str:
     >>> encode_erc20_asset_data('0x1dc4c1cefef38a777b15aa20260a54e584b16c48')
     '0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48'
     """
-    if not isinstance(token_address, str):
-        raise TypeError(
-            "token_address should be a str, not a "
-            + type(token_address).__name__
-        )
+    string_or_type_error(token_address)
 
     return (
         "0x"
@@ -52,10 +49,7 @@ def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
     >>> decode_erc20_asset_data("0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48")
     {'asset_proxy_id': '0xf47261b0', 'token_address': '0x1dc4c1cefef38a777b15aa20260a54e584b16c48'}
     """  # noqa: E501 (line too long)
-    if not isinstance(asset_data, str):
-        raise TypeError(
-            "asset_data should be str, not " + type(asset_data).__name__
-        )
+    string_or_type_error(asset_data)
 
     if len(asset_data) < ERC20_ASSET_DATA_BYTE_LENGTH:
         raise ValueError(
