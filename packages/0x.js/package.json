@@ -47,7 +47,6 @@
         "@0x/contract-addresses": "^1.0.1",
         "@0x/dev-utils": "^1.0.13",
         "@0x/migrations": "^2.0.0",
-        "@0x/monorepo-scripts": "^1.0.12",
         "@0x/tslint-config": "^1.0.9",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
