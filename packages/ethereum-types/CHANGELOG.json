@@ -1,10 +1,18 @@
 [
     {
-        "version": "1.1.0",
+        "version": "1.1.1",
         "changes": [
             {
                 "note": "Add `JSONRPCResponseError` and error field on `JSONRPCResponsePayload`.",
                 "pr": 1102
+            }
+        ]
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Unpublished package."
             }
         ]
     },
