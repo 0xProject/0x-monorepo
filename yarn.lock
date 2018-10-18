@@ -12164,7 +12164,7 @@ react-router@^4.2.0:
     prop-types "^15.5.4"
     warning "^3.0.0"
 
-react-scroll@0xproject/react-scroll#similar-to-pr-330:
+react-scroll@0xproject/react-scroll#similar-to-pr-330-but-with-replace-state:
   version "1.7.10"
   resolved "https://codeload.github.com/0xproject/react-scroll/tar.gz/0f625b270d7e966313cac8b811c0ae807b37e170"
   dependencies:
