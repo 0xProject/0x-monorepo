@@ -93,7 +93,7 @@ export class EthAmountRow extends React.Component<EthAmountRowProps> {
                                 ethAmount,
                                 4,
                                 <Container opacity={0.5}>
-                                    <AmountPlaceholder color={ColorOption.lightGrey} pulsating={isLoading} />
+                                    <AmountPlaceholder color={ColorOption.lightGrey} isPulsating={isLoading} />
                                 </Container>,
                             )}
                         </Text>

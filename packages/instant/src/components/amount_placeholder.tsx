@@ -17,10 +17,10 @@ export const PlainPlaceholder: React.StatelessComponent<PlainPlaceholder> = prop
 
 export interface AmountPlaceholderProps {
     color: ColorOption;
-    pulsating: boolean;
+    isPulsating: boolean;
 }
 export const AmountPlaceholder: React.StatelessComponent<AmountPlaceholderProps> = props => {
-    if (props.pulsating) {
+    if (props.isPulsating) {
         return (
             <Pulse>
                 <PlainPlaceholder color={props.color} />
