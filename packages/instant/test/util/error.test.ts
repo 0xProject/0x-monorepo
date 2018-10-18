@@ -48,7 +48,7 @@ describe('errorUtil', () => {
         });
         it('should return default for AssetUnavailable error', () => {
             const assetUnavailableError = new Error(`${AssetBuyerError.AssetUnavailable}: For assetData xyz`);
-            expect(errorUtil.errorDescription(assetUnavailableError, ZRX_ASSET).message).toEqual(
+            expect(errorUtil.errorDescription(assetUnavailableError, undefined).message).toEqual(
                 'This asset is currently unavailable',
             );
         });

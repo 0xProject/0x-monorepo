@@ -37,9 +37,9 @@ export const assetUtils = {
         const metaData = asset.metaData;
         switch (metaData.assetProxyId) {
             case AssetProxyId.ERC20:
-                return metaData.symbol;
+                return metaData.symbol.toUpperCase();
             case AssetProxyId.ERC721:
-                return metaData.name;
+                return metaData.name.toUpperCase();
             default:
                 return defaultName;
         }
