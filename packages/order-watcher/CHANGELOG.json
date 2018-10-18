@@ -11,7 +11,8 @@
                     "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers. Constructor has a new optional `contractAddresses` parameter.",
                 "pr": 1105
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "version": "2.1.1",

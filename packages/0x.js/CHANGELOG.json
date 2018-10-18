@@ -29,7 +29,8 @@
                 "note": "Export new `AssetData` type from types",
                 "pr": 1131
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "version": "1.0.8",

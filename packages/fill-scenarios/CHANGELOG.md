@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.8 - _October 18, 2018_
+
+    * Updated to use new @0xproject/contract-artifacts and @0xproject/abi-gen-wrappers packages (#1105)
+
 ## v1.0.7 - _October 4, 2018_
 
     * Dependencies updated
@@ -41,7 +45,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.1-rc.3 - _August 13, 2018_
+## v1.0.1-rc.3 - _August 14, 2018_
 
     * Updated to use latest orderFactory interface, fixed `feeRecipient` spelling error in public interface (#936)
     * Dependencies updated

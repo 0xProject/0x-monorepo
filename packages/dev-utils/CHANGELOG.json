@@ -6,7 +6,8 @@
                 "note": "Make web3-provider-engine types a 'dependency' so it's available to users of the library",
                 "pr": 1105
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "version": "1.0.12",
