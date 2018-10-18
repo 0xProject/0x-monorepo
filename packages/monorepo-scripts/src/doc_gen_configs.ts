@@ -16,8 +16,14 @@ export const docGenConfigs: DocGenConfigs = {
         Schema:
             'https://github.com/tdegrunt/jsonschema/blob/5c2edd4baba149964aec0f23c87ad12c25a50dfb/lib/index.d.ts#L49',
         Uint8Array: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array',
+        // HACK: CI can handle these without the namespace but some local setups (Jacob) require the namespace prefix
+        //      This is duplicated until we can discover the source of the issue.
         GanacheOpts: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/ganache-core/index.d.ts#L8',
         keystore: 'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/eth-lightwallet/index.d.ts#L36',
+        'Ganache.GanacheOpts':
+            'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/ganache-core/index.d.ts#L8',
+        'lightwallet.keystore':
+            'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/eth-lightwallet/index.d.ts#L36',
     },
     // If a 0x package re-exports an external package, we should add a link to it's exported items here
     EXTERNAL_EXPORT_TO_LINK: {
