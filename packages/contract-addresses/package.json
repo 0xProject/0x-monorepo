@@ -1,6 +1,6 @@
 {
     "name": "@0x/contract-addresses",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -25,8 +25,8 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-addresses/README.md",
     "devDependencies": {
         "@types/lodash": "4.14.104",
-        "typescript": "3.0.1",
-        "shx": "^0.2.2"
+        "shx": "^0.2.2",
+        "typescript": "3.0.1"
     },
     "dependencies": {
         "lodash": "^4.17.5"
