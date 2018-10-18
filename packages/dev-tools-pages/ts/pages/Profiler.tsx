@@ -9,11 +9,19 @@ import { Tabs, TabBlock } from 'ts/components/Tabs';
 import Code from 'ts/components/Code';
 import InlineCode from 'ts/components/InlineCode';
 import List from 'ts/components/List';
+import Intro from 'ts/components/Intro';
 
 function Profiler(props: any) {
     return (
         <Base context={context}>
             <Container>
+                <Intro title="ra">
+                    <p>
+                        Sol-profiler gathers line-by-line gas usage for any transaction submitted through your provider.
+                        This will help you find unexpected inefficiencies in parts of your smart contract, and take a
+                        data-driven approach to optimizing it.
+                    </p>
+                </Intro>
                 <Main>
                     <ContentBlock title="Required steps">
                         <List items={['Step 1', 'Step 2']} />
