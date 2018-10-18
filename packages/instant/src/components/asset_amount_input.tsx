@@ -1,10 +1,10 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { oc } from 'ts-optchain';
 
 import { ColorOption } from '../style/theme';
 import { ERC20Asset } from '../types';
+import { assetUtils } from '../util/asset';
 import { util } from '../util/util';
 
 import { AmountInput, AmountInputProps } from './amount_input';
@@ -27,7 +27,7 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps> {
                 <AmountInput {...rest} onChange={this._handleChange} />
                 <Container display="inline-block" marginLeft="10px">
                     <Text fontSize={rest.fontSize} fontColor={ColorOption.white} textTransform="uppercase">
-                        {oc(asset).metaData.symbol()}
+                        {assetUtils.bestNameForAsset(asset)}
                     </Text>
                 </Container>
             </Container>

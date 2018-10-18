@@ -1,6 +1,6 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 
-import { AssetPairsResponse } from '@0xproject/types';
+import { AssetPairsResponse } from '@0x/types';
 
 export const assetDataPairsResponse: AssetPairsResponse = {
     total: 43,

@@ -26,7 +26,8 @@
                 "note": "Add missing types to public interface",
                 "pr": 1139
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "version": "2.0.0",

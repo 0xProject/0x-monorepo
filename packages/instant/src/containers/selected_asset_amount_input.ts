@@ -1,7 +1,7 @@
-import { AssetBuyer } from '@0xproject/asset-buyer';
-import { AssetProxyId } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
+import { AssetProxyId } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -11,6 +11,7 @@ import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { AsyncProcessState, ERC20Asset } from '../types';
+import { errorUtil } from '../util/error';
 
 import { AssetAmountInput } from '../components/asset_amount_input';
 
@@ -39,7 +40,7 @@ type FinalProps = ConnectedProps & SelectedAssetAmountInputProps;
 
 const mapStateToProps = (state: State, _ownProps: SelectedAssetAmountInputProps): ConnectedState => {
     const selectedAsset = state.selectedAsset;
-    if (_.isUndefined(selectedAsset) || selectedAsset.assetProxyId !== AssetProxyId.ERC20) {
+    if (_.isUndefined(selectedAsset) || selectedAsset.metaData.assetProxyId !== AssetProxyId.ERC20) {
         return {
             value: state.selectedAssetAmount,
         };
@@ -52,22 +53,27 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetAmountInputProps)
 };
 
 const updateBuyQuoteAsync = async (
+    assetBuyer: AssetBuyer,
     dispatch: Dispatch<Action>,
-    assetBuyer?: AssetBuyer,
-    asset?: ERC20Asset,
-    assetAmount?: BigNumber,
+    asset: ERC20Asset,
+    assetAmount: BigNumber,
 ): Promise<void> => {
-    if (
-        _.isUndefined(assetBuyer) ||
-        _.isUndefined(assetAmount) ||
-        _.isUndefined(asset) ||
-        _.isUndefined(asset.metaData)
-    ) {
-        return;
-    }
     // get a new buy quote.
     const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetAmount, asset.metaData.decimals);
-    const newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue);
+
+    // mark quote as pending
+    dispatch(actions.updateBuyQuoteStatePending());
+
+    let newBuyQuote: BuyQuote | undefined;
+    try {
+        newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue);
+    } catch (error) {
+        dispatch(actions.updateBuyQuoteStateFailure());
+        errorUtil.errorFlasher.flashNewError(dispatch, error);
+        return;
+    }
+    // We have a successful new buy quote
+    errorUtil.errorFlasher.clearError(dispatch);
     // invalidate the last buy quote.
     dispatch(actions.updateLatestBuyQuote(newBuyQuote));
 };
@@ -84,9 +90,14 @@ const mapDispatchToProps = (
         // invalidate the last buy quote.
         dispatch(actions.updateLatestBuyQuote(undefined));
         // reset our buy state
-        dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.NONE));
-        // tslint:disable-next-line:no-floating-promises
-        debouncedUpdateBuyQuoteAsync(dispatch, assetBuyer, asset, value);
+        dispatch(actions.updatebuyOrderState(AsyncProcessState.NONE));
+
+        if (!_.isUndefined(value) && !_.isUndefined(asset) && !_.isUndefined(assetBuyer)) {
+            // even if it's debounced, give them the illusion it's loading
+            dispatch(actions.updateBuyQuoteStatePending());
+            // tslint:disable-next-line:no-floating-promises
+            debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value);
+        }
     },
 });
 

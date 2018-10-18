@@ -1,23 +1,23 @@
-## @0xproject/sol-resolver
+## @0x/sol-resolver
 
 A Solidity import resolver used by [sol-compiler](https://github.com/0xProject/0x-monorepo/tree/development/packages/sol-compiler).
 
 ## Installation
 
 ```bash
-yarn add @0xproject/sol-resolver
+yarn add @0x/sol-resolver
 ```
 
 **Import**
 
 ```javascript
-import { Resolver } from '@0xproject/sol-resolver';
+import { Resolver } from '@0x/sol-resolver';
 ```
 
 or
 
 ```javascript
-var Resolver = require('@0xproject/sol-resolver').Resolver;
+var Resolver = require('@0x/sol-resolver').Resolver;
 ```
 
 ## Contributing
@@ -45,13 +45,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/sol-resolver yarn build
+PKG=@0x/sol-resolver yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/sol-resolver yarn watch
+PKG=@0x/sol-resolver yarn watch
 ```
 
 ### Clean

@@ -18,7 +18,7 @@ import { DocGenerateAndUploadUtils } from './utils/doc_generate_and_upload_utils
 import { publishReleaseNotesAsync } from './utils/github_release_utils';
 import { utils } from './utils/utils';
 
-const NPM_NAMESPACE = '@0xproject/';
+const NPM_NAMESPACE = '@0x/';
 const TODAYS_TIMESTAMP = moment().unix();
 
 async function confirmAsync(message: string): Promise<void> {
@@ -35,6 +35,10 @@ async function confirmAsync(message: string): Promise<void> {
     // Fetch public, updated Lerna packages
     const shouldIncludePrivate = true;
     const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
+    if (_.isEmpty(allUpdatedPackages)) {
+        utils.log('No packages need publishing');
+        process.exit(0);
+    }
     const packagesWithDocs = getPackagesWithDocs(allUpdatedPackages);
 
     if (!configs.IS_LOCAL_PUBLISH) {
@@ -96,7 +100,7 @@ function getPackagesWithDocs(allUpdatedPackages: Package[]): Package[] {
     const packagesWithDocPages = packagesWithDocPagesStringIfExist.split(' ');
     const updatedPackagesWithDocPages: Package[] = [];
     _.each(allUpdatedPackages, pkg => {
-        const nameWithoutPrefix = pkg.packageJson.name.replace('@0xproject/', '');
+        const nameWithoutPrefix = pkg.packageJson.name.replace('@0x/', '');
         if (_.includes(packagesWithDocPages, nameWithoutPrefix)) {
             updatedPackagesWithDocPages.push(pkg);
         }
@@ -110,7 +114,7 @@ async function generateAndUploadDocJsonsAsync(
     shouldUploadDocs: boolean,
 ): Promise<void> {
     for (const pkg of packagesWithDocs) {
-        const nameWithoutPrefix = pkg.packageJson.name.replace('@0xproject/', '');
+        const nameWithoutPrefix = pkg.packageJson.name.replace('@0x/', '');
         const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(nameWithoutPrefix, isStaging, shouldUploadDocs);
         await docGenerateAndUploadUtils.generateAndUploadDocsAsync();
     }
@@ -130,7 +134,7 @@ async function confirmDocPagesRenderAsync(packagesWithDocs: Package[]): Promise<
 
     _.each(packagesWithDocs, pkg => {
         const name = pkg.packageJson.name;
-        const nameWithoutPrefix = _.startsWith(name, NPM_NAMESPACE) ? name.split('@0xproject/')[1] : name;
+        const nameWithoutPrefix = _.startsWith(name, NPM_NAMESPACE) ? name.split('@0x/')[1] : name;
         const link = `${constants.stagingWebsite}/docs/${nameWithoutPrefix}`;
         // tslint:disable-next-line:no-floating-promises
         opn(link);

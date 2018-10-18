@@ -1,5 +1,5 @@
-import { assetDataUtils } from '@0xproject/order-utils';
-import { AssetProxyId, ObjectMap } from '@0xproject/types';
+import { assetDataUtils } from '@0x/order-utils';
+import { AssetProxyId, ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 
 import { assetDataNetworkMapping } from '../data/asset_data_network_mapping';
@@ -8,7 +8,6 @@ import { Asset, AssetMetaData, Network, ZeroExInstantError } from '../types';
 export const assetUtils = {
     createAssetFromAssetData: (assetData: string, assetMetaDataMap: ObjectMap<AssetMetaData>): Asset => {
         return {
-            assetProxyId: assetDataUtils.decodeAssetProxyId(assetData),
             assetData,
             metaData: assetUtils.getMetaDataOrThrow(assetData, assetMetaDataMap),
         };
@@ -30,5 +29,19 @@ export const assetUtils = {
             throw new Error();
         }
         return metaData;
+    },
+    bestNameForAsset: (asset?: Asset, defaultName: string = '???'): string => {
+        if (_.isUndefined(asset)) {
+            return defaultName;
+        }
+        const metaData = asset.metaData;
+        switch (metaData.assetProxyId) {
+            case AssetProxyId.ERC20:
+                return metaData.symbol;
+            case AssetProxyId.ERC721:
+                return metaData.name;
+            default:
+                return defaultName;
+        }
     },
 };

@@ -9,7 +9,7 @@ import {
     RawLog,
     SolidityTypes,
 } from 'ethereum-types';
-import { ethers } from 'ethers';
+import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { addressUtils } from './address_utils';

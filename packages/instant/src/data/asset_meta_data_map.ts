@@ -1,4 +1,4 @@
-import { AssetProxyId, ObjectMap } from '@0xproject/types';
+import { AssetProxyId, ObjectMap } from '@0x/types';
 
 import { AssetMetaData } from '../types';
 

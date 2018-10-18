@@ -1,4 +1,4 @@
-import { SignatureType } from '@0xproject/types';
+import { SignatureType } from '@0x/types';
 import * as ethUtil from 'ethereumjs-util';
 
 export const signingUtils = {

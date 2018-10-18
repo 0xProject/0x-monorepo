@@ -1,4 +1,4 @@
-import { ECSignature } from '@0xproject/types';
+import { ECSignature } from '@0x/types';
 import { JSONRPCRequestPayload } from 'ethereum-types';
 import HDNode = require('hdkey');
 

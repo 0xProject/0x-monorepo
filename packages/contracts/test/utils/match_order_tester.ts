@@ -1,6 +1,6 @@
-import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { AssetProxyId, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { AssetProxyId, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 

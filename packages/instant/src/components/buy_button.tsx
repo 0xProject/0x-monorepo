@@ -1,4 +1,4 @@
-import { AssetBuyer, BuyQuote } from '@0xproject/asset-buyer';
+import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
 

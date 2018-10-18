@@ -1,7 +1,7 @@
-import { DummyERC721TokenContract } from '@0xproject/abi-gen-wrappers';
-import { DummyERC721Token } from '@0xproject/contract-artifacts';
-import { generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { BigNumber } from '@0xproject/utils';
+import { DummyERC721TokenContract } from '@0x/abi-gen-wrappers';
+import { DummyERC721Token } from '@0x/contract-artifacts';
+import { generatePseudoRandomSalt } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 
 import { provider, txDefaults, web3Wrapper } from './web3_wrapper';
 

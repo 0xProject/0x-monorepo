@@ -1,9 +1,10 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { SelectedAssetAmountInput } from '../containers/selected_asset_amount_input';
 import { ColorOption } from '../style/theme';
+import { AsyncProcessState } from '../types';
 import { format } from '../util/format';
 
 import { Container, Flex, Text } from './ui';
@@ -12,20 +13,45 @@ export interface InstantHeadingProps {
     selectedAssetAmount?: BigNumber;
     totalEthBaseAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
+    quoteState: AsyncProcessState;
 }
 
-const displaytotalEthBaseAmount = ({ selectedAssetAmount, totalEthBaseAmount }: InstantHeadingProps): string => {
+const Placeholder = () => (
+    <Text fontWeight="bold" fontColor={ColorOption.white}>
+        &mdash;
+    </Text>
+);
+const displaytotalEthBaseAmount = ({
+    selectedAssetAmount,
+    totalEthBaseAmount,
+}: InstantHeadingProps): React.ReactNode => {
     if (_.isUndefined(selectedAssetAmount)) {
         return '0 ETH';
     }
-    return format.ethBaseAmount(totalEthBaseAmount, 4, '...loading');
+    return format.ethBaseAmount(totalEthBaseAmount, 4, <Placeholder />);
 };
 
-const displayUsdAmount = ({ totalEthBaseAmount, selectedAssetAmount, ethUsdPrice }: InstantHeadingProps): string => {
+const displayUsdAmount = ({
+    totalEthBaseAmount,
+    selectedAssetAmount,
+    ethUsdPrice,
+}: InstantHeadingProps): React.ReactNode => {
     if (_.isUndefined(selectedAssetAmount)) {
         return '$0.00';
     }
-    return format.ethBaseAmountInUsd(totalEthBaseAmount, ethUsdPrice, 2, '...loading');
+    return format.ethBaseAmountInUsd(totalEthBaseAmount, ethUsdPrice, 2, <Placeholder />);
+};
+
+const loadingOrAmount = (quoteState: AsyncProcessState, amount: React.ReactNode): React.ReactNode => {
+    if (quoteState === AsyncProcessState.PENDING) {
+        return (
+            <Text fontWeight="bold" fontColor={ColorOption.white}>
+                &hellip;loading
+            </Text>
+        );
+    } else {
+        return amount;
+    }
 };
 
 export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = props => (
@@ -47,11 +73,11 @@ export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = pro
             <Flex direction="column" justify="space-between">
                 <Container marginBottom="5px">
                     <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
-                        {displaytotalEthBaseAmount(props)}
+                        {loadingOrAmount(props.quoteState, displaytotalEthBaseAmount(props))}
                     </Text>
                 </Container>
                 <Text fontSize="16px" fontColor={ColorOption.white} opacity={0.7}>
-                    {displayUsdAmount(props)}
+                    {loadingOrAmount(props.quoteState, displayUsdAmount(props))}
                 </Text>
             </Flex>
         </Flex>

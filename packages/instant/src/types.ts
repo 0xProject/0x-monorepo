@@ -1,11 +1,11 @@
-import { AssetProxyId, ObjectMap } from '@0xproject/types';
+import { AssetProxyId, ObjectMap } from '@0x/types';
 
 // Reusable
 export enum AsyncProcessState {
-    NONE,
-    PENDING,
-    SUCCESS,
-    FAILURE,
+    NONE = 'None',
+    PENDING = 'Pending',
+    SUCCESS = 'Success',
+    FAILURE = 'Failure',
 }
 
 export type FunctionType = (...args: any[]) => any;
@@ -29,18 +29,15 @@ export interface ERC721AssetMetaData {
 export type AssetMetaData = ERC20AssetMetaData | ERC721AssetMetaData;
 
 export interface ERC20Asset {
-    assetProxyId: AssetProxyId.ERC20;
     assetData: string;
     metaData: ERC20AssetMetaData;
 }
 
 export interface ERC721Asset {
-    assetProxyId: AssetProxyId.ERC721;
     assetData: string;
     metaData: ERC721AssetMetaData;
 }
 export interface Asset {
-    assetProxyId: AssetProxyId;
     assetData: string;
     metaData: AssetMetaData;
 }

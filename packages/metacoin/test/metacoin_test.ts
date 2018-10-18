@@ -1,5 +1,5 @@
-import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
-import { BigNumber } from '@0xproject/utils';
+import { BlockchainLifecycle, devConstants } from '@0x/dev-utils';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { ContractArtifact, LogWithDecodedArgs } from 'ethereum-types';
 

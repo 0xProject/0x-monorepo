@@ -1,4 +1,4 @@
-import { logUtils } from '@0xproject/utils';
+import { logUtils } from '@0x/utils';
 import Rollbar = require('rollbar');
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';

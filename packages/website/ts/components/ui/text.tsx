@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors } from '@0x/react-shared';
 import { darken } from 'polished';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
@@ -19,7 +19,9 @@ export interface TextProps {
     textDecorationLine?: string;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
     hoverColor?: string;
+    letterSpacing?: string | number;
     noWrap?: boolean;
+    textAlign?: string;
     display?: string;
 }
 
@@ -34,6 +36,8 @@ export const Text = styled(PlainText)`
     font-style: ${props => props.fontStyle};
     font-weight: ${props => props.fontWeight};
     font-size: ${props => props.fontSize};
+    text-align: ${props => props.textAlign};
+    letter-spacing: ${props => props.letterSpacing};
     text-decoration-line: ${props => props.textDecorationLine};
     ${props => (props.lineHeight ? `line-height: ${props.lineHeight}` : '')};
     ${props => (props.center ? 'text-align: center' : '')};

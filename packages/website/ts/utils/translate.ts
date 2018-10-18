@@ -80,7 +80,12 @@ export class Translate {
 
                 case Deco.CapWords:
                     const words = text.split(' ');
-                    const capitalizedWords = _.map(words, w => this._capitalize(w));
+                    const capitalizedWords = _.map(words, (w: string, i: number) => {
+                        if (w.length === 1) {
+                            return w;
+                        }
+                        return this._capitalize(w);
+                    });
                     text = capitalizedWords.join(' ');
                     break;
 

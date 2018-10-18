@@ -1,10 +1,10 @@
-import { DummyERC20TokenContract, DummyERC721TokenContract, ExchangeContract } from '@0xproject/abi-gen-wrappers';
-import * as artifacts from '@0xproject/contract-artifacts';
-import { assetDataUtils } from '@0xproject/order-utils';
-import { orderFactory } from '@0xproject/order-utils/lib/src/order_factory';
-import { AssetProxyId, ERC721AssetData, OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { DummyERC20TokenContract, DummyERC721TokenContract, ExchangeContract } from '@0x/abi-gen-wrappers';
+import * as artifacts from '@0x/contract-artifacts';
+import { assetDataUtils } from '@0x/order-utils';
+import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
+import { AssetProxyId, ERC721AssetData, OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 

@@ -1,5 +1,5 @@
-import { intervalUtils, logUtils } from '@0xproject/utils';
-import { marshaller, Web3Wrapper } from '@0xproject/web3-wrapper';
+import { intervalUtils, logUtils } from '@0x/utils';
+import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import { BlockParamLiteral, FilterObject, LogEntry, Provider, RawLogEntry } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';

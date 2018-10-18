@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import * as yargs from 'yargs';
 
-import { logUtils } from '@0xproject/utils';
+import { logUtils } from '@0x/utils';
 
 import { SolDoc } from './sol_doc';
 

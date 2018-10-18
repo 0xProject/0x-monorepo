@@ -1,5 +1,5 @@
-import { AssetBuyer } from '@0xproject/asset-buyer';
-import { ObjectMap } from '@0xproject/types';
+import { AssetBuyer } from '@0x/asset-buyer';
+import { ObjectMap } from '@0x/types';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 

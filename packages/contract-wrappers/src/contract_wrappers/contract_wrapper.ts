@@ -1,5 +1,5 @@
-import { AbiDecoder, intervalUtils, logUtils } from '@0xproject/utils';
-import { marshaller, Web3Wrapper } from '@0xproject/web3-wrapper';
+import { AbiDecoder, intervalUtils, logUtils } from '@0x/utils';
+import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import {
     BlockParamLiteral,
     ContractAbi,

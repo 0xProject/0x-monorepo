@@ -23,9 +23,9 @@
         "wsrun": "wsrun",
         "lerna": "lerna",
         "build": "wsrun build $PKG --fast-exit -r --stages",
-        "build:no_website": "wsrun build $PKG --fast-exit -r --stages --exclude @0xproject/website",
-        "build:ci:no_website": "wsrun build:ci $PKG --fast-exit -r --stages --exclude @0xproject/website",
-        "build:monorepo_scripts": "PKG=@0xproject/monorepo-scripts yarn build",
+        "build:no_website": "wsrun build $PKG --fast-exit -r --stages --exclude @0x/website",
+        "build:ci:no_website": "wsrun build:ci $PKG --fast-exit -r --stages --exclude @0x/website",
+        "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",
         "clean": "wsrun clean $PKG --fast-exit -r --parallel",
@@ -42,7 +42,7 @@
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
         "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types asset-buyer"
     },
-    "bundlewatch" : {
+    "bundlewatch": {
         "files": [
             {
                 "path": "packages/0x.js/_bundles/index.min.js",
@@ -54,18 +54,22 @@
             }
         ],
         "ci": {
-            "trackBranches": ["master", "development"],
+            "trackBranches": [
+                "master",
+                "development"
+            ],
             "repoBranchBase": "development"
         }
     },
     "devDependencies": {
         "@0x-lerna-fork/lerna": "3.0.0-beta.25",
+        "@0xproject/npm-cli-login": "^0.0.11",
         "async-child-process": "^1.1.1",
         "bundlewatch": "^0.2.1",
         "coveralls": "^3.0.0",
         "ganache-cli": "6.1.8",
         "lcov-result-merger": "^3.0.0",
-        "@0xproject/npm-cli-login": "^0.0.11",
+        "lerna": "^3.0.0-beta.25",
         "npm-run-all": "^4.1.2",
         "prettier": "^1.11.1",
         "source-map-support": "^0.5.6",

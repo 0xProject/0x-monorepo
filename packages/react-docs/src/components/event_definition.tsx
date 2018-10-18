@@ -1,5 +1,5 @@
-import { AnchorTitle, colors, HeaderSizes } from '@0xproject/react-shared';
-import { Event, EventArg } from '@0xproject/types';
+import { AnchorTitle, colors, HeaderSizes } from '@0x/react-shared';
+import { Event, EventArg } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 

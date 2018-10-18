@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.13 - _October 18, 2018_
+
+    * Make web3-provider-engine types a 'dependency' so it's available to users of the library (#1105)
+
 ## v1.0.12 - _October 4, 2018_
 
     * Dependencies updated
@@ -37,7 +41,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.4 - _August 13, 2018_
+## v1.0.4 - _August 14, 2018_
 
     * Dependencies updated
 

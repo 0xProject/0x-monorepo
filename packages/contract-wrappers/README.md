@@ -1,4 +1,4 @@
-## @0xproject/contract-wrappers
+## @0x/contract-wrappers
 
 Smart TS wrappers for 0x smart contracts. The wrappers have simplified interfaces, perform client-side validation on transactions and throw helpful error messages.
 
@@ -9,20 +9,20 @@ Smart TS wrappers for 0x smart contracts. The wrappers have simplified interface
 **Install**
 
 ```bash
-npm install @0xproject/contract-wrappers --save
+npm install @0x/contract-wrappers --save
 ```
 
 **Import**
 
 ```javascript
-import { ContractWrappers } from '@0xproject/contract-wrappers';
+import { ContractWrappers } from '@0x/contract-wrappers';
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 
@@ -51,13 +51,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/contract-wrappers yarn build
+PKG=@0x/contract-wrappers yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/contract-wrappers yarn watch
+PKG=@0x/contract-wrappers yarn watch
 ```
 
 ```bash

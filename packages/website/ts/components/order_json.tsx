@@ -1,4 +1,4 @@
-import { BigNumber, fetchAsync, logUtils } from '@0xproject/utils';
+import { BigNumber, fetchAsync, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';

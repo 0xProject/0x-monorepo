@@ -14,7 +14,8 @@
                 "note": "Add `AssetData` union type (`type AssetData = ERC20AssetData | ERC721AssetData`)",
                 "pr": 1131
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "timestamp": 1538693146,

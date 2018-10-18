@@ -1,27 +1,28 @@
 import {
+    ALink,
     colors,
     constants as sharedConstants,
     HeaderSizes,
+    Link,
     MarkdownSection,
     NestedSidebarMenu,
-    Styles,
     utils as sharedUtils,
-} from '@0xproject/react-shared';
+} from '@0x/react-shared';
+import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
-import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
-import DocumentTitle = require('react-document-title');
-import { SidebarHeader } from 'ts/components/sidebar_header';
-import { TopBar } from 'ts/components/top_bar/top_bar';
+import { SidebarHeader } from 'ts/components/documentation/sidebar_header';
+import { Button } from 'ts/components/ui/button';
+import { Container } from 'ts/components/ui/container';
+import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Article, ArticlesBySection } from 'ts/types';
+import { Article, ArticlesBySection, Deco, Key, ScreenWidths } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
-const TOP_BAR_HEIGHT = 60;
 const WIKI_NOT_READY_BACKOUT_TIMEOUT_MS = 5000;
 
 export interface WikiProps {
@@ -29,30 +30,13 @@ export interface WikiProps {
     location: Location;
     dispatcher: Dispatcher;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface WikiState {
     articlesBySection: ArticlesBySection;
     isHoveringSidebar: boolean;
 }
-
-const styles: Styles = {
-    mainContainers: {
-        position: 'absolute',
-        top: 1,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        overflow: 'hidden',
-        height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
-        WebkitOverflowScrolling: 'touch',
-    },
-    menuContainer: {
-        borderColor: colors.grey300,
-        maxWidth: 330,
-        backgroundColor: colors.gray40,
-    },
-};
 
 export class Wiki extends React.Component<WikiProps, WikiState> {
     private _wikiBackoffTimeoutId: number;
@@ -78,88 +62,72 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
         window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
     public render(): React.ReactNode {
-        const menuSubsectionsBySection = _.isUndefined(this.state.articlesBySection)
+        const sectionNameToLinks = _.isUndefined(this.state.articlesBySection)
             ? {}
-            : this._getMenuSubsectionsBySection(this.state.articlesBySection);
-        const mainContainersStyle: React.CSSProperties = {
-            ...styles.mainContainers,
-            overflow: this.state.isHoveringSidebar ? 'auto' : 'hidden',
-        };
-        const sidebarHeader = <SidebarHeader title="Wiki" iconUrl="/images/doc_icons/wiki.png" />;
-        return (
-            <div>
-                <DocumentTitle title="0x Protocol Wiki" />
-                <TopBar
-                    blockchainIsLoaded={false}
-                    location={this.props.location}
-                    menuSubsectionsBySection={menuSubsectionsBySection}
-                    translate={this.props.translate}
-                    sidebarHeader={sidebarHeader}
-                />
-                {_.isUndefined(this.state.articlesBySection) ? (
-                    <div className="col col-12" style={mainContainersStyle}>
-                        <div
-                            className="relative sm-px2 sm-pt2 sm-m1"
-                            style={{ height: 122, top: '50%', transform: 'translateY(-50%)' }}
-                        >
-                            <div className="center pb2">
-                                <CircularProgress size={40} thickness={5} />
-                            </div>
-                            <div className="center pt2" style={{ paddingBottom: 11 }}>
-                                Loading wiki...
-                            </div>
-                        </div>
-                    </div>
-                ) : (
-                    <div style={{ width: '100%', height: '100%', backgroundColor: colors.gray40 }}>
-                        <div
-                            className="mx-auto max-width-4 flex"
-                            style={{ color: colors.grey800, height: `calc(100vh - ${TOP_BAR_HEIGHT}px)` }}
-                        >
-                            <div
-                                className="relative lg-pl0 md-pl1 sm-hide xs-hide"
-                                style={{ height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`, width: '36%' }}
-                            >
-                                <div
-                                    className="absolute"
-                                    style={{
-                                        ...styles.menuContainer,
-                                        ...mainContainersStyle,
-                                        height: 'calc(100vh - 76px)',
-                                    }}
-                                    onMouseEnter={this._onSidebarHover.bind(this)}
-                                    onMouseLeave={this._onSidebarHoverOff.bind(this)}
-                                >
-                                    <NestedSidebarMenu
-                                        topLevelMenu={menuSubsectionsBySection}
-                                        menuSubsectionsBySection={menuSubsectionsBySection}
-                                        sidebarHeader={sidebarHeader}
-                                    />
-                                </div>
-                            </div>
-                            <div
-                                className="relative"
-                                style={{
-                                    width: '100%',
-                                    height: `calc(100vh - ${TOP_BAR_HEIGHT}px)`,
-                                    backgroundColor: 'white',
-                                }}
-                            >
-                                <div
-                                    id={sharedConstants.SCROLL_CONTAINER_ID}
-                                    style={{ ...mainContainersStyle, overflow: 'auto' }}
-                                    className="absolute"
-                                >
-                                    <div id={sharedConstants.SCROLL_TOP_ID} />
-                                    <div id="wiki" style={{ paddingRight: 2 }}>
-                                        {this._renderWikiArticles()}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+            : this._getSectionNameToLinks(this.state.articlesBySection);
+
+        const mainContent = _.isUndefined(this.state.articlesBySection) ? (
+            <div className="flex justify-center">{this._renderLoading()}</div>
+        ) : (
+            <div id="wiki" style={{ paddingRight: 2 }}>
+                {this._renderWikiArticles()}
             </div>
+        );
+        const sidebar = _.isUndefined(this.state.articlesBySection) ? (
+            <div />
+        ) : (
+            <NestedSidebarMenu sidebarHeader={this._renderSidebarHeader()} sectionNameToLinks={sectionNameToLinks} />
+        );
+        return (
+            <DevelopersPage
+                sidebar={sidebar}
+                mainContent={mainContent}
+                location={this.props.location}
+                screenWidth={this.props.screenWidth}
+                translate={this.props.translate}
+                dispatcher={this.props.dispatcher}
+            />
+        );
+    }
+    private _renderSidebarHeader(): React.ReactNode {
+        const menuItems = _.map(constants.DEVELOPER_TOPBAR_LINKS, menuItemInfo => {
+            return (
+                <Link
+                    key={`menu-item-${menuItemInfo.title}`}
+                    to={menuItemInfo.to}
+                    shouldOpenInNewTab={menuItemInfo.shouldOpenInNewTab}
+                >
+                    <Button
+                        borderRadius="4px"
+                        padding="0.4em 6px"
+                        width="100%"
+                        fontColor={colors.grey800}
+                        fontSize="14px"
+                        textAlign="left"
+                    >
+                        {this.props.translate.get(menuItemInfo.title as Key, Deco.Cap)}
+                    </Button>
+                </Link>
+            );
+        });
+        const wikiTitle = this.props.translate.get(Key.Wiki, Deco.Cap);
+        return (
+            <Container>
+                <SidebarHeader screenWidth={this.props.screenWidth} title={wikiTitle} />
+                {menuItems}
+            </Container>
+        );
+    }
+    private _renderLoading(): React.ReactNode {
+        return (
+            <Container className="pt4">
+                <Container className="center pb2">
+                    <CircularProgress size={40} thickness={5} />
+                </Container>
+                <Container className="center pt2" paddingBottom="11px">
+                    Loading wiki...
+                </Container>
+            </Container>
         );
     }
     private _renderWikiArticles(): React.ReactNode {
@@ -179,22 +147,10 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                         headerSize={HeaderSizes.H2}
                         githubLink={githubLink}
                     />
-                    <div className="clearfix mb3 mt2 p3 mx-auto lg-flex md-flex sm-pb4" style={{ maxWidth: 390 }}>
-                        <div className="sm-col sm-col-12 sm-center" style={{ opacity: 0.4, lineHeight: 2.5 }}>
-                            See a way to improve this article?
-                        </div>
-                        <div className="sm-col sm-col-12 lg-col-7 md-col-7 sm-center sm-pt2">
-                            <RaisedButton href={githubLink} target="_blank" label="Edit on Github" />
-                        </div>
-                    </div>
                 </div>
             );
         });
-        return (
-            <div key={`section-${sectionName}`} className="py2 md-px1 sm-px0">
-                {renderedArticles}
-            </div>
-        );
+        return <div key={`section-${sectionName}`}>{renderedArticles}</div>;
     }
     private async _fetchArticlesBySectionAsync(): Promise<void> {
         try {
@@ -223,25 +179,20 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             }
         }
     }
-    private _getMenuSubsectionsBySection(articlesBySection: ArticlesBySection): { [section: string]: string[] } {
+    private _getSectionNameToLinks(articlesBySection: ArticlesBySection): ObjectMap<ALink[]> {
         const sectionNames = _.keys(articlesBySection);
-        const menuSubsectionsBySection: { [section: string]: string[] } = {};
+        const sectionNameToLinks: ObjectMap<ALink[]> = {};
         for (const sectionName of sectionNames) {
             const articles = articlesBySection[sectionName];
-            const articleNames = _.map(articles, article => article.title);
-            menuSubsectionsBySection[sectionName] = articleNames;
+            const articleLinks = _.map(articles, article => {
+                return {
+                    to: sharedUtils.getIdFromName(article.title),
+                    title: article.title,
+                };
+            });
+            sectionNameToLinks[sectionName] = articleLinks;
         }
-        return menuSubsectionsBySection;
-    }
-    private _onSidebarHover(_event: React.FormEvent<HTMLInputElement>): void {
-        this.setState({
-            isHoveringSidebar: true,
-        });
-    }
-    private _onSidebarHoverOff(): void {
-        this.setState({
-            isHoveringSidebar: false,
-        });
+        return sectionNameToLinks;
     }
     private _onHashChanged(_event: any): void {
         const hash = window.location.hash.slice(1);

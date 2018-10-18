@@ -1,4 +1,4 @@
-import { logUtils } from '@0xproject/utils';
+import { logUtils } from '@0x/utils';
 import * as express from 'express';
 import rollbar = require('rollbar');
 
