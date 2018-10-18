@@ -45,7 +45,6 @@
         { "path": "./packages/sol-compiler" },
         { "path": "./packages/sol-cov" },
         { "path": "./packages/sol-resolver" },
-        { "path": "./packages/sra-report" },
         { "path": "./packages/sra-spec" },
         { "path": "./packages/subproviders" },
         { "path": "./packages/testnet-faucets" },
