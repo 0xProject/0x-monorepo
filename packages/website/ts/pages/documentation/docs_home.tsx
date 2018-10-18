@@ -113,6 +113,14 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 shouldOpenInNewTab: true,
             },
         },
+        {
+            description:
+                'Convenience package for buying assets represented on the Ethereum blockchain using 0x. In its simplest form, the package helps in the usage of the [0x forwarder contract](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md), which allows users to execute [Wrapped Ether](https://weth.io/) based 0x orders without having to set allowances, wrap Ether or own ZRX, meaning they can buy tokens with Ether alone. Given some liquidity (0x signed orders), it helps estimate the Ether cost of buying a certain asset (giving a range) and then buying that asset.',
+            link: {
+                title: '@0xproject/asset-buyer',
+                to: WebsitePaths.AssetBuyer,
+            },
+        },
     ],
     [Categories.Ethereum]: [
         {
