@@ -14,6 +14,10 @@
             {
                 "note": "Rename `ecSignOrderHashAsync` to `ecSignHashAsync` removing `SignerType` parameter.",
                 "pr": 1102
+            },
+            {
+                "note": "Use `AssetData` union type for function return values.",
+                "pr": 1131
             }
         ]
     },

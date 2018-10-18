@@ -331,7 +331,7 @@ export class DocGenerateAndUploadUtils {
             throw new Error(
                 `${this._packageName} package exports BUT does not need: \n${excessiveReferencesExceptIgnored.join(
                     '\n',
-                )} \nin it\'s index.ts. Remove them then try again.`,
+                )} \nin it\'s index.ts. Remove them then try again OR if we still want them exported (e.g error enum types), then add them to the IGNORED_EXCESSIVE_TYPES array.`,
             );
         }
     }

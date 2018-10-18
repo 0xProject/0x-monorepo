@@ -38,6 +38,7 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.OrderUtils]: 'order-utils',
     [DocPackages.OrderWatcher]: 'order-watcher',
     [DocPackages.EthereumTypes]: 'ethereum-types',
+    [DocPackages.AssetBuyer]: 'asset-buyer',
 };
 
 export interface DocPageProps {

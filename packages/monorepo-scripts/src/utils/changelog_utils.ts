@@ -19,7 +19,8 @@ CHANGELOG
 
 export const changelogUtils = {
     getChangelogMdTitle(versionChangelog: VersionChangelog): string {
-        const date = moment(`${versionChangelog.timestamp}`, 'X').format('MMMM D, YYYY');
+        // Use UTC rather than the local machines time (formatted date time is +0:00)
+        const date = moment.utc(`${versionChangelog.timestamp}`, 'X').format('MMMM D, YYYY');
         const title = `\n## v${versionChangelog.version} - _${date}_\n\n`;
         return title;
     },

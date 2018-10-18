@@ -1,4 +1,10 @@
-export { Provider } from 'ethereum-types';
+export {
+    JSONRPCRequestPayload,
+    JSONRPCResponsePayload,
+    JSONRPCResponseError,
+    JSONRPCErrorCallback,
+    Provider,
+} from 'ethereum-types';
 export { SignedOrder } from '@0xproject/types';
 export { BigNumber } from '@0xproject/utils';
 
@@ -10,6 +16,7 @@ export {
     AssetBuyerOpts,
     BuyQuote,
     BuyQuoteExecutionOpts,
+    BuyQuoteInfo,
     BuyQuoteRequestOpts,
     OrderProvider,
     OrderProviderRequest,

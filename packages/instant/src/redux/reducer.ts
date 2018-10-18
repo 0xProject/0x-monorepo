@@ -1,16 +1,37 @@
+import { BuyQuote } from '@0xproject/asset-buyer';
 import { BigNumber } from '@0xproject/utils';
 import * as _ from 'lodash';
 
-import { Action, ActionTypes } from '../types';
+import { zrxAssetData } from '../constants';
+import { AsyncProcessState } from '../types';
 
+import { Action, ActionTypes } from './actions';
+
+export enum LatestErrorDisplay {
+    Present,
+    Hidden,
+}
 export interface State {
-    ethUsdPrice?: string;
+    selectedAssetData?: string;
     selectedAssetAmount?: BigNumber;
+    buyOrderState: AsyncProcessState;
+    ethUsdPrice?: BigNumber;
+    latestBuyQuote?: BuyQuote;
+    quoteState: AsyncProcessState;
+    latestError?: any;
+    latestErrorDisplay: LatestErrorDisplay;
 }
 
 export const INITIAL_STATE: State = {
-    ethUsdPrice: undefined,
+    // TODO: Remove hardcoded zrxAssetData
+    selectedAssetData: zrxAssetData,
     selectedAssetAmount: undefined,
+    buyOrderState: AsyncProcessState.NONE,
+    ethUsdPrice: undefined,
+    latestBuyQuote: undefined,
+    latestError: undefined,
+    latestErrorDisplay: LatestErrorDisplay.Hidden,
+    quoteState: AsyncProcessState.NONE,
 };
 
 export const reducer = (state: State = INITIAL_STATE, action: Action): State => {
@@ -24,6 +45,46 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             return {
                 ...state,
                 selectedAssetAmount: action.data,
+            };
+        case ActionTypes.UPDATE_LATEST_BUY_QUOTE:
+            return {
+                ...state,
+                latestBuyQuote: action.data,
+                quoteState: AsyncProcessState.SUCCESS,
+            };
+        case ActionTypes.UPDATE_BUY_QUOTE_STATE_PENDING:
+            return {
+                ...state,
+                latestBuyQuote: undefined,
+                quoteState: AsyncProcessState.PENDING,
+            };
+        case ActionTypes.UPDATE_BUY_QUOTE_STATE_FAILURE:
+            return {
+                ...state,
+                latestBuyQuote: undefined,
+                quoteState: AsyncProcessState.FAILURE,
+            };
+        case ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE:
+            return {
+                ...state,
+                buyOrderState: action.data,
+            };
+        case ActionTypes.SET_ERROR:
+            return {
+                ...state,
+                latestError: action.data,
+                latestErrorDisplay: LatestErrorDisplay.Present,
+            };
+        case ActionTypes.HIDE_ERROR:
+            return {
+                ...state,
+                latestErrorDisplay: LatestErrorDisplay.Hidden,
+            };
+        case ActionTypes.CLEAR_ERROR:
+            return {
+                ...state,
+                latestError: undefined,
+                latestErrorDisplay: LatestErrorDisplay.Hidden,
             };
         default:
             return state;

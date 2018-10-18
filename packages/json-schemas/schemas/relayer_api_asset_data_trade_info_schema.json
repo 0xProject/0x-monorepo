@@ -1,0 +1,11 @@
+{
+    "id": "/relayerApiAssetDataTradeInfoSchema",
+    "type": "object",
+    "properties": {
+        "assetData": { "$ref": "/hexSchema" },
+        "minAmount": { "$ref": "/numberSchema" },
+        "maxAmount": { "$ref": "/numberSchema" },
+        "precision": { "type": "number" }
+    },
+    "required": ["assetData"]
+}
