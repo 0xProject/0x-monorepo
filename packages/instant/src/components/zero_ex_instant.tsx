@@ -3,12 +3,12 @@ import { ObjectMap } from '@0x/types';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 
+import { SelectedAssetThemeProvider } from '../containers/selected_asset_theme_provider';
 import { assetMetaDataMap } from '../data/asset_meta_data_map';
 import { asyncData } from '../redux/async_data';
 import { State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { theme, ThemeProvider } from '../style/theme';
 import { AssetMetaData } from '../types';
 import { assetUtils } from '../util/asset';
 import { getProvider } from '../util/provider';
@@ -53,9 +53,9 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
     public render(): React.ReactNode {
         return (
             <Provider store={this.store}>
-                <ThemeProvider theme={theme}>
+                <SelectedAssetThemeProvider>
                     <ZeroExInstantContainer />
-                </ThemeProvider>
+                </SelectedAssetThemeProvider>
             </Provider>
         );
     }
