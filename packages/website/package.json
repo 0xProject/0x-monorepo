@@ -19,7 +19,6 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "0x.js": "^0.38.6",
         "@0x/contract-wrappers": "^2.0.2",
         "@0x/json-schemas": "^1.0.7",
         "@0x/order-utils": "^1.0.7",

@@ -1,4 +1,3 @@
-import { ZeroEx } from '0x.js';
 import {
     BlockRange,
     ContractWrappers,
@@ -53,6 +52,7 @@ import { backendClient } from 'ts/utils/backend_client';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
+import { fakeTokenRegistry } from 'ts/utils/fake_token_registry';
 import { tokenAddressOverrides } from 'ts/utils/token_address_overrides';
 import { utils } from 'ts/utils/utils';
 import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
@@ -74,7 +74,6 @@ export class Blockchain {
     public networkId: number;
     public nodeVersion: string;
     private _contractWrappers: ContractWrappers;
-    private _zeroEx: ZeroEx;
     private readonly _dispatcher: Dispatcher;
     private _web3Wrapper?: Web3Wrapper;
     private _blockchainWatcher?: BlockchainWatcher;
@@ -228,8 +227,9 @@ export class Blockchain {
         }
     }
     public async isAddressInTokenRegistryAsync(tokenAddress: string): Promise<boolean> {
-        utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
-        const tokenIfExists = await this._zeroEx.tokenRegistry.getTokenIfExistsAsync(tokenAddress);
+        const tokens = fakeTokenRegistry[this.networkId];
+        const tokenIfExists = _.find(tokens, { address: tokenAddress });
+
         // HACK: Override token addresses on testnets
         const tokenSymbolToAddressOverrides = tokenAddressOverrides[this.networkId];
         let isTokenAddressInOverrides = false;
@@ -768,8 +768,7 @@ export class Blockchain {
         if (this.networkId === constants.NETWORK_ID_MAINNET) {
             tokenRegistryTokens = await backendClient.getTokenInfosAsync();
         } else {
-            utils.assert(!_.isUndefined(this._zeroEx), 'ZeroEx must be instantiated.');
-            tokenRegistryTokens = await this._zeroEx.tokenRegistry.getTokensAsync();
+            tokenRegistryTokens = fakeTokenRegistry[this.networkId];
             const tokenSymbolToAddressOverrides = tokenAddressOverrides[this.networkId];
             if (!_.isUndefined(tokenAddressOverrides)) {
                 // HACK: Override token addresses on testnets
@@ -865,11 +864,6 @@ export class Blockchain {
             networkId,
         };
         this._contractWrappers = new ContractWrappers(provider, contractWrappersConfig);
-        if (!_.isUndefined(this._zeroEx)) {
-            this._zeroEx.setProvider(provider, networkId);
-        } else {
-            this._zeroEx = new ZeroEx(provider, { networkId });
-        }
         if (!_.isUndefined(this._blockchainWatcher)) {
             this._blockchainWatcher.destroy();
         }
