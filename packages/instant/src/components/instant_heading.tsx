@@ -13,7 +13,7 @@ export interface InstantHeadingProps {
     selectedAssetAmount?: BigNumber;
     totalEthBaseAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
-    quoteState: AsyncProcessState;
+    quoteRequestState: AsyncProcessState;
 }
 
 const Placeholder = () => (
@@ -42,8 +42,8 @@ const displayUsdAmount = ({
     return format.ethBaseAmountInUsd(totalEthBaseAmount, ethUsdPrice, 2, <Placeholder />);
 };
 
-const loadingOrAmount = (quoteState: AsyncProcessState, amount: React.ReactNode): React.ReactNode => {
-    if (quoteState === AsyncProcessState.PENDING) {
+const loadingOrAmount = (quoteRequestState: AsyncProcessState, amount: React.ReactNode): React.ReactNode => {
+    if (quoteRequestState === AsyncProcessState.PENDING) {
         return (
             <Text fontWeight="bold" fontColor={ColorOption.white}>
                 &hellip;loading
@@ -73,11 +73,11 @@ export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = pro
             <Flex direction="column" justify="space-between">
                 <Container marginBottom="5px">
                     <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
-                        {loadingOrAmount(props.quoteState, displaytotalEthBaseAmount(props))}
+                        {loadingOrAmount(props.quoteRequestState, displaytotalEthBaseAmount(props))}
                     </Text>
                 </Container>
                 <Text fontSize="16px" fontColor={ColorOption.white} opacity={0.7}>
-                    {loadingOrAmount(props.quoteState, displayUsdAmount(props))}
+                    {loadingOrAmount(props.quoteRequestState, displayUsdAmount(props))}
                 </Text>
             </Flex>
         </Flex>

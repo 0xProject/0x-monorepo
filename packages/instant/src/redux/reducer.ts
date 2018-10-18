@@ -17,7 +17,7 @@ export interface State {
     buyOrderState: AsyncProcessState;
     ethUsdPrice?: BigNumber;
     latestBuyQuote?: BuyQuote;
-    quoteState: AsyncProcessState;
+    quoteRequestState: AsyncProcessState;
     latestError?: any;
     latestErrorDisplay: LatestErrorDisplay;
 }
@@ -31,7 +31,7 @@ export const INITIAL_STATE: State = {
     latestBuyQuote: undefined,
     latestError: undefined,
     latestErrorDisplay: LatestErrorDisplay.Hidden,
-    quoteState: AsyncProcessState.NONE,
+    quoteRequestState: AsyncProcessState.NONE,
 };
 
 export const reducer = (state: State = INITIAL_STATE, action: Action): State => {
@@ -50,19 +50,19 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             return {
                 ...state,
                 latestBuyQuote: action.data,
-                quoteState: AsyncProcessState.SUCCESS,
+                quoteRequestState: AsyncProcessState.SUCCESS,
             };
         case ActionTypes.UPDATE_BUY_QUOTE_STATE_PENDING:
             return {
                 ...state,
                 latestBuyQuote: undefined,
-                quoteState: AsyncProcessState.PENDING,
+                quoteRequestState: AsyncProcessState.PENDING,
             };
         case ActionTypes.UPDATE_BUY_QUOTE_STATE_FAILURE:
             return {
                 ...state,
                 latestBuyQuote: undefined,
-                quoteState: AsyncProcessState.FAILURE,
+                quoteRequestState: AsyncProcessState.FAILURE,
             };
         case ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE:
             return {
