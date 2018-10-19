@@ -1,4 +1,4 @@
-import { colors, constants as sharedConstants } from '@0x/react-shared';
+import { colors, constants as sharedConstants, utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle = require('react-document-title');
@@ -71,6 +71,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
         const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         const mainContentPadding = isSmallScreen ? 20 : 50;
         const sidebarPadding = 22;
+        const isUserOnMobile = sharedUtils.isUserOnMobile();
         return (
             <Container
                 className="flex items-center overflow-hidden"
@@ -143,7 +144,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                                 paddingRight: this.state.isHoveringMainContent
                                     ? mainContentPadding - SCROLLER_WIDTH
                                     : mainContentPadding,
-                                overflow: this.state.isHoveringMainContent ? 'auto' : 'hidden',
+                                overflow: this.state.isHoveringMainContent || isUserOnMobile ? 'auto' : 'hidden',
                             }}
                             onMouseEnter={this._onMainContentHover.bind(this, true)}
                             onMouseOver={this._onMainContentHover.bind(this, true)}
