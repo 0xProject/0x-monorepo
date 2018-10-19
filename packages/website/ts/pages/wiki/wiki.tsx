@@ -5,7 +5,6 @@ import {
     HeaderSizes,
     Link,
     MarkdownSection,
-    NestedSidebarMenu,
     utils as sharedUtils,
 } from '@0x/react-shared';
 import { ObjectMap } from '@0x/types';
@@ -13,6 +12,7 @@ import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import { SidebarHeader } from 'ts/components/documentation/sidebar_header';
+import { NestedSidebarMenu } from 'ts/components/nested_sidebar_menu';
 import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
