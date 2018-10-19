@@ -13,9 +13,6 @@ const expect = chai.expect;
 
 // tslint:disable:custom-no-magic-numbers
 describe('exchange_events', () => {
-    // before('create typeorm connection', async () => {
-    //     await createConnection(testConfig);
-    // });
     describe('_convertToEntity', () => {
         it('converts LogWithDecodedArgs to ExchangeFillEvent entity', () => {
             const input: LogWithDecodedArgs<ExchangeFillEventArgs> = {
