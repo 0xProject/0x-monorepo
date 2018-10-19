@@ -1,6 +1,6 @@
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider, TransactionReceiptWithDecodedLogs, TxDataPayable } from 'ethereum-types';
 import * as _ from 'lodash';
 

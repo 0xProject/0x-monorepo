@@ -1,5 +1,5 @@
-import { BigNumber } from '@0x/utils';
 import { EthRPCClient } from '@0x/eth-rpc-client';
+import { BigNumber } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 

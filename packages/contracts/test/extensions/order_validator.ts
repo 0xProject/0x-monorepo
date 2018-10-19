@@ -19,7 +19,7 @@ import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { OrderFactory } from '../utils/order_factory';
 import { OrderStatus } from '../utils/types';
-import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
+import { ethRPCClient, provider, txDefaults } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

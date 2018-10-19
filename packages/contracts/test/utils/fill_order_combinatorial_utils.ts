@@ -1,3 +1,4 @@
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import {
     assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
@@ -8,7 +9,6 @@ import {
 } from '@0x/order-utils';
 import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, errorUtils, logUtils } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import { LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';

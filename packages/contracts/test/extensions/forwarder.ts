@@ -1,8 +1,8 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
@@ -25,7 +25,7 @@ import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { ForwarderWrapper } from '../utils/forwarder_wrapper';
 import { OrderFactory } from '../utils/order_factory';
 import { ContractName, ERC20BalancesByOwner } from '../utils/types';
-import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
+import { ethRPCClient, provider, txDefaults } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

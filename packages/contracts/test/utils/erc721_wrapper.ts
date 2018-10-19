@@ -1,6 +1,6 @@
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 

@@ -1,8 +1,8 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
@@ -23,7 +23,7 @@ import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { MatchOrderTester } from '../utils/match_order_tester';
 import { OrderFactory } from '../utils/order_factory';
 import { ERC20BalancesByOwner, ERC721TokenIdsByOwner } from '../utils/types';
-import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
+import { ethRPCClient, provider, txDefaults } from '../utils/web3_wrapper';
 
 const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 chaiSetup.configure();

@@ -11,7 +11,7 @@ import { chaiSetup } from '../utils/chai_setup';
 import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_utils';
 import { constants } from '../utils/constants';
 import { FillResults } from '../utils/types';
-import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
+import { ethRPCClient, provider, txDefaults } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

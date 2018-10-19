@@ -1,6 +1,6 @@
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { ExchangeContract } from '../../generated-wrappers/exchange';

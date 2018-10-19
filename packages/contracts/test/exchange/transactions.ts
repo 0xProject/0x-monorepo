@@ -20,7 +20,7 @@ import { OrderFactory } from '../utils/order_factory';
 import { orderUtils } from '../utils/order_utils';
 import { TransactionFactory } from '../utils/transaction_factory';
 import { ERC20BalancesByOwner, SignedTransaction } from '../utils/types';
-import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
+import { ethRPCClient, provider, txDefaults } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

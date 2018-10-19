@@ -1,6 +1,6 @@
+import { NodeType } from '@0x/eth-rpc-client';
 import { RevertReason } from '@0x/types';
 import { logUtils } from '@0x/utils';
-import { NodeType } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import { TransactionReceipt, TransactionReceiptStatus, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';

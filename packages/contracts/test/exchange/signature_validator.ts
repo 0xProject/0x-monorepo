@@ -19,7 +19,7 @@ import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { LogDecoder } from '../utils/log_decoder';
 import { OrderFactory } from '../utils/order_factory';
-import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
+import { ethRPCClient, provider, txDefaults } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

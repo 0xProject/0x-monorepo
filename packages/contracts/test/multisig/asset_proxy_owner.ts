@@ -25,7 +25,7 @@ import { increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { MultiSigWrapper } from '../utils/multi_sig_wrapper';
-import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
+import { ethRPCClient, provider, txDefaults } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

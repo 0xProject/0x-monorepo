@@ -17,7 +17,7 @@ import {
     TakerAssetFillAmountScenario,
     TakerScenario,
 } from '../utils/types';
-import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
+import { ethRPCClient, provider, txDefaults } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);

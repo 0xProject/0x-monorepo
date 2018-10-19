@@ -1,7 +1,7 @@
 import { devConstants, env, EnvVars, web3Factory } from '@0x/dev-utils';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { prependSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 
 import { coverage } from './coverage';
