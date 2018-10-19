@@ -55,7 +55,7 @@
         "react-highlight": "0xproject/react-highlight#2f40a42e0a3f0ad126f9f42d505b97b603fc7162",
         "react-markdown": "^3.2.2",
         "react-router-dom": "^4.1.1",
-        "react-scroll": "0xproject/react-scroll#similar-to-pr-330-but-with-replace-state",
+        "react-scroll": "0xproject/react-scroll#pr-330-and-replace-state",
         "styled-components": "^3.3.0",
         "valid-url": "^1.0.9"
     },
