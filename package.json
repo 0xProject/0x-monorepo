@@ -22,21 +22,21 @@
         "install:all": "yarn install",
         "wsrun": "wsrun",
         "lerna": "lerna",
-        "build": "wsrun --fast-exit -r --stages $PKG build",
-        "build:no_website": "wsrun --fast-exit -r --stages --exclude @0x/website $PKG build",
-        "build:ci:no_website": "wsrun $PKG --fast-exit -r --stages --exclude @0x/website build:ci ",
+        "build": "wsrun build $PKG --fast-exit -r --stages",
+        "build:no_website": "wsrun build $PKG --fast-exit -r --stages --exclude @0x/website",
+        "build:ci:no_website": "wsrun build:ci $PKG --fast-exit -r --stages --exclude @0x/website",
         "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",
-        "clean": "wsrun $PKG --fast-exit -r --parallel clean",
+        "clean": "wsrun clean $PKG --fast-exit -r --parallel",
         "remove_node_modules": "lerna clean --yes; rm -rf node_modules",
         "rebuild": "run-s clean build",
         "rebuild:no_website": "run-s clean build:no_website",
-        "test": "wsrun $PKG --fast-exit --serial --exclude-missing test",
+        "test": "wsrun test $PKG --fast-exit --serial --exclude-missing",
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break -1; done;",
         "bundlewatch": "bundlewatch",
-        "lint": "wsrun $PKG --fast-exit --parallel --exclude-missing lint"
+        "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing"
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
@@ -74,6 +74,6 @@
         "prettier": "^1.11.1",
         "source-map-support": "^0.5.6",
         "typescript": "3.0.1",
-        "wsrun": "^3.3.3"
+        "wsrun": "^2.2.0"
     }
 }
