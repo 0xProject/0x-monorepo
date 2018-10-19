@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import variables from '../variables';
 
 import { withContext, Props } from './withContext';
 import { Alpha, Beta, Gamma } from './Typography';
@@ -97,7 +98,7 @@ const StyledSection =
     `
     max-width: 90rem;
     margin: 0 auto;
-    background: linear-gradient(to right, #000 50%, ${props => props.background} 50%);
+    background: linear-gradient(to right, ${variables.colors.black} 50%, ${props => props.background} 50%);
     padding-top: 6.25rem;
     padding-bottom: 5.25rem;
 `;
