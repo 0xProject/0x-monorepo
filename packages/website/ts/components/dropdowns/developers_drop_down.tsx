@@ -24,7 +24,7 @@ const gettingStartedKeyToLinkInfo2: ALink[] = [
         to: `${WebsitePaths.Wiki}#Ethereum-Development`,
     },
     {
-        title: Key.UseSharedLiquidity,
+        title: Key.UseNetworkedLiquidity,
         to: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
     },
 ];
