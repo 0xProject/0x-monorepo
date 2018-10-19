@@ -34,12 +34,12 @@ async function confirmAsync(message: string): Promise<void> {
 (async () => {
     // Fetch public, updated Lerna packages
     const shouldIncludePrivate = true;
-    const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
-    if (_.isEmpty(allUpdatedPackages)) {
+    const allPackagesToPublish = await utils.getPackagesToPublishAsync(shouldIncludePrivate);
+    if (_.isEmpty(allPackagesToPublish)) {
         utils.log('No packages need publishing');
         process.exit(0);
     }
-    const packagesWithDocs = getPackagesWithDocs(allUpdatedPackages);
+    const packagesWithDocs = getPackagesWithDocs(allPackagesToPublish);
 
     if (!configs.IS_LOCAL_PUBLISH) {
         await confirmAsync(
@@ -49,12 +49,12 @@ async function confirmAsync(message: string): Promise<void> {
     }
 
     // Update CHANGELOGs
-    const updatedPublicPackages = _.filter(allUpdatedPackages, pkg => !pkg.packageJson.private);
+    const updatedPublicPackages = _.filter(allPackagesToPublish, pkg => !pkg.packageJson.private);
     const updatedPublicPackageNames = _.map(updatedPublicPackages, pkg => pkg.packageJson.name);
     utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicPackageNames.join('\n')}\n`);
     const packageToNextVersion = await updateChangeLogsAsync(updatedPublicPackages);
 
-    const updatedPrivatePackages = _.filter(allUpdatedPackages, pkg => pkg.packageJson.private);
+    const updatedPrivatePackages = _.filter(allPackagesToPublish, pkg => pkg.packageJson.private);
     _.each(updatedPrivatePackages, pkg => {
         const currentVersion = pkg.packageJson.version;
         const packageName = pkg.packageJson.name;
