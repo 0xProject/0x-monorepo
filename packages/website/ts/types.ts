@@ -590,6 +590,8 @@ export enum BrowserType {
     Chrome = 'Chrome',
     Firefox = 'Firefox',
     Opera = 'Opera',
+    Safari = 'Safari',
+    Edge = 'Edge',
     Other = 'Other',
 }
 
