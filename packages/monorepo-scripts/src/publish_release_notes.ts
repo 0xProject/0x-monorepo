@@ -15,7 +15,7 @@ const args = yargs
             'Space-separated list of packages to generated release notes for. If not supplied, it does all `Lerna updated` packages.',
         type: 'string',
     })
-    .example('$0 --isDryRun true --packages "0x.js @0x/web3-wrapper"', 'Full usage example').argv;
+    .example('$0 --isDryRun true --packages "0x.js @0x/eth-rpc-client"', 'Full usage example').argv;
 
 (async () => {
     const isDryRun = args.isDryRun;

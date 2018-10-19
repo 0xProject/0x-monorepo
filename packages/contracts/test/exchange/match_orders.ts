@@ -2,7 +2,7 @@ import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
@@ -23,9 +23,9 @@ import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { MatchOrderTester } from '../utils/match_order_tester';
 import { OrderFactory } from '../utils/order_factory';
 import { ERC20BalancesByOwner, ERC721TokenIdsByOwner } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 chaiSetup.configure();
 const expect = chai.expect;
 
@@ -73,7 +73,7 @@ describe('matchOrders', () => {
     });
     before(async () => {
         // Create accounts
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         // Hack(albrow): Both Prettier and TSLint insert a trailing comma below
         // but that is invalid syntax as of TypeScript version >= 2.8. We don't
         // have the right fine-grained configuration options in TSLint,
@@ -120,13 +120,13 @@ describe('matchOrders', () => {
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
         // Authorize ERC20 and ERC721 trades by exchange
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
             }),
@@ -189,16 +189,16 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(17), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(98), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(17), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(98), 0),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(75), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(13), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Assert is rounding error ceil & not rounding error floor
@@ -227,17 +227,17 @@ describe('matchOrders', () => {
             // Fees can be thought of as a tax paid by the seller, derived from the sale price.
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16), // 76.47%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(13), 0),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(75), 0),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16), // 76.47%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(75), 0),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), 0),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16), // 76.53%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(0), 0),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16), // 76.53%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
@@ -253,16 +253,16 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(15), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(15), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(90), 0),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(97), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(14), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(97), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(14), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Assert is rounding error floor & not rounding error ceil
@@ -291,17 +291,17 @@ describe('matchOrders', () => {
             // Fees can be thought of as a tax paid by the seller, derived from the sale price.
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(15), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 0),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(15), 0),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(90), 0),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.7835051546391752'), 16), // 92.78%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(90), 0),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber('92.7835051546391752'), 16), // 92.78%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 0),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.8571428571428571'), 16), // 92.85%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 0),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber('92.8571428571428571'), 16), // 92.85%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
@@ -317,16 +317,16 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(16), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(16), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(22), 0),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(83), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(49), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(83), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(49), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Note:
@@ -338,17 +338,17 @@ describe('matchOrders', () => {
             //  fee slightly lower than the right taker.
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(16), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(16), 0),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(22), 0),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5060240963855421'), 16), // 26.506%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(22), 0),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber('26.5060240963855421'), 16), // 26.506%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5306122448979591'), 16), // 26.531%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 0),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber('26.5306122448979591'), 16), // 26.531%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -365,16 +365,16 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(12), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(97), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(12), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(97), 0),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(89), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(89), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(1), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Note:
@@ -383,17 +383,17 @@ describe('matchOrders', () => {
             //  slightly lower than the left taker.
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(11), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(89), 0),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(11), 0),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(89), 0),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(89), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(89), 0),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(1), 0),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 0),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 0),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -410,19 +410,19 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(16), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(16), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(22), 0),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(83), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(49), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(83), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(49), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
-                makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 0),
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 0),
+                makerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(10000), 0),
+                takerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(10000), 0),
             });
             // Note:
             //  The maker/taker fee percentage paid on the right order differs because
@@ -430,17 +430,17 @@ describe('matchOrders', () => {
             //  fee slightly lower than the right taker.
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(16), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(16), 0),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(22), 0),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(22), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2650), 0), // 2650.6 rounded down tro 2650
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(22), 0),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2650), 0), // 2650.6 rounded down tro 2650
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 0),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(2653), 0), // 2653.1 rounded down to 2653
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 0),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(2653), 0), // 2653.1 rounded down to 2653
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -457,18 +457,18 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(12), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(97), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(12), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(97), 0),
                 feeRecipientAddress: feeRecipientAddressLeft,
-                makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 0),
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 0),
+                makerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(10000), 0),
+                takerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(10000), 0),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(89), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(89), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(1), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             // Note:
@@ -477,17 +477,17 @@ describe('matchOrders', () => {
             //  fee slightly lower than the left taker.
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(11), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(89), 0),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(9166), 0), // 9166.6 rounded down to 9166
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(11), 0),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(89), 0),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(9166), 0), // 9166.6 rounded down to 9166
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(89), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(89), 0),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(1), 0),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 0),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(9175), 0), // 9175.2 rounded down to 9175
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 0),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(9175), 0), // 9175.2 rounded down to 9175
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -504,23 +504,23 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(1000), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(1005), 0),
                 feeRecipientAddress: feeRecipientAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2126), 0),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1063), 0),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2126), 0),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(1063), 0),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(1000), 0),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(1005), 0),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
                 // Notes:
                 //  i.
@@ -536,13 +536,13 @@ describe('matchOrders', () => {
                 //  iv.
                 //    The right maker fee differs from the right taker fee because their exchange rate differs.
                 //    The right maker always receives the better exchange and fee price.
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1005), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(503), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.2718720602069614'), 16), // 47.27%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(1005), 0),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(503), 0),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber('47.2718720602069614'), 16), // 47.27%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(497), 0),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.3189087488240827'), 16), // 47.31%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(497), 0),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber('47.3189087488240827'), 16), // 47.31%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -561,17 +561,17 @@ describe('matchOrders', () => {
                 it(description, async () => {
                     const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                         makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                        takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                        makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                        takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
                     });
                     const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                         makerAddress: makerAddressRight,
                         takerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                        takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                        makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                        takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
                         feeRecipientAddress: feeRecipientAddressRight,
                     });
-                    await web3Wrapper.awaitTransactionSuccessAsync(
+                    await ethRPCClient.awaitTransactionSuccessAsync(
                         await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
@@ -587,27 +587,27 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts when orders completely fill each other', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Match signedOrderLeft with signedOrderRight
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
@@ -622,27 +622,27 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts when orders completely fill each other and taker doesnt take a profit', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
             });
             // Match signedOrderLeft with signedOrderRight
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(0), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -658,27 +658,27 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts when left order is completely filled and right order is partially filled', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(20), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(4), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(20), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(4), 18),
             });
             // Match signedOrderLeft with signedOrderRight
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 16), // 50%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(50), 16), // 50%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 16), // 50%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(50), 16), // 50%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -694,27 +694,27 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts when right order is completely filled and left order is partially filled', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(50), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Match signedOrderLeft with signedOrderRight
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 16), // 10%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 16), // 10%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 16), // 10%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 16), // 10%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             // Match signedOrderLeft with signedOrderRight
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
@@ -730,29 +730,29 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts when consecutive calls are used to completely fill the left order', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(50), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Match orders
             let newERC20BalancesByOwner: ERC20BalancesByOwner;
             let newERC721TokenIdsByOwner: ERC721TokenIdsByOwner;
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 16), // 10%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 16), // 10%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 16), // 10%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 16), // 10%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             // prettier-ignore
             [
@@ -772,25 +772,25 @@ describe('matchOrders', () => {
             //       However, we use 100/50 to ensure a partial fill as we want to go down the "left fill"
             //       branch in the contract twice for this test.
             const signedOrderRight2 = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(50), 18),
             });
             // Match signedOrderLeft with signedOrderRight2
             const leftTakerAssetFilledAmount = signedOrderRight.makerAssetAmount;
             const rightTakerAssetFilledAmount = new BigNumber(0);
             const expectedTransferAmounts2 = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(45), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 16), // 90% (10% paid earlier)
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(45), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(90), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(90), 16), // 90% (10% paid earlier)
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(45), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 16), // 90%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(90), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(45), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(90), 16), // 90%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 16), // 90% (10% paid earlier)
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(90), 16), // 90%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(0), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(90), 16), // 90% (10% paid earlier)
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(90), 16), // 90%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
@@ -807,30 +807,30 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts when consecutive calls are used to completely fill the right order', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
 
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(50), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
             });
             // Match orders
             let newERC20BalancesByOwner: ERC20BalancesByOwner;
             let newERC721TokenIdsByOwner: ERC721TokenIdsByOwner;
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(4), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(4), 16), // 4%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(4), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(4), 16), // 4%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(6), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(4), 16), // 4%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(6), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(4), 16), // 4%
             };
             // prettier-ignore
             [
@@ -851,8 +851,8 @@ describe('matchOrders', () => {
             //       However, we use 100/50 to ensure a partial fill as we want to go down the "right fill"
             //       branch in the contract twice for this test.
             const signedOrderLeft2 = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(50), 18),
             });
             // Match signedOrderLeft2 with signedOrderRight
             const leftTakerAssetFilledAmount = new BigNumber(0);
@@ -862,17 +862,17 @@ describe('matchOrders', () => {
             const rightTakerAssetFilledAmount = signedOrderLeft.makerAssetAmount.minus(takerAmountReceived);
             const expectedTransferAmounts2 = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(96), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(48), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(96), 16), // 96%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(96), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(48), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(96), 16), // 96%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(48), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(96), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(96), 16), // 96%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(48), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(96), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(96), 16), // 96%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(96), 16), // 96%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(96), 16), // 96%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(0), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(96), 16), // 96%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(96), 16), // 96%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft2,
@@ -889,29 +889,29 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts if fee recipient is the same across both matched orders', async () => {
             const feeRecipientAddress = feeRecipientAddressLeft;
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
                 feeRecipientAddress,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
                 feeRecipientAddress,
             });
             // Match orders
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
@@ -926,28 +926,28 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts if taker is also the left order maker', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Match orders
             takerAddress = signedOrderLeft.makerAddress;
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
@@ -962,28 +962,28 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts if taker is also the right order maker', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Match orders
             takerAddress = signedOrderRight.makerAddress;
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
@@ -998,28 +998,28 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts if taker is also the left fee recipient', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Match orders
             takerAddress = feeRecipientAddressLeft;
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
@@ -1034,28 +1034,28 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts if taker is also the right fee recipient', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Match orders
             takerAddress = feeRecipientAddressRight;
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
@@ -1070,27 +1070,27 @@ describe('matchOrders', () => {
         it('should transfer the correct amounts if left maker is the left fee recipient and right maker is the right fee recipient', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Match orders
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(3), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
@@ -1105,12 +1105,12 @@ describe('matchOrders', () => {
         it('Should throw if left order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Cancel left order
             await exchangeWrapper.cancelOrderAsync(signedOrderLeft, signedOrderLeft.makerAddress);
@@ -1124,12 +1124,12 @@ describe('matchOrders', () => {
         it('Should throw if right order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Cancel right order
             await exchangeWrapper.cancelOrderAsync(signedOrderRight, signedOrderRight.makerAddress);
@@ -1143,12 +1143,12 @@ describe('matchOrders', () => {
         it('should throw if there is not a positive spread', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(1), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(200), 18),
             });
             // Match orders
             return expectTransactionFailedAsync(
@@ -1160,13 +1160,13 @@ describe('matchOrders', () => {
         it('should throw if the left maker asset is not equal to the right taker asset ', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Match orders
             return expectTransactionFailedAsync(
@@ -1183,12 +1183,12 @@ describe('matchOrders', () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(5), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
             });
             // Match orders
             return expectTransactionFailedAsync(
@@ -1203,27 +1203,27 @@ describe('matchOrders', () => {
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetData: assetDataUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
                 makerAssetAmount: new BigNumber(1),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 takerAssetData: assetDataUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: new BigNumber(1),
             });
             // Match orders
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(1), 0),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(1), 0),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 50%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(0), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 50%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,
@@ -1240,28 +1240,28 @@ describe('matchOrders', () => {
             const erc721TokenToTransfer = erc721RightMakerAssetIds[0];
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 takerAssetData: assetDataUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: new BigNumber(1),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAssetData: assetDataUtils.encodeERC721AssetData(defaultERC721AssetAddress, erc721TokenToTransfer),
                 makerAssetAmount: new BigNumber(1),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(8), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(8), 18),
             });
             // Match orders
             const expectedTransferAmounts = {
                 // Left Maker
-                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
-                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
-                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
+                amountBoughtByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(1), 0),
+                feePaidByLeftMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Right Maker
-                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 0),
-                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(8), 18),
-                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountSoldByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(1), 0),
+                amountBoughtByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(8), 18),
+                feePaidByRightMaker: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
                 // Taker
-                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
-                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
-                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                amountReceivedByTaker: EthRPCClient.toBaseUnitAmount(new BigNumber(2), 18),
+                feePaidByTakerLeft: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                feePaidByTakerRight: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 16), // 100%
             };
             await matchOrderTester.matchOrdersAndAssertEffectsAsync(
                 signedOrderLeft,

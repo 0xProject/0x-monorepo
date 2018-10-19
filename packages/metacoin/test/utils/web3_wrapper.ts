@@ -1,7 +1,7 @@
 import { env, EnvVars } from '@0x/dev-utils';
 import { GanacheSubprovider, prependSubprovider, RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { errorUtils, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as fs from 'fs';
 
 import { config } from './config';
@@ -73,4 +73,4 @@ if (isProfilerEnabled) {
     prependSubprovider(provider, profilerSubprovider);
 }
 
-export const web3Wrapper = new Web3Wrapper(provider);
+export const ethRPCClient = new EthRPCClient(provider);

@@ -13,7 +13,7 @@ import {
     SignedOrder,
 } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
@@ -28,13 +28,13 @@ import { OrderWatcherError } from '../src/types';
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 const TIMEOUT_MS = 150;
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('OrderWatcher', () => {
     let contractWrappers: ContractWrappers;
@@ -52,7 +52,7 @@ describe('OrderWatcher', () => {
     let signedOrder: SignedOrder;
     let orderWatcher: OrderWatcher;
     const decimals = constants.ZRX_DECIMALS;
-    const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
+    const fillableAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(5), decimals);
     before(async () => {
         const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
@@ -62,7 +62,7 @@ describe('OrderWatcher', () => {
             contractAddresses,
         };
         contractWrappers = new ContractWrappers(provider, config);
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await ethRPCClient.getAvailableAddressesAsync();
         zrxTokenAddress = contractAddresses.zrxToken;
         fillScenarios = new FillScenarios(
             provider,
@@ -333,8 +333,8 @@ describe('OrderWatcher', () => {
         });
         it('should trigger the callback when orders backing ZRX allowance changes', (done: DoneCallback) => {
             (async () => {
-                const makerFee = Web3Wrapper.toBaseUnitAmount(new BigNumber(2), decimals);
-                const takerFee = Web3Wrapper.toBaseUnitAmount(new BigNumber(0), decimals);
+                const makerFee = EthRPCClient.toBaseUnitAmount(new BigNumber(2), decimals);
+                const takerFee = EthRPCClient.toBaseUnitAmount(new BigNumber(0), decimals);
                 signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
                     makerAssetData,
                     takerAssetData,
@@ -358,8 +358,8 @@ describe('OrderWatcher', () => {
         describe('remainingFillable(M|T)akerTokenAmount', () => {
             it('should calculate correct remaining fillable', (done: DoneCallback) => {
                 (async () => {
-                    const takerFillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(10), decimals);
-                    const makerFillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(20), decimals);
+                    const takerFillableAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(10), decimals);
+                    const makerFillableAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(20), decimals);
                     signedOrder = await fillScenarios.createAsymmetricFillableSignedOrderAsync(
                         makerAssetData,
                         takerAssetData,
@@ -368,7 +368,7 @@ describe('OrderWatcher', () => {
                         makerFillableAmount,
                         takerFillableAmount,
                     );
-                    const fillAmountInBaseUnits = Web3Wrapper.toBaseUnitAmount(new BigNumber(2), decimals);
+                    const fillAmountInBaseUnits = EthRPCClient.toBaseUnitAmount(new BigNumber(2), decimals);
                     const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     await orderWatcher.addOrderAsync(signedOrder);
                     const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
@@ -377,10 +377,10 @@ describe('OrderWatcher', () => {
                         expect(validOrderState.orderHash).to.be.equal(orderHash);
                         const orderRelevantState = validOrderState.orderRelevantState;
                         expect(orderRelevantState.remainingFillableMakerAssetAmount).to.be.bignumber.equal(
-                            Web3Wrapper.toBaseUnitAmount(new BigNumber(16), decimals),
+                            EthRPCClient.toBaseUnitAmount(new BigNumber(16), decimals),
                         );
                         expect(orderRelevantState.remainingFillableTakerAssetAmount).to.be.bignumber.equal(
-                            Web3Wrapper.toBaseUnitAmount(new BigNumber(8), decimals),
+                            EthRPCClient.toBaseUnitAmount(new BigNumber(8), decimals),
                         );
                     });
                     orderWatcher.subscribe(callback);
@@ -397,7 +397,7 @@ describe('OrderWatcher', () => {
                         fillableAmount,
                     );
 
-                    const changedMakerApprovalAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(3), decimals);
+                    const changedMakerApprovalAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(3), decimals);
                     await orderWatcher.addOrderAsync(signedOrder);
 
                     const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
@@ -433,7 +433,7 @@ describe('OrderWatcher', () => {
                         makerAddress,
                     );
 
-                    const remainingAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), decimals);
+                    const remainingAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(1), decimals);
                     const transferAmount = makerBalance.sub(remainingAmount);
                     await orderWatcher.addOrderAsync(signedOrder);
 
@@ -459,8 +459,8 @@ describe('OrderWatcher', () => {
             });
             it('should equal ratio amount when fee balance is lowered', (done: DoneCallback) => {
                 (async () => {
-                    const takerFee = Web3Wrapper.toBaseUnitAmount(new BigNumber(0), decimals);
-                    const makerFee = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
+                    const takerFee = EthRPCClient.toBaseUnitAmount(new BigNumber(0), decimals);
+                    const makerFee = EthRPCClient.toBaseUnitAmount(new BigNumber(5), decimals);
                     signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
                         makerAssetData,
                         takerAssetData,
@@ -472,9 +472,9 @@ describe('OrderWatcher', () => {
                         feeRecipient,
                     );
 
-                    const remainingFeeAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(3), decimals);
+                    const remainingFeeAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(3), decimals);
 
-                    const remainingTokenAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(4), decimals);
+                    const remainingTokenAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(4), decimals);
                     const transferTokenAmount = makerFee.sub(remainingTokenAmount);
                     await orderWatcher.addOrderAsync(signedOrder);
 
@@ -501,8 +501,8 @@ describe('OrderWatcher', () => {
             });
             it('should calculate full amount when all available and non-divisible', (done: DoneCallback) => {
                 (async () => {
-                    const takerFee = Web3Wrapper.toBaseUnitAmount(new BigNumber(0), decimals);
-                    const makerFee = Web3Wrapper.toBaseUnitAmount(new BigNumber(2), decimals);
+                    const takerFee = EthRPCClient.toBaseUnitAmount(new BigNumber(0), decimals);
+                    const makerFee = EthRPCClient.toBaseUnitAmount(new BigNumber(2), decimals);
                     signedOrder = await fillScenarios.createFillableSignedOrderWithFeesAsync(
                         makerAssetData,
                         takerAssetData,
@@ -527,7 +527,7 @@ describe('OrderWatcher', () => {
                     await contractWrappers.erc20Token.setProxyAllowanceAsync(
                         makerTokenAddress,
                         makerAddress,
-                        Web3Wrapper.toBaseUnitAmount(new BigNumber(100), decimals),
+                        EthRPCClient.toBaseUnitAmount(new BigNumber(100), decimals),
                     );
                 })().catch(done);
             });

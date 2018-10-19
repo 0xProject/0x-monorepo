@@ -29,7 +29,7 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.ZeroExJs]: '0x.js',
     [DocPackages.Connect]: 'connect',
     [DocPackages.SmartContracts]: 'contracts',
-    [DocPackages.Web3Wrapper]: 'web3-wrapper',
+    [DocPackages.EthRPCClient]: 'eth-rpc-client',
     [DocPackages.ContractWrappers]: 'contract-wrappers',
     [DocPackages.SolCompiler]: 'sol-compiler',
     [DocPackages.JSONSchemas]: 'json-schemas',

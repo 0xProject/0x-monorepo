@@ -1,5 +1,5 @@
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -10,12 +10,12 @@ import { LogDecoder } from './log_decoder';
 
 export class MultiSigWrapper {
     private readonly _multiSig: MultiSigWalletContract;
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     private readonly _logDecoder: LogDecoder;
     constructor(multiSigContract: MultiSigWalletContract, provider: Provider) {
         this._multiSig = multiSigContract;
-        this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper);
+        this._ethRPCClient = new EthRPCClient(provider);
+        this._logDecoder = new LogDecoder(this._ethRPCClient);
     }
     public async submitTransactionAsync(
         destination: string,

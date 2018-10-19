@@ -36,11 +36,12 @@
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break -1; done;",
         "bundlewatch": "bundlewatch",
+        "lint:fix": "wsrun lint --fix $PKG --fast-exit --parallel --exclude-missing",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing"
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
-        "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types asset-buyer"
+        "packagesWithDocPages": "0x.js connect json-schemas subproviders eth-rpc-client contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types asset-buyer"
     },
     "bundlewatch": {
         "files": [
@@ -74,6 +75,6 @@
         "prettier": "^1.11.1",
         "source-map-support": "^0.5.6",
         "typescript": "3.0.1",
-        "wsrun": "^2.2.0"
+        "wsrun": "^3.3.3"
     }
 }

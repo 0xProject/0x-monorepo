@@ -95,7 +95,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/sol-cov
             - run: yarn wsrun test:circleci @0x/sol-doc
             - run: yarn wsrun test:circleci @0x/subproviders
-            - run: yarn wsrun test:circleci @0x/web3-wrapper
+            - run: yarn wsrun test:circleci @0x/eth-rpc-client
             - run: yarn wsrun test:circleci @0x/utils
             - run: yarn wsrun test:circleci @0x/instant
             - save_cache:
@@ -155,9 +155,9 @@ jobs:
                   paths:
                       - ~/repo/packages/subproviders/coverage/lcov.info
             - save_cache:
-                  key: coverage-web3-wrapper-{{ .Environment.CIRCLE_SHA1 }}
+                  key: coverage-eth-rpc-client-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
-                      - ~/repo/packages/web3-wrapper/coverage/lcov.info
+                      - ~/repo/packages/eth-rpc-client/coverage/lcov.info
     test-python:
         working_directory: ~/repo
         docker:
@@ -309,7 +309,7 @@ jobs:
                       - coverage-subproviders-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
-                      - coverage-web3-wrapper-{{ .Environment.CIRCLE_SHA1 }}
+                      - coverage-eth-rpc-client-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-contracts-{{ .Environment.CIRCLE_SHA1 }}

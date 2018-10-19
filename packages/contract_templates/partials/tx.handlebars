@@ -19,13 +19,13 @@ public {{this.tsName}} = {
                 ...txData,
                 data: encodedData,
             },
-            self._web3Wrapper.getContractDefaults(),
+            self._ethRPCClient.getContractDefaults(),
             self.{{this.tsName}}.estimateGasAsync.bind(
                 self,
                 {{> params inputs=inputs}}
             ),
         );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
         return txHash;
     },
     async estimateGasAsync(
@@ -42,9 +42,9 @@ public {{this.tsName}} = {
                 ...txData,
                 data: encodedData,
             },
-            self._web3Wrapper.getContractDefaults(),
+            self._ethRPCClient.getContractDefaults(),
         );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
         return gas;
     },
     getABIEncodedTransactionData(

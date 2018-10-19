@@ -1,5 +1,5 @@
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { State } from 'ts/redux/reducer';
@@ -28,7 +28,7 @@ interface ConnectedState {
 }
 
 const mapStateToProps = (state: State, _ownProps: EthAmountInputProps): ConnectedState => ({
-    balance: Web3Wrapper.toUnitAmount(state.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH),
+    balance: EthRPCClient.toUnitAmount(state.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH),
 });
 
 export const EthAmountInput: React.ComponentClass<EthAmountInputProps> = connect(mapStateToProps)(

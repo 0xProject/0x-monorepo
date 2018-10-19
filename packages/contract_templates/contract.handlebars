@@ -2,9 +2,10 @@
 // tslint:disable:no-unused-variable
 // tslint:disable:no-unbound-method
 import { BaseContract } from '@0x/base-contract';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, Provider, TxData, TxDataPayable } from 'ethereum-types';
+import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, Provider,
+TxData, TxDataPayable } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
@@ -12,13 +13,13 @@ import * as _ from 'lodash';
 {{#if events}}
 export type {{contractName}}EventArgs =
 {{#each events}}
-    | {{@root.contractName}}{{name}}EventArgs{{#if @last}};{{/if}}
+| {{@root.contractName}}{{name}}EventArgs{{#if @last}};{{/if}}
 {{/each}}
 
 export enum {{contractName}}Events {
-    {{#each events}}
-    {{name}} = '{{name}}',
-    {{/each}}
+{{#each events}}
+{{name}} = '{{name}}',
+{{/each}}
 }
 
 {{#each events}}
@@ -32,59 +33,62 @@ export enum {{contractName}}Events {
 // tslint:disable-next-line:class-name
 export class {{contractName}}Contract extends BaseContract {
 {{#each methods}}
-    {{#this.constant}}
-    {{> call contractName=../contractName}}
-    {{/this.constant}}
-    {{^this.constant}}
-    {{> tx contractName=../contractName}}
-    {{/this.constant}}
+{{#this.constant}}
+{{> call contractName=../contractName}}
+{{/this.constant}}
+{{^this.constant}}
+{{> tx contractName=../contractName}}
+{{/this.constant}}
 {{/each}}
-    public static async deployFrom0xArtifactAsync(
-        artifact: ContractArtifact,
-        provider: Provider,
-        txDefaults: Partial<TxData>,
-        {{> typed_params inputs=ctor.inputs}}
-    ): Promise<{{contractName}}Contract> {
+public static async deployFrom0xArtifactAsync(
+artifact: ContractArtifact,
+provider: Provider,
+txDefaults: Partial<TxData>,
+    {{> typed_params inputs=ctor.inputs}}
+    ): Promise< {{contractName}} Contract> {
         if (_.isUndefined(artifact.compilerOutput)) {
-            throw new Error('Compiler output not found in the artifact file');
+        throw new Error('Compiler output not found in the artifact file');
         }
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return {{contractName}}Contract.deployAsync(bytecode, abi, provider, txDefaults, {{> params inputs=ctor.inputs}});
-    }
-    public static async deployAsync(
+        return {{contractName}}Contract.deployAsync(bytecode, abi, provider, txDefaults, {{> params
+        inputs=ctor.inputs}});
+        }
+        public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         provider: Provider,
         txDefaults: Partial<TxData>,
-        {{> typed_params inputs=ctor.inputs}}
-    ): Promise<{{contractName}}Contract> {
-        const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [{{> params inputs=ctor.inputs}}] = BaseContract._formatABIDataItemList(
-            constructorAbi.inputs,
-            [{{> params inputs=ctor.inputs}}],
-            BaseContract._bigNumberToString,
-        );
-        const iface = new ethers.utils.Interface(abi);
-        const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
-        const web3Wrapper = new Web3Wrapper(provider);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
-            txDefaults,
-            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
-        );
-        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        logUtils.log(`transactionHash: ${txHash}`);
-        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new {{contractName}}Contract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
-        return contractInstance;
-    }
-    constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
-        super('{{contractName}}', abi, address, provider, txDefaults);
-        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
-    }
-} // tslint:disable:max-file-line-count
-// tslint:enable:no-unbound-method
+            {{> typed_params inputs=ctor.inputs}}
+            ): Promise< {{contractName}} Contract> {
+                const constructorAbi = BaseContract._lookupConstructorAbi(abi);
+                [{{> params inputs=ctor.inputs}}] = BaseContract._formatABIDataItemList(
+                constructorAbi.inputs,
+                [{{> params inputs=ctor.inputs}}],
+                BaseContract._bigNumberToString,
+                );
+                const iface = new ethers.utils.Interface(abi);
+                const deployInfo = iface.deployFunction;
+                const txData = deployInfo.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
+                const ethRPCClient = new EthRPCClient(provider);
+                const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {data: txData},
+                txDefaults,
+                ethRPCClient.estimateGasAsync.bind(ethRPCClient),
+                );
+                const txHash = await ethRPCClient.sendTransactionAsync(txDataWithDefaults);
+                logUtils.log(`transactionHash: ${txHash}`);
+                const txReceipt = await ethRPCClient.awaitTransactionSuccessAsync(txHash);
+                logUtils.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
+                const contractInstance = new {{contractName}}Contract(abi, txReceipt.contractAddress as string,
+                provider, txDefaults);
+                contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
+                return contractInstance;
+                }
+                constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
+                    super('{{contractName}}', abi, address, provider, txDefaults);
+                    classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi',
+                    '_ethRPCClient']);
+                    }
+                    } // tslint:disable:max-file-line-count
+                    // tslint:enable:no-unbound-method

@@ -4,7 +4,7 @@
 import { BaseContract } from '@0x/base-contract';
 import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, Provider, TxData, TxDataPayable } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
@@ -54,9 +54,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'name'}) as MethodAbi).outputs;
@@ -90,14 +90,14 @@ export class ZRXTokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.approve.estimateGasAsync.bind(
                     self,
                     _spender,
                     _value
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -121,9 +121,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -170,9 +170,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'approve'}) as MethodAbi).outputs;
@@ -200,9 +200,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'totalSupply'}) as MethodAbi).outputs;
@@ -241,7 +241,7 @@ export class ZRXTokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.transferFrom.estimateGasAsync.bind(
                     self,
                     _from,
@@ -249,7 +249,7 @@ export class ZRXTokenContract extends BaseContract {
                     _value
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -277,9 +277,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -335,9 +335,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'transferFrom'}) as MethodAbi).outputs;
@@ -365,9 +365,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'decimals'}) as MethodAbi).outputs;
@@ -400,9 +400,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'balanceOf'}) as MethodAbi).outputs;
@@ -430,9 +430,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'symbol'}) as MethodAbi).outputs;
@@ -466,14 +466,14 @@ export class ZRXTokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.transfer.estimateGasAsync.bind(
                     self,
                     _to,
                     _value
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -497,9 +497,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -546,9 +546,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'transfer'}) as MethodAbi).outputs;
@@ -586,9 +586,9 @@ export class ZRXTokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'allowance'}) as MethodAbi).outputs;
@@ -624,15 +624,15 @@ export class ZRXTokenContract extends BaseContract {
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, []);
-        const web3Wrapper = new Web3Wrapper(provider);
+        const ethRPCClient = new EthRPCClient(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {data: txData},
             txDefaults,
-            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
+            ethRPCClient.estimateGasAsync.bind(ethRPCClient),
         );
-        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        const txHash = await ethRPCClient.sendTransactionAsync(txDataWithDefaults);
         logUtils.log(`transactionHash: ${txHash}`);
-        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+        const txReceipt = await ethRPCClient.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`ZRXToken successfully deployed at ${txReceipt.contractAddress}`);
         const contractInstance = new ZRXTokenContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
@@ -640,7 +640,7 @@ export class ZRXTokenContract extends BaseContract {
     }
     constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
         super('ZRXToken', abi, address, provider, txDefaults);
-        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
+        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_ethRPCClient']);
     }
 } // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method

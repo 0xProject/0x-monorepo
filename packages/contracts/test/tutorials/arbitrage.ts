@@ -2,7 +2,7 @@
 // import { BlockchainLifecycle, devConstants, web3Factory } from '@0x/dev-utils';
 // import { ExchangeContractErrs } from 'ethereum-types';
 // import { BigNumber } from '@0x/utils';
-// import { Web3Wrapper } from '@0x/web3-wrapper';
+// import { EthRPCClient } from '@0x/eth-rpc-client';
 // import * as chai from 'chai';
 // import ethUtil = require('ethereumjs-util');
 // import * as Web3 from 'web3';
@@ -22,11 +22,11 @@
 // import { BalancesByOwner, ContractName } from '../../util/types';
 // import { chaiSetup } from '../utils/chai_setup';
 
-// import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+// import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 // chaiSetup.configure();
 // const expect = chai.expect;
-// const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+// const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 // describe('Arbitrage', () => {
 //     let coinbase: string;
@@ -57,7 +57,7 @@
 //     // ED order of 2 WETH (tokenGive) for 1 ZRX (tokenGet)
 //     // And then we do an atomic arbitrage between them which gives us 1 WETH.
 //     before(async () => {
-//         const accounts = await web3Wrapper.getAvailableAddressesAsync();
+//         const accounts = await ethRPCClient.getAvailableAddressesAsync();
 //         [coinbase, maker, edMaker, edFrontRunner] = accounts;
 //         weth = await DummyTokenContract.deployFrom0xArtifactAsync(
 //             artifacts.DummyToken,
@@ -187,7 +187,7 @@
 //             signedOrder = await orderFactory.newSignedOrderAsync();
 //             tokenGet = zrx.address;
 //             tokenGive = weth.address;
-//             const blockNumber = await web3Wrapper.getBlockNumberAsync();
+//             const blockNumber = await ethRPCClient.getBlockNumberAsync();
 //             const ED_ORDER_EXPIRATION_IN_BLOCKS = 10;
 //             expires = new BigNumber(blockNumber + ED_ORDER_EXPIRATION_IN_BLOCKS);
 //             nonce = new BigNumber(42);

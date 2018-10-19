@@ -3,7 +3,7 @@ import { ContractAddresses } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -18,7 +18,7 @@ import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
  * @returns The addresses of the contracts that were deployed.
  */
 export async function runMigrationsAsync(provider: Provider, txDefaults: Partial<TxData>): Promise<ContractAddresses> {
-    const web3Wrapper = new Web3Wrapper(provider);
+    const ethRPCClient = new EthRPCClient(provider);
 
     // Proxies
     const erc20Proxy = await wrappers.ERC20ProxyContract.deployFrom0xArtifactAsync(
@@ -51,7 +51,7 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
     );
 
     // Multisigs
-    const accounts: string[] = await web3Wrapper.getAvailableAddressesAsync();
+    const accounts: string[] = await ethRPCClient.getAvailableAddressesAsync();
     const owners = [accounts[0], accounts[1]];
     const confirmationsRequired = new BigNumber(2);
     const secondsRequired = new BigNumber(0);
@@ -68,32 +68,32 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         secondsRequired,
     );
 
-    await web3Wrapper.awaitTransactionSuccessAsync(
+    await ethRPCClient.awaitTransactionSuccessAsync(
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
             from: owner,
         }),
     );
-    await web3Wrapper.awaitTransactionSuccessAsync(
+    await ethRPCClient.awaitTransactionSuccessAsync(
         await erc20Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, {
             from: owner,
         }),
     );
-    await web3Wrapper.awaitTransactionSuccessAsync(
+    await ethRPCClient.awaitTransactionSuccessAsync(
         await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
             from: owner,
         }),
     );
-    await web3Wrapper.awaitTransactionSuccessAsync(
+    await ethRPCClient.awaitTransactionSuccessAsync(
         await erc721Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, {
             from: owner,
         }),
     );
 
     // Register the Asset Proxies to the Exchange
-    await web3Wrapper.awaitTransactionSuccessAsync(
+    await ethRPCClient.awaitTransactionSuccessAsync(
         await exchange.registerAssetProxy.sendTransactionAsync(erc20Proxy.address),
     );
-    await web3Wrapper.awaitTransactionSuccessAsync(
+    await ethRPCClient.awaitTransactionSuccessAsync(
         await exchange.registerAssetProxy.sendTransactionAsync(erc721Proxy.address),
     );
 

@@ -1,5 +1,5 @@
 import { intervalUtils, logUtils } from '@0x/utils';
-import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
+import { marshaller, EthRPCClient } from '@0x/eth-rpc-client';
 import { BlockParamLiteral, FilterObject, LogEntry, Provider, RawLogEntry } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
@@ -19,7 +19,7 @@ enum LogEventState {
  * depth.
  */
 export class EventWatcher {
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     private readonly _isVerbose: boolean;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
@@ -33,7 +33,7 @@ export class EventWatcher {
         isVerbose: boolean,
     ) {
         this._isVerbose = isVerbose;
-        this._web3Wrapper = new Web3Wrapper(provider);
+        this._ethRPCClient = new EthRPCClient(provider);
         this._pollingIntervalMs = _.isUndefined(pollingIntervalIfExistsMs)
             ? DEFAULT_EVENT_POLLING_INTERVAL_MS
             : pollingIntervalIfExistsMs;
@@ -83,7 +83,7 @@ export class EventWatcher {
     // This method only exists in order to comply with the expected interface of Blockstream's constructor
     private async _blockstreamGetBlockOrNullAsync(hash: string): Promise<Block | null> {
         const shouldIncludeTransactionData = false;
-        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync<Block | null>({
+        const blockOrNull = await this._ethRPCClient.sendRawPayloadAsync<Block | null>({
             method: 'eth_getBlockByHash',
             params: [hash, shouldIncludeTransactionData],
         });
@@ -92,7 +92,7 @@ export class EventWatcher {
     // This method only exists in order to comply with the expected interface of Blockstream's constructor
     private async _blockstreamGetLatestBlockOrNullAsync(): Promise<Block | null> {
         const shouldIncludeTransactionData = false;
-        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync<Block | null>({
+        const blockOrNull = await this._ethRPCClient.sendRawPayloadAsync<Block | null>({
             method: 'eth_getBlockByNumber',
             params: [BlockParamLiteral.Latest, shouldIncludeTransactionData],
         });
@@ -100,7 +100,7 @@ export class EventWatcher {
     }
     // This method only exists in order to comply with the expected interface of Blockstream's constructor
     private async _blockstreamGetLogsAsync(filterOptions: FilterObject): Promise<RawLogEntry[]> {
-        const logs = await this._web3Wrapper.sendRawPayloadAsync<RawLogEntry[]>({
+        const logs = await this._ethRPCClient.sendRawPayloadAsync<RawLogEntry[]>({
             method: 'eth_getLogs',
             params: [filterOptions],
         });

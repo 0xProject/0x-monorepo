@@ -2,7 +2,7 @@ import { ContractAddresses } from '@0x/contract-addresses';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
 import { DoneCallback } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import 'mocha';
 
@@ -22,11 +22,11 @@ import { DecodedLogEvent } from '../src/types';
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 // Since the address depositing/withdrawing ETH/WETH also needs to pay gas costs for the transaction,
 // a small amount of ETH will be used to pay this gas cost. We therefore check that the difference between
@@ -57,10 +57,10 @@ describe('EtherTokenWrapper', () => {
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await ethRPCClient.getAvailableAddressesAsync();
         addressWithETH = userAddresses[0];
         wethContractAddress = contractAddresses.etherToken;
-        depositWeiAmount = Web3Wrapper.toWei(new BigNumber(5));
+        depositWeiAmount = EthRPCClient.toWei(new BigNumber(5));
         addressWithoutFunds = userAddresses[1];
     });
     beforeEach(async () => {
@@ -86,7 +86,7 @@ describe('EtherTokenWrapper', () => {
     });
     describe('#depositAsync', () => {
         it('should successfully deposit ETH and issue Wrapped ETH tokens', async () => {
-            const preETHBalance = await web3Wrapper.getBalanceInWeiAsync(addressWithETH);
+            const preETHBalance = await ethRPCClient.getBalanceInWeiAsync(addressWithETH);
             const preWETHBalance = await contractWrappers.erc20Token.getBalanceAsync(
                 wethContractAddress,
                 addressWithETH,
@@ -99,9 +99,9 @@ describe('EtherTokenWrapper', () => {
                 depositWeiAmount,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
 
-            const postETHBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(addressWithETH);
+            const postETHBalanceInWei = await ethRPCClient.getBalanceInWeiAsync(addressWithETH);
             const postWETHBalanceInBaseUnits = await contractWrappers.erc20Token.getBalanceAsync(
                 wethContractAddress,
                 addressWithETH,
@@ -113,9 +113,9 @@ describe('EtherTokenWrapper', () => {
             expect(gasCost).to.be.bignumber.lte(MAX_REASONABLE_GAS_COST_IN_WEI);
         });
         it('should throw if user has insufficient ETH balance for deposit', async () => {
-            const preETHBalance = await web3Wrapper.getBalanceInWeiAsync(addressWithETH);
+            const preETHBalance = await ethRPCClient.getBalanceInWeiAsync(addressWithETH);
 
-            const extraETHBalance = Web3Wrapper.toWei(new BigNumber(5));
+            const extraETHBalance = EthRPCClient.toWei(new BigNumber(5));
             const overETHBalanceinWei = preETHBalance.add(extraETHBalance);
 
             return expect(
@@ -125,12 +125,12 @@ describe('EtherTokenWrapper', () => {
     });
     describe('#withdrawAsync', () => {
         it('should successfully withdraw ETH in return for Wrapped ETH tokens', async () => {
-            const ETHBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(addressWithETH);
+            const ETHBalanceInWei = await ethRPCClient.getBalanceInWeiAsync(addressWithETH);
 
             await contractWrappers.etherToken.depositAsync(wethContractAddress, depositWeiAmount, addressWithETH);
 
             const expectedPreETHBalance = ETHBalanceInWei.minus(depositWeiAmount);
-            const preETHBalance = await web3Wrapper.getBalanceInWeiAsync(addressWithETH);
+            const preETHBalance = await ethRPCClient.getBalanceInWeiAsync(addressWithETH);
             const preWETHBalance = await contractWrappers.erc20Token.getBalanceAsync(
                 wethContractAddress,
                 addressWithETH,
@@ -144,9 +144,9 @@ describe('EtherTokenWrapper', () => {
                 depositWeiAmount,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
 
-            const postETHBalance = await web3Wrapper.getBalanceInWeiAsync(addressWithETH);
+            const postETHBalance = await ethRPCClient.getBalanceInWeiAsync(addressWithETH);
             const postWETHBalanceInBaseUnits = await contractWrappers.erc20Token.getBalanceAsync(
                 wethContractAddress,
                 addressWithETH,
@@ -348,7 +348,7 @@ describe('EtherTokenWrapper', () => {
             etherTokenAddress = contractAddresses.etherToken;
             erc20ProxyAddress = contractWrappers.erc20Proxy.address;
             // Start the block range after all migrations to avoid unexpected logs
-            const currentBlock: number = await web3Wrapper.getBlockNumberAsync();
+            const currentBlock: number = await ethRPCClient.getBlockNumberAsync();
             const fromBlock = currentBlock + 1;
             blockRange = {
                 fromBlock,
@@ -360,7 +360,7 @@ describe('EtherTokenWrapper', () => {
                 etherTokenAddress,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = WETH9Events.Approval;
             const indexFilterValues = {};
             const logs = await contractWrappers.etherToken.getLogsAsync<WETH9ApprovalEventArgs>(
@@ -397,7 +397,7 @@ describe('EtherTokenWrapper', () => {
                 etherTokenAddress,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const differentEventName = WETH9Events.Transfer;
             const indexFilterValues = {};
             const logs = await contractWrappers.etherToken.getLogsAsync(
@@ -413,12 +413,12 @@ describe('EtherTokenWrapper', () => {
                 etherTokenAddress,
                 addressWithETH,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
                 etherTokenAddress,
                 addressWithoutFunds,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = WETH9Events.Approval;
             const indexFilterValues = {
                 _owner: addressWithETH,

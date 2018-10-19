@@ -20,10 +20,10 @@ const markdownSections = {
 };
 
 const docsInfoConfig: DocsInfoConfig = {
-    id: DocPackages.Web3Wrapper,
-    packageName: '@0x/web3-wrapper',
+    id: DocPackages.EthRPCClient,
+    packageName: '@0x/eth-rpc-client',
     type: SupportedDocJson.TypeDoc,
-    displayName: 'Web3Wrapper',
+    displayName: 'EthRPCClient',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     markdownMenu: {
         'getting-started': [markdownSections.introduction, markdownSections.installation],

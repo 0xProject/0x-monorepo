@@ -4,14 +4,14 @@ import { assetDataUtils } from '@0x/order-utils';
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
 import { AssetProxyId, ERC721AssetData, OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
 
 export class FillScenarios {
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     private readonly _userAddresses: string[];
     private readonly _coinbase: string;
     private readonly _zrxTokenAddress: string;
@@ -26,7 +26,7 @@ export class FillScenarios {
         erc20ProxyAddress: string,
         erc721ProxyAddress: string,
     ) {
-        this._web3Wrapper = new Web3Wrapper(provider);
+        this._ethRPCClient = new EthRPCClient(provider);
         this._userAddresses = userAddresses;
         this._coinbase = userAddresses[0];
         this._zrxTokenAddress = zrxTokenAddress;
@@ -120,8 +120,8 @@ export class FillScenarios {
         const exchangeInstance = new ExchangeContract(
             artifacts.Exchange.compilerOutput.abi,
             signedOrder.exchangeAddress,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
 
         const orderWithoutExchangeAddress = _.omit(signedOrder, [
@@ -135,7 +135,7 @@ export class FillScenarios {
             signedOrder.signature,
             { from: takerAddress },
         );
-        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+        await this._ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         return signedOrder;
     }
     private async _createAsymmetricFillableSignedOrderWithFeesAsync(
@@ -191,7 +191,7 @@ export class FillScenarios {
         const senderAddress = constants.NULL_ADDRESS;
 
         const signedOrder = await orderFactory.createSignedOrderAsync(
-            this._web3Wrapper.getProvider(),
+            this._ethRPCClient.getProvider(),
             makerAddress,
             makerFillableAmount,
             makerAssetData,
@@ -225,13 +225,13 @@ export class FillScenarios {
         const erc721Token = new DummyERC721TokenContract(
             artifacts.DummyERC721Token.compilerOutput.abi,
             tokenAddress,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
         const txHash = await erc721Token.approve.sendTransactionAsync(this._erc721ProxyAddress, tokenId, {
             from: address,
         });
-        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+        await this._ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
     }
     private async _increaseERC721BalanceAsync(
         tokenAddress: string,
@@ -241,8 +241,8 @@ export class FillScenarios {
         const erc721Token = new DummyERC721TokenContract(
             artifacts.DummyERC721Token.compilerOutput.abi,
             tokenAddress,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
         try {
             const currentOwner = await erc721Token.ownerOf.callAsync(tokenId);
@@ -251,7 +251,7 @@ export class FillScenarios {
             }
         } catch (err) {
             const txHash = await erc721Token.mint.sendTransactionAsync(address, tokenId, { from: this._coinbase });
-            await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await this._ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         }
     }
     private async _increaseERC20BalanceAndAllowanceAsync(
@@ -271,13 +271,13 @@ export class FillScenarios {
         const erc20Token = new DummyERC20TokenContract(
             artifacts.DummyERC20Token.compilerOutput.abi,
             tokenAddress,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
         const txHash = await erc20Token.transfer.sendTransactionAsync(address, amount, {
             from: this._coinbase,
         });
-        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+        await this._ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
     }
     private async _increaseERC20AllowanceAsync(
         tokenAddress: string,
@@ -287,8 +287,8 @@ export class FillScenarios {
         const erc20Token = new DummyERC20TokenContract(
             artifacts.DummyERC20Token.compilerOutput.abi,
             tokenAddress,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
         const oldMakerAllowance = await erc20Token.allowance.callAsync(address, this._erc20ProxyAddress);
         const newMakerAllowance = oldMakerAllowance.plus(amount);
@@ -296,6 +296,6 @@ export class FillScenarios {
         const txHash = await erc20Token.approve.sendTransactionAsync(this._erc20ProxyAddress, newMakerAllowance, {
             from: address,
         });
-        await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+        await this._ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
     }
 }

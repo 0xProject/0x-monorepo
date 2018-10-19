@@ -1,25 +1,25 @@
 import { BigNumber, intervalUtils, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 import { Dispatcher } from 'ts/redux/dispatcher';
 
 export class BlockchainWatcher {
     private readonly _dispatcher: Dispatcher;
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     private readonly _shouldPollUserAddress: boolean;
     private _watchBalanceIntervalId: NodeJS.Timer;
     private _prevUserEtherBalanceInWei?: BigNumber;
     private _prevUserAddressIfExists: string;
     private _prevNodeVersionIfExists: string;
-    constructor(dispatcher: Dispatcher, web3Wrapper: Web3Wrapper, shouldPollUserAddress: boolean) {
+    constructor(dispatcher: Dispatcher, ethRPCClient: EthRPCClient, shouldPollUserAddress: boolean) {
         this._dispatcher = dispatcher;
         this._shouldPollUserAddress = shouldPollUserAddress;
-        this._web3Wrapper = web3Wrapper;
+        this._ethRPCClient = ethRPCClient;
     }
     public destroy(): void {
         this._stopEmittingUserBalanceState();
         // HACK: stop() is only available on providerEngine instances
-        const provider = this._web3Wrapper.getProvider();
+        const provider = this._ethRPCClient.getProvider();
         if (!_.isUndefined((provider as any).stop)) {
             (provider as any).stop();
         }
@@ -44,14 +44,14 @@ export class BlockchainWatcher {
         );
     }
     private async _updateBalanceAsync(): Promise<void> {
-        const currentNodeVersion = await this._web3Wrapper.getNodeVersionAsync();
+        const currentNodeVersion = await this._ethRPCClient.getNodeVersionAsync();
         if (this._prevNodeVersionIfExists !== currentNodeVersion) {
             this._prevNodeVersionIfExists = currentNodeVersion;
             this._dispatcher.updateNodeVersion(currentNodeVersion);
         }
 
         if (this._shouldPollUserAddress) {
-            const addresses = await this._web3Wrapper.getAvailableAddressesAsync();
+            const addresses = await this._ethRPCClient.getAvailableAddressesAsync();
             const userAddressIfExists = addresses[0];
             // Update makerAddress on network change
             if (this._prevUserAddressIfExists !== userAddressIfExists) {
@@ -72,7 +72,7 @@ export class BlockchainWatcher {
         }
     }
     private async _updateUserWeiBalanceAsync(userAddress: string): Promise<void> {
-        const balanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(userAddress);
+        const balanceInWei = await this._ethRPCClient.getBalanceInWeiAsync(userAddress);
         if (_.isUndefined(this._prevUserEtherBalanceInWei) || !balanceInWei.eq(this._prevUserEtherBalanceInWei)) {
             this._prevUserEtherBalanceInWei = balanceInWei;
             this._dispatcher.updateUserWeiBalance(balanceInWei);

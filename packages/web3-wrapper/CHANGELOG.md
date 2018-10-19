@@ -24,7 +24,7 @@ CHANGELOG
 ## v3.1.0 - _October 18, 2018_
 
     * Add `signTypedData` to perform EIP712 `eth_signTypedData`. (#1102)
-    * Web3Wrapper now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned. (#1102)
+    * EthRPCClient now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned. (#1102)
 
 ## v3.0.3 - _October 4, 2018_
 
@@ -41,7 +41,7 @@ CHANGELOG
 ## v3.0.0 - _September 25, 2018_
 
     * Rename `getBlockAsync` to `getBlockIfExistsAsync` and rather then throw if the requested block wasn't found, return undefined. (#1082)
-    * Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls (#1080)
+    * Expose `sendRawPayloadAsync` so one can easily extend `EthRPCClient` with their own custom JSON RPC calls (#1080)
 
 ## v2.0.3 - _September 21, 2018_
 
@@ -103,9 +103,9 @@ CHANGELOG
 
 ## v0.7.0 - _June 4, 2018_
 
-    * Add `web3Wrapper.getContractCodeAsync` (#675)
-    * Add `web3Wrapper.getTransactionTraceAsync` (#675)
-    * Add `web3Wrapper.getBlockWithTransactionDataAsync` (#675)
+    * Add `ethRPCClient.getContractCodeAsync` (#675)
+    * Add `ethRPCClient.getTransactionTraceAsync` (#675)
+    * Add `ethRPCClient.getBlockWithTransactionDataAsync` (#675)
     * Add exported uniqueVersionIds object (#622)
     * Update increaseTimeAsync to work with Geth (#622)
     * Make callAsync throw if raw call result is 0x (null) (#622)
@@ -135,9 +135,9 @@ CHANGELOG
 
 ## v0.5.0 - _April 2, 2018_
 
-    * Add `web3Wrapper.awaitTransactionMinedAsync` (#485)
+    * Add `ethRPCClient.awaitTransactionMinedAsync` (#485)
     * Add a public field `abiDecoder: AbiDecoder` which allows you to add your ABIs that are later used to decode logs (#485)
-    * Export enum `Web3WrapperErrors` with a single value so far: `TransactionMiningTimeout` (#485)
+    * Export enum `EthRPCClientErrors` with a single value so far: `TransactionMiningTimeout` (#485)
 
 ## v0.4.0 - _April 2, 2018_
 
@@ -145,16 +145,16 @@ CHANGELOG
 
 ## v0.3.0 - _March 17, 2018_
 
-    * Add `web3Wrapper.takeSnapshotAsync`, `web3Wrapper.revertSnapshotAsync`, `web3Wrapper.mineBlockAsync`, `web3Wrapper.increaseTimeAsync` (#426)
-    * Add `web3Wrapper.isZeroExWeb3Wrapper` for runtime instanceOf checks (#426)
+    * Add `ethRPCClient.takeSnapshotAsync`, `ethRPCClient.revertSnapshotAsync`, `ethRPCClient.mineBlockAsync`, `ethRPCClient.increaseTimeAsync` (#426)
+    * Add `ethRPCClient.isZeroExEthRPCClient` for runtime instanceOf checks (#426)
     * Add a `getProvider` method (#444)
 
 ## v0.2.0 - _March 3, 2018_
 
     * Ensure all returned user addresses are lowercase (#373)
-    * Add `web3Wrapper.callAsync` (#413)
-    * Make `web3Wrapper.estimateGas` accept whole `txData` instead of `data` (#413)
-    * Remove `web3Wrapper.getContractInstance` (#413)
+    * Add `ethRPCClient.callAsync` (#413)
+    * Make `ethRPCClient.estimateGas` accept whole `txData` instead of `data` (#413)
+    * Remove `ethRPCClient.getContractInstance` (#413)
 
 ## v0.1.12 - _February 8, 2018_
 

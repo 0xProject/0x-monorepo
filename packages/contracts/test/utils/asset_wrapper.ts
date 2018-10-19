@@ -85,7 +85,7 @@ export class AssetWrapper {
                     );
                 } else if (tokenOwner === userAddress && desiredBalance.eq(0)) {
                     // Transfer token to someone else
-                    const userAddresses = await (erc721Wrapper as any)._web3Wrapper.getAvailableAddressesAsync();
+                    const userAddresses = await (erc721Wrapper as any)._ethRPCClient.getAvailableAddressesAsync();
                     const nonOwner = _.find(userAddresses, a => a !== userAddress);
                     await erc721Wrapper.transferFromAsync(
                         assetProxyData.tokenAddress,

@@ -11,7 +11,7 @@ import { constants } from '../src/constants';
 import { signatureUtils } from '../src/signature_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -21,7 +21,7 @@ describe('Signature utils', () => {
     const fakeExchangeContractAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
     let order: Order;
     before(async () => {
-        const availableAddreses = await web3Wrapper.getAvailableAddressesAsync();
+        const availableAddreses = await ethRPCClient.getAvailableAddressesAsync();
         makerAddress = availableAddreses[0];
         order = {
             makerAddress,
@@ -149,7 +149,7 @@ describe('Signature utils', () => {
                         callback(new Error('Internal RPC Error'));
                     } else if (payload.method === 'eth_sign') {
                         const [address, message] = payload.params;
-                        const signature = await web3Wrapper.signMessageAsync(address, message);
+                        const signature = await ethRPCClient.signMessageAsync(address, message);
                         callback(null, {
                             id: 42,
                             jsonrpc: '2.0',
@@ -170,7 +170,7 @@ describe('Signature utils', () => {
                         callback(new Error('User denied message signature'));
                     } else if (payload.method === 'eth_sign') {
                         const [address, message] = payload.params;
-                        const signature = await web3Wrapper.signMessageAsync(address, message);
+                        const signature = await ethRPCClient.signMessageAsync(address, message);
                         callback(null, {
                             id: 42,
                             jsonrpc: '2.0',
@@ -188,7 +188,7 @@ describe('Signature utils', () => {
     });
     describe('#ecSignHashAsync', () => {
         before(async () => {
-            const availableAddreses = await web3Wrapper.getAvailableAddressesAsync();
+            const availableAddreses = await ethRPCClient.getAvailableAddressesAsync();
             makerAddress = availableAddreses[0];
         });
         it('should return the correct Signature', async () => {
@@ -208,7 +208,7 @@ describe('Signature utils', () => {
                     if (payload.method === 'eth_sign') {
                         const [address, message] = payload.params;
                         expect(message).to.equal(orderHash);
-                        const signature = await web3Wrapper.signMessageAsync(address, message);
+                        const signature = await ethRPCClient.signMessageAsync(address, message);
                         // tslint:disable-next-line:custom-no-magic-numbers
                         const rsvHex = `0x${signature.substr(130)}${signature.substr(2, 128)}`;
                         callback(null, {
@@ -232,7 +232,7 @@ describe('Signature utils', () => {
                 async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
                     if (payload.method === 'eth_sign') {
                         const [address, message] = payload.params;
-                        const signature = await web3Wrapper.signMessageAsync(address, message);
+                        const signature = await ethRPCClient.signMessageAsync(address, message);
                         callback(null, {
                             id: 42,
                             jsonrpc: '2.0',
@@ -293,7 +293,7 @@ describe('Signature utils', () => {
                 async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
                     if (payload.method === 'eth_signTypedData') {
                         const [address, typedData] = payload.params;
-                        const signature = await web3Wrapper.signTypedDataAsync(address, typedData);
+                        const signature = await ethRPCClient.signTypedDataAsync(address, typedData);
                         callback(null, {
                             id: 42,
                             jsonrpc: '2.0',

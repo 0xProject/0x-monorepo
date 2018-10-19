@@ -1,19 +1,19 @@
 **Install**
 
 ```bash
-npm install @0x/web3-wrapper --save
+npm install @0x/eth-rpc-client --save
 ```
 
 **Import**
 
 ```javascript
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 ```
 
 or
 
 ```javascript
-var Web3Wrapper = require('@0x/web3-wrapper').Web3Wrapper;
+var EthRPCClient = require('@0x/eth-rpc-client').EthRPCClient;
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:

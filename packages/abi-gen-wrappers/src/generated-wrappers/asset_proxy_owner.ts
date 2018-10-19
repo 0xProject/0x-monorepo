@@ -4,7 +4,7 @@
 import { BaseContract } from '@0x/base-contract';
 import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, Provider, TxData, TxDataPayable } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
@@ -120,9 +120,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'owners'}) as MethodAbi).outputs;
@@ -151,13 +151,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.removeOwner.estimateGasAsync.bind(
                     self,
                     owner
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -177,9 +177,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -217,9 +217,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'removeOwner'}) as MethodAbi).outputs;
@@ -248,13 +248,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.revokeConfirmation.estimateGasAsync.bind(
                     self,
                     transactionId
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -274,9 +274,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -314,9 +314,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'revokeConfirmation'}) as MethodAbi).outputs;
@@ -349,9 +349,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'isOwner'}) as MethodAbi).outputs;
@@ -389,9 +389,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'confirmations'}) as MethodAbi).outputs;
@@ -420,13 +420,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.executeRemoveAuthorizedAddressAtIndex.estimateGasAsync.bind(
                     self,
                     transactionId
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -446,9 +446,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -486,9 +486,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'executeRemoveAuthorizedAddressAtIndex'}) as MethodAbi).outputs;
@@ -516,9 +516,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'secondsTimeLocked'}) as MethodAbi).outputs;
@@ -556,9 +556,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'getTransactionCount'}) as MethodAbi).outputs;
@@ -592,14 +592,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.registerAssetProxy.estimateGasAsync.bind(
                     self,
                     assetProxyContract,
                     isRegistered
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -623,9 +623,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -672,9 +672,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'registerAssetProxy'}) as MethodAbi).outputs;
@@ -703,13 +703,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.addOwner.estimateGasAsync.bind(
                     self,
                     owner
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -729,9 +729,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -769,9 +769,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'addOwner'}) as MethodAbi).outputs;
@@ -804,9 +804,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'isConfirmed'}) as MethodAbi).outputs;
@@ -835,13 +835,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.changeTimeLock.estimateGasAsync.bind(
                     self,
                     _secondsTimeLocked
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -861,9 +861,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -901,9 +901,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'changeTimeLock'}) as MethodAbi).outputs;
@@ -936,9 +936,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'isAssetProxyRegistered'}) as MethodAbi).outputs;
@@ -971,9 +971,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'getConfirmationCount'}) as MethodAbi).outputs;
@@ -1006,9 +1006,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'transactions'}) as MethodAbi).outputs;
@@ -1036,9 +1036,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'getOwners'}) as MethodAbi).outputs;
@@ -1086,9 +1086,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'getTransactionIds'}) as MethodAbi).outputs;
@@ -1121,9 +1121,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'getConfirmations'}) as MethodAbi).outputs;
@@ -1151,9 +1151,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'transactionCount'}) as MethodAbi).outputs;
@@ -1182,13 +1182,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.changeRequirement.estimateGasAsync.bind(
                     self,
                     _required
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -1208,9 +1208,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -1248,9 +1248,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'changeRequirement'}) as MethodAbi).outputs;
@@ -1279,13 +1279,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.confirmTransaction.estimateGasAsync.bind(
                     self,
                     transactionId
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -1305,9 +1305,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -1345,9 +1345,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'confirmTransaction'}) as MethodAbi).outputs;
@@ -1386,7 +1386,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.submitTransaction.estimateGasAsync.bind(
                     self,
                     destination,
@@ -1394,7 +1394,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -1422,9 +1422,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -1480,9 +1480,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'submitTransaction'}) as MethodAbi).outputs;
@@ -1515,9 +1515,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'confirmationTimes'}) as MethodAbi).outputs;
@@ -1545,9 +1545,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'MAX_OWNER_COUNT'}) as MethodAbi).outputs;
@@ -1575,9 +1575,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'required'}) as MethodAbi).outputs;
@@ -1611,14 +1611,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.replaceOwner.estimateGasAsync.bind(
                     self,
                     owner,
                     newOwner
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -1642,9 +1642,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -1691,9 +1691,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'replaceOwner'}) as MethodAbi).outputs;
@@ -1722,13 +1722,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.executeTransaction.estimateGasAsync.bind(
                     self,
                     transactionId
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -1748,9 +1748,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -1788,9 +1788,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'executeTransaction'}) as MethodAbi).outputs;
@@ -1850,15 +1850,15 @@ _assetProxyContracts,
 _required,
 _secondsTimeLocked
 ]);
-        const web3Wrapper = new Web3Wrapper(provider);
+        const ethRPCClient = new EthRPCClient(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {data: txData},
             txDefaults,
-            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
+            ethRPCClient.estimateGasAsync.bind(ethRPCClient),
         );
-        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        const txHash = await ethRPCClient.sendTransactionAsync(txDataWithDefaults);
         logUtils.log(`transactionHash: ${txHash}`);
-        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+        const txReceipt = await ethRPCClient.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`AssetProxyOwner successfully deployed at ${txReceipt.contractAddress}`);
         const contractInstance = new AssetProxyOwnerContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [_owners,
@@ -1870,7 +1870,7 @@ _secondsTimeLocked
     }
     constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
         super('AssetProxyOwner', abi, address, provider, txDefaults);
-        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
+        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_ethRPCClient']);
     }
 } // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method

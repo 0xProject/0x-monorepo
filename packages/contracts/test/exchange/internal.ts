@@ -11,12 +11,12 @@ import { chaiSetup } from '../utils/chai_setup';
 import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_utils';
 import { constants } from '../utils/constants';
 import { FillResults } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
 
@@ -444,7 +444,7 @@ describe('Exchange core internal functions', () => {
                 makerFeePaid: new BigNumber(0),
                 takerFeePaid: new BigNumber(0),
             };
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await testExchange.publicUpdateFilledState.sendTransactionAsync(
                     emptySignedOrder,
                     constants.NULL_ADDRESS,

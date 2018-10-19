@@ -1,7 +1,7 @@
 import { ERC20ProxyContract } from '@0x/abi-gen-wrappers';
 import { ERC20Proxy } from '@0x/contract-artifacts';
 import { AssetProxyId } from '@0x/types';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -19,13 +19,13 @@ export class ERC20ProxyWrapper extends ContractWrapper {
     private _erc20ProxyContractIfExists?: ERC20ProxyContract;
     /**
      * Instantiate ERC20ProxyWrapper
-     * @param web3Wrapper Web3Wrapper instance to use
+     * @param ethRPCClient EthRPCClient instance to use
      * @param networkId Desired networkId
      * @param address The address of the ERC20Proxy contract. If undefined, will
      * default to the known address corresponding to the networkId.
      */
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
-        super(web3Wrapper, networkId);
+    constructor(ethRPCClient: EthRPCClient, networkId: number, address?: string) {
+        super(ethRPCClient, networkId);
         this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).erc20Proxy : address;
     }
     /**
@@ -68,8 +68,8 @@ export class ERC20ProxyWrapper extends ContractWrapper {
         const contractInstance = new ERC20ProxyContract(
             this.abi,
             this.address,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
         this._erc20ProxyContractIfExists = contractInstance;
         return this._erc20ProxyContractIfExists;

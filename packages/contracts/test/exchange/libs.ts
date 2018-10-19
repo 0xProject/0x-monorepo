@@ -11,12 +11,12 @@ import { addressUtils } from '../utils/address_utils';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { OrderFactory } from '../utils/order_factory';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('Exchange libs', () => {
     let signedOrder: SignedOrder;
@@ -31,7 +31,7 @@ describe('Exchange libs', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
         libs = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults);
         testConstants = await TestConstantsContract.deployFrom0xArtifactAsync(

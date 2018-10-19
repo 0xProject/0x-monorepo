@@ -23,11 +23,11 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('ERC721Wrapper', () => {
     let contractWrappers: ContractWrappers;
@@ -49,7 +49,7 @@ describe('ERC721Wrapper', () => {
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await ethRPCClient.getAvailableAddressesAsync();
         tokens = tokenUtils.getDummyERC721TokenAddresses();
         tokenAddress = tokens[0];
         [ownerAddress, operatorAddress, anotherOwnerAddress, approvedAddress, receiverAddress] = userAddresses;
@@ -70,7 +70,7 @@ describe('ERC721Wrapper', () => {
         it('should successfully transfer tokens when sender is an approved address', async () => {
             const tokenId = await tokenUtils.mintDummyERC721Async(tokenAddress, ownerAddress);
             let txHash = await contractWrappers.erc721Token.setApprovalAsync(tokenAddress, approvedAddress, tokenId);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const owner = await contractWrappers.erc721Token.getOwnerOfAsync(tokenAddress, tokenId);
             expect(owner).to.be.equal(ownerAddress);
             txHash = await contractWrappers.erc721Token.transferFromAsync(
@@ -79,7 +79,7 @@ describe('ERC721Wrapper', () => {
                 approvedAddress,
                 tokenId,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const newOwner = await contractWrappers.erc721Token.getOwnerOfAsync(tokenAddress, tokenId);
             expect(newOwner).to.be.equal(receiverAddress);
         });
@@ -92,7 +92,7 @@ describe('ERC721Wrapper', () => {
                 operatorAddress,
                 isApprovedForAll,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const owner = await contractWrappers.erc721Token.getOwnerOfAsync(tokenAddress, tokenId);
             expect(owner).to.be.equal(ownerAddress);
             txHash = await contractWrappers.erc721Token.transferFromAsync(
@@ -101,7 +101,7 @@ describe('ERC721Wrapper', () => {
                 operatorAddress,
                 tokenId,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const newOwner = await contractWrappers.erc721Token.getOwnerOfAsync(tokenAddress, tokenId);
             expect(newOwner).to.be.equal(receiverAddress);
         });
@@ -166,7 +166,7 @@ describe('ERC721Wrapper', () => {
                 operatorAddress,
                 isApprovedForAll,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             isApprovedForAll = await contractWrappers.erc721Token.isApprovedForAllAsync(
                 tokenAddress,
                 ownerAddress,
@@ -180,7 +180,7 @@ describe('ERC721Wrapper', () => {
                 operatorAddress,
                 false,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             isApprovedForAll = await contractWrappers.erc721Token.isApprovedForAllAsync(
                 tokenAddress,
                 ownerAddress,
@@ -197,7 +197,7 @@ describe('ERC721Wrapper', () => {
                 ownerAddress,
                 isApprovedForAll,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             isApprovedForAll = await contractWrappers.erc721Token.isProxyApprovedForAllAsync(
                 tokenAddress,
                 ownerAddress,
@@ -262,7 +262,7 @@ describe('ERC721Wrapper', () => {
                 );
                 const tokenId = await tokenUtils.mintDummyERC721Async(tokenAddress, ownerAddress);
                 const isApprovedForAll = true;
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await contractWrappers.erc721Token.setApprovalForAllAsync(
                         tokenAddress,
                         ownerAddress,
@@ -277,7 +277,7 @@ describe('ERC721Wrapper', () => {
                     indexFilterValues,
                     callback,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await contractWrappers.erc721Token.transferFromAsync(
                         tokenAddress,
                         receiverAddress,
@@ -307,7 +307,7 @@ describe('ERC721Wrapper', () => {
                     callback,
                 );
                 const tokenId = await tokenUtils.mintDummyERC721Async(tokenAddress, ownerAddress);
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await contractWrappers.erc721Token.setApprovalAsync(tokenAddress, approvedAddress, tokenId),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
@@ -335,7 +335,7 @@ describe('ERC721Wrapper', () => {
                     callbackToBeCalled,
                 );
                 const tokenId = await tokenUtils.mintDummyERC721Async(tokenAddress, ownerAddress);
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await contractWrappers.erc721Token.setApprovalAsync(tokenAddress, approvedAddress, tokenId),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
@@ -358,7 +358,7 @@ describe('ERC721Wrapper', () => {
                 contractWrappers.erc721Token.unsubscribe(subscriptionToken);
 
                 const isApproved = true;
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await contractWrappers.erc721Token.setApprovalForAllAsync(
                         tokenAddress,
                         ownerAddress,
@@ -385,7 +385,7 @@ describe('ERC721Wrapper', () => {
                 operatorAddress,
                 isApprovedForAll,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = ERC721TokenEvents.ApprovalForAll;
             const indexFilterValues = {};
             const logs = await contractWrappers.erc721Token.getLogsAsync<ERC721TokenApprovalForAllEventArgs>(
@@ -409,7 +409,7 @@ describe('ERC721Wrapper', () => {
                 operatorAddress,
                 isApprovedForAll,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const differentEventName = ERC721TokenEvents.Transfer;
             const indexFilterValues = {};
             const logs = await contractWrappers.erc721Token.getLogsAsync(
@@ -428,14 +428,14 @@ describe('ERC721Wrapper', () => {
                 operatorAddress,
                 isApprovedForAll,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             txHash = await contractWrappers.erc721Token.setApprovalForAllAsync(
                 tokenAddress,
                 anotherOwnerAddress,
                 operatorAddress,
                 isApprovedForAll,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = ERC721TokenEvents.ApprovalForAll;
             const indexFilterValues = {
                 _owner: anotherOwnerAddress,

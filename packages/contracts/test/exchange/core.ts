@@ -2,7 +2,7 @@ import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
@@ -26,11 +26,11 @@ import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { OrderFactory } from '../utils/order_factory';
 import { ERC20BalancesByOwner, OrderStatus } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 // tslint:disable:no-unnecessary-type-assertion
 describe('Exchange core', () => {
     let makerAddress: string;
@@ -70,7 +70,7 @@ describe('Exchange core', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = _.slice(accounts, 0, 4));
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
@@ -101,13 +101,13 @@ describe('Exchange core', () => {
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
             }),
@@ -159,7 +159,7 @@ describe('Exchange core', () => {
                     signedOrder = await orderFactory.newSignedOrderAsync({
                         makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
-                    await web3Wrapper.awaitTransactionSuccessAsync(
+                    await ethRPCClient.awaitTransactionSuccessAsync(
                         await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
@@ -174,7 +174,7 @@ describe('Exchange core', () => {
 
         it('should throw if signature is invalid', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), 18),
             });
 
             const v = ethUtil.toBuffer(signedOrder.signature.slice(0, 4));
@@ -201,14 +201,14 @@ describe('Exchange core', () => {
 
         it('should revert if `isValidSignature` tries to update state when SignatureType=Wallet', async () => {
             const maliciousMakerAddress = maliciousWallet.address;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20TokenA.setBalance.sendTransactionAsync(
                     maliciousMakerAddress,
                     constants.INITIAL_ERC20_BALANCE,
                 ),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await maliciousWallet.approveERC20.sendTransactionAsync(
                     erc20TokenA.address,
                     erc20Proxy.address,
@@ -229,7 +229,7 @@ describe('Exchange core', () => {
 
         it('should revert if `isValidSignature` tries to update state when SignatureType=Validator', async () => {
             const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await exchange.setSignatureValidatorApproval.sendTransactionAsync(
                     maliciousValidator.address,
                     isApproved,
@@ -290,11 +290,11 @@ describe('Exchange core', () => {
                 constants.DUMMY_TOKEN_DECIMALS,
                 constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await noReturnErc20Token.setBalance.sendTransactionAsync(makerAddress, constants.INITIAL_ERC20_BALANCE),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await noReturnErc20Token.approve.sendTransactionAsync(
                     erc20Proxy.address,
                     constants.INITIAL_ERC20_ALLOWANCE,
@@ -306,8 +306,8 @@ describe('Exchange core', () => {
         it('should transfer the correct amounts when makerAssetAmount === takerAssetAmount', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(noReturnErc20Token.address),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
             });
 
             const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
@@ -341,8 +341,8 @@ describe('Exchange core', () => {
         it('should transfer the correct amounts when makerAssetAmount > takerAssetAmount', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(noReturnErc20Token.address),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(200), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
             });
 
             const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
@@ -376,8 +376,8 @@ describe('Exchange core', () => {
         it('should transfer the correct amounts when makerAssetAmount < takerAssetAmount', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(noReturnErc20Token.address),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(200), 18),
             });
 
             const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
@@ -540,23 +540,23 @@ describe('Exchange core', () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             const signedOrders = [
                 await orderFactory.newSignedOrderAsync({
-                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 18),
-                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(9), 18),
+                    makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(9), 18),
+                    takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(9), 18),
                     salt: new BigNumber(0),
                 }),
                 await orderFactory.newSignedOrderAsync({
-                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(79), 18),
-                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(79), 18),
+                    makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(79), 18),
+                    takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(79), 18),
                     salt: new BigNumber(1),
                 }),
                 await orderFactory.newSignedOrderAsync({
-                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(979), 18),
-                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(979), 18),
+                    makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(979), 18),
+                    takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(979), 18),
                     salt: new BigNumber(2),
                 }),
                 await orderFactory.newSignedOrderAsync({
-                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(7979), 18),
-                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(7979), 18),
+                    makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(7979), 18),
+                    takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(7979), 18),
                     salt: new BigNumber(3),
                 }),
             ];
@@ -694,7 +694,7 @@ describe('Exchange core', () => {
             const makerAssetId = erc721MakerAssetIds[0];
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
                 makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
             });

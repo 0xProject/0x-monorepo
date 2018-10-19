@@ -40,8 +40,8 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
     }
     // tslint:disable-next-line:no-unused-variable
     protected async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
-        await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
-        const trace = await this._web3Wrapper.getTransactionTraceAsync(txHash, {
+        await this._ethRPCClient.awaitTransactionMinedAsync(txHash, 0);
+        const trace = await this._ethRPCClient.getTransactionTraceAsync(txHash, {
             disableMemory: true,
             disableStack: false,
             disableStorage: true,
@@ -64,7 +64,7 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
                 this._logger.error('Contract creation not supported');
                 continue;
             }
-            const bytecode = await this._web3Wrapper.getContractCodeAsync(evmCallStackEntry.address);
+            const bytecode = await this._ethRPCClient.getContractCodeAsync(evmCallStackEntry.address);
             const contractData = utils.getContractDataIfExists(this._contractsData, bytecode);
             if (_.isUndefined(contractData)) {
                 const errMsg = isContractCreation

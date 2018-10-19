@@ -1,6 +1,6 @@
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import 'mocha';
 
@@ -30,13 +30,13 @@ describe('RemainingFillableCalculator', () => {
         '0x1B61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403';
     beforeEach(async () => {
         [makerAmount, takerAmount, makerFeeAmount] = [
-            Web3Wrapper.toBaseUnitAmount(new BigNumber(50), decimals),
-            Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals),
-            Web3Wrapper.toBaseUnitAmount(new BigNumber(1), decimals),
+            EthRPCClient.toBaseUnitAmount(new BigNumber(50), decimals),
+            EthRPCClient.toBaseUnitAmount(new BigNumber(5), decimals),
+            EthRPCClient.toBaseUnitAmount(new BigNumber(1), decimals),
         ];
         [transferrableMakeAssetAmount, transferrableMakerFeeTokenAmount] = [
-            Web3Wrapper.toBaseUnitAmount(new BigNumber(50), decimals),
-            Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals),
+            EthRPCClient.toBaseUnitAmount(new BigNumber(50), decimals),
+            EthRPCClient.toBaseUnitAmount(new BigNumber(5), decimals),
         ];
     });
     function buildSignedOrder(): SignedOrder {
@@ -76,7 +76,7 @@ describe('RemainingFillableCalculator', () => {
         });
         it('calculates the correct amount when partially filled and funds available', () => {
             signedOrder = buildSignedOrder();
-            remainingMakeAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), decimals);
+            remainingMakeAssetAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(1), decimals);
             calculator = new RemainingFillableCalculator(
                 signedOrder.makerFee,
                 signedOrder.makerAssetAmount,
@@ -103,7 +103,7 @@ describe('RemainingFillableCalculator', () => {
         });
         it('calculates the correct amount when balance is less than remaining fillable', () => {
             signedOrder = buildSignedOrder();
-            const partiallyFilledAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(2), decimals);
+            const partiallyFilledAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(2), decimals);
             remainingMakeAssetAmount = signedOrder.makerAssetAmount.minus(partiallyFilledAmount);
             transferrableMakeAssetAmount = remainingMakeAssetAmount.minus(partiallyFilledAmount);
             calculator = new RemainingFillableCalculator(
@@ -119,15 +119,15 @@ describe('RemainingFillableCalculator', () => {
         describe('Order to Fee Ratio is < 1', () => {
             beforeEach(async () => {
                 [makerAmount, takerAmount, makerFeeAmount] = [
-                    Web3Wrapper.toBaseUnitAmount(new BigNumber(3), decimals),
-                    Web3Wrapper.toBaseUnitAmount(new BigNumber(6), decimals),
-                    Web3Wrapper.toBaseUnitAmount(new BigNumber(6), decimals),
+                    EthRPCClient.toBaseUnitAmount(new BigNumber(3), decimals),
+                    EthRPCClient.toBaseUnitAmount(new BigNumber(6), decimals),
+                    EthRPCClient.toBaseUnitAmount(new BigNumber(6), decimals),
                 ];
             });
             it('calculates the correct amount when funds unavailable', () => {
                 signedOrder = buildSignedOrder();
                 remainingMakeAssetAmount = signedOrder.makerAssetAmount;
-                const transferredAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(2), decimals);
+                const transferredAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(2), decimals);
                 transferrableMakeAssetAmount = remainingMakeAssetAmount.minus(transferredAmount);
                 calculator = new RemainingFillableCalculator(
                     signedOrder.makerFee,
@@ -143,15 +143,15 @@ describe('RemainingFillableCalculator', () => {
         describe('Ratio is not evenly divisble', () => {
             beforeEach(async () => {
                 [makerAmount, takerAmount, makerFeeAmount] = [
-                    Web3Wrapper.toBaseUnitAmount(new BigNumber(3), decimals),
-                    Web3Wrapper.toBaseUnitAmount(new BigNumber(7), decimals),
-                    Web3Wrapper.toBaseUnitAmount(new BigNumber(7), decimals),
+                    EthRPCClient.toBaseUnitAmount(new BigNumber(3), decimals),
+                    EthRPCClient.toBaseUnitAmount(new BigNumber(7), decimals),
+                    EthRPCClient.toBaseUnitAmount(new BigNumber(7), decimals),
                 ];
             });
             it('calculates the correct amount when funds unavailable', () => {
                 signedOrder = buildSignedOrder();
                 remainingMakeAssetAmount = signedOrder.makerAssetAmount;
-                const transferredAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(2), decimals);
+                const transferredAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(2), decimals);
                 transferrableMakeAssetAmount = remainingMakeAssetAmount.minus(transferredAmount);
                 calculator = new RemainingFillableCalculator(
                     signedOrder.makerFee,
@@ -191,7 +191,7 @@ describe('RemainingFillableCalculator', () => {
         });
         it('calculates the correct amount when partially filled and funds available', () => {
             signedOrder = buildSignedOrder();
-            remainingMakeAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), decimals);
+            remainingMakeAssetAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(1), decimals);
             calculator = new RemainingFillableCalculator(
                 signedOrder.makerFee,
                 signedOrder.makerAssetAmount,
@@ -219,7 +219,7 @@ describe('RemainingFillableCalculator', () => {
         });
         it('calculates the correct amount when balance is less than remaining fillable', () => {
             signedOrder = buildSignedOrder();
-            const partiallyFilledAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(2), decimals);
+            const partiallyFilledAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(2), decimals);
             remainingMakeAssetAmount = signedOrder.makerAssetAmount.minus(partiallyFilledAmount);
             transferrableMakeAssetAmount = remainingMakeAssetAmount.minus(partiallyFilledAmount);
             transferrableMakerFeeTokenAmount = transferrableMakeAssetAmount;

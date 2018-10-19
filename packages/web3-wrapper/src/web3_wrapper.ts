@@ -26,10 +26,10 @@ import { marshaller } from './marshaller';
 import {
     BlockWithoutTransactionDataRPC,
     BlockWithTransactionDataRPC,
+    EthRPCClientErrors,
     NodeType,
     TransactionReceiptRPC,
     TransactionRPC,
-    Web3WrapperErrors,
 } from './types';
 import { utils } from './utils';
 
@@ -45,11 +45,11 @@ const uniqueVersionIds = {
 /**
  * An alternative to the Web3.js library that provides a consistent, clean, promise-based interface.
  */
-export class Web3Wrapper {
+export class EthRPCClient {
     /**
-     * Flag to check if this instance is of type Web3Wrapper
+     * Flag to check if this instance is of type EthRPCClient
      */
-    public isZeroExWeb3Wrapper = true;
+    public isZeroExEthRPCClient = true;
     public abiDecoder: AbiDecoder;
     private _provider: Provider;
     private readonly _txDefaults: Partial<TxData>;
@@ -104,7 +104,7 @@ export class Web3Wrapper {
     public static toWei(ethAmount: BigNumber): BigNumber {
         assert.isBigNumber('ethAmount', ethAmount);
         const ETH_DECIMALS = 18;
-        const balanceWei = Web3Wrapper.toBaseUnitAmount(ethAmount, ETH_DECIMALS);
+        const balanceWei = EthRPCClient.toBaseUnitAmount(ethAmount, ETH_DECIMALS);
         return balanceWei;
     }
     private static _assertBlockParam(blockParam: string | BlockParam): void {
@@ -116,7 +116,7 @@ export class Web3Wrapper {
     }
     private static _assertBlockParamOrString(blockParam: string | BlockParam): void {
         try {
-            Web3Wrapper._assertBlockParam(blockParam);
+            EthRPCClient._assertBlockParam(blockParam);
         } catch (err) {
             try {
                 assert.isHexString('blockParam', blockParam as string);
@@ -141,18 +141,18 @@ export class Web3Wrapper {
         }
     }
     /**
-     * Instantiates a new Web3Wrapper.
-     * @param   provider    The Web3 provider instance you would like the Web3Wrapper to use for interacting with
+     * Instantiates a new EthRPCClient.
+     * @param   provider    The Web3 provider instance you would like the EthRPCClient to use for interacting with
      *                      the backing Ethereum node.
      * @param   txDefaults  Override TxData defaults sent with RPC requests to the backing Ethereum node.
-     * @return  An instance of the Web3Wrapper class.
+     * @return  An instance of the EthRPCClient class.
      */
     constructor(provider: Provider, txDefaults?: Partial<TxData>) {
         assert.isWeb3Provider('provider', provider);
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
-            // We re-assign the send method so that Web3@1.0 providers work with @0x/web3-wrapper
+            // We re-assign the send method so that Web3@1.0 providers work with @0x/eth-rpc-client
             (provider as any).sendAsync = (provider as any).send;
         }
         this.abiDecoder = new AbiDecoder([]);
@@ -161,7 +161,7 @@ export class Web3Wrapper {
         this._jsonRpcRequestId = 1;
     }
     /**
-     * Get the contract defaults set to the Web3Wrapper instance
+     * Get the contract defaults set to the EthRPCClient instance
      * @return  TxData defaults (e.g gas, gasPrice, nonce, etc...)
      */
     public getContractDefaults(): Partial<TxData> {
@@ -224,7 +224,7 @@ export class Web3Wrapper {
             params: [txHash],
         });
         if (!_.isNull(transactionReceiptRpc)) {
-            transactionReceiptRpc.status = Web3Wrapper._normalizeTxReceiptStatus(transactionReceiptRpc.status);
+            transactionReceiptRpc.status = EthRPCClient._normalizeTxReceiptStatus(transactionReceiptRpc.status);
             const transactionReceipt = marshaller.unmarshalTransactionReceipt(transactionReceiptRpc);
             return transactionReceipt;
         } else {
@@ -254,7 +254,7 @@ export class Web3Wrapper {
     public async getBalanceInWeiAsync(owner: string, defaultBlock?: BlockParam): Promise<BigNumber> {
         assert.isETHAddressHex('owner', owner);
         if (!_.isUndefined(defaultBlock)) {
-            Web3Wrapper._assertBlockParam(defaultBlock);
+            EthRPCClient._assertBlockParam(defaultBlock);
         }
         const marshalledDefaultBlock = marshaller.marshalBlockParam(defaultBlock);
         const encodedOwner = marshaller.marshalAddress(owner);
@@ -286,7 +286,7 @@ export class Web3Wrapper {
     public async getContractCodeAsync(address: string, defaultBlock?: BlockParam): Promise<string> {
         assert.isETHAddressHex('address', address);
         if (!_.isUndefined(defaultBlock)) {
-            Web3Wrapper._assertBlockParam(defaultBlock);
+            EthRPCClient._assertBlockParam(defaultBlock);
         }
         const marshalledDefaultBlock = marshaller.marshalBlockParam(defaultBlock);
         const encodedAddress = marshaller.marshalAddress(address);
@@ -361,7 +361,7 @@ export class Web3Wrapper {
     public async getBlockIfExistsAsync(
         blockParam: string | BlockParam,
     ): Promise<BlockWithoutTransactionData | undefined> {
-        Web3Wrapper._assertBlockParamOrString(blockParam);
+        EthRPCClient._assertBlockParamOrString(blockParam);
         const encodedBlockParam = marshaller.marshalBlockParam(blockParam);
         const method = utils.isHexStrict(blockParam) ? 'eth_getBlockByHash' : 'eth_getBlockByNumber';
         const shouldIncludeTransactionData = false;
@@ -385,7 +385,7 @@ export class Web3Wrapper {
      * @returns The requested block with transaction data
      */
     public async getBlockWithTransactionDataAsync(blockParam: string | BlockParam): Promise<BlockWithTransactionData> {
-        Web3Wrapper._assertBlockParamOrString(blockParam);
+        EthRPCClient._assertBlockParamOrString(blockParam);
         let encodedBlockParam = blockParam;
         if (_.isNumber(blockParam)) {
             encodedBlockParam = utils.numberToHex(blockParam);
@@ -407,7 +407,7 @@ export class Web3Wrapper {
      * @returns The block's timestamp
      */
     public async getBlockTimestampAsync(blockParam: string | BlockParam): Promise<number> {
-        Web3Wrapper._assertBlockParamOrString(blockParam);
+        EthRPCClient._assertBlockParamOrString(blockParam);
         const blockIfExists = await this.getBlockIfExistsAsync(blockParam);
         if (_.isUndefined(blockIfExists)) {
             throw new Error(`Failed to fetch block with blockParam: ${JSON.stringify(blockParam)}`);
@@ -529,7 +529,7 @@ export class Web3Wrapper {
             schemas.jsNumber,
         ]);
         if (!_.isUndefined(defaultBlock)) {
-            Web3Wrapper._assertBlockParam(defaultBlock);
+            EthRPCClient._assertBlockParam(defaultBlock);
         }
         const marshalledDefaultBlock = marshaller.marshalBlockParam(defaultBlock);
         const callDataHex = marshaller.marshalCallData(callData);
@@ -601,7 +601,7 @@ export class Web3Wrapper {
                     async () => {
                         if (wasTimeoutExceeded) {
                             intervalUtils.clearAsyncExcludingInterval(intervalId);
-                            return reject(Web3WrapperErrors.TransactionMiningTimeout);
+                            return reject(EthRPCClientErrors.TransactionMiningTimeout);
                         }
 
                         transactionReceipt = await this.getTransactionReceiptIfExistsAsync(txHash);

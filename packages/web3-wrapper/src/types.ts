@@ -1,4 +1,4 @@
-export enum Web3WrapperErrors {
+export enum EthRPCClientErrors {
     TransactionMiningTimeout = 'TRANSACTION_MINING_TIMEOUT',
 }
 

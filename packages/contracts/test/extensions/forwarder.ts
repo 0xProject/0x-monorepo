@@ -2,7 +2,7 @@ import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
@@ -25,11 +25,11 @@ import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { ForwarderWrapper } from '../utils/forwarder_wrapper';
 import { OrderFactory } from '../utils/order_factory';
 import { ContractName, ERC20BalancesByOwner } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 const DECIMALS_DEFAULT = 18;
 const MAX_WETH_FILL_PERCENTAGE = 95;
 
@@ -67,11 +67,11 @@ describe(ContractName.Forwarder, () => {
 
     before(async () => {
         await blockchainLifecycle.startAsync();
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress, otherAddress] = accounts);
 
-        const txHash = await web3Wrapper.sendTransactionAsync({ from: accounts[0], to: accounts[0], value: 0 });
-        const transaction = await web3Wrapper.getTransactionByHashAsync(txHash);
+        const txHash = await ethRPCClient.sendTransactionAsync({ from: accounts[0], to: accounts[0], value: 0 });
+        const transaction = await ethRPCClient.getTransactionByHashAsync(txHash);
         gasPrice = new BigNumber(transaction.gasPrice);
 
         const erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
@@ -122,10 +122,10 @@ describe(ContractName.Forwarder, () => {
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
-            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
-            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
-            makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
-            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
+            makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
+            takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
+            makerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            takerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -140,8 +140,8 @@ describe(ContractName.Forwarder, () => {
         );
         forwarderContract = new ForwarderContract(forwarderInstance.abi, forwarderInstance.address, provider);
         forwarderWrapper = new ForwarderWrapper(forwarderContract, provider);
-        const zrxDepositAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18);
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        const zrxDepositAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(10000), 18);
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await zrxToken.transfer.sendTransactionAsync(forwarderContract.address, zrxDepositAmount),
         );
         erc20Wrapper.addTokenOwnerAddress(forwarderInstance.address);
@@ -152,14 +152,14 @@ describe(ContractName.Forwarder, () => {
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
         erc20Balances = await erc20Wrapper.getBalancesAsync();
-        takerEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+        takerEthBalanceBefore = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
         orderWithoutFee = await orderFactory.newSignedOrderAsync();
         feeOrder = await orderFactory.newSignedOrderAsync({
             makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
-            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            takerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
         });
         orderWithFee = await orderFactory.newSignedOrderAsync({
-            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            takerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
         });
     });
     afterEach(async () => {
@@ -197,8 +197,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = ForwarderWrapper.getPercentageOfValue(
@@ -238,8 +238,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = ForwarderWrapper.getPercentageOfValue(
@@ -280,8 +280,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = ForwarderWrapper.getPercentageOfValue(
@@ -341,8 +341,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = ForwarderWrapper.getPercentageOfValue(
@@ -377,7 +377,7 @@ describe(ContractName.Forwarder, () => {
         it('should fill the order when token is ZRX with fees', async () => {
             orderWithFee = await orderFactory.newSignedOrderAsync({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                takerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             const ordersWithFee = [orderWithFee];
             const feeOrders: SignedOrder[] = [];
@@ -387,8 +387,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const makerAssetFillAmount = orderWithFee.makerAssetAmount.dividedToIntegerBy(2);
@@ -421,19 +421,19 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
             const totalEthSpent = orderWithoutFee.takerAssetAmount.plus(gasPrice.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
         });
         it('should revert if ZRX cannot be fully repurchased', async () => {
             orderWithFee = await orderFactory.newSignedOrderAsync({
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), DECIMALS_DEFAULT),
+                takerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(50), DECIMALS_DEFAULT),
             });
             const ordersWithFee = [orderWithFee];
             feeOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             const feeOrders = [feeOrder];
             const ethValue = orderWithFee.takerAssetAmount;
@@ -460,7 +460,7 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
             const totalEthSpent = erc20SignedOrder.takerAssetAmount.plus(gasPrice.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
@@ -474,7 +474,7 @@ describe(ContractName.Forwarder, () => {
 
             const baseFeePercentage = 2;
             feePercentage = ForwarderWrapper.getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, baseFeePercentage);
-            const feeRecipientEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
+            const feeRecipientEthBalanceBefore = await ethRPCClient.getBalanceInWeiAsync(feeRecipientAddress);
             tx = await forwarderWrapper.marketSellOrdersWithEthAsync(
                 ordersWithoutFee,
                 feeOrders,
@@ -484,9 +484,9 @@ describe(ContractName.Forwarder, () => {
                 },
                 { feePercentage, feeRecipient: feeRecipientAddress },
             );
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const feeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const feeRecipientEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(feeRecipientAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = ForwarderWrapper.getPercentageOfValue(
@@ -560,8 +560,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = ethValue;
@@ -598,8 +598,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = ethValue;
@@ -631,8 +631,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = ethValue.dividedToIntegerBy(2);
@@ -664,8 +664,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = orderWithFee.takerAssetAmount.dividedToIntegerBy(2);
@@ -694,7 +694,7 @@ describe(ContractName.Forwarder, () => {
         it('should buy slightly greater than makerAssetAmount when buying ZRX', async () => {
             orderWithFee = await orderFactory.newSignedOrderAsync({
                 makerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                takerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             const ordersWithFee = [orderWithFee];
             const feeOrders: SignedOrder[] = [];
@@ -704,8 +704,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = ForwarderWrapper.getWethForFeeOrders(
@@ -774,8 +774,8 @@ describe(ContractName.Forwarder, () => {
                 from: takerAddress,
                 value: ethValue,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newOwner = await erc721Token.ownerOf.callAsync(makerAssetId);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -816,7 +816,7 @@ describe(ContractName.Forwarder, () => {
             orderWithFee = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                takerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             const ordersWithFee = [orderWithFee];
             const feeOrders = [feeOrder];
@@ -830,8 +830,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newOwner = await erc721Token.ownerOf.callAsync(makerAssetId);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -853,7 +853,7 @@ describe(ContractName.Forwarder, () => {
             orderWithFee = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                takerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
             });
             const ordersWithFee = [orderWithFee];
             const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
@@ -884,8 +884,8 @@ describe(ContractName.Forwarder, () => {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newOwner = await erc721Token.ownerOf.callAsync(makerAssetId);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -1175,7 +1175,7 @@ describe(ContractName.Forwarder, () => {
 
             const baseFeePercentage = 2;
             feePercentage = ForwarderWrapper.getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, baseFeePercentage);
-            const feeRecipientEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
+            const feeRecipientEthBalanceBefore = await ethRPCClient.getBalanceInWeiAsync(feeRecipientAddress);
             tx = await forwarderWrapper.marketBuyOrdersWithEthAsync(
                 ordersWithoutFee,
                 feeOrders,
@@ -1186,9 +1186,9 @@ describe(ContractName.Forwarder, () => {
                 },
                 { feePercentage, feeRecipient: feeRecipientAddress },
             );
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
-            const feeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(feeRecipientAddress);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
+            const feeRecipientEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(feeRecipientAddress);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const primaryTakerAssetFillAmount = orderWithoutFee.takerAssetAmount.dividedToIntegerBy(2);

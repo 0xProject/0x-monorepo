@@ -2,7 +2,7 @@ import { ExchangeContract, IValidatorContract, IWalletContract } from '@0x/abi-g
 import * as artifacts from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { ECSignature, Order, SignatureType, SignedOrder, ValidatorSignature } from '@0x/types';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -233,12 +233,12 @@ export const signatureUtils = {
         assert.isWeb3Provider('provider', provider);
         assert.isETHAddressHex('signerAddress', signerAddress);
         assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
-        const web3Wrapper = new Web3Wrapper(provider);
-        await assert.isSenderAddressAsync('signerAddress', signerAddress, web3Wrapper);
+        const ethRPCClient = new EthRPCClient(provider);
+        await assert.isSenderAddressAsync('signerAddress', signerAddress, ethRPCClient);
         const normalizedSignerAddress = signerAddress.toLowerCase();
         const typedData = eip712Utils.createOrderTypedData(order);
         try {
-            const signature = await web3Wrapper.signTypedDataAsync(normalizedSignerAddress, typedData);
+            const signature = await ethRPCClient.signTypedDataAsync(normalizedSignerAddress, typedData);
             const ecSignatureRSV = parseSignatureHexAsRSV(signature);
             const signatureBuffer = Buffer.concat([
                 ethUtil.toBuffer(ecSignatureRSV.v),
@@ -271,10 +271,10 @@ export const signatureUtils = {
         assert.isWeb3Provider('provider', provider);
         assert.isHexString('msgHash', msgHash);
         assert.isETHAddressHex('signerAddress', signerAddress);
-        const web3Wrapper = new Web3Wrapper(provider);
-        await assert.isSenderAddressAsync('signerAddress', signerAddress, web3Wrapper);
+        const ethRPCClient = new EthRPCClient(provider);
+        await assert.isSenderAddressAsync('signerAddress', signerAddress, ethRPCClient);
         const normalizedSignerAddress = signerAddress.toLowerCase();
-        const signature = await web3Wrapper.signMessageAsync(normalizedSignerAddress, msgHash);
+        const signature = await ethRPCClient.signMessageAsync(normalizedSignerAddress, msgHash);
         const prefixedMsgHashHex = signatureUtils.addSignedMessagePrefix(msgHash);
 
         // HACK: There is no consensus on whether the signatureHex string should be formatted as

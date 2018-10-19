@@ -1,6 +1,6 @@
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -15,14 +15,14 @@ import { txDefaults } from './web3_wrapper';
 export class ERC721Wrapper {
     private readonly _tokenOwnerAddresses: string[];
     private readonly _contractOwnerAddress: string;
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     private readonly _provider: Provider;
     private readonly _dummyTokenContracts: DummyERC721TokenContract[];
     private _proxyContract?: ERC721ProxyContract;
     private _proxyIdIfExists?: string;
     private _initialTokenIdsByOwner: ERC721TokenIdsByOwner = {};
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
-        this._web3Wrapper = new Web3Wrapper(provider);
+        this._ethRPCClient = new EthRPCClient(provider);
         this._provider = provider;
         this._dummyTokenContracts = [];
         this._tokenOwnerAddresses = tokenOwnerAddresses;
@@ -93,7 +93,7 @@ export class ERC721Wrapper {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const tokenOwner = await this.ownerOfAsync(tokenAddress, tokenId);
         const proxyAddress = (this._proxyContract as ERC721ProxyContract).address;
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
+        await this._ethRPCClient.awaitTransactionSuccessAsync(
             await tokenContract.setApprovalForAll.sendTransactionAsync(proxyAddress, isApproved, {
                 from: tokenOwner,
             }),
@@ -103,7 +103,7 @@ export class ERC721Wrapper {
     public async approveAsync(to: string, tokenAddress: string, tokenId: BigNumber): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
         const tokenOwner = await this.ownerOfAsync(tokenAddress, tokenId);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
+        await this._ethRPCClient.awaitTransactionSuccessAsync(
             await tokenContract.approve.sendTransactionAsync(to, tokenId, {
                 from: tokenOwner,
             }),
@@ -117,7 +117,7 @@ export class ERC721Wrapper {
         userAddress: string,
     ): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
+        await this._ethRPCClient.awaitTransactionSuccessAsync(
             await tokenContract.transferFrom.sendTransactionAsync(currentOwner, userAddress, tokenId, {
                 from: currentOwner,
             }),
@@ -126,7 +126,7 @@ export class ERC721Wrapper {
     }
     public async mintAsync(tokenAddress: string, tokenId: BigNumber, userAddress: string): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
+        await this._ethRPCClient.awaitTransactionSuccessAsync(
             await tokenContract.mint.sendTransactionAsync(userAddress, tokenId, {
                 from: this._contractOwnerAddress,
             }),
@@ -135,7 +135,7 @@ export class ERC721Wrapper {
     }
     public async burnAsync(tokenAddress: string, tokenId: BigNumber, owner: string): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(tokenAddress);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
+        await this._ethRPCClient.awaitTransactionSuccessAsync(
             await tokenContract.burn.sendTransactionAsync(owner, tokenId, {
                 from: this._contractOwnerAddress,
             }),

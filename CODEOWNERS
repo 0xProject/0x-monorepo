@@ -26,9 +26,9 @@ packages/order-utils/ @fabioberger @LogvinovLeon
 packages/sol-compiler/ @LogvinovLeon
 packages/sol-cov/ @LogvinovLeon
 packages/sol-resolver/ @LogvinovLeon
+packages/eth-rpc-client/ @LogvinovLeon @fabioberger
 packages/subproviders/ @fabioberger @dekz
 packages/verdaccio/ @albrow
-packages/web3-wrapper/ @LogvinovLeon @fabioberger
 python-packages/ @feuGeneA
 
 # Protocol/smart contracts

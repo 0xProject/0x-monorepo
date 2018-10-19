@@ -1,7 +1,7 @@
 import { devConstants, env, EnvVars, web3Factory } from '@0x/dev-utils';
 import { prependSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 
 import { coverage } from './coverage';
@@ -81,4 +81,4 @@ if (isRevertTraceEnabled) {
     prependSubprovider(provider, revertTraceSubprovider);
 }
 
-export const web3Wrapper = new Web3Wrapper(provider);
+export const ethRPCClient = new EthRPCClient(provider);

@@ -2,7 +2,7 @@ import { ERC721TokenContract, ERC721TokenEventArgs, ERC721TokenEvents } from '@0
 import { ERC721Token } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -34,18 +34,18 @@ export class ERC721TokenWrapper extends ContractWrapper {
     private readonly _erc721ProxyWrapper: ERC721ProxyWrapper;
     /**
      * Instantiate ERC721TokenWrapper
-     * @param web3Wrapper Web3Wrapper instance to use
+     * @param ethRPCClient EthRPCClient instance to use
      * @param networkId Desired networkId
      * @param erc721ProxyWrapper The ERC721ProxyWrapper instance to use
      * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
      */
     constructor(
-        web3Wrapper: Web3Wrapper,
+        ethRPCClient: EthRPCClient,
         networkId: number,
         erc721ProxyWrapper: ERC721ProxyWrapper,
         blockPollingIntervalMs?: number,
     ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+        super(ethRPCClient, networkId, blockPollingIntervalMs);
         this._tokenContractsByAddress = {};
         this._erc721ProxyWrapper = erc721ProxyWrapper;
     }
@@ -222,7 +222,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         txOpts: TransactionOpts = {},
     ): Promise<string> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._ethRPCClient);
         assert.isETHAddressHex('operatorAddress', operatorAddress);
         assert.isBoolean('isApproved', isApproved);
         assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
@@ -291,7 +291,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
 
         const tokenContract = await this._getTokenContractAsync(normalizedTokenAddress);
         const tokenOwnerAddress = await tokenContract.ownerOf.callAsync(tokenId);
-        await assert.isSenderAddressAsync('tokenOwnerAddress', tokenOwnerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('tokenOwnerAddress', tokenOwnerAddress, this._ethRPCClient);
         const txHash = await tokenContract.approve.sendTransactionAsync(
             normalizedApprovedAddress,
             tokenId,
@@ -343,7 +343,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isETHAddressHex('receiverAddress', receiverAddress);
-        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._ethRPCClient);
         assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
         const normalizedReceiverAddress = receiverAddress.toLowerCase();
@@ -460,8 +460,8 @@ export class ERC721TokenWrapper extends ContractWrapper {
         const contractInstance = new ERC721TokenContract(
             this.abi,
             normalizedTokenAddress,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
         tokenContract = contractInstance;
         this._tokenContractsByAddress[normalizedTokenAddress] = tokenContract;

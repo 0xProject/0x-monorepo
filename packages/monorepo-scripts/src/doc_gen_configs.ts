@@ -52,7 +52,7 @@ export const docGenConfigs: DocGenConfigs = {
     // config
     IGNORED_EXCESSIVE_TYPES: [
         'NonceSubproviderErrors',
-        'Web3WrapperErrors',
+        'EthRPCClientErrors',
         'ContractWrappersError',
         'OrderError',
         'AssetBuyerError',

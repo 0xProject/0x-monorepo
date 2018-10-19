@@ -15,11 +15,11 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('OrderValidator', () => {
     const fillableAmount = new BigNumber(5);
@@ -52,7 +52,7 @@ describe('OrderValidator', () => {
         };
         contractWrappers = new ContractWrappers(provider, config);
         exchangeContractAddress = contractWrappers.exchange.address;
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await ethRPCClient.getAvailableAddressesAsync();
         zrxTokenAddress = contractWrappers.exchange.zrxTokenAddress;
         zrxTokenAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
         fillScenarios = new FillScenarios(

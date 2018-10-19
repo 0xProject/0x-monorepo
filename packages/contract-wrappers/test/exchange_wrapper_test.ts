@@ -14,11 +14,11 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('ExchangeWrapper', () => {
     let contractWrappers: ContractWrappers;
@@ -49,7 +49,7 @@ describe('ExchangeWrapper', () => {
         };
         contractWrappers = new ContractWrappers(provider, config);
         exchangeContractAddress = contractWrappers.exchange.address;
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await ethRPCClient.getAvailableAddressesAsync();
         zrxTokenAddress = contractWrappers.exchange.zrxTokenAddress;
         fillScenarios = new FillScenarios(
             provider,
@@ -97,7 +97,7 @@ describe('ExchangeWrapper', () => {
                     takerTokenFillAmount,
                     takerAddress,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#fillOrderNoThrowAsync', () => {
@@ -107,7 +107,7 @@ describe('ExchangeWrapper', () => {
                     takerTokenFillAmount,
                     takerAddress,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             });
@@ -119,7 +119,7 @@ describe('ExchangeWrapper', () => {
                     takerTokenFillAmount,
                     takerAddress,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#batchFillOrdersAsync', () => {
@@ -131,7 +131,7 @@ describe('ExchangeWrapper', () => {
                     takerAssetFillAmounts,
                     takerAddress,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#marketBuyOrdersAsync', () => {
@@ -143,7 +143,7 @@ describe('ExchangeWrapper', () => {
                     makerAssetFillAmount,
                     takerAddress,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#marketBuyOrdersNoThrowAsync', () => {
@@ -155,7 +155,7 @@ describe('ExchangeWrapper', () => {
                     makerAssetFillAmount,
                     takerAddress,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             });
@@ -169,7 +169,7 @@ describe('ExchangeWrapper', () => {
                     takerAssetFillAmount,
                     takerAddress,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#marketSellOrdersNoThrowAsync', () => {
@@ -181,7 +181,7 @@ describe('ExchangeWrapper', () => {
                     takerAssetFillAmount,
                     takerAddress,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             });
@@ -195,7 +195,7 @@ describe('ExchangeWrapper', () => {
                     takerAssetFillAmounts,
                     takerAddress,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 let orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
                 orderInfo = await contractWrappers.exchange.getOrderInfoAsync(anotherSignedOrder);
@@ -211,7 +211,7 @@ describe('ExchangeWrapper', () => {
                     takerAssetFillAmounts,
                     takerAddress,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#matchOrdersAsync', () => {
@@ -228,7 +228,7 @@ describe('ExchangeWrapper', () => {
                     matchingSignedOrder,
                     takerAddress,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
     });
@@ -236,21 +236,21 @@ describe('ExchangeWrapper', () => {
         describe('#cancelOrderAsync', () => {
             it('should cancel a valid order', async () => {
                 txHash = await contractWrappers.exchange.cancelOrderAsync(signedOrder);
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#batchCancelOrdersAsync', () => {
             it('should cancel a batch of valid orders', async () => {
                 const orders = [signedOrder, anotherSignedOrder];
                 txHash = await contractWrappers.exchange.batchCancelOrdersAsync(orders);
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#cancelOrdersUpTo/getOrderEpochAsync', () => {
             it('should cancel orders up to target order epoch', async () => {
                 const targetOrderEpoch = new BigNumber(42);
                 txHash = await contractWrappers.exchange.cancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
                 const orderEpoch = await contractWrappers.exchange.getOrderEpochAsync(
                     makerAddress,
                     constants.NULL_ADDRESS,
@@ -330,7 +330,7 @@ describe('ExchangeWrapper', () => {
                 isApproved,
                 senderAddress,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         });
     });
     describe('#isTransactionExecutedAsync', () => {
@@ -365,7 +365,7 @@ describe('ExchangeWrapper', () => {
                 signedOrder.signature,
                 senderAddress,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             isPreSigned = await contractWrappers.exchange.isPreSignedAsync(hash, signerAddress);
             expect(isPreSigned).to.be.true();
         });
@@ -484,7 +484,7 @@ describe('ExchangeWrapper', () => {
         });
         it('should only get the logs with the correct event name', async () => {
             txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const differentEventName = ExchangeEvents.Cancel;
             const indexFilterValues = {};
             const logs = await contractWrappers.exchange.getLogsAsync(
@@ -496,7 +496,7 @@ describe('ExchangeWrapper', () => {
         });
         it('should only get the logs with the correct indexed fields', async () => {
             txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const signedOrderWithAnotherMakerAddress = await fillScenarios.createFillableSignedOrderAsync(
                 makerAssetData,
                 takerAssetData,
@@ -509,7 +509,7 @@ describe('ExchangeWrapper', () => {
                 takerTokenFillAmount,
                 takerAddress,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
 
             const eventName = ExchangeEvents.Fill;
             const indexFilterValues = {

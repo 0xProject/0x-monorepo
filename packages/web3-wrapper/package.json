@@ -1,5 +1,5 @@
 {
-    "name": "@0x/web3-wrapper",
+    "name": "@0x/eth-rpc-client",
     "version": "3.1.4",
     "engines": {
         "node": ">=6.12"
@@ -34,7 +34,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/packages/web3-wrapper/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/eth-rpc-client/README.md",
     "devDependencies": {
         "@0x/tslint-config": "^1.0.10",
         "@types/ganache-core": "^2.1.0",

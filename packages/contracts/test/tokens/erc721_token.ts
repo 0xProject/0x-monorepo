@@ -18,11 +18,11 @@ import { expectTransactionFailedAsync, expectTransactionFailedWithoutReasonAsync
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { LogDecoder } from '../utils/log_decoder';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 // tslint:disable:no-unnecessary-type-assertion
 describe('ERC721Token', () => {
     let owner: string;
@@ -38,7 +38,7 @@ describe('ERC721Token', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
         token = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
@@ -53,8 +53,8 @@ describe('ERC721Token', () => {
             provider,
             txDefaults,
         );
-        logDecoder = new LogDecoder(web3Wrapper);
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        logDecoder = new LogDecoder(ethRPCClient);
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await token.mint.sendTransactionAsync(owner, tokenId, { from: owner }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
@@ -115,7 +115,7 @@ describe('ERC721Token', () => {
         });
         it('should transfer the token if spender is approved for all', async () => {
             const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await token.setApprovalForAll.sendTransactionAsync(spender, isApproved),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -133,7 +133,7 @@ describe('ERC721Token', () => {
             expect(log.args._tokenId).to.be.bignumber.equal(tokenId);
         });
         it('should transfer the token if spender is individually approved', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await token.approve.sendTransactionAsync(spender, tokenId),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );

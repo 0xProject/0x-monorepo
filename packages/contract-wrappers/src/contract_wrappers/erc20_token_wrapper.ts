@@ -2,7 +2,7 @@ import { ERC20TokenContract, ERC20TokenEventArgs, ERC20TokenEvents } from '@0x/a
 import { ERC20Token } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -35,18 +35,18 @@ export class ERC20TokenWrapper extends ContractWrapper {
     private readonly _erc20ProxyWrapper: ERC20ProxyWrapper;
     /**
      * Instantiate ERC20TokenWrapper
-     * @param web3Wrapper Web3Wrapper instance to use
+     * @param ethRPCClient EthRPCClient instance to use
      * @param networkId Desired networkId
      * @param erc20ProxyWrapper The ERC20ProxyWrapper instance to use
      * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
      */
     constructor(
-        web3Wrapper: Web3Wrapper,
+        ethRPCClient: EthRPCClient,
         networkId: number,
         erc20ProxyWrapper: ERC20ProxyWrapper,
         blockPollingIntervalMs?: number,
     ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+        super(ethRPCClient, networkId, blockPollingIntervalMs);
         this._tokenContractsByAddress = {};
         this._erc20ProxyWrapper = erc20ProxyWrapper;
     }
@@ -95,7 +95,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
         txOpts: TransactionOpts = {},
     ): Promise<string> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('ownerAddress', ownerAddress, this._ethRPCClient);
         assert.isETHAddressHex('spenderAddress', spenderAddress);
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
         assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
@@ -260,7 +260,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
         txOpts: TransactionOpts = {},
     ): Promise<string> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
-        await assert.isSenderAddressAsync('fromAddress', fromAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('fromAddress', fromAddress, this._ethRPCClient);
         assert.isETHAddressHex('toAddress', toAddress);
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
         assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
@@ -312,7 +312,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isETHAddressHex('fromAddress', fromAddress);
         assert.isETHAddressHex('toAddress', toAddress);
-        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._ethRPCClient);
         assert.isValidBaseUnitAmount('amountInBaseUnits', amountInBaseUnits);
         assert.doesConformToSchema('txOpts', txOpts, txOptsSchema);
         const normalizedToAddress = toAddress.toLowerCase();
@@ -433,8 +433,8 @@ export class ERC20TokenWrapper extends ContractWrapper {
         const contractInstance = new ERC20TokenContract(
             this.abi,
             normalizedTokenAddress,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
         tokenContract = contractInstance;
         this._tokenContractsByAddress[normalizedTokenAddress] = tokenContract;

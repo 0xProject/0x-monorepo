@@ -4,7 +4,7 @@ import { assert as sharedAssert } from '@0x/assert';
 import { Schema } from '@0x/json-schemas';
 import { ECSignature, SignatureType } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 // tslint:enable:no-unused-variable
 import * as _ from 'lodash';
 
@@ -15,10 +15,10 @@ export const assert = {
     async isSenderAddressAsync(
         variableName: string,
         senderAddressHex: string,
-        web3Wrapper: Web3Wrapper,
+        ethRPCClient: EthRPCClient,
     ): Promise<void> {
         sharedAssert.isETHAddressHex(variableName, senderAddressHex);
-        const isSenderAddressAvailable = await web3Wrapper.isSenderAddressAvailableAsync(senderAddressHex);
+        const isSenderAddressAvailable = await ethRPCClient.isSenderAddressAvailableAsync(senderAddressHex);
         sharedAssert.assert(
             isSenderAddressAvailable,
             `Specified ${variableName} ${senderAddressHex} isn't available through the supplied web3 provider`,

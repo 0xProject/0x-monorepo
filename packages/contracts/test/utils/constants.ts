@@ -1,5 +1,5 @@
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -40,13 +40,13 @@ export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     UNLIMITED_ALLOWANCE_IN_BASE_UNITS: new BigNumber(2).pow(256).minus(1),
     TESTRPC_PRIVATE_KEYS: _.map(TESTRPC_PRIVATE_KEYS_STRINGS, privateKeyString => ethUtil.toBuffer(privateKeyString)),
-    INITIAL_ERC20_BALANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
-    INITIAL_ERC20_ALLOWANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
+    INITIAL_ERC20_BALANCE: EthRPCClient.toBaseUnitAmount(new BigNumber(10000), 18),
+    INITIAL_ERC20_ALLOWANCE: EthRPCClient.toBaseUnitAmount(new BigNumber(10000), 18),
     STATIC_ORDER_PARAMS: {
-        makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
-        takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
-        makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
-        takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
+        makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
+        takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(200), 18),
+        makerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(1), 18),
+        takerFee: EthRPCClient.toBaseUnitAmount(new BigNumber(1), 18),
     },
     WORD_LENGTH: 32,
     ZERO_AMOUNT: new BigNumber(0),

@@ -35,8 +35,8 @@
         "@0x/types": "^1.2.1",
         "@0x/typescript-typings": "^3.0.4",
         "@0x/utils": "^2.0.5",
-        "@0x/web3-wrapper": "^3.1.4",
         "ethereum-types": "^1.1.2",
+        "@0x/eth-rpc-client": "^3.1.0",
         "ethers": "~4.0.4",
         "lodash": "^4.17.5"
     },

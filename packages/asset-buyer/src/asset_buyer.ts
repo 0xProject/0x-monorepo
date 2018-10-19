@@ -3,7 +3,7 @@ import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -213,8 +213,8 @@ export class AssetBuyer {
         if (!_.isUndefined(takerAddress)) {
             finalTakerAddress = takerAddress;
         } else {
-            const web3Wrapper = new Web3Wrapper(this.provider);
-            const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
+            const ethRPCClient = new EthRPCClient(this.provider);
+            const availableAddresses = await ethRPCClient.getAvailableAddressesAsync();
             const firstAvailableAddress = _.head(availableAddresses);
             if (!_.isUndefined(firstAvailableAddress)) {
                 finalTakerAddress = firstAvailableAddress;

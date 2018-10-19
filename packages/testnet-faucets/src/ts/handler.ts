@@ -13,7 +13,7 @@ import {
 } from '0x.js';
 import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as express from 'express';
 import * as _ from 'lodash';
 
@@ -26,7 +26,7 @@ import { TOKENS_BY_NETWORK } from './tokens';
 
 interface NetworkConfig {
     dispatchQueue: DispatchQueue;
-    web3Wrapper: Web3Wrapper;
+    ethRPCClient: EthRPCClient;
     contractWrappers: ContractWrappers;
     networkId: number;
 }
@@ -62,7 +62,7 @@ export class Handler {
     constructor() {
         _.forIn(rpcUrls, (rpcUrl: string, networkIdString: string) => {
             const providerObj = Handler._createProviderEngine(rpcUrl);
-            const web3Wrapper = new Web3Wrapper(providerObj);
+            const ethRPCClient = new EthRPCClient(providerObj);
             // tslint:disable-next-line:custom-no-magic-numbers
             const networkId = parseInt(networkIdString, 10);
             const contractWrappersConfig = {
@@ -72,7 +72,7 @@ export class Handler {
             const dispatchQueue = new DispatchQueue();
             this._networkConfigByNetworkId[networkId] = {
                 dispatchQueue,
-                web3Wrapper,
+                ethRPCClient,
                 contractWrappers,
                 networkId,
             };
@@ -117,7 +117,7 @@ export class Handler {
         let dispenserTask;
         switch (requestedAssetType) {
             case RequestedAssetType.ETH:
-                dispenserTask = dispenseAssetTasks.dispenseEtherTask(recipient, networkConfig.web3Wrapper);
+                dispenserTask = dispenseAssetTasks.dispenseEtherTask(recipient, networkConfig.ethRPCClient);
                 break;
             case RequestedAssetType.WETH:
             case RequestedAssetType.ZRX:
@@ -161,8 +161,8 @@ export class Handler {
             throw new Error(`Unsupported asset type: ${takerTokenSymbol}`);
         }
 
-        const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, makerTokenIfExists.decimals);
-        const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, takerTokenIfExists.decimals);
+        const makerAssetAmount = EthRPCClient.toBaseUnitAmount(ASSET_AMOUNT, makerTokenIfExists.decimals);
+        const takerAssetAmount = EthRPCClient.toBaseUnitAmount(ASSET_AMOUNT, takerTokenIfExists.decimals);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenIfExists.address);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenIfExists.address);
         const order: Order = {
@@ -183,7 +183,7 @@ export class Handler {
         };
         const orderHash = orderHashUtils.getOrderHashHex(order);
         const signature = await signatureUtils.ecSignHashAsync(
-            networkConfig.web3Wrapper.getProvider(),
+            networkConfig.ethRPCClient.getProvider(),
             orderHash,
             configs.DISPENSER_ADDRESS,
         );

@@ -69,7 +69,7 @@
     "CONNECT": "0x 连接",
     "WHITEPAPER": "白皮书",
     "WIKI": "维基",
-    "WEB3_WRAPPER": "Web3Wrapper",
+    "WEB3_WRAPPER": "EthRPCClient",
     "ORDER_UTILS": "Order Utils",
     "FAQ": "FAQ",
     "SMART_CONTRACTS": "0x 智能合约",

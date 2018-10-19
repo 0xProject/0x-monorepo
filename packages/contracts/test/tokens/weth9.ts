@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 
 import { WETH9Contract } from '../../generated-wrappers/weth9';
@@ -8,15 +8,15 @@ import { artifacts } from '../../src/artifacts';
 import { expectInsufficientFundsAsync, expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('EtherToken', () => {
     let account: string;
-    const gasPrice = Web3Wrapper.toBaseUnitAmount(new BigNumber(20), 9);
+    const gasPrice = EthRPCClient.toBaseUnitAmount(new BigNumber(20), 9);
     let etherToken: WETH9Contract;
 
     before(async () => {
@@ -26,7 +26,7 @@ describe('EtherToken', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         account = accounts[0];
 
         etherToken = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, {
@@ -42,26 +42,26 @@ describe('EtherToken', () => {
     });
     describe('deposit', () => {
         it('should throw if caller attempts to deposit more Ether than caller balance', async () => {
-            const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
+            const initEthBalance = await ethRPCClient.getBalanceInWeiAsync(account);
             const ethToDeposit = initEthBalance.plus(1);
 
             return expectInsufficientFundsAsync(etherToken.deposit.sendTransactionAsync({ value: ethToDeposit }));
         });
 
         it('should convert deposited Ether to wrapped Ether tokens', async () => {
-            const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
+            const initEthBalance = await ethRPCClient.getBalanceInWeiAsync(account);
             const initEthTokenBalance = await etherToken.balanceOf.callAsync(account);
 
-            const ethToDeposit = new BigNumber(Web3Wrapper.toWei(new BigNumber(1)));
+            const ethToDeposit = new BigNumber(EthRPCClient.toWei(new BigNumber(1)));
 
             const txHash = await etherToken.deposit.sendTransactionAsync({ value: ethToDeposit });
-            const receipt = await web3Wrapper.awaitTransactionSuccessAsync(
+            const receipt = await ethRPCClient.awaitTransactionSuccessAsync(
                 txHash,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);
-            const finalEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
+            const finalEthBalance = await ethRPCClient.getBalanceInWeiAsync(account);
             const finalEthTokenBalance = await etherToken.balanceOf.callAsync(account);
 
             expect(finalEthBalance).to.be.bignumber.equal(initEthBalance.minus(ethToDeposit.plus(ethSpentOnGas)));
@@ -80,25 +80,25 @@ describe('EtherToken', () => {
         });
 
         it('should convert ether tokens to ether with sufficient balance', async () => {
-            const ethToDeposit = new BigNumber(Web3Wrapper.toWei(new BigNumber(1)));
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            const ethToDeposit = new BigNumber(EthRPCClient.toWei(new BigNumber(1)));
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await etherToken.deposit.sendTransactionAsync({ value: ethToDeposit }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const initEthTokenBalance = await etherToken.balanceOf.callAsync(account);
-            const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
+            const initEthBalance = await ethRPCClient.getBalanceInWeiAsync(account);
             const ethTokensToWithdraw = initEthTokenBalance;
             expect(ethTokensToWithdraw).to.not.be.bignumber.equal(0);
             const txHash = await etherToken.withdraw.sendTransactionAsync(ethTokensToWithdraw, {
                 gas: constants.MAX_ETHERTOKEN_WITHDRAW_GAS,
             });
-            const receipt = await web3Wrapper.awaitTransactionSuccessAsync(
+            const receipt = await ethRPCClient.awaitTransactionSuccessAsync(
                 txHash,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);
-            const finalEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
+            const finalEthBalance = await ethRPCClient.getBalanceInWeiAsync(account);
             const finalEthTokenBalance = await etherToken.balanceOf.callAsync(account);
 
             expect(finalEthBalance).to.be.bignumber.equal(
@@ -110,25 +110,25 @@ describe('EtherToken', () => {
 
     describe('fallback', () => {
         it('should convert sent ether to ether tokens', async () => {
-            const initEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
+            const initEthBalance = await ethRPCClient.getBalanceInWeiAsync(account);
             const initEthTokenBalance = await etherToken.balanceOf.callAsync(account);
 
-            const ethToDeposit = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18);
+            const ethToDeposit = EthRPCClient.toBaseUnitAmount(new BigNumber(1), 18);
 
-            const txHash = await web3Wrapper.sendTransactionAsync({
+            const txHash = await ethRPCClient.sendTransactionAsync({
                 from: account,
                 to: etherToken.address,
                 value: ethToDeposit,
                 gasPrice,
             });
 
-            const receipt = await web3Wrapper.awaitTransactionSuccessAsync(
+            const receipt = await ethRPCClient.awaitTransactionSuccessAsync(
                 txHash,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
             const ethSpentOnGas = gasPrice.times(receipt.gasUsed);
-            const finalEthBalance = await web3Wrapper.getBalanceInWeiAsync(account);
+            const finalEthBalance = await ethRPCClient.getBalanceInWeiAsync(account);
             const finalEthTokenBalance = await etherToken.balanceOf.callAsync(account);
 
             expect(finalEthBalance).to.be.bignumber.equal(initEthBalance.minus(ethToDeposit.plus(ethSpentOnGas)));

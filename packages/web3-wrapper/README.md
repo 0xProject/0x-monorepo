@@ -1,13 +1,13 @@
-## @0x/web3-wrapper
+## @0x/eth-rpc-client
 
-Web3-wrapper is a JSON-RPC client for Ethereum nodes. It is a type-safe alternative to [Web3.js](https://github.com/ethereum/web3.js/) written in TypeScript.
+EthRPCClient is a JSON-RPC client for Ethereum nodes. It is a type-safe alternative to [Web3.js](https://github.com/ethereum/web3.js/) written in TypeScript.
 
-### Read the [Documentation](https://0xproject.com/docs/web3-wrapper).
+### Read the [Documentation](https://0xproject.com/docs/eth-rpc-client).
 
 ## Installation
 
 ```bash
-yarn add @0x/web3-wrapper
+yarn add @0x/eth-rpc-client
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
@@ -43,13 +43,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0x/web3-wrapper yarn build
+PKG=@0x/eth-rpc-client yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0x/web3-wrapper yarn watch
+PKG=@0x/eth-rpc-client yarn watch
 ```
 
 ### Clean

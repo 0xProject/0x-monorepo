@@ -1,7 +1,7 @@
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { colors, Link } from '@0x/react-shared';
 import { BigNumber, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as accounting from 'accounting';
 import * as _ from 'lodash';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
@@ -638,7 +638,7 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
         }
     }
     private _formatCurrencyAmount(amount: BigNumber, decimals: number): number {
-        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+        const unitAmount = EthRPCClient.toUnitAmount(amount, decimals);
         const roundedUnitAmount = Math.round(unitAmount.toNumber() * 100000) / 100000;
         return roundedUnitAmount;
     }

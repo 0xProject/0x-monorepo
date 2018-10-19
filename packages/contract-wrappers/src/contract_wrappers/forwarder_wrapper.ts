@@ -3,7 +3,7 @@ import { Forwarder } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -31,7 +31,7 @@ export class ForwarderWrapper extends ContractWrapper {
 
     /**
      * Instantiate ForwarderWrapper
-     * @param web3Wrapper Web3Wrapper instance to use.
+     * @param ethRPCClient EthRPCClient instance to use.
      * @param networkId Desired networkId.
      * @param address The address of the Exchange contract. If undefined, will
      * default to the known address corresponding to the networkId.
@@ -43,13 +43,13 @@ export class ForwarderWrapper extends ContractWrapper {
      * networkId.
      */
     constructor(
-        web3Wrapper: Web3Wrapper,
+        ethRPCClient: EthRPCClient,
         networkId: number,
         address?: string,
         zrxTokenAddress?: string,
         etherTokenAddress?: string,
     ) {
-        super(web3Wrapper, networkId);
+        super(ethRPCClient, networkId);
         this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
         this.zrxTokenAddress = _.isUndefined(zrxTokenAddress)
             ? _getDefaultContractAddresses(networkId).zrxToken
@@ -88,7 +88,7 @@ export class ForwarderWrapper extends ContractWrapper {
     ): Promise<string> {
         // type assertions
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.isBigNumber('ethAmount', ethAmount);
         assert.doesConformToSchema('signedFeeOrders', signedFeeOrders, schemas.signedOrdersSchema);
         assert.isNumber('feePercentage', feePercentage);
@@ -178,7 +178,7 @@ export class ForwarderWrapper extends ContractWrapper {
         // type assertions
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.isBigNumber('ethAmount', ethAmount);
         assert.doesConformToSchema('signedFeeOrders', signedFeeOrders, schemas.signedOrdersSchema);
         assert.isNumber('feePercentage', feePercentage);
@@ -245,8 +245,8 @@ export class ForwarderWrapper extends ContractWrapper {
         const contractInstance = new ForwarderContract(
             this.abi,
             this.address,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
         this._forwarderContractIfExists = contractInstance;
         return this._forwarderContractIfExists;

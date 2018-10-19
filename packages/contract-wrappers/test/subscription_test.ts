@@ -16,10 +16,10 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 chaiSetup.configure();
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('SubscriptionTest', () => {
     let contractWrappers: ContractWrappers;
@@ -63,7 +63,7 @@ describe('SubscriptionTest', () => {
                     callback,
                 );
                 stubs = [
-                    Sinon.stub((contractWrappers as any)._web3Wrapper, 'getBlockIfExistsAsync').throws(
+                    Sinon.stub((contractWrappers as any)._ethRPCClient, 'getBlockIfExistsAsync').throws(
                         new Error('JSON RPC error'),
                     ),
                 ];

@@ -1,6 +1,6 @@
 import { ERC20TokenWrapper } from '0x.js';
 import { BigNumber, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 
 import { configs } from './configs';
@@ -14,21 +14,21 @@ const DISPENSE_MAX_AMOUNT_ETHER = 2;
 type AsyncTask = () => Promise<void>;
 
 export const dispenseAssetTasks = {
-    dispenseEtherTask(recipientAddress: string, web3Wrapper: Web3Wrapper): AsyncTask {
+    dispenseEtherTask(recipientAddress: string, ethRPCClient: EthRPCClient): AsyncTask {
         return async () => {
             logUtils.log(`Processing ETH ${recipientAddress}`);
-            const userBalance = await web3Wrapper.getBalanceInWeiAsync(recipientAddress);
-            const maxAmountInWei = Web3Wrapper.toWei(new BigNumber(DISPENSE_MAX_AMOUNT_ETHER));
+            const userBalance = await ethRPCClient.getBalanceInWeiAsync(recipientAddress);
+            const maxAmountInWei = EthRPCClient.toWei(new BigNumber(DISPENSE_MAX_AMOUNT_ETHER));
             if (userBalance.greaterThanOrEqualTo(maxAmountInWei)) {
                 logUtils.log(
                     `User exceeded ETH balance maximum (${maxAmountInWei}) ${recipientAddress} ${userBalance} `,
                 );
                 return;
             }
-            const txHash = await web3Wrapper.sendTransactionAsync({
+            const txHash = await ethRPCClient.sendTransactionAsync({
                 from: configs.DISPENSER_ADDRESS,
                 to: recipientAddress,
-                value: Web3Wrapper.toWei(new BigNumber(DISPENSE_AMOUNT_ETHER)),
+                value: EthRPCClient.toWei(new BigNumber(DISPENSE_AMOUNT_ETHER)),
             });
             logUtils.log(`Sent ${DISPENSE_AMOUNT_ETHER} ETH to ${recipientAddress} tx: ${txHash}`);
         };
@@ -46,12 +46,12 @@ export const dispenseAssetTasks = {
             if (_.isUndefined(tokenIfExists)) {
                 throw new Error(`Unsupported asset type: ${tokenSymbol}`);
             }
-            const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountToDispense, tokenIfExists.decimals);
+            const baseUnitAmount = EthRPCClient.toBaseUnitAmount(amountToDispense, tokenIfExists.decimals);
             const userBalanceBaseUnits = await erc20TokenWrapper.getBalanceAsync(
                 tokenIfExists.address,
                 recipientAddress,
             );
-            const maxAmountBaseUnits = Web3Wrapper.toBaseUnitAmount(
+            const maxAmountBaseUnits = EthRPCClient.toBaseUnitAmount(
                 new BigNumber(DISPENSE_MAX_AMOUNT_TOKEN),
                 tokenIfExists.decimals,
             );

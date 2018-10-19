@@ -1,6 +1,6 @@
 import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -15,7 +15,7 @@ import { txDefaults } from './web3_wrapper';
 export class ERC20Wrapper {
     private readonly _tokenOwnerAddresses: string[];
     private readonly _contractOwnerAddress: string;
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     private readonly _provider: Provider;
     private readonly _dummyTokenContracts: DummyERC20TokenContract[];
     private _proxyContract?: ERC20ProxyContract;
@@ -29,7 +29,7 @@ export class ERC20Wrapper {
      */
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._dummyTokenContracts = [];
-        this._web3Wrapper = new Web3Wrapper(provider);
+        this._ethRPCClient = new EthRPCClient(provider);
         this._provider = provider;
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
@@ -71,7 +71,7 @@ export class ERC20Wrapper {
         this._validateProxyContractExistsOrThrow();
         for (const dummyTokenContract of this._dummyTokenContracts) {
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
-                await this._web3Wrapper.awaitTransactionSuccessAsync(
+                await this._ethRPCClient.awaitTransactionSuccessAsync(
                     await dummyTokenContract.setBalance.sendTransactionAsync(
                         tokenOwnerAddress,
                         constants.INITIAL_ERC20_BALANCE,
@@ -79,7 +79,7 @@ export class ERC20Wrapper {
                     ),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                await this._web3Wrapper.awaitTransactionSuccessAsync(
+                await this._ethRPCClient.awaitTransactionSuccessAsync(
                     await dummyTokenContract.approve.sendTransactionAsync(
                         (this._proxyContract as ERC20ProxyContract).address,
                         constants.INITIAL_ERC20_ALLOWANCE,
@@ -97,7 +97,7 @@ export class ERC20Wrapper {
     }
     public async setBalanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(assetData);
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
+        await this._ethRPCClient.awaitTransactionSuccessAsync(
             await tokenContract.setBalance.sendTransactionAsync(userAddress, amount, {
                 from: this._contractOwnerAddress,
             }),
@@ -113,7 +113,7 @@ export class ERC20Wrapper {
     public async setAllowanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(assetData);
         const proxyAddress = (this._proxyContract as ERC20ProxyContract).address;
-        await this._web3Wrapper.awaitTransactionSuccessAsync(
+        await this._ethRPCClient.awaitTransactionSuccessAsync(
             await tokenContract.approve.sendTransactionAsync(proxyAddress, amount, {
                 from: userAddress,
             }),

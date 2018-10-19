@@ -1,17 +1,17 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 
 import { ZRXTokenContract } from '../../generated-wrappers/zrx_token';
 import { artifacts } from '../../src/artifacts';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('ZRXToken', () => {
     let owner: string;
@@ -26,7 +26,7 @@ describe('ZRXToken', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
         zrxToken = await ZRXTokenContract.deployFrom0xArtifactAsync(artifacts.ZRXToken, provider, txDefaults);
@@ -48,7 +48,7 @@ describe('ZRXToken', () => {
         it('should have a total supply of 1 billion tokens', async () => {
             const totalSupply = new BigNumber(await zrxToken.totalSupply.callAsync());
             const expectedTotalSupply = 1000000000;
-            expect(Web3Wrapper.toUnitAmount(totalSupply, 18)).to.be.bignumber.equal(expectedTotalSupply);
+            expect(EthRPCClient.toUnitAmount(totalSupply, 18)).to.be.bignumber.equal(expectedTotalSupply);
         });
 
         it('should be named 0x Protocol Token', async () => {
@@ -77,7 +77,7 @@ describe('ZRXToken', () => {
             const receiver = spender;
             const initOwnerBalance = await zrxToken.balanceOf.callAsync(owner);
             const amountToTransfer = new BigNumber(1);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.transfer.sendTransactionAsync(receiver, amountToTransfer, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -102,7 +102,7 @@ describe('ZRXToken', () => {
         it('should return false if owner has insufficient balance', async () => {
             const ownerBalance = await zrxToken.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance.plus(1);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.approve.sendTransactionAsync(spender, amountToTransfer, {
                     from: owner,
                     gas: constants.MAX_TOKEN_APPROVE_GAS,
@@ -141,14 +141,14 @@ describe('ZRXToken', () => {
             const initOwnerBalance = await zrxToken.balanceOf.callAsync(owner);
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = MAX_UINT;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.approve.sendTransactionAsync(spender, initSpenderAllowance, {
                     from: owner,
                     gas: constants.MAX_TOKEN_APPROVE_GAS,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
@@ -165,11 +165,11 @@ describe('ZRXToken', () => {
             const initSpenderBalance = await zrxToken.balanceOf.callAsync(spender);
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.approve.sendTransactionAsync(spender, initSpenderAllowance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
@@ -187,11 +187,11 @@ describe('ZRXToken', () => {
         it('should modify allowance if spender has sufficient allowance less than 2^256 - 1', async () => {
             const initOwnerBalance = await zrxToken.balanceOf.callAsync(owner);
             const amountToTransfer = initOwnerBalance;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.approve.sendTransactionAsync(spender, amountToTransfer),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,

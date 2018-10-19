@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0x/subproviders';
-import { CallDataRPC, marshaller, Web3Wrapper } from '@0x/web3-wrapper';
+import { CallDataRPC, marshaller, EthRPCClient } from '@0x/eth-rpc-client';
 import { JSONRPCRequestPayload, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';
@@ -30,7 +30,7 @@ export interface TraceCollectionSubproviderConfig {
  * be extended by implementing the _recordTxTraceAsync method which is called for every transaction.
  */
 export abstract class TraceCollectionSubprovider extends Subprovider {
-    protected _web3Wrapper!: Web3Wrapper;
+    protected _ethRPCClient!: EthRPCClient;
     // Lock is used to not accept normal transactions while doing call/snapshot magic because they'll be reverted later otherwise
     private readonly _lock = new Lock();
     private readonly _defaultFromAddress: string;
@@ -113,7 +113,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
      */
     public setEngine(engine: Provider): void {
         super.setEngine(engine);
-        this._web3Wrapper = new Web3Wrapper(engine);
+        this._ethRPCClient = new EthRPCClient(engine);
     }
     protected abstract async _recordTxTraceAsync(
         address: string,
@@ -137,7 +137,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
                 _.isUndefined(txData.to) || txData.to === NULL_ADDRESS ? constants.NEW_CONTRACT : txData.to;
             await this._recordTxTraceAsync(toAddress, txData.data, txHash as string);
         } else {
-            const latestBlock = await this._web3Wrapper.getBlockWithTransactionDataAsync(BlockParamLiteral.Latest);
+            const latestBlock = await this._ethRPCClient.getBlockWithTransactionDataAsync(BlockParamLiteral.Latest);
             const transactions = latestBlock.transactions;
             for (const transaction of transactions) {
                 const toAddress =
@@ -165,7 +165,7 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         // We don't want other transactions to be exeucted during snashotting period, that's why we lock the
         // transaction execution for all transactions except our fake ones.
         await this._lock.acquire();
-        const blockchainLifecycle = new BlockchainLifecycle(this._web3Wrapper);
+        const blockchainLifecycle = new BlockchainLifecycle(this._ethRPCClient);
         await blockchainLifecycle.startAsync();
         const fakeTxData = {
             gas: BLOCK_GAS_LIMIT.toString(16), // tslint:disable-line:custom-no-magic-numbers
@@ -175,8 +175,8 @@ export abstract class TraceCollectionSubprovider extends Subprovider {
         };
         try {
             const txData = marshaller.unmarshalTxData(fakeTxData);
-            const txHash = await this._web3Wrapper.sendTransactionAsync(txData);
-            await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
+            const txHash = await this._ethRPCClient.sendTransactionAsync(txData);
+            await this._ethRPCClient.awaitTransactionMinedAsync(txHash, 0);
         } catch (err) {
             // TODO(logvinov) Check that transaction failed and not some other exception
             // Even if this transaction failed - we've already recorded it's trace.

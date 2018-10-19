@@ -8,6 +8,7 @@ import {
     ExchangeFillEventArgs,
     IndexedFilterValues,
 } from '@0x/contract-wrappers';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
 import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0x/react-shared';
 import {
@@ -20,8 +21,7 @@ import {
     Web3ProviderEngine,
 } from '@0x/subproviders';
 import { SignedOrder, Token as ZeroExToken } from '@0x/types';
-import { BigNumber, intervalUtils, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { BigNumber, intervalUtils, logUtils, promisify } from '@0x/utils';
 import { BlockParam, LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -75,7 +75,7 @@ export class Blockchain {
     public nodeVersion: string;
     private _contractWrappers: ContractWrappers;
     private readonly _dispatcher: Dispatcher;
-    private _web3Wrapper?: Web3Wrapper;
+    private _ethRPCClient?: EthRPCClient;
     private _blockchainWatcher?: BlockchainWatcher;
     private _injectedProviderObservable?: InjectedProviderObservable;
     private readonly _injectedProviderUpdateHandler: (update: InjectedProviderUpdate) => Promise<void>;
@@ -254,7 +254,7 @@ export class Blockchain {
             gasPrice: this._defaultGasPrice,
         };
         this._showFlashMessageIfLedger();
-        const txHash = await this._web3Wrapper.sendTransactionAsync(transaction);
+        const txHash = await this._ethRPCClient.sendTransactionAsync(transaction);
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const etherScanLinkIfExists = sharedUtils.getEtherScanLinkIfExists(
             txHash,
@@ -354,7 +354,7 @@ export class Blockchain {
     }
     public isValidAddress(address: string): boolean {
         const lowercaseAddress = address.toLowerCase();
-        return Web3Wrapper.isAddress(lowercaseAddress);
+        return EthRPCClient.isAddress(lowercaseAddress);
     }
     public async isValidSignatureAsync(data: string, signature: string, signerAddress: string): Promise<boolean> {
         const result = await signatureUtils.isValidSignatureAsync(
@@ -418,7 +418,7 @@ export class Blockchain {
         });
     }
     public async getBalanceInWeiAsync(owner: string): Promise<BigNumber> {
-        const balanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(owner);
+        const balanceInWei = await this._ethRPCClient.getBalanceInWeiAsync(owner);
         return balanceInWei;
     }
     public async convertEthToWrappedEthTokensAsync(etherTokenAddress: string, amount: BigNumber): Promise<void> {
@@ -452,7 +452,7 @@ export class Blockchain {
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
-        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(address);
+        const doesContractExist = await this._ethRPCClient.doesContractExistAtAddressAsync(address);
         return doesContractExist;
     }
     public async getCurrentUserTokenBalanceAndAllowanceAsync(tokenAddress: string): Promise<BigNumber[]> {
@@ -487,14 +487,14 @@ export class Blockchain {
     public async getUserAccountsAsync(): Promise<string[]> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
         const provider = this._contractWrappers.getProvider();
-        const web3Wrapper = new Web3Wrapper(provider);
-        const userAccountsIfExists = await web3Wrapper.getAvailableAddressesAsync();
+        const ethRPCClient = new EthRPCClient(provider);
+        const userAccountsIfExists = await ethRPCClient.getAvailableAddressesAsync();
         return userAccountsIfExists;
     }
     // HACK: When a user is using a Ledger, we simply dispatch the selected userAddress, which
-    // by-passes the web3Wrapper logic for updating the prevUserAddress. We therefore need to
+    // by-passes the ethRPCClient logic for updating the prevUserAddress. We therefore need to
     // manually update it. This should only be called by the LedgerConfigDialog.
-    public updateWeb3WrapperPrevUserAddress(newUserAddress: string): void {
+    public updateEthRPCClientPrevUserAddress(newUserAddress: string): void {
         this._blockchainWatcher.updatePrevUserAddress(newUserAddress);
     }
     public destroy(): void {
@@ -607,7 +607,7 @@ export class Blockchain {
         let networkIdIfExists: number;
         if (!_.isUndefined(injectedProviderIfExists)) {
             try {
-                const injectedWeb3Wrapper = new Web3Wrapper(injectedProviderIfExists);
+                const injectedWeb3Wrapper = new EthRPCClient(injectedProviderIfExists);
                 networkIdIfExists = await injectedWeb3Wrapper.getNetworkIdAsync();
             } catch (err) {
                 // Ignore error and proceed with networkId undefined
@@ -629,10 +629,10 @@ export class Blockchain {
             }),
         );
         const provider = this._contractWrappers.getProvider();
-        const web3Wrapper = new Web3Wrapper(provider);
+        const ethRPCClient = new EthRPCClient(provider);
         const exchangeAbi = this._contractWrappers.exchange.abi;
-        web3Wrapper.abiDecoder.addABI(exchangeAbi);
-        const receipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+        ethRPCClient.abiDecoder.addABI(exchangeAbi);
+        const receipt = await ethRPCClient.awaitTransactionSuccessAsync(txHash);
         return receipt;
     }
     private _doesUserAddressExist(): boolean {
@@ -724,7 +724,7 @@ export class Blockchain {
     }
     private async _convertDecodedLogToFillAsync(decodedLog: LogWithDecodedArgs<ExchangeFillEventArgs>): Promise<Fill> {
         const args = decodedLog.args;
-        const blockTimestamp = await this._web3Wrapper.getBlockTimestampAsync(decodedLog.blockHash);
+        const blockTimestamp = await this._ethRPCClient.getBlockTimestampAsync(decodedLog.blockHash);
         const makerToken = assetDataUtils.decodeERC20AssetData(args.makerAssetData).tokenAddress;
         const takerToken = assetDataUtils.decodeERC20AssetData(args.takerAssetData).tokenAddress;
         const fill = {
@@ -861,8 +861,6 @@ export class Blockchain {
             networkId,
             shouldUserLedgerProvider,
         );
-        this._web3Wrapper = new Web3Wrapper(provider);
-        this.networkId = await this._web3Wrapper.getNetworkIdAsync();
         if (!_.isUndefined(this._contractWrappers)) {
             this._contractWrappers.unsubscribeAll();
         }
@@ -873,7 +871,8 @@ export class Blockchain {
         if (!_.isUndefined(this._blockchainWatcher)) {
             this._blockchainWatcher.destroy();
         }
-        this._blockchainWatcher = new BlockchainWatcher(this._dispatcher, this._web3Wrapper, shouldPollUserAddress);
+        this._ethRPCClient = new EthRPCClient(provider);
+        this._blockchainWatcher = new BlockchainWatcher(this._dispatcher, this._ethRPCClient, shouldPollUserAddress);
         if (shouldUserLedgerProvider && !_.isUndefined(ledgerSubproviderIfExists)) {
             delete this._userAddressIfExists;
             this._ledgerSubprovider = ledgerSubproviderIfExists;
@@ -881,7 +880,7 @@ export class Blockchain {
             this._dispatcher.updateProviderType(ProviderType.Ledger);
         } else {
             delete this._ledgerSubprovider;
-            const userAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
+            const userAddresses = await this._ethRPCClient.getAvailableAddressesAsync();
             this._userAddressIfExists = userAddresses[0];
             this._dispatcher.updateUserAddress(this._userAddressIfExists);
             if (!_.isUndefined(injectedProviderIfExists)) {
@@ -902,7 +901,7 @@ export class Blockchain {
     }
     private async _instantiateContractIfExistsAsync(artifact: any, address?: string): Promise<ContractInstance> {
         const c = await contract(artifact);
-        const providerObj = this._web3Wrapper.getProvider();
+        const providerObj = this._ethRPCClient.getProvider();
         c.setProvider(providerObj);
 
         const artifactNetworkConfigs = artifact.networks[this.networkId];

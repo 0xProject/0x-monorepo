@@ -20,11 +20,11 @@ import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { LogDecoder } from '../utils/log_decoder';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 const assetProxyInterface = new IAssetProxyContract(
     artifacts.IAssetProxy.compilerOutput.abi,
     constants.NULL_ADDRESS,
@@ -58,7 +58,7 @@ describe('Asset Transfer Proxies', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         const usedAddresses = ([owner, notAuthorized, exchangeAddress, makerAddress, takerAddress] = _.slice(
             accounts,
             0,
@@ -72,7 +72,7 @@ describe('Asset Transfer Proxies', () => {
         [zrxToken] = await erc20Wrapper.deployDummyTokensAsync(numDummyErc20ToDeploy, constants.DUMMY_TOKEN_DECIMALS);
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
                 from: owner,
             }),
@@ -84,7 +84,7 @@ describe('Asset Transfer Proxies', () => {
         await erc721Wrapper.setBalancesAndAllowancesAsync();
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerTokenId = erc721Balances[makerAddress][erc721Token.address][0];
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeAddress, {
                 from: owner,
             }),
@@ -104,11 +104,11 @@ describe('Asset Transfer Proxies', () => {
             constants.DUMMY_TOKEN_DECIMALS,
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await noReturnErc20Token.setBalance.sendTransactionAsync(makerAddress, constants.INITIAL_ERC20_BALANCE),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await noReturnErc20Token.approve.sendTransactionAsync(
                 erc20Proxy.address,
                 constants.INITIAL_ERC20_ALLOWANCE,
@@ -125,14 +125,14 @@ describe('Asset Transfer Proxies', () => {
             constants.DUMMY_TOKEN_DECIMALS,
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await multipleReturnErc20Token.setBalance.sendTransactionAsync(
                 makerAddress,
                 constants.INITIAL_ERC20_BALANCE,
             ),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await multipleReturnErc20Token.approve.sendTransactionAsync(
                 erc20Proxy.address,
                 constants.INITIAL_ERC20_ALLOWANCE,
@@ -151,7 +151,7 @@ describe('Asset Transfer Proxies', () => {
         it('should revert if undefined function is called', async () => {
             const undefinedSelector = '0x01020304';
             await expectTransactionFailedWithoutReasonAsync(
-                web3Wrapper.sendTransactionAsync({
+                ethRPCClient.sendTransactionAsync({
                     from: owner,
                     to: erc20Proxy.address,
                     value: constants.ZERO_AMOUNT,
@@ -172,8 +172,8 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
-                    await web3Wrapper.sendTransactionAsync({
+                await ethRPCClient.awaitTransactionSuccessAsync(
+                    await ethRPCClient.sendTransactionAsync({
                         to: erc20Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -203,8 +203,8 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
-                    await web3Wrapper.sendTransactionAsync({
+                await ethRPCClient.awaitTransactionSuccessAsync(
+                    await ethRPCClient.sendTransactionAsync({
                         to: erc20Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -231,8 +231,8 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
-                    await web3Wrapper.sendTransactionAsync({
+                await ethRPCClient.awaitTransactionSuccessAsync(
+                    await ethRPCClient.sendTransactionAsync({
                         to: erc20Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -261,8 +261,8 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
-                    await web3Wrapper.sendTransactionAsync({
+                await ethRPCClient.awaitTransactionSuccessAsync(
+                    await ethRPCClient.sendTransactionAsync({
                         to: erc20Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -291,7 +291,7 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, allowance, {
                         from: makerAddress,
                     }),
@@ -300,7 +300,7 @@ describe('Asset Transfer Proxies', () => {
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 // Perform a transfer; expect this to fail.
                 await expectTransactionFailedAsync(
-                    web3Wrapper.sendTransactionAsync({
+                    ethRPCClient.sendTransactionAsync({
                         to: erc20Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -323,7 +323,7 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await noReturnErc20Token.approve.sendTransactionAsync(erc20Proxy.address, allowance, {
                         from: makerAddress,
                     }),
@@ -333,7 +333,7 @@ describe('Asset Transfer Proxies', () => {
                 const initialTakerBalance = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
                 // Perform a transfer; expect this to fail.
                 await expectTransactionFailedAsync(
-                    web3Wrapper.sendTransactionAsync({
+                    ethRPCClient.sendTransactionAsync({
                         to: erc20Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -359,7 +359,7 @@ describe('Asset Transfer Proxies', () => {
                 );
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 await expectTransactionFailedAsync(
-                    web3Wrapper.sendTransactionAsync({
+                    ethRPCClient.sendTransactionAsync({
                         to: erc20Proxy.address,
                         data,
                         from: notAuthorized,
@@ -384,7 +384,7 @@ describe('Asset Transfer Proxies', () => {
                 const initialTakerBalance = await multipleReturnErc20Token.balanceOf.callAsync(takerAddress);
                 // Perform a transfer; expect this to fail.
                 await expectTransactionFailedAsync(
-                    web3Wrapper.sendTransactionAsync({
+                    ethRPCClient.sendTransactionAsync({
                         to: erc20Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -409,7 +409,7 @@ describe('Asset Transfer Proxies', () => {
         it('should revert if undefined function is called', async () => {
             const undefinedSelector = '0x01020304';
             await expectTransactionFailedWithoutReasonAsync(
-                web3Wrapper.sendTransactionAsync({
+                ethRPCClient.sendTransactionAsync({
                     from: owner,
                     to: erc721Proxy.address,
                     value: constants.ZERO_AMOUNT,
@@ -432,8 +432,8 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
-                    await web3Wrapper.sendTransactionAsync({
+                await ethRPCClient.awaitTransactionSuccessAsync(
+                    await ethRPCClient.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -463,8 +463,8 @@ describe('Asset Transfer Proxies', () => {
                     takerAddress,
                     amount,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
-                    await web3Wrapper.sendTransactionAsync({
+                await ethRPCClient.awaitTransactionSuccessAsync(
+                    await ethRPCClient.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -490,9 +490,9 @@ describe('Asset Transfer Proxies', () => {
                     erc721Receiver.address,
                     amount,
                 );
-                const logDecoder = new LogDecoder(web3Wrapper);
+                const logDecoder = new LogDecoder(ethRPCClient);
                 const tx = await logDecoder.getTxWithDecodedLogsAsync(
-                    await web3Wrapper.sendTransactionAsync({
+                    await ethRPCClient.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -521,7 +521,7 @@ describe('Asset Transfer Proxies', () => {
                     amount,
                 );
                 await expectTransactionFailedAsync(
-                    web3Wrapper.sendTransactionAsync({
+                    ethRPCClient.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -547,7 +547,7 @@ describe('Asset Transfer Proxies', () => {
                     amount,
                 );
                 await expectTransactionFailedAsync(
-                    web3Wrapper.sendTransactionAsync({
+                    ethRPCClient.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -565,7 +565,7 @@ describe('Asset Transfer Proxies', () => {
                 const ownerMakerAsset = await erc721Token.ownerOf.callAsync(erc721MakerTokenId);
                 expect(ownerMakerAsset).to.be.equal(makerAddress);
                 // Remove transfer approval for makerAddress.
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await erc721Token.approve.sendTransactionAsync(constants.NULL_ADDRESS, erc721MakerTokenId, {
                         from: makerAddress,
                     }),
@@ -580,7 +580,7 @@ describe('Asset Transfer Proxies', () => {
                     amount,
                 );
                 await expectTransactionFailedAsync(
-                    web3Wrapper.sendTransactionAsync({
+                    ethRPCClient.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,
                         from: exchangeAddress,
@@ -606,7 +606,7 @@ describe('Asset Transfer Proxies', () => {
                     amount,
                 );
                 await expectTransactionFailedAsync(
-                    web3Wrapper.sendTransactionAsync({
+                    ethRPCClient.sendTransactionAsync({
                         to: erc721Proxy.address,
                         data,
                         from: notAuthorized,

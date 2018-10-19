@@ -1,11 +1,11 @@
 import { RevertReason } from '@0x/types';
 import { logUtils } from '@0x/utils';
-import { NodeType } from '@0x/web3-wrapper';
+import { NodeType } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import { TransactionReceipt, TransactionReceiptStatus, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { web3Wrapper } from './web3_wrapper';
+import { ethRPCClient } from './web3_wrapper';
 
 const expect = chai.expect;
 
@@ -25,7 +25,7 @@ export type sendTransactionResult = Promise<TransactionReceipt | TransactionRece
  */
 async function _getGanacheOrGethError(ganacheError: string, gethError: string): Promise<string> {
     if (_.isUndefined(nodeType)) {
-        nodeType = await web3Wrapper.getNodeTypeAsync();
+        nodeType = await ethRPCClient.getNodeTypeAsync();
     }
     switch (nodeType) {
         case NodeType.Ganache:
@@ -100,7 +100,7 @@ export async function expectTransactionFailedAsync(p: sendTransactionResult, rea
     });
 
     if (_.isUndefined(nodeType)) {
-        nodeType = await web3Wrapper.getNodeTypeAsync();
+        nodeType = await ethRPCClient.getNodeTypeAsync();
     }
     switch (nodeType) {
         case NodeType.Ganache:
@@ -130,7 +130,7 @@ export async function expectTransactionFailedWithoutReasonAsync(p: sendTransacti
             if (_.isString(result)) {
                 // Result is a txHash. We need to make a web3 call to get the
                 // receipt, then get the status from the receipt.
-                const txReceipt = await web3Wrapper.awaitTransactionMinedAsync(result);
+                const txReceipt = await ethRPCClient.awaitTransactionMinedAsync(result);
                 txReceiptStatus = txReceipt.status;
             } else if ('status' in result) {
                 // Result is a transaction receipt, so we can get the status

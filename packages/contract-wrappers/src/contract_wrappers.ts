@@ -8,7 +8,7 @@ import {
     OrderValidator,
     WETH9,
 } from '@0x/contract-artifacts';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -66,7 +66,7 @@ export class ContractWrappers {
      */
     public orderValidator: OrderValidatorWrapper;
 
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     /**
      * Instantiates a new ContractWrappers instance.
      * @param   provider    The Provider instance you would like the contract-wrappers library to use for interacting with
@@ -80,7 +80,7 @@ export class ContractWrappers {
         const txDefaults = {
             gasPrice: config.gasPrice,
         };
-        this._web3Wrapper = new Web3Wrapper(provider, txDefaults);
+        this._ethRPCClient = new EthRPCClient(provider, txDefaults);
         const artifactsArray = [
             ERC20Proxy,
             ERC20Token,
@@ -92,7 +92,7 @@ export class ContractWrappers {
             WETH9,
         ];
         _.forEach(artifactsArray, artifact => {
-            this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi);
+            this._ethRPCClient.abiDecoder.addABI(artifact.compilerOutput.abi);
         });
         const blockPollingIntervalMs = _.isUndefined(config.blockPollingIntervalMs)
             ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
@@ -100,28 +100,28 @@ export class ContractWrappers {
         const contractAddresses = _.isUndefined(config.contractAddresses)
             ? _getDefaultContractAddresses(config.networkId)
             : config.contractAddresses;
-        this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc20Proxy);
-        this.erc721Proxy = new ERC721ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc721Proxy);
+        this.erc20Proxy = new ERC20ProxyWrapper(this._ethRPCClient, config.networkId, contractAddresses.erc20Proxy);
+        this.erc721Proxy = new ERC721ProxyWrapper(this._ethRPCClient, config.networkId, contractAddresses.erc721Proxy);
         this.erc20Token = new ERC20TokenWrapper(
-            this._web3Wrapper,
+            this._ethRPCClient,
             config.networkId,
             this.erc20Proxy,
             blockPollingIntervalMs,
         );
         this.erc721Token = new ERC721TokenWrapper(
-            this._web3Wrapper,
+            this._ethRPCClient,
             config.networkId,
             this.erc721Proxy,
             blockPollingIntervalMs,
         );
         this.etherToken = new EtherTokenWrapper(
-            this._web3Wrapper,
+            this._ethRPCClient,
             config.networkId,
             this.erc20Token,
             blockPollingIntervalMs,
         );
         this.exchange = new ExchangeWrapper(
-            this._web3Wrapper,
+            this._ethRPCClient,
             config.networkId,
             this.erc20Token,
             this.erc721Token,
@@ -130,14 +130,14 @@ export class ContractWrappers {
             blockPollingIntervalMs,
         );
         this.forwarder = new ForwarderWrapper(
-            this._web3Wrapper,
+            this._ethRPCClient,
             config.networkId,
             contractAddresses.forwarder,
             contractAddresses.zrxToken,
             contractAddresses.etherToken,
         );
         this.orderValidator = new OrderValidatorWrapper(
-            this._web3Wrapper,
+            this._ethRPCClient,
             config.networkId,
             contractAddresses.orderValidator,
         );
@@ -156,6 +156,6 @@ export class ContractWrappers {
      * @return  Web3 provider instance
      */
     public getProvider(): Provider {
-        return this._web3Wrapper.getProvider();
+        return this._ethRPCClient.getProvider();
     }
 }

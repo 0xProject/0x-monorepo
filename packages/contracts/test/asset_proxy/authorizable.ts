@@ -9,11 +9,11 @@ import { artifacts } from '../../src/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('Authorizable', () => {
     let owner: string;
@@ -28,7 +28,7 @@ describe('Authorizable', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         [owner, address, notOwner] = _.slice(accounts, 0, 3);
         authorizable = await MixinAuthorizableContract.deployFrom0xArtifactAsync(
             artifacts.MixinAuthorizable,
@@ -50,7 +50,7 @@ describe('Authorizable', () => {
             );
         });
         it('should allow owner to add an authorized address', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -58,7 +58,7 @@ describe('Authorizable', () => {
             expect(isAuthorized).to.be.true();
         });
         it('should throw if owner attempts to authorize a duplicate address', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -71,7 +71,7 @@ describe('Authorizable', () => {
 
     describe('removeAuthorizedAddress', () => {
         it('should throw if not called by owner', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -84,11 +84,11 @@ describe('Authorizable', () => {
         });
 
         it('should allow owner to remove an authorized address', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
@@ -110,7 +110,7 @@ describe('Authorizable', () => {
 
     describe('removeAuthorizedAddressAtIndex', () => {
         it('should throw if not called by owner', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -123,7 +123,7 @@ describe('Authorizable', () => {
             );
         });
         it('should throw if index is >= authorities.length', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -147,11 +147,11 @@ describe('Authorizable', () => {
         it('should throw if address at index does not match target', async () => {
             const address1 = address;
             const address2 = notOwner;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address1, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address2, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -164,12 +164,12 @@ describe('Authorizable', () => {
             );
         });
         it('should allow owner to remove an authorized address', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const index = new BigNumber(0);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
                     from: owner,
                 }),
@@ -184,7 +184,7 @@ describe('Authorizable', () => {
         it('should return all authorized addresses', async () => {
             const initial = await authorizable.getAuthorizedAddresses.callAsync();
             expect(initial).to.have.length(0);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.addAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),
@@ -194,7 +194,7 @@ describe('Authorizable', () => {
             expect(afterAdd).to.have.length(1);
             expect(afterAdd).to.include(address);
 
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
                     from: owner,
                 }),

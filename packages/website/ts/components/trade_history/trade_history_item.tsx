@@ -1,6 +1,6 @@
 import { colors, EtherscanLinkSuffixes } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 import Paper from 'material-ui/Paper';
 import * as moment from 'moment';
@@ -90,16 +90,16 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
     }
     private _renderAmounts(makerToken: Token, takerToken: Token): React.ReactNode {
         const fill = this.props.fill;
-        const filledTakerTokenAmountInUnits = Web3Wrapper.toUnitAmount(
+        const filledTakerTokenAmountInUnits = EthRPCClient.toUnitAmount(
             fill.filledTakerTokenAmount,
             takerToken.decimals,
         );
-        const filledMakerTokenAmountInUnits = Web3Wrapper.toUnitAmount(
+        const filledMakerTokenAmountInUnits = EthRPCClient.toUnitAmount(
             fill.filledMakerTokenAmount,
             takerToken.decimals,
         );
         let exchangeRate = filledTakerTokenAmountInUnits.div(filledMakerTokenAmountInUnits);
-        const fillMakerTokenAmount = Web3Wrapper.toBaseUnitAmount(filledMakerTokenAmountInUnits, makerToken.decimals);
+        const fillMakerTokenAmount = EthRPCClient.toBaseUnitAmount(filledMakerTokenAmountInUnits, makerToken.decimals);
 
         let receiveAmount;
         let receiveToken;
@@ -166,7 +166,7 @@ export class TradeHistoryItem extends React.Component<TradeHistoryItemProps, Tra
         );
     }
     private _renderAmount(amount: BigNumber, symbol: string, decimals: number): React.ReactNode {
-        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+        const unitAmount = EthRPCClient.toUnitAmount(amount, decimals);
         return (
             <span>
                 {unitAmount.toFixed(configs.AMOUNT_DISPLAY_PRECSION)} {symbol}

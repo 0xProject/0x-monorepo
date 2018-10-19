@@ -20,11 +20,11 @@ import { OrderFactory } from '../utils/order_factory';
 import { orderUtils } from '../utils/order_utils';
 import { TransactionFactory } from '../utils/transaction_factory';
 import { ERC20BalancesByOwner, SignedTransaction } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('Exchange transactions', () => {
     let senderAddress: string;
@@ -67,7 +67,7 @@ describe('Exchange transactions', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         const usedAddresses = ([owner, senderAddress, makerAddress, takerAddress, feeRecipientAddress] = _.slice(
             accounts,
             0,
@@ -93,7 +93,7 @@ describe('Exchange transactions', () => {
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
 
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
@@ -337,7 +337,7 @@ describe('Exchange transactions', () => {
                 exchange.address,
             );
             const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await exchange.setSignatureValidatorApproval.sendTransactionAsync(whitelist.address, isApproved, {
                     from: takerAddress,
                 }),
@@ -362,7 +362,7 @@ describe('Exchange transactions', () => {
 
         it('should revert if maker has not been whitelisted', async () => {
             const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -384,7 +384,7 @@ describe('Exchange transactions', () => {
 
         it('should revert if taker has not been whitelisted', async () => {
             const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -406,12 +406,12 @@ describe('Exchange transactions', () => {
 
         it('should fill the order if maker and taker have been whitelisted', async () => {
             const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
 
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -419,7 +419,7 @@ describe('Exchange transactions', () => {
             orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
             const salt = generatePseudoRandomSalt();
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
                     orderWithoutExchangeAddress,
                     takerAssetFillAmount,

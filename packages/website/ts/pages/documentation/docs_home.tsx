@@ -195,8 +195,8 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'A raw Ethereum JSON RPC client to simplify interfacing with Ethereum nodes. Also includes some convenience functions for awaiting transactions to be mined, converting between token units, etc...',
             link: {
-                title: '@0x/web3-wrapper',
-                to: WebsitePaths.Web3Wrapper,
+                title: '@0x/eth-rpc-client',
+                to: WebsitePaths.EthRPCClient,
             },
         },
     ],

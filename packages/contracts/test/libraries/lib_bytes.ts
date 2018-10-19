@@ -13,11 +13,11 @@ import { expectContractCallFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { typeEncodingUtils } from '../utils/type_encoding_utils';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 // BUG: Ideally we would use Buffer.from(memory).toString('hex')
 // https://github.com/Microsoft/TypeScript/issues/23155
@@ -61,7 +61,7 @@ describe('LibBytes', () => {
     });
     before(async () => {
         // Setup accounts & addresses
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         testAddress = accounts[1];
         testAddressB = accounts[2];
         // Deploy LibBytes

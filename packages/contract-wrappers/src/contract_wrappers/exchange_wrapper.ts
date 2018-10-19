@@ -9,7 +9,7 @@ import {
 } from '@0x/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { BlockParamLiteral, ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -51,7 +51,7 @@ export class ExchangeWrapper extends ContractWrapper {
     private readonly _erc20TokenWrapper: ERC20TokenWrapper;
     /**
      * Instantiate ExchangeWrapper
-     * @param web3Wrapper Web3Wrapper instance to use.
+     * @param ethRPCClient EthRPCClient instance to use.
      * @param networkId Desired networkId.
      * @param erc20TokenWrapper ERC20TokenWrapper instance to use.
      * @param erc721TokenWrapper ERC721TokenWrapper instance to use.
@@ -63,7 +63,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param blockPollingIntervalMs The block polling interval to use for active subscriptions.
      */
     constructor(
-        web3Wrapper: Web3Wrapper,
+        ethRPCClient: EthRPCClient,
         networkId: number,
         erc20TokenWrapper: ERC20TokenWrapper,
         erc721TokenWrapper: ERC721TokenWrapper,
@@ -71,7 +71,7 @@ export class ExchangeWrapper extends ContractWrapper {
         zrxTokenAddress?: string,
         blockPollingIntervalMs?: number,
     ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+        super(ethRPCClient, networkId, blockPollingIntervalMs);
         this._erc20TokenWrapper = erc20TokenWrapper;
         this._erc721TokenWrapper = erc721TokenWrapper;
         this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
@@ -186,7 +186,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
@@ -231,7 +231,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
@@ -281,7 +281,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
@@ -332,7 +332,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isETHAddressHex('signerAddress', signerAddress);
         assert.isHexString('data', data);
         assert.isHexString('signature', signature);
-        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedSenderAddress = senderAddress.toLowerCase();
 
@@ -379,7 +379,7 @@ export class ExchangeWrapper extends ContractWrapper {
         _.forEach(takerAssetFillAmounts, takerAssetFillAmount =>
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount),
         );
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
@@ -424,7 +424,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
@@ -469,7 +469,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
@@ -514,7 +514,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
@@ -559,7 +559,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
@@ -606,7 +606,7 @@ export class ExchangeWrapper extends ContractWrapper {
         _.forEach(takerAssetFillAmounts, takerAssetFillAmount =>
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount),
         );
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
@@ -653,7 +653,7 @@ export class ExchangeWrapper extends ContractWrapper {
         _.forEach(takerAssetFillAmounts, takerAssetFillAmount =>
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount),
         );
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
 
@@ -695,7 +695,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const makerAddresses = _.map(orders, order => order.makerAddress);
         const makerAddress = makerAddresses[0];
-        await assert.isSenderAddressAsync('makerAddress', makerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('makerAddress', makerAddress, this._ethRPCClient);
         const normalizedMakerAddress = makerAddress.toLowerCase();
 
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -735,7 +735,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.doesConformToSchema('leftSignedOrder', leftSignedOrder, schemas.signedOrderSchema);
         assert.doesConformToSchema('rightSignedOrder', rightSignedOrder, schemas.signedOrderSchema);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = takerAddress.toLowerCase();
         if (
@@ -798,7 +798,7 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.isHexString('hash', hash);
         assert.isETHAddressHex('signerAddress', signerAddress);
         assert.isHexString('signature', signature);
-        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedTakerAddress = senderAddress.toLowerCase();
         const exchangeInstance = await this._getExchangeContractAsync();
@@ -974,7 +974,7 @@ export class ExchangeWrapper extends ContractWrapper {
         orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.doesConformToSchema('order', order, schemas.orderSchema);
-        await assert.isSenderAddressAsync('order.maker', order.makerAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('order.maker', order.makerAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedMakerAddress = order.makerAddress.toLowerCase();
 
@@ -1012,7 +1012,7 @@ export class ExchangeWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.isETHAddressHex('validatorAddress', validatorAddress);
         assert.isBoolean('isApproved', isApproved);
-        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedSenderAddress = senderAddress.toLowerCase();
 
@@ -1052,7 +1052,7 @@ export class ExchangeWrapper extends ContractWrapper {
         orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
     ): Promise<string> {
         assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
-        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
+        await assert.isSenderAddressAsync('senderAddress', senderAddress, this._ethRPCClient);
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         const normalizedSenderAddress = senderAddress.toLowerCase();
 
@@ -1193,7 +1193,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
         await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
             exchangeTradeSimulator,
-            this._web3Wrapper.getProvider(),
+            this._ethRPCClient.getProvider(),
             signedOrder,
             fillTakerAssetAmount,
             takerAddress,
@@ -1226,8 +1226,8 @@ export class ExchangeWrapper extends ContractWrapper {
         const contractInstance = new ExchangeContract(
             this.abi,
             this.address,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
         this._exchangeContractIfExists = contractInstance;
         return this._exchangeContractIfExists;

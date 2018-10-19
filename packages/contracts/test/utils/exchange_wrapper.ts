@@ -1,6 +1,6 @@
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { ExchangeContract } from '../../generated-wrappers/exchange';
@@ -12,12 +12,12 @@ import { FillResults, OrderInfo, SignedTransaction } from './types';
 
 export class ExchangeWrapper {
     private readonly _exchange: ExchangeContract;
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     private readonly _logDecoder: LogDecoder;
     constructor(exchangeContract: ExchangeContract, provider: Provider) {
         this._exchange = exchangeContract;
-        this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper);
+        this._ethRPCClient = new EthRPCClient(provider);
+        this._logDecoder = new LogDecoder(this._ethRPCClient);
     }
     public async fillOrderAsync(
         signedOrder: SignedOrder,

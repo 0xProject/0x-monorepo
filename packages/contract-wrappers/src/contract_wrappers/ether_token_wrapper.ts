@@ -2,7 +2,7 @@ import { WETH9Contract, WETH9EventArgs, WETH9Events } from '@0x/abi-gen-wrappers
 import { WETH9 } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -25,18 +25,18 @@ export class EtherTokenWrapper extends ContractWrapper {
     private readonly _erc20TokenWrapper: ERC20TokenWrapper;
     /**
      * Instantiate EtherTokenWrapper.
-     * @param web3Wrapper Web3Wrapper instance to use
+     * @param ethRPCClient EthRPCClient instance to use
      * @param networkId Desired networkId
      * @param erc20TokenWrapper The ERC20TokenWrapper instance to use
      * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
      */
     constructor(
-        web3Wrapper: Web3Wrapper,
+        ethRPCClient: EthRPCClient,
         networkId: number,
         erc20TokenWrapper: ERC20TokenWrapper,
         blockPollingIntervalMs?: number,
     ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+        super(ethRPCClient, networkId, blockPollingIntervalMs);
         this._erc20TokenWrapper = erc20TokenWrapper;
     }
     /**
@@ -57,11 +57,11 @@ export class EtherTokenWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
-        await assert.isSenderAddressAsync('depositor', depositor, this._web3Wrapper);
+        await assert.isSenderAddressAsync('depositor', depositor, this._ethRPCClient);
         const normalizedEtherTokenAddress = etherTokenAddress.toLowerCase();
         const normalizedDepositorAddress = depositor.toLowerCase();
 
-        const ethBalanceInWei = await this._web3Wrapper.getBalanceInWeiAsync(normalizedDepositorAddress);
+        const ethBalanceInWei = await this._ethRPCClient.getBalanceInWeiAsync(normalizedDepositorAddress);
         assert.assert(ethBalanceInWei.gte(amountInWei), ContractWrappersError.InsufficientEthBalanceForDeposit);
 
         const wethContract = await this._getEtherTokenContractAsync(normalizedEtherTokenAddress);
@@ -93,7 +93,7 @@ export class EtherTokenWrapper extends ContractWrapper {
     ): Promise<string> {
         assert.isValidBaseUnitAmount('amountInWei', amountInWei);
         assert.isETHAddressHex('etherTokenAddress', etherTokenAddress);
-        await assert.isSenderAddressAsync('withdrawer', withdrawer, this._web3Wrapper);
+        await assert.isSenderAddressAsync('withdrawer', withdrawer, this._ethRPCClient);
         const normalizedEtherTokenAddress = etherTokenAddress.toLowerCase();
         const normalizedWithdrawerAddress = withdrawer.toLowerCase();
 
@@ -201,8 +201,8 @@ export class EtherTokenWrapper extends ContractWrapper {
         const contractInstance = new WETH9Contract(
             this.abi,
             etherTokenAddress,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
         etherTokenContract = contractInstance;
         this._etherTokenContractsByAddress[etherTokenAddress] = etherTokenContract;

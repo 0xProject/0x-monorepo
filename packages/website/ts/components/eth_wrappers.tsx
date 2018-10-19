@@ -1,6 +1,6 @@
 import { colors, EtherscanLinkSuffixes, utils as sharedUtils } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 import Divider from 'material-ui/Divider';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
@@ -89,7 +89,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
     }
     public render(): React.ReactNode {
         const etherToken = this._getEthToken();
-        const wethBalance = Web3Wrapper.toUnitAmount(this.state.ethTokenState.balance, constants.DECIMAL_PLACES_ETH);
+        const wethBalance = EthRPCClient.toUnitAmount(this.state.ethTokenState.balance, constants.DECIMAL_PLACES_ETH);
         const isBidirectional = true;
         const etherscanUrl = sharedUtils.getEtherScanLinkIfExists(
             etherToken.address,
@@ -102,7 +102,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             utils.getTokenIconUrl(etherToken.symbol),
         );
         const userEtherBalanceInEth = !_.isUndefined(this.props.userEtherBalanceInWei)
-            ? Web3Wrapper.toUnitAmount(this.props.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH)
+            ? EthRPCClient.toUnitAmount(this.props.userEtherBalanceInWei, constants.DECIMAL_PLACES_ETH)
             : undefined;
         const rootClassName = this.props.isFullWidth ? 'clearfix' : 'clearfix lg-px4 md-px4 sm-px2';
         return (
@@ -276,7 +276,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                 const outdatedEtherTokenState = this.state.outdatedWETHStateByAddress[outdatedWETHIfExists.address];
                 const isStateLoaded = outdatedEtherTokenState.isLoaded;
                 const balanceInEthIfExists = isStateLoaded
-                    ? Web3Wrapper.toUnitAmount(outdatedEtherTokenState.balance, constants.DECIMAL_PLACES_ETH).toFixed(
+                    ? EthRPCClient.toUnitAmount(outdatedEtherTokenState.balance, constants.DECIMAL_PLACES_ETH).toFixed(
                           configs.AMOUNT_DISPLAY_PRECSION,
                       )
                     : undefined;

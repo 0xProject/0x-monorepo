@@ -1,5 +1,5 @@
 import { devConstants, web3Factory } from '@0x/dev-utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider } from 'ethereum-types';
 
 const txDefaults = {
@@ -7,6 +7,6 @@ const txDefaults = {
     gas: devConstants.GAS_LIMIT,
 };
 const provider: Provider = web3Factory.getRpcProvider({ shouldUseInProcessGanache: true });
-const web3Wrapper = new Web3Wrapper(provider);
+const ethRPCClient = new EthRPCClient(provider);
 
-export { provider, web3Wrapper, txDefaults };
+export { provider, ethRPCClient, txDefaults };

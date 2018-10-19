@@ -12,11 +12,11 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 // tslint:disable:custom-no-magic-numbers
 describe('ForwarderWrapper', () => {
@@ -44,7 +44,7 @@ describe('ForwarderWrapper', () => {
         };
         contractWrappers = new ContractWrappers(provider, config);
         exchangeContractAddress = contractWrappers.exchange.address;
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await ethRPCClient.getAvailableAddressesAsync();
         zrxTokenAddress = contractWrappers.exchange.zrxTokenAddress;
         fillScenarios = new FillScenarios(
             provider,
@@ -95,7 +95,7 @@ describe('ForwarderWrapper', () => {
                 takerAddress,
                 makerAssetFillAmount,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const ordersInfo = await contractWrappers.exchange.getOrdersInfoAsync([signedOrder, anotherSignedOrder]);
             expect(ordersInfo[0].orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             expect(ordersInfo[1].orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
@@ -129,7 +129,7 @@ describe('ForwarderWrapper', () => {
                 takerAddress,
                 makerAssetFillAmount,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const ordersInfo = await contractWrappers.exchange.getOrdersInfoAsync([signedOrder, anotherSignedOrder]);
             expect(ordersInfo[0].orderStatus).to.be.equal(OrderStatus.FULLY_FILLED);
             expect(ordersInfo[1].orderStatus).to.be.equal(OrderStatus.FILLABLE);

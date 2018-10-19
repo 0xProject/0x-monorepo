@@ -19,11 +19,11 @@ import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { OrderFactory } from '../utils/order_factory';
 import { OrderStatus } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('OrderValidator', () => {
     let makerAddress: string;
@@ -57,7 +57,7 @@ describe('OrderValidator', () => {
     });
 
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress] = _.slice(accounts, 0, 3));
 
         const erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
@@ -120,7 +120,7 @@ describe('OrderValidator', () => {
                 expect(tokenOwner).to.be.equal(constants.NULL_ADDRESS);
             });
             it('should return the owner address when tokenId is owned', async () => {
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await erc721Token.mint.sendTransactionAsync(makerAddress, tokenId),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
@@ -140,11 +140,11 @@ describe('OrderValidator', () => {
             it('should return the correct balance and allowance when both values are non-zero', async () => {
                 const balance = new BigNumber(123);
                 const allowance = new BigNumber(456);
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await erc20Token.setBalance.sendTransactionAsync(makerAddress, balance),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, allowance, {
                         from: makerAddress,
                     }),
@@ -174,7 +174,7 @@ describe('OrderValidator', () => {
                 expect(newAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             });
             it('should return a balance of 1 when the tokenId is owned by target', async () => {
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await erc721Token.mint.sendTransactionAsync(makerAddress, tokenId),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
@@ -186,7 +186,7 @@ describe('OrderValidator', () => {
             });
             it('should return an allowance of 1 when ERC721Proxy is approved for all', async () => {
                 const isApproved = true;
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, isApproved, {
                         from: makerAddress,
                     }),
@@ -199,11 +199,11 @@ describe('OrderValidator', () => {
                 expect(newAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
             });
             it('should return an allowance of 1 when ERC721Proxy is approved for specific tokenId', async () => {
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await erc721Token.mint.sendTransactionAsync(makerAddress, tokenId),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await erc721Token.approve.sendTransactionAsync(erc721Proxy.address, tokenId, {
                         from: makerAddress,
                     }),
@@ -234,21 +234,21 @@ describe('OrderValidator', () => {
         it('should return the correct balances and allowances when balances and allowances are non-zero', async () => {
             const balance = new BigNumber(123);
             const allowance = new BigNumber(456);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20Token.setBalance.sendTransactionAsync(makerAddress, balance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, allowance, {
                     from: makerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc721Token.mint.sendTransactionAsync(makerAddress, tokenId),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc721Token.approve.sendTransactionAsync(erc721Proxy.address, tokenId, {
                     from: makerAddress,
                 }),
@@ -287,31 +287,31 @@ describe('OrderValidator', () => {
             const makerAllowance = new BigNumber(456);
             const makerZrxBalance = new BigNumber(789);
             const takerZrxAllowance = new BigNumber(987);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20Token.setBalance.sendTransactionAsync(makerAddress, makerBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, makerAllowance, {
                     from: makerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.setBalance.sendTransactionAsync(makerAddress, makerZrxBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, takerZrxAllowance, {
                     from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc721Token.mint.sendTransactionAsync(takerAddress, tokenId),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc721Token.approve.sendTransactionAsync(erc721Proxy.address, tokenId, {
                     from: takerAddress,
                 }),
@@ -361,34 +361,34 @@ describe('OrderValidator', () => {
             const makerAllowance = new BigNumber(456);
             const makerZrxBalance = new BigNumber(789);
             const takerZrxAllowance = new BigNumber(987);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20Token.setBalance.sendTransactionAsync(makerAddress, makerBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, makerAllowance, {
                     from: makerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.setBalance.sendTransactionAsync(makerAddress, makerZrxBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, takerZrxAllowance, {
                     from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, isApproved, {
                     from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc721Token.mint.sendTransactionAsync(takerAddress, tokenId2),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -441,31 +441,31 @@ describe('OrderValidator', () => {
             const makerAllowance = new BigNumber(456);
             const makerZrxBalance = new BigNumber(789);
             const takerZrxAllowance = new BigNumber(987);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20Token.setBalance.sendTransactionAsync(makerAddress, makerBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, makerAllowance, {
                     from: makerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.setBalance.sendTransactionAsync(makerAddress, makerZrxBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, takerZrxAllowance, {
                     from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc721Token.mint.sendTransactionAsync(takerAddress, tokenId),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc721Token.approve.sendTransactionAsync(erc721Proxy.address, tokenId, {
                     from: takerAddress,
                 }),
@@ -533,34 +533,34 @@ describe('OrderValidator', () => {
             const makerAllowance = new BigNumber(456);
             const makerZrxBalance = new BigNumber(789);
             const takerZrxAllowance = new BigNumber(987);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20Token.setBalance.sendTransactionAsync(makerAddress, makerBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, makerAllowance, {
                     from: makerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.setBalance.sendTransactionAsync(makerAddress, makerZrxBalance),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, takerZrxAllowance, {
                     from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, isApproved, {
                     from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc721Token.mint.sendTransactionAsync(takerAddress, tokenId2),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );

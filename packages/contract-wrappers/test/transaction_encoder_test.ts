@@ -11,9 +11,9 @@ import { TransactionEncoder } from '../src/utils/transaction_encoder';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('TransactionEncoder', () => {
     let contractWrappers: ContractWrappers;
@@ -43,7 +43,7 @@ describe('TransactionEncoder', () => {
         };
         contractWrappers = new ContractWrappers(provider, config);
         exchangeContractAddress = contractWrappers.exchange.address;
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await ethRPCClient.getAvailableAddressesAsync();
         const zrxTokenAddress = contractWrappers.exchange.zrxTokenAddress;
         fillScenarios = new FillScenarios(
             provider,
@@ -92,7 +92,7 @@ describe('TransactionEncoder', () => {
                 signature,
                 senderAddress,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         };
         describe('#fillOrderTx', () => {
             it('should successfully execute the transaction', async () => {

@@ -1,6 +1,6 @@
 import { Styles } from '@0x/react-shared';
 import { BigNumber, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
@@ -184,8 +184,8 @@ export class WrapEtherItem extends React.Component<WrapEtherItemProps, WrapEther
         });
         const etherToken = this.props.etherToken;
         const amountToConvert = this.state.currentInputAmount;
-        const ethAmount = Web3Wrapper.toUnitAmount(amountToConvert, constants.DECIMAL_PLACES_ETH).toString();
-        const tokenAmount = Web3Wrapper.toUnitAmount(amountToConvert, etherToken.decimals).toString();
+        const ethAmount = EthRPCClient.toUnitAmount(amountToConvert, constants.DECIMAL_PLACES_ETH).toString();
+        const tokenAmount = EthRPCClient.toUnitAmount(amountToConvert, etherToken.decimals).toString();
         try {
             if (this.props.direction === Side.Deposit) {
                 await this.props.blockchain.convertEthToWrappedEthTokensAsync(etherToken.address, amountToConvert);

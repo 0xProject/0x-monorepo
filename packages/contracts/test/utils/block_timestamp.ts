@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { constants } from './constants';
-import { web3Wrapper } from './web3_wrapper';
+import { ethRPCClient } from './web3_wrapper';
 
 let firstAccount: string | undefined;
 
@@ -14,16 +14,16 @@ let firstAccount: string | undefined;
  */
 export async function increaseTimeAndMineBlockAsync(seconds: number): Promise<number> {
     if (_.isUndefined(firstAccount)) {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         firstAccount = accounts[0];
     }
 
-    const offset = await web3Wrapper.increaseTimeAsync(seconds);
+    const offset = await ethRPCClient.increaseTimeAsync(seconds);
     // Note: we need to send a transaction after increasing time so
     // that a block is actually mined. The contract looks at the
     // last mined block for the timestamp.
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await web3Wrapper.sendTransactionAsync({ from: firstAccount, to: firstAccount, value: 0 }),
+    await ethRPCClient.awaitTransactionSuccessAsync(
+        await ethRPCClient.sendTransactionAsync({ from: firstAccount, to: firstAccount, value: 0 }),
         constants.AWAIT_TRANSACTION_MINED_MS,
     );
 
@@ -35,7 +35,7 @@ export async function increaseTimeAndMineBlockAsync(seconds: number): Promise<nu
  * @returns a new Promise which will resolve with the timestamp in seconds.
  */
 export async function getLatestBlockTimestampAsync(): Promise<number> {
-    const currentBlockIfExists = await web3Wrapper.getBlockIfExistsAsync('latest');
+    const currentBlockIfExists = await ethRPCClient.getBlockIfExistsAsync('latest');
     if (_.isUndefined(currentBlockIfExists)) {
         throw new Error(`Unable to fetch latest block.`);
     }

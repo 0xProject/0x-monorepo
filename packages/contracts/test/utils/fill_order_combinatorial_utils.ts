@@ -8,7 +8,7 @@ import {
 } from '@0x/order-utils';
 import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, errorUtils, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import { LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -49,20 +49,20 @@ const expect = chai.expect;
 /**
  * Instantiates a new instance of FillOrderCombinatorialUtils. Since this method has some
  * required async setup, a factory method is required.
- * @param web3Wrapper Web3Wrapper instance
+ * @param ethRPCClient EthRPCClient instance
  * @param txDefaults Default Ethereum tx options
  * @return FillOrderCombinatorialUtils instance
  */
 export async function fillOrderCombinatorialUtilsFactoryAsync(
-    web3Wrapper: Web3Wrapper,
+    ethRPCClient: EthRPCClient,
     txDefaults: Partial<TxData>,
 ): Promise<FillOrderCombinatorialUtils> {
-    const accounts = await web3Wrapper.getAvailableAddressesAsync();
+    const accounts = await ethRPCClient.getAvailableAddressesAsync();
     const userAddresses = _.slice(accounts, 0, 5);
     const [ownerAddress, makerAddress, takerAddress] = userAddresses;
     const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
 
-    const provider = web3Wrapper.getProvider();
+    const provider = ethRPCClient.getProvider();
     const erc20Wrapper = new ERC20Wrapper(provider, userAddresses, ownerAddress);
     const erc721Wrapper = new ERC721Wrapper(provider, userAddresses, ownerAddress);
 
@@ -107,13 +107,13 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
     await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, ownerAddress);
     await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, ownerAddress);
 
-    await web3Wrapper.awaitTransactionSuccessAsync(
+    await ethRPCClient.awaitTransactionSuccessAsync(
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeContract.address, {
             from: ownerAddress,
         }),
         constants.AWAIT_TRANSACTION_MINED_MS,
     );
-    await web3Wrapper.awaitTransactionSuccessAsync(
+    await ethRPCClient.awaitTransactionSuccessAsync(
         await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeContract.address, {
             from: ownerAddress,
         }),

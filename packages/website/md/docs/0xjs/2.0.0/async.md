@@ -4,7 +4,7 @@ _Async/await syntax (recommended):_
 
 ```javascript
 try {
-    var availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
+    var availableAddresses = await ethRPCClient.getAvailableAddressesAsync();
 } catch (error) {
     console.log('Caught error: ', error);
 }
@@ -13,7 +13,7 @@ try {
 _Promise syntax:_
 
 ```javascript
-web3Wrapper
+ethRPCClient
     .getAvailableAddressesAsync()
     .then(function(availableAddresses) {
         console.log(availableAddresses);

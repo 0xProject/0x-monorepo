@@ -13,11 +13,11 @@ import { TradeSide, TransferType } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { SimpleERC20BalanceAndProxyAllowanceFetcher } from './utils/simple_erc20_balance_and_proxy_allowance_fetcher';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('ExchangeTransferSimulator', async () => {
     const transferAmount = new BigNumber(5);
@@ -34,7 +34,7 @@ describe('ExchangeTransferSimulator', async () => {
         const mochaTestTimeoutMs = 20000;
         this.timeout(mochaTestTimeoutMs); // tslint:disable-line:no-invalid-this
 
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await ethRPCClient.getAvailableAddressesAsync();
         [coinbase, sender, recipient] = userAddresses;
 
         const txDefaults = {
@@ -102,7 +102,7 @@ describe('ExchangeTransferSimulator', async () => {
             txHash = await dummyERC20Token.approve.sendTransactionAsync(erc20ProxyAddress, transferAmount, {
                 from: sender,
             });
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash);
             return expect(
                 exchangeTransferSimulator.transferFromAsync(
                     exampleAssetData,
@@ -118,12 +118,12 @@ describe('ExchangeTransferSimulator', async () => {
             txHash = await dummyERC20Token.transfer.sendTransactionAsync(sender, transferAmount, {
                 from: coinbase,
             });
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash);
 
             txHash = await dummyERC20Token.approve.sendTransactionAsync(erc20ProxyAddress, transferAmount, {
                 from: sender,
             });
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash);
 
             await exchangeTransferSimulator.transferFromAsync(
                 exampleAssetData,
@@ -145,7 +145,7 @@ describe('ExchangeTransferSimulator', async () => {
             txHash = await dummyERC20Token.transfer.sendTransactionAsync(sender, transferAmount, {
                 from: coinbase,
             });
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash);
             txHash = await dummyERC20Token.approve.sendTransactionAsync(
                 erc20ProxyAddress,
                 constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
@@ -153,7 +153,7 @@ describe('ExchangeTransferSimulator', async () => {
                     from: sender,
                 },
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash);
             await exchangeTransferSimulator.transferFromAsync(
                 exampleAssetData,
                 sender,

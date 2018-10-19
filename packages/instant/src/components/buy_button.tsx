@@ -1,6 +1,6 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { oc } from 'ts-optchain';
@@ -58,6 +58,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         const ethNeededForBuy = buyQuote.worstCaseQuoteInfo.totalEthAmount;
         // if we don't have a balance for the user, let the transaction through, it will be handled by the wallet
         const hasSufficientEth = _.isUndefined(accountEthBalanceInWei) || accountEthBalanceInWei.gte(ethNeededForBuy);
+        const ethRPCClient = new EthRPCClient(assetBuyer.provider);
         if (!hasSufficientEth) {
             this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);
             return;
@@ -87,7 +88,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         const expectedEndTimeUnix = startTimeUnix + gasInfo.estimatedTimeMs;
         this.props.onBuyProcessing(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
         try {
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
             if (e instanceof Error && e.message.startsWith(WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX)) {
                 this.props.onBuyFailure(buyQuote, txHash);

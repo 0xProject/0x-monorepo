@@ -4,7 +4,7 @@
 import { BaseContract } from '@0x/base-contract';
 import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, Provider, TxData, TxDataPayable } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
@@ -62,9 +62,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'name'}) as MethodAbi).outputs;
@@ -97,9 +97,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'getApproved'}) as MethodAbi).outputs;
@@ -133,14 +133,14 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.approve.estimateGasAsync.bind(
                     self,
                     _approved,
                     _tokenId
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -164,9 +164,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -213,9 +213,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'approve'}) as MethodAbi).outputs;
@@ -254,7 +254,7 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.transferFrom.estimateGasAsync.bind(
                     self,
                     _from,
@@ -262,7 +262,7 @@ export class DummyERC721TokenContract extends BaseContract {
                     _tokenId
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -290,9 +290,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -348,9 +348,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'transferFrom'}) as MethodAbi).outputs;
@@ -384,14 +384,14 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.mint.estimateGasAsync.bind(
                     self,
                     _to,
                     _tokenId
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -415,9 +415,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -464,9 +464,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'mint'}) as MethodAbi).outputs;
@@ -505,7 +505,7 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.safeTransferFrom1.estimateGasAsync.bind(
                     self,
                     _from,
@@ -513,7 +513,7 @@ export class DummyERC721TokenContract extends BaseContract {
                     _tokenId
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -541,9 +541,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -599,9 +599,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'safeTransferFrom'}) as MethodAbi).outputs;
@@ -634,9 +634,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'ownerOf'}) as MethodAbi).outputs;
@@ -669,9 +669,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'balanceOf'}) as MethodAbi).outputs;
@@ -699,9 +699,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'owner'}) as MethodAbi).outputs;
@@ -729,9 +729,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'symbol'}) as MethodAbi).outputs;
@@ -765,14 +765,14 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.burn.estimateGasAsync.bind(
                     self,
                     _owner,
                     _tokenId
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -796,9 +796,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -845,9 +845,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'burn'}) as MethodAbi).outputs;
@@ -881,14 +881,14 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.setApprovalForAll.estimateGasAsync.bind(
                     self,
                     _operator,
                     _approved
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -912,9 +912,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -961,9 +961,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'setApprovalForAll'}) as MethodAbi).outputs;
@@ -1007,7 +1007,7 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.safeTransferFrom2.estimateGasAsync.bind(
                     self,
                     _from,
@@ -1016,7 +1016,7 @@ export class DummyERC721TokenContract extends BaseContract {
                     _data
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -1048,9 +1048,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -1115,9 +1115,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'safeTransferFrom'}) as MethodAbi).outputs;
@@ -1155,9 +1155,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'isApprovedForAll'}) as MethodAbi).outputs;
@@ -1186,13 +1186,13 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
                 self.transferOwnership.estimateGasAsync.bind(
                     self,
                     newOwner
                 ),
             );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            const txHash = await self._ethRPCClient.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
         async estimateGasAsync(
@@ -1212,9 +1212,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...txData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            const gas = await self._ethRPCClient.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
         getABIEncodedTransactionData(
@@ -1252,9 +1252,9 @@ export class DummyERC721TokenContract extends BaseContract {
                     ...callData,
                     data: encodedData,
                 },
-                self._web3Wrapper.getContractDefaults(),
+                self._ethRPCClient.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             let resultArray = ethersFunction.decode(rawCallResult);
             const outputAbi = (_.find(self.abi, {name: 'transferOwnership'}) as MethodAbi).outputs;
@@ -1302,15 +1302,15 @@ _symbol
         const txData = deployInfo.encode(bytecode, [_name,
 _symbol
 ]);
-        const web3Wrapper = new Web3Wrapper(provider);
+        const ethRPCClient = new EthRPCClient(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {data: txData},
             txDefaults,
-            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
+            ethRPCClient.estimateGasAsync.bind(ethRPCClient),
         );
-        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        const txHash = await ethRPCClient.sendTransactionAsync(txDataWithDefaults);
         logUtils.log(`transactionHash: ${txHash}`);
-        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+        const txReceipt = await ethRPCClient.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`DummyERC721Token successfully deployed at ${txReceipt.contractAddress}`);
         const contractInstance = new DummyERC721TokenContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [_name,
@@ -1320,7 +1320,7 @@ _symbol
     }
     constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
         super('DummyERC721Token', abi, address, provider, txDefaults);
-        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
+        classUtils.bindAll(this, ['_ethersInterfacesByFunctionSignature', 'address', 'abi', '_ethRPCClient']);
     }
 } // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method

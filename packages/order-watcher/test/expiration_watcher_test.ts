@@ -14,11 +14,11 @@ import { utils } from '../src/utils/utils';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 const MILISECONDS_IN_SECOND = 1000;
 
 describe('ExpirationWatcher', () => {
@@ -37,7 +37,7 @@ describe('ExpirationWatcher', () => {
     before(async () => {
         const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await ethRPCClient.getAvailableAddressesAsync();
         fillScenarios = new FillScenarios(
             provider,
             userAddresses,

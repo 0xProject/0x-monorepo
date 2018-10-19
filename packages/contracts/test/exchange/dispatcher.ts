@@ -20,11 +20,11 @@ import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { LogDecoder } from '../utils/log_decoder';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 // tslint:disable:no-unnecessary-type-assertion
 describe('AssetProxyDispatcher', () => {
     let owner: string;
@@ -48,7 +48,7 @@ describe('AssetProxyDispatcher', () => {
     });
     before(async () => {
         // Setup accounts & addresses
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         const usedAddresses = ([owner, notOwner, makerAddress, takerAddress] = _.slice(accounts, 0, 4));
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
@@ -66,13 +66,13 @@ describe('AssetProxyDispatcher', () => {
             provider,
             txDefaults,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
                 from: owner,
             }),
@@ -87,7 +87,7 @@ describe('AssetProxyDispatcher', () => {
     });
     describe('registerAssetProxy', () => {
         it('should record proxy upon registration', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -97,14 +97,14 @@ describe('AssetProxyDispatcher', () => {
 
         it('should be able to record multiple proxies', async () => {
             // Record first proxy
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             let proxyAddress = await assetProxyDispatcher.getAssetProxy.callAsync(AssetProxyId.ERC20);
             expect(proxyAddress).to.be.equal(erc20Proxy.address);
             // Record another proxy
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc721Proxy.address, {
                     from: owner,
                 }),
@@ -116,7 +116,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should throw if a proxy with the same id is already registered', async () => {
             // Initial registration
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -145,7 +145,7 @@ describe('AssetProxyDispatcher', () => {
         });
 
         it('should log an event with correct arguments when an asset proxy is registered', async () => {
-            const logDecoder = new LogDecoder(web3Wrapper);
+            const logDecoder = new LogDecoder(ethRPCClient);
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
             );
@@ -158,7 +158,7 @@ describe('AssetProxyDispatcher', () => {
 
     describe('getAssetProxy', () => {
         it('should return correct address of registered proxy', async () => {
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -175,7 +175,7 @@ describe('AssetProxyDispatcher', () => {
     describe('dispatchTransferFrom', () => {
         it('should dispatch transfer to registered proxy', async () => {
             // Register ERC20 proxy
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -185,7 +185,7 @@ describe('AssetProxyDispatcher', () => {
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
                     encodedAssetData,
                     makerAddress,
@@ -207,7 +207,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should not dispatch a transfer if amount == 0', async () => {
             // Register ERC20 proxy
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -217,7 +217,7 @@ describe('AssetProxyDispatcher', () => {
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = constants.ZERO_AMOUNT;
-            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
+            const txReceipt = await ethRPCClient.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
                     encodedAssetData,
                     makerAddress,
@@ -234,7 +234,7 @@ describe('AssetProxyDispatcher', () => {
 
         it('should not dispatch a transfer if from == to', async () => {
             // Register ERC20 proxy
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -244,7 +244,7 @@ describe('AssetProxyDispatcher', () => {
             // Perform a transfer from makerAddress to takerAddress
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const amount = new BigNumber(10);
-            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
+            const txReceipt = await ethRPCClient.awaitTransactionSuccessAsync(
                 await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
                     encodedAssetData,
                     makerAddress,

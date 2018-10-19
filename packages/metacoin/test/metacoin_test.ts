@@ -10,13 +10,13 @@ import { chaiSetup } from './utils/chai_setup';
 import { config } from './utils/config';
 // Comment out the next line enable profiling
 // import { profiler } from './utils/profiler';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 const artifact: ContractArtifact = MetacoinArtifact as any;
 
 chaiSetup.configure();
 const { expect } = chai;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 // tslint:disable:no-unnecessary-type-assertion
 describe('Metacoin', () => {
     let metacoin: MetacoinContract;
@@ -24,7 +24,7 @@ describe('Metacoin', () => {
     const INITIAL_BALANCE = new BigNumber(10000);
     before(async () => {
         metacoin = await MetacoinContract.deployFrom0xArtifactAsync(artifact, provider, config.txDefaults);
-        web3Wrapper.abiDecoder.addABI(metacoin.abi);
+        ethRPCClient.abiDecoder.addABI(metacoin.abi);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -53,7 +53,7 @@ describe('Metacoin', () => {
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
             // profiler.stop();
-            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            const txReceipt = await ethRPCClient.awaitTransactionSuccessAsync(txHash);
             const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<MetacoinTransferEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,
@@ -78,7 +78,7 @@ describe('Metacoin', () => {
                 callback,
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
-            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            const txReceipt = await ethRPCClient.awaitTransactionSuccessAsync(txHash);
             const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<MetacoinTransferEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,
@@ -105,7 +105,7 @@ describe('Metacoin', () => {
                 },
                 { from: devConstants.TESTRPC_FIRST_ADDRESS },
             );
-            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            const txReceipt = await ethRPCClient.awaitTransactionSuccessAsync(txHash);
             const transferLogs = txReceipt.logs[0] as LogWithDecodedArgs<MetacoinTransferEventArgs>;
             expect(transferLogs.args).to.be.deep.equal({
                 _to: ZERO_ADDRESS,

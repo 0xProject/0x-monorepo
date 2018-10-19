@@ -33,8 +33,8 @@
         "@0x/abi-gen": "^1.0.16",
         "@0x/tslint-config": "^1.0.10",
         "@0x/utils": "^2.0.5",
-        "@0x/web3-wrapper": "^3.1.4",
         "ethereum-types": "^1.1.2",
+        "@0x/eth-rpc-client": "^3.1.0",
         "ethers": "~4.0.4",
         "lodash": "^4.17.5",
         "shx": "^0.2.2"

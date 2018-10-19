@@ -1,4 +1,4 @@
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import 'mocha';
 
@@ -8,18 +8,18 @@ const expect = chai.expect;
 
 describe('BlockchainLifecycle tests', () => {
     const provider = web3Factory.getRpcProvider({ shouldUseInProcessGanache: true });
-    const web3Wrapper = new Web3Wrapper(provider);
-    const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+    const ethRPCClient = new EthRPCClient(provider);
+    const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
     describe('#startAsync/revertAsync', () => {
         it('reverts changes in between', async () => {
-            const blockNumberBefore = await web3Wrapper.getBlockNumberAsync();
+            const blockNumberBefore = await ethRPCClient.getBlockNumberAsync();
             await blockchainLifecycle.startAsync();
-            await web3Wrapper.mineBlockAsync();
-            const blockNumberAfter = await web3Wrapper.getBlockNumberAsync();
+            await ethRPCClient.mineBlockAsync();
+            const blockNumberAfter = await ethRPCClient.getBlockNumberAsync();
             // tslint:disable-next-line:restrict-plus-operands
             expect(blockNumberAfter).to.be.equal(blockNumberBefore + 1);
             await blockchainLifecycle.revertAsync();
-            const blockNumberAfterRevert = await web3Wrapper.getBlockNumberAsync();
+            const blockNumberAfterRevert = await ethRPCClient.getBlockNumberAsync();
             expect(blockNumberAfterRevert).to.be.equal(blockNumberBefore);
         });
     });

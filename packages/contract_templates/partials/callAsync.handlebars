@@ -16,9 +16,9 @@ async callAsync(
             ...callData,
             data: encodedData,
         },
-        self._web3Wrapper.getContractDefaults(),
+        self._ethRPCClient.getContractDefaults(),
     );
-    const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+    const rawCallResult = await self._ethRPCClient.callAsync(callDataWithDefaults, defaultBlock);
     BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
     let resultArray = ethersFunction.decode(rawCallResult);
     const outputAbi = (_.find(self.abi, {name: '{{this.name}}'}) as MethodAbi).outputs;

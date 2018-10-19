@@ -1,5 +1,5 @@
 import { AbiDecoder, intervalUtils, logUtils } from '@0x/utils';
-import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
+import { marshaller, EthRPCClient } from '@0x/eth-rpc-client';
 import {
     BlockParamLiteral,
     ContractAbi,
@@ -26,7 +26,7 @@ import { filterUtils } from '../utils/filter_utils';
 export abstract class ContractWrapper {
     public abstract abi: ContractAbi;
     protected _networkId: number;
-    protected _web3Wrapper: Web3Wrapper;
+    protected _ethRPCClient: EthRPCClient;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
     private readonly _blockPollingIntervalMs: number;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
@@ -43,8 +43,8 @@ export abstract class ContractWrapper {
             logUtils.warn(err);
         }
     }
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, blockPollingIntervalMs?: number) {
-        this._web3Wrapper = web3Wrapper;
+    constructor(ethRPCClient: EthRPCClient, networkId: number, blockPollingIntervalMs?: number) {
+        this._ethRPCClient = ethRPCClient;
         this._networkId = networkId;
         this._blockPollingIntervalMs = _.isUndefined(blockPollingIntervalMs)
             ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
@@ -100,7 +100,7 @@ export abstract class ContractWrapper {
         abi: ContractAbi,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi, blockRange);
-        const logs = await this._web3Wrapper.getLogsAsync(filter);
+        const logs = await this._ethRPCClient.getLogsAsync(filter);
         const logsWithDecodedArguments = _.map(logs, this._tryToDecodeLogOrNoop.bind(this));
         return logsWithDecodedArguments;
     }
@@ -152,7 +152,7 @@ export abstract class ContractWrapper {
     // This method only exists in order to comply with the expected interface of Blockstream's constructor
     private async _blockstreamGetBlockOrNullAsync(hash: string): Promise<Block | null> {
         const shouldIncludeTransactionData = false;
-        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync<Block | null>({
+        const blockOrNull = await this._ethRPCClient.sendRawPayloadAsync<Block | null>({
             method: 'eth_getBlockByHash',
             params: [hash, shouldIncludeTransactionData],
         });
@@ -161,7 +161,7 @@ export abstract class ContractWrapper {
     // This method only exists in order to comply with the expected interface of Blockstream's constructor
     private async _blockstreamGetLatestBlockOrNullAsync(): Promise<Block | null> {
         const shouldIncludeTransactionData = false;
-        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync<Block | null>({
+        const blockOrNull = await this._ethRPCClient.sendRawPayloadAsync<Block | null>({
             method: 'eth_getBlockByNumber',
             params: [BlockParamLiteral.Latest, shouldIncludeTransactionData],
         });
@@ -169,7 +169,7 @@ export abstract class ContractWrapper {
     }
     // This method only exists in order to comply with the expected interface of Blockstream's constructor
     private async _blockstreamGetLogsAsync(filterOptions: FilterObject): Promise<RawLogEntry[]> {
-        const logs = await this._web3Wrapper.sendRawPayloadAsync<RawLogEntry[]>({
+        const logs = await this._ethRPCClient.sendRawPayloadAsync<RawLogEntry[]>({
             method: 'eth_getLogs',
             params: [filterOptions],
         });

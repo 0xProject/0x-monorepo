@@ -4,7 +4,7 @@ import { runMigrationsAsync } from '@0x/migrations';
 import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import 'mocha';
 
@@ -29,7 +29,7 @@ describe('Revert Validation ExchangeWrapper', () => {
     let takerAssetData: string;
     let txHash: string;
     let blockchainLifecycle: BlockchainLifecycle;
-    let web3Wrapper: Web3Wrapper;
+    let ethRPCClient: EthRPCClient;
     const fillableAmount = new BigNumber(5);
     const takerTokenFillAmount = new BigNumber(5);
     let signedOrder: SignedOrder;
@@ -41,8 +41,8 @@ describe('Revert Validation ExchangeWrapper', () => {
             shouldUseInProcessGanache: true,
             shouldThrowErrorsOnGanacheRPCResponse: false,
         });
-        web3Wrapper = new Web3Wrapper(provider);
-        blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+        ethRPCClient = new EthRPCClient(provider);
+        blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
         // Re-deploy the artifacts in this provider, rather than in the default provider exposed in
         // the beforeAll hook. This is due to the fact that the default provider enabled vmErrorsOnRPCResponse
         // and we are explicity testing with vmErrorsOnRPCResponse disabled.
@@ -58,7 +58,7 @@ describe('Revert Validation ExchangeWrapper', () => {
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await ethRPCClient.getAvailableAddressesAsync();
         fillScenarios = new FillScenarios(
             provider,
             userAddresses,
@@ -104,7 +104,7 @@ describe('Revert Validation ExchangeWrapper', () => {
                 takerAddress,
                 makerTokenBalance,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             return expect(
                 contractWrappers.exchange.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress, {
                     shouldValidate: true,

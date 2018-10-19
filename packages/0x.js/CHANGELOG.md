@@ -170,7 +170,7 @@ CHANGELOG
 
 ## v0.35.0 - _April 2, 2018_
 
-    * Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/web3-wrapper' `Web3WrapperErrors.TransactionMiningTimeout` (#485)
+    * Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/eth-rpc-client' `EthRPCClientErrors.TransactionMiningTimeout` (#485)
 
 ## v0.34.0 - _April 2, 2018_
 

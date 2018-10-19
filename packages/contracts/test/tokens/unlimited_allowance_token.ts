@@ -8,11 +8,11 @@ import { artifacts } from '../../src/artifacts';
 import { expectContractCallFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('UnlimitedAllowanceToken', () => {
     let owner: string;
@@ -27,7 +27,7 @@ describe('UnlimitedAllowanceToken', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
         token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
@@ -39,7 +39,7 @@ describe('UnlimitedAllowanceToken', () => {
             constants.DUMMY_TOKEN_DECIMALS,
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await token.mint.sendTransactionAsync(MAX_MINT_VALUE, { from: owner }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
@@ -64,7 +64,7 @@ describe('UnlimitedAllowanceToken', () => {
             const receiver = spender;
             const initOwnerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = new BigNumber(1);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await token.transfer.sendTransactionAsync(receiver, amountToTransfer, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -89,7 +89,7 @@ describe('UnlimitedAllowanceToken', () => {
         it('should throw if owner has insufficient balance', async () => {
             const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance.plus(1);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await token.approve.sendTransactionAsync(spender, amountToTransfer, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
@@ -129,11 +129,11 @@ describe('UnlimitedAllowanceToken', () => {
             const initOwnerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await token.approve.sendTransactionAsync(spender, initSpenderAllowance, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await token.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
@@ -149,11 +149,11 @@ describe('UnlimitedAllowanceToken', () => {
             const initOwnerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await token.approve.sendTransactionAsync(spender, initSpenderAllowance, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await token.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,
@@ -172,11 +172,11 @@ describe('UnlimitedAllowanceToken', () => {
             const initOwnerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = initOwnerBalance;
             const initSpenderAllowance = initOwnerBalance;
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await token.approve.sendTransactionAsync(spender, initSpenderAllowance, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await token.transferFrom.sendTransactionAsync(owner, spender, amountToTransfer, {
                     from: spender,
                     gas: constants.MAX_TOKEN_TRANSFERFROM_GAS,

@@ -1,5 +1,5 @@
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 
 import { ETH_DECIMALS } from '../../src/constants';
 import { format } from '../../src/util/format';
@@ -7,9 +7,9 @@ import { format } from '../../src/util/format';
 const BIG_NUMBER_ONE = new BigNumber(1);
 const BIG_NUMBER_DECIMAL = new BigNumber(0.432414);
 const BIG_NUMBER_IRRATIONAL = new BigNumber(5.3014059295032);
-const ONE_ETH_IN_BASE_UNITS = Web3Wrapper.toBaseUnitAmount(BIG_NUMBER_ONE, ETH_DECIMALS);
-const DECIMAL_ETH_IN_BASE_UNITS = Web3Wrapper.toBaseUnitAmount(BIG_NUMBER_DECIMAL, ETH_DECIMALS);
-const IRRATIONAL_ETH_IN_BASE_UNITS = Web3Wrapper.toBaseUnitAmount(BIG_NUMBER_IRRATIONAL, ETH_DECIMALS);
+const ONE_ETH_IN_BASE_UNITS = EthRPCClient.toBaseUnitAmount(BIG_NUMBER_ONE, ETH_DECIMALS);
+const DECIMAL_ETH_IN_BASE_UNITS = EthRPCClient.toBaseUnitAmount(BIG_NUMBER_DECIMAL, ETH_DECIMALS);
+const IRRATIONAL_ETH_IN_BASE_UNITS = EthRPCClient.toBaseUnitAmount(BIG_NUMBER_IRRATIONAL, ETH_DECIMALS);
 const BIG_NUMBER_FAKE_ETH_USD_PRICE = new BigNumber(2.534);
 
 describe('format', () => {

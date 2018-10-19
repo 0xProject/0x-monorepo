@@ -1,5 +1,5 @@
 import { abiUtils, BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import {
     AbiDefinition,
     AbiType,
@@ -27,7 +27,7 @@ const REVERT_ERROR_SELECTOR_END = REVERT_ERROR_SELECTOR_OFFSET + REVERT_ERROR_SE
 
 export class BaseContract {
     protected _ethersInterfacesByFunctionSignature: EthersInterfaceByFunctionSignature;
-    protected _web3Wrapper: Web3Wrapper;
+    protected _ethRPCClient: EthRPCClient;
     public abi: ContractAbi;
     public address: string;
     public contractName: string;
@@ -146,7 +146,7 @@ export class BaseContract {
         txDefaults?: Partial<TxData>,
     ) {
         this.contractName = contractName;
-        this._web3Wrapper = new Web3Wrapper(provider, txDefaults);
+        this._ethRPCClient = new EthRPCClient(provider, txDefaults);
         this.abi = abi;
         this.address = address;
         const methodAbis = this.abi.filter(

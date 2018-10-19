@@ -1,4 +1,4 @@
-import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
+import { marshaller, EthRPCClient } from '@0x/eth-rpc-client';
 import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
 
 import { Callback, ErrorCallback } from '../types';
@@ -12,14 +12,14 @@ import { Subprovider } from './subprovider';
  * are passed onwards for subsequent subproviders to handle.
  */
 export class SignerSubprovider extends Subprovider {
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     /**
      * Instantiates a new SignerSubprovider.
      * @param provider Web3 provider that should handle  all user account related requests
      */
     constructor(provider: Provider) {
         super();
-        this._web3Wrapper = new Web3Wrapper(provider);
+        this._ethRPCClient = new EthRPCClient(provider);
     }
     /**
      * This method conforms to the web3-provider-engine interface.
@@ -36,7 +36,7 @@ export class SignerSubprovider extends Subprovider {
         switch (payload.method) {
             case 'web3_clientVersion':
                 try {
-                    const nodeVersion = await this._web3Wrapper.getNodeVersionAsync();
+                    const nodeVersion = await this._ethRPCClient.getNodeVersionAsync();
                     end(null, nodeVersion);
                 } catch (err) {
                     end(err);
@@ -44,7 +44,7 @@ export class SignerSubprovider extends Subprovider {
                 return;
             case 'eth_accounts':
                 try {
-                    const accounts = await this._web3Wrapper.getAvailableAddressesAsync();
+                    const accounts = await this._ethRPCClient.getAvailableAddressesAsync();
                     end(null, accounts);
                 } catch (err) {
                     end(err);
@@ -54,7 +54,7 @@ export class SignerSubprovider extends Subprovider {
                 const [txParams] = payload.params;
                 try {
                     const txData = marshaller.unmarshalTxData(txParams);
-                    const txHash = await this._web3Wrapper.sendTransactionAsync(txData);
+                    const txHash = await this._ethRPCClient.sendTransactionAsync(txData);
                     end(null, txHash);
                 } catch (err) {
                     end(err);
@@ -63,7 +63,7 @@ export class SignerSubprovider extends Subprovider {
             case 'eth_sign':
                 [address, message] = payload.params;
                 try {
-                    const signature = await this._web3Wrapper.signMessageAsync(address, message);
+                    const signature = await this._ethRPCClient.signMessageAsync(address, message);
                     end(null, signature);
                 } catch (err) {
                     end(err);
@@ -72,7 +72,7 @@ export class SignerSubprovider extends Subprovider {
             case 'eth_signTypedData':
                 [address, message] = payload.params;
                 try {
-                    const signature = await this._web3Wrapper.signTypedDataAsync(address, message);
+                    const signature = await this._ethRPCClient.signTypedDataAsync(address, message);
                     end(null, signature);
                 } catch (err) {
                     end(err);

@@ -17,10 +17,10 @@ import {
     TakerAssetFillAmountScenario,
     TakerScenario,
 } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 const defaultFillScenario = {
     orderScenario: {
@@ -54,7 +54,7 @@ describe('FillOrder Tests', () => {
 
     before(async () => {
         await blockchainLifecycle.startAsync();
-        fillOrderCombinatorialUtils = await fillOrderCombinatorialUtilsFactoryAsync(web3Wrapper, txDefaults);
+        fillOrderCombinatorialUtils = await fillOrderCombinatorialUtilsFactoryAsync(ethRPCClient, txDefaults);
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();

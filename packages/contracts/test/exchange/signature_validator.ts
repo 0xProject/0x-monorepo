@@ -19,12 +19,12 @@ import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { LogDecoder } from '../utils/log_decoder';
 import { OrderFactory } from '../utils/order_factory';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 // tslint:disable:no-unnecessary-type-assertion
 describe('MixinSignatureValidator', () => {
     let signedOrder: SignedOrder;
@@ -47,7 +47,7 @@ describe('MixinSignatureValidator', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
         signerAddress = makerAddress;
         notSignerAddress = accounts[1];
@@ -73,14 +73,14 @@ describe('MixinSignatureValidator', () => {
             provider,
             txDefaults,
         );
-        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper);
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        signatureValidatorLogDecoder = new LogDecoder(ethRPCClient);
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
                 from: signerAddress,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
                 maliciousValidator.address,
                 true,
@@ -386,7 +386,7 @@ describe('MixinSignatureValidator', () => {
         });
         it('should return false when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
                     testValidator.address,
                     false,
@@ -411,7 +411,7 @@ describe('MixinSignatureValidator', () => {
         it('should return true when SignatureType=Presigned and signer has presigned hash', async () => {
             // Presign hash
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await signatureValidator.preSign.sendTransactionAsync(
                     orderHashHex,
                     signedOrder.makerAddress,

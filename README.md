@@ -52,7 +52,7 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 | [`@0x/types`](/packages/types)                           | [![npm](https://img.shields.io/npm/v/@0x/types.svg)](https://www.npmjs.com/package/@0x/types)                           | Shared type declarations                                                                                                 |
 | [`@0x/typescript-typings`](/packages/typescript-typings) | [![npm](https://img.shields.io/npm/v/@0x/typescript-typings.svg)](https://www.npmjs.com/package/@0x/typescript-typings) | Repository of types for external packages                                                                                |
 | [`@0x/utils`](/packages/utils)                           | [![npm](https://img.shields.io/npm/v/@0x/utils.svg)](https://www.npmjs.com/package/@0x/utils)                           | Shared utilities                                                                                                         |
-| [`@0x/web3-wrapper`](/packages/web3-wrapper)             | [![npm](https://img.shields.io/npm/v/@0x/web3-wrapper.svg)](https://www.npmjs.com/package/@0x/web3-wrapper)             | Web3 wrapper                                                                                                             |
+| [`@0x/eth-rpc-client`](/packages/eth-rpc-client)         | [![npm](https://img.shields.io/npm/v/@0x/eth-rpc-client.svg)](https://www.npmjs.com/package/@0x/eth-rpc-client)         | Web3 wrapper                                                                                                             |
 
 #### Python
 
@@ -78,7 +78,7 @@ Dedicated documentation pages:
 *   [Smart contracts](https://0xproject.com/docs/contracts)
 *   [Subproviders](https://0xproject.com/docs/subproviders)
 *   [Sol Compiler](https://0xproject.com/docs/sol-compiler)
-*   [Web3-wrapper](https://0xproject.com/docs/web3-wrapper)
+*   [Eth RPC Client](https://0xproject.com/docs/eth-rpc-client)
 *   [JSON-schemas](https://0xproject.com/docs/json-schemas)
 *   [Sol-cov](https://0xproject.com/docs/sol-cov)
 *   [Standard Relayer API](https://github.com/0xProject/standard-relayer-api/blob/master/README.md)
@@ -123,7 +123,7 @@ yarn build
 To build a specific package:
 
 ```bash
-PKG=@0x/web3-wrapper yarn build
+PKG=@0x/eth-rpc-client yarn build
 ```
 
 ### Watch
@@ -140,7 +140,7 @@ To watch a specific package and all it's dependent packages:
 PKG=[NPM_PACKAGE_NAME] yarn watch
 
 e.g
-PKG=@0x/web3-wrapper yarn watch
+PKG=@0x/eth-rpc-client yarn watch
 ```
 
 ### Clean
@@ -196,5 +196,5 @@ yarn test
 Run a specific package's test:
 
 ```bash
-PKG=@0x/web3-wrapper yarn test
+PKG=@0x/eth-rpc-client yarn test
 ```

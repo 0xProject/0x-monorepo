@@ -1,5 +1,5 @@
 import { AbiDecoder, BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import {
     AbiDefinition,
     ContractArtifact,
@@ -16,7 +16,7 @@ import { artifacts } from '../../src/artifacts';
 import { constants } from './constants';
 
 export class LogDecoder {
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     private readonly _abiDecoder: AbiDecoder;
     public static wrapLogBigNumbers(log: any): any {
         const argNames = _.keys(log.args);
@@ -27,8 +27,8 @@ export class LogDecoder {
             }
         }
     }
-    constructor(web3Wrapper: Web3Wrapper) {
-        this._web3Wrapper = web3Wrapper;
+    constructor(ethRPCClient: EthRPCClient) {
+        this._ethRPCClient = ethRPCClient;
         const abiArrays: AbiDefinition[][] = [];
         _.forEach(artifacts, (artifact: ContractArtifact) => {
             const compilerOutput = artifact.compilerOutput;
@@ -46,7 +46,7 @@ export class LogDecoder {
         return logWithDecodedArgsOrLog;
     }
     public async getTxWithDecodedLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const tx = await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+        const tx = await this._ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         tx.logs = _.map(tx.logs, log => this.decodeLogOrThrow(log));
         return tx;
     }

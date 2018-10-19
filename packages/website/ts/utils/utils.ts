@@ -3,7 +3,7 @@ import { assetDataUtils, OrderError } from '@0x/order-utils';
 import { constants as sharedConstants, Networks } from '@0x/react-shared';
 import { ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as bowser from 'bowser';
 import deepEqual from 'deep-equal';
 import * as _ from 'lodash';
@@ -383,7 +383,7 @@ export const utils = {
         return formattedAmount;
     },
     getFormattedAmount(amount: BigNumber, decimals: number): string {
-        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+        const unitAmount = EthRPCClient.toUnitAmount(amount, decimals);
         // if the unit amount is less than 1, show the natural number of decimal places with a max of 4
         // if the unit amount is greater than or equal to 1, show only 2 decimal places
         const lessThanOnePrecision = Math.min(constants.TOKEN_AMOUNT_DISPLAY_PRECISION, unitAmount.decimalPlaces());
@@ -393,7 +393,7 @@ export const utils = {
         return utils.format(unitAmount, format);
     },
     getUsdValueFormattedAmount(amount: BigNumber, decimals: number, price: BigNumber): string {
-        const unitAmount = Web3Wrapper.toUnitAmount(amount, decimals);
+        const unitAmount = EthRPCClient.toUnitAmount(amount, decimals);
         const value = unitAmount.mul(price);
         return utils.format(value, constants.NUMERAL_USD_FORMAT);
     },

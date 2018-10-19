@@ -71,7 +71,7 @@
     "CONNECT": "0x Connect",
     "WHITEPAPER": "whitepaper",
     "WIKI": "wiki",
-    "WEB3_WRAPPER": "Web3Wrapper",
+    "WEB3_WRAPPER": "EthRPCClient",
     "ORDER_UTILS": "Order Utils",
     "ASSET_BUYER": "AssetBuyer",
     "FAQ": "FAQ",

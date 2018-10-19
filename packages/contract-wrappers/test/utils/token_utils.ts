@@ -3,7 +3,7 @@ import { DummyERC721Token } from '@0x/contract-artifacts';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
-import { provider, txDefaults, web3Wrapper } from './web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from './web3_wrapper';
 
 // Those addresses come from migrations. They're deterministic so it's relatively safe to hard-code them here.
 // Before we were fetching them from the TokenRegistry but now we can't as it's deprecated and removed.
@@ -29,7 +29,7 @@ export const tokenUtils = {
         const erc721 = new DummyERC721TokenContract(DummyERC721Token.compilerOutput.abi, address, provider, txDefaults);
         const tokenId = generatePseudoRandomSalt();
         const txHash = await erc721.mint.sendTransactionAsync(tokenOwner, tokenId);
-        web3Wrapper.awaitTransactionSuccessAsync(txHash);
+        ethRPCClient.awaitTransactionSuccessAsync(txHash);
         return tokenId;
     },
 };

@@ -126,13 +126,13 @@ CHANGELOG
 ## v0.3.1 - _March 17, 2018_
 
     * Reduce npm package size by adding an `.npmignore` file.
-    * Move `@0xproject/web3-wrapper` to dependencies from devDependencies.
+    * Move `@0xproject/eth-rpc-client` to dependencies from devDependencies.
 
 ## v0.3.0 - _March 17, 2018_
 
     * Add coverage subprovider if SOLIDITY_COVERAGE env variable is true (#426)
     * Refactor `BlockchainLifecycle` to work with in-process ganache (#426)
-    * Remove `RPC` class and move it's logic to `Web3Wrapper` (#426)
+    * Remove `RPC` class and move it's logic to `EthRPCClient` (#426)
 
 ## v0.2.0 - _February 15, 2018_
 

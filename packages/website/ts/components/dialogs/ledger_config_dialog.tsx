@@ -1,6 +1,6 @@
 import { colors, constants as sharedConstants } from '@0x/react-shared';
 import { BigNumber, logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -171,7 +171,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             // We specifically prefix kovan ETH.
             // TODO: We should probably add prefixes for all networks
             const isKovanNetwork = networkName === 'Kovan';
-            const balanceInEth = Web3Wrapper.toUnitAmount(balanceInWei, constants.DECIMAL_PLACES_ETH);
+            const balanceInEth = EthRPCClient.toUnitAmount(balanceInWei, constants.DECIMAL_PLACES_ETH);
             const balanceString = `${balanceInEth.toString()} ${isKovanNetwork ? 'Kovan ' : ''}ETH`;
             return (
                 <TableRow key={userAddress} style={{ height: 40 }}>
@@ -205,7 +205,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         const selectedAddress = this.state.userAddresses[selectedRowIndex];
         const selectAddressBalance = this.state.addressBalances[selectedRowIndex];
         this.props.dispatcher.updateUserAddress(selectedAddress);
-        this.props.blockchain.updateWeb3WrapperPrevUserAddress(selectedAddress);
+        this.props.blockchain.updateEthRPCClientPrevUserAddress(selectedAddress);
         // tslint:disable-next-line:no-floating-promises
         this.props.blockchain.fetchTokenInformationAsync();
         this.props.dispatcher.updateUserWeiBalance(selectAddressBalance);

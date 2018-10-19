@@ -2,7 +2,7 @@ import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
@@ -22,11 +22,11 @@ import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { OrderFactory } from '../utils/order_factory';
 import { ERC20BalancesByOwner, OrderStatus } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('Exchange wrappers', () => {
     let makerAddress: string;
@@ -62,7 +62,7 @@ describe('Exchange wrappers', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = _.slice(accounts, 0, 4));
 
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
@@ -93,13 +93,13 @@ describe('Exchange wrappers', () => {
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
                 from: owner,
             }),
@@ -142,7 +142,7 @@ describe('Exchange wrappers', () => {
                     const signedOrder = await orderFactory.newSignedOrderAsync({
                         makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
-                    await web3Wrapper.awaitTransactionSuccessAsync(
+                    await ethRPCClient.awaitTransactionSuccessAsync(
                         await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
@@ -157,8 +157,8 @@ describe('Exchange wrappers', () => {
 
         it('should transfer the correct amounts', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(200), 18),
             });
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
             await exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress, {
@@ -233,7 +233,7 @@ describe('Exchange wrappers', () => {
                     const signedOrder = await orderFactory.newSignedOrderAsync({
                         makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
-                    await web3Wrapper.awaitTransactionSuccessAsync(
+                    await ethRPCClient.awaitTransactionSuccessAsync(
                         await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
@@ -247,8 +247,8 @@ describe('Exchange wrappers', () => {
 
         it('should transfer the correct amounts', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(200), 18),
             });
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
 
@@ -296,7 +296,7 @@ describe('Exchange wrappers', () => {
 
         it('should not change erc20Balances if maker erc20Balances are too low to fill order', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18),
+                makerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100000), 18),
             });
 
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
@@ -306,7 +306,7 @@ describe('Exchange wrappers', () => {
 
         it('should not change erc20Balances if taker erc20Balances are too low to fill order', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
-                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18),
+                takerAssetAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(100000), 18),
             });
 
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
@@ -316,14 +316,14 @@ describe('Exchange wrappers', () => {
 
         it('should not change erc20Balances if maker allowances are too low to fill order', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync();
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
                     from: makerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
                     from: makerAddress,
                 }),
@@ -336,14 +336,14 @@ describe('Exchange wrappers', () => {
 
         it('should not change erc20Balances if taker allowances are too low to fill order', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync();
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
                     from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
-            await web3Wrapper.awaitTransactionSuccessAsync(
+            await ethRPCClient.awaitTransactionSuccessAsync(
                 await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
                     from: takerAddress,
                 }),
@@ -452,7 +452,7 @@ describe('Exchange wrappers', () => {
                         const signedOrder = await orderFactory.newSignedOrderAsync({
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
+                        await ethRPCClient.awaitTransactionSuccessAsync(
                             await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
@@ -521,7 +521,7 @@ describe('Exchange wrappers', () => {
                         const signedOrder = await orderFactory.newSignedOrderAsync({
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
+                        await ethRPCClient.awaitTransactionSuccessAsync(
                             await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
@@ -607,7 +607,7 @@ describe('Exchange wrappers', () => {
                         const signedOrder = await orderFactory.newSignedOrderAsync({
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
+                        await ethRPCClient.awaitTransactionSuccessAsync(
                             await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
@@ -739,7 +739,7 @@ describe('Exchange wrappers', () => {
                         const signedOrder = await orderFactory.newSignedOrderAsync({
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
+                        await ethRPCClient.awaitTransactionSuccessAsync(
                             await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
@@ -793,7 +793,7 @@ describe('Exchange wrappers', () => {
             });
 
             it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
-                const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const takerAssetFillAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
                         defaultMakerAssetAddress
@@ -836,7 +836,7 @@ describe('Exchange wrappers', () => {
 
                 return expectTransactionFailedAsync(
                     exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
-                        takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
+                        takerAssetFillAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
                     // We simply use the takerAssetData from the first order for all orders.
                     // If they are not the same, the contract throws when validating the order signature
@@ -853,7 +853,7 @@ describe('Exchange wrappers', () => {
                         const signedOrder = await orderFactory.newSignedOrderAsync({
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
+                        await ethRPCClient.awaitTransactionSuccessAsync(
                             await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
@@ -910,7 +910,7 @@ describe('Exchange wrappers', () => {
             });
 
             it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
-                const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const takerAssetFillAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
                         defaultMakerAssetAddress
@@ -954,7 +954,7 @@ describe('Exchange wrappers', () => {
                         takerAssetData: assetDataUtils.encodeERC20AssetData(zrxToken.address),
                     }),
                 ];
-                const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const takerAssetFillAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(100000), 18);
                 const filledSignedOrders = signedOrders.slice(0, -1);
                 _.forEach(filledSignedOrders, signedOrder => {
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
@@ -1000,7 +1000,7 @@ describe('Exchange wrappers', () => {
                         const signedOrder = await orderFactory.newSignedOrderAsync({
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
+                        await ethRPCClient.awaitTransactionSuccessAsync(
                             await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
@@ -1054,7 +1054,7 @@ describe('Exchange wrappers', () => {
             });
 
             it('should fill all signedOrders if cannot fill entire makerAssetFillAmount', async () => {
-                const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const makerAssetFillAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
                         defaultMakerAssetAddress
@@ -1097,7 +1097,7 @@ describe('Exchange wrappers', () => {
 
                 return expectTransactionFailedAsync(
                     exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
-                        makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
+                        makerAssetFillAmount: EthRPCClient.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
                     RevertReason.InvalidOrderSignature,
                 );
@@ -1112,7 +1112,7 @@ describe('Exchange wrappers', () => {
                         const signedOrder = await orderFactory.newSignedOrderAsync({
                             makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                         });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
+                        await ethRPCClient.awaitTransactionSuccessAsync(
                             await reentrantErc20Token.setCurrentFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
@@ -1169,7 +1169,7 @@ describe('Exchange wrappers', () => {
             });
 
             it('should fill all signedOrders if cannot fill entire makerAssetFillAmount', async () => {
-                const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const makerAssetFillAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
                         defaultMakerAssetAddress
@@ -1214,7 +1214,7 @@ describe('Exchange wrappers', () => {
                     }),
                 ];
 
-                const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const makerAssetFillAmount = EthRPCClient.toBaseUnitAmount(new BigNumber(100000), 18);
                 const filledSignedOrders = signedOrders.slice(0, -1);
                 _.forEach(filledSignedOrders, signedOrder => {
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][

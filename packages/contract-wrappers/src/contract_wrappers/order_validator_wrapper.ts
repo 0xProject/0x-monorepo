@@ -3,7 +3,7 @@ import { OrderValidator } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -22,13 +22,13 @@ export class OrderValidatorWrapper extends ContractWrapper {
     private _orderValidatorContractIfExists?: OrderValidatorContract;
     /**
      * Instantiate OrderValidatorWrapper
-     * @param web3Wrapper Web3Wrapper instance to use.
+     * @param ethRPCClient EthRPCClient instance to use.
      * @param networkId Desired networkId.
      * @param address The address of the OrderValidator contract. If undefined,
      * will default to the known address corresponding to the networkId.
      */
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
-        super(web3Wrapper, networkId);
+    constructor(ethRPCClient: EthRPCClient, networkId: number, address?: string) {
+        super(ethRPCClient, networkId);
         this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
     }
     /**
@@ -176,8 +176,8 @@ export class OrderValidatorWrapper extends ContractWrapper {
         const contractInstance = new OrderValidatorContract(
             this.abi,
             this.address,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
+            this._ethRPCClient.getProvider(),
+            this._ethRPCClient.getContractDefaults(),
         );
         this._orderValidatorContractIfExists = contractInstance;
         return this._orderValidatorContractIfExists;

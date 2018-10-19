@@ -419,7 +419,7 @@
         "changes": [
             {
                 "note":
-                    "Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/web3-wrapper' `Web3WrapperErrors.TransactionMiningTimeout`",
+                    "Removed `ZeroExError.TransactionMiningTimeout` and moved it to '@0xproject/eth-rpc-client' `EthRPCClientErrors.TransactionMiningTimeout`",
                 "pr": 485
             }
         ],

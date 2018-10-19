@@ -1,6 +1,6 @@
 import { colors, Link } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
@@ -73,14 +73,14 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
     }
     public render(): React.ReactNode {
         const amount = this.props.amount
-            ? Web3Wrapper.toUnitAmount(this.props.amount, this.props.token.decimals)
+            ? EthRPCClient.toUnitAmount(this.props.amount, this.props.token.decimals)
             : undefined;
         return (
             <div className="flex overflow-hidden" style={this._getStyle()}>
                 <BalanceBoundedInput
                     label={this.props.label}
                     amount={amount}
-                    balance={Web3Wrapper.toUnitAmount(this.state.balance, this.props.token.decimals)}
+                    balance={EthRPCClient.toUnitAmount(this.state.balance, this.props.token.decimals)}
                     onChange={this._onChange.bind(this)}
                     onErrorMsgChange={this.props.onErrorMsgChange}
                     validate={this._validate.bind(this)}
@@ -100,7 +100,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
     private _onChange(isValid: boolean, amount?: BigNumber): void {
         let baseUnitAmount;
         if (!_.isUndefined(amount)) {
-            baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amount, this.props.token.decimals);
+            baseUnitAmount = EthRPCClient.toBaseUnitAmount(amount, this.props.token.decimals);
         }
         this.props.onChange(isValid, baseUnitAmount);
     }

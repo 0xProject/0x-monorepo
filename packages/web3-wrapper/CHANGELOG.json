@@ -59,7 +59,7 @@
             },
             {
                 "note":
-                    "Web3Wrapper now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned.",
+                    "EthRPCClient now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned.",
                 "pr": 1102
             }
         ],
@@ -102,7 +102,7 @@
             },
             {
                 "note":
-                    "Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls",
+                    "Expose `sendRawPayloadAsync` so one can easily extend `EthRPCClient` with their own custom JSON RPC calls",
                 "pr": 1080
             }
         ],
@@ -261,15 +261,15 @@
         "version": "0.7.0",
         "changes": [
             {
-                "note": "Add `web3Wrapper.getContractCodeAsync`",
+                "note": "Add `ethRPCClient.getContractCodeAsync`",
                 "pr": 675
             },
             {
-                "note": "Add `web3Wrapper.getTransactionTraceAsync`",
+                "note": "Add `ethRPCClient.getTransactionTraceAsync`",
                 "pr": 675
             },
             {
-                "note": "Add `web3Wrapper.getBlockWithTransactionDataAsync`",
+                "note": "Add `ethRPCClient.getBlockWithTransactionDataAsync`",
                 "pr": 675
             },
             {
@@ -349,7 +349,7 @@
         "version": "0.5.0",
         "changes": [
             {
-                "note": "Add `web3Wrapper.awaitTransactionMinedAsync`",
+                "note": "Add `ethRPCClient.awaitTransactionMinedAsync`",
                 "pr": 485
             },
             {
@@ -358,7 +358,7 @@
                 "pr": 485
             },
             {
-                "note": "Export enum `Web3WrapperErrors` with a single value so far: `TransactionMiningTimeout`",
+                "note": "Export enum `EthRPCClientErrors` with a single value so far: `TransactionMiningTimeout`",
                 "pr": 485
             }
         ],
@@ -379,11 +379,11 @@
         "changes": [
             {
                 "note":
-                    "Add `web3Wrapper.takeSnapshotAsync`, `web3Wrapper.revertSnapshotAsync`, `web3Wrapper.mineBlockAsync`, `web3Wrapper.increaseTimeAsync`",
+                    "Add `ethRPCClient.takeSnapshotAsync`, `ethRPCClient.revertSnapshotAsync`, `ethRPCClient.mineBlockAsync`, `ethRPCClient.increaseTimeAsync`",
                 "pr": 426
             },
             {
-                "note": "Add `web3Wrapper.isZeroExWeb3Wrapper` for runtime instanceOf checks",
+                "note": "Add `ethRPCClient.isZeroExEthRPCClient` for runtime instanceOf checks",
                 "pr": 426
             },
             {
@@ -401,15 +401,15 @@
                 "pr": 373
             },
             {
-                "note": "Add `web3Wrapper.callAsync`",
+                "note": "Add `ethRPCClient.callAsync`",
                 "pr": 413
             },
             {
-                "note": "Make `web3Wrapper.estimateGas` accept whole `txData` instead of `data`",
+                "note": "Make `ethRPCClient.estimateGas` accept whole `txData` instead of `data`",
                 "pr": 413
             },
             {
-                "note": "Remove `web3Wrapper.getContractInstance`",
+                "note": "Remove `ethRPCClient.getContractInstance`",
                 "pr": 413
             }
         ],

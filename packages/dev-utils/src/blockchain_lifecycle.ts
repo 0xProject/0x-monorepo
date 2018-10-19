@@ -1,5 +1,5 @@
+import { EthRPCClient, NodeType } from '@0x/eth-rpc-client';
 import { logUtils } from '@0x/utils';
-import { NodeType, Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 // HACK(albrow): 🐉 We have to do this so that debug.setHead works correctly.
@@ -10,28 +10,28 @@ import * as _ from 'lodash';
 const MINIMUM_BLOCKS = 3;
 
 export class BlockchainLifecycle {
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     private readonly _snapshotIdsStack: number[];
     private _addresses: string[] = [];
     private _nodeType: NodeType | undefined;
-    constructor(web3Wrapper: Web3Wrapper) {
-        this._web3Wrapper = web3Wrapper;
+    constructor(ethRPCClient: EthRPCClient) {
+        this._ethRPCClient = ethRPCClient;
         this._snapshotIdsStack = [];
     }
     public async startAsync(): Promise<void> {
         const nodeType = await this._getNodeTypeAsync();
         switch (nodeType) {
             case NodeType.Ganache:
-                const snapshotId = await this._web3Wrapper.takeSnapshotAsync();
+                const snapshotId = await this._ethRPCClient.takeSnapshotAsync();
                 this._snapshotIdsStack.push(snapshotId);
                 break;
             case NodeType.Geth:
-                let blockNumber = await this._web3Wrapper.getBlockNumberAsync();
+                let blockNumber = await this._ethRPCClient.getBlockNumberAsync();
                 if (blockNumber < MINIMUM_BLOCKS) {
                     // If the minimum block number is not met, force Geth to
                     // mine some blocks by sending some dummy transactions.
                     await this._mineMinimumBlocksAsync();
-                    blockNumber = await this._web3Wrapper.getBlockNumberAsync();
+                    blockNumber = await this._ethRPCClient.getBlockNumberAsync();
                 }
                 this._snapshotIdsStack.push(blockNumber);
                 // HACK(albrow) It's possible that we applied a time offset but
@@ -50,14 +50,14 @@ export class BlockchainLifecycle {
         switch (nodeType) {
             case NodeType.Ganache:
                 const snapshotId = this._snapshotIdsStack.pop() as number;
-                const didRevert = await this._web3Wrapper.revertSnapshotAsync(snapshotId);
+                const didRevert = await this._ethRPCClient.revertSnapshotAsync(snapshotId);
                 if (!didRevert) {
                     throw new Error(`Snapshot with id #${snapshotId} failed to revert`);
                 }
                 break;
             case NodeType.Geth:
                 const blockNumber = this._snapshotIdsStack.pop() as number;
-                await this._web3Wrapper.setHeadAsync(blockNumber);
+                await this._ethRPCClient.setHeadAsync(blockNumber);
                 break;
             default:
                 throw new Error(`Unknown node type: ${nodeType}`);
@@ -65,7 +65,7 @@ export class BlockchainLifecycle {
     }
     private async _mineMinimumBlocksAsync(): Promise<void> {
         logUtils.warn('WARNING: minimum block number for tests not met. Mining additional blocks...');
-        while ((await this._web3Wrapper.getBlockNumberAsync()) < MINIMUM_BLOCKS) {
+        while ((await this._ethRPCClient.getBlockNumberAsync()) < MINIMUM_BLOCKS) {
             logUtils.warn('Mining block...');
             await this._mineDummyBlockAsync();
         }
@@ -73,7 +73,7 @@ export class BlockchainLifecycle {
     }
     private async _getNodeTypeAsync(): Promise<NodeType> {
         if (_.isUndefined(this._nodeType)) {
-            this._nodeType = await this._web3Wrapper.getNodeTypeAsync();
+            this._nodeType = await this._ethRPCClient.getNodeTypeAsync();
         }
         return this._nodeType;
     }
@@ -81,13 +81,13 @@ export class BlockchainLifecycle {
     // to be mined.
     private async _mineDummyBlockAsync(): Promise<void> {
         if (this._addresses.length === 0) {
-            this._addresses = await this._web3Wrapper.getAvailableAddressesAsync();
+            this._addresses = await this._ethRPCClient.getAvailableAddressesAsync();
             if (this._addresses.length === 0) {
                 throw new Error('No accounts found');
             }
         }
-        await this._web3Wrapper.awaitTransactionMinedAsync(
-            await this._web3Wrapper.sendTransactionAsync({
+        await this._ethRPCClient.awaitTransactionMinedAsync(
+            await this._ethRPCClient.sendTransactionAsync({
                 from: this._addresses[0],
                 to: this._addresses[0],
                 value: '0',

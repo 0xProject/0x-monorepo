@@ -20,11 +20,11 @@ import { increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { MultiSigWrapper } from '../utils/multi_sig_wrapper';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 // tslint:disable:no-unnecessary-type-assertion
 describe('MultiSigWalletWithTimeLock', () => {
     let owners: string[];
@@ -39,7 +39,7 @@ describe('MultiSigWalletWithTimeLock', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         owners = [accounts[0], accounts[1], accounts[2]];
         notOwner = accounts[3];
     });
@@ -115,8 +115,8 @@ describe('MultiSigWalletWithTimeLock', () => {
         });
         it('should set the confirmation time of the transaction if it becomes fully confirmed', async () => {
             const txReceipt = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
-            const blockNum = await web3Wrapper.getBlockNumberAsync();
-            const timestamp = new BigNumber(await web3Wrapper.getBlockTimestampAsync(blockNum));
+            const blockNum = await ethRPCClient.getBlockNumberAsync();
+            const timestamp = new BigNumber(await ethRPCClient.getBlockTimestampAsync(blockNum));
             const log = txReceipt.logs[1] as LogWithDecodedArgs<MultiSigWalletWithTimeLockConfirmationTimeSetEventArgs>;
             expect(log.args.confirmationTime).to.be.bignumber.equal(timestamp);
             expect(log.args.transactionId).to.be.bignumber.equal(txId);
@@ -268,8 +268,8 @@ describe('MultiSigWalletWithTimeLock', () => {
                 const confirmRes = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
                 expect(confirmRes.logs).to.have.length(2);
 
-                const blockNum = await web3Wrapper.getBlockNumberAsync();
-                const blockInfo = await web3Wrapper.getBlockIfExistsAsync(blockNum);
+                const blockNum = await ethRPCClient.getBlockNumberAsync();
+                const blockInfo = await ethRPCClient.getBlockIfExistsAsync(blockNum);
                 if (_.isUndefined(blockInfo)) {
                     throw new Error(`Unexpectedly failed to fetch block at #${blockNum}`);
                 }
@@ -333,7 +333,7 @@ describe('MultiSigWalletWithTimeLock', () => {
 
             it('should execute if it has enough confirmations and is past the time lock', async () => {
                 await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
-                await web3Wrapper.awaitTransactionSuccessAsync(
+                await ethRPCClient.awaitTransactionSuccessAsync(
                     await multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );

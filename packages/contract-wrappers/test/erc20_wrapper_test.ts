@@ -23,11 +23,11 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
-import { provider, web3Wrapper } from './utils/web3_wrapper';
+import { provider, ethRPCClient } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 
 describe('ERC20Wrapper', () => {
     let contractWrappers: ContractWrappers;
@@ -46,7 +46,7 @@ describe('ERC20Wrapper', () => {
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);
-        userAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        userAddresses = await ethRPCClient.getAvailableAddressesAsync();
         tokens = tokenUtils.getDummyERC20TokenAddresses();
         coinbase = userAddresses[0];
         addressWithoutFunds = userAddresses[1];
@@ -283,8 +283,8 @@ describe('ERC20Wrapper', () => {
                 userWithUnlimitedAllowance,
             );
 
-            const initBalanceWithNormalAllowance = await web3Wrapper.getBalanceInWeiAsync(userWithNormalAllowance);
-            const initBalanceWithUnlimitedAllowance = await web3Wrapper.getBalanceInWeiAsync(
+            const initBalanceWithNormalAllowance = await ethRPCClient.getBalanceInWeiAsync(userWithNormalAllowance);
+            const initBalanceWithUnlimitedAllowance = await ethRPCClient.getBalanceInWeiAsync(
                 userWithUnlimitedAllowance,
             );
 
@@ -303,8 +303,8 @@ describe('ERC20Wrapper', () => {
                 transferAmount,
             );
 
-            const finalBalanceWithNormalAllowance = await web3Wrapper.getBalanceInWeiAsync(userWithNormalAllowance);
-            const finalBalanceWithUnlimitedAllowance = await web3Wrapper.getBalanceInWeiAsync(
+            const finalBalanceWithNormalAllowance = await ethRPCClient.getBalanceInWeiAsync(userWithNormalAllowance);
+            const finalBalanceWithUnlimitedAllowance = await ethRPCClient.getBalanceInWeiAsync(
                 userWithUnlimitedAllowance,
             );
 
@@ -567,7 +567,7 @@ describe('ERC20Wrapper', () => {
         });
         it('should get logs with decoded args emitted by Approval', async () => {
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = ERC20TokenEvents.Approval;
             const indexFilterValues = {};
             const logs = await contractWrappers.erc20Token.getLogsAsync<ERC20TokenApprovalEventArgs>(
@@ -585,7 +585,7 @@ describe('ERC20Wrapper', () => {
         });
         it('should only get the logs with the correct event name', async () => {
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const differentEventName = ERC20TokenEvents.Transfer;
             const indexFilterValues = {};
             const logs = await contractWrappers.erc20Token.getLogsAsync(
@@ -598,12 +598,12 @@ describe('ERC20Wrapper', () => {
         });
         it('should only get the logs with the correct indexed fields', async () => {
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(
                 tokenAddress,
                 addressWithoutFunds,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             const eventName = ERC20TokenEvents.Approval;
             const indexFilterValues = {
                 _owner: coinbase,

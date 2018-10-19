@@ -1,4 +1,4 @@
-export { Web3Wrapper } from './web3_wrapper';
+export { EthRPCClient } from './web3_wrapper';
 export { marshaller } from './marshaller';
 
 export { AbiDecoder } from '@0x/utils';
@@ -47,7 +47,7 @@ export {
     StateMutability,
 } from 'ethereum-types';
 export {
-    Web3WrapperErrors,
+    EthRPCClientErrors,
     NodeType,
     CallDataRPC,
     BlockWithoutTransactionDataRPC,

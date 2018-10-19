@@ -1,6 +1,6 @@
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider, TransactionReceiptWithDecodedLogs, TxDataPayable } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -12,7 +12,7 @@ import { LogDecoder } from './log_decoder';
 import { MarketSellOrders } from './types';
 
 export class ForwarderWrapper {
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     private readonly _forwarderContract: ForwarderContract;
     private readonly _logDecoder: LogDecoder;
     public static getPercentageOfValue(value: BigNumber, percentage: number): BigNumber {
@@ -60,8 +60,8 @@ export class ForwarderWrapper {
     }
     constructor(contractInstance: ForwarderContract, provider: Provider) {
         this._forwarderContract = contractInstance;
-        this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper);
+        this._ethRPCClient = new EthRPCClient(provider);
+        this._logDecoder = new LogDecoder(this._ethRPCClient);
     }
     public async marketSellOrdersWithEthAsync(
         orders: SignedOrder[],

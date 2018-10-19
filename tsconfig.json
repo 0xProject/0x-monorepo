@@ -52,7 +52,7 @@
         { "path": "./packages/types" },
         { "path": "./packages/typescript-typings" },
         { "path": "./packages/utils" },
-        { "path": "./packages/web3-wrapper" }
+        { "path": "./packages/eth-rpc-client" }
         // Skipping website because it requires allowJs: false and this is
         // incompatible with project references.
         // { "path": "./packages/website" }

@@ -1,4 +1,4 @@
-import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
+import { marshaller, EthRPCClient } from '@0x/eth-rpc-client';
 import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 
@@ -15,7 +15,7 @@ import { Subprovider } from './subprovider';
  * are passed onwards for subsequent subproviders to handle.
  */
 export class MetamaskSubprovider extends Subprovider {
-    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _ethRPCClient: EthRPCClient;
     private readonly _provider: Provider;
     /**
      * Instantiates a new MetamaskSubprovider
@@ -23,7 +23,7 @@ export class MetamaskSubprovider extends Subprovider {
      */
     constructor(provider: Provider) {
         super();
-        this._web3Wrapper = new Web3Wrapper(provider);
+        this._ethRPCClient = new EthRPCClient(provider);
         this._provider = provider;
     }
     /**
@@ -41,7 +41,7 @@ export class MetamaskSubprovider extends Subprovider {
         switch (payload.method) {
             case 'web3_clientVersion':
                 try {
-                    const nodeVersion = await this._web3Wrapper.getNodeVersionAsync();
+                    const nodeVersion = await this._ethRPCClient.getNodeVersionAsync();
                     end(null, nodeVersion);
                 } catch (err) {
                     end(err);
@@ -49,7 +49,7 @@ export class MetamaskSubprovider extends Subprovider {
                 return;
             case 'eth_accounts':
                 try {
-                    const accounts = await this._web3Wrapper.getAvailableAddressesAsync();
+                    const accounts = await this._ethRPCClient.getAvailableAddressesAsync();
                     end(null, accounts);
                 } catch (err) {
                     end(err);
@@ -59,7 +59,7 @@ export class MetamaskSubprovider extends Subprovider {
                 const [txParams] = payload.params;
                 try {
                     const txData = marshaller.unmarshalTxData(txParams);
-                    const txHash = await this._web3Wrapper.sendTransactionAsync(txData);
+                    const txHash = await this._ethRPCClient.sendTransactionAsync(txData);
                     end(null, txHash);
                 } catch (err) {
                     end(err);
@@ -73,7 +73,7 @@ export class MetamaskSubprovider extends Subprovider {
                     const msgBuff = ethUtil.toBuffer(message);
                     const prefixedMsgBuff = ethUtil.hashPersonalMessage(msgBuff);
                     const prefixedMsgHex = ethUtil.bufferToHex(prefixedMsgBuff);
-                    const signature = await this._web3Wrapper.signMessageAsync(address, prefixedMsgHex);
+                    const signature = await this._ethRPCClient.signMessageAsync(address, prefixedMsgHex);
                     signature ? end(null, signature) : end(new Error('Error performing eth_sign'), null);
                 } catch (err) {
                     end(err);
@@ -88,7 +88,7 @@ export class MetamaskSubprovider extends Subprovider {
                     // Source: https://github.com/MetaMask/metamask-extension/blob/c49d854b55b3efd34c7fd0414b76f7feaa2eec7c/app/scripts/metamask-controller.js#L1262
                     // and expects message to be serialised as JSON
                     const messageJSON = JSON.stringify(message);
-                    const signature = await this._web3Wrapper.sendRawPayloadAsync<string>({
+                    const signature = await this._ethRPCClient.sendRawPayloadAsync<string>({
                         method: 'eth_signTypedData_v3',
                         params: [address, messageJSON],
                     });

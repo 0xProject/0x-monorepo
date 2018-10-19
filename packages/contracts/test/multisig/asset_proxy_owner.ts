@@ -25,11 +25,11 @@ import { increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { MultiSigWrapper } from '../utils/multi_sig_wrapper';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { provider, txDefaults, ethRPCClient } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 // tslint:disable:no-unnecessary-type-assertion
 describe('AssetProxyOwner', () => {
     let owners: string[];
@@ -50,7 +50,7 @@ describe('AssetProxyOwner', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await ethRPCClient.getAvailableAddressesAsync();
         owners = [accounts[0], accounts[1]];
         authorized = accounts[2];
         notOwner = accounts[3];
@@ -76,13 +76,13 @@ describe('AssetProxyOwner', () => {
             SECONDS_TIME_LOCKED,
         );
         multiSigWrapper = new MultiSigWrapper(testAssetProxyOwner, provider);
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc20Proxy.transferOwnership.sendTransactionAsync(testAssetProxyOwner.address, {
                 from: initialOwner,
             }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
+        await ethRPCClient.awaitTransactionSuccessAsync(
             await erc721Proxy.transferOwnership.sendTransactionAsync(testAssetProxyOwner.address, {
                 from: initialOwner,
             }),

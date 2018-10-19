@@ -35,6 +35,7 @@ CHANGELOG
     * Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from web3-wrapper, which we feel provides enough information. (#1105)
     * Add `ForwarderWrapperError` to public interface (#1147)
     * Add `ContractWrapperError.SignatureRequestDenied` to public interface (#1147)
+    * Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from eth-rpc-client, which we feel provides enough information. (#1105)
 
 ## v2.0.2 - _October 4, 2018_
 

@@ -11,8 +11,8 @@ import { TraceInfo, TraceInfoExistingContract, TraceInfoNewContract } from './ty
 export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
     protected abstract _handleTraceInfoAsync(traceInfo: TraceInfo): Promise<void>;
     protected async _recordTxTraceAsync(address: string, data: string | undefined, txHash: string): Promise<void> {
-        await this._web3Wrapper.awaitTransactionMinedAsync(txHash, 0);
-        const trace = await this._web3Wrapper.getTransactionTraceAsync(txHash, {
+        await this._ethRPCClient.awaitTransactionMinedAsync(txHash, 0);
+        const trace = await this._ethRPCClient.getTransactionTraceAsync(txHash, {
             disableMemory: true,
             disableStack: false,
             disableStorage: true,
@@ -31,7 +31,7 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
                         bytecode: data as string,
                     };
                 } else {
-                    const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(subcallAddress);
+                    const runtimeBytecode = await this._ethRPCClient.getContractCodeAsync(subcallAddress);
                     const traceForThatSubcall = tracesByContractAddress[subcallAddress];
                     traceInfo = {
                         subtrace: traceForThatSubcall,
@@ -44,7 +44,7 @@ export abstract class TraceInfoSubprovider extends TraceCollectionSubprovider {
             }
         } else {
             for (const subcallAddress of subcallAddresses) {
-                const runtimeBytecode = await this._web3Wrapper.getContractCodeAsync(subcallAddress);
+                const runtimeBytecode = await this._ethRPCClient.getContractCodeAsync(subcallAddress);
                 const traceForThatSubcall = tracesByContractAddress[subcallAddress];
                 const traceInfo: TraceInfoExistingContract = {
                     subtrace: traceForThatSubcall,
