@@ -11,9 +11,9 @@ import {
     SignedOrder,
     Web3ProviderEngine,
 } from '0x.js';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as express from 'express';
 import * as _ from 'lodash';
 

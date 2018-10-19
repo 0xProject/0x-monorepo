@@ -1,3 +1,4 @@
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import {
     constants as sharedConstants,
     EtherscanLinkSuffixes,
@@ -6,7 +7,6 @@ import {
     utils as sharedUtils,
 } from '@0x/react-shared';
 import { BigNumber, errorUtils, fetchAsync, logUtils } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';

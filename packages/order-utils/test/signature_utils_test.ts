@@ -11,7 +11,7 @@ import { constants } from '../src/constants';
 import { signatureUtils } from '../src/signature_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { provider, ethRPCClient } from './utils/web3_wrapper';
+import { ethRPCClient, provider } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

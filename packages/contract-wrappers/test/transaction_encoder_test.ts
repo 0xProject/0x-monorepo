@@ -11,7 +11,7 @@ import { TransactionEncoder } from '../src/utils/transaction_encoder';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
-import { provider, ethRPCClient } from './utils/web3_wrapper';
+import { ethRPCClient, provider } from './utils/web3_wrapper';
 
 const blockchainLifecycle = new BlockchainLifecycle(ethRPCClient);
 

@@ -14,7 +14,7 @@ import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
-import { provider, ethRPCClient } from './utils/web3_wrapper';
+import { ethRPCClient, provider } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

@@ -1,6 +1,6 @@
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { colors } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { utils } from 'ts/utils/utils';

@@ -3,7 +3,7 @@ import { DummyERC721Token } from '@0x/contract-artifacts';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
-import { provider, txDefaults, ethRPCClient } from './web3_wrapper';
+import { ethRPCClient, provider, txDefaults } from './web3_wrapper';
 
 // Those addresses come from migrations. They're deterministic so it's relatively safe to hard-code them here.
 // Before we were fetching them from the TokenRegistry but now we can't as it's deprecated and removed.

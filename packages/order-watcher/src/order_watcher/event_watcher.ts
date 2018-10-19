@@ -1,5 +1,5 @@
+import { EthRPCClient, marshaller } from '@0x/eth-rpc-client';
 import { intervalUtils, logUtils } from '@0x/utils';
-import { marshaller, EthRPCClient } from '@0x/eth-rpc-client';
 import { BlockParamLiteral, FilterObject, LogEntry, Provider, RawLogEntry } from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';

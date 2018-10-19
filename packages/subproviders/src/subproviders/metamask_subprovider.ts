@@ -1,4 +1,4 @@
-import { marshaller, EthRPCClient } from '@0x/eth-rpc-client';
+import { EthRPCClient, marshaller } from '@0x/eth-rpc-client';
 import { JSONRPCRequestPayload, Provider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 

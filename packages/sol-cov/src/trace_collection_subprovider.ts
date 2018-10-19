@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
+import { CallDataRPC, EthRPCClient, marshaller } from '@0x/eth-rpc-client';
 import { Callback, ErrorCallback, NextCallback, Subprovider } from '@0x/subproviders';
-import { CallDataRPC, marshaller, EthRPCClient } from '@0x/eth-rpc-client';
 import { JSONRPCRequestPayload, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import { Lock } from 'semaphore-async-await';

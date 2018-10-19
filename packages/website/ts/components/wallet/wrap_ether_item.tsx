@@ -1,6 +1,6 @@
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Styles } from '@0x/react-shared';
 import { BigNumber, logUtils } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';

@@ -1,7 +1,7 @@
 import { env, EnvVars } from '@0x/dev-utils';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { GanacheSubprovider, prependSubprovider, RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { errorUtils, logUtils } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as fs from 'fs';
 
 import { config } from './config';

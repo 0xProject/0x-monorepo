@@ -1,8 +1,8 @@
 import { ExchangeContract, IValidatorContract, IWalletContract } from '@0x/abi-gen-wrappers';
 import * as artifacts from '@0x/contract-artifacts';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { schemas } from '@0x/json-schemas';
 import { ECSignature, Order, SignatureType, SignedOrder, ValidatorSignature } from '@0x/types';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';

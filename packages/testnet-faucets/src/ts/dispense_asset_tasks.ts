@@ -1,6 +1,6 @@
 import { ERC20TokenWrapper } from '0x.js';
-import { BigNumber, logUtils } from '@0x/utils';
 import { EthRPCClient } from '@0x/eth-rpc-client';
+import { BigNumber, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { configs } from './configs';

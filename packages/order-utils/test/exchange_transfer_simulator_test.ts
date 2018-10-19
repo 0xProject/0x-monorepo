@@ -13,7 +13,7 @@ import { TradeSide, TransferType } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { SimpleERC20BalanceAndProxyAllowanceFetcher } from './utils/simple_erc20_balance_and_proxy_allowance_fetcher';
-import { provider, ethRPCClient } from './utils/web3_wrapper';
+import { ethRPCClient, provider } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

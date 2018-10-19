@@ -1,8 +1,8 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { DoneCallback } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as chai from 'chai';
 import 'mocha';
 
@@ -22,7 +22,7 @@ import { DecodedLogEvent } from '../src/types';
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
-import { provider, ethRPCClient } from './utils/web3_wrapper';
+import { ethRPCClient, provider } from './utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

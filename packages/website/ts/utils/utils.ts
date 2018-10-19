@@ -1,9 +1,9 @@
 import { ContractWrappersError } from '@0x/contract-wrappers';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { assetDataUtils, OrderError } from '@0x/order-utils';
 import { constants as sharedConstants, Networks } from '@0x/react-shared';
 import { ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as bowser from 'bowser';
 import deepEqual from 'deep-equal';
 import * as _ from 'lodash';

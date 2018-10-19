@@ -10,7 +10,7 @@ import { chaiSetup } from './utils/chai_setup';
 import { config } from './utils/config';
 // Comment out the next line enable profiling
 // import { profiler } from './utils/profiler';
-import { provider, ethRPCClient } from './utils/web3_wrapper';
+import { ethRPCClient, provider } from './utils/web3_wrapper';
 
 const artifact: ContractArtifact = MetacoinArtifact as any;
 

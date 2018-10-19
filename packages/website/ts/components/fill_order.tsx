@@ -1,7 +1,7 @@
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { colors, Link } from '@0x/react-shared';
 import { BigNumber, logUtils } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as accounting from 'accounting';
 import * as _ from 'lodash';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
