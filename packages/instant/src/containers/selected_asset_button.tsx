@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import { SecondaryButton } from '../components/secondary_button';
 import { State } from '../redux/reducer';
 import { AsyncProcessState } from '../types';
 
@@ -21,6 +22,10 @@ const SelectedAssetButtonPresentationComponent: React.StatelessComponent<{
 }> = props => {
     if (props.buyOrderState === AsyncProcessState.FAILURE) {
         return <SelectedAssetRetryButton />;
+    } else if (props.buyOrderState === AsyncProcessState.SUCCESS) {
+        return <SecondaryButton text="Success" isDisabled={true} />;
+    } else if (props.buyOrderState === AsyncProcessState.PENDING) {
+        return <SecondaryButton text="Processing" isDisabled={true} />;
     }
 
     return <SelectedAssetBuyButton />;
