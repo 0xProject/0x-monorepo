@@ -43,9 +43,10 @@ export function _convertToExchangeFillEvent(eventLog: LogWithDecodedArgs<Exchang
     exchangeFillEvent.blockNumber = eventLog.blockNumber as number;
     exchangeFillEvent.logIndex = eventLog.logIndex as number;
     exchangeFillEvent.rawData = eventLog.data as string;
+    exchangeFillEvent.transactionHash = eventLog.transactionHash;
     exchangeFillEvent.makerAddress = eventLog.args.makerAddress.toString();
     exchangeFillEvent.takerAddress = eventLog.args.takerAddress.toString();
-    exchangeFillEvent.feeRecepientAddress = eventLog.args.feeRecipientAddress;
+    exchangeFillEvent.feeRecipientAddress = eventLog.args.feeRecipientAddress;
     exchangeFillEvent.senderAddress = eventLog.args.senderAddress;
     exchangeFillEvent.makerAssetFilledAmount = eventLog.args.makerAssetFilledAmount.toString();
     exchangeFillEvent.takerAssetFilledAmount = eventLog.args.takerAssetFilledAmount.toString();
