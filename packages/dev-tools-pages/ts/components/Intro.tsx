@@ -1,11 +1,11 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import variables from '../variables';
+import { colors } from '../variables';
 
 import { Alpha, Beta } from './Typography';
 
 const Main = styled.div`
-    background-color: ${variables.colors.lightGray};
+    background-color: ${colors.lightGray};
     padding: 6.25rem;
     display: flex;
     justify-content: space-between;
@@ -22,7 +22,7 @@ const Content = styled.div`
 `;
 
 const Code = styled.div`
-    background-color: ${variables.colors.darkGray};
+    background-color: ${colors.darkGray};
     width: 520px;
     height: 350px;
 `;

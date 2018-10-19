@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import variables from '../variables';
+import { colors } from '../variables';
 
 import { withContext, Props } from './withContext';
 import { Alpha, Beta, Gamma } from './Typography';
@@ -98,7 +98,7 @@ const StyledSection =
     `
     max-width: 90rem;
     margin: 0 auto;
-    background: linear-gradient(to right, ${variables.colors.black} 50%, ${props => props.background} 50%);
+    background: linear-gradient(to right, ${colors.black} 50%, ${props => props.background} 50%);
     padding-top: 6.25rem;
     padding-bottom: 5.25rem;
 `;
@@ -116,8 +116,8 @@ const Block =
     TraceProps >
     `
     width: 50%;
-    background: ${props => (props.background ? props.background : '#000')};
-    color: ${props => (props.background ? 'inherit' : '#fff')};
+    background: ${props => (props.background ? props.background : colors.black)};
+    color: ${props => (props.background ? 'inherit' : colors.white)};
 
     :first-of-type {
         padding-right: 6.25rem;
