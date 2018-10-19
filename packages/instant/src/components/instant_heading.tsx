@@ -60,7 +60,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         return amountFunction();
     }
 
-    private _ethAmount = (): React.ReactNode => {
+    private readonly _ethAmount = (): React.ReactNode => {
         return (
             <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
                 {format.ethBaseAmount(
@@ -72,7 +72,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         );
     };
 
-    private _dollarAmount = (): React.ReactNode => {
+    private readonly _dollarAmount = (): React.ReactNode => {
         return (
             <Text fontSize="16px" fontColor={ColorOption.white}>
                 {format.ethBaseAmountInUsd(
