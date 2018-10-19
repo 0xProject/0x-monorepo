@@ -74,7 +74,6 @@ export class EthAmountRow extends React.Component<EthAmountRowProps> {
         shouldEmphasize: false,
         isEthAmountInBaseUnits: true,
     };
-    public static displayName = 'EthAmountRow';
     public render(): React.ReactNode {
         const { rowLabel, ethAmount, isEthAmountInBaseUnits, shouldEmphasize, isLoading } = this.props;
 
@@ -87,7 +86,7 @@ export class EthAmountRow extends React.Component<EthAmountRowProps> {
                         {rowLabel}
                     </Text>
                     <Container>
-                        {this._usdSection()}
+                        {this._renderUsdSection()}
                         <Text fontWeight={fontWeight} fontColor={ColorOption.grey}>
                             {ethFormatter(
                                 ethAmount,
@@ -102,7 +101,7 @@ export class EthAmountRow extends React.Component<EthAmountRowProps> {
             </Container>
         );
     }
-    private _usdSection(): React.ReactNode {
+    private _renderUsdSection(): React.ReactNode {
         const usdFormatter = this.props.isEthAmountInBaseUnits ? format.ethBaseAmountInUsd : format.ethUnitAmountInUsd;
         const shouldHideUsdPriceSection = _.isUndefined(this.props.ethUsdPrice) || _.isUndefined(this.props.ethAmount);
         return shouldHideUsdPriceSection ? null : (
