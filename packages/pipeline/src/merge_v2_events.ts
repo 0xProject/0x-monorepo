@@ -31,7 +31,10 @@ async function getExchangeEventsAsync(): Promise<void> {
     const events = parseExchangeEvents(eventLogs);
     console.log(`Retrieved and parsed ${events.length} total events.`);
     console.log('Saving events...');
-    eventsRepository.save(events);
+    for (const event of events) {
+        await eventsRepository.save(event);
+    }
+    await eventsRepository.save(events);
     console.log('Saved events.');
 }
 
