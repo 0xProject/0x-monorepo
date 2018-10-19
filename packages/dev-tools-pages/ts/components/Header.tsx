@@ -5,6 +5,8 @@ import { withContext, Props } from './withContext';
 import Container from './Container';
 import { Small } from './Typography';
 
+import { media } from '../variables';
+
 function Header(props: Props) {
     const { icon, title, colors } = props;
 
@@ -36,6 +38,8 @@ const StyledHeader = styled.header`
         justify-content: space-between;
         align-items: center;
     }
+
+    ${media.small`padding-top: 2.125rem;`};
 `;
 
 const LogoMark = styled.div`
@@ -53,6 +57,8 @@ const Title = styled.h1`
     font-size: 1.5rem;
     margin: 0;
     margin-left: 0.8125rem;
+
+    ${media.small`font-size: 1.25rem;`};
 `;
 
 const StyledLink = styled(Small)`
