@@ -9,6 +9,7 @@ import { BuyButton } from './buy_button';
 import { RetryButton } from './retry_button';
 import { Container } from './ui';
 
+// TODO: split into sepearte components? getting really big..
 interface AssetButtonProps {
     assetBuyer?: AssetBuyer;
     buyQuote?: BuyQuote;
@@ -16,6 +17,7 @@ interface AssetButtonProps {
     onBuyClick: (buyQuote: BuyQuote) => void;
     onBuySuccess: (buyQuote: BuyQuote) => void;
     onBuyFailure: (buyQuote: BuyQuote) => void;
+    onRetryClick: () => void;
 }
 
 export class AssetButton extends React.Component<AssetButtonProps, {}> {
@@ -30,13 +32,7 @@ export class AssetButton extends React.Component<AssetButtonProps, {}> {
         // TODO: figure out why buyOrderState is undefined in beginning, get rid of default
         switch (this.props.buyOrderState) {
             case AsyncProcessState.FAILURE:
-                return (
-                    <RetryButton
-                        onClick={() => {
-                            console.log('try again');
-                        }}
-                    />
-                );
+                return <RetryButton onClick={this.props.onRetryClick} />;
             case AsyncProcessState.SUCCESS:
                 return <div />;
             default:

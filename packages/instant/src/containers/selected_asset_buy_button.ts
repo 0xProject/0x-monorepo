@@ -24,6 +24,7 @@ interface ConnectedDispatch {
     onBuyClick: (buyQuote: BuyQuote) => void;
     onBuySuccess: (buyQuote: BuyQuote) => void;
     onBuyFailure: (buyQuote: BuyQuote) => void;
+    onRetryClick: () => void;
 }
 
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): ConnectedState => ({
@@ -36,6 +37,7 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetB
     onBuyClick: buyQuote => dispatch(actions.updatebuyOrderState(AsyncProcessState.PENDING)),
     onBuySuccess: buyQuote => dispatch(actions.updatebuyOrderState(AsyncProcessState.SUCCESS)),
     onBuyFailure: buyQuote => dispatch(actions.updatebuyOrderState(AsyncProcessState.FAILURE)),
+    onRetryClick: () => dispatch(actions.clearBuyQuoteAndSelectedAssetAmount()),
 });
 
 export const SelectedAssetBuyButton: React.ComponentClass<SelectedAssetBuyButtonProps> = connect(

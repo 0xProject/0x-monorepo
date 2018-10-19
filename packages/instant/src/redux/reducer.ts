@@ -99,6 +99,14 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 ...state,
                 selectedAsset: newSelectedAsset,
             };
+        case ActionTypes.CLEAR_BUY_QUOTE_AND_SELECTED_ASSET_AMOUNT:
+            return {
+                ...state,
+                latestBuyQuote: undefined,
+                quoteState: AsyncProcessState.NONE,
+                buyOrderState: AsyncProcessState.NONE,
+                selectedAssetAmount: undefined,
+            };
         default:
             return state;
     }
