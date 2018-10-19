@@ -1,6 +1,8 @@
 declare module 'whatwg-fetch';
 declare module 'react-document-title';
 
+declare var System: any;
+
 declare module '*.json' {
     const json: any;
     /* tslint:disable */

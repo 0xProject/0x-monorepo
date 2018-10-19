@@ -1,13 +1,24 @@
 const path = require('path');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const childProcess = require('child_process');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+
+const pages = require('./pages');
 
 const config = {
-    entry: ['./ts/index.tsx'],
+    entry: {
+        compiler: './ts/pages/Compiler.tsx',
+        cov: './ts/pages/Cov.tsx',
+        profiler: './ts/pages/Profiler.tsx',
+        trace: './ts/pages/Trace.tsx',
+    },
     output: {
         path: path.join(__dirname, '/public'),
-        filename: 'bundle.js',
+        filename: 'bundle-[name].js',
         chunkFilename: 'bundle-[name].js',
         publicPath: '/',
     },
@@ -70,17 +81,25 @@ const config = {
 };
 
 module.exports = (_env, argv) => {
-    let plugins = [];
+    let plugins = [
+        new CleanWebpackPlugin('public'),
+        ...pages.map(p => new HtmlWebpackPlugin(p)),
+        new CopyWebpackPlugin([{ from: 'assets/crawl.html', to: 'index.html' }, { from: 'assets/fonts', to: 'fonts' }]),
+    ];
     if (argv.mode === 'development') {
         config.mode = 'development';
     } else {
         config.mode = 'production';
+        config.output.filename = 'bundle-[name].[chunkhash].js';
+        config.output.chunkFilename = 'bundle-[name].[chunkhash].js';
+
         plugins = plugins.concat([
             new webpack.DefinePlugin({
                 'process.env': {
-                    NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+                    NODE_ENV: JSON.stringify(process.env.NODE_ENV || config.mode),
                 },
             }),
+            //new BundleAnalyzerPlugin(),
         ]);
     }
     console.log('i ｢atl｣: Mode: ', config.mode);
