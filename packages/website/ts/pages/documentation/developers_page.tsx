@@ -6,6 +6,7 @@ import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { DocsTopBar } from 'ts/components/documentation/docs_top_bar';
 import { Container } from 'ts/components/ui/container';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { media } from 'ts/style/media';
 import { styled } from 'ts/style/theme';
 import { BrowserType, OperatingSystemType, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
@@ -98,14 +99,14 @@ const MainContentContainer =
         padding-right: ${50 - SCROLLBAR_WIDTH}px;
         overflow: auto;
     }
-    @media (max-width: 40em) {
+    ${media.small`
         padding-left: 20px;
         padding-right: 20px;
         &:hover {
             padding-right: ${20 - SCROLLBAR_WIDTH}px;
             overflow: auto;
         }
-    }
+    `}
 `;
 
 export class DevelopersPage extends React.Component<DevelopersPageProps, DevelopersPageState> {
