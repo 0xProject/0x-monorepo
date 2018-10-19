@@ -2,7 +2,7 @@
 
 import pytest  # type: ignore
 
-from zero_ex.abi_utils import (
+from zero_ex.dev_utils.abi_utils import (
     elementary_name,
     event_id,
     method_id,

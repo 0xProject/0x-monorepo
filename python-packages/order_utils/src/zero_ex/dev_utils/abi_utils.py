@@ -13,7 +13,7 @@ from mypy_extensions import TypedDict
 from eth_abi import encode_abi  # type: ignore
 from web3 import Web3  # type: ignore
 
-from zero_ex.type_assertions import string_or_type_error, list_or_type_error
+from .type_assertions import string_or_type_error, list_or_type_error
 
 
 class MethodSignature(TypedDict, total=False):

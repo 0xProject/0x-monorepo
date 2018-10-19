@@ -4,8 +4,8 @@ from mypy_extensions import TypedDict
 
 import eth_abi  # type: ignore
 
-from zero_ex import abi_utils
-from zero_ex.type_assertions import string_or_type_error
+from zero_ex.dev_utils import abi_utils
+from zero_ex.dev_utils.type_assertions import string_or_type_error
 
 
 ERC20_ASSET_DATA_BYTE_LENGTH = 36

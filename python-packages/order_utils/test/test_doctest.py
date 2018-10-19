@@ -2,7 +2,7 @@
 
 from doctest import testmod
 
-from zero_ex import abi_utils, type_assertions
+from zero_ex.dev_utils import abi_utils, type_assertions
 from zero_ex.order_utils import asset_data_utils
 
 
