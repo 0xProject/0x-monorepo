@@ -22,6 +22,7 @@ export interface InstantHeadingProps {
 const placeholderColor = ColorOption.white;
 export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
+        const iconOrAmounts = this._renderIcon() || this._renderAmountsSection();
         return (
             <Container
                 backgroundColor={ColorOption.primaryColor}
@@ -44,19 +45,14 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                 <Flex direction="row" justify="space-between">
                     <SelectedAssetAmountInput fontSize="45px" />
                     <Flex direction="column" justify="space-between">
-                        {this._renderIconOrAmounts()}
+                        {iconOrAmounts}
                     </Flex>
                 </Flex>
             </Container>
         );
     }
 
-    private _renderIconOrAmounts(): React.ReactNode {
-        const icon = this._renderIcon();
-        if (icon) {
-            return icon;
-        }
-
+    private _renderAmountsSection(): React.ReactNode {
         return (
             <Container>
                 <Container marginBottom="5px">{this._placeholderOrAmount(this._ethAmount)}</Container>
