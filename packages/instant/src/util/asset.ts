@@ -1,4 +1,3 @@
-import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 
