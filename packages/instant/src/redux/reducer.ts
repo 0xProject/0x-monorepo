@@ -3,7 +3,8 @@ import { ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { Asset, AssetMetaData, AsyncProcessState } from '../types';
+import { assetMetaDataMap } from '../data/asset_meta_data_map';
+import { Asset, AssetMetaData, AsyncProcessState, Network } from '../types';
 import { assetUtils } from '../util/asset';
 
 import { Action, ActionTypes } from './actions';
@@ -13,6 +14,7 @@ export enum LatestErrorDisplay {
     Hidden,
 }
 export interface State {
+    network: Network;
     assetBuyer?: AssetBuyer;
     assetMetaDataMap: ObjectMap<AssetMetaData>;
     selectedAsset?: Asset;
@@ -26,8 +28,9 @@ export interface State {
 }
 
 export const INITIAL_STATE: State = {
+    network: Network.Mainnet,
     selectedAssetAmount: undefined,
-    assetMetaDataMap: {},
+    assetMetaDataMap,
     buyOrderState: AsyncProcessState.NONE,
     ethUsdPrice: undefined,
     latestBuyQuote: undefined,
@@ -92,7 +95,11 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             const newSelectedAssetData = action.data;
             let newSelectedAsset: Asset | undefined;
             if (!_.isUndefined(newSelectedAssetData)) {
-                newSelectedAsset = assetUtils.createAssetFromAssetData(newSelectedAssetData, state.assetMetaDataMap);
+                newSelectedAsset = assetUtils.createAssetFromAssetData(
+                    newSelectedAssetData,
+                    state.assetMetaDataMap,
+                    state.network,
+                );
             }
             return {
                 ...state,

@@ -6,17 +6,17 @@ import { assetDataNetworkMapping } from '../data/asset_data_network_mapping';
 import { Asset, AssetMetaData, Network, ZeroExInstantError } from '../types';
 
 export const assetUtils = {
-    createAssetFromAssetData: (assetData: string, assetMetaDataMap: ObjectMap<AssetMetaData>): Asset => {
+    createAssetFromAssetData: (
+        assetData: string,
+        assetMetaDataMap: ObjectMap<AssetMetaData>,
+        network: Network,
+    ): Asset => {
         return {
             assetData,
-            metaData: assetUtils.getMetaDataOrThrow(assetData, assetMetaDataMap),
+            metaData: assetUtils.getMetaDataOrThrow(assetData, assetMetaDataMap, network),
         };
     },
-    getMetaDataOrThrow: (
-        assetData: string,
-        metaDataMap: ObjectMap<AssetMetaData>,
-        network: Network = Network.Mainnet,
-    ): AssetMetaData => {
+    getMetaDataOrThrow: (assetData: string, metaDataMap: ObjectMap<AssetMetaData>, network: Network): AssetMetaData => {
         let mainnetAssetData: string | undefined = assetData;
         if (network !== Network.Mainnet) {
             mainnetAssetData = assetUtils.getAssociatedAssetDataIfExists(assetData, network);

@@ -4,12 +4,11 @@ import * as React from 'react';
 import { Provider } from 'react-redux';
 
 import { SelectedAssetThemeProvider } from '../containers/selected_asset_theme_provider';
-import { assetMetaDataMap } from '../data/asset_meta_data_map';
 import { asyncData } from '../redux/async_data';
-import { State } from '../redux/reducer';
+import { INITIAL_STATE, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AssetMetaData } from '../types';
+import { AssetMetaData, Network } from '../types';
 import { assetUtils } from '../util/asset';
 import { getProvider } from '../util/provider';
 
@@ -17,35 +16,49 @@ import { ZeroExInstantContainer } from './zero_ex_instant_container';
 
 fonts.include();
 
-export interface ZeroExInstantProps {
+export type ZeroExInstantProps = ZeroExInstantRequiredProps & Partial<ZeroExInstantOptionalProps>;
+
+export interface ZeroExInstantRequiredProps {
     // TODO: Change API when we allow the selection of different assetDatas
     assetData: string;
-    sraApiUrl: string;
+    // TODO: Allow for a function that returns orders
+    liquiditySource: string;
+}
+
+export interface ZeroExInstantOptionalProps {
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
+    network: Network;
 }
 
 export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
-    public static defaultProps = {
-        additionalAssetMetaDataMap: {},
-    };
     public store: Store;
-    private static _createPartialStoreStateFromProps(props: ZeroExInstantProps): Partial<State> {
+    private static _mergeInitialStateWithProps(props: ZeroExInstantProps, state: State = INITIAL_STATE): State {
+        // Create merged object such that properties in props override default settings
+        const optionalPropsWithDefaults: ZeroExInstantOptionalProps = {
+            additionalAssetMetaDataMap: props.additionalAssetMetaDataMap || {},
+            network: props.network || state.network,
+        };
+        const { network } = optionalPropsWithDefaults;
         // TODO: Provider needs to not be hard-coded to injected web3.
-        const assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(getProvider(), props.sraApiUrl);
+        const assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(getProvider(), props.liquiditySource, {
+            networkId: network,
+        });
         const completeAssetMetaDataMap = {
             ...props.additionalAssetMetaDataMap,
-            ...assetMetaDataMap,
+            ...state.assetMetaDataMap,
         };
-        const storeStateFromProps: Partial<State> = {
+        const storeStateFromProps: State = {
+            ...state,
             assetBuyer,
-            selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap),
+            network,
+            selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap, network),
             assetMetaDataMap: completeAssetMetaDataMap,
         };
         return storeStateFromProps;
     }
     constructor(props: ZeroExInstantProps) {
         super(props);
-        this.store = store.create(ZeroExInstant._createPartialStoreStateFromProps(this.props));
+        this.store = store.create(ZeroExInstant._mergeInitialStateWithProps(this.props, INITIAL_STATE));
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchAndDispatchToStore(this.store);
     }
