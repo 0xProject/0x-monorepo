@@ -27,9 +27,9 @@ export const NestedSidebarMenu = (props: NestedSidebarMenuProps) => {
         // tslint:disable-next-line:no-unused-variable
         return (
             <div key={`section-${sectionName}`} className="py1" style={{ color: colors.greyTheme }}>
-                <div style={{ fontSize: 14, letterSpacing: 0.5 }} className="py1 pl1">
+                <Text fontSize="14px" letterSpacing="0.5" className="py1 pl1">
                     {finalSectionName.toUpperCase()}
-                </div>
+                </Text>
                 {menuItems}
             </div>
         );
