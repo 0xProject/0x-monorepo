@@ -5,7 +5,8 @@ import * as React from 'react';
 import { ColorOption } from '../style/theme';
 import { util } from '../util/util';
 
-import { Container, Input } from './ui';
+import { ScalingInput } from './scaling_input';
+import { Container, Text } from './ui';
 
 export interface AmountInputProps {
     fontColor?: ColorOption;
@@ -22,13 +23,14 @@ export class AmountInput extends React.Component<AmountInputProps> {
         const { fontColor, fontSize, value } = this.props;
         return (
             <Container borderBottom="1px solid rgba(255,255,255,0.3)" display="inline-block">
-                <Input
+                <ScalingInput
+                    startWidthCh={3.5}
+                    endWidthCh={6}
+                    startFontSizePx={45}
                     fontColor={fontColor}
-                    fontSize={fontSize}
                     onChange={this._handleChange}
                     value={!_.isUndefined(value) ? value.toString() : ''}
                     placeholder="0.00"
-                    width="2.2em"
                 />
             </Container>
         );
