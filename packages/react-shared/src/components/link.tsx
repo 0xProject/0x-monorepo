@@ -7,7 +7,7 @@ import * as validUrl from 'valid-url';
 import { LinkType } from '../types';
 import { constants } from '../utils/constants';
 
-interface LinkProps {
+interface BaseLinkProps {
     to: string;
     shouldOpenInNewTab?: boolean;
     className?: string;
@@ -17,6 +17,12 @@ interface LinkProps {
     textDecoration?: string;
     fontColor?: string;
 }
+
+interface ScrollLinkProps extends BaseLinkProps {
+    onActivityChanged?: (isActive: boolean) => void;
+}
+
+type LinkProps = BaseLinkProps & ScrollLinkProps;
 
 export interface LinkState {}
 
@@ -103,11 +109,14 @@ export class Link extends React.Component<LinkProps, LinkState> {
                         <ScrollLink
                             to={this.props.to}
                             offset={0}
+                            spy={true}
                             hashSpy={true}
                             duration={constants.DOCS_SCROLL_DURATION_MS}
                             containerId={constants.SCROLL_CONTAINER_ID}
                             className={this.props.className}
                             style={styleWithDefault}
+                            onSetActive={this._onActivityChanged.bind(this, true)}
+                            onSetInactive={this._onActivityChanged.bind(this, false)}
                         >
                             <span onClick={this._onClickPropagateClickEventAroundScrollLink.bind(this)}>
                                 {this.props.children}
@@ -117,6 +126,11 @@ export class Link extends React.Component<LinkProps, LinkState> {
                 );
             default:
                 throw new Error(`Unrecognized LinkType: ${type}`);
+        }
+    }
+    private _onActivityChanged(isActive: boolean): void {
+        if (this.props.onActivityChanged) {
+            this.props.onActivityChanged(isActive);
         }
     }
     // HACK(fabio): For some reason, the react-scroll link decided to stop the propagation of click events.

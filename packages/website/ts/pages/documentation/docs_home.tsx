@@ -1,8 +1,9 @@
-import { ALink, colors, Link, NestedSidebarMenu } from '@0x/react-shared';
+import { ALink, colors, Link } from '@0x/react-shared';
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { OverviewContent } from 'ts/components/documentation/overview_content';
+import { NestedSidebarMenu } from 'ts/components/nested_sidebar_menu';
 import { Button } from 'ts/components/ui/button';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
@@ -37,9 +38,9 @@ const TUTORIALS: TutorialInfo[] = [
     },
     {
         iconUrl: '/images/developers/tutorials/use_shared_liquidity.svg',
-        description: Key.UseSharedLiquidityDescription,
+        description: Key.UseNetworkedLiquidityDescription,
         link: {
-            title: Key.UseSharedLiquidity,
+            title: Key.UseNetworkedLiquidity,
             to: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
         },
     },
@@ -194,7 +195,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
-                "ERCdex's Javascript SDK for trading on their relayer, as well as other Aquaduct partner relayers",
+                "ERCdEX's Javascript SDK for trading on their relayer, as well as other Aquaduct partner relayers",
             link: {
                 title: 'Aquaduct',
                 to: 'https://www.npmjs.com/package/aqueduct',
@@ -219,26 +220,26 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             },
         },
         {
-            description: "The ERC dEX Trade Widget let's any website provide token liquidity to it's users",
+            description: "The ERCdEX Trade Widget let's any website provide token liquidity to it's users",
             link: {
                 to: 'https://github.com/ERCdEX/widget',
-                title: 'ERCdex Widget',
+                title: 'ERCdEX Widget',
                 shouldOpenInNewTab: true,
             },
         },
         {
-            description: "ERCdex's Java SDK for trading on their relayer, as well as other Aquaduct partner relayers",
+            description: "ERCdEX's Java SDK for trading on their relayer, as well as other Aquaduct partner relayers",
             link: {
                 to: 'https://github.com/ERCdEX/java',
-                title: 'ERCdex Java SDK',
+                title: 'ERCdEX Java SDK',
                 shouldOpenInNewTab: true,
             },
         },
         {
-            description: "ERCdex's Python SDK for trading on their relayer, as well as other Aquaduct partner relayers",
+            description: "ERCdEX's Python SDK for trading on their relayer, as well as other Aquaduct partner relayers",
             link: {
                 to: 'https://github.com/ERCdEX/python',
-                title: 'ERCdex Python SDK',
+                title: 'ERCdEX Python SDK',
                 shouldOpenInNewTab: true,
             },
         },
@@ -368,7 +369,7 @@ export class DocsHome extends React.Component<DocsHomeProps, DocsHomeState> {
                 >
                     <Button
                         borderRadius="4px"
-                        padding="0.4em 6px"
+                        padding="0.4em 0.375em"
                         width="100%"
                         fontColor={colors.grey800}
                         fontSize="14px"

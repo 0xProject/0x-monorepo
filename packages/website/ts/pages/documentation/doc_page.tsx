@@ -6,13 +6,13 @@ import {
     SupportedDocJson,
     TypeDocUtils,
 } from '@0x/react-docs';
-import { NestedSidebarMenu } from '@0x/react-shared';
 import findVersions = require('find-versions');
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import semverSort = require('semver-sort');
 import { SidebarHeader } from 'ts/components/documentation/sidebar_header';
+import { NestedSidebarMenu } from 'ts/components/nested_sidebar_menu';
 import { Container } from 'ts/components/ui/container';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';

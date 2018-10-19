@@ -48,7 +48,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
         const formattedSectionName = utils.convertCamelCaseToSpaces(sectionName);
         const title = !_.isUndefined(this.props.alternativeSectionTitle)
             ? this.props.alternativeSectionTitle
-            : formattedSectionName;
+            : _.capitalize(formattedSectionName);
         return (
             <div
                 className="md-px1 sm-px2 overflow-hidden"
@@ -61,7 +61,7 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                             <span style={{ color: colors.grey700 }}>
                                 <AnchorTitle
                                     headerSize={headerSize}
-                                    title={_.capitalize(title)}
+                                    title={title}
                                     id={id}
                                     shouldShowAnchor={this.state.shouldShowAnchor}
                                 />

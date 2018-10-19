@@ -50,7 +50,7 @@
         "react": "^16.4.2",
         "react-dom": "^16.4.2",
         "react-markdown": "^3.2.2",
-        "react-scroll": "0xproject/react-scroll#similar-to-pr-330-but-with-replace-state",
+        "react-scroll": "0xproject/react-scroll#pr-330-and-replace-state",
         "react-tooltip": "^3.2.7",
         "semver": "5.5.0",
         "styled-components": "^3.3.0"

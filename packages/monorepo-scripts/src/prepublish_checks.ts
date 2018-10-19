@@ -11,7 +11,7 @@ import { utils } from './utils/utils';
 
 async function prepublishChecksAsync(): Promise<void> {
     const shouldIncludePrivate = false;
-    const updatedPublicPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
+    const updatedPublicPackages = await utils.getPackagesToPublishAsync(shouldIncludePrivate);
 
     await checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(updatedPublicPackages);
     await checkChangelogFormatAsync(updatedPublicPackages);
