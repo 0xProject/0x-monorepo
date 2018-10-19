@@ -37,9 +37,9 @@ const TUTORIALS: TutorialInfo[] = [
     },
     {
         iconUrl: '/images/developers/tutorials/use_shared_liquidity.svg',
-        description: Key.UseSharedLiquidityDescription,
+        description: Key.UseNetworkedLiquidityDescription,
         link: {
-            title: Key.UseSharedLiquidity,
+            title: Key.UseNetworkedLiquidity,
             to: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
         },
     },
