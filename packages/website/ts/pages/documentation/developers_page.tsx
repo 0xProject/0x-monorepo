@@ -6,6 +6,7 @@ import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { DocsTopBar } from 'ts/components/documentation/docs_top_bar';
 import { Container } from 'ts/components/ui/container';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { media } from 'ts/style/media';
 import { styled } from 'ts/style/theme';
 import { BrowserType, OperatingSystemType, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
@@ -72,7 +73,6 @@ const SidebarContainer =
     `
     ${scrollableContainerStyles}
     padding-top: 27px;
-    padding-bottom: 100px;
     padding-left: ${SIDEBAR_PADDING}px;
     padding-right: ${SIDEBAR_PADDING}px;
     overflow: hidden;
@@ -99,14 +99,14 @@ const MainContentContainer =
         padding-right: ${50 - SCROLLBAR_WIDTH}px;
         overflow: auto;
     }
-    @media (max-width: 40em) {
+    ${media.small`
         padding-left: 20px;
         padding-right: 20px;
         &:hover {
             padding-right: ${20 - SCROLLBAR_WIDTH}px;
             overflow: auto;
         }
-    }
+    `}
 `;
 
 export class DevelopersPage extends React.Component<DevelopersPageProps, DevelopersPageState> {
@@ -163,7 +163,9 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                             </Container>
                         </Container>
                         <SidebarContainer onWheel={this._throttledSidebarScrolling}>
-                            {this.props.screenWidth !== ScreenWidths.Sm && this.props.sidebar}
+                            <Container paddingBottom="100px">
+                                {this.props.screenWidth !== ScreenWidths.Sm && this.props.sidebar}
+                            </Container>
                         </SidebarContainer>
                     </Container>
                     <Container

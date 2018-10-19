@@ -89,26 +89,22 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
         );
     }
     private _renderDropdownMenu(): React.ReactNode {
+        const sectionPadding = '28px';
         const dropdownMenu = (
             <Container>
-                <Container padding="1.75rem">
-                    {this._renderTitle('Getting started')}
-                    <Container className="flex">
-                        <Container className="pr4 mr2">
-                            {this._renderLinkSection(gettingStartedKeyToLinkInfo1)}
-                        </Container>
-                        <Container>{this._renderLinkSection(gettingStartedKeyToLinkInfo2)}</Container>
+                <Container className="flex" padding={sectionPadding}>
+                    <Container paddingRight="45px">
+                        {this._renderLinkSection(gettingStartedKeyToLinkInfo1, 'Getting started')}
                     </Container>
+                    <Container>{this._renderLinkSection(gettingStartedKeyToLinkInfo2)}</Container>
                 </Container>
                 <Container width="100%" height="1px" backgroundColor={colors.grey300} />
-                <Container className="flex" padding="1.75rem">
-                    <Container className="pr4 mr2">
-                        <Container>{this._renderTitle('Popular docs')}</Container>
-                        <Container>{this._renderLinkSection(popularDocsToLinkInfos)}</Container>
+                <Container className="flex" padding={sectionPadding}>
+                    <Container paddingRight="62px">
+                        <Container>{this._renderLinkSection(popularDocsToLinkInfos, 'Popular docs')}</Container>
                     </Container>
                     <Container>
-                        <Container>{this._renderTitle('Useful links')}</Container>
-                        <Container>{this._renderLinkSection(usefulLinksToLinkInfo)}</Container>
+                        <Container>{this._renderLinkSection(usefulLinksToLinkInfo, 'Useful links')}</Container>
                     </Container>
                 </Container>
                 <Link to={WebsitePaths.Docs} fontColor={colors.lightBlueA700}>
@@ -127,16 +123,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
         );
         return dropdownMenu;
     }
-    private _renderTitle(title: string): React.ReactNode {
-        return (
-            <Container paddingBottom="12px">
-                <Text letterSpacing={1} fontColor={colors.linkSectionGrey} fontSize="14px" fontWeight={600}>
-                    {title.toUpperCase()}
-                </Text>
-            </Container>
-        );
-    }
-    private _renderLinkSection(links: ALink[]): React.ReactNode {
+    private _renderLinkSection(links: ALink[], title: string = ''): React.ReactNode {
         const numLinks = links.length;
         let i = 0;
         const renderLinks = _.map(links, (link: ALink) => {
@@ -159,6 +146,17 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
                 </Container>
             );
         });
-        return <Container>{renderLinks}</Container>;
+        return (
+            <Container>
+                <Container height="33px">
+                    {!_.isEmpty(title) && (
+                        <Text letterSpacing={1} fontColor={colors.linkSectionGrey} fontSize="14px" fontWeight={600}>
+                            {title.toUpperCase()}
+                        </Text>
+                    )}
+                </Container>
+                {renderLinks}
+            </Container>
+        );
     }
 }

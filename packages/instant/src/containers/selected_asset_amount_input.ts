@@ -62,13 +62,13 @@ const updateBuyQuoteAsync = async (
     const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetAmount, asset.metaData.decimals);
 
     // mark quote as pending
-    dispatch(actions.updateBuyQuoteStatePending());
+    dispatch(actions.setQuoteRequestStatePending());
 
     let newBuyQuote: BuyQuote | undefined;
     try {
         newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue);
     } catch (error) {
-        dispatch(actions.updateBuyQuoteStateFailure());
+        dispatch(actions.setQuoteRequestStateFailure());
         errorUtil.errorFlasher.flashNewError(dispatch, error);
         return;
     }
@@ -90,11 +90,11 @@ const mapDispatchToProps = (
         // invalidate the last buy quote.
         dispatch(actions.updateLatestBuyQuote(undefined));
         // reset our buy state
-        dispatch(actions.updatebuyOrderState(AsyncProcessState.NONE));
+        dispatch(actions.updateBuyOrderState(AsyncProcessState.NONE));
 
         if (!_.isUndefined(value) && !_.isUndefined(asset) && !_.isUndefined(assetBuyer)) {
             // even if it's debounced, give them the illusion it's loading
-            dispatch(actions.updateBuyQuoteStatePending());
+            dispatch(actions.setQuoteRequestStatePending());
             // tslint:disable-next-line:no-floating-promises
             debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value);
         }

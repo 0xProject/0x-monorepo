@@ -3,8 +3,8 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { SlidingError } from '../components/sliding_error';
-import { LatestErrorDisplay, State } from '../redux/reducer';
-import { Asset } from '../types';
+import { State } from '../redux/reducer';
+import { Asset, DisplayStatus } from '../types';
 import { errorUtil } from '../util/error';
 
 export interface LatestErrorComponentProps {
@@ -30,7 +30,7 @@ export interface LatestErrorProps {}
 const mapStateToProps = (state: State, _ownProps: LatestErrorProps): ConnectedState => ({
     asset: state.selectedAsset,
     latestError: state.latestError,
-    slidingDirection: state.latestErrorDisplay === LatestErrorDisplay.Present ? 'up' : 'down',
+    slidingDirection: state.latestErrorDisplay === DisplayStatus.Present ? 'up' : 'down',
 });
 
 export const LatestError = connect(mapStateToProps)(LatestErrorComponent);
