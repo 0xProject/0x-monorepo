@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as chai from 'chai';
 import 'mocha';
 
-import { DocAgnosticFormat, Event, SolidityMethod } from '@0xproject/types';
+import { DocAgnosticFormat, Event, SolidityMethod } from '@0x/types';
 
 import { SolDoc } from '../src/sol_doc';
 

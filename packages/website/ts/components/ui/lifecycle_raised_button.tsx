@@ -1,5 +1,5 @@
-import { colors } from '@0xproject/react-shared';
-import { errorUtils } from '@0xproject/utils';
+import { colors } from '@0x/react-shared';
+import { errorUtils } from '@0x/utils';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
 

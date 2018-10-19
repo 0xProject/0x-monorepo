@@ -1,4 +1,4 @@
-import { addressUtils, BigNumber } from '@0xproject/utils';
+import { addressUtils, BigNumber } from '@0x/utils';
 import { OpCode, StructLog } from 'ethereum-types';
 import { addHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';

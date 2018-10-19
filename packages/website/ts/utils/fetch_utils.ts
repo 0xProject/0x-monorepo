@@ -1,4 +1,4 @@
-import { fetchAsync, logUtils } from '@0xproject/utils';
+import { fetchAsync, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
 

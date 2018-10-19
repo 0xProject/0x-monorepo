@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.2 - _October 18, 2018_
+
+    * Dependencies updated
+
 ## v3.0.1 - _October 4, 2018_
 
     * Dependencies updated
@@ -42,7 +46,7 @@ CHANGELOG
     * Updated for SRA v2 (#974)
     * Stopped exporting `Order` type (#924)
 
-## v1.0.5 - _August 13, 2018_
+## v1.0.5 - _August 14, 2018_
 
     * Dependencies updated
 

@@ -1,4 +1,4 @@
-import { promisify } from '@0xproject/utils';
+import { promisify } from '@0x/utils';
 import { JSONRPCRequestPayload, JSONRPCResponsePayload, Provider } from 'ethereum-types';
 
 import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from '../types';

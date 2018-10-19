@@ -1,8 +1,8 @@
-import { DummyERC20TokenContract, ERC20ProxyContract, ERC20TokenContract } from '@0xproject/abi-gen-wrappers';
-import * as artifacts from '@0xproject/contract-artifacts';
-import { BlockchainLifecycle, devConstants } from '@0xproject/dev-utils';
-import { ExchangeContractErrs } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { DummyERC20TokenContract, ERC20ProxyContract, ERC20TokenContract } from '@0x/abi-gen-wrappers';
+import * as artifacts from '@0x/contract-artifacts';
+import { BlockchainLifecycle, devConstants } from '@0x/dev-utils';
+import { ExchangeContractErrs } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 
 import { assetDataUtils } from '../src/asset_data_utils';

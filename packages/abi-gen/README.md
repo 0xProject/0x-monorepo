@@ -8,7 +8,7 @@ You can write your custom handlebars templates which will allow you to seamlessl
 
 ## Installation
 
-`yarn add -g @0xproject/abi-gen`
+`yarn add -g @0x/abi-gen`
 
 ## Usage
 
@@ -82,13 +82,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/abi-gen yarn build
+PKG=@0x/abi-gen yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/abi-gen yarn watch
+PKG=@0x/abi-gen yarn watch
 ```
 
 ### Clean

@@ -1,4 +1,4 @@
-import { Styles } from '@0xproject/react-shared';
+import { Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import { GridTile as PlainGridTile } from 'material-ui/GridList';
 import * as React from 'react';
@@ -14,9 +14,15 @@ import { styled } from 'ts/style/theme';
 import { WebsiteBackendRelayerInfo } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
+export enum RelayerGridTileStyle {
+    Expanded = 0,
+    Minimized,
+}
+
 export interface RelayerGridTileProps {
     relayerInfo: WebsiteBackendRelayerInfo;
     networkId: number;
+    style: RelayerGridTileStyle;
 }
 
 const styles: Styles = {
@@ -30,8 +36,12 @@ const styles: Styles = {
         height: '100%',
         boxSizing: 'border-box',
     },
-    header: {
+    expandedHeader: {
         height: '50%',
+        width: '100%',
+    },
+    minimizedHeader: {
+        height: '100%',
         width: '100%',
     },
     body: {
@@ -75,10 +85,12 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
         !_.isUndefined(headerImageUrl) && !_.isUndefined(props.relayerInfo.primaryColor)
             ? props.relayerInfo.primaryColor
             : FALLBACK_PRIMARY_COLOR;
+    const isExpanded = props.style === RelayerGridTileStyle.Expanded;
+    const headerStyle = isExpanded ? styles.expandedHeader : styles.minimizedHeader;
     return (
         <Island style={styles.root} Component={GridTile}>
             <div style={styles.innerDiv} onClick={onClick}>
-                <div className="flex items-center" style={{ ...styles.header, backgroundColor: headerBackgroundColor }}>
+                <div className="flex items-center" style={{ ...headerStyle, backgroundColor: headerBackgroundColor }}>
                     <Image
                         className="mx-auto"
                         src={props.relayerInfo.logoImgUrl}
@@ -86,21 +98,23 @@ export const RelayerGridTile: React.StatelessComponent<RelayerGridTileProps> = (
                         height={RELAYER_ICON_HEIGHT}
                     />
                 </div>
-                <div style={styles.body}>
-                    <div className="pb1" style={styles.relayerNameLabel}>
-                        {props.relayerInfo.name}
-                    </div>
-                    <Section titleText="Weekly Trade Volume">
-                        {!_.isUndefined(weeklyTxnVolume) && (
-                            <div style={styles.weeklyTradeVolumeLabel}>{props.relayerInfo.weeklyTxnVolume}</div>
-                        )}
-                    </Section>
-                    <Container marginTop="10px">
-                        <Section titleText="Top Tokens">
-                            {!_.isEmpty(topTokens) && <TopTokens tokens={topTokens} networkId={props.networkId} />}
+                {isExpanded && (
+                    <div style={styles.body}>
+                        <div className="pb1" style={styles.relayerNameLabel}>
+                            {props.relayerInfo.name}
+                        </div>
+                        <Section titleText="Weekly Trade Volume">
+                            {!_.isUndefined(weeklyTxnVolume) && (
+                                <div style={styles.weeklyTradeVolumeLabel}>{props.relayerInfo.weeklyTxnVolume}</div>
+                            )}
                         </Section>
-                    </Container>
-                </div>
+                        <Container marginTop="10px">
+                            <Section titleText="Top Tokens">
+                                {!_.isEmpty(topTokens) && <TopTokens tokens={topTokens} networkId={props.networkId} />}
+                            </Section>
+                        </Container>
+                    </div>
+                )}
             </div>
         </Island>
     );

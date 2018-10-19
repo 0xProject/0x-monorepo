@@ -1,5 +1,5 @@
-import { ContractWrappers } from '@0xproject/contract-wrappers';
-import { assetDataUtils as sharedAssetDataUtils } from '@0xproject/order-utils';
+import { ContractWrappers } from '@0x/contract-wrappers';
+import { assetDataUtils as sharedAssetDataUtils } from '@0x/order-utils';
 import * as _ from 'lodash';
 
 export const assetDataUtils = {

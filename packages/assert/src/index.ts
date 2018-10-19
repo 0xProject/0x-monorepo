@@ -1,5 +1,5 @@
-import { Schema, SchemaValidator } from '@0xproject/json-schemas';
-import { addressUtils, BigNumber } from '@0xproject/utils';
+import { Schema, SchemaValidator } from '@0x/json-schemas';
+import { addressUtils, BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as validUrl from 'valid-url';
 

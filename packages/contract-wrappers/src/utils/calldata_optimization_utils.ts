@@ -1,4 +1,4 @@
-import { SignedOrder } from '@0xproject/types';
+import { SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';

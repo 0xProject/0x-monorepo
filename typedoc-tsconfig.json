@@ -11,7 +11,7 @@
         "resolveJsonModule": true,
         "pretty": true,
         "skipLibCheck": true,
-        "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+        "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
         "strict": true
     }
 }

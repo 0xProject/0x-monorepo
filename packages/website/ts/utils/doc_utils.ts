@@ -1,5 +1,5 @@
-import { DocAgnosticFormat, GeneratedDocJson } from '@0xproject/react-docs';
-import { fetchAsync, logUtils } from '@0xproject/utils';
+import { DocAgnosticFormat, GeneratedDocJson } from '@0x/react-docs';
+import { fetchAsync, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import { S3FileObject, VersionToFilePath } from 'ts/types';
 import convert = require('xml-js');

@@ -1,6 +1,6 @@
-import { assert as sharedAssert } from '@0xproject/assert';
-import { schemas } from '@0xproject/json-schemas';
-import { SignedOrder } from '@0xproject/types';
+import { assert as sharedAssert } from '@0x/assert';
+import { schemas } from '@0x/json-schemas';
+import { SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
 import { BuyQuote, BuyQuoteInfo, OrderProvider, OrderProviderRequest } from '../types';

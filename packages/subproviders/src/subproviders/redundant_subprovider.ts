@@ -1,4 +1,4 @@
-import { promisify } from '@0xproject/utils';
+import { promisify } from '@0x/utils';
 import { JSONRPCRequestPayload } from 'ethereum-types';
 import * as _ from 'lodash';
 

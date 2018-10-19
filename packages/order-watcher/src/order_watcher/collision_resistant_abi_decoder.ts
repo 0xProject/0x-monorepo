@@ -1,4 +1,4 @@
-import { AbiDecoder } from '@0xproject/utils';
+import { AbiDecoder } from '@0x/utils';
 import { ContractAbi, DecodedLogArgs, LogEntry, LogWithDecodedArgs, RawLog } from 'ethereum-types';
 
 const TOKEN_TYPE_COLLISION = `Token can't be marked as ERC20 and ERC721 at the same time`;

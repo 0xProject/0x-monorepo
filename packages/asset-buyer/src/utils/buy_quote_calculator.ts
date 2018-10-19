@@ -1,5 +1,5 @@
-import { marketUtils, rateUtils } from '@0xproject/order-utils';
-import { BigNumber } from '@0xproject/utils';
+import { marketUtils, rateUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';

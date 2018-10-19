@@ -1,10 +1,10 @@
 {
-    "name": "@0xproject/abi-gen-wrappers",
-    "version": "1.0.0",
+    "name": "@0x/abi-gen-wrappers",
+    "version": "1.0.1",
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Low-level 0x smart contract wrappers generated using @0xproject/abi-gen",
+    "description": "Low-level 0x smart contract wrappers generated using @0x/abi-gen",
     "main": "lib/src/index.js",
     "directories": {
         "test": "test"
@@ -12,6 +12,7 @@
     "scripts": {
         "build": "yarn pre_build && tsc -b",
         "build:ci": "yarn build",
+        "lint": "tslint --project .",
         "pre_build": "yarn generate_contract_wrappers",
         "clean": "shx rm -rf lib wrappers",
         "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers"
@@ -29,11 +30,17 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen-wrappers/README.md",
     "devDependencies": {
-        "@0xproject/abi-gen": "^1.0.12",
+        "@0x/abi-gen": "^1.0.14",
+        "@0x/tslint-config": "^1.0.9",
+        "@0x/utils": "^2.0.3",
+        "@0x/web3-wrapper": "^3.1.0",
+        "ethereum-types": "^1.1.1",
+        "ethers": "~4.0.4",
+        "lodash": "^4.17.5",
         "shx": "^0.2.2"
     },
     "dependencies": {
-        "@0xproject/base-contract": "^3.0.1"
+        "@0x/base-contract": "^3.0.2"
     },
     "publishConfig": {
         "access": "public"

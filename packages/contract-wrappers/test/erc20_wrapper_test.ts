@@ -1,8 +1,8 @@
-import { ContractAddresses } from '@0xproject/contract-addresses';
-import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
-import { EmptyWalletSubprovider, Web3ProviderEngine } from '@0xproject/subproviders';
-import { DoneCallback } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { ContractAddresses } from '@0x/contract-addresses';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
+import { EmptyWalletSubprovider, Web3ProviderEngine } from '@0x/subproviders';
+import { DoneCallback } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { Provider } from 'ethereum-types';
 import 'mocha';

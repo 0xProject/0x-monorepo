@@ -7,7 +7,8 @@
                     "Convert all schemas to JSON files so that they can be used with `json-schema` implemenations in other programming languages.",
                 "pr": 1145
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "timestamp": 1538693146,

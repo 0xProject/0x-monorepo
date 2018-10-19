@@ -1,4 +1,4 @@
-## @0xproject/sol-cov
+## @0x/sol-cov
 
 A Solidity code coverage tool.
 
@@ -7,19 +7,19 @@ A Solidity code coverage tool.
 ## Installation
 
 ```bash
-yarn add @0xproject/sol-cov
+yarn add @0x/sol-cov
 ```
 
 **Import**
 
 ```javascript
-import { CoverageSubprovider } from '@0xproject/sol-cov';
+import { CoverageSubprovider } from '@0x/sol-cov';
 ```
 
 or
 
 ```javascript
-var CoverageSubprovider = require('@0xproject/sol-cov').CoverageSubprovider;
+var CoverageSubprovider = require('@0x/sol-cov').CoverageSubprovider;
 ```
 
 ## Contributing
@@ -47,13 +47,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/sol-cov yarn build
+PKG=@0x/sol-cov yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/sol-cov yarn watch
+PKG=@0x/sol-cov yarn watch
 ```
 
 ### Clean

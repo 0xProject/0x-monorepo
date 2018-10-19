@@ -1,4 +1,4 @@
-import { BuyQuote } from '@0xproject/asset-buyer';
+import { BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -39,14 +39,14 @@ const textForState = (state: AsyncProcessState): string => {
 };
 
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): ConnectedState => ({
-    text: textForState(state.selectedAssetBuyState),
+    text: textForState(state.buyOrderState),
     buyQuote: state.latestBuyQuote,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetBuyButtonProps): ConnectedDispatch => ({
-    onClick: buyQuote => dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.PENDING)),
-    onBuySuccess: buyQuote => dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.SUCCESS)),
-    onBuyFailure: buyQuote => dispatch(actions.updateSelectedAssetBuyState(AsyncProcessState.FAILURE)),
+    onClick: buyQuote => dispatch(actions.updateBuyOrderState(AsyncProcessState.PENDING)),
+    onBuySuccess: buyQuote => dispatch(actions.updateBuyOrderState(AsyncProcessState.SUCCESS)),
+    onBuyFailure: buyQuote => dispatch(actions.updateBuyOrderState(AsyncProcessState.FAILURE)),
 });
 
 export const SelectedAssetBuyButton: React.ComponentClass<SelectedAssetBuyButtonProps> = connect(

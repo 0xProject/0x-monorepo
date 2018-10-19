@@ -1,8 +1,8 @@
-import { ERC20TokenContract, ERC20TokenEventArgs, ERC20TokenEvents } from '@0xproject/abi-gen-wrappers';
-import { ERC20Token } from '@0xproject/contract-artifacts';
-import { schemas } from '@0xproject/json-schemas';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ERC20TokenContract, ERC20TokenEventArgs, ERC20TokenEvents } from '@0x/abi-gen-wrappers';
+import { ERC20Token } from '@0x/contract-artifacts';
+import { schemas } from '@0x/json-schemas';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 

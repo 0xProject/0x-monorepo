@@ -1,7 +1,7 @@
-import { Styles } from '@0xproject/react-shared';
+import { Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { MenuItem } from 'ts/components/ui/menu_item';
+import { CustomMenuItem } from 'ts/components/ui/custom_menu_item';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 
@@ -67,14 +67,14 @@ export const Menu: React.StatelessComponent<MenuProps> = (props: MenuProps) => {
             {_.map(props.menuItemEntries, entry => {
                 const isSelected = entry.to === props.selectedPath;
                 return (
-                    <MenuItem key={entry.to} to={entry.to}>
+                    <CustomMenuItem key={entry.to} to={entry.to}>
                         <MenuItemLabel
                             title={entry.labelText}
                             iconName={entry.iconName}
                             selected={isSelected}
                             theme={props.theme}
                         />
-                    </MenuItem>
+                    </CustomMenuItem>
                 );
             })}
         </div>

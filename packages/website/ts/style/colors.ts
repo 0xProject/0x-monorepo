@@ -1,4 +1,4 @@
-import { colors as sharedColors } from '@0xproject/react-shared';
+import { colors as sharedColors } from '@0x/react-shared';
 
 const appColors = {
     walletBoxShadow: 'rgba(0, 0, 0, 0.05)',

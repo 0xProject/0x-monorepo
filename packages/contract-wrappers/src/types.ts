@@ -7,10 +7,10 @@ import {
     ExchangeEvents,
     WETH9EventArgs,
     WETH9Events,
-} from '@0xproject/abi-gen-wrappers';
-import { ContractAddresses } from '@0xproject/contract-addresses';
-import { OrderState, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+} from '@0x/abi-gen-wrappers';
+import { ContractAddresses } from '@0x/contract-addresses';
+import { OrderState, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 import { BlockParam, ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
 

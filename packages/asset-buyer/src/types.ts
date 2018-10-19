@@ -1,5 +1,5 @@
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
