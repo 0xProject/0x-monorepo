@@ -40,8 +40,8 @@ const scrollableContainerStyles = `
     right: 0px;
     overflow-x: hidden;
     overflow-y: scroll;
-    min-height: calc(100vh - ${TOP_BAR_HEIGHT}px);
     -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
 `;
 
 interface SidebarContainerProps {
