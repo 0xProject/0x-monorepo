@@ -11,8 +11,6 @@ const Alpha = styled.h2`
 const Beta = styled.h3`
     font-size: 1.25rem;
     line-height: 1.65;
-
-    ${media.small`font-size: 1rem;`};
 `;
 
 const Gamma = styled.h4`
