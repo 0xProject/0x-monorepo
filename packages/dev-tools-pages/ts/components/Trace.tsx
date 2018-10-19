@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { colors } from '../variables';
+import { colors, media } from '../variables';
 
 import { withContext, Props } from './withContext';
 import { Alpha, Beta, Gamma } from './Typography';
@@ -101,6 +101,8 @@ const StyledSection =
     background: linear-gradient(to right, ${colors.black} 50%, ${props => props.background} 50%);
     padding-top: 6.25rem;
     padding-bottom: 5.25rem;
+    
+    ${media.small`background: none`};
 `;
 
 const Wrapper = styled(Container)`
@@ -108,7 +110,14 @@ const Wrapper = styled(Container)`
 
     ${Alpha} {
         padding-bottom: 2.5rem;
+
+        ${media.small`padding-bottom: 1.875rem;`};
     }
+
+    ${media.small`
+        display: block;
+        width: 100%;
+    `};
 `;
 
 const Block =
@@ -125,27 +134,52 @@ const Block =
     :last-of-type {
         padding-left: 6.25rem;
     }
+
+    ${media.small`
+        width: 100%;
+        padding-top: 2.5rem;
+        padding-bottom: 3.4375rem;
+
+        :first-of-type {
+            padding-left: 1.875rem;
+            padding-right: 1.875rem;
+        }
+        :last-of-type {
+            padding-left: 1.875rem;
+            padding-right: 1.875rem;
+        }
+    `};
 `;
 
 const MainCopy = styled(Beta)`
     margin-bottom: 3.1875rem;
+    ${media.small`margin-bottom: 1.125rem;`};
 `;
 
 const List = styled.ul`
     margin-top: 6.25rem;
     margin-bottom: 0;
     padding: 0;
+
+    ${media.small`margin-top: 3.4375rem;`};
 `;
 
 const Item = styled.li`
     display: flex;
     align-items: center;
-    margin-bottom: 4.4375rem;
+
+    :not(:last-child) {
+        margin-bottom: 4.4375rem;
+
+        ${media.small`margin-bottom: 3.4375rem;`};
+    }
 `;
 
 const Copy = styled.div`
     max-width: 20rem;
     margin-right: 5.875rem;
+
+    ${media.small`margin-right: 2.0625rem;`};
 `;
 
 export default withContext(Trace);
