@@ -1,5 +1,6 @@
-const variables = {
-    colors: {
+import { css } from 'styled-components';
+
+const colors = {
         black: '#000000',
         white: '#FFFFFF',
         lightGray: '#F1F4F5',
@@ -10,3 +11,4 @@ const variables = {
 };
 
 export default variables;
+export { colors, media };

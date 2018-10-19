@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import variables from '../variables';
+import { colors } from '../variables';
 
 const InlineCode = styled.code`
-    background-color: ${variables.colors.blueGray}
+    background-color: ${colors.blueGray}
     padding: 0.1875rem;
 `;
 
