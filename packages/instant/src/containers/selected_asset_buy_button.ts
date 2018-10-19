@@ -1,4 +1,3 @@
-// TODO: Rename to SelectedAssetButton
 import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -9,14 +8,12 @@ import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { AsyncProcessState } from '../types';
 
-import { AssetButton } from '../components/asset_button';
+import { BuyButton } from '../components/buy_button';
 
-// TODO: rename
 export interface SelectedAssetBuyButtonProps {}
 
 interface ConnectedState {
     assetBuyer?: AssetBuyer;
-    buyOrderState: AsyncProcessState;
     buyQuote?: BuyQuote;
 }
 
@@ -24,12 +21,10 @@ interface ConnectedDispatch {
     onBuyClick: (buyQuote: BuyQuote) => void;
     onBuySuccess: (buyQuote: BuyQuote) => void;
     onBuyFailure: (buyQuote: BuyQuote) => void;
-    onRetryClick: () => void;
 }
 
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): ConnectedState => ({
     assetBuyer: state.assetBuyer,
-    buyOrderState: state.buyOrderState,
     buyQuote: state.latestBuyQuote,
 });
 
@@ -37,10 +32,9 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetB
     onBuyClick: buyQuote => dispatch(actions.updatebuyOrderState(AsyncProcessState.PENDING)),
     onBuySuccess: buyQuote => dispatch(actions.updatebuyOrderState(AsyncProcessState.SUCCESS)),
     onBuyFailure: buyQuote => dispatch(actions.updatebuyOrderState(AsyncProcessState.FAILURE)),
-    onRetryClick: () => dispatch(actions.clearBuyQuoteAndSelectedAssetAmount()),
 });
 
 export const SelectedAssetBuyButton: React.ComponentClass<SelectedAssetBuyButtonProps> = connect(
     mapStateToProps,
     mapDispatchToProps,
-)(AssetButton);
+)(BuyButton);
