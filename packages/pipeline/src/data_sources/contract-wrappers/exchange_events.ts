@@ -29,7 +29,10 @@ export class ExchangeEventsSource {
         let events: Array<LogWithDecodedArgs<ExchangeFillEventArgs>> = [];
         for (let currFromBlock = fromBlock; currFromBlock <= calculatedToBlock; currFromBlock += NUM_BLOCKS_PER_QUERY) {
             events = events.concat(
-                await this._getFillEventsForRangeAsync(currFromBlock, currFromBlock + NUM_BLOCKS_PER_QUERY - 1),
+                await this._getFillEventsForRangeAsync(
+                    currFromBlock,
+                    Math.min(currFromBlock + NUM_BLOCKS_PER_QUERY - 1, calculatedToBlock),
+                ),
             );
         }
         return events;

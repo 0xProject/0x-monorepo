@@ -25,8 +25,8 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@types/ramda": "^0.25.38",
         "@0x/tslint-config": "^1.0.9",
+        "@types/ramda": "^0.25.38",
         "chai": "^4.1.2",
         "chai-as-promised": "^7.1.1",
         "chai-bignumber": "^2.0.2",
@@ -36,10 +36,10 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/dev-utils": "^1.0.13",
-        "@0x/contract-artifacts": "^1.0.1",
         "@0x/connect": "^3.0.2",
+        "@0x/contract-artifacts": "^1.0.1",
         "@0x/contract-wrappers": "^3.0.0",
+        "@0x/dev-utils": "^1.0.13",
         "@0x/order-utils": "^2.0.0",
         "@0x/subproviders": "^2.1.0",
         "@0x/types": "^1.2.0",
@@ -47,6 +47,7 @@
         "@0x/web3-wrapper": "^3.1.0",
         "axios": "^0.18.0",
         "ethereum-types": "^1.0.6",
+        "pg": "^7.5.0",
         "ramda": "^0.25.0",
         "reflect-metadata": "^0.1.12",
         "sqlite3": "^4.0.2",
