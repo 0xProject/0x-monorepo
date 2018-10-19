@@ -1,8 +1,11 @@
 import styled from 'styled-components';
+import { media } from '../variables';
 
 const Alpha = styled.h2`
     font-size: 1.75rem;
     line-height: 1;
+
+    ${media.small`font-size: 1.5rem;`};
 `;
 
 const Beta = styled.h3`
@@ -12,6 +15,8 @@ const Beta = styled.h3`
 
 const Gamma = styled.h4`
     font-size: 1rem;
+
+    ${media.small`font-size: 0.875rem;`};
 `;
 
 const Small = styled.p`
