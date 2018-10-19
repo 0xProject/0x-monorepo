@@ -69,8 +69,8 @@ class Code extends React.Component<CodeProps, CodeState> {
         const { language, children } = this.props;
 
         if (language !== undefined) {
-            const { highlight } = await import(/* webpackChunkName: 'highlight.js' */ 'highlight.js');
-            const { value: hlCode } = highlight(language, children as string);
+            const { default: hljs } = await System.import(/* webpackChunkName: 'highlightjs' */ 'ts/highlight');
+            const { value: hlCode } = hljs.highlight(language, children as string);
             this.setState({ hlCode });
         }
     }
@@ -103,7 +103,7 @@ class Code extends React.Component<CodeProps, CodeState> {
                         <StyledCode>{this.props.children}</StyledCode>
                     )}
                 </StyledPre>
-                <Button onClick={this.handleCopy}>Copy</Button>
+                {navigator.userAgent !== 'ReactSnap' ? <Button onClick={this.handleCopy}>Copy</Button> : null}
                 {!('clipboard' in navigator) ? (
                     <CopyInput readOnly aria-hidden="true" ref={this.code} value={children} />
                 ) : null}

@@ -11,21 +11,21 @@ const BaseStyles = createGlobalStyle`
 
   @font-face {
     font-family: "Maison Neue";
-    src: url("/fonts/MaisonNeue-Book-subset.woff") format("woff");
+    src: url("/fonts/MaisonNeue-Book-subset.woff2") format("woff2"), url("/fonts/MaisonNeue-Book-subset.woff") format("woff");
     font-weight: 300;
     font-display: swap;
     unicode-range: U+20-7E;
   }
   @font-face {
     font-family: "Maison Neue";
-    src: url("/fonts/MaisonNeue-Bold-subset.woff") format("woff");
+    src: url("/fonts/MaisonNeue-Bold-subset.woff2") format("woff2"), url("/fonts/MaisonNeue-Bold-subset.woff") format("woff");
     font-weight: 500;
     font-display: swap;
     unicode-range: U+20-7E;
   }
   @font-face {
     font-family: "Maison Neue Mono";
-    src: url("/fonts/MaisonNeue-Mono-subset.woff") format("woff");
+    src: url("/fonts/MaisonNeue-Mono-subset.woff2") format("woff2"), url("/fonts/MaisonNeue-Mono-subset.woff") format("woff");
     font-weight: 300;
     font-display: optional;
     unicode-range: U+20-7E;

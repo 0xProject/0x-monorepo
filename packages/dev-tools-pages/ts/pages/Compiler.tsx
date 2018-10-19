@@ -1,7 +1,8 @@
 import * as React from 'react';
+import { render, hydrate } from 'react-dom';
 
 import context from 'ts/context/compiler';
-import Base from './Base';
+import Base from 'ts/components/Base';
 import Container from 'ts/components/Container';
 import Main from 'ts/components/Main';
 import ContentBlock from 'ts/components/ContentBlock';
@@ -11,7 +12,7 @@ import InlineCode from 'ts/components/InlineCode';
 import List from 'ts/components/List';
 import CompilerComponent from 'ts/components/Compiler';
 
-function Compiler(props: any) {
+function Compiler() {
     return (
         <Base context={context}>
             <Container>
@@ -52,4 +53,10 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
     );
 }
 
-export default Compiler;
+const root = document.getElementById('app');
+
+if (root.hasChildNodes()) {
+    hydrate(<Compiler />, root);
+} else {
+    render(<Compiler />, root);
+}
