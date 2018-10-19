@@ -1,4 +1,4 @@
-export { EthRPCClient } from './web3_wrapper';
+export { EthRPCClient } from './eth_rpc_client';
 export { marshaller } from './marshaller';
 
 export { AbiDecoder } from '@0x/utils';
