@@ -99,7 +99,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                 >
                     <Button
                         borderRadius="4px"
-                        padding="0.4em 6px"
+                        padding="0.4em 0.375em"
                         width="100%"
                         fontColor={colors.grey800}
                         fontSize="14px"

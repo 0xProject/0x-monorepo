@@ -68,7 +68,7 @@ export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
             >
                 <Button
                     borderRadius="4px"
-                    padding="0.4em 6px"
+                    padding="0.4em 0.375em"
                     width="100%"
                     backgroundColor={isActive ? colors.lightLinkBlue : colors.grey100}
                     fontSize="14px"
