@@ -40,12 +40,10 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         this.props.onClick(this.props.buyQuote);
         let txnHash;
         try {
-            txnHash = await this.props.assetBuyer.executeBuyQuoteAsync(this.props.buyQuote, {
-                gasLimit: 5000000,
-            });
+            txnHash = await this.props.assetBuyer.executeBuyQuoteAsync(this.props.buyQuote);
             await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
             this.props.onBuySuccess(this.props.buyQuote, txnHash);
-        } catch (e) {
+        } catch {
             this.props.onBuyFailure(this.props.buyQuote, txnHash);
         }
     };
