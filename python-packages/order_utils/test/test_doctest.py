@@ -3,13 +3,7 @@
 from doctest import testmod
 
 from zero_ex import abi_utils, type_assertions
-from zero_ex.order_utils import asset_data_utils, signature_utils
-
-
-def test_doctest_signature_utils():
-    """Invoke doctest on the signature_utils module."""
-    (failure_count, _) = testmod(signature_utils)
-    assert failure_count == 0
+from zero_ex.order_utils import asset_data_utils
 
 
 def test_doctest_asset_data_utils():
