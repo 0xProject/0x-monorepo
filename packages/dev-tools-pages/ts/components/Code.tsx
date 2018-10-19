@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import variables from '../variables';
 
 import BaseButton from './Button';
 
@@ -25,8 +26,8 @@ const Base =
     styled.div <
     CodeProps >
     `
-  color: ${props => (props.language === undefined ? '#FFF' : 'inherit')};
-  background-color: ${props => (props.language === undefined ? '#000' : '#F1F4F5')};
+  color: ${props => (props.language === undefined ? variables.colors.white : 'inherit')};
+  background-color: ${props => (props.language === undefined ? variables.colors.black : variables.colors.lightGray)};
   white-space: ${props => (props.language === undefined ? 'nowrap' : '')};
   position: relative;
   &:hover ${Button} {
