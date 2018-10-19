@@ -1,6 +1,6 @@
 import * as styledComponents from 'styled-components';
 
-const { default: styled, css, injectGlobal, keyframes, ThemeProvider } = styledComponents;
+const { default: styled, css, keyframes, ThemeProvider } = styledComponents;
 
 export type Theme = { [key in ColorOption]: string };
 
@@ -28,4 +28,4 @@ export const theme: Theme = {
     darkOrange: '#F2994C',
 };
 
-export { styled, css, injectGlobal, keyframes, ThemeProvider };
+export { styled, css, keyframes, ThemeProvider };
