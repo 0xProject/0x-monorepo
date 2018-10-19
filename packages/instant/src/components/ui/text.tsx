@@ -23,14 +23,8 @@ export interface TextProps {
     display?: string;
 }
 
-const PlainText: React.StatelessComponent<TextProps> = ({ children, className, onClick }) => (
-    <div className={className} onClick={onClick}>
-        {children}
-    </div>
-);
-
 const darkenOnHoverAmount = 0.3;
-export const Text = styled(PlainText)`
+export const Text = styled<TextProps, 'div'>('div')`
     font-family: ${props => props.fontFamily};
     font-style: ${props => props.fontStyle};
     font-weight: ${props => props.fontWeight};

@@ -29,11 +29,7 @@ export interface ContainerProps {
     zIndex?: number;
 }
 
-const PlainContainer: React.StatelessComponent<ContainerProps> = ({ children, className }) => (
-    <div className={className}>{children}</div>
-);
-
-export const Container = styled(PlainContainer)`
+export const Container = styled<ContainerProps, 'div'>('div')`
     box-sizing: border-box;
     ${props => cssRuleIfExists(props, 'display')}
     ${props => cssRuleIfExists(props, 'position')}

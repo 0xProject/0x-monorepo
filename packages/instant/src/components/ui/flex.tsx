@@ -17,7 +17,7 @@ const PlainFlex: React.StatelessComponent<FlexProps> = ({ children, className })
     <div className={className}>{children}</div>
 );
 
-export const Flex = styled(PlainFlex)`
+export const Flex = styled<FlexProps, 'div'>('div')`
     display: flex;
     flex-direction: ${props => props.direction};
     flex-wrap: ${props => props.flexWrap};
