@@ -6,10 +6,10 @@ import { Pulse } from './animations/pulse';
 
 import { Text } from './ui';
 
-export interface PlainPlaceholder {
+interface PlainPlaceholder {
     color: ColorOption;
 }
-export const PlainPlaceholder: React.StatelessComponent<PlainPlaceholder> = props => (
+const PlainPlaceholder: React.StatelessComponent<PlainPlaceholder> = props => (
     <Text fontWeight="bold" fontColor={props.color}>
         &mdash;
     </Text>
