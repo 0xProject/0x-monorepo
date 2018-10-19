@@ -153,7 +153,10 @@ const Block =
 
 const MainCopy = styled(Beta)`
     margin-bottom: 3.1875rem;
-    ${media.small`margin-bottom: 1.125rem;`};
+    ${media.small`
+        margin-bottom: 1.125rem;
+        font-size: 1rem;
+    `};
 `;
 
 const List = styled.ul`
