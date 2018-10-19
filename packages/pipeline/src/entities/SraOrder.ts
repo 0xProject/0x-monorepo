@@ -1,9 +1,9 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 import { AssetType } from '../types';
 
 @Entity()
-export class SraOrder extends BaseEntity {
+export class SraOrder {
     @PrimaryColumn() public exchangeAddress!: string;
     @PrimaryColumn() public orderHashHex!: string;
 

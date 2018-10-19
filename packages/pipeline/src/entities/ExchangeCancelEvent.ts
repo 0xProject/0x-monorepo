@@ -1,15 +1,16 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 import { AssetType } from '../types';
 
 @Entity()
-export class ExchangeCancelEvent extends BaseEntity {
+export class ExchangeCancelEvent {
     @PrimaryColumn() public contractAddress!: string;
     @PrimaryColumn() public logIndex!: number;
     @PrimaryColumn() public blockNumber!: number;
 
     @Column() public rawData!: string;
 
+    // TODO(albrow): Include transaction hash
     @Column() public makerAddress!: string;
     @Column({ nullable: true, type: String })
     public takerAddress!: string;
