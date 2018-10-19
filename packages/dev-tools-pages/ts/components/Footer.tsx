@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Alpha, Beta } from './Typography';
 import { withContext, Props } from './withContext';
 import Container from './Container';
+import { media } from '../variables';
 
 import MainIcon from 'ts/icons/logos/0x.svg';
 import compiler from 'ts/context/compiler';
@@ -23,7 +24,7 @@ function Footer(props: Props) {
                     <Alpha>Other tools by 0x</Alpha>
                     <List>
                         {tools.map(({ title, subtitle, icon }) => (
-                            <ListItem as="li" key={title}>
+                            <ListItem key={title}>
                                 <Icon as={icon} />
                                 <div>
                                     <Beta>{title}</Beta>
@@ -49,21 +50,38 @@ const StyledFooter = styled.footer`
     background-color: ${(props: { background: string }) => props.background};
     padding-top: 6.25rem;
     padding-bottom: 5.4375rem;
+
+    ${media.small`padding-top: 2.5rem;`};
 `;
 
 const Top = styled.div`
     display: flex;
     justify-content: space-between;
     margin-bottom: 9.375rem;
+
+    ${media.small`
+        display: block;
+        margin-bottom: 5.3125rem;
+    `};
+
+    ${Alpha} {
+        ${media.small`margin-bottom: 3.8125rem;`};
+    }
+`;
+
+const Icon = styled.div`
+    margin-right: 1.3125rem;
+
+    ${media.small`margin-right: 0.9375rem`};
 `;
 
 const Media = styled.div`
     display: flex;
     align-items: center;
-`;
 
-const Icon = styled.div`
-    margin-right: 1.3125rem;
+    ${Icon} {
+        align-self: flex-start;
+    }
 `;
 
 const List = styled.ul`
@@ -73,14 +91,26 @@ const List = styled.ul`
     flex-direction: row;
     margin: 0;
     padding: 0;
+
+    ${media.small`
+        display: block;
+        width: 100%; 
+    `};
 `;
 
-const ListItem = styled(Media)`
+const ListItem = styled.li`
+    display: flex;
+    align-items: center;
     flex-basis: 50%;
     margin-bottom: 3.3125rem;
+
     :nth-last-of-type(-n + 2) {
         margin-bottom: 0;
+
+        ${media.small`margin-bottom: 1.875rem`};
     }
+
+    ${media.small`margin-bottom: 1.875rem`};
 `;
 
 const Small = styled.small`
