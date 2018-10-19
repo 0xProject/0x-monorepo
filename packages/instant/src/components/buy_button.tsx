@@ -24,15 +24,14 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         onBuyFailure: util.boundNoop,
     };
     public render(): React.ReactNode {
+        // TODO: move container out
         const shouldDisableButton = _.isUndefined(this.props.buyQuote);
         return (
-            <Container padding="20px" width="100%">
-                <Button width="100%" onClick={this._handleClick} isDisabled={shouldDisableButton}>
-                    <Text fontColor={ColorOption.white} fontWeight={600} fontSize="20px">
-                        {this.props.text}
-                    </Text>
-                </Button>
-            </Container>
+            <Button width="100%" onClick={this._handleClick} isDisabled={shouldDisableButton}>
+                <Text fontColor={ColorOption.white} fontWeight={600} fontSize="20px">
+                    {this.props.text}
+                </Text>
+            </Button>
         );
     }
     private readonly _handleClick = async () => {
@@ -43,10 +42,13 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         this.props.onClick(this.props.buyQuote);
         let txnHash;
         try {
-            txnHash = await this.props.assetBuyer.executeBuyQuoteAsync(this.props.buyQuote);
+            txnHash = await this.props.assetBuyer.executeBuyQuoteAsync(this.props.buyQuote, {
+                gasLimit: 5000000,
+            });
             await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
             this.props.onBuySuccess(this.props.buyQuote, txnHash);
-        } catch {
+        } catch (e) {
+            console.log('error', e);
             this.props.onBuyFailure(this.props.buyQuote, txnHash);
         }
     };
