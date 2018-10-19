@@ -15,11 +15,8 @@ SELECTOR_LENGTH = 10
 class ERC20AssetData(TypedDict):
     """Object interface to ERC20 asset data."""
 
-    #: 4-byte ABI method ID for, eg, "ERC20Token(address)"
     asset_proxy_id: str
-
     token_address: str
-    """Token contract address"""
 
 
 def encode_erc20_asset_data(token_address: str) -> str:
