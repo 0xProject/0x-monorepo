@@ -6,13 +6,14 @@ import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { DocsTopBar } from 'ts/components/documentation/docs_top_bar';
 import { Container } from 'ts/components/ui/container';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { ScreenWidths } from 'ts/types';
+import { BrowserType, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 const THROTTLE_TIMEOUT = 100;
 const TOP_BAR_HEIGHT = 80;
-const SCROLLER_WIDTH = 4;
+const browserType = utils.getBrowserType();
+const SCROLLER_WIDTH = browserType === BrowserType.Firefox ? 15 : 4;
 
 export interface DevelopersPageProps {
     location: Location;
