@@ -42,10 +42,8 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                 <Flex direction="row" justify="space-between">
                     <SelectedAssetAmountInput fontSize="45px" />
                     <Flex direction="column" justify="space-between">
-                        <Container marginBottom="5px">
-                            {this._placeholderOrAmount(this._ethAmount.bind(this))}
-                        </Container>
-                        <Container opacity={0.7}>{this._placeholderOrAmount(this._dollarAmount.bind(this))}</Container>
+                        <Container marginBottom="5px">{this._placeholderOrAmount(this._ethAmount)}</Container>
+                        <Container opacity={0.7}>{this._placeholderOrAmount(this._dollarAmount)}</Container>
                     </Flex>
                 </Flex>
             </Container>
@@ -62,7 +60,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         return amountFunction();
     }
 
-    private _ethAmount(): React.ReactNode {
+    private _ethAmount = (): React.ReactNode => {
         return (
             <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
                 {format.ethBaseAmount(
@@ -72,9 +70,9 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                 )}
             </Text>
         );
-    }
+    };
 
-    private _dollarAmount(): React.ReactNode {
+    private _dollarAmount = (): React.ReactNode => {
         return (
             <Text fontSize="16px" fontColor={ColorOption.white}>
                 {format.ethBaseAmountInUsd(
@@ -85,5 +83,5 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                 )}
             </Text>
         );
-    }
+    };
 }
