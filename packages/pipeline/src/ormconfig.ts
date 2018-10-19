@@ -17,7 +17,7 @@ export const deployConfig: ConnectionOptions = {
     type: 'postgres',
     url: process.env.ZEROEX_DATA_PIPELINE_DB_URL,
     synchronize: true,
-    logging: false,
+    logging: true,
     entities: ['./lib/src/entities/**/*.js'],
     migrations: ['./lib/src/migrations/**/*.js'],
     cli: {
