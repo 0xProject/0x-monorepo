@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 
-import { ERC20AssetData } from '@0xproject/types';
+import { ERC20AssetData } from '@0x/types';
 
 import { assetDataUtils } from '../src/asset_data_utils';
 
