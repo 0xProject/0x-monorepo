@@ -8,18 +8,21 @@ import { oc } from 'ts-optchain';
 import { State } from '../redux/reducer';
 
 import { OrderDetails } from '../components/order_details';
+import { AsyncProcessState } from '../types';
 
 export interface LatestBuyQuoteOrderDetailsProps {}
 
 interface ConnectedState {
     buyQuoteInfo?: BuyQuoteInfo;
     ethUsdPrice?: BigNumber;
+    isLoading: boolean;
 }
 
 const mapStateToProps = (state: State, _ownProps: LatestBuyQuoteOrderDetailsProps): ConnectedState => ({
     // use the worst case quote info
     buyQuoteInfo: oc(state).latestBuyQuote.worstCaseQuoteInfo(),
     ethUsdPrice: state.ethUsdPrice,
+    isLoading: state.quoteRequestState === AsyncProcessState.PENDING,
 });
 
 export const LatestBuyQuoteOrderDetails: React.ComponentClass<LatestBuyQuoteOrderDetailsProps> = connect(

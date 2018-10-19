@@ -7,6 +7,10 @@ export enum AsyncProcessState {
     SUCCESS = 'Success',
     FAILURE = 'Failure',
 }
+export enum DisplayStatus {
+    Present,
+    Hidden,
+}
 
 export type FunctionType = (...args: any[]) => any;
 export type ActionCreatorsMapObject = ObjectMap<FunctionType>;

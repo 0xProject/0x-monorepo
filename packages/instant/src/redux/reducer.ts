@@ -3,23 +3,19 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { zrxAssetData } from '../constants';
-import { AsyncProcessState } from '../types';
+import { AsyncProcessState, DisplayStatus } from '../types';
 
 import { Action, ActionTypes } from './actions';
 
-export enum LatestErrorDisplay {
-    Present,
-    Hidden,
-}
 export interface State {
     selectedAssetData?: string;
     selectedAssetAmount?: BigNumber;
     buyOrderState: AsyncProcessState;
     ethUsdPrice?: BigNumber;
     latestBuyQuote?: BuyQuote;
-    quoteState: AsyncProcessState;
+    quoteRequestState: AsyncProcessState;
     latestError?: any;
-    latestErrorDisplay: LatestErrorDisplay;
+    latestErrorDisplay: DisplayStatus;
 }
 
 export const INITIAL_STATE: State = {
@@ -30,8 +26,8 @@ export const INITIAL_STATE: State = {
     ethUsdPrice: undefined,
     latestBuyQuote: undefined,
     latestError: undefined,
-    latestErrorDisplay: LatestErrorDisplay.Hidden,
-    quoteState: AsyncProcessState.NONE,
+    latestErrorDisplay: DisplayStatus.Hidden,
+    quoteRequestState: AsyncProcessState.NONE,
 };
 
 export const reducer = (state: State = INITIAL_STATE, action: Action): State => {
@@ -50,19 +46,19 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             return {
                 ...state,
                 latestBuyQuote: action.data,
-                quoteState: AsyncProcessState.SUCCESS,
+                quoteRequestState: AsyncProcessState.SUCCESS,
             };
-        case ActionTypes.UPDATE_BUY_QUOTE_STATE_PENDING:
+        case ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING:
             return {
                 ...state,
                 latestBuyQuote: undefined,
-                quoteState: AsyncProcessState.PENDING,
+                quoteRequestState: AsyncProcessState.PENDING,
             };
-        case ActionTypes.UPDATE_BUY_QUOTE_STATE_FAILURE:
+        case ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE:
             return {
                 ...state,
                 latestBuyQuote: undefined,
-                quoteState: AsyncProcessState.FAILURE,
+                quoteRequestState: AsyncProcessState.FAILURE,
             };
         case ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE:
             return {
@@ -73,18 +69,18 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             return {
                 ...state,
                 latestError: action.data,
-                latestErrorDisplay: LatestErrorDisplay.Present,
+                latestErrorDisplay: DisplayStatus.Present,
             };
         case ActionTypes.HIDE_ERROR:
             return {
                 ...state,
-                latestErrorDisplay: LatestErrorDisplay.Hidden,
+                latestErrorDisplay: DisplayStatus.Hidden,
             };
         case ActionTypes.CLEAR_ERROR:
             return {
                 ...state,
                 latestError: undefined,
-                latestErrorDisplay: LatestErrorDisplay.Hidden,
+                latestErrorDisplay: DisplayStatus.Hidden,
             };
         default:
             return state;
