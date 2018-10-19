@@ -1,18 +1,19 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 import { AssetType } from '../types';
 
 @Entity()
-export class ExchangeFillEvent extends BaseEntity {
+export class ExchangeFillEvent {
     @PrimaryColumn() public contractAddress!: string;
     @PrimaryColumn() public logIndex!: number;
     @PrimaryColumn() public blockNumber!: number;
 
     @Column() public rawData!: string;
 
+    @Column() public transactionHash!: string;
     @Column() public makerAddress!: string;
     @Column() public takerAddress!: string;
-    @Column() public feeRecepientAddress!: string;
+    @Column() public feeRecipientAddress!: string;
     @Column() public senderAddress!: string;
     @Column() public makerAssetFilledAmount!: string;
     @Column() public takerAssetFilledAmount!: string;
