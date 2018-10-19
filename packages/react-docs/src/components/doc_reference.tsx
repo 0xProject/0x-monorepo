@@ -52,12 +52,6 @@ export interface DocReferenceProps {
 export interface DocReferenceState {}
 
 export class DocReference extends React.Component<DocReferenceProps, DocReferenceState> {
-    public componentDidMount(): void {
-        window.addEventListener('hashchange', this._onHashChanged.bind(this), false);
-    }
-    public componentWillUnmount(): void {
-        window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
-    }
     public componentDidUpdate(prevProps: DocReferenceProps, _prevState: DocReferenceState): void {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
             const hash = window.location.hash.slice(1);
@@ -322,9 +316,5 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
                 sourceUrl={this.props.sourceUrl}
             />
         );
-    }
-    private _onHashChanged(_event: any): void {
-        const hash = window.location.hash.slice(1);
-        sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
     }
 }

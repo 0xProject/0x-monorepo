@@ -1,8 +1,9 @@
-import { ALink, colors, Link, NestedSidebarMenu } from '@0x/react-shared';
+import { ALink, colors, Link } from '@0x/react-shared';
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { OverviewContent } from 'ts/components/documentation/overview_content';
+import { NestedSidebarMenu } from 'ts/components/nested_sidebar_menu';
 import { Button } from 'ts/components/ui/button';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
@@ -368,7 +369,7 @@ export class DocsHome extends React.Component<DocsHomeProps, DocsHomeState> {
                 >
                     <Button
                         borderRadius="4px"
-                        padding="0.4em 6px"
+                        padding="0.4em 0.375em"
                         width="100%"
                         fontColor={colors.grey800}
                         fontSize="14px"

@@ -5,7 +5,6 @@ import {
     HeaderSizes,
     Link,
     MarkdownSection,
-    NestedSidebarMenu,
     utils as sharedUtils,
 } from '@0x/react-shared';
 import { ObjectMap } from '@0x/types';
@@ -13,6 +12,7 @@ import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
 import { SidebarHeader } from 'ts/components/documentation/sidebar_header';
+import { NestedSidebarMenu } from 'ts/components/nested_sidebar_menu';
 import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
@@ -49,9 +49,6 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             isHoveringSidebar: false,
         };
     }
-    public componentDidMount(): void {
-        window.addEventListener('hashchange', this._onHashChanged.bind(this), false);
-    }
     public componentWillMount(): void {
         // tslint:disable-next-line:no-floating-promises
         this._fetchArticlesBySectionAsync();
@@ -59,7 +56,6 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
     public componentWillUnmount(): void {
         this._isUnmounted = true;
         clearTimeout(this._wikiBackoffTimeoutId);
-        window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
     public render(): React.ReactNode {
         const sectionNameToLinks = _.isUndefined(this.state.articlesBySection)
@@ -103,7 +99,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
                 >
                     <Button
                         borderRadius="4px"
-                        padding="0.4em 6px"
+                        padding="0.4em 0.375em"
                         width="100%"
                         fontColor={colors.grey800}
                         fontSize="14px"
@@ -197,9 +193,5 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             sectionNameToLinks[sectionName] = articleLinks;
         }
         return sectionNameToLinks;
-    }
-    private _onHashChanged(_event: any): void {
-        const hash = window.location.hash.slice(1);
-        sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
     }
 }
