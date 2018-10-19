@@ -1,8 +1,6 @@
-import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 
 import { State } from '../redux/reducer';
 import { AsyncProcessState } from '../types';

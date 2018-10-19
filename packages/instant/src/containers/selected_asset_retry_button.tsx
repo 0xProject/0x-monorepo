@@ -6,7 +6,6 @@ import { Dispatch } from 'redux';
 import { Action, actions } from '../redux/actions';
 
 import { RetryButton } from '../components/retry_button';
-import { State } from '../redux/reducer';
 
 export interface SelectedAssetRetryButtonProps {}
 

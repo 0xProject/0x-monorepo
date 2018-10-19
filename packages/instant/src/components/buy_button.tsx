@@ -46,7 +46,6 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
             this.props.onBuySuccess(this.props.buyQuote, txnHash);
         } catch (e) {
-            console.log('error', e);
             this.props.onBuyFailure(this.props.buyQuote, txnHash);
         }
     };
