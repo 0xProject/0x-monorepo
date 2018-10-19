@@ -1,5 +1,5 @@
-import { AbstractOrderFilledCancelledFetcher } from '@0xproject/order-utils';
-import { BigNumber } from '@0xproject/utils';
+import { AbstractOrderFilledCancelledFetcher } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 
 import { ExchangeWrapper } from './exchange_wrapper';
 

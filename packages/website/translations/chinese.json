@@ -78,5 +78,24 @@
     "WEBSITE": "网站",
     "DEVELOPERS": "首页",
     "HOME": "Rocket.chat",
-    "ROCKETCHAT": "开发人员"
+    "ROCKETCHAT": "开发人员",
+    "BUILD_A_RELAYER": "build a relayer",
+    "BUILD_A_RELAYER_DESCRIPTION": "Learn how to build your own 0x relayer from scratch",
+    "DEVELOP_ON_ETHEREUM": "develop on Ethereum",
+    "DEVELOP_ON_ETHEREUM_DESCRIPTION": "Learn more about building applications ontop of Ethereum",
+    "ORDER_BASICS": "0x order basics",
+    "ORDER_BASICS_DESCRIPTION": "Tutorial on how to create, validate and fill an order using 0x",
+    "USE_NETWORKED_LIQUIDITY": "use networked liquidity",
+    "USE_NETWORKED_LIQUIDITY_DESCRIPTION": "Access the shared liquidity pool using the Standard Relayer API",
+    "VIEW_ALL_DOCUMENTATION": "view all documentation",
+    "SANDBOX": "0x.js sandbox",
+    "GITHUB": "github",
+    "LIVE_CHAT": "live chat",
+    "LIBRARIES_AND_TOOLS": "Libraries & Tools",
+    "LIBRARIES_AND_TOOLS_DESCRIPTION":
+        "A list of available tools maintained by the 0x core developers and wider community for building on top of 0x Protocol and Ethereum",
+    "MORE": "more",
+    "START_BUILDING_ON_0X": "Start building on 0x",
+    "START_BUILDING_ON_0X_DESCRIPTION":
+        "Follow one of our \"Getting started\" guides to learn more about building ontop of 0x."
 }

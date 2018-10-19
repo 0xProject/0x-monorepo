@@ -1,6 +1,6 @@
-import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { Styles } from '@0xproject/react-shared';
-import { Order } from '@0xproject/types';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { Styles } from '@0x/react-shared';
+import { Order } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import ReactTooltip = require('react-tooltip');

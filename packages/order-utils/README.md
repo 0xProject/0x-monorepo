@@ -1,4 +1,4 @@
-## @0xproject/order-utils
+## @0x/order-utils
 
 0x order-related utilities for those developing on top of 0x protocol.
 
@@ -7,14 +7,14 @@
 ## Installation
 
 ```bash
-yarn add @0xproject/order-utils
+yarn add @0x/order-utils
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 
@@ -43,13 +43,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/order-utils yarn build
+PKG=@0x/order-utils yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/order-utils yarn watch
+PKG=@0x/order-utils yarn watch
 ```
 
 ### Clean

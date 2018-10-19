@@ -1,7 +1,7 @@
-import { env, EnvVars } from '@0xproject/dev-utils';
-import { GanacheSubprovider, prependSubprovider, RPCSubprovider, Web3ProviderEngine } from '@0xproject/subproviders';
-import { errorUtils, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { env, EnvVars } from '@0x/dev-utils';
+import { GanacheSubprovider, prependSubprovider, RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
+import { errorUtils, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as fs from 'fs';
 
 import { config } from './config';

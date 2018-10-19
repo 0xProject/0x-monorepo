@@ -6,7 +6,8 @@
                 "note": "Make @types/solidity-parser-antlr a 'dependency' so it's available to users of the library",
                 "pr": 1105
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "version": "2.1.7",

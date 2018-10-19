@@ -1,4 +1,4 @@
-import { DoneCallback } from '@0xproject/types';
+import { DoneCallback } from '@0x/types';
 import * as chai from 'chai';
 import { JSONRPCResponsePayload } from 'ethereum-types';
 import * as Sinon from 'sinon';

@@ -1,4 +1,4 @@
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { BlockParamLiteral } from 'ethereum-types';
 import 'mocha';

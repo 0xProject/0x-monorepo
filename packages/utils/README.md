@@ -1,25 +1,25 @@
-## @0xproject/utils
+## @0x/utils
 
 Utils to be shared across 0x projects and packages
 
 ## Installation
 
 ```bash
-yarn add @0xproject/utils
+yarn add @0x/utils
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 
 ## Usage
 
 ```javascript
-import { addressUtils, bigNumberConfigs, classUtils, intervalUtils, promisify } from '@0xproject/utils';
+import { addressUtils, bigNumberConfigs, classUtils, intervalUtils, promisify } from '@0x/utils';
 ```
 
 ## Troubleshooting
@@ -62,13 +62,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/utils yarn build
+PKG=@0x/utils yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/utils yarn watch
+PKG=@0x/utils yarn watch
 ```
 
 ### Clean

@@ -19,7 +19,8 @@
                 "note": "Use `AssetData` union type for function return values.",
                 "pr": 1131
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "version": "1.0.7",

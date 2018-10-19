@@ -1,7 +1,7 @@
 // tslint:disable:no-unnecessary-type-assertion
-import { AbstractBalanceAndProxyAllowanceFetcher, assetDataUtils } from '@0xproject/order-utils';
-import { AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { AbstractBalanceAndProxyAllowanceFetcher, assetDataUtils } from '@0x/order-utils';
+import { AssetProxyId, ERC20AssetData, ERC721AssetData } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import { BlockParamLiteral } from 'ethereum-types';
 
 import { ERC20TokenWrapper } from '../contract_wrappers/erc20_token_wrapper';

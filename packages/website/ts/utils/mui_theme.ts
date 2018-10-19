@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors } from '@0x/react-shared';
 import { getMuiTheme } from 'material-ui/styles';
 
 export const muiTheme = getMuiTheme({

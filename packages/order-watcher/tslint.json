@@ -2,5 +2,5 @@
     "rules": {
         "prefer-readonly": true
     },
-    "extends": ["@0xproject/tslint-config"]
+    "extends": ["@0x/tslint-config"]
 }

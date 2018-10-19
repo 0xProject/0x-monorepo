@@ -1,7 +1,7 @@
+import { Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
-import { Link } from 'react-router-dom';
 
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
@@ -72,7 +72,7 @@ export const GoToAccountManagementSimpleMenuItem: React.StatelessComponent<
     GoToAccountManagementSimpleMenuItemProps
 > = ({ onClick }) => {
     return (
-        <Link to={`${WebsitePaths.Portal}/account`} style={{ textDecoration: 'none' }}>
+        <Link to={`${WebsitePaths.Portal}/account`}>
             <SimpleMenuItem displayText="Manage Account..." onClick={onClick} />
         </Link>
     );

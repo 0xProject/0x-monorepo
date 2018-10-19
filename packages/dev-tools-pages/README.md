@@ -19,7 +19,7 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/dev-tools-pages yarn build
+PKG=@0x/dev-tools-pages yarn build
 ```
 
 Note: Ignore the `WARNING in asset size limit` and `WARNING in entrypoint size limit` warnings.

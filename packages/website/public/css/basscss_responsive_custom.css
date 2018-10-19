@@ -26,6 +26,10 @@
     .sm-right {
         float: right;
     }
+    .sm-justify-end {
+        ms-flex-pack: end;
+        justify-content: flex-end;
+    }
 }
 
 @media (min-width: 52em) {
@@ -54,6 +58,10 @@
     .md-right {
         float: right;
     }
+    .md-justify-end {
+        ms-flex-pack: end;
+        justify-content: flex-end;
+    }
 }
 
 @media (min-width: 64em) {
@@ -81,5 +89,9 @@
     }
     .lg-right {
         float: right;
+    }
+    .lg-justify-end {
+        ms-flex-pack: end;
+        justify-content: flex-end;
     }
 }

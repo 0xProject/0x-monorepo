@@ -8,14 +8,17 @@ import { colors } from '../utils/colors';
 import { utils } from '../utils/utils';
 
 import { AnchorTitle } from './anchor_title';
+import { Link } from './link';
 import { MarkdownCodeBlock } from './markdown_code_block';
 import { MarkdownLinkBlock } from './markdown_link_block';
+import { MarkdownParagraphBlock } from './markdown_paragraph_block';
 
 export interface MarkdownSectionProps {
     sectionName: string;
     markdownContent: string;
     headerSize?: HeaderSizes;
     githubLink?: string;
+    alternativeSectionTitle?: string;
 }
 
 interface DefaultMarkdownSectionProps {
@@ -42,20 +45,23 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
         const { sectionName, markdownContent, headerSize, githubLink } = this.props as PropsWithDefaults;
 
         const id = utils.getIdFromName(sectionName);
-        const finalSectionName = utils.convertCamelCaseToSpaces(sectionName);
+        const formattedSectionName = utils.convertCamelCaseToSpaces(sectionName);
+        const title = !_.isUndefined(this.props.alternativeSectionTitle)
+            ? this.props.alternativeSectionTitle
+            : _.capitalize(formattedSectionName);
         return (
             <div
                 className="md-px1 sm-px2 overflow-hidden"
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >
-                <ScrollElement name={id}>
-                    <div className="clearfix pt3">
+                <ScrollElement name={id} style={{ paddingBottom: 20 }}>
+                    <div className="clearfix" style={{ paddingTop: 30, paddingBottom: 20 }}>
                         <div className="col lg-col-8 md-col-8 sm-col-12">
-                            <span style={{ textTransform: 'capitalize', color: colors.grey700 }}>
+                            <span style={{ color: colors.grey700 }}>
                                 <AnchorTitle
                                     headerSize={headerSize}
-                                    title={finalSectionName}
+                                    title={title}
                                     id={id}
                                     shouldShowAnchor={this.state.shouldShowAnchor}
                                 />
@@ -63,23 +69,29 @@ export class MarkdownSection extends React.Component<MarkdownSectionProps, Markd
                         </div>
                         <div className="col col-4 sm-hide xs-hide right-align pr3" style={{ height: 28 }}>
                             {!_.isUndefined(githubLink) && (
-                                <a
-                                    href={githubLink}
-                                    target="_blank"
-                                    style={{ color: colors.linkBlue, textDecoration: 'none', lineHeight: 2.1 }}
-                                >
-                                    Edit on Github
-                                </a>
+                                <div style={{ lineHeight: 2.1 }}>
+                                    <Link to={githubLink} shouldOpenInNewTab={true} fontColor={colors.linkBlue}>
+                                        Edit on Github
+                                    </Link>
+                                </div>
                             )}
                         </div>
                     </div>
-                    <hr style={{ border: `1px solid ${colors.lightestGrey}` }} />
                     <ReactMarkdown
                         source={markdownContent}
                         escapeHtml={false}
                         renderers={{
                             code: MarkdownCodeBlock,
                             link: MarkdownLinkBlock,
+                            paragraph: MarkdownParagraphBlock,
+                        }}
+                    />
+                    <div
+                        style={{
+                            width: '100%',
+                            height: 1,
+                            backgroundColor: colors.grey300,
+                            marginTop: 32,
                         }}
                     />
                 </ScrollElement>

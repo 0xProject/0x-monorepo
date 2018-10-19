@@ -1,4 +1,4 @@
-import { BigNumber, intervalUtils } from '@0xproject/utils';
+import { BigNumber, intervalUtils } from '@0x/utils';
 import { RBTree } from 'bintrees';
 import * as _ from 'lodash';
 

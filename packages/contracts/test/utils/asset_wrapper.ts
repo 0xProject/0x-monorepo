@@ -1,6 +1,6 @@
-import { assetDataUtils } from '@0xproject/order-utils';
-import { AssetProxyId } from '@0xproject/types';
-import { BigNumber, errorUtils } from '@0xproject/utils';
+import { assetDataUtils } from '@0x/order-utils';
+import { AssetProxyId } from '@0x/types';
+import { BigNumber, errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { AbstractAssetWrapper } from './abstract_asset_wrapper';

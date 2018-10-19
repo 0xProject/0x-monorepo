@@ -22,4 +22,4 @@ export {
     ErrorCallback,
     OnNextCompleted,
     Callback,
-} from '@0xproject/subproviders';
+} from '@0x/subproviders';

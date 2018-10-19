@@ -1,5 +1,5 @@
-import { assert } from '@0xproject/assert';
-import { schemas } from '@0xproject/json-schemas';
+import { assert } from '@0x/assert';
+import { schemas } from '@0x/json-schemas';
 import {
     APIOrder,
     AssetPairsRequestOpts,
@@ -14,8 +14,8 @@ import {
     PagedRequestOpts,
     RequestOpts,
     SignedOrder,
-} from '@0xproject/types';
-import { fetchAsync } from '@0xproject/utils';
+} from '@0x/types';
+import { fetchAsync } from '@0x/utils';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
 

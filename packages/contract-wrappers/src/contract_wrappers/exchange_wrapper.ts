@@ -1,15 +1,15 @@
-import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from '@0xproject/abi-gen-wrappers';
-import { Exchange } from '@0xproject/contract-artifacts';
-import { schemas } from '@0xproject/json-schemas';
+import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from '@0x/abi-gen-wrappers';
+import { Exchange } from '@0x/contract-artifacts';
+import { schemas } from '@0x/json-schemas';
 import {
     assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
     ExchangeTransferSimulator,
     OrderValidationUtils,
-} from '@0xproject/order-utils';
-import { AssetProxyId, Order, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+} from '@0x/order-utils';
+import { AssetProxyId, Order, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { BlockParamLiteral, ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 

@@ -1,5 +1,5 @@
-import { devConstants } from '@0xproject/dev-utils';
-import { RevertTraceSubprovider, SolCompilerArtifactAdapter } from '@0xproject/sol-cov';
+import { devConstants } from '@0x/dev-utils';
+import { RevertTraceSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-cov';
 import * as _ from 'lodash';
 
 let revertTraceSubprovider: RevertTraceSubprovider;

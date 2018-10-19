@@ -8,7 +8,7 @@
         "noImplicitReturns": true,
         "pretty": true,
         "skipLibCheck": true,
-        "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+        "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
         "strict": true,
         // These settings are required for TypeScript project references
         "composite": true,
@@ -45,7 +45,6 @@
         { "path": "./packages/sol-compiler" },
         { "path": "./packages/sol-cov" },
         { "path": "./packages/sol-resolver" },
-        { "path": "./packages/sra-report" },
         { "path": "./packages/sra-spec" },
         { "path": "./packages/subproviders" },
         { "path": "./packages/testnet-faucets" },

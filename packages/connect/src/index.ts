@@ -17,4 +17,4 @@ export {
     PaginatedCollection,
     RequestOpts,
     SignedOrder,
-} from '@0xproject/types';
+} from '@0x/types';

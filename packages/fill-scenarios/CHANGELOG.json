@@ -6,7 +6,8 @@
                 "note": "Updated to use new @0xproject/contract-artifacts and @0xproject/abi-gen-wrappers packages",
                 "pr": 1105
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "version": "1.0.7",

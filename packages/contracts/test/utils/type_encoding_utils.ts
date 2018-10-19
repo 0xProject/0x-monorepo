@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 import BN = require('bn.js');
 import ethUtil = require('ethereumjs-util');
 

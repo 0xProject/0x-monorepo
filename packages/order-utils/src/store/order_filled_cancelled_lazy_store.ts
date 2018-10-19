@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { AbstractOrderFilledCancelledFetcher } from '../abstract/abstract_order_filled_cancelled_fetcher';

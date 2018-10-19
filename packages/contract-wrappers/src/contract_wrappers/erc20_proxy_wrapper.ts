@@ -1,7 +1,7 @@
-import { ERC20ProxyContract } from '@0xproject/abi-gen-wrappers';
-import { ERC20Proxy } from '@0xproject/contract-artifacts';
-import { AssetProxyId } from '@0xproject/types';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ERC20ProxyContract } from '@0x/abi-gen-wrappers';
+import { ERC20Proxy } from '@0x/contract-artifacts';
+import { AssetProxyId } from '@0x/types';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 

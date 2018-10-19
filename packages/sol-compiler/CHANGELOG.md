@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.8 - _October 18, 2018_
+
+    * Dependencies updated
+
 ## v1.1.7 - _October 4, 2018_
 
     * Dependencies updated
@@ -39,7 +43,7 @@ CHANGELOG
     * Stop exporting types: `ContractArtifact`, `ContractNetworks` (#924)
     * Export types: `CompilerSettings`, `OutputField` (#924)
 
-## v1.0.5 - _August 13, 2018_
+## v1.0.5 - _August 14, 2018_
 
     * Dependencies updated
 

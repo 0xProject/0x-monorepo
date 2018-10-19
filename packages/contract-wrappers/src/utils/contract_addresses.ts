@@ -1,4 +1,4 @@
-import { ContractAddresses, getContractAddressesForNetworkOrThrow, NetworkId } from '@0xproject/contract-addresses';
+import { ContractAddresses, getContractAddressesForNetworkOrThrow, NetworkId } from '@0x/contract-addresses';
 import * as _ from 'lodash';
 
 /**

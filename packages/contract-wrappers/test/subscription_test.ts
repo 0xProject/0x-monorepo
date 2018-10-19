@@ -1,5 +1,5 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { DoneCallback } from '@0xproject/types';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { DoneCallback } from '@0x/types';
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';

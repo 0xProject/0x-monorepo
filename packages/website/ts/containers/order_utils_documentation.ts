@@ -1,16 +1,18 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages } from 'ts/types';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/order_utils/1.0.0/introduction');
-const InstallationMarkdownV1 = require('md/docs/order_utils/1.0.0/installation');
+const IntroMarkdown1 = require('md/docs/order_utils/1/introduction');
+const InstallationMarkdown1 = require('md/docs/order_utils/1/installation');
+const IntroMarkdown2 = require('md/docs/order_utils/2/introduction');
+const InstallationMarkdown2 = require('md/docs/order_utils/2/installation');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -20,18 +22,21 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.OrderUtils,
-    packageName: '@0xproject/order-utils',
+    packageName: '@0x/order-utils',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Order utils',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     markdownMenu: {
-        introduction: [markdownSections.introduction],
-        install: [markdownSections.installation],
+        'getting-started': [markdownSections.introduction, markdownSections.installation],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [markdownSections.introduction]: IntroMarkdownV1,
-            [markdownSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+        },
+        '2.0.0': {
+            [markdownSections.introduction]: IntroMarkdown2,
+            [markdownSections.installation]: InstallationMarkdown2,
         },
     },
     markdownSections,
@@ -43,6 +48,7 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -54,6 +60,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
     docsInfo,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

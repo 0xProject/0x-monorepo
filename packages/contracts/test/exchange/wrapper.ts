@@ -1,8 +1,8 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { RevertReason, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { RevertReason, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 

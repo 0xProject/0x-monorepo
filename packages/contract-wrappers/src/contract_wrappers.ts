@@ -7,8 +7,8 @@ import {
     Forwarder,
     OrderValidator,
     WETH9,
-} from '@0xproject/contract-artifacts';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+} from '@0x/contract-artifacts';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
