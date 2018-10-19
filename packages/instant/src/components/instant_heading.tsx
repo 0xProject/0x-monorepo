@@ -20,7 +20,6 @@ export interface InstantHeadingProps {
 const placeholderColor = ColorOption.white;
 export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
-        const placeholderAmountToAlwaysShow = this._placeholderAmountToAlwaysShow();
         return (
             <Container
                 backgroundColor={ColorOption.primaryColor}
@@ -43,22 +42,24 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                 <Flex direction="row" justify="space-between">
                     <SelectedAssetAmountInput fontSize="45px" />
                     <Flex direction="column" justify="space-between">
-                        <Container marginBottom="5px">{placeholderAmountToAlwaysShow || this._ethAmount()}</Container>
-                        <Container opacity={0.7}>{placeholderAmountToAlwaysShow || this._dollarAmount()}</Container>
+                        <Container marginBottom="5px">
+                            {this._placeholderOrAmount(this._ethAmount.bind(this))}
+                        </Container>
+                        <Container opacity={0.7}>{this._placeholderOrAmount(this._dollarAmount.bind(this))}</Container>
                     </Flex>
                 </Flex>
             </Container>
         );
     }
 
-    private _placeholderAmountToAlwaysShow(): React.ReactNode | null {
+    private _placeholderOrAmount(amountFunction: () => React.ReactNode): React.ReactNode {
         if (this.props.quoteRequestState === AsyncProcessState.PENDING) {
             return <AmountPlaceholder isPulsating={true} color={placeholderColor} />;
         }
         if (_.isUndefined(this.props.selectedAssetAmount)) {
             return <AmountPlaceholder isPulsating={false} color={placeholderColor} />;
         }
-        return null;
+        return amountFunction();
     }
 
     private _ethAmount(): React.ReactNode {
