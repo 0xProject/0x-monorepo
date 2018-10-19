@@ -16544,9 +16544,9 @@ ws@^5.2.0:
   dependencies:
     async-limiter "~1.0.0"
 
-wsrun@^3.3.3:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/wsrun/-/wsrun-3.3.3.tgz#94d26ba87f541e7db4f6edfc2f2dc896682b1f08"
+wsrun@^2.2.0:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/wsrun/-/wsrun-2.2.1.tgz#ab93cde5e59d4e8ffd140c06be66e2697c791346"
   dependencies:
     bluebird "^3.5.1"
     chalk "^2.3.0"
