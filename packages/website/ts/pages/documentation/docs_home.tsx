@@ -37,9 +37,9 @@ const TUTORIALS: TutorialInfo[] = [
     },
     {
         iconUrl: '/images/developers/tutorials/use_shared_liquidity.svg',
-        description: Key.UseSharedLiquidityDescription,
+        description: Key.UseNetworkedLiquidityDescription,
         link: {
-            title: Key.UseSharedLiquidity,
+            title: Key.UseNetworkedLiquidity,
             to: `${WebsitePaths.Wiki}#Find,-Submit,-Fill-Order-From-Relayer`,
         },
     },
@@ -194,7 +194,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
-                "ERCdex's Javascript SDK for trading on their relayer, as well as other Aquaduct partner relayers",
+                "ERCdEX's Javascript SDK for trading on their relayer, as well as other Aquaduct partner relayers",
             link: {
                 title: 'Aquaduct',
                 to: 'https://www.npmjs.com/package/aqueduct',
@@ -219,26 +219,26 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             },
         },
         {
-            description: "The ERC dEX Trade Widget let's any website provide token liquidity to it's users",
+            description: "The ERCdEX Trade Widget let's any website provide token liquidity to it's users",
             link: {
                 to: 'https://github.com/ERCdEX/widget',
-                title: 'ERCdex Widget',
+                title: 'ERCdEX Widget',
                 shouldOpenInNewTab: true,
             },
         },
         {
-            description: "ERCdex's Java SDK for trading on their relayer, as well as other Aquaduct partner relayers",
+            description: "ERCdEX's Java SDK for trading on their relayer, as well as other Aquaduct partner relayers",
             link: {
                 to: 'https://github.com/ERCdEX/java',
-                title: 'ERCdex Java SDK',
+                title: 'ERCdEX Java SDK',
                 shouldOpenInNewTab: true,
             },
         },
         {
-            description: "ERCdex's Python SDK for trading on their relayer, as well as other Aquaduct partner relayers",
+            description: "ERCdEX's Python SDK for trading on their relayer, as well as other Aquaduct partner relayers",
             link: {
                 to: 'https://github.com/ERCdEX/python',
-                title: 'ERCdex Python SDK',
+                title: 'ERCdEX Python SDK',
                 shouldOpenInNewTab: true,
             },
         },

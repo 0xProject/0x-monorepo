@@ -22,7 +22,7 @@ const args = yargs
     let packages;
     if (_.isUndefined(args.packages)) {
         const shouldIncludePrivate = false;
-        packages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
+        packages = await utils.getPackagesToPublishAsync(shouldIncludePrivate);
     } else {
         const packageNames = args.packages.split(' ');
         packages = await utils.getPackagesByNameAsync(packageNames);

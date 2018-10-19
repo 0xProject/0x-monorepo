@@ -413,6 +413,10 @@ export const utils = {
             return BrowserType.Firefox;
         } else if (bowser.opera) {
             return BrowserType.Opera;
+        } else if (bowser.msedge) {
+            return BrowserType.Edge;
+        } else if (bowser.safari) {
+            return BrowserType.Safari;
         } else {
             return BrowserType.Other;
         }

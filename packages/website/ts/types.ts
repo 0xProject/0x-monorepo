@@ -468,8 +468,8 @@ export enum Key {
     DevelopOnEthereumDescription = 'DEVELOP_ON_ETHEREUM_DESCRIPTION',
     OrderBasics = 'ORDER_BASICS',
     OrderBasicsDescription = 'ORDER_BASICS_DESCRIPTION',
-    UseSharedLiquidity = 'USE_SHARED_LIQUIDITY',
-    UseSharedLiquidityDescription = 'USE_SHARED_LIQUIDITY_DESCRIPTION',
+    UseNetworkedLiquidity = 'USE_NETWORKED_LIQUIDITY',
+    UseNetworkedLiquidityDescription = 'USE_NETWORKED_LIQUIDITY_DESCRIPTION',
     ViewAllDocumentation = 'VIEW_ALL_DOCUMENTATION',
     Sandbox = 'SANDBOX',
     Github = 'GITHUB',
@@ -590,6 +590,8 @@ export enum BrowserType {
     Chrome = 'Chrome',
     Firefox = 'Firefox',
     Opera = 'Opera',
+    Safari = 'Safari',
+    Edge = 'Edge',
     Other = 'Other',
 }
 
