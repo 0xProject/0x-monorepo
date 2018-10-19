@@ -49,9 +49,6 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             isHoveringSidebar: false,
         };
     }
-    public componentDidMount(): void {
-        window.addEventListener('hashchange', this._onHashChanged.bind(this), false);
-    }
     public componentWillMount(): void {
         // tslint:disable-next-line:no-floating-promises
         this._fetchArticlesBySectionAsync();
@@ -59,7 +56,6 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
     public componentWillUnmount(): void {
         this._isUnmounted = true;
         clearTimeout(this._wikiBackoffTimeoutId);
-        window.removeEventListener('hashchange', this._onHashChanged.bind(this), false);
     }
     public render(): React.ReactNode {
         const sectionNameToLinks = _.isUndefined(this.state.articlesBySection)
@@ -197,9 +193,5 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             sectionNameToLinks[sectionName] = articleLinks;
         }
         return sectionNameToLinks;
-    }
-    private _onHashChanged(_event: any): void {
-        const hash = window.location.hash.slice(1);
-        sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
     }
 }
