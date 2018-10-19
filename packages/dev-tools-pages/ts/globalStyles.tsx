@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import { media } from './variables';
 import styledNormalize from 'styled-normalize';
 import hljsStyles from 'highlight.js/styles/github-gist.css';
 
@@ -44,6 +45,9 @@ const BaseStyles = createGlobalStyle`
     font-weight: 300;
     font-size: 1rem;
     line-height: 1.8;
+
+    ${media.small`font-size: 0.875rem;`};
+
   }
 
   a {
