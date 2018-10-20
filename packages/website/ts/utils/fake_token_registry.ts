@@ -694,7 +694,7 @@ export const fakeTokenRegistry: { [networkId: string]: FakeTokenRegistryEntry[] 
     ],
     '42': [
         {
-            address: '0x6ff6c0ff1d68b964901f986d4c9fa3ac68346570',
+            address: '0x2002d3812f58e35f0ea1ffbf80a75a38c32175fa',
             name: '0x Protocol Token',
             symbol: 'ZRX',
             decimals: 18,
@@ -858,7 +858,7 @@ export const fakeTokenRegistry: { [networkId: string]: FakeTokenRegistryEntry[] 
             decimals: 19,
         },
         {
-            address: '0xa8e9fa8f91e5ae138c74648c9c304f1c75003a8d',
+            address: '0xff67881f8d12f372d91baae9752eb3631ff0ed00',
             name: '0x Protocol Token',
             symbol: 'ZRX',
             decimals: 18,
