@@ -3,17 +3,17 @@
     "properties": {
         "makerAddress": { "$ref": "/addressSchema" },
         "takerAddress": { "$ref": "/addressSchema" },
-        "makerFee": { "$ref": "/numberSchema" },
-        "takerFee": { "$ref": "/numberSchema" },
+        "makerFee": { "$ref": "/wholeNumberSchema" },
+        "takerFee": { "$ref": "/wholeNumberSchema" },
         "senderAddress": { "$ref": "/addressSchema" },
-        "makerAssetAmount": { "$ref": "/numberSchema" },
-        "takerAssetAmount": { "$ref": "/numberSchema" },
+        "makerAssetAmount": { "$ref": "/wholeNumberSchema" },
+        "takerAssetAmount": { "$ref": "/wholeNumberSchema" },
         "makerAssetData": { "$ref": "/hexSchema" },
         "takerAssetData": { "$ref": "/hexSchema" },
-        "salt": { "$ref": "/numberSchema" },
+        "salt": { "$ref": "/wholeNumberSchema" },
         "exchangeAddress": { "$ref": "/addressSchema" },
         "feeRecipientAddress": { "$ref": "/addressSchema" },
-        "expirationTimeSeconds": { "$ref": "/numberSchema" }
+        "expirationTimeSeconds": { "$ref": "/wholeNumberSchema" }
     },
     "required": [
         "makerAddress",

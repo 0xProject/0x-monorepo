@@ -3,8 +3,8 @@
     "type": "object",
     "properties": {
         "assetData": { "$ref": "/hexSchema" },
-        "minAmount": { "$ref": "/numberSchema" },
-        "maxAmount": { "$ref": "/numberSchema" },
+        "minAmount": { "$ref": "/wholeNumberSchema" },
+        "maxAmount": { "$ref": "/wholeNumberSchema" },
         "precision": { "type": "number" }
     },
     "required": ["assetData"]
