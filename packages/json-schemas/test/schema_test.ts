@@ -36,6 +36,7 @@ const {
     relayerApiOrdersChannelUpdateSchema,
     relayerApiOrdersResponseSchema,
     relayerApiOrderSchema,
+    wholeNumberSchema,
 } = schemas;
 
 describe('Schema', () => {
@@ -71,6 +72,17 @@ describe('Schema', () => {
             const testCases = ['.3', '1.', 'abacaba', 'и', '1..0'];
             const shouldFail = true;
             validateAgainstSchema(testCases, numberSchema, shouldFail);
+        });
+    });
+    describe('#wholeNumberSchema', () => {
+        it('should validate valid numbers', () => {
+            const testCases = ['5', '42', '0'];
+            validateAgainstSchema(testCases, wholeNumberSchema);
+        });
+        it('should fail for invalid numbers', () => {
+            const testCases = ['1.3', '0.2', '00.00', '.3', '1.', 'abacaba', 'и', '1..0'];
+            const shouldFail = true;
+            validateAgainstSchema(testCases, wholeNumberSchema, shouldFail);
         });
     });
     describe('#addressSchema', () => {
