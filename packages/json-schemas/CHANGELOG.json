@@ -1,5 +1,15 @@
 [
     {
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note":
+                    "Improve schemas by enforcing that amounts that must be whole numbers (e.g Order asset amounts) no longer allow decimal amounts",
+                "pr": 1173
+            }
+        ]
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
