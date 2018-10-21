@@ -1,8 +1,8 @@
 Basic Schemas
 
-*   [Address type](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/address.json)
-*   [Number type](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/number.json)
-*   [Hex type](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/hex.json)
+*   [Address type](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/address_schema.json)
+*   [Number type](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/number_schema.json)
+*   [Hex type](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/hex_schema.json)
 *   [JS number](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/js_number.json)
 
 0x Protocol Schemas
@@ -18,7 +18,7 @@ Basic Schemas
 *   [BlockRange](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/block_range_schema.json)
 *   [IndexFilter Values](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/index_filter_values_schema.json)
 *   [OrderFillRequests](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/order_fill_requests_schema.json)
-*   [OrderCancellationRequests](https://github.com/0xProjet/0x-monorepo/blob/development/packages/json-schemas/schemas/order_cancel_schema.json)
+*   [OrderCancellationRequests](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/order_cancel_schema.json)
 *   [OrderFillOrKillRequests](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/order_fill_or_kill_requests_schema.json)
 *   [SignedOrders](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/signed_orders_schema.json)
 *   [Token](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/token_schema.json)
@@ -34,7 +34,7 @@ Standard Relayer API Schemas
 *   [Orders channel subscribe](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_orders_channel_subscribe_schema.json)
 *   [Orders channel update](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_orders_channel_update_response_schema.json)
 *   [Orderbook response](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_orderbook_response_schema.json)
-*   [Asset pairs](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_asset_pairs_schema.json)
-*   [Trade info](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_asset_trade_info_schema.json)
-*   [Asset pairs response](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_asset_pairs_response_schema.json)
+*   [Asset pairs](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_asset_data_pairs_schema.json)
+*   [Trade info](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_asset_data_trade_info_schema.json)
+*   [Asset pairs response](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_asset_data_pairs_response_schema.json)
 *   [Fee recipients response](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/relayer_api_fee_recipients_response_schema.json)
