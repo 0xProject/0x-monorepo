@@ -15,8 +15,9 @@ const InstallationMarkdown1 = require('md/docs/json_schemas/1/installation');
 const InstallationMarkdown3 = require('md/docs/json_schemas/3/installation');
 const usageMarkdown1 = require('md/docs/json_schemas/1/usage');
 const usageMarkdown3 = require('md/docs/json_schemas/3/usage');
-const SchemasMarkdownV1 = require('md/docs/json_schemas/1/schemas');
-const SchemasMarkdownV2 = require('md/docs/json_schemas/2/schemas');
+const SchemasMarkdown1 = require('md/docs/json_schemas/1/schemas');
+const SchemasMarkdown2 = require('md/docs/json_schemas/2/schemas');
+const SchemasMarkdown3 = require('md/docs/json_schemas/3/schemas');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -40,19 +41,25 @@ const docsInfoConfig: DocsInfoConfig = {
         '0.0.1': {
             [markdownSections.introduction]: IntroMarkdown1,
             [markdownSections.installation]: InstallationMarkdown1,
-            [markdownSections.schemas]: SchemasMarkdownV1,
+            [markdownSections.schemas]: SchemasMarkdown1,
             [markdownSections.usage]: usageMarkdown1,
         },
         '1.0.0': {
             [markdownSections.introduction]: IntroMarkdown1,
             [markdownSections.installation]: InstallationMarkdown1,
-            [markdownSections.schemas]: SchemasMarkdownV2,
+            [markdownSections.schemas]: SchemasMarkdown2,
             [markdownSections.usage]: usageMarkdown1,
         },
         '2.0.0': {
             [markdownSections.introduction]: IntroMarkdown3,
             [markdownSections.installation]: InstallationMarkdown3,
-            [markdownSections.schemas]: SchemasMarkdownV2,
+            [markdownSections.schemas]: SchemasMarkdown2,
+            [markdownSections.usage]: usageMarkdown3,
+        },
+        '2.0.1': {
+            [markdownSections.introduction]: IntroMarkdown3,
+            [markdownSections.installation]: InstallationMarkdown3,
+            [markdownSections.schemas]: SchemasMarkdown3,
             [markdownSections.usage]: usageMarkdown3,
         },
     },

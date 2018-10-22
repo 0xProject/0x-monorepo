@@ -2,8 +2,8 @@
     "id": "/relayerApiOrderConfigResponseSchema",
     "type": "object",
     "properties": {
-        "makerFee": { "$ref": "/numberSchema" },
-        "takerFee": { "$ref": "/numberSchema" },
+        "makerFee": { "$ref": "/wholeNumberSchema" },
+        "takerFee": { "$ref": "/wholeNumberSchema" },
         "feeRecipientAddress": { "$ref": "/addressSchema" },
         "senderAddress": { "$ref": "/addressSchema" }
     },

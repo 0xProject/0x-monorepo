@@ -210,12 +210,16 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     isLoaded: false,
                 };
             }
-            this.setState({
-                trackedTokenStateByAddress,
-            });
-            // Fetch the actual balance/allowance.
-            // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
+            this.setState(
+                {
+                    trackedTokenStateByAddress,
+                },
+                () => {
+                    // Fetch the actual balance/allowance.
+                    // tslint:disable-next-line:no-floating-promises
+                    this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
+                },
+            );
         }
     }
     public render(): React.ReactNode {
@@ -644,6 +648,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
 
     private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]): Promise<void> {
+        if (_.isEmpty(tokenAddresses)) {
+            return;
+        }
         const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const balancesAndAllowances = await Promise.all(
