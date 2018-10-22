@@ -17,7 +17,7 @@ import { AssetAmountInput } from '../components/asset_amount_input';
 
 export interface SelectedAssetAmountInputProps {
     fontColor?: ColorOption;
-    fontSize?: string;
+    startingFontSizePx: number;
 }
 
 interface ConnectedState {
