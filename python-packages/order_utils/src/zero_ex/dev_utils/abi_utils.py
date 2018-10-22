@@ -29,7 +29,7 @@ def parse_signature(signature: str) -> MethodSignature:
     >>> parse_signature("ERC20Token(address)")
     {'method': 'ERC20Token', 'args': ['address']}
     """
-    assert_is_string(signature)
+    assert_is_string(signature, "signature")
 
     matches = re.match(r"^(\w+)\((.+)\)$", signature)
     if matches is None:
@@ -48,7 +48,7 @@ def elementary_name(name: str) -> str:
     >>> elementary_name("uint")
     'uint256'
     """
-    assert_is_string(name)
+    assert_is_string(name, "name")
 
     return {
         "int": "int256",
@@ -64,8 +64,8 @@ def event_id(name: str, types: List[str]) -> str:
     >>> event_id("ERC20Token", ["address"])
     '0xf47261b06eedbfce68afd46d0f3c27c60b03faad319eaf33103611cf8f6456ad'
     """
-    assert_is_string(name)
-    assert_is_list(types)
+    assert_is_string(name, "name")
+    assert_is_list(types, "types")
 
     signature = f"{name}({','.join(list(map(elementary_name, types)))})"
     return Web3.sha3(text=signature).hex()
@@ -77,8 +77,8 @@ def method_id(name: str, types: List[str]) -> str:
     >>> method_id("ERC20Token", ["address"])
     '0xf47261b0'
     """
-    assert_is_string(name)
-    assert_is_list(types)
+    assert_is_string(name, "name")
+    assert_is_list(types, "types")
 
     return event_id(name, types)[0:10]
 
@@ -90,7 +90,7 @@ def simple_encode(method: str, *args: Any) -> bytes:
     >>> simple_encode("ERC20Token(address)", "0x1dc4c1cefef38a777b15aa20260a54e584b16c48")
     b'\xf4ra\xb0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x1d\xc4\xc1\xce\xfe\xf3\x8aw{\x15\xaa &\nT\xe5\x84\xb1lH'
     """  # noqa: E501 (line too long)
-    assert_is_string(method)
+    assert_is_string(method, "method")
 
     signature: MethodSignature = parse_signature(method)
 

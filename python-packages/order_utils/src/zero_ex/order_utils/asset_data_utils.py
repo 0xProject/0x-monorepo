@@ -29,7 +29,7 @@ def encode_erc20_asset_data(token_address: str) -> str:
     >>> encode_erc20_asset_data('0x1dc4c1cefef38a777b15aa20260a54e584b16c48')
     '0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48'
     """
-    assert_is_string(token_address)
+    assert_is_string(token_address, "token_address")
 
     return (
         "0x"
@@ -46,7 +46,7 @@ def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
     >>> decode_erc20_asset_data("0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48")
     {'asset_proxy_id': '0xf47261b0', 'token_address': '0x1dc4c1cefef38a777b15aa20260a54e584b16c48'}
     """  # noqa: E501 (line too long)
-    assert_is_string(asset_data)
+    assert_is_string(asset_data, "asset_data")
 
     if len(asset_data) < ERC20_ASSET_DATA_BYTE_LENGTH:
         raise ValueError(
