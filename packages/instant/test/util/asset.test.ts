@@ -1,4 +1,4 @@
-import { AssetData, AssetProxyId, ObjectMap } from '@0x/types';
+import { AssetProxyId, ObjectMap } from '@0x/types';
 
 import { Asset, AssetMetaData, ERC20AssetMetaData, Network, ZeroExInstantError } from '../../src/types';
 import { assetUtils } from '../../src/util/asset';
