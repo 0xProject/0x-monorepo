@@ -28,7 +28,7 @@ function Trace(props: Props) {
                         Every time an Ethereum transaction fails, it's extremely hard to trace down the troublemaking
                         line of code. The only hint you'll get is a generic error.
                     </MainCopy>
-                    <Code>Error: VM Exception while processing transaction: rever</Code>
+                    <Code light>Error: VM Exception while processing transaction: rever</Code>
 
                     <List>
                         <Item>
