@@ -3,7 +3,6 @@ import { render, hydrate } from 'react-dom';
 
 import context from 'ts/context/compiler';
 import Base from 'ts/components/Base';
-import Container from 'ts/components/Container';
 import Main from 'ts/components/Main';
 import ContentBlock from 'ts/components/ContentBlock';
 import { Tabs, TabBlock } from 'ts/components/Tabs';
