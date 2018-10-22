@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import { media } from '../variables';
 
 const StyledList = styled.ul`
     list-style-type: none;
@@ -16,6 +17,11 @@ const StyledItem = styled.li`
         display: inline-block;
         transform: rotate(45deg);
         margin-right: 1.09375rem;
+    }
+    :not(:last-child) {
+        margin-bottom: 0.5625rem;
+
+        ${media.small`margin-bottom: 0.375rem`};
     }
 `;
 

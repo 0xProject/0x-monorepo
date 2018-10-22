@@ -28,7 +28,7 @@ function Trace(props: Props) {
                         Every time an Ethereum transaction fails, it's extremely hard to trace down the troublemaking
                         line of code. The only hint you'll get is a generic error.
                     </MainCopy>
-                    <Code>Error: VM Exception while processing transaction: rever</Code>
+                    <Code light>Error: VM Exception while processing transaction: rever</Code>
 
                     <List>
                         <Item>
@@ -39,7 +39,7 @@ function Trace(props: Props) {
                                     completely in the dark about its exact location.
                                 </p>
                             </Copy>
-                            <NoLocation />
+                            <Icon as={NoLocation} />
                         </Item>
 
                         <Item>
@@ -50,7 +50,7 @@ function Trace(props: Props) {
                                     the failing line of code quickly becomes a daunting task.
                                 </p>
                             </Copy>
-                            <TimeConsuming />
+                            <Icon as={TimeConsuming} />
                         </Item>
                     </List>
                 </Block>
@@ -61,7 +61,7 @@ function Trace(props: Props) {
                         Sol-trace will give you full stack traces, including contract names, line numbers and code
                         snippets, every time you encounter an error.
                     </MainCopy>
-                    <Code>Error: VM Exception while processing transaction: rever</Code>
+                    <Code light>Error: VM Exception while processing transaction: rever</Code>
 
                     <List>
                         <Item>
@@ -72,7 +72,7 @@ function Trace(props: Props) {
                                     from.
                                 </p>
                             </Copy>
-                            <ExactLocation />
+                            <Icon as={ExactLocation} />
                         </Item>
 
                         <Item>
@@ -83,7 +83,7 @@ function Trace(props: Props) {
                                     on linen X of contract Y", it drastically improves the developer experience.
                                 </p>
                             </Copy>
-                            <TimeSaving />
+                            <Icon as={TimeSaving} />
                         </Item>
                     </List>
                 </Block>
@@ -102,7 +102,11 @@ const StyledSection =
     padding-top: 6.25rem;
     padding-bottom: 5.25rem;
     
-    ${media.small`background: none`};
+    ${media.small`
+        background: none
+        padding-top: 0;
+        padding-bottom: 0;
+    `};
 `;
 
 const Wrapper = styled(Container)`
@@ -183,6 +187,10 @@ const Copy = styled.div`
     margin-right: 5.875rem;
 
     ${media.small`margin-right: 2.0625rem;`};
+`;
+
+const Icon = styled.div`
+    flex-shrink: 0;
 `;
 
 export default withContext(Trace);

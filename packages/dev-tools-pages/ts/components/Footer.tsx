@@ -71,7 +71,7 @@ const Top = styled.div`
 
 const Icon = styled.div`
     margin-right: 1.3125rem;
-
+    flex-shrink: 0;
     ${media.small`margin-right: 0.9375rem`};
 `;
 
@@ -110,7 +110,12 @@ const ListItem = styled.li`
         ${media.small`margin-bottom: 1.875rem`};
     }
 
-    ${media.small`margin-bottom: 1.875rem`};
+    ${media.small`
+        margin-bottom: 1.875rem
+        :last-of-type {
+            margin-bottom: 0;
+        }
+    `};
 `;
 
 const Small = styled.small`

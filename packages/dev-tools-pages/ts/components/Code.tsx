@@ -1,12 +1,13 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { colors } from '../variables';
 
+import { colors } from 'ts/variables';
 import BaseButton from './Button';
 
 interface CodeProps {
     children: React.ReactNode;
     language?: string;
+    light?: boolean;
 }
 
 interface CodeState {
@@ -26,13 +27,14 @@ const Base =
     styled.div <
     CodeProps >
     `
-  color: ${props => (props.language === undefined ? colors.white : 'inherit')};
-  background-color: ${props => (props.language === undefined ? colors.black : colors.lightGray)};
-  white-space: ${props => (props.language === undefined ? 'nowrap' : '')};
-  position: relative;
-  &:hover ${Button} {
-    opacity: 1;
-  }
+    color: ${props => (props.language === undefined ? colors.white : 'inherit')};
+    background-color: ${props =>
+        props.light ? 'rgba(255,255,255,.15)' : props.language === undefined ? colors.black : colors.lightGray};
+    white-space: ${props => (props.language === undefined ? 'nowrap' : '')};
+    position: relative;
+    &:hover ${Button} {
+        opacity: 1;
+    }
 `;
 
 const StyledCode = styled.code`
@@ -92,10 +94,10 @@ class Code extends React.Component<CodeProps, CodeState> {
     };
 
     render() {
-        const { language, children } = this.props;
+        const { language, light, children } = this.props;
 
         return (
-            <Base language={language}>
+            <Base language={language} light={light}>
                 <StyledPre>
                     {this.state.hlCode !== undefined ? (
                         <StyledCode dangerouslySetInnerHTML={{ __html: this.state.hlCode }} />
