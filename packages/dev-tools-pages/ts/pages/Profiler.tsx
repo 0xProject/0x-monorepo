@@ -3,7 +3,7 @@ import { render, hydrate } from 'react-dom';
 
 import context from 'ts/context/profiler';
 import Base from 'ts/components/Base';
-import Main from 'ts/components/Main';
+import Content from 'ts/components/Content';
 import ContentBlock from 'ts/components/ContentBlock';
 import { Tabs, TabBlock } from 'ts/components/Tabs';
 import Code from 'ts/components/Code';
@@ -21,7 +21,7 @@ function Profiler() {
                     data-driven approach to optimizing it.
                 </p>
             </Intro>
-            <Main>
+            <Content>
                 <ContentBlock title="Required steps">
                     <List items={['Step 1', 'Step 2']} />
                 </ContentBlock>
@@ -50,7 +50,7 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
                         <TabBlock title="Custom">Custom</TabBlock>
                     </Tabs>
                 </ContentBlock>
-            </Main>
+            </Content>
         </Base>
     );
 }

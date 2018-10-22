@@ -3,7 +3,7 @@ import { render, hydrate } from 'react-dom';
 
 import context from 'ts/context/compiler';
 import Base from 'ts/components/Base';
-import Main from 'ts/components/Main';
+import Content from 'ts/components/Content';
 import ContentBlock from 'ts/components/ContentBlock';
 import { Tabs, TabBlock } from 'ts/components/Tabs';
 import Code from 'ts/components/Code';
@@ -15,7 +15,7 @@ function Compiler() {
     return (
         <Base context={context}>
             <CompilerComponent />
-            <Main>
+            <Content>
                 <ContentBlock title="Required steps">
                     <List items={['Step 1', 'Step 2']} />
                 </ContentBlock>
@@ -44,8 +44,8 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
                         <TabBlock title="Custom">Custom</TabBlock>
                     </Tabs>
                 </ContentBlock>
-            </Main>
-            <Main
+            </Content>
+            <Content
                 title="Artifacts"
                 subtitle="Sol compiler uses solidity standard JSON output format for the artifacts. This way, you can define which parts of the artifact you need."
                 dark
@@ -56,7 +56,7 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
                         define which parts of the artifact you need.
                     </p>
                 </ContentBlock>
-            </Main>
+            </Content>
         </Base>
     );
 }
