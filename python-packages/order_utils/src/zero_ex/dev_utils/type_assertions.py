@@ -13,11 +13,8 @@ def assert_is_string(value: Any) -> None:
     """
     if not isinstance(value, str):
         raise TypeError(
-            "expected variable with value "
-            + str(value)
-            + " to have type 'str', not '"
-            + type(value).__name__
-            + "'"
+            f"expected variable with value {str(value)} to have type 'str', "
+            + f"not '{type(value).__name__}'"
         )
 
 
@@ -31,9 +28,6 @@ def assert_is_list(value: Any) -> None:
     """
     if not isinstance(value, list):
         raise TypeError(
-            "expected variable with value "
-            + str(value)
-            + " to have type 'list', not '"
-            + type(value).__name__
-            + "'"
+            f"expected variable with value {str(value)} to have type 'list', "
+            + f"not '{type(value).__name__}'"
         )

@@ -51,23 +51,16 @@ def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
     if len(asset_data) < ERC20_ASSET_DATA_BYTE_LENGTH:
         raise ValueError(
             "Could not decode ERC20 Proxy Data. Expected length of encoded"
-            + " data to be at least "
-            + str(ERC20_ASSET_DATA_BYTE_LENGTH)
-            + ". Got "
-            + str(len(asset_data))
-            + "."
+            + f" data to be at least {str(ERC20_ASSET_DATA_BYTE_LENGTH)}."
+            + f" Got {str(len(asset_data))}."
         )
 
     asset_proxy_id: str = asset_data[0:10]
     if asset_proxy_id != abi_utils.method_id("ERC20Token", ["address"]):
         raise ValueError(
             "Could not decode ERC20 Proxy Data. Expected Asset Proxy Id to be"
-            + " ERC20 ("
-            + abi_utils.method_id("ERC20Token", ["address"])
-            + ")"
-            + " but got "
-            + asset_proxy_id
-            + "."
+            + f" ERC20 ({abi_utils.method_id('ERC20Token', ['address'])})"
+            + f" but got {asset_proxy_id}."
         )
 
     # workaround for https://github.com/PyCQA/pylint/issues/1498

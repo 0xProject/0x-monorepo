@@ -33,7 +33,7 @@ def parse_signature(signature: str) -> MethodSignature:
 
     matches = re.match(r"^(\w+)\((.+)\)$", signature)
     if matches is None:
-        raise ValueError("Invalid method signature " + signature)
+        raise ValueError(f"Invalid method signature {signature}")
     return {"method": matches[1], "args": matches[2].split(",")}
 
 
@@ -67,7 +67,7 @@ def event_id(name: str, types: List[str]) -> str:
     assert_is_string(name)
     assert_is_list(types)
 
-    signature = name + "(" + ",".join(list(map(elementary_name, types))) + ")"
+    signature = f"{name}({','.join(list(map(elementary_name, types)))})"
     return Web3.sha3(text=signature).hex()
 
 
