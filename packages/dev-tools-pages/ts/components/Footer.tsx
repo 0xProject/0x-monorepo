@@ -71,7 +71,7 @@ const Top = styled.div`
 
 const Icon = styled.div`
     margin-right: 1.3125rem;
-
+    flex-shrink: 0;
     ${media.small`margin-right: 0.9375rem`};
 `;
 
