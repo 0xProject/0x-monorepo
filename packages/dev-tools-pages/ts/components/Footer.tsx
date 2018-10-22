@@ -110,7 +110,12 @@ const ListItem = styled.li`
         ${media.small`margin-bottom: 1.875rem`};
     }
 
-    ${media.small`margin-bottom: 1.875rem`};
+    ${media.small`
+        margin-bottom: 1.875rem
+        :last-of-type {
+            margin-bottom: 0;
+        }
+    `};
 `;
 
 const Small = styled.small`
