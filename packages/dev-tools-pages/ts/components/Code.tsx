@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { colors } from '../variables';
 
+import { colors } from '../variables';
 import BaseButton from './Button';
 
 interface CodeProps {
@@ -26,13 +26,13 @@ const Base =
     styled.div <
     CodeProps >
     `
-  color: ${props => (props.language === undefined ? colors.white : 'inherit')};
-  background-color: ${props => (props.language === undefined ? colors.black : colors.lightGray)};
-  white-space: ${props => (props.language === undefined ? 'nowrap' : '')};
-  position: relative;
-  &:hover ${Button} {
-    opacity: 1;
-  }
+    color: ${props => (props.language === undefined ? colors.white : 'inherit')};
+    background-color: ${props => (props.language === undefined ? colors.black : colors.lightGray)};
+    white-space: ${props => (props.language === undefined ? 'nowrap' : '')};
+    position: relative;
+    &:hover ${Button} {
+        opacity: 1;
+    }
 `;
 
 const StyledCode = styled.code`
