@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { media, colors } from '../variables';
 
 import { Alpha, Lead } from './Typography';
+import Container from './Container';
 import Code from './Code';
 
 const Main = styled.div`
@@ -38,7 +39,7 @@ interface IntroProps {
 
 function Intro(props: IntroProps) {
     return (
-        <Breakout>
+        <Container wide>
             <Main>
                 <Content>
                     <Title>{props.title}</Title>
@@ -48,7 +49,7 @@ function Intro(props: IntroProps) {
                     <Code>Function execute transaction Function execute transaction Function execute transaction</Code>
                 </Breakout>
             </Main>
-        </Breakout>
+        </Container>
     );
 }
 
