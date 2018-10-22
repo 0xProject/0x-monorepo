@@ -29,13 +29,12 @@ const Item = styled.div`
 
 const StyledTitle = styled(Alpha)`
     color: ${props => props.color};
-    margin-bottom: 6.25rem;
 `;
 
 interface ContentBlockProps extends Props {
     title: string;
     main?: boolean;
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 function ContentBlock(props: ContentBlockProps) {
@@ -48,7 +47,7 @@ function ContentBlock(props: ContentBlockProps) {
     return (
         <Base>
             <Title color={props.colors.main}>{props.title}</Title>
-            <Content>{children}</Content>
+            {children ? <Content>{children}</Content> : null}
         </Base>
     );
 }

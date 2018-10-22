@@ -22,6 +22,7 @@ function Cov() {
                 </p>
             </Intro>
             <Content>
+                <ContentBlock main title="Get started" />
                 <ContentBlock title="Required steps">
                     <List items={['Step 1', 'Step 2']} />
                 </ContentBlock>

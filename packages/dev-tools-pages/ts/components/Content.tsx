@@ -21,8 +21,6 @@ const StyledMain =
 `;
 
 interface MainProps {
-    title?: string;
-    subtitle?: string;
     dark?: boolean;
     children: React.ReactNode;
 }
@@ -30,13 +28,7 @@ interface MainProps {
 function Main(props: MainProps) {
     return (
         <StyledMain dark={props.dark}>
-            <Container>
-                <ContentBlock main title={props.title || 'Get started'}>
-                    {props.subtitle ? <Beta as="p">{props.subtitle}</Beta> : null}
-                </ContentBlock>
-
-                {props.children}
-            </Container>
+            <Container>{props.children}</Container>
         </StyledMain>
     );
 }

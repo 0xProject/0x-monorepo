@@ -16,6 +16,7 @@ function Compiler() {
         <Base context={context}>
             <CompilerComponent />
             <Content>
+                <ContentBlock main title="Get started" />
                 <ContentBlock title="Required steps">
                     <List items={['Step 1', 'Step 2']} />
                 </ContentBlock>
@@ -45,11 +46,14 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
                     </Tabs>
                 </ContentBlock>
             </Content>
-            <Content
-                title="Artifacts"
-                subtitle="Sol compiler uses solidity standard JSON output format for the artifacts. This way, you can define which parts of the artifact you need."
-                dark
-            >
+            <Content dark>
+                <ContentBlock main title="Artifacts">
+                    <p>
+                        Sol compiler uses solidity standard JSON output format for the artifacts. This way, you can
+                        define which parts of the artifact you need.
+                    </p>
+                </ContentBlock>
+
                 <ContentBlock title="Production">
                     <p>
                         Sol compiler uses solidity standard JSON output format for the artifacts. This way, you can
