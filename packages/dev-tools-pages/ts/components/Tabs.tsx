@@ -1,5 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import { colors } from '../variables';
+
 import { Tabs as ReactTabs, Tab, TabList, TabPanel } from 'react-tabs'
 
 import {withContext, Props} from './withContext';
@@ -34,7 +36,7 @@ const Root = styled.div<{primaryColor: string;}>`
     background-color: ${props => props.primaryColor};
   }
   ${StyledTab}[aria-selected="true"] {
-    background-color: #F1F2F7;
+    background-color: ${colors.gray};
   } 
 `;
 

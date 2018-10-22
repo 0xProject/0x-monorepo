@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import { colors } from '../variables';
 
 import InlineCode from './InlineCode';
 
@@ -13,7 +14,7 @@ const Cards = styled.dl`
 `;
 
 const Card = styled.div`
-    background-color: #f1f4f5;
+    background-color: ${colors.lightGray};
     padding: 3.125rem;
     padding-bottom: 2.5rem;
 `;

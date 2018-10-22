@@ -1,10 +1,11 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import { colors } from '../variables';
 
 import { Alpha, Beta } from './Typography';
 
 const Main = styled.div`
-    background-color: #f1f4f5;
+    background-color: ${colors.lightGray};
     padding: 6.25rem;
     display: flex;
     justify-content: space-between;
@@ -16,13 +17,12 @@ const Title = styled(Alpha)`
 
 const Content = styled.div`
     max-width: 25.9375rem;
-
     display: flex;
     flex-direction: column;
 `;
 
 const Code = styled.div`
-    background-color: #e9eced;
+    background-color: ${colors.darkGray};
     width: 520px;
     height: 350px;
 `;
