@@ -4,7 +4,7 @@
     "items": {
         "properties": {
             "signedOrder": { "$ref": "/signedOrderSchema" },
-            "takerTokenFillAmount": { "$ref": "/numberSchema" }
+            "takerTokenFillAmount": { "$ref": "/wholeNumberSchema" }
         },
         "required": ["signedOrder", "takerTokenFillAmount"],
         "type": "object"
