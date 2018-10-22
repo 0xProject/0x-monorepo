@@ -58,9 +58,12 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         const { value, startWidthCh, endWidthCh } = props;
         return ScalingInput.getPhase(startWidthCh, endWidthCh, value);
     }
-    public static calculateFontSize(props: ScalingInputProps): number {
-        const { startWidthCh, endWidthCh, value, maxFontSizePx } = props;
-        const phase = ScalingInput.getPhase(startWidthCh, endWidthCh, value);
+    public static calculateFontSize(
+        endWidthCh: number,
+        maxFontSizePx: number,
+        phase: ScalingInputPhase,
+        value?: string,
+    ): number {
         if (_.isUndefined(value) || phase !== ScalingInputPhase.End) {
             return maxFontSizePx;
         }
@@ -68,6 +71,10 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         const scalingFactor = (1 - percentageToReduceByPerCharacter) ** charactersOverMax;
         const fontSize = scalingFactor * maxFontSizePx;
         return fontSize;
+    }
+    public static calculateFontSizeFromProps(props: ScalingInputProps, phase: ScalingInputPhase): number {
+        const { endWidthCh, value, maxFontSizePx } = props;
+        return ScalingInput.calculateFontSize(endWidthCh, maxFontSizePx, phase, value);
     }
     public getSnapshotBeforeUpdate(): ScalingInputSnapshot {
         return {
@@ -81,8 +88,8 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
     ): void {
         const prevPhase = ScalingInput.getPhaseFromProps(prevProps);
         const curPhase = ScalingInput.getPhaseFromProps(this.props);
-        const prevFontSize = ScalingInput.calculateFontSize(prevProps);
-        const curFontSize = ScalingInput.calculateFontSize(this.props);
+        const prevFontSize = ScalingInput.calculateFontSizeFromProps(prevProps, prevPhase);
+        const curFontSize = ScalingInput.calculateFontSizeFromProps(this.props, curPhase);
         // if we went from anything else to end, fix to the current width as it shouldn't change as we grow
         if (prevPhase !== ScalingInputPhase.End && curPhase === ScalingInputPhase.End) {
             this.setState({
@@ -110,14 +117,13 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
                 onChange={onChange}
                 value={value}
                 placeholder={placeholder}
-                fontSize={`${ScalingInput.calculateFontSize(this.props)}px`}
-                width={this._calculateWidth()}
+                fontSize={`${this._calculateFontSize(phase)}px`}
+                width={this._calculateWidth(phase)}
                 maxLength={maxLength}
             />
         );
     }
-    private readonly _calculateWidth = (): string => {
-        const phase = ScalingInput.getPhaseFromProps(this.props);
+    private readonly _calculateWidth = (phase: ScalingInputPhase): string => {
         const { value, startWidthCh, endWidthCh } = this.props;
         if (_.isUndefined(value)) {
             return `${startWidthCh}ch`;
@@ -135,6 +141,9 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
             default:
                 return `${startWidthCh}ch`;
         }
+    };
+    private readonly _calculateFontSize = (phase: ScalingInputPhase): number => {
+        return ScalingInput.calculateFontSizeFromProps(this.props, phase);
     };
     private readonly _getInputWidthInPx = (): number => {
         const ref = this._inputRef.current;
