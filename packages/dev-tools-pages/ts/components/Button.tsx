@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { colors } from '../variables';
 
+import { media } from 'ts/variables';
 import { withContext, Props } from './withContext';
 
 interface ButtonProps extends Props {
@@ -22,6 +23,12 @@ const Button =
   border-radius: 5rem;
   padding: ${props => (props.large ? '1.125rem 2.375rem' : '.5625rem 1.25rem')};
   display: inline-block;
+  ${props =>
+      props.large &&
+      media.small`
+    font-size: 1rem;
+    padding: .875rem 1.5rem;
+  `}
 `;
 
 export default withContext(Button);
