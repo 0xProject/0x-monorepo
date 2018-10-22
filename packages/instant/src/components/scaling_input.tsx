@@ -17,21 +17,29 @@ export enum ScalingInputPhase {
 export interface ScalingInputProps {
     startWidthCh: number;
     endWidthCh: number;
-    fontSizePx: number;
+    maxFontSizePx: number;
     value?: string;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>, fontSize: number) => void;
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onFontSizeChange: (fontSizePx: number) => void;
     fontColor?: ColorOption;
     placeholder?: string;
+    maxLength?: number;
 }
 
-export interface ScalingInputProps {
+export interface ScalingInputState {
     fixedWidthInPxIfExists?: number;
 }
 
-export class ScalingInput extends React.Component<ScalingInputProps> {
+export interface ScalingInputSnapshot {
+    inputWidthPx: number;
+}
+// This is a magic number that was determined experimentally.
+const percentageToReduceByPerCharacter = 0.15;
+export class ScalingInput extends React.Component<ScalingInputProps, ScalingInputState> {
     public static defaultProps = {
         onChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,
+        maxLength: 10,
     };
     public state = {
         fixedWidthInPxIfExists: undefined,
@@ -50,13 +58,35 @@ export class ScalingInput extends React.Component<ScalingInputProps> {
         const { value, startWidthCh, endWidthCh } = props;
         return ScalingInput.getPhase(startWidthCh, endWidthCh, value);
     }
-    public componentDidUpdate(prevProps: ScalingInputProps): void {
+    public static calculateFontSize(props: ScalingInputProps): number {
+        const { startWidthCh, endWidthCh, value, maxFontSizePx } = props;
+        const phase = ScalingInput.getPhase(startWidthCh, endWidthCh, value);
+        if (_.isUndefined(value) || phase !== ScalingInputPhase.End) {
+            return maxFontSizePx;
+        }
+        const charactersOverMax = value.length - endWidthCh;
+        const scalingFactor = (1 - percentageToReduceByPerCharacter) ** charactersOverMax;
+        const fontSize = scalingFactor * maxFontSizePx;
+        return fontSize;
+    }
+    public getSnapshotBeforeUpdate(): ScalingInputSnapshot {
+        return {
+            inputWidthPx: this._getInputWidthInPx(),
+        };
+    }
+    public componentDidUpdate(
+        prevProps: ScalingInputProps,
+        prevState: ScalingInputState,
+        snapshot: ScalingInputSnapshot,
+    ): void {
         const prevPhase = ScalingInput.getPhaseFromProps(prevProps);
         const curPhase = ScalingInput.getPhaseFromProps(this.props);
+        const prevFontSize = ScalingInput.calculateFontSize(prevProps);
+        const curFontSize = ScalingInput.calculateFontSize(this.props);
         // if we went from anything else to end, fix to the current width as it shouldn't change as we grow
         if (prevPhase !== ScalingInputPhase.End && curPhase === ScalingInputPhase.End) {
             this.setState({
-                fixedWidthInPxIfExists: this._getInputWidthInPx(),
+                fixedWidthInPxIfExists: snapshot.inputWidthPx,
             });
         }
         // if we end from end to to anything else, un-fix the width
@@ -65,19 +95,24 @@ export class ScalingInput extends React.Component<ScalingInputProps> {
                 fixedWidthInPxIfExists: undefined,
             });
         }
+        // If font size has changed, notify.
+        if (prevFontSize !== curFontSize) {
+            this.props.onFontSizeChange(curFontSize);
+        }
     }
     public render(): React.ReactNode {
-        const { fontColor, onChange, placeholder, value } = this.props;
+        const { fontColor, onChange, placeholder, value, maxLength } = this.props;
         const phase = ScalingInput.getPhaseFromProps(this.props);
         return (
             <Input
                 ref={this._inputRef as any}
                 fontColor={fontColor}
-                onChange={this._handleChange}
+                onChange={onChange}
                 value={value}
                 placeholder={placeholder}
-                fontSize={`${this.props.fontSizePx}px`}
+                fontSize={`${ScalingInput.calculateFontSize(this.props)}px`}
                 width={this._calculateWidth()}
+                maxLength={maxLength}
             />
         );
     }
@@ -107,25 +142,5 @@ export class ScalingInput extends React.Component<ScalingInputProps> {
             return 0;
         }
         return (ref as any).getBoundingClientRect().width;
-    };
-    private readonly _calculateNextFontSize = (
-        currentFontSizePx: number,
-        value: string,
-        startWidthCh: number,
-        endWidthCh: number,
-    ): number => {
-        const phase = ScalingInput.getPhase(startWidthCh, endWidthCh, value);
-        if (_.isUndefined(value) || phase !== ScalingInputPhase.End) {
-            return currentFontSizePx;
-        }
-        const charactersOverMax = value.length - endWidthCh;
-        const pixelsToReduceFontSizeBy = charactersOverMax * 5;
-        const fontSize = currentFontSizePx - pixelsToReduceFontSizeBy;
-        return fontSize;
-    };
-    private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        const { fontSizePx, startWidthCh, endWidthCh } = this.props;
-        this.props.onChange(event, this._calculateNextFontSize(fontSizePx, value, startWidthCh, endWidthCh));
     };
 }

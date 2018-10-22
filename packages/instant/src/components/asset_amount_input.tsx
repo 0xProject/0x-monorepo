@@ -41,8 +41,9 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps, Ass
                         {...rest}
                         startWidthCh={3.5}
                         endWidthCh={5}
-                        fontSizePx={this.state.currentFontSizePx}
+                        maxFontSizePx={this.props.startingFontSizePx}
                         onChange={this._handleChange}
+                        onFontSizeChange={this._handleFontSizeChange}
                     />
                 </Container>
                 <Container display="inline-block" marginLeft="10px">
@@ -57,12 +58,12 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps, Ass
             </Container>
         );
     }
-    private readonly _handleChange = (value?: BigNumber, fontSize?: number): void => {
+    private readonly _handleChange = (value?: BigNumber): void => {
         this.props.onChange(value, this.props.asset);
-        if (!_.isUndefined(fontSize)) {
-            this.setState({
-                currentFontSizePx: fontSize,
-            });
-        }
+    };
+    private readonly _handleFontSizeChange = (fontSizePx: number): void => {
+        this.setState({
+            currentFontSizePx: fontSizePx,
+        });
     };
 }

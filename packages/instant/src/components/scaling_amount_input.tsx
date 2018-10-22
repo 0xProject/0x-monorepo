@@ -9,12 +9,13 @@ import { ScalingInput } from './scaling_input';
 import { Container, Text } from './ui';
 
 export interface ScalingAmountInputProps {
-    fontSizePx: number;
+    maxFontSizePx: number;
     startWidthCh: number;
     endWidthCh: number;
     fontColor?: ColorOption;
     value?: BigNumber;
     onChange: (value?: BigNumber, fontSize?: number) => void;
+    onFontSizeChange: (fontSizePx: number) => void;
 }
 
 export class ScalingAmountInput extends React.Component<ScalingAmountInputProps> {
@@ -23,12 +24,13 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
         onFontSizeChange: util.boundNoop,
     };
     public render(): React.ReactNode {
-        const { startWidthCh, endWidthCh, fontColor, fontSizePx, value } = this.props;
+        const { startWidthCh, endWidthCh, fontColor, maxFontSizePx, value, onFontSizeChange } = this.props;
         return (
             <ScalingInput
                 startWidthCh={startWidthCh}
                 endWidthCh={endWidthCh}
-                fontSizePx={fontSizePx}
+                maxFontSizePx={maxFontSizePx}
+                onFontSizeChange={onFontSizeChange}
                 fontColor={fontColor}
                 onChange={this._handleChange}
                 value={!_.isUndefined(value) ? value.toString() : ''}
