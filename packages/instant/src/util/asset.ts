@@ -16,11 +16,10 @@ export const assetUtils = {
         };
     },
     getMetaDataOrThrow: (assetData: string, metaDataMap: ObjectMap<AssetMetaData>, network: Network): AssetMetaData => {
-        let mainnetAssetData: string | undefined;
+        let mainnetAssetData: string | undefined = assetData;
         if (network !== Network.Mainnet) {
             mainnetAssetData = assetUtils.getAssociatedAssetDataIfExists(assetData, network);
         }
-        mainnetAssetData = assetData;
         if (_.isUndefined(mainnetAssetData)) {
             throw new Error(ZeroExInstantError.AssetMetaDataNotAvailable);
         }
