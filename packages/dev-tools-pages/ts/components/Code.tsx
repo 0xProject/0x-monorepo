@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { colors } from '../variables';
+import { colors } from 'ts/variables';
 import BaseButton from './Button';
 
 interface CodeProps {
