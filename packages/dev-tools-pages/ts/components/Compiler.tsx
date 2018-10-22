@@ -1,22 +1,30 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { colors } from '../variables';
+import { media, colors } from '../variables';
 
+import Container from './Container';
 import InlineCode from './InlineCode';
 
 const Cards = styled.dl`
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
-    align-items: start;
-    grid-gap: 1.25rem;
-    margin-top: 0;
-    margin-bottom: 0;
+    column-count: 3;
+    column-gap: 1.25rem;
+
+    ${media.small`
+        column-count: 1;
+    `}: ;
 `;
 
 const Card = styled.div`
     background-color: ${colors.lightGray};
     padding: 3.125rem;
     padding-bottom: 2.5rem;
+    display: inline-block;
+    margin: 0 0 1.25rem;
+    width: 100%;
+
+    ${media.small`
+        padding: 1.875rem;
+    `};
 `;
 
 const Dt = styled.dt`
@@ -63,14 +71,16 @@ const cards = [
 
 function Compiler() {
     return (
-        <Cards>
-            {cards.map(card => (
-                <Card key={card.title.split(' ').join('-')}>
-                    <Dt>{card.title}</Dt>
-                    <Dd>{card.body}</Dd>
-                </Card>
-            ))}
-        </Cards>
+        <Container wide>
+            <Cards>
+                {cards.map(card => (
+                    <Card key={card.title.split(' ').join('-')}>
+                        <Dt>{card.title}</Dt>
+                        <Dd>{card.body}</Dd>
+                    </Card>
+                ))}
+            </Cards>
+        </Container>
     );
 }
 
