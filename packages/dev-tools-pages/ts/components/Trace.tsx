@@ -102,7 +102,11 @@ const StyledSection =
     padding-top: 6.25rem;
     padding-bottom: 5.25rem;
     
-    ${media.small`background: none`};
+    ${media.small`
+        background: none
+        padding-top: 0;
+        padding-bottom: 0;
+    `};
 `;
 
 const Wrapper = styled(Container)`
