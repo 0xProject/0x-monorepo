@@ -3,15 +3,15 @@ import * as React from 'react';
 import { FullRotation } from '../animations/full_rotation';
 
 export interface SpinnerProps {
-    width: number;
-    height: number;
+    pxWidth: number;
+    pxHeight: number;
 }
 export const Spinner: React.StatelessComponent<SpinnerProps> = props => {
     return (
-        <FullRotation>
+        <FullRotation width={`${props.pxWidth}px`} height={`${props.pxHeight}px`}>
             <svg
-                width={props.width}
-                height={props.height}
+                width={props.pxWidth}
+                height={props.pxHeight}
                 viewBox="0 0 34 34"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
