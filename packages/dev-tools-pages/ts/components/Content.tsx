@@ -1,9 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { Beta } from './Typography';
 import Container from './Container';
-import ContentBlock from './ContentBlock';
 
 const StyledMain =
     styled.div <
