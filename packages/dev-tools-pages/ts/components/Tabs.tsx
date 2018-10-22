@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled from 'styled-components';
-
 import { colors } from 'ts/variables';
 import { Tabs as ReactTabs, Tab, TabList, TabPanel } from 'react-tabs';
 import Breakout from './Breakout';
@@ -41,7 +40,7 @@ const Root =
   }
   ${StyledTab}[aria-selected="true"] {
     background-color: ${colors.gray};
-  }
+  } 
 `;
 
 interface TabsProps extends Props {

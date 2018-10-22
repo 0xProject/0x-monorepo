@@ -1,8 +1,9 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { withContext, Props } from './withContext';
+import { Beta, Alpha } from './Typography';
 import { media } from 'ts/variables';
-import { Beta } from './Typography';
 
 const Base = styled.div`
     display: flex;
@@ -42,9 +43,14 @@ const Item = styled.div`
     }
 `;
 
-interface ContentBlockProps {
+const StyledTitle = styled(Alpha)`
+    color: ${props => props.color};
+`;
+
+interface ContentBlockProps extends Props {
     title: string;
-    children: React.ReactNode;
+    main?: boolean;
+    children?: React.ReactNode;
 }
 
 function ContentBlock(props: ContentBlockProps) {
@@ -52,12 +58,14 @@ function ContentBlock(props: ContentBlockProps) {
         return <Item>{child}</Item>;
     });
 
+    const Title = props.main ? StyledTitle : Beta;
+
     return (
         <Base>
-            <Beta>{props.title}</Beta>
-            <Content>{children}</Content>
+            <Title color={props.colors.main}>{props.title}</Title>
+            {children ? <Content>{children}</Content> : null}
         </Base>
     );
 }
 
-export default ContentBlock;
+export default withContext(ContentBlock);
