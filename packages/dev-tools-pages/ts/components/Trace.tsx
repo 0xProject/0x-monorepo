@@ -39,7 +39,7 @@ function Trace(props: Props) {
                                     completely in the dark about its exact location.
                                 </p>
                             </Copy>
-                            <NoLocation />
+                            <Icon as={NoLocation} />
                         </Item>
 
                         <Item>
@@ -50,7 +50,7 @@ function Trace(props: Props) {
                                     the failing line of code quickly becomes a daunting task.
                                 </p>
                             </Copy>
-                            <TimeConsuming />
+                            <Icon as={TimeConsuming} />
                         </Item>
                     </List>
                 </Block>
@@ -72,7 +72,7 @@ function Trace(props: Props) {
                                     from.
                                 </p>
                             </Copy>
-                            <ExactLocation />
+                            <Icon as={ExactLocation} />
                         </Item>
 
                         <Item>
@@ -83,7 +83,7 @@ function Trace(props: Props) {
                                     on linen X of contract Y", it drastically improves the developer experience.
                                 </p>
                             </Copy>
-                            <TimeSaving />
+                            <Icon as={TimeSaving} />
                         </Item>
                     </List>
                 </Block>
@@ -187,6 +187,10 @@ const Copy = styled.div`
     margin-right: 5.875rem;
 
     ${media.small`margin-right: 2.0625rem;`};
+`;
+
+const Icon = styled.div`
+    flex-shrink: 0;
 `;
 
 export default withContext(Trace);
