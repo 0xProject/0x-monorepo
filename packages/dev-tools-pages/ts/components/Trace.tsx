@@ -61,7 +61,7 @@ function Trace(props: Props) {
                         Sol-trace will give you full stack traces, including contract names, line numbers and code
                         snippets, every time you encounter an error.
                     </MainCopy>
-                    <Code>Error: VM Exception while processing transaction: rever</Code>
+                    <Code light>Error: VM Exception while processing transaction: rever</Code>
 
                     <List>
                         <Item>
