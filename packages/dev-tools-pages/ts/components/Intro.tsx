@@ -2,8 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { media, colors } from '../variables';
 
-import { Alpha, Beta } from './Typography';
-import Breakout from './Breakout';
+import { Alpha, Lead } from './Typography';
 import Code from './Code';
 
 const Main = styled.div`
@@ -43,7 +42,7 @@ function Intro(props: IntroProps) {
             <Main>
                 <Content>
                     <Title>{props.title}</Title>
-                    <Beta as="div">{props.children}</Beta>
+                    <Lead as="div">{props.children}</Lead>
                 </Content>
                 <Breakout>
                     <Code>Function execute transaction Function execute transaction Function execute transaction</Code>

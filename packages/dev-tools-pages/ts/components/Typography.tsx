@@ -19,8 +19,14 @@ const Gamma = styled.h4`
     ${media.small`font-size: 0.875rem;`};
 `;
 
+const Lead = styled.p`
+    font-size: 1.25rem;
+
+    ${media.small`font-size: 1rem;`};
+`;
+
 const Small = styled.p`
     font-size: 0.875rem;
 `;
 
-export { Alpha, Beta, Gamma, Small };
+export { Alpha, Beta, Gamma, Lead, Small };
