@@ -12,7 +12,7 @@ export interface ScalingAmountInputProps {
     textLengthThreshold: number;
     fontColor?: ColorOption;
     value?: BigNumber;
-    onChange: (value?: BigNumber, fontSize?: number) => void;
+    onChange: (value?: BigNumber) => void;
     onFontSizeChange: (fontSizePx: number) => void;
 }
 
@@ -36,7 +36,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
             />
         );
     }
-    private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>, fontSize?: number): void => {
+    private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value;
         let bigNumberValue;
         if (!_.isEmpty(value)) {
@@ -47,6 +47,6 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
                 return;
             }
         }
-        this.props.onChange(bigNumberValue, fontSize);
+        this.props.onChange(bigNumberValue);
     };
 }
