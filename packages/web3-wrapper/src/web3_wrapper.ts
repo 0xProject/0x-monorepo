@@ -27,8 +27,8 @@ import {
     BlockWithoutTransactionDataRPC,
     BlockWithTransactionDataRPC,
     NodeType,
-    Web3WrapperErrors,
     TransactionRPC,
+    Web3WrapperErrors,
 } from './types';
 import { utils } from './utils';
 
