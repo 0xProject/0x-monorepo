@@ -1017,7 +1017,6 @@ describe(ContractName.Forwarder, () => {
         });
         it('Should buy slightly greater MakerAsset when exchange rate is rounded (Regression Test)', async () => {
             // Order taken from a transaction on mainnet that failed due to a rounding error.
--           // tx=0x3d22b18fe2615c1903408b1b969744bcd117becc30205df18d5c5c54d27d1237
             orderWithoutFee = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber('268166666666666666666'),
                 takerAssetAmount: new BigNumber('219090625878836371'),
@@ -1070,7 +1069,6 @@ describe(ContractName.Forwarder, () => {
         });
         it('Should buy slightly greater MakerAsset when exchange rate is rounded, and MakerAsset is ZRX (Regression Test)', async () => {
             // Order taken from a transaction on mainnet that failed due to a rounding error.
--           // tx=0x3d22b18fe2615c1903408b1b969744bcd117becc30205df18d5c5c54d27d1237
             orderWithoutFee = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber('268166666666666666666'),
                 takerAssetAmount: new BigNumber('219090625878836371'),
