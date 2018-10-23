@@ -23,7 +23,13 @@ import {
 import * as _ from 'lodash';
 
 import { marshaller } from './marshaller';
-import { BlockWithoutTransactionDataRPC, BlockWithTransactionDataRPC, NodeType, Web3WrapperErrors } from './types';
+import {
+    BlockWithoutTransactionDataRPC,
+    BlockWithTransactionDataRPC,
+    NodeType,
+    Web3WrapperErrors,
+    TransactionRPC,
+} from './types';
 import { utils } from './utils';
 
 const BASE_TEN = 10;
@@ -228,10 +234,11 @@ export class Web3Wrapper {
      */
     public async getTransactionByHashAsync(txHash: string): Promise<Transaction> {
         assert.isHexString('txHash', txHash);
-        const transaction = await this.sendRawPayloadAsync<Transaction>({
+        const transactionRpc = await this.sendRawPayloadAsync<TransactionRPC>({
             method: 'eth_getTransactionByHash',
             params: [txHash],
         });
+        const transaction = marshaller.unmarshalTransaction(transactionRpc);
         return transaction;
     }
     /**
