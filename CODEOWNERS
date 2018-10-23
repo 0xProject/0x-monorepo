@@ -26,3 +26,4 @@ packages/subproviders/ @fabioberger @dekz
 packages/connect/ @fragosti 
 packages/monorepo-scripts/ @fabioberger
 packages/order-utils/ @fabioberger @LogvinovLeon 
+python-packages/ @feuGeneA
