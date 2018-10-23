@@ -4,7 +4,6 @@ import { media, colors } from '../variables';
 
 import { Alpha, Lead } from './Typography';
 import Container from './Container';
-import Code from './Code';
 
 const Main = styled.div`
     background-color: ${colors.lightGray};
@@ -18,46 +17,56 @@ const Main = styled.div`
     `};
 `;
 
+const Inner = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+`;
+
 const Title = styled(Alpha)`
     margin-bottom: 2.5rem;
 
     ${media.small`margin-bottom: 2.25rem;`};
 `;
 
-const Content = styled.div`
-    max-width: 25.9375rem;
+const Blocks = styled.div`
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
 
-    ${Lead} {
-        ${media.small`margin-bottom: 2.25rem;`};
-    }
+    ${media.small`display: block;`};
 `;
 
-const StyledCode = styled(Code)`
-    width: 520px;
-    height: 350px;
+const IntroLead = styled(Lead)`
+    max-width: 25.9375rem;
 
-    ${media.small`margin-bottom: 2.25rem;`};
+    ${media.small`margin-bottom: 1.5625rem;`};
+`;
+const IntroAside = styled.div`
+    max-width: 32.5rem;
+
+    ${media.small`
+        margin-left: -30px;
+        width: calc(100% + 60px);
+    `};
 `;
 
 interface IntroProps {
     title: string;
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 function Intro(props: IntroProps) {
     return (
         <Container wide>
             <Main>
-                <Content>
+                <Inner>
                     <Title>{props.title}</Title>
-                    <Lead as="div">{props.children}</Lead>
-                </Content>
-                <StyledCode> Function execute transaction</StyledCode>
+                    <Blocks>{props.children}</Blocks>
+                </Inner>
             </Main>
         </Container>
     );
 }
 
 export default Intro;
+export { IntroLead, IntroAside, Intro };

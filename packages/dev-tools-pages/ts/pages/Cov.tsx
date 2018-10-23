@@ -9,19 +9,28 @@ import { Tabs, TabBlock } from 'ts/components/Tabs';
 import Code from 'ts/components/Code';
 import InlineCode from 'ts/components/InlineCode';
 import { List, ListItem } from 'ts/components/List';
-import Intro from 'ts/components/Intro';
 import Breakout from 'ts/components/Breakout';
+import { Intro, IntroLead, IntroAside } from 'ts/components/Intro';
 
 function Cov() {
     return (
         <Base context={context}>
             <Intro title="Measure your tests">
-                <p>
+                <IntroLead>
                     When it comes to writing smart contracts, testing is one of the most important steps of the process.
                     In order to quantify the robustness of your Solidity testing suite, you need to measure its code
                     coverage.
-                </p>
+                </IntroLead>
+                <IntroAside>
+                    <Code language="js">
+                        {`import { SolCompilerArtifactAdapter } from '@0x/sol-trace';
+
+// Both artifactsDir and contractsDir are optional and will be fetched from compiler.json if not passed in
+const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDir);`}
+                    </Code>
+                </IntroAside>
             </Intro>
+
             <Content>
                 <ContentBlock main title="Get started" />
                 <ContentBlock title="Prerequisites">
