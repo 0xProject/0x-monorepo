@@ -51,7 +51,7 @@ class LintCommand(distutils.command.build_py.build_py):
             path.dirname(path.realpath(argv[0])), "stubs"
         )
 
-        # HACK: until eth_abi releases
+        # HACK(gene): until eth_abi releases
         # https://github.com/ethereum/eth-abi/pull/107 , we need to simply
         # create an empty file `py.typed` in the eth_abi package directory.
         import eth_abi
