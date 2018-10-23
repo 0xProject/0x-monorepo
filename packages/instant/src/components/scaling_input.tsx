@@ -1,12 +1,10 @@
-import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 import { ColorOption } from '../style/theme';
 import { util } from '../util/util';
 
-import { Container, Input } from './ui';
+import { Input } from './ui';
 
 export enum ScalingInputPhase {
     Start,
@@ -44,7 +42,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
     public state = {
         fixedWidthInPxIfExists: undefined,
     };
-    private _inputRef = React.createRef();
+    private readonly _inputRef = React.createRef();
     public static getPhase(startWidthCh: number, endWidthCh: number, value?: string): ScalingInputPhase {
         if (_.isUndefined(value) || value.length <= startWidthCh) {
             return ScalingInputPhase.Start;

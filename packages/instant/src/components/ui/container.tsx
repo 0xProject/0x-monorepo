@@ -1,4 +1,3 @@
-import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';

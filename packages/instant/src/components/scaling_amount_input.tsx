@@ -6,7 +6,6 @@ import { ColorOption } from '../style/theme';
 import { util } from '../util/util';
 
 import { ScalingInput } from './scaling_input';
-import { Container, Text } from './ui';
 
 export interface ScalingAmountInputProps {
     maxFontSizePx: number;

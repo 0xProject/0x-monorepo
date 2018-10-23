@@ -1,4 +1,3 @@
-import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';
@@ -12,10 +11,6 @@ export interface FlexProps {
     backgroundColor?: ColorOption;
     className?: string;
 }
-
-const PlainFlex: React.StatelessComponent<FlexProps> = ({ children, className }) => (
-    <div className={className}>{children}</div>
-);
 
 export const Flex = styled<FlexProps, 'div'>('div')`
     display: flex;
