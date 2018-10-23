@@ -19,7 +19,7 @@ const Card = styled.div`
     padding: 3.125rem;
     padding-bottom: 2.5rem;
     display: inline-block;
-    margin: 0 0 1.25rem;
+    margin-bottom: 1.25rem;
     width: 100%;
 
     ${media.small`
