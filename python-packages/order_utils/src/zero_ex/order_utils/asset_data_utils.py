@@ -2,7 +2,7 @@
 
 from mypy_extensions import TypedDict
 
-import eth_abi  # type: ignore
+import eth_abi
 
 from zero_ex.dev_utils import abi_utils
 from zero_ex.dev_utils.type_assertions import assert_is_string

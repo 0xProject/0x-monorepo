@@ -1,6 +1,6 @@
 """Tests of 0x.order_utils.asset_data_utils."""
 
-import pytest  # type: ignore
+import pytest
 
 from zero_ex.order_utils.asset_data_utils import (
     encode_erc20_asset_data,

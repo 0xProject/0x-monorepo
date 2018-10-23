@@ -1,6 +1,6 @@
 """Tests of 0x.abi_utils."""
 
-import pytest  # type: ignore
+import pytest
 
 from zero_ex.dev_utils.abi_utils import (
     elementary_name,
