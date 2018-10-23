@@ -1,4 +1,4 @@
-import { marketUtils, rateUtils, SignedOrder } from '@0x/order-utils';
+import { marketUtils, SignedOrder } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -151,7 +151,7 @@ function findEthAmountNeededToBuyZrx(
         (acc, order, index) => {
             const { totalEthAmount, remainingZrxBuyAmount } = acc;
             const remainingFillableMakerAssetAmount = remainingFillableMakerAssetAmounts[index];
-            const makerFillAmount = BigNumber.min(acc.remainingZrxBuyAmount, remainingFillableMakerAssetAmount);
+            const makerFillAmount = BigNumber.min(remainingZrxBuyAmount, remainingFillableMakerAssetAmount);
             const [takerFillAmount, adjustedMakerFillAmount] = orderUtils.getTakerFillAmountForFeeOrder(
                 order,
                 makerFillAmount,
@@ -163,7 +163,7 @@ function findEthAmountNeededToBuyZrx(
                 totalEthAmount: totalEthAmount.plus(takerFillAmount),
                 remainingZrxBuyAmount: BigNumber.max(
                     constants.ZERO_AMOUNT,
-                    acc.remainingZrxBuyAmount.minus(makerFillAmount).plus(extraFeeAmount),
+                    remainingZrxBuyAmount.minus(makerFillAmount).plus(extraFeeAmount),
                 ),
             };
         },
