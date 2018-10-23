@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { colors, media } from '../variables';
 
 import { withContext, Props } from './withContext';
-import { Alpha, Beta, Gamma } from './Typography';
+import { Alpha, Lead, Gamma } from './Typography';
 import Container from './Container';
 import Code from './Code';
 
@@ -24,7 +24,7 @@ function Trace(props: Props) {
             <Wrapper>
                 <Block>
                     <Alpha>The Issue</Alpha>
-                    <MainCopy as="p">
+                    <MainCopy>
                         Every time an Ethereum transaction fails, it's extremely hard to trace down the troublemaking
                         line of code. The only hint you'll get is a generic error.
                     </MainCopy>
@@ -57,7 +57,7 @@ function Trace(props: Props) {
 
                 <Block background={colors.secondary}>
                     <Alpha>The Fix</Alpha>
-                    <MainCopy as="p">
+                    <MainCopy>
                         Sol-trace will give you full stack traces, including contract names, line numbers and code
                         snippets, every time you encounter an error.
                     </MainCopy>
@@ -155,11 +155,10 @@ const Block =
     `};
 `;
 
-const MainCopy = styled(Beta)`
+const MainCopy = styled(Lead)`
     margin-bottom: 3.1875rem;
     ${media.small`
         margin-bottom: 1.125rem;
-        font-size: 1rem;
     `};
 `;
 

@@ -2,8 +2,8 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { media, colors } from '../variables';
 
-import { Alpha, Beta } from './Typography';
-import Breakout from './Breakout';
+import { Alpha, Lead } from './Typography';
+import Container from './Container';
 import Code from './Code';
 
 const Main = styled.div`
@@ -29,6 +29,15 @@ const Content = styled.div`
     display: flex;
     flex-direction: column;
 
+    ${Lead} {
+        ${media.small`margin-bottom: 2.25rem;`};
+    }
+`;
+
+const StyledCode = styled(Code)`
+    width: 520px;
+    height: 350px;
+
     ${media.small`margin-bottom: 2.25rem;`};
 `;
 
@@ -39,17 +48,15 @@ interface IntroProps {
 
 function Intro(props: IntroProps) {
     return (
-        <Breakout>
+        <Container wide>
             <Main>
                 <Content>
                     <Title>{props.title}</Title>
-                    <Beta as="div">{props.children}</Beta>
+                    <Lead as="div">{props.children}</Lead>
                 </Content>
-                <Breakout>
-                    <Code>Function execute transaction Function execute transaction Function execute transaction</Code>
-                </Breakout>
+                <StyledCode> Function execute transaction</StyledCode>
             </Main>
-        </Breakout>
+        </Container>
     );
 }
 
