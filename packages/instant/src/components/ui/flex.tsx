@@ -1,4 +1,3 @@
-
 import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';
 
@@ -8,6 +7,7 @@ export interface FlexProps {
     justify?: 'flex-start' | 'center' | 'space-around' | 'space-between' | 'space-evenly' | 'flex-end';
     align?: 'flex-start' | 'center' | 'space-around' | 'space-between' | 'space-evenly' | 'flex-end';
     width?: string;
+    height?: string;
     backgroundColor?: ColorOption;
     className?: string;
 }
@@ -19,6 +19,7 @@ export const Flex = styled<FlexProps, 'div'>('div')`
     justify-content: ${props => props.justify};
     align-items: ${props => props.align};
     ${props => cssRuleIfExists(props, 'width')}
+    ${props => cssRuleIfExists(props, 'height')}
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
 `;
 

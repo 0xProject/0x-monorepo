@@ -1,4 +1,3 @@
-
 import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';
 
@@ -10,6 +9,7 @@ export interface ContainerProps {
     bottom?: string;
     left?: string;
     width?: string;
+    height?: string;
     maxWidth?: string;
     margin?: string;
     marginTop?: string;
@@ -37,6 +37,7 @@ export const Container = styled<ContainerProps, 'div'>('div')`
     ${props => cssRuleIfExists(props, 'bottom')}
     ${props => cssRuleIfExists(props, 'left')}
     ${props => cssRuleIfExists(props, 'width')}
+    ${props => cssRuleIfExists(props, 'height')}
     ${props => cssRuleIfExists(props, 'max-width')}
     ${props => cssRuleIfExists(props, 'margin')}
     ${props => cssRuleIfExists(props, 'margin-top')}

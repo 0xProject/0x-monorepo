@@ -69,7 +69,9 @@ export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = pro
             </Text>
         </Container>
         <Flex direction="row" justify="space-between">
-            <SelectedAssetAmountInput startingFontSizePx={45} />
+            <Flex height="65px">
+                <SelectedAssetAmountInput startingFontSizePx={45} />
+            </Flex>
             <Flex direction="column" justify="space-between">
                 <Container marginBottom="5px">
                     <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
