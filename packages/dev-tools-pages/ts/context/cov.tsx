@@ -9,6 +9,6 @@ export default {
     colors: {
         main: '#BB9200',
         secondary: '#F1DB8D',
-        link: '#D7AE1B',
+        type: '#D7AE1B',
     },
 };

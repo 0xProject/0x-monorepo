@@ -50,7 +50,7 @@ const BaseStyles = createGlobalStyle`
     }
 
     a {
-        color: ${(props: any) => props.colors.link};
+        color: ${(props: any) => props.colors.type};
         text-decoration: none; 
 
         &:hover {

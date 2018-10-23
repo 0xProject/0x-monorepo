@@ -62,7 +62,7 @@ function ContentBlock(props: ContentBlockProps) {
 
     return (
         <Base>
-            <Title color={props.colors.main}>{props.title}</Title>
+            <Title color={props.colors.type}>{props.title}</Title>
             {children ? <Content>{children}</Content> : null}
         </Base>
     );
