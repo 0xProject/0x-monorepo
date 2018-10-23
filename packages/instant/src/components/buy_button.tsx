@@ -24,7 +24,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         onBuyFailure: util.boundNoop,
     };
     public render(): React.ReactNode {
-        const shouldDisableButton = _.isUndefined(this.props.buyQuote);
+        const shouldDisableButton = _.isUndefined(this.props.buyQuote) || _.isUndefined(this.props.assetBuyer);
         return (
             <Container padding="20px" width="100%">
                 <Button width="100%" onClick={this._handleClick} isDisabled={shouldDisableButton}>
