@@ -26,7 +26,6 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
         const { startWidthCh, endWidthCh, fontColor, maxFontSizePx, value, onFontSizeChange } = this.props;
         return (
             <ScalingInput
-                startWidthCh={startWidthCh}
                 endWidthCh={endWidthCh}
                 maxFontSizePx={maxFontSizePx}
                 onFontSizeChange={onFontSizeChange}
@@ -34,6 +33,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
                 onChange={this._handleChange}
                 value={!_.isUndefined(value) ? value.toString() : ''}
                 placeholder="0.00"
+                emptyInputWidthCh={3.5}
             />
         );
     }

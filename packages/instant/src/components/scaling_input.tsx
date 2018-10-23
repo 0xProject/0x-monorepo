@@ -7,16 +7,15 @@ import { util } from '../util/util';
 import { Input } from './ui';
 
 export enum ScalingInputPhase {
-    Start,
-    Scaling,
-    End,
+    FixedFontSize,
+    ScalingFontSize,
 }
 
 export interface ScalingInputProps {
-    startWidthCh: number;
     endWidthCh: number;
     maxFontSizePx: number;
-    value?: string;
+    value: string;
+    emptyInputWidthCh: number;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onFontSizeChange: (fontSizePx: number) => void;
     fontColor?: ColorOption;
@@ -43,26 +42,23 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         fixedWidthInPxIfExists: undefined,
     };
     private readonly _inputRef = React.createRef();
-    public static getPhase(startWidthCh: number, endWidthCh: number, value?: string): ScalingInputPhase {
-        if (_.isUndefined(value) || value.length <= startWidthCh) {
-            return ScalingInputPhase.Start;
+    public static getPhase(endWidthCh: number, value: string): ScalingInputPhase {
+        if (value.length <= endWidthCh) {
+            return ScalingInputPhase.FixedFontSize;
         }
-        if (value.length > startWidthCh && value.length <= endWidthCh) {
-            return ScalingInputPhase.Scaling;
-        }
-        return ScalingInputPhase.End;
+        return ScalingInputPhase.ScalingFontSize;
     }
     public static getPhaseFromProps(props: ScalingInputProps): ScalingInputPhase {
-        const { value, startWidthCh, endWidthCh } = props;
-        return ScalingInput.getPhase(startWidthCh, endWidthCh, value);
+        const { value, endWidthCh } = props;
+        return ScalingInput.getPhase(endWidthCh, value);
     }
     public static calculateFontSize(
         endWidthCh: number,
         maxFontSizePx: number,
         phase: ScalingInputPhase,
-        value?: string,
+        value: string,
     ): number {
-        if (_.isUndefined(value) || phase !== ScalingInputPhase.End) {
+        if (phase !== ScalingInputPhase.ScalingFontSize) {
             return maxFontSizePx;
         }
         const charactersOverMax = value.length - endWidthCh;
@@ -89,13 +85,13 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         const prevFontSize = ScalingInput.calculateFontSizeFromProps(prevProps, prevPhase);
         const curFontSize = ScalingInput.calculateFontSizeFromProps(this.props, curPhase);
         // if we went from anything else to end, fix to the current width as it shouldn't change as we grow
-        if (prevPhase !== ScalingInputPhase.End && curPhase === ScalingInputPhase.End) {
+        if (prevPhase !== ScalingInputPhase.ScalingFontSize && curPhase === ScalingInputPhase.ScalingFontSize) {
             this.setState({
                 fixedWidthInPxIfExists: snapshot.inputWidthPx,
             });
         }
         // if we end from end to to anything else, un-fix the width
-        if (prevPhase === ScalingInputPhase.End && curPhase !== ScalingInputPhase.End) {
+        if (prevPhase === ScalingInputPhase.ScalingFontSize && curPhase !== ScalingInputPhase.ScalingFontSize) {
             this.setState({
                 fixedWidthInPxIfExists: undefined,
             });
@@ -122,22 +118,20 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         );
     }
     private readonly _calculateWidth = (phase: ScalingInputPhase): string => {
-        const { value, startWidthCh, endWidthCh } = this.props;
-        if (_.isUndefined(value)) {
-            return `${startWidthCh}ch`;
+        const { value, endWidthCh } = this.props;
+        if (_.isEmpty(value)) {
+            return `${this.props.emptyInputWidthCh}ch`;
         }
         if (!_.isUndefined(this.state.fixedWidthInPxIfExists)) {
             return `${this.state.fixedWidthInPxIfExists}px`;
         }
         switch (phase) {
-            case ScalingInputPhase.Start:
-                return `${startWidthCh}ch`;
-            case ScalingInputPhase.Scaling:
+            case ScalingInputPhase.FixedFontSize:
                 return `${value.length}ch`;
-            case ScalingInputPhase.End:
+            case ScalingInputPhase.ScalingFontSize:
                 return `${endWidthCh}ch`;
             default:
-                return `${startWidthCh}ch`;
+                return '1ch';
         }
     };
     private readonly _calculateFontSize = (phase: ScalingInputPhase): number => {
