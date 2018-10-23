@@ -39,8 +39,7 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps, Ass
                 <Container borderBottom="1px solid rgba(255,255,255,0.3)" display="inline-block">
                     <ScalingAmountInput
                         {...rest}
-                        startWidthCh={3.5}
-                        endWidthCh={4}
+                        textLengthThreshold={4}
                         maxFontSizePx={this.props.startingFontSizePx}
                         onChange={this._handleChange}
                         onFontSizeChange={this._handleFontSizeChange}
