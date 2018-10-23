@@ -34,12 +34,12 @@ export interface ScalingInputSnapshot {
     inputWidthPx: number;
 }
 // This is a magic number that was determined experimentally.
-const percentageToReduceByPerCharacter = 0.15;
+const percentageToReduceByPerCharacter = 0.18;
 export class ScalingInput extends React.Component<ScalingInputProps, ScalingInputState> {
     public static defaultProps = {
         onChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,
-        maxLength: 10,
+        maxLength: 9,
     };
     public state = {
         fixedWidthInPxIfExists: undefined,

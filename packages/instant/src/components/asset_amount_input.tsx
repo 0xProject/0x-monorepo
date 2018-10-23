@@ -40,7 +40,7 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps, Ass
                     <ScalingAmountInput
                         {...rest}
                         startWidthCh={3.5}
-                        endWidthCh={5}
+                        endWidthCh={4}
                         maxFontSizePx={this.props.startingFontSizePx}
                         onChange={this._handleChange}
                         onFontSizeChange={this._handleFontSizeChange}
