@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
+import { BigNumberInput } from '../util/big_number';
 import { util } from '../util/util';
 
 import { ScalingInput } from './scaling_input';
@@ -41,7 +42,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
         let bigNumberValue;
         if (!_.isEmpty(value)) {
             try {
-                bigNumberValue = new BigNumber(event.target.value);
+                bigNumberValue = new BigNumberInput(event.target.value);
             } catch {
                 // We don't want to allow values that can't be a BigNumber, so don't even call onChange.
                 return;
