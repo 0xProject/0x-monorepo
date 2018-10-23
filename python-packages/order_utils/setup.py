@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """setuptools module for order_utils package."""
 
 import subprocess  # nosec
