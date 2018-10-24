@@ -45,13 +45,13 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps, Ass
                         onFontSizeChange={this._handleFontSizeChange}
                     />
                 </Container>
-                <Container display="inline-block" marginLeft="10px">
+                <Container display="inline-block" marginLeft="10px" title={assetUtils.bestNameForAsset(asset)}>
                     <Text
                         fontSize={`${this.state.currentFontSizePx}px`}
                         fontColor={ColorOption.white}
                         textTransform="uppercase"
                     >
-                        {assetUtils.bestNameForAsset(asset)}
+                        {assetUtils.formattedSymbolForAsset(asset)}
                     </Text>
                 </Container>
             </Container>
