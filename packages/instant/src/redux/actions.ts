@@ -25,6 +25,7 @@ export enum ActionTypes {
     UPDATE_SELECTED_ASSET_AMOUNT = 'UPDATE_SELECTED_ASSET_AMOUNT',
     UPDATE_SELECTED_ASSET_BUY_STATE = 'UPDATE_SELECTED_ASSET_BUY_STATE',
     UPDATE_LATEST_BUY_QUOTE = 'UPDATE_LATEST_BUY_QUOTE',
+    UPDATE_SELECTED_ASSET = 'UPDATE_SELECTED_ASSET',
     SET_QUOTE_REQUEST_STATE_PENDING = 'SET_QUOTE_REQUEST_STATE_PENDING',
     SET_QUOTE_REQUEST_STATE_FAILURE = 'SET_QUOTE_REQUEST_STATE_FAILURE',
     SET_ERROR = 'SET_ERROR',
@@ -38,6 +39,7 @@ export const actions = {
     updateBuyOrderState: (buyState: AsyncProcessState) =>
         createAction(ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE, buyState),
     updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UPDATE_LATEST_BUY_QUOTE, buyQuote),
+    updateSelectedAsset: (assetData?: string) => createAction(ActionTypes.UPDATE_SELECTED_ASSET, assetData),
     setQuoteRequestStatePending: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING),
     setQuoteRequestStateFailure: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE),
     setError: (error?: any) => createAction(ActionTypes.SET_ERROR, error),

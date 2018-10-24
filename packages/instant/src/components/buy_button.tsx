@@ -1,9 +1,8 @@
-import { BuyQuote } from '@0x/asset-buyer';
+import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
-import { assetBuyer } from '../util/asset_buyer';
 import { util } from '../util/util';
 import { web3Wrapper } from '../util/web3_wrapper';
 
@@ -11,6 +10,7 @@ import { Button, Container, Text } from './ui';
 
 export interface BuyButtonProps {
     buyQuote?: BuyQuote;
+    assetBuyer?: AssetBuyer;
     onClick: (buyQuote: BuyQuote) => void;
     onBuySuccess: (buyQuote: BuyQuote, txnHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, tnxHash?: string) => void;
@@ -24,7 +24,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         onBuyFailure: util.boundNoop,
     };
     public render(): React.ReactNode {
-        const shouldDisableButton = _.isUndefined(this.props.buyQuote);
+        const shouldDisableButton = _.isUndefined(this.props.buyQuote) || _.isUndefined(this.props.assetBuyer);
         return (
             <Container padding="20px" width="100%">
                 <Button width="100%" onClick={this._handleClick} isDisabled={shouldDisableButton}>
@@ -37,13 +37,13 @@ export class BuyButton extends React.Component<BuyButtonProps> {
     }
     private readonly _handleClick = async () => {
         // The button is disabled when there is no buy quote anyway.
-        if (_.isUndefined(this.props.buyQuote)) {
+        if (_.isUndefined(this.props.buyQuote) || _.isUndefined(this.props.assetBuyer)) {
             return;
         }
         this.props.onClick(this.props.buyQuote);
         let txnHash;
         try {
-            txnHash = await assetBuyer.executeBuyQuoteAsync(this.props.buyQuote);
+            txnHash = await this.props.assetBuyer.executeBuyQuoteAsync(this.props.buyQuote);
             await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
             this.props.onBuySuccess(this.props.buyQuote, txnHash);
         } catch {

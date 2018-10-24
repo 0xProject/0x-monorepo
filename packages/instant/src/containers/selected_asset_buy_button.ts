@@ -1,4 +1,4 @@
-import { BuyQuote } from '@0x/asset-buyer';
+import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -13,6 +13,7 @@ import { BuyButton } from '../components/buy_button';
 export interface SelectedAssetBuyButtonProps {}
 
 interface ConnectedState {
+    assetBuyer?: AssetBuyer;
     text: string;
     buyQuote?: BuyQuote;
 }
@@ -39,6 +40,7 @@ const textForState = (state: AsyncProcessState): string => {
 };
 
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): ConnectedState => ({
+    assetBuyer: state.assetBuyer,
     text: textForState(state.buyOrderState),
     buyQuote: state.latestBuyQuote,
 });

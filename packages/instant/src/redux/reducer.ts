@@ -1,14 +1,19 @@
-import { BuyQuote } from '@0x/asset-buyer';
+import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
+import { ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { zrxAssetData } from '../constants';
-import { AsyncProcessState, DisplayStatus } from '../types';
+import { assetMetaDataMap } from '../data/asset_meta_data_map';
+import { Asset, AssetMetaData, AsyncProcessState, DisplayStatus, Network } from '../types';
+import { assetUtils } from '../util/asset';
 
 import { Action, ActionTypes } from './actions';
 
 export interface State {
-    selectedAssetData?: string;
+    network: Network;
+    assetBuyer?: AssetBuyer;
+    assetMetaDataMap: ObjectMap<AssetMetaData>;
+    selectedAsset?: Asset;
     selectedAssetAmount?: BigNumber;
     buyOrderState: AsyncProcessState;
     ethUsdPrice?: BigNumber;
@@ -19,9 +24,9 @@ export interface State {
 }
 
 export const INITIAL_STATE: State = {
-    // TODO: Remove hardcoded zrxAssetData
-    selectedAssetData: zrxAssetData,
+    network: Network.Mainnet,
     selectedAssetAmount: undefined,
+    assetMetaDataMap,
     buyOrderState: AsyncProcessState.NONE,
     ethUsdPrice: undefined,
     latestBuyQuote: undefined,
@@ -81,6 +86,20 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 ...state,
                 latestError: undefined,
                 latestErrorDisplay: DisplayStatus.Hidden,
+            };
+        case ActionTypes.UPDATE_SELECTED_ASSET:
+            const newSelectedAssetData = action.data;
+            let newSelectedAsset: Asset | undefined;
+            if (!_.isUndefined(newSelectedAssetData)) {
+                newSelectedAsset = assetUtils.createAssetFromAssetData(
+                    newSelectedAssetData,
+                    state.assetMetaDataMap,
+                    state.network,
+                );
+            }
+            return {
+                ...state,
+                selectedAsset: newSelectedAsset,
             };
         default:
             return state;
