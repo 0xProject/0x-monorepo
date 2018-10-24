@@ -1,10 +1,10 @@
-**Install**
+#### Install
 
 ```bash
 yarn add @0x/asset-buyer
 ```
 
-**Import**
+#### Import
 
 ```javascript
 import { AssetBuyer } from '@0x/asset-buyer';

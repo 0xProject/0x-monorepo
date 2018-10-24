@@ -17,10 +17,10 @@ const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
     _ownProps: SelectedAssetRetryButtonProps,
 ): ConnectedDispatch => ({
-    onClick: () => dispatch(actions.clearBuyQuoteAndSelectedAssetAmount()),
+    onClick: () => dispatch(actions.resetAmount()),
 });
 
 export const SelectedAssetRetryButton: React.ComponentClass<SelectedAssetRetryButtonProps> = connect(
-    null,
+    undefined,
     mapDispatchToProps,
 )(RetryButton);

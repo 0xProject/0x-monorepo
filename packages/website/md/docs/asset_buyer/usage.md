@@ -1,4 +1,4 @@
-**Construction**
+#### Construction
 
 Connecting to a standard relayer API compliant url:
 
@@ -16,7 +16,7 @@ const orders = []; // get these from your own API, a relayer, a friend, from any
 const assetBuyer = AssetBuyer.getAssetBuyerForProvidedOrders(provider, orders);
 ```
 
-**Get a quote**
+#### Get a quote
 
 A [BuyQuote](#types-BuyQuote) object contains enough information to display buy information to an end user
 
@@ -30,7 +30,7 @@ console.log(quoteInfo.feeAmount); // a portion of the total ethAmount above that
 console.log(quoteInfo.ethPerAssetPrice); // the rate that this quote provides (e.g. 0.0035ETH / REP)
 ```
 
-**Perform a buy**
+#### Perform a buy
 
 Pass the [BuyQuote](#types-BuyQuote) object from above back to the assetBuyer in order to initiate the buy transaction
 

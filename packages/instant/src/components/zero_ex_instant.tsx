@@ -31,7 +31,7 @@ export interface ZeroExInstantOptionalProps {
 }
 
 export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
-    public store: Store;
+    private readonly _store: Store;
     private static _mergeInitialStateWithProps(props: ZeroExInstantProps, state: State = INITIAL_STATE): State {
         // Create merged object such that properties in props override default settings
         const optionalPropsWithDefaults: ZeroExInstantOptionalProps = {
@@ -58,14 +58,14 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
     }
     constructor(props: ZeroExInstantProps) {
         super(props);
-        this.store = store.create(ZeroExInstant._mergeInitialStateWithProps(this.props, INITIAL_STATE));
+        this._store = store.create(ZeroExInstant._mergeInitialStateWithProps(this.props, INITIAL_STATE));
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchAndDispatchToStore(this.store);
+        asyncData.fetchAndDispatchToStore(this._store);
     }
 
     public render(): React.ReactNode {
         return (
-            <Provider store={this.store}>
+            <Provider store={this._store}>
                 <SelectedAssetThemeProvider>
                     <ZeroExInstantContainer />
                 </SelectedAssetThemeProvider>

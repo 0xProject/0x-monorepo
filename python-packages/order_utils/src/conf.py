@@ -2,6 +2,9 @@
 
 # Reference: http://www.sphinx-doc.org/en/master/config
 
+from typing import List
+
+
 # pylint: disable=invalid-name
 # because these variables are not named in upper case, as globals should be.
 
@@ -29,7 +32,7 @@ master_doc = "index"  # The master toctree document.
 
 language = None
 
-exclude_patterns = []  # type: ignore
+exclude_patterns: List[str] = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
