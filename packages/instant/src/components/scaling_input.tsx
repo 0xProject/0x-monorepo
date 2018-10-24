@@ -50,7 +50,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         maxLength: 7,
         scalingSettings: defaultScalingSettings,
     };
-    public state = {
+    public state: ScalingInputState = {
         inputWidthPxAtPhaseChange: undefined,
     };
     private readonly _inputRef = React.createRef<HTMLInputElement>();
