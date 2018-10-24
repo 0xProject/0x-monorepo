@@ -10,20 +10,26 @@ packages/instant/  @BMillman19 @fragosti @steveklebanoff
 packages/website/  @BMillman19 @fragosti @fabioberger @steveklebanoff
 
 # Dev tools & setup
+.circleci/ @LogvinovLeon
 packages/abi-gen/ @LogvinovLeon
 packages/base-contract/ @LogvinovLeon
+packages/connect/ @fragosti 
 packages/contract_templates/ @LogvinovLeon
+packages/contract-addresses/ @albrow
+packages/contract-artifacts/ @albrow
 packages/dev-utils/ @LogvinovLeon @fabioberger
-
+packages/devnet/ @albrow
 packages/ethereum-types/ @LogvinovLeon
 packages/metacoin/ @LogvinovLeon
+packages/monorepo-scripts/ @fabioberger
+packages/order-utils/ @fabioberger @LogvinovLeon 
 packages/sol-compiler/ @LogvinovLeon
 packages/sol-cov/ @LogvinovLeon
 packages/sol-resolver/ @LogvinovLeon
-packages/web3-wrapper/ @LogvinovLeon @fabioberger
-.circleci/ @LogvinovLeon
 packages/subproviders/ @fabioberger @dekz
-packages/connect/ @fragosti 
-packages/monorepo-scripts/ @fabioberger
-packages/order-utils/ @fabioberger @LogvinovLeon 
+packages/verdaccio/ @albrow
+packages/web3-wrapper/ @LogvinovLeon @fabioberger
 python-packages/ @feuGeneA
+
+# Protocol/smart contracts
+packages/contracts/test/ @albrow
