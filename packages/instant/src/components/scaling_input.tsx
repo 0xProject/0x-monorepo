@@ -101,13 +101,13 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
     ): void {
         const prevPhase = ScalingInput.getPhaseFromProps(prevProps);
         const curPhase = ScalingInput.getPhaseFromProps(this.props);
-        // if we went from anything else to end, fix to the current width as it shouldn't change as we grow
+        // if we went from fixed to scaling, save the width from the transition
         if (prevPhase !== ScalingInputPhase.ScalingFontSize && curPhase === ScalingInputPhase.ScalingFontSize) {
             this.setState({
                 inputWidthPxAtPhaseChange: snapshot.inputWidthPx,
             });
         }
-        // if we end from end to to anything else, un-fix the width
+        // if we went from scaling to fixed, revert back to scaling using `ch`
         if (prevPhase === ScalingInputPhase.ScalingFontSize && curPhase !== ScalingInputPhase.ScalingFontSize) {
             this.setState({
                 inputWidthPxAtPhaseChange: undefined,
