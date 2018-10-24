@@ -9,7 +9,7 @@ import * as _ from 'lodash';
  *  new BigNumberInput(1..) => still throws
  */
 export class BigNumberInput extends BigNumber {
-    private _hasDecimalPeriod: boolean;
+    private readonly _hasDecimalPeriod: boolean;
     constructor(bigNumberString: string) {
         const hasDecimalPeriod = _.endsWith(bigNumberString, '.');
         let internalString = bigNumberString;

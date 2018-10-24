@@ -8,7 +8,7 @@ import { assetUtils } from '../util/asset';
 import { util } from '../util/util';
 
 import { ScalingAmountInput } from './scaling_amount_input';
-import { Container, Flex, Text } from './ui';
+import { Container, Text } from './ui';
 
 // Asset amounts only apply to ERC20 assets
 export interface AssetAmountInputProps {

@@ -2,7 +2,7 @@ import { AssetProxyId, ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 
 import { assetDataNetworkMapping } from '../data/asset_data_network_mapping';
-import { Asset, AssetMetaData, Network, ZeroExInstantError, ERC20Asset } from '../types';
+import { Asset, AssetMetaData, ERC20Asset, Network, ZeroExInstantError } from '../types';
 
 export const assetUtils = {
     createAssetFromAssetData: (
