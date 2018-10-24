@@ -70,10 +70,10 @@ export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = pro
         </Container>
         <Flex direction="row" justify="space-between">
             <Flex height="65px">
-                <SelectedAssetAmountInput startingFontSizePx={45} />
+                <SelectedAssetAmountInput startingFontSizePx={38} />
             </Flex>
             <Flex direction="column" justify="space-between">
-                <Container marginBottom="5px">
+                <Container marginBottom="5px" whiteSpace="nowrap">
                     <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
                         {loadingOrAmount(props.quoteState, displaytotalEthBaseAmount(props))}
                     </Text>

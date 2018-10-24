@@ -8,7 +8,7 @@ import { assetUtils } from '../util/asset';
 import { util } from '../util/util';
 
 import { ScalingAmountInput } from './scaling_amount_input';
-import { Container, Text } from './ui';
+import { Container, Flex, Text } from './ui';
 
 // Asset amounts only apply to ERC20 assets
 export interface AssetAmountInputProps {
@@ -35,17 +35,17 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps, Ass
     public render(): React.ReactNode {
         const { asset, onChange, ...rest } = this.props;
         return (
-            <Container>
+            <Container whiteSpace="nowrap">
                 <Container borderBottom="1px solid rgba(255,255,255,0.3)" display="inline-block">
                     <ScalingAmountInput
                         {...rest}
-                        textLengthThreshold={4}
+                        textLengthThreshold={this._textLengthThresholdForAsset(asset)}
                         maxFontSizePx={this.props.startingFontSizePx}
                         onChange={this._handleChange}
                         onFontSizeChange={this._handleFontSizeChange}
                     />
                 </Container>
-                <Container display="inline-block" marginLeft="10px" title={assetUtils.bestNameForAsset(asset)}>
+                <Container display="inline-flex" marginLeft="10px" title={assetUtils.bestNameForAsset(asset)}>
                     <Text
                         fontSize={`${this.state.currentFontSizePx}px`}
                         fontColor={ColorOption.white}
@@ -64,5 +64,18 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps, Ass
         this.setState({
             currentFontSizePx: fontSizePx,
         });
+    };
+    private readonly _textLengthThresholdForAsset = (asset?: ERC20Asset): number => {
+        if (_.isUndefined(asset)) {
+            return 3;
+        }
+        const symbol = asset.metaData.symbol;
+        if (symbol.length <= 3) {
+            return 5;
+        }
+        if (symbol.length === 5) {
+            return 3;
+        }
+        return 4;
     };
 }

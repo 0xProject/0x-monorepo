@@ -47,7 +47,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
     public static defaultProps = {
         onChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,
-        maxLength: 8,
+        maxLength: 7,
         scalingSettings: defaultScalingSettings,
     };
     public state = {
