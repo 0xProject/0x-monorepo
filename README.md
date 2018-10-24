@@ -94,6 +94,10 @@ We strongly recommend that the community help us make improvements and determine
 
 Make sure you are using Yarn v1.9.4. To install using brew:
 
+```bash
+brew install yarn@1.9.4
+```
+
 Then install dependencies
 
 ```bash
