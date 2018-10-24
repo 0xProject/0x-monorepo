@@ -7,81 +7,109 @@ import { ColorOption } from '../style/theme';
 import { AsyncProcessState } from '../types';
 import { format } from '../util/format';
 
+import { AmountPlaceholder } from './amount_placeholder';
 import { Container, Flex, Text } from './ui';
+import { Icon } from './ui/icon';
 
 export interface InstantHeadingProps {
     selectedAssetAmount?: BigNumber;
     totalEthBaseAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
-    quoteState: AsyncProcessState;
+    quoteRequestState: AsyncProcessState;
+    buyOrderState: AsyncProcessState;
 }
 
-const Placeholder = () => (
-    <Text fontWeight="bold" fontColor={ColorOption.white}>
-        &mdash;
-    </Text>
-);
-const displaytotalEthBaseAmount = ({
-    selectedAssetAmount,
-    totalEthBaseAmount,
-}: InstantHeadingProps): React.ReactNode => {
-    if (_.isUndefined(selectedAssetAmount)) {
-        return '0 ETH';
-    }
-    return format.ethBaseAmount(totalEthBaseAmount, 4, <Placeholder />);
-};
-
-const displayUsdAmount = ({
-    totalEthBaseAmount,
-    selectedAssetAmount,
-    ethUsdPrice,
-}: InstantHeadingProps): React.ReactNode => {
-    if (_.isUndefined(selectedAssetAmount)) {
-        return '$0.00';
-    }
-    return format.ethBaseAmountInUsd(totalEthBaseAmount, ethUsdPrice, 2, <Placeholder />);
-};
-
-const loadingOrAmount = (quoteState: AsyncProcessState, amount: React.ReactNode): React.ReactNode => {
-    if (quoteState === AsyncProcessState.PENDING) {
+const placeholderColor = ColorOption.white;
+export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
+    public render(): React.ReactNode {
+        const iconOrAmounts = this._renderIcon() || this._renderAmountsSection();
         return (
-            <Text fontWeight="bold" fontColor={ColorOption.white}>
-                &hellip;loading
-            </Text>
-        );
-    } else {
-        return amount;
-    }
-};
-
-export const InstantHeading: React.StatelessComponent<InstantHeadingProps> = props => (
-    <Container backgroundColor={ColorOption.primaryColor} padding="20px" width="100%" borderRadius="3px 3px 0px 0px">
-        <Container marginBottom="5px">
-            <Text
-                letterSpacing="1px"
-                fontColor={ColorOption.white}
-                opacity={0.7}
-                fontWeight={500}
-                textTransform="uppercase"
-                fontSize="12px"
+            <Container
+                backgroundColor={ColorOption.primaryColor}
+                padding="20px"
+                width="100%"
+                borderRadius="3px 3px 0px 0px"
             >
-                I want to buy
-            </Text>
-        </Container>
-        <Flex direction="row" justify="space-between">
-            <Flex height="65px">
-                <SelectedAssetAmountInput startingFontSizePx={38} />
-            </Flex>
-            <Flex direction="column" justify="space-between">
-                <Container marginBottom="5px" whiteSpace="nowrap">
-                    <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
-                        {loadingOrAmount(props.quoteState, displaytotalEthBaseAmount(props))}
+                <Container marginBottom="5px">
+                    <Text
+                        letterSpacing="1px"
+                        fontColor={ColorOption.white}
+                        opacity={0.7}
+                        fontWeight={500}
+                        textTransform="uppercase"
+                        fontSize="12px"
+                    >
+                        {this._renderTopText()}
                     </Text>
                 </Container>
-                <Text fontSize="16px" fontColor={ColorOption.white} opacity={0.7}>
-                    {loadingOrAmount(props.quoteState, displayUsdAmount(props))}
-                </Text>
-            </Flex>
-        </Flex>
-    </Container>
-);
+                <Flex direction="row" justify="space-between">
+                    <Flex height="60px">
+                        <SelectedAssetAmountInput startingFontSizePx={38} />
+                    </Flex>
+                    <Flex direction="column" justify="space-between">
+                        {iconOrAmounts}
+                    </Flex>
+                </Flex>
+            </Container>
+        );
+    }
+
+    private _renderAmountsSection(): React.ReactNode {
+        return (
+            <Container>
+                <Container marginBottom="5px">{this._placeholderOrAmount(this._ethAmount)}</Container>
+                <Container opacity={0.7}>{this._placeholderOrAmount(this._dollarAmount)}</Container>
+            </Container>
+        );
+    }
+
+    private _renderIcon(): React.ReactNode {
+        if (this.props.buyOrderState === AsyncProcessState.FAILURE) {
+            return <Icon icon={'failed'} width={34} height={34} color={ColorOption.white} />;
+        }
+        return undefined;
+    }
+
+    private _renderTopText(): React.ReactNode {
+        if (this.props.buyOrderState === AsyncProcessState.FAILURE) {
+            return 'Order failed';
+        }
+
+        return 'I want to buy';
+    }
+
+    private _placeholderOrAmount(amountFunction: () => React.ReactNode): React.ReactNode {
+        if (this.props.quoteRequestState === AsyncProcessState.PENDING) {
+            return <AmountPlaceholder isPulsating={true} color={placeholderColor} />;
+        }
+        if (_.isUndefined(this.props.selectedAssetAmount)) {
+            return <AmountPlaceholder isPulsating={false} color={placeholderColor} />;
+        }
+        return amountFunction();
+    }
+
+    private readonly _ethAmount = (): React.ReactNode => {
+        return (
+            <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
+                {format.ethBaseAmount(
+                    this.props.totalEthBaseAmount,
+                    4,
+                    <AmountPlaceholder isPulsating={false} color={placeholderColor} />,
+                )}
+            </Text>
+        );
+    };
+
+    private readonly _dollarAmount = (): React.ReactNode => {
+        return (
+            <Text fontSize="16px" fontColor={ColorOption.white}>
+                {format.ethBaseAmountInUsd(
+                    this.props.totalEthBaseAmount,
+                    this.props.ethUsdPrice,
+                    2,
+                    <AmountPlaceholder isPulsating={false} color={ColorOption.white} />,
+                )}
+            </Text>
+        );
+    };
+}

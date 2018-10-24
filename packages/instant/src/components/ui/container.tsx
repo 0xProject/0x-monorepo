@@ -27,6 +27,7 @@ export interface ContainerProps {
     hasBoxShadow?: boolean;
     zIndex?: number;
     whiteSpace?: string;
+    opacity?: number;
 }
 
 export const Container = styled<ContainerProps, 'div'>('div')`
@@ -52,6 +53,7 @@ export const Container = styled<ContainerProps, 'div'>('div')`
     ${props => cssRuleIfExists(props, 'border-bottom')}
     ${props => cssRuleIfExists(props, 'z-index')}
     ${props => cssRuleIfExists(props, 'white-space')}
+    ${props => cssRuleIfExists(props, 'opacity')}
     ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
     border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};

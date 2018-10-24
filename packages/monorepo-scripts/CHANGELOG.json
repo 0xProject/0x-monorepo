@@ -9,6 +9,10 @@
             {
                 "note": "Add AssetBuyerError to the IGNORED_EXCESSIVE_TYPES array",
                 "pr": 1139
+            },
+            {
+                "note": "Add ForwarderError to the IGNORED_EXCESSIVE_TYPES array",
+                "pr": 1147
             }
         ]
     },

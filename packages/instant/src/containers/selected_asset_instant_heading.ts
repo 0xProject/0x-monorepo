@@ -15,14 +15,16 @@ interface ConnectedState {
     selectedAssetAmount?: BigNumber;
     totalEthBaseAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
-    quoteState: AsyncProcessState;
+    quoteRequestState: AsyncProcessState;
+    buyOrderState: AsyncProcessState;
 }
 
 const mapStateToProps = (state: State, _ownProps: InstantHeadingProps): ConnectedState => ({
     selectedAssetAmount: state.selectedAssetAmount,
     totalEthBaseAmount: oc(state).latestBuyQuote.worstCaseQuoteInfo.totalEthAmount(),
     ethUsdPrice: state.ethUsdPrice,
-    quoteState: state.quoteState,
+    quoteRequestState: state.quoteRequestState,
+    buyOrderState: state.buyOrderState,
 });
 
 export const SelectedAssetInstantHeading: React.ComponentClass<InstantHeadingProps> = connect(mapStateToProps)(

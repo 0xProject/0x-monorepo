@@ -43,6 +43,7 @@
         "./schemas/js_number.json",
         "./schemas/zero_ex_transaction_schema.json",
         "./schemas/tx_data_schema.json",
-        "./schemas/index_filter_values_schema.json"
+        "./schemas/index_filter_values_schema.json",
+        "./schemas/whole_number_schema.json"
     ]
 }

@@ -4,7 +4,7 @@
     "items": {
         "properties": {
             "order": { "$ref": "/orderSchema" },
-            "takerTokenCancelAmount": { "$ref": "/numberSchema" }
+            "takerTokenCancelAmount": { "$ref": "/wholeNumberSchema" }
         },
         "required": ["order", "takerTokenCancelAmount"],
         "type": "object"
