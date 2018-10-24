@@ -52,16 +52,13 @@ export class AssetBuyer {
     public static getAssetBuyerForProvidedOrders(
         provider: Provider,
         orders: SignedOrder[],
-        feeOrders: SignedOrder[] = [],
         options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
-        assert.doesConformToSchema('feeOrders', feeOrders, schemas.signedOrdersSchema);
         assert.areValidProvidedOrders('orders', orders);
-        assert.areValidProvidedOrders('feeOrders', feeOrders);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
-        const orderProvider = new BasicOrderProvider(_.concat(orders, feeOrders));
+        const orderProvider = new BasicOrderProvider(orders);
         const assetBuyer = new AssetBuyer(provider, orderProvider, options);
         return assetBuyer;
     }
