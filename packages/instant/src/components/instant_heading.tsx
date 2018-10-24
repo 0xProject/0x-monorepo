@@ -9,17 +9,20 @@ import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
 import { Container, Flex, Text } from './ui';
+import { Icon } from './ui/icon';
 
 export interface InstantHeadingProps {
     selectedAssetAmount?: BigNumber;
     totalEthBaseAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
     quoteRequestState: AsyncProcessState;
+    buyOrderState: AsyncProcessState;
 }
 
 const placeholderColor = ColorOption.white;
 export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
+        const iconOrAmounts = this._renderIcon() || this._renderAmountsSection();
         return (
             <Container
                 backgroundColor={ColorOption.primaryColor}
@@ -36,18 +39,41 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                         textTransform="uppercase"
                         fontSize="12px"
                     >
-                        I want to buy
+                        {this._renderTopText()}
                     </Text>
                 </Container>
                 <Flex direction="row" justify="space-between">
                     <SelectedAssetAmountInput fontSize="45px" />
                     <Flex direction="column" justify="space-between">
-                        <Container marginBottom="5px">{this._placeholderOrAmount(this._ethAmount)}</Container>
-                        <Container opacity={0.7}>{this._placeholderOrAmount(this._dollarAmount)}</Container>
+                        {iconOrAmounts}
                     </Flex>
                 </Flex>
             </Container>
         );
+    }
+
+    private _renderAmountsSection(): React.ReactNode {
+        return (
+            <Container>
+                <Container marginBottom="5px">{this._placeholderOrAmount(this._ethAmount)}</Container>
+                <Container opacity={0.7}>{this._placeholderOrAmount(this._dollarAmount)}</Container>
+            </Container>
+        );
+    }
+
+    private _renderIcon(): React.ReactNode {
+        if (this.props.buyOrderState === AsyncProcessState.FAILURE) {
+            return <Icon icon={'failed'} width={34} height={34} color={ColorOption.white} />;
+        }
+        return undefined;
+    }
+
+    private _renderTopText(): React.ReactNode {
+        if (this.props.buyOrderState === AsyncProcessState.FAILURE) {
+            return 'Order failed';
+        }
+
+        return 'I want to buy';
     }
 
     private _placeholderOrAmount(amountFunction: () => React.ReactNode): React.ReactNode {

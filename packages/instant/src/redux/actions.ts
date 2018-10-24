@@ -31,6 +31,7 @@ export enum ActionTypes {
     SET_ERROR = 'SET_ERROR',
     HIDE_ERROR = 'HIDE_ERROR',
     CLEAR_ERROR = 'CLEAR_ERROR',
+    RESET_AMOUNT = 'RESET_AMOUNT',
 }
 
 export const actions = {
@@ -45,4 +46,5 @@ export const actions = {
     setError: (error?: any) => createAction(ActionTypes.SET_ERROR, error),
     hideError: () => createAction(ActionTypes.HIDE_ERROR),
     clearError: () => createAction(ActionTypes.CLEAR_ERROR),
+    resetAmount: () => createAction(ActionTypes.RESET_AMOUNT),
 };

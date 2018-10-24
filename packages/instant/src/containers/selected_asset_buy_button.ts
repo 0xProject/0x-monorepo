@@ -14,7 +14,6 @@ export interface SelectedAssetBuyButtonProps {}
 
 interface ConnectedState {
     assetBuyer?: AssetBuyer;
-    text: string;
     buyQuote?: BuyQuote;
 }
 
@@ -24,24 +23,8 @@ interface ConnectedDispatch {
     onBuyFailure: (buyQuote: BuyQuote) => void;
 }
 
-const textForState = (state: AsyncProcessState): string => {
-    switch (state) {
-        case AsyncProcessState.NONE:
-            return 'Buy';
-        case AsyncProcessState.PENDING:
-            return '...Loading';
-        case AsyncProcessState.SUCCESS:
-            return 'Success!';
-        case AsyncProcessState.FAILURE:
-            return 'Failed';
-        default:
-            return 'Buy';
-    }
-};
-
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): ConnectedState => ({
     assetBuyer: state.assetBuyer,
-    text: textForState(state.buyOrderState),
     buyQuote: state.latestBuyQuote,
 });
 

@@ -101,6 +101,14 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 ...state,
                 selectedAsset: newSelectedAsset,
             };
+        case ActionTypes.RESET_AMOUNT:
+            return {
+                ...state,
+                latestBuyQuote: undefined,
+                quoteRequestState: AsyncProcessState.NONE,
+                buyOrderState: AsyncProcessState.NONE,
+                selectedAssetAmount: undefined,
+            };
         default:
             return state;
     }
