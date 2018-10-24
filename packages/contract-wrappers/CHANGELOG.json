@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Fix bug in `ForwarderWrapper` where `feeRecipientAddress` was not correctly normalized.",
+                "pr": 1178
+            }
+        ]
+    },
+    {
         "version": "3.0.0",
         "changes": [
             {
