@@ -11,7 +11,7 @@
     "scripts": {
         "build": "tsc -b",
         "build:ci": "yarn build",
-        "lint": "tslint --project .",
+        "lint": "tslint --format stylish --project .",
         "clean": "shx rm -rf lib",
         "test:publish": "run-s build script:publish",
         "find_unused_deps": "run-s build script:find_unused_deps",

@@ -12,7 +12,7 @@
         "build:ci": "yarn build",
         "dev": "node ../../node_modules/gulp/bin/gulp.js run",
         "start": "node ./server/server.js",
-        "lint": "tslint --project .",
+        "lint": "tslint --format stylish --project .",
         "clean": "shx rm -rf server"
     },
     "author": "Fabio Berger",

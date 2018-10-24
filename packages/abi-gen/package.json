@@ -8,7 +8,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "lint": "tslint --project .",
+        "lint": "tslint --format stylish --project .",
         "clean": "shx rm -rf lib",
         "build": "tsc -b",
         "build:ci": "yarn build",
