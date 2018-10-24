@@ -22,11 +22,21 @@ function Cov() {
                     coverage.
                 </IntroLead>
                 <IntroAside>
-                    <Code language="js">
-                        {`import { SolCompilerArtifactAdapter } from '@0x/sol-trace';
+                    <Code language="js.diff">
+                        {`+function executeTransaction(uint transactionId)
+    public
++notExecuted(transactionId)
++pastTimeLock(transactionId)
+{ 
++Transaction storage tx = transactions[transactionId]
++tx.executed = true
++if (tx.destination.call.value(tx.value)(tx.data))
++Execution(transactionId)
+else {
+-ExecutionFailure(transactionId)
 
-// Both artifactsDir and contractsDir are optional and will be fetched from compiler.json if not passed in
-const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDir);`}
+    }
+}`}
                     </Code>
                 </IntroAside>
             </Intro>

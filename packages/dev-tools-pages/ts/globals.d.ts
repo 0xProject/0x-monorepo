@@ -1,5 +1,6 @@
 declare module 'whatwg-fetch';
 declare module 'react-document-title';
+declare module 'highlighter';
 
 declare var System: any;
 

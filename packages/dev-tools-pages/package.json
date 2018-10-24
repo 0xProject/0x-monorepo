@@ -18,6 +18,7 @@
     "dependencies": {
         "@0xproject/react-shared": "^1.0.15",
         "highlight.js": "^9.13.1",
+        "highlighter": "^0.1.0",
         "less": "^2.7.2",
         "polished": "^1.9.2",
         "react": "^16.5.2",
