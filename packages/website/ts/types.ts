@@ -616,14 +616,6 @@ export interface InjectedProvider extends Provider {
     publicConfigStore?: InjectedProviderObservable;
 }
 
-// Minimal expected interface for an injected web3 object
-export interface InjectedWeb3 {
-    currentProvider: InjectedProvider;
-    version: {
-        getNetwork(cd: (err: Error, networkId: string) => void): void;
-    };
-}
-
 export interface TutorialInfo {
     iconUrl: string;
     description: string;
