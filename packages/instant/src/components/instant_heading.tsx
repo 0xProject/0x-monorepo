@@ -10,6 +10,7 @@ import { format } from '../util/format';
 import { AmountPlaceholder } from './amount_placeholder';
 import { Container, Flex, Text } from './ui';
 import { Icon } from './ui/icon';
+import { Spinner } from './ui/spinner';
 
 export interface InstantHeadingProps {
     selectedAssetAmount?: BigNumber;
@@ -70,6 +71,8 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
 
         if (processState === OrderProcessState.FAILURE) {
             return <Icon icon={'failed'} width={ICON_WIDTH} height={ICON_HEIGHT} color={ICON_COLOR} />;
+        } else if (processState === OrderProcessState.PROCESSING) {
+            return <Spinner widthPx={ICON_HEIGHT} heightPx={ICON_HEIGHT} />;
         } else if (processState === OrderProcessState.SUCCESS) {
             return <Icon icon={'success'} width={ICON_WIDTH} height={ICON_HEIGHT} color={ICON_COLOR} />;
         }
@@ -80,6 +83,8 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         const processState = this.props.buyOrderState.processState;
         if (processState === OrderProcessState.FAILURE) {
             return 'Order failed';
+        } else if (processState === OrderProcessState.PROCESSING) {
+            return 'Processing Order...';
         } else if (processState === OrderProcessState.SUCCESS) {
             return 'Tokens received!';
         }

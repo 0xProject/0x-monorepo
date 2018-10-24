@@ -13,12 +13,12 @@ export interface BuyOrderStateButtonProps {
 export const BuyOrderStateButton: React.StatelessComponent<BuyOrderStateButtonProps> = props => {
     if (props.buyOrderProcessingState === OrderProcessState.FAILURE) {
         return <SelectedAssetRetryButton />;
-    } else if (props.buyOrderProcessingState === OrderProcessState.SUCCESS) {
-        return <SelectedAssetViewTransactionButton />;
     } else if (
-        props.buyOrderProcessingState === OrderProcessState.AWAITING_SIGNATURE ||
+        props.buyOrderProcessingState === OrderProcessState.SUCCESS ||
         props.buyOrderProcessingState === OrderProcessState.PROCESSING
     ) {
+        return <SelectedAssetViewTransactionButton />;
+    } else if (props.buyOrderProcessingState === OrderProcessState.AWAITING_SIGNATURE) {
         return <PlacingOrderButton />;
     }
 

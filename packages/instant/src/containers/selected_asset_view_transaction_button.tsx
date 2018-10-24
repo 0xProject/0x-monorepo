@@ -16,7 +16,11 @@ interface ConnectedState {
 
 const mapStateToProps = (state: State, _ownProps: {}): ConnectedState => ({
     onClick: () => {
-        if (state.assetBuyer && state.buyOrderState.processState === OrderProcessState.SUCCESS) {
+        if (
+            state.assetBuyer &&
+            (state.buyOrderState.processState === OrderProcessState.PROCESSING ||
+                state.buyOrderState.processState === OrderProcessState.SUCCESS)
+        ) {
             const etherscanUrl = etherscanUtil.getEtherScanTxnAddressIfExists(
                 state.buyOrderState.txnHash,
                 state.assetBuyer.networkId,
