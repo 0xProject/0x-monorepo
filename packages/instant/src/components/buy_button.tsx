@@ -1,4 +1,4 @@
-import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
+import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -14,6 +14,7 @@ export interface BuyButtonProps {
     onClick: (buyQuote: BuyQuote) => void;
     onBuySuccess: (buyQuote: BuyQuote, txnHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, tnxHash?: string) => void;
+    onBuyPrevented: (buyQuote: BuyQuote, preventedError: Error) => void;
 }
 
 export class BuyButton extends React.Component<BuyButtonProps> {
@@ -43,7 +44,11 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             txnHash = await this.props.assetBuyer.executeBuyQuoteAsync(this.props.buyQuote);
             const txnReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
             this.props.onBuySuccess(this.props.buyQuote, txnReceipt.transactionHash);
-        } catch {
+        } catch (e) {
+            if (e instanceof Error && e.message === AssetBuyerError.SignatureRequestDenied) {
+                this.props.onBuyPrevented(this.props.buyQuote, e);
+                return;
+            }
             this.props.onBuyFailure(this.props.buyQuote, txnHash);
         }
     };
