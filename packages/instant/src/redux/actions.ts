@@ -2,7 +2,7 @@ import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { ActionsUnion, AsyncProcessState, OrderState } from '../types';
+import { ActionsUnion, OrderState } from '../types';
 
 export interface PlainAction<T extends string> {
     type: T;
