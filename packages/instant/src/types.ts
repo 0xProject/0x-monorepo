@@ -8,15 +8,23 @@ export enum AsyncProcessState {
     FAILURE = 'Failure',
 }
 
+export enum OrderProcessState {
+    NONE = 'None',
+    AWAITING_SIGNATURE = 'Awaiting Signature',
+    PROCESSING = 'Processing',
+    SUCCESS = 'Success',
+    FAILURE = 'Failure',
+}
+
 interface RegularOrderState {
-    processState: AsyncProcessState.NONE | AsyncProcessState.PENDING;
+    processState: OrderProcessState.NONE | OrderProcessState.AWAITING_SIGNATURE;
 }
 interface SuccessfulOrderState {
-    processState: AsyncProcessState.SUCCESS;
+    processState: OrderProcessState.SUCCESS;
     txnHash: string;
 }
 interface FailureOrderState {
-    processState: AsyncProcessState.FAILURE;
+    processState: OrderProcessState.FAILURE;
     txnHash?: string;
 }
 export type OrderState = RegularOrderState | SuccessfulOrderState | FailureOrderState;

@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { SelectedAssetAmountInput } from '../containers/selected_asset_amount_input';
 import { ColorOption } from '../style/theme';
-import { AsyncProcessState, OrderState } from '../types';
+import { AsyncProcessState, OrderProcessState, OrderState } from '../types';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
@@ -68,9 +68,9 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     private _renderIcon(): React.ReactNode {
         const processState = this.props.buyOrderState.processState;
 
-        if (processState === AsyncProcessState.FAILURE) {
+        if (processState === OrderProcessState.FAILURE) {
             return <Icon icon={'failed'} width={ICON_WIDTH} height={ICON_HEIGHT} color={ICON_COLOR} />;
-        } else if (processState === AsyncProcessState.SUCCESS) {
+        } else if (processState === OrderProcessState.SUCCESS) {
             return <Icon icon={'success'} width={ICON_WIDTH} height={ICON_HEIGHT} color={ICON_COLOR} />;
         }
         return undefined;
@@ -78,9 +78,9 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
 
     private _renderTopText(): React.ReactNode {
         const processState = this.props.buyOrderState.processState;
-        if (processState === AsyncProcessState.FAILURE) {
+        if (processState === OrderProcessState.FAILURE) {
             return 'Order failed';
-        } else if (processState === AsyncProcessState.SUCCESS) {
+        } else if (processState === OrderProcessState.SUCCESS) {
             return 'Tokens received!';
         }
 

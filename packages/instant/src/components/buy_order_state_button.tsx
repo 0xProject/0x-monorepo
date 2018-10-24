@@ -4,18 +4,21 @@ import { PlacingOrderButton } from '../components/placing_order_button';
 import { SelectedAssetBuyButton } from '../containers/selected_asset_buy_button';
 import { SelectedAssetRetryButton } from '../containers/selected_asset_retry_button';
 import { SelectedAssetViewTransactionButton } from '../containers/selected_asset_view_transaction_button';
-import { AsyncProcessState } from '../types';
+import { OrderProcessState } from '../types';
 
 export interface BuyOrderStateButtonProps {
-    buyOrderProcessingState: AsyncProcessState;
+    buyOrderProcessingState: OrderProcessState;
 }
 
 export const BuyOrderStateButton: React.StatelessComponent<BuyOrderStateButtonProps> = props => {
-    if (props.buyOrderProcessingState === AsyncProcessState.FAILURE) {
+    if (props.buyOrderProcessingState === OrderProcessState.FAILURE) {
         return <SelectedAssetRetryButton />;
-    } else if (props.buyOrderProcessingState === AsyncProcessState.SUCCESS) {
+    } else if (props.buyOrderProcessingState === OrderProcessState.SUCCESS) {
         return <SelectedAssetViewTransactionButton />;
-    } else if (props.buyOrderProcessingState === AsyncProcessState.PENDING) {
+    } else if (
+        props.buyOrderProcessingState === OrderProcessState.AWAITING_SIGNATURE ||
+        props.buyOrderProcessingState === OrderProcessState.PROCESSING
+    ) {
         return <PlacingOrderButton />;
     }
 

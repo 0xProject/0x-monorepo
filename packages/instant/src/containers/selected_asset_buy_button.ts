@@ -6,7 +6,7 @@ import { Dispatch } from 'redux';
 
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { AsyncProcessState } from '../types';
+import { AsyncProcessState, OrderProcessState } from '../types';
 
 import { BuyButton } from '../components/buy_button';
 
@@ -30,10 +30,10 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): 
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetBuyButtonProps): ConnectedDispatch => ({
-    onClick: buyQuote => dispatch(actions.updateBuyOrderState({ processState: AsyncProcessState.PENDING })),
+    onClick: buyQuote => dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.AWAITING_SIGNATURE })),
     onBuySuccess: (buyQuote: BuyQuote, txnHash: string) =>
-        dispatch(actions.updateBuyOrderState({ processState: AsyncProcessState.SUCCESS, txnHash })),
-    onBuyFailure: buyQuote => dispatch(actions.updateBuyOrderState({ processState: AsyncProcessState.FAILURE })),
+        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.SUCCESS, txnHash })),
+    onBuyFailure: buyQuote => dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.FAILURE })),
     onBuyPrevented: (buyQuote, error) => {
         dispatch(actions.resetAmount());
         dispatch(actions.setError(error));

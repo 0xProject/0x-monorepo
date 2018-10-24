@@ -4,7 +4,15 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { assetMetaDataMap } from '../data/asset_meta_data_map';
-import { Asset, AssetMetaData, AsyncProcessState, DisplayStatus, Network, OrderState } from '../types';
+import {
+    Asset,
+    AssetMetaData,
+    AsyncProcessState,
+    DisplayStatus,
+    Network,
+    OrderProcessState,
+    OrderState,
+} from '../types';
 import { assetUtils } from '../util/asset';
 
 import { Action, ActionTypes } from './actions';
@@ -27,7 +35,7 @@ export const INITIAL_STATE: State = {
     network: Network.Mainnet,
     selectedAssetAmount: undefined,
     assetMetaDataMap,
-    buyOrderState: { processState: AsyncProcessState.NONE },
+    buyOrderState: { processState: OrderProcessState.NONE },
     ethUsdPrice: undefined,
     latestBuyQuote: undefined,
     latestError: undefined,
@@ -106,7 +114,7 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 ...state,
                 latestBuyQuote: undefined,
                 quoteRequestState: AsyncProcessState.NONE,
-                buyOrderState: { processState: AsyncProcessState.NONE },
+                buyOrderState: { processState: OrderProcessState.NONE },
                 selectedAssetAmount: undefined,
             };
         default:
