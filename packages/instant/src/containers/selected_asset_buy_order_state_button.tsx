@@ -15,6 +15,6 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetButtonProps): Con
     buyOrderState: state.buyOrderState,
 });
 
-export const SelectedAssetButton: React.ComponentClass<SelectedAssetButtonProps> = connect(mapStateToProps)(
-    BuyOrderStateButton,
-);
+export const SelectedAssetBuyOrderStateButton: React.ComponentClass<SelectedAssetButtonProps> = connect(
+    mapStateToProps,
+)(BuyOrderStateButton);
