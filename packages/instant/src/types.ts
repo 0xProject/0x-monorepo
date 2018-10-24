@@ -41,6 +41,7 @@ export interface ERC721Asset {
     assetData: string;
     metaData: ERC721AssetMetaData;
 }
+
 export interface Asset {
     assetData: string;
     metaData: AssetMetaData;

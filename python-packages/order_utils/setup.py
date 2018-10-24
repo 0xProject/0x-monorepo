@@ -1,13 +1,16 @@
+#!/usr/bin/env python
+
 """setuptools module for order_utils package."""
 
 import subprocess  # nosec
 from shutil import rmtree
-from os import path, remove, walk
+from os import environ, path, remove, walk
+from sys import argv
 
-from distutils.command.clean import clean  # type: ignore
-from setuptools import setup  # type: ignore
-import setuptools.command.build_py  # type: ignore
-from setuptools.command.test import test as TestCommand  # type: ignore
+from distutils.command.clean import clean
+import distutils.command.build_py
+from setuptools import setup
+from setuptools.command.test import test as TestCommand
 
 
 class TestCommandExtension(TestCommand):
@@ -15,13 +18,13 @@ class TestCommandExtension(TestCommand):
 
     def run_tests(self):
         """Invoke pytest."""
-        import pytest  # type: ignore
+        import pytest
 
         pytest.main()
 
 
 # pylint: disable=too-many-ancestors
-class LintCommand(setuptools.command.build_py.build_py):
+class LintCommand(distutils.command.build_py.build_py):
     """Custom setuptools command class for running linters."""
 
     def run(self):
@@ -34,7 +37,7 @@ class LintCommand(setuptools.command.build_py.build_py):
             # docstring style checker:
             "pydocstyle src test setup.py".split(),
             # static type checker:
-            "mypy src setup.py".split(),
+            "mypy src test setup.py".split(),
             # security issue checker:
             "bandit -r src ./setup.py".split(),
             # general linter:
@@ -42,6 +45,21 @@ class LintCommand(setuptools.command.build_py.build_py):
             # pylint takes relatively long to run, so it runs last, to enable
             # fast failures.
         ]
+
+        # tell mypy where to find interface stubs for 3rd party libs
+        environ["MYPYPATH"] = path.join(
+            path.dirname(path.realpath(argv[0])), "stubs"
+        )
+
+        # HACK(gene): until eth_abi releases
+        # https://github.com/ethereum/eth-abi/pull/107 , we need to simply
+        # create an empty file `py.typed` in the eth_abi package directory.
+        import eth_abi
+
+        eth_abi_dir = path.dirname(path.realpath(eth_abi.__file__))
+        with open(path.join(eth_abi_dir, "py.typed"), "a"):
+            pass
+
         for lint_command in lint_commands:
             print(
                 "Running lint command `", " ".join(lint_command).strip(), "`"
@@ -79,7 +97,7 @@ setup(
         "test": TestCommandExtension,
     },
     include_package_data=True,
-    install_requires=["web3"],
+    install_requires=["eth-abi", "web3"],
     extras_require={
         "dev": [
             "bandit",
@@ -87,6 +105,7 @@ setup(
             "coverage",
             "coveralls",
             "mypy",
+            "mypy_extensions",
             "pycodestyle",
             "pydocstyle",
             "pylint",
@@ -118,7 +137,7 @@ setup(
         "Topic :: Software Development :: Libraries",
         "Topic :: Utilities",
     ],
-    zip_safe=False,
+    zip_safe=False,  # required per mypy
     command_options={
         "build_sphinx": {
             "source_dir": ("setup.py", "src"),

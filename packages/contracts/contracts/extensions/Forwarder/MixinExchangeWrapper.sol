@@ -155,8 +155,10 @@ contract MixinExchangeWrapper is
             uint256 remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
-            // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerAssetFillAmount = getPartialAmountFloor(
+            // of takerAsset to sell, assuming entire amount can be sold in the current order.
+            // We round up because the exchange rate computed by fillOrder rounds in favor
+            // of the Maker. In this case we want to overestimate the amount of takerAsset.
+            uint256 remainingTakerAssetFillAmount = getPartialAmountCeil(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
@@ -224,7 +226,9 @@ contract MixinExchangeWrapper is
 
             // Convert the remaining amount of ZRX to buy into remaining amount
             // of WETH to sell, assuming entire amount can be sold in the current order.
-            uint256 remainingWethSellAmount = getPartialAmountFloor(
+            // We round up because the exchange rate computed by fillOrder rounds in favor
+            // of the Maker. In this case we want to overestimate the amount of takerAsset.
+            uint256 remainingWethSellAmount = getPartialAmountCeil(
                 orders[i].takerAssetAmount,
                 safeSub(orders[i].makerAssetAmount, orders[i].takerFee),  // our exchange rate after fees 
                 remainingZrxBuyAmount
@@ -233,7 +237,7 @@ contract MixinExchangeWrapper is
             // Attempt to sell the remaining amount of WETH.
             FillResults memory singleFillResult = fillOrderNoThrow(
                 orders[i],
-                safeAdd(remainingWethSellAmount, 1),  // we add 1 wei to the fill amount to make up for rounding errors
+                remainingWethSellAmount,
                 signatures[i]
             );
 

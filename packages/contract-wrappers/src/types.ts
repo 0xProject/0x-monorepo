@@ -18,6 +18,10 @@ export enum ExchangeWrapperError {
     AssetDataMismatch = 'ASSET_DATA_MISMATCH',
 }
 
+export enum ForwarderWrapperError {
+    CompleteFillFailed = 'COMPLETE_FILL_FAILED',
+}
+
 export enum ContractWrappersError {
     ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
     InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
@@ -30,6 +34,7 @@ export enum ContractWrappersError {
     SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
     ERC721OwnerNotFound = 'ERC_721_OWNER_NOT_FOUND',
     ERC721NoApproval = 'ERC_721_NO_APPROVAL',
+    SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
 }
 
 export enum InternalContractWrappersError {

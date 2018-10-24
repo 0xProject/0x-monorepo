@@ -1,4 +1,4 @@
-import { ContractWrappers } from '@0x/contract-wrappers';
+import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
@@ -210,21 +210,32 @@ export class AssetBuyer {
                 throw new Error(AssetBuyerError.NoAddressAvailable);
             }
         }
-        // if no ethAmount is provided, default to the worst ethAmount from buyQuote
-        const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
-            orders,
-            assetBuyAmount,
-            finalTakerAddress,
-            ethAmount || worstCaseQuoteInfo.totalEthAmount,
-            feeOrders,
-            feePercentage,
-            feeRecipient,
-            {
-                gasLimit,
-                gasPrice,
-            },
-        );
-        return txHash;
+        try {
+            // if no ethAmount is provided, default to the worst ethAmount from buyQuote
+            const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+                orders,
+                assetBuyAmount,
+                finalTakerAddress,
+                ethAmount || worstCaseQuoteInfo.totalEthAmount,
+                feeOrders,
+                feePercentage,
+                feeRecipient,
+                {
+                    gasLimit,
+                    gasPrice,
+                    shouldValidate: true,
+                },
+            );
+            return txHash;
+        } catch (err) {
+            if (_.includes(err.message, ContractWrappersError.SignatureRequestDenied)) {
+                throw new Error(AssetBuyerError.SignatureRequestDenied);
+            } else if (_.includes(err.message, ForwarderWrapperError.CompleteFillFailed)) {
+                throw new Error(AssetBuyerError.TransactionValueTooLow);
+            } else {
+                throw err;
+            }
+        }
     }
     /**
      * Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders

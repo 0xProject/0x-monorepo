@@ -56,6 +56,7 @@ export const docGenConfigs: DocGenConfigs = {
         'ContractWrappersError',
         'OrderError',
         'AssetBuyerError',
+        'ForwarderWrapperError',
     ],
     // Some libraries only export types. In those cases, we cannot check if the exported types are part of the
     // "exported public interface". Thus we add them here and skip those checks.

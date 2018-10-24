@@ -163,7 +163,7 @@ export class Blockchain {
             const providerName = this._getNameGivenProvider(injectedWeb3.currentProvider);
             // Wrap Metamask in a compatability wrapper MetamaskSubprovider (to handle inconsistencies)
             const signerSubprovider =
-                providerName === Providers.Metamask
+                providerName === constants.PROVIDER_NAME_METAMASK
                     ? new MetamaskSubprovider(injectedWeb3.currentProvider)
                     : new SignerSubprovider(injectedWeb3.currentProvider);
             provider.addProvider(signerSubprovider);
