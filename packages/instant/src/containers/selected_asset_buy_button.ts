@@ -6,7 +6,7 @@ import { Dispatch } from 'redux';
 
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { AsyncProcessState, OrderProcessState } from '../types';
+import { OrderProcessState, OrderState } from '../types';
 
 import { BuyButton } from '../components/buy_button';
 
@@ -18,7 +18,8 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    onClick: (buyQuote: BuyQuote) => void;
+    onAwaitingSignature: (buyQuote: BuyQuote) => void;
+    onProcessingTransaction: (buyQuote: BuyQuote, txnHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txnHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote) => void;
     onBuyPrevented: (buyQuote: BuyQuote, error: Error) => void;
@@ -30,7 +31,14 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): 
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetBuyButtonProps): ConnectedDispatch => ({
-    onClick: buyQuote => dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.AWAITING_SIGNATURE })),
+    onAwaitingSignature: (buyQuote: BuyQuote) => {
+        const newOrderState: OrderState = { processState: OrderProcessState.AWAITING_SIGNATURE };
+        dispatch(actions.updateBuyOrderState(newOrderState));
+    },
+    onProcessingTransaction: (buyQuote: BuyQuote, txnHash: string) => {
+        const newOrderState: OrderState = { processState: OrderProcessState.PROCESSING, txnHash };
+        dispatch(actions.updateBuyOrderState(newOrderState));
+    },
     onBuySuccess: (buyQuote: BuyQuote, txnHash: string) =>
         dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.SUCCESS, txnHash })),
     onBuyFailure: buyQuote => dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.FAILURE })),

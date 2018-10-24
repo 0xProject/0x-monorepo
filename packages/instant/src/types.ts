@@ -19,6 +19,11 @@ export enum OrderProcessState {
 interface RegularOrderState {
     processState: OrderProcessState.NONE | OrderProcessState.AWAITING_SIGNATURE;
 }
+// TODO: later turn into just a generic OrderStateWithTxn
+interface ProcessingOrderState {
+    processState: OrderProcessState.PROCESSING;
+    txnHash: string;
+}
 interface SuccessfulOrderState {
     processState: OrderProcessState.SUCCESS;
     txnHash: string;
@@ -27,7 +32,7 @@ interface FailureOrderState {
     processState: OrderProcessState.FAILURE;
     txnHash?: string;
 }
-export type OrderState = RegularOrderState | SuccessfulOrderState | FailureOrderState;
+export type OrderState = RegularOrderState | ProcessingOrderState | SuccessfulOrderState | FailureOrderState;
 
 export enum DisplayStatus {
     Present,

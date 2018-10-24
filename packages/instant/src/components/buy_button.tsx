@@ -11,7 +11,8 @@ import { Button, Text } from './ui';
 export interface BuyButtonProps {
     buyQuote?: BuyQuote;
     assetBuyer?: AssetBuyer;
-    onClick: (buyQuote: BuyQuote) => void;
+    onAwaitingSignature: (buyQuote: BuyQuote) => void;
+    onProcessingTransaction: (buyQuote: BuyQuote, txnHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txnHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, tnxHash?: string) => void;
     onBuyPrevented: (buyQuote: BuyQuote, preventedError: Error) => void;
@@ -35,21 +36,23 @@ export class BuyButton extends React.Component<BuyButtonProps> {
     }
     private readonly _handleClick = async () => {
         // The button is disabled when there is no buy quote anyway.
-        if (_.isUndefined(this.props.buyQuote) || _.isUndefined(this.props.assetBuyer)) {
+        const { buyQuote, assetBuyer } = this.props;
+        if (_.isUndefined(buyQuote) || _.isUndefined(assetBuyer)) {
             return;
         }
-        this.props.onClick(this.props.buyQuote);
+        this.props.onAwaitingSignature(buyQuote);
         let txnHash;
         try {
-            txnHash = await this.props.assetBuyer.executeBuyQuoteAsync(this.props.buyQuote);
-            const txnReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
-            this.props.onBuySuccess(this.props.buyQuote, txnReceipt.transactionHash);
+            txnHash = await assetBuyer.executeBuyQuoteAsync(buyQuote);
+            this.props.onProcessingTransaction(buyQuote, txnHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
+            this.props.onBuySuccess(buyQuote, txnHash);
         } catch (e) {
             if (e instanceof Error && e.message === AssetBuyerError.SignatureRequestDenied) {
-                this.props.onBuyPrevented(this.props.buyQuote, e);
+                this.props.onBuyPrevented(buyQuote, e);
                 return;
             }
-            this.props.onBuyFailure(this.props.buyQuote, txnHash);
+            this.props.onBuyFailure(buyQuote, txnHash);
         }
     };
 }
