@@ -13,7 +13,7 @@ export enum ScalingInputPhase {
 
 export interface ScalingSettings {
     percentageToReduceFontSizePerCharacter: number;
-    percentageToIncreaseWidthPerCharacter: number;
+    constantPxToIncreaseWidthPerCharacter: number;
 }
 
 export interface ScalingInputProps {
@@ -40,7 +40,7 @@ export interface ScalingInputSnapshot {
 // These are magic numbers that were determined experimentally.
 const defaultScalingSettings: ScalingSettings = {
     percentageToReduceFontSizePerCharacter: 0.125,
-    percentageToIncreaseWidthPerCharacter: 0.06,
+    constantPxToIncreaseWidthPerCharacter: 4,
 };
 
 export class ScalingInput extends React.Component<ScalingInputProps, ScalingInputState> {
@@ -148,9 +148,8 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
                 const { inputWidthPxAtPhaseChange } = this.state;
                 if (!_.isUndefined(inputWidthPxAtPhaseChange)) {
                     const charactersOverMax = value.length - textLengthThreshold;
-                    const scalingFactor =
-                        (scalingSettings.percentageToIncreaseWidthPerCharacter + 1) ** charactersOverMax;
-                    const width = scalingFactor * inputWidthPxAtPhaseChange;
+                    const scalingAmount = scalingSettings.constantPxToIncreaseWidthPerCharacter * charactersOverMax;
+                    const width = inputWidthPxAtPhaseChange + scalingAmount;
                     return `${width}px`;
                 }
                 return `${textLengthThreshold}ch`;
