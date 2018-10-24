@@ -135,9 +135,14 @@ export class AssetBuyer {
         assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
         assert.isNumber('slippagePercentage', slippagePercentage);
         const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+        const isMakerAssetZrxToken = assetData === zrxTokenAssetData;
+        // get the relevant orders for the makerAsset and fees
+        // if the requested assetData is ZRX, don't get the fee info
         const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
             this._getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
-            this._getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
+            isMakerAssetZrxToken
+                ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
+                : this._getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
             shouldForceOrderRefresh,
         ]);
         if (ordersAndFillableAmounts.orders.length === 0) {
@@ -149,6 +154,7 @@ export class AssetBuyer {
             assetBuyAmount,
             feePercentage,
             slippagePercentage,
+            isMakerAssetZrxToken,
         );
         return buyQuote;
     }
