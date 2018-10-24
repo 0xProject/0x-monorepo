@@ -53,7 +53,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
     public state = {
         inputWidthPxAtPhaseChange: undefined,
     };
-    private readonly _inputRef = React.createRef();
+    private readonly _inputRef = React.createRef<HTMLInputElement>();
     public static getPhase(textLengthThreshold: number, value: string): ScalingInputPhase {
         if (value.length <= textLengthThreshold) {
             return ScalingInputPhase.FixedFontSize;
@@ -101,8 +101,6 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
     ): void {
         const prevPhase = ScalingInput.getPhaseFromProps(prevProps);
         const curPhase = ScalingInput.getPhaseFromProps(this.props);
-        const prevFontSize = ScalingInput.calculateFontSizeFromProps(prevProps, prevPhase);
-        const curFontSize = ScalingInput.calculateFontSizeFromProps(this.props, curPhase);
         // if we went from anything else to end, fix to the current width as it shouldn't change as we grow
         if (prevPhase !== ScalingInputPhase.ScalingFontSize && curPhase === ScalingInputPhase.ScalingFontSize) {
             this.setState({
@@ -115,6 +113,8 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
                 inputWidthPxAtPhaseChange: undefined,
             });
         }
+        const prevFontSize = ScalingInput.calculateFontSizeFromProps(prevProps, prevPhase);
+        const curFontSize = ScalingInput.calculateFontSizeFromProps(this.props, curPhase);
         // If font size has changed, notify.
         if (prevFontSize !== curFontSize) {
             this.props.onFontSizeChange(curFontSize);
@@ -166,6 +166,6 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         if (!ref) {
             return 0;
         }
-        return (ref as any).getBoundingClientRect().width;
+        return ref.getBoundingClientRect().width;
     };
 }
