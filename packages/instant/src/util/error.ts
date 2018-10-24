@@ -47,7 +47,7 @@ const humanReadableMessageForError = (error: Error, asset?: Asset): string | und
     }
 
     if (error.message === AssetBuyerError.SignatureRequestDenied) {
-        return 'You denied this transaction.';
+        return 'You denied this transaction';
     }
 
     return undefined;
