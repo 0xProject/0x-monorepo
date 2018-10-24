@@ -1,23 +1,22 @@
 import * as React from 'react';
 
+import { PlacingOrderButton } from '../components/placing_order_button';
 import { SelectedAssetBuyButton } from '../containers/selected_asset_buy_button';
 import { SelectedAssetRetryButton } from '../containers/selected_asset_retry_button';
-
+import { SelectedAssetViewTransactionButton } from '../containers/selected_asset_view_transaction_button';
 import { AsyncProcessState } from '../types';
 
-import { SecondaryButton } from './secondary_button';
-
 export interface BuyOrderStateButtonProps {
-    buyOrderState: AsyncProcessState;
+    buyOrderProcessingState: AsyncProcessState;
 }
 
 export const BuyOrderStateButton: React.StatelessComponent<BuyOrderStateButtonProps> = props => {
-    if (props.buyOrderState === AsyncProcessState.FAILURE) {
+    if (props.buyOrderProcessingState === AsyncProcessState.FAILURE) {
         return <SelectedAssetRetryButton />;
-    } else if (props.buyOrderState === AsyncProcessState.SUCCESS) {
-        return <SecondaryButton text="Success" isDisabled={true} />;
-    } else if (props.buyOrderState === AsyncProcessState.PENDING) {
-        return <SecondaryButton text="Processing" isDisabled={true} />;
+    } else if (props.buyOrderProcessingState === AsyncProcessState.SUCCESS) {
+        return <SelectedAssetViewTransactionButton />;
+    } else if (props.buyOrderProcessingState === AsyncProcessState.PENDING) {
+        return <PlacingOrderButton />;
     }
 
     return <SelectedAssetBuyButton />;

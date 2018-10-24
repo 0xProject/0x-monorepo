@@ -7,5 +7,5 @@ export interface RetryButtonProps {
 }
 
 export const RetryButton: React.StatelessComponent<RetryButtonProps> = props => {
-    return <SecondaryButton text="Try Again" onClick={props.onClick} />;
+    return <SecondaryButton onClick={props.onClick}>Try Again</SecondaryButton>;
 };

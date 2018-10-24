@@ -7,6 +7,20 @@ export enum AsyncProcessState {
     SUCCESS = 'Success',
     FAILURE = 'Failure',
 }
+
+interface RegularOrderState {
+    processState: AsyncProcessState.NONE | AsyncProcessState.PENDING;
+}
+interface SuccessfulOrderState {
+    processState: AsyncProcessState.SUCCESS;
+    txnHash: string;
+}
+interface FailureOrderState {
+    processState: AsyncProcessState.FAILURE;
+    txnHash?: string;
+}
+export type OrderState = RegularOrderState | SuccessfulOrderState | FailureOrderState;
+
 export enum DisplayStatus {
     Present,
     Hidden,

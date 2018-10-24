@@ -8,11 +8,11 @@ import { AsyncProcessState } from '../types';
 import { BuyOrderStateButton } from '../components/buy_order_state_button';
 
 interface ConnectedState {
-    buyOrderState: AsyncProcessState;
+    buyOrderProcessingState: AsyncProcessState;
 }
 export interface SelectedAssetButtonProps {}
 const mapStateToProps = (state: State, _ownProps: SelectedAssetButtonProps): ConnectedState => ({
-    buyOrderState: state.buyOrderState,
+    buyOrderProcessingState: state.buyOrderState.processState,
 });
 
 export const SelectedAssetBuyOrderStateButton: React.ComponentClass<SelectedAssetButtonProps> = connect(

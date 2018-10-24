@@ -41,8 +41,8 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         let txnHash;
         try {
             txnHash = await this.props.assetBuyer.executeBuyQuoteAsync(this.props.buyQuote);
-            await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
-            this.props.onBuySuccess(this.props.buyQuote, txnHash);
+            const txnReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
+            this.props.onBuySuccess(this.props.buyQuote, txnReceipt.transactionHash);
         } catch {
             this.props.onBuyFailure(this.props.buyQuote, txnHash);
         }
