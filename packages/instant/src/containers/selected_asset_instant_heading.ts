@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { oc } from 'ts-optchain';
 
 import { State } from '../redux/reducer';
-import { AsyncProcessState } from '../types';
+import { AsyncProcessState, OrderState } from '../types';
 
 import { InstantHeading } from '../components/instant_heading';
 
@@ -16,7 +16,7 @@ interface ConnectedState {
     totalEthBaseAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
     quoteRequestState: AsyncProcessState;
-    buyOrderState: AsyncProcessState;
+    buyOrderState: OrderState;
 }
 
 const mapStateToProps = (state: State, _ownProps: InstantHeadingProps): ConnectedState => ({

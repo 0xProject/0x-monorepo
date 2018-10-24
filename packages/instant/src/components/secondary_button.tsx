@@ -6,9 +6,7 @@ import { ColorOption } from '../style/theme';
 import { Button, ButtonProps } from './ui/button';
 import { Text } from './ui/text';
 
-export interface SecondaryButtonProps extends ButtonProps {
-    text: string;
-}
+export interface SecondaryButtonProps extends ButtonProps {}
 
 export const SecondaryButton: React.StatelessComponent<SecondaryButtonProps> = props => {
     const buttonProps = _.omit(props, 'text');
@@ -21,7 +19,7 @@ export const SecondaryButton: React.StatelessComponent<SecondaryButtonProps> = p
             {...buttonProps}
         >
             <Text fontColor={ColorOption.primaryColor} fontWeight={600} fontSize="16px">
-                {props.text}
+                {props.children}
             </Text>
         </Button>
     );

@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { assetMetaDataMap } from '../data/asset_meta_data_map';
-import { Asset, AssetMetaData, AsyncProcessState, DisplayStatus, Network } from '../types';
+import { Asset, AssetMetaData, AsyncProcessState, DisplayStatus, Network, OrderState } from '../types';
 import { assetUtils } from '../util/asset';
 
 import { Action, ActionTypes } from './actions';
@@ -15,7 +15,7 @@ export interface State {
     assetMetaDataMap: ObjectMap<AssetMetaData>;
     selectedAsset?: Asset;
     selectedAssetAmount?: BigNumber;
-    buyOrderState: AsyncProcessState;
+    buyOrderState: OrderState;
     ethUsdPrice?: BigNumber;
     latestBuyQuote?: BuyQuote;
     quoteRequestState: AsyncProcessState;
@@ -27,7 +27,7 @@ export const INITIAL_STATE: State = {
     network: Network.Mainnet,
     selectedAssetAmount: undefined,
     assetMetaDataMap,
-    buyOrderState: AsyncProcessState.NONE,
+    buyOrderState: { processState: AsyncProcessState.NONE },
     ethUsdPrice: undefined,
     latestBuyQuote: undefined,
     latestError: undefined,
@@ -65,7 +65,7 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 latestBuyQuote: undefined,
                 quoteRequestState: AsyncProcessState.FAILURE,
             };
-        case ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE:
+        case ActionTypes.UPDATE_BUY_ORDER_STATE:
             return {
                 ...state,
                 buyOrderState: action.data,
@@ -106,7 +106,7 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 ...state,
                 latestBuyQuote: undefined,
                 quoteRequestState: AsyncProcessState.NONE,
-                buyOrderState: AsyncProcessState.NONE,
+                buyOrderState: { processState: AsyncProcessState.NONE },
                 selectedAssetAmount: undefined,
             };
         default:
