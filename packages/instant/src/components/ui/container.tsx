@@ -30,7 +30,10 @@ export interface ContainerProps {
     opacity?: number;
 }
 
-export const Container = styled<ContainerProps, 'div'>('div')`
+export const Container =
+    styled.div <
+    ContainerProps >
+    `
     box-sizing: border-box;
     ${props => cssRuleIfExists(props, 'display')}
     ${props => cssRuleIfExists(props, 'position')}

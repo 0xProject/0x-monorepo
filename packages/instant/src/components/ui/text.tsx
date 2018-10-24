@@ -24,7 +24,10 @@ export interface TextProps {
 }
 
 const darkenOnHoverAmount = 0.3;
-export const Text = styled<TextProps, 'div'>('div')`
+export const Text =
+    styled.div <
+    TextProps >
+    `
     font-family: ${props => props.fontFamily};
     font-style: ${props => props.fontStyle};
     font-weight: ${props => props.fontWeight};

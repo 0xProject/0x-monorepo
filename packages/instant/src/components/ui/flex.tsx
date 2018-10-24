@@ -12,7 +12,10 @@ export interface FlexProps {
     className?: string;
 }
 
-export const Flex = styled<FlexProps, 'div'>('div')`
+export const Flex =
+    styled.div <
+    FlexProps >
+    `
     display: flex;
     flex-direction: ${props => props.direction};
     flex-wrap: ${props => props.flexWrap};

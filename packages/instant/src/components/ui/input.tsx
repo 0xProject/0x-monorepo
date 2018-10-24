@@ -12,7 +12,10 @@ export interface InputProps {
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const Input = styled<InputProps, 'input'>('input')`
+export const Input =
+    styled.input <
+    InputProps >
+    `
     font-size: ${props => props.fontSize};
     width: ${props => props.width};
     padding: 0.1em 0em;
