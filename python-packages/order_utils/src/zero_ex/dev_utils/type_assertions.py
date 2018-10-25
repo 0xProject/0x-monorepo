@@ -31,3 +31,18 @@ def assert_is_list(value: Any, name: str) -> None:
             f"expected variable '{name}', with value {str(value)}, to have"
             + f" type 'list', not '{type(value).__name__}'"
         )
+
+
+def assert_is_int(value: Any, name: str) -> None:
+    """If :param value: isn't of type int, raise a TypeError.
+
+    >>> try: assert_is_int('asdf', 'var')
+    ... except TypeError as type_error: print(str(type_error))
+    ...
+    expected variable 'var', with value asdf, to have type 'int', not 'str'
+    """
+    if not isinstance(value, int):
+        raise TypeError(
+            f"expected variable '{name}', with value {str(value)}, to have"
+            + f" type 'int', not '{type(value).__name__}'"
+        )

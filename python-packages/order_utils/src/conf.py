@@ -12,7 +12,7 @@ project = "order_utils.py"
 # pylint: disable=redefined-builtin
 copyright = "2018, ZeroEx, Intl."
 author = "F. Eugene Aumson"
-version = ""  # The short X.Y version
+version = "0.2.0"  # The short X.Y version
 release = ""  # The full version, including alpha/beta/rc tags
 
 extensions = [

@@ -20,7 +20,7 @@ class TestCommandExtension(TestCommand):
         """Invoke pytest."""
         import pytest
 
-        pytest.main()
+        exit(pytest.main())
 
 
 # pylint: disable=too-many-ancestors
@@ -87,8 +87,8 @@ class CleanCommandExtension(clean):
 
 
 setup(
-    name="order_utils",
-    version="1.0.0",
+    name="0x-order-utils",
+    version="0.2.0",
     description="Order utilities for 0x applications",
     author="F. Eugene Aumson",
     cmdclass={
@@ -121,7 +121,7 @@ setup(
     keywords=(
         "ethereum cryptocurrency 0x decentralized blockchain dex exchange"
     ),
-    packages=["zero_ex.order_utils"],
+    packages=["zero_ex.order_utils", "zero_ex.dev_utils"],
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",
