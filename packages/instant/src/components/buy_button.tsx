@@ -2,6 +2,7 @@ import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
 import { util } from '../util/util';
 import { web3Wrapper } from '../util/web3_wrapper';
@@ -62,7 +63,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         try {
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
-            if (e instanceof Error && e.message.startsWith('Transaction failed')) {
+            if (e instanceof Error && e.message.startsWith(WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX)) {
                 this.props.onBuyFailure(buyQuote, txHash);
                 return;
             }
