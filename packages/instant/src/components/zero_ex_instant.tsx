@@ -79,7 +79,7 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchAndDispatchToStore(this._store);
         // tslint:disable-next-line:no-floating-promises
-        this._flashErrorIfWrongNetwork(this._store.getState().network);
+        this._flashErrorIfWrongNetwork();
     }
 
     public render(): React.ReactNode {
@@ -92,8 +92,9 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
         );
     }
 
-    private readonly _flashErrorIfWrongNetwork = async (network: Network): Promise<void> => {
+    private readonly _flashErrorIfWrongNetwork = async (): Promise<void> => {
         const msToShowError = 30000; // 30 seconds
+        const network = this._store.getState().network;
         const networkOfProvider = await web3Wrapper.getNetworkIdAsync();
         if (network !== networkOfProvider) {
             const errorMessage = `Wrong network detected. Try switching to ${Network[network]}.`;
