@@ -80,7 +80,7 @@ function Trace(props: Props) {
                                 <Gamma as="h3">Time-saving</Gamma>
                                 <p>
                                     Turning "Your code failed somewhere, good luck debugging it" into "Your code failed
-                                    on linen X of contract Y", it drastically improves the developer experience.
+                                    on line X of contract Y", it drastically improves the developer experience.
                                 </p>
                             </Copy>
                             <Icon as={TimeSaving} />
@@ -94,8 +94,8 @@ function Trace(props: Props) {
 
 const StyledSection =
     styled.section <
-    TraceProps >
-    `
+        TraceProps >
+        `
     max-width: 90rem;
     margin: 0 auto;
     background: linear-gradient(to right, ${colors.black} 50%, ${props => props.background} 50%);
@@ -126,8 +126,8 @@ const Wrapper = styled(Container)`
 
 const Block =
     styled.div <
-    TraceProps >
-    `
+        TraceProps >
+        `
     width: 50%;
     background: ${props => (props.background ? props.background : colors.black)};
     color: ${props => (props.background ? 'inherit' : colors.white)};
