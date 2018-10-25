@@ -21,6 +21,9 @@ const Button = styled(BaseButton)`
     top: 1rem;
     right: 1rem;
     transition: opacity 0.2s;
+    :focus {
+        opacity: 1;
+    }
 `;
 
 const Base =

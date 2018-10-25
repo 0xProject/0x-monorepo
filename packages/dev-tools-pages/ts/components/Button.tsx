@@ -23,6 +23,9 @@ const Button =
   border-radius: 5rem;
   padding: ${props => (props.large ? '1.125rem 2.375rem' : '.5625rem 1.25rem')};
   display: inline-block;
+  :hover, :focus {
+    color: ${props => props.colors.main};
+  } 
   ${props =>
       props.large &&
       media.small`

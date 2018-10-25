@@ -50,11 +50,16 @@ const BaseStyles = createGlobalStyle`
     }
 
     a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    a:not([class]) {
         color: ${(props: any) => props.colors.type};
         text-decoration: none; 
 
         &:hover {
-            color: red; //what should this be?
+            text-decoration: underline;
         }
     }
     

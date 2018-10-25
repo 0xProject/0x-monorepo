@@ -27,7 +27,11 @@ function Footer(props: Props) {
                             <ListItem key={title}>
                                 <Icon as={icon} />
                                 <div>
-                                    <Beta>{title}</Beta>
+                                    <Beta>
+                                        <StyledLink colors={colors} href="#">
+                                            {title}
+                                        </StyledLink>
+                                    </Beta>
                                     <p>{subtitle}</p>
                                 </div>
                             </ListItem>
@@ -59,13 +63,13 @@ const Top = styled.div`
     justify-content: space-between;
     margin-bottom: 9.375rem;
 
-    ${media.small`
+    ${media.medium`
         display: block;
         margin-bottom: 5.3125rem;
     `};
 
     ${Alpha} {
-        ${media.small`margin-bottom: 3.8125rem;`};
+        ${media.medium`margin-bottom: 3.8125rem;`};
     }
 `;
 
@@ -92,9 +96,13 @@ const List = styled.ul`
     margin: 0;
     padding: 0;
 
+    ${media.medium`
+    
+        width: 100%; 
+    `};
+
     ${media.small`
         display: block;
-        width: 100%; 
     `};
 `;
 
@@ -121,6 +129,15 @@ const ListItem = styled.li`
 const Small = styled.small`
     font-size: 1em;
     max-width: 37.5rem;
+`;
+
+const StyledLink =
+    styled.a <
+    { colors: any } >
+    `
+    :hover {
+        color: ${props => props.colors.main};
+    }
 `;
 
 export default withContext(Footer);

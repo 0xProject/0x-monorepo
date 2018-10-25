@@ -62,7 +62,9 @@ const Title = styled.h1`
 `;
 
 const StyledLink = styled(Small)`
-    color: inherit;
+    :hover {
+        text-decoration: underline;
+    }
 `;
 
 const Link = StyledLink as any;

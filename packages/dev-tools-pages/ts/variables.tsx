@@ -14,9 +14,8 @@ interface SizesInterface {
 }
 
 const sizes: SizesInterface = {
-    large: 992,
-    medium: 768,
-    small: 376,
+    medium: 900,
+    small: 650,
 };
 
 const media = Object.keys(sizes).reduce((acc: any, label: string) => {

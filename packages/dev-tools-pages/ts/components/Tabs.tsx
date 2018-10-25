@@ -24,23 +24,25 @@ const StyledTab = styled(Tab)`
     &:not(:first-of-type) {
         margin-left: 0.25rem;
     }
-    &:focus,
-    &:hover {
-        color: red;
-        outline: 0;
-    }
 `;
 
 const Root =
     styled.div <
-    { primaryColor: string } >
+    { colors: any } >
     `
-  ${StyledTab} {
-    background-color: ${props => props.primaryColor};
-  }
-  ${StyledTab}[aria-selected="true"] {
-    background-color: ${colors.gray};
-  } 
+    ${StyledTab} {
+        background-color: ${props => props.colors.secondary};
+        &[aria-selected="true"] {
+            background-color: ${colors.gray};
+
+        }
+
+        &[aria-selected="false"]:focus,
+        &[aria-selected="false"]:hover {
+            color: ${props => props.colors.main};
+            cursor: pointer;
+        }
+    }
 `;
 
 interface TabsProps extends Props {
@@ -50,7 +52,7 @@ interface TabsProps extends Props {
 function Tabs(props: TabsProps) {
     return (
         <Breakout>
-            <Root primaryColor={props.colors.secondary}>
+            <Root colors={props.colors}>
                 <ReactTabs>
                     <StyledTabList>
                         {React.Children.map(props.children, child => {
