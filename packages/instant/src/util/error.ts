@@ -10,7 +10,6 @@ class ErrorFlasher {
     private _timeoutId?: number;
     public flashNewError(dispatch: Dispatch<Action>, error: any, delayMs: number = 7000): void {
         this._clearTimeout();
-
         // dispatch new message
         dispatch(actions.setError(error));
 

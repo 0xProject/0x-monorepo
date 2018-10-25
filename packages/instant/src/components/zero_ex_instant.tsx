@@ -1,5 +1,6 @@
 import { AssetBuyer } from '@0x/asset-buyer';
-import { ObjectMap } from '@0x/types';
+import { ObjectMap, SignedOrder } from '@0x/types';
+import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 
@@ -21,8 +22,7 @@ export type ZeroExInstantProps = ZeroExInstantRequiredProps & Partial<ZeroExInst
 export interface ZeroExInstantRequiredProps {
     // TODO: Change API when we allow the selection of different assetDatas
     assetData: string;
-    // TODO: Allow for a function that returns orders
-    liquiditySource: string;
+    liquiditySource: string | SignedOrder[];
 }
 
 export interface ZeroExInstantOptionalProps {
@@ -40,9 +40,20 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
         };
         const { network } = optionalPropsWithDefaults;
         // TODO: Provider needs to not be hard-coded to injected web3.
-        const assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(getProvider(), props.liquiditySource, {
+        const provider = getProvider();
+        const assetBuyerOptions = {
             networkId: network,
-        });
+        };
+        let assetBuyer;
+        if (_.isString(props.liquiditySource)) {
+            assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(
+                provider,
+                props.liquiditySource,
+                assetBuyerOptions,
+            );
+        } else {
+            assetBuyer = AssetBuyer.getAssetBuyerForProvidedOrders(provider, props.liquiditySource, assetBuyerOptions);
+        }
         const completeAssetMetaDataMap = {
             ...props.additionalAssetMetaDataMap,
             ...state.assetMetaDataMap,
