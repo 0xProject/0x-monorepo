@@ -43,6 +43,7 @@ const IntroLead = styled(Lead)`
 `;
 const IntroAside = styled.div`
     max-width: 32.5rem;
+    position: relative; 
 
     ${media.small`
         margin-left: -30px;

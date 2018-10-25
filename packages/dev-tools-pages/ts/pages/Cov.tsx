@@ -22,19 +22,25 @@ function Cov() {
                     coverage.
                 </IntroLead>
                 <IntroAside>
-                    <Code language="js.diff">
+                    <Code
+                        language="javascript"
+                        diff
+                        gutterLength={2}
+                        gutter={[4, undefined, 4, 4, 4, undefined, 4, 2, 2, 2]}
+                    >
                         {`+function executeTransaction(uint transactionId)
-    public
-+notExecuted(transactionId)
-+pastTimeLock(transactionId)
+     public
++    notExecuted(transactionId)
++    fullyConfirmed(transactionId)
++    pastTimeLock(transactionId)
 { 
-+Transaction storage tx = transactions[transactionId]
-+tx.executed = true
-+if (tx.destination.call.value(tx.value)(tx.data))
-+Execution(transactionId)
-else {
--ExecutionFailure(transactionId)
-
++    Transaction storage tx = transactions[transactionId]
++    tx.executed = true
++    if (tx.destination.call.value(tx.value)(tx.data))
++        Execution(transactionId)
+     else {
+-        ExecutionFailure(transactionId)
+-        tx.executed = false
     }
 }`}
                     </Code>
@@ -69,7 +75,7 @@ else {
 
                     <Tabs>
                         <TabBlock title="Sol-compiler">
-                            <Code language="js">
+                            <Code language="javascript">
                                 {`import { SolCompilerArtifactAdapter } from '@0x/sol-trace';
 
 // Both artifactsDir and contractsDir are optional and will be fetched from compiler.json if not passed in

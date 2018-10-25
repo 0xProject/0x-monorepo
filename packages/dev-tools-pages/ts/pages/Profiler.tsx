@@ -9,18 +9,35 @@ import { Tabs, TabBlock } from 'ts/components/Tabs';
 import Code from 'ts/components/Code';
 import InlineCode from 'ts/components/InlineCode';
 import { List, ListItem } from 'ts/components/List';
-import Intro from 'ts/components/Intro';
 import Breakout from 'ts/components/Breakout';
+import { Intro, IntroLead, IntroAside } from 'ts/components/Intro';
 
 function Profiler() {
     return (
         <Base context={context}>
-            <Intro title="ra">
-                <p>
+            <Intro title="Headline">
+                <IntroLead>
                     Sol-profiler gathers line-by-line gas usage for any transaction submitted through your provider.
                     This will help you find unexpected inefficiencies in parts of your smart contract, and take a
                     data-driven approach to optimizing it.
-                </p>
+                </IntroLead>
+                <IntroAside>
+                    <Code language="javascript" diff gutterLength={6} gutter={[15, 15, undefined, 21747, 20303, 1435]}>
+                        {`+function() public payable {
++    deposit();
+}
++function deposit() public payabble {
++    balanceOf[msg.sender] += msg.value; 
++    Deposit(msg.sender, msg.value);
+}
+-function withdraw(uint wad) public {
+-    require(balanceOf[msg.sender] >= wad);
+-    balanceOf[msg.sender] -= wad;
+-    msg.sender.transfer(wad);
+-    Withdrawal(msg.sender, wad);
+}`}
+                    </Code>
+                </IntroAside>
             </Intro>
             <Content>
                 <ContentBlock main title="Get started" />
