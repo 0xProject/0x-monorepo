@@ -45,7 +45,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         etherToken: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
         exchange: '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
         assetProxyOwner: '0x2c824d2882baa668e0d5202b1e7f2922278703f8',
-        forwarder: '0x4859339a70a63f5e32497d865ce793c38ce9c004',
+        forwarder: '0xd85e2fa7e7e252b27b01bf0d65c946959d2f45b8',
         orderValidator: '0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d',
     },
 };
