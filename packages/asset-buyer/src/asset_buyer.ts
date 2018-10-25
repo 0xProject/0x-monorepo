@@ -221,13 +221,14 @@ export class AssetBuyer {
                 feePercentage,
                 feeRecipient,
                 {
-                    gasLimit,
+                    gasLimit: 5000000,
                     gasPrice,
-                    shouldValidate: true,
+                    // shouldValidate: true,
                 },
             );
             return txHash;
         } catch (err) {
+            console.log('err', err);
             if (_.includes(err.message, ContractWrappersError.SignatureRequestDenied)) {
                 throw new Error(AssetBuyerError.SignatureRequestDenied);
             } else if (_.includes(err.message, ForwarderWrapperError.CompleteFillFailed)) {
@@ -279,7 +280,8 @@ export class AssetBuyer {
             response,
             isMakerAssetZrxToken,
             this.expiryBufferSeconds,
-            this._contractWrappers.orderValidator,
+            // DONT COMMIT BELOW!!!!
+            // this._contractWrappers.orderValidator,
         );
         const lastRefreshTime = Date.now();
         const updatedOrdersEntry = {
