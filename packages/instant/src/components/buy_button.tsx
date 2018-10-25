@@ -49,14 +49,9 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         } catch (e) {
             if (e instanceof Error && e.message === AssetBuyerError.SignatureRequestDenied) {
                 this.props.onSignatureDenied(buyQuote, e);
-            } else {
-                throw e;
+                return;
             }
-        }
-
-        // Have to let TS know that txHash is definitely defined now
-        if (!txHash) {
-            throw new Error('No txHash available');
+            throw e;
         }
 
         this.props.onBuyProcessing(buyQuote, txHash);

@@ -16,14 +16,14 @@ export enum OrderProcessState {
     FAILURE = 'Failure',
 }
 
-interface OrderStateWithoutTx {
+interface OrderStatePreTx {
     processState: OrderProcessState.NONE | OrderProcessState.AWAITING_SIGNATURE;
 }
-interface OrderStateWithTx {
+interface OrderStatePostTx {
     processState: OrderProcessState.PROCESSING | OrderProcessState.SUCCESS | OrderProcessState.FAILURE;
     txHash: string;
 }
-export type OrderState = OrderStateWithoutTx | OrderStateWithTx;
+export type OrderState = OrderStatePreTx | OrderStatePostTx;
 
 export enum DisplayStatus {
     Present,
