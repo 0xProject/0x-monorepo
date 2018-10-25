@@ -5,18 +5,18 @@ import context from 'ts/context/profiler';
 import Base from 'ts/components/Base';
 import Content from 'ts/components/Content';
 import ContentBlock from 'ts/components/ContentBlock';
+import Breakout from 'ts/components/Breakout';
 import { Tabs, TabBlock } from 'ts/components/Tabs';
 import Code from 'ts/components/Code';
 import InlineCode from 'ts/components/InlineCode';
 import { List, ListItem } from 'ts/components/List';
-import Breakout from 'ts/components/Breakout';
 import { Intro, IntroLead, IntroAside } from 'ts/components/Intro';
 
 function Profiler() {
     return (
         <Base context={context}>
-            <Intro title="Headline">
-                <IntroLead>
+            <Intro>
+                <IntroLead title="Headline">
                     Sol-profiler gathers line-by-line gas usage for any transaction submitted through your provider.
                     This will help you find unexpected inefficiencies in parts of your smart contract, and take a
                     data-driven approach to optimizing it.

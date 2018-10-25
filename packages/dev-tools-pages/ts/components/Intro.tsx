@@ -4,6 +4,7 @@ import { media, colors } from '../variables';
 
 import { Alpha, Lead } from './Typography';
 import Container from './Container';
+import Breakout from './Breakout';
 
 const Main = styled.div`
     background-color: ${colors.lightGray};
@@ -17,12 +18,6 @@ const Main = styled.div`
     `};
 `;
 
-const Inner = styled.div`
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-`;
-
 const Title = styled(Alpha)`
     margin-bottom: 2.5rem;
 
@@ -32,38 +27,56 @@ const Title = styled(Alpha)`
 const Blocks = styled.div`
     display: flex;
     justify-content: space-between;
+    width: 100%;
 
     ${media.small`display: block;`};
 `;
 
-const IntroLead = styled(Lead)`
+
+const StyledIntroLead = styled(Lead)`
     max-width: 25.9375rem;
 
     ${media.small`margin-bottom: 1.5625rem;`};
 `;
-const IntroAside = styled.div`
+
+const StyledIntroAside = styled.div`
     max-width: 32.5rem;
     position: relative; 
-
-    ${media.small`
-        margin-left: -30px;
-        width: calc(100% + 60px);
-    `};
 `;
 
 interface IntroProps {
+    children?: React.ReactNode;
+}
+
+interface IntroLeadProps {
     title: string;
     children?: React.ReactNode;
+}
+
+function IntroLead(props: IntroLeadProps) {
+    return (
+        <StyledIntroLead>
+            <Title>{props.title}</Title>
+            {props.children}
+        </StyledIntroLead>
+    )
+}
+
+function IntroAside(props: IntroProps) {
+    return (
+        <Breakout>
+            <StyledIntroAside>
+                {props.children}
+            </StyledIntroAside>
+        </Breakout>
+    )
 }
 
 function Intro(props: IntroProps) {
     return (
         <Container wide>
             <Main>
-                <Inner>
-                    <Title>{props.title}</Title>
-                    <Blocks>{props.children}</Blocks>
-                </Inner>
+                <Blocks>{props.children}</Blocks>
             </Main>
         </Container>
     );
