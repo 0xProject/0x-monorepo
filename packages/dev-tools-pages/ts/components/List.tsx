@@ -26,14 +26,19 @@ const StyledItem = styled.li`
 `;
 
 interface ListProps {
-    items: Array<string>;
+    items?: Array<string>;
+    children?: React.ReactNode;
 }
 
 function List(props: ListProps) {
-    const items = props.items;
-    const listItems = items.map((bullet, index) => <StyledItem key={index}>{bullet}</StyledItem>);
-
-    return <StyledList>{listItems}</StyledList>;
+    return (
+        <StyledList>
+            {props.children !== undefined
+                ? props.children
+                : props.items.map((bullet, index) => <StyledItem key={index}>{bullet}</StyledItem>)}
+        </StyledList>
+    );
 }
 
 export default List;
+export { List, StyledItem as ListItem };

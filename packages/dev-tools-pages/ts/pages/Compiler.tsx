@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { render, hydrate } from 'react-dom';
 
+import { Lead } from 'ts/components/Typography';
 import context from 'ts/context/compiler';
 import Base from 'ts/components/Base';
 import Content from 'ts/components/Content';
 import ContentBlock from 'ts/components/ContentBlock';
-import { Tabs, TabBlock } from 'ts/components/Tabs';
 import Code from 'ts/components/Code';
 import InlineCode from 'ts/components/InlineCode';
-import List from 'ts/components/List';
 import CompilerComponent from 'ts/components/Compiler';
+import Breakout from 'ts/components/Breakout';
 
 function Compiler() {
     return (
@@ -17,41 +17,51 @@ function Compiler() {
             <CompilerComponent />
             <Content>
                 <ContentBlock main title="Get started" />
-                <ContentBlock title="Required steps">
-                    <List items={['Step 1', 'Step 2']} />
+                <ContentBlock title="Install">
+                    <Breakout>
+                        <Code>npm install @0x/sol-compiler --g</Code>
+                    </Breakout>
                 </ContentBlock>
-                <ContentBlock title="Prerequisites">
-                    <Code>npm install @0x/sol-trace --save</Code>
+
+                <ContentBlock title="Run">
+                    <Breakout>
+                        <Code>cd /your_project_dir && sol-compiler</Code>
+                    </Breakout>
+                </ContentBlock>
+
+                <ContentBlock title="Configure">
                     <p>
-                        Sol-trace is a subprovider that needs to be prepended to your <a href="#">provider engine</a>.
-                        Depending on your project setup, you will need to use a specific ArtifactAdapter. Sol-trace
-                        ships with the <InlineCode>SolCompilerArtifactAdapter</InlineCode> for use with Sol-compiler and{' '}
-                        <InlineCode>TruffleArtifactAdapter</InlineCode> for use with the Truffle framework. You can also
-                        write your own and support any artifact format.
+                        Configure via a <InlineCode>compiler.json</InlineCode> file.
                     </p>
-                </ContentBlock>
-
-                <ContentBlock title="Installation">
-                    <Tabs>
-                        <TabBlock title="Sol-compiler">
-                            <Code language="js">
-                                {`import { SolCompilerArtifactAdapter } from '@0x/sol-trace';
-
-// Both artifactsDir and contractsDir are optional and will be fetched from compiler.json if not passed in
-const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDir);`}
-                            </Code>
-                        </TabBlock>
-                        <TabBlock title="Truffle">Truffle</TabBlock>
-                        <TabBlock title="Custom">Custom</TabBlock>
-                    </Tabs>
+                    <Breakout>
+                        <Code>mkdir compiler.json</Code>
+                    </Breakout>
+                    <p>Example of settings:</p>
+                    <Breakout>
+                        <Code language="json">
+                            {`{
+    "contractsDir": "contracts",
+    "artifactsDir": "artifacts",
+    "contracts": "*",
+    "compilerSettings": {
+        "optimizer": { "enabled": false },
+        "outputSelection": {
+            "*": {
+                "*": ["abi", "evm.bytecode.object"]
+            }
+        }
+    }
+}`}
+                        </Code>
+                    </Breakout>
                 </ContentBlock>
             </Content>
             <Content dark>
                 <ContentBlock main title="Artifacts">
-                    <p>
+                    <Lead>
                         Sol compiler uses solidity standard JSON output format for the artifacts. This way, you can
                         define which parts of the artifact you need.
-                    </p>
+                    </Lead>
                 </ContentBlock>
 
                 <ContentBlock title="Production">
@@ -59,6 +69,68 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
                         Sol compiler uses solidity standard JSON output format for the artifacts. This way, you can
                         define which parts of the artifact you need.
                     </p>
+                    <Breakout>
+                        <Code light language="json">
+                            {`{
+    ...
+    "compilerSettings": {
+        "outputSelection": {
+            "*": {
+                "*": ["abi"]
+            }
+        }
+    }
+    ...
+}`}
+                        </Code>
+                    </Breakout>
+                    <Breakout>
+                        <Code light language="json">
+                            {`{
+    ...
+    "compilerSettings": {
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "evm.bytecode.object",
+                    "evm.bytecode.sourceMap",
+                    "evm.deployedBytecode.object",
+                    "evm.deployedBytecode.sourceMap"
+                ]
+            }
+        }
+    }
+    ...
+}`}
+                        </Code>
+                    </Breakout>
+                    <Breakout>
+                        <Code light language="json">
+                            {`{
+    ...
+    "compilerOutput": {
+        "abi": [...],
+        "evm": {
+            "bytecode": {
+                "object": "0xdeadbeef",
+                "sourceMap": "26:480:..."
+            },
+            "deployedBytecode": {
+                "object": "0xdeadbeef",
+                "sourceMap": "26:480:0..."
+            }
+        }
+    }
+    "sources": {
+        "Migrations.sol": {
+            "id": 0
+        }
+    },
+    ...
+}`}
+                        </Code>
+                    </Breakout>
                 </ContentBlock>
             </Content>
         </Base>
