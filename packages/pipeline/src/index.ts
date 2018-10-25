@@ -4,27 +4,31 @@ import 'reflect-metadata';
 import { Connection, createConnection } from 'typeorm';
 
 import { ExchangeEventsSource } from './data_sources/contract-wrappers/exchange_events';
+import { RelayerRegistrySource } from './data_sources/relayer-registry';
 import { Web3Source } from './data_sources/web3';
 import { Block } from './entities/Block';
 import { ExchangeFillEvent } from './entities/ExchangeFillEvent';
+import { Relayer } from './entities/Relayer';
 import { Transaction } from './entities/Transaction';
-import { testConfig } from './ormconfig';
+import { deployConfig } from './ormconfig';
 import { parseExchangeEvents } from './parsers/events';
+import { parseRelayers } from './parsers/relayer_registry';
 import { parseBlock, parseTransaction } from './parsers/web3';
 
 const EXCHANGE_START_BLOCK = 6271590; // Block number when the Exchange contract was deployed to mainnet.
+const RELAYER_REGISTRY_URL = 'https://raw.githubusercontent.com/0xProject/0x-relayer-registry/master/relayers.json';
 
 let connection: Connection;
 
 (async () => {
-    connection = await createConnection(testConfig);
+    connection = await createConnection(deployConfig);
     const provider = web3Factory.getRpcProvider({
         rpcUrl: 'https://mainnet.infura.io',
     });
-    await getExchangeEventsAsync(provider);
-    await getBlockAsync(provider);
-    await getTransactionAsync(provider);
-    console.log('Exiting process');
+    // await getExchangeEventsAsync(provider);
+    // await getBlockAsync(provider);
+    // await getTransactionAsync(provider);
+    await getRelayers(RELAYER_REGISTRY_URL);
     process.exit(0);
 })();
 
@@ -65,4 +69,17 @@ async function getTransactionAsync(provider: Web3ProviderEngine): Promise<void> 
     console.log('Saving tx info...');
     await txsRepository.save(tx);
     console.log('Done saving tx.');
+}
+
+async function getRelayers(url: string): Promise<void> {
+    console.log('Getting relayer info...');
+    const relayerRepository = connection.getRepository(Relayer);
+    const relayerSource = new RelayerRegistrySource(RELAYER_REGISTRY_URL);
+    const relayersResp = await relayerSource.getRelayerInfoAsync();
+    const relayers = parseRelayers(relayersResp);
+    console.log('Saving relayer info...');
+    // for (const relayer of relayers) {
+    await relayerRepository.save(relayers);
+    // }
+    console.log('Done saving relayers.');
 }
