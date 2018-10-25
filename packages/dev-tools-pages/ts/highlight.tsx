@@ -1,7 +1,9 @@
 const hljs = require('highlight.js/lib/highlight');
 const javascript = require('highlight.js/lib/languages/javascript');
+const json = require('highlight.js/lib/languages/json');
 
 hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('json', json);
 
 interface PatchInterface {
     [key: string]: string;
