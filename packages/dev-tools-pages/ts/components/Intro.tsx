@@ -12,7 +12,7 @@ const Main = styled.div`
     display: flex;
     justify-content: space-between;
 
-    ${media.small`
+    ${media.medium`
         padding: 2.5rem 1.875rem
         display: block;     
     `};
@@ -24,17 +24,8 @@ const Title = styled(Alpha)`
     ${media.small`margin-bottom: 2.25rem;`};
 `;
 
-const Blocks = styled.div`
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-
-    ${media.small`display: block;`};
-`;
-
 const StyledIntroLead = styled(Lead)`
     max-width: 25.9375rem;
-
     ${media.small`margin-bottom: 1.5625rem;`};
 `;
 
@@ -72,9 +63,7 @@ function IntroAside(props: IntroProps) {
 function Intro(props: IntroProps) {
     return (
         <Container wide>
-            <Main>
-                <Blocks>{props.children}</Blocks>
-            </Main>
+            <Main>{props.children}</Main>
         </Container>
     );
 }
