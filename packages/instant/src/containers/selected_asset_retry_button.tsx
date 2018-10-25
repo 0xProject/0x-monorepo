@@ -7,7 +7,9 @@ import { Action, actions } from '../redux/actions';
 
 import { RetryButton } from '../components/retry_button';
 
-export interface SelectedAssetRetryButtonProps {}
+export interface SelectedAssetRetryButtonProps {
+    width?: string;
+}
 
 interface ConnectedDispatch {
     onClick: () => void;
@@ -21,6 +23,6 @@ const mapDispatchToProps = (
 });
 
 export const SelectedAssetRetryButton: React.ComponentClass<SelectedAssetRetryButtonProps> = connect(
-    undefined,
+    _.noop,
     mapDispatchToProps,
 )(RetryButton);

@@ -8,13 +8,14 @@ import { Text } from './ui/text';
 
 export interface SecondaryButtonProps extends ButtonProps {}
 
+// TODO: don't hard code this
 export const SecondaryButton: React.StatelessComponent<SecondaryButtonProps> = props => {
     const buttonProps = _.omit(props, 'text');
     return (
         <Button
             backgroundColor={ColorOption.white}
             borderColor={ColorOption.lightGrey}
-            width="100%"
+            width={props.width}
             onClick={props.onClick}
             {...buttonProps}
         >
@@ -23,4 +24,7 @@ export const SecondaryButton: React.StatelessComponent<SecondaryButtonProps> = p
             </Text>
         </Button>
     );
+};
+SecondaryButton.defaultProps = {
+    width: '100%',
 };

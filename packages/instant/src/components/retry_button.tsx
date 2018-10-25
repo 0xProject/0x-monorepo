@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import { SecondaryButton } from './secondary_button';
+import { SecondaryButton, SecondaryButtonProps } from './secondary_button';
 
-export interface RetryButtonProps {
+export interface RetryButtonProps extends SecondaryButtonProps {
     onClick: () => void;
 }
 
 export const RetryButton: React.StatelessComponent<RetryButtonProps> = props => {
-    return <SecondaryButton onClick={props.onClick}>Try Again</SecondaryButton>;
+    return <SecondaryButton {...props}>Try Again</SecondaryButton>;
 };

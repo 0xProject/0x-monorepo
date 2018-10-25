@@ -8,18 +8,22 @@ import { ViewTransactionButton } from '../components/view_transaction_button';
 import { OrderProcessState } from '../types';
 import { etherscanUtil } from '../util/etherscan';
 
-export interface SelectedAssetViewTransactionButtonProps {}
+export interface SelectedAssetViewTransactionButtonProps {
+    width?: string;
+}
 
 interface ConnectedState {
     onClick: () => void;
+    width?: string;
 }
 
-const mapStateToProps = (state: State, _ownProps: {}): ConnectedState => ({
+const mapStateToProps = (state: State, ownProps: SelectedAssetViewTransactionButtonProps): ConnectedState => ({
     onClick: () => {
         if (
             state.assetBuyer &&
             (state.buyOrderState.processState === OrderProcessState.PROCESSING ||
-                state.buyOrderState.processState === OrderProcessState.SUCCESS)
+                state.buyOrderState.processState === OrderProcessState.SUCCESS ||
+                state.buyOrderState.processState === OrderProcessState.FAILURE)
         ) {
             const etherscanUrl = etherscanUtil.getEtherScanTxnAddressIfExists(
                 state.buyOrderState.txHash,
@@ -31,6 +35,7 @@ const mapStateToProps = (state: State, _ownProps: {}): ConnectedState => ({
             }
         }
     },
+    width: ownProps.width,
 });
 
 export const SelectedAssetViewTransactionButton: React.ComponentClass<
