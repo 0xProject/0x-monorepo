@@ -22,7 +22,7 @@ const mapStateToProps = (state: State, _ownProps: {}): ConnectedState => ({
                 state.buyOrderState.processState === OrderProcessState.SUCCESS)
         ) {
             const etherscanUrl = etherscanUtil.getEtherScanTxnAddressIfExists(
-                state.buyOrderState.txnHash,
+                state.buyOrderState.txHash,
                 state.assetBuyer.networkId,
             );
             if (etherscanUrl) {

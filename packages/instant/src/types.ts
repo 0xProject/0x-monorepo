@@ -21,15 +21,15 @@ interface RegularOrderState {
 }
 interface ProcessingOrderState {
     processState: OrderProcessState.PROCESSING;
-    txnHash: string;
+    txHash: string;
 }
 interface SuccessfulOrderState {
     processState: OrderProcessState.SUCCESS;
-    txnHash: string;
+    txHash: string;
 }
 interface FailureOrderState {
     processState: OrderProcessState.FAILURE;
-    txnHash?: string;
+    txHash?: string;
 }
 export type OrderState = RegularOrderState | ProcessingOrderState | SuccessfulOrderState | FailureOrderState;
 

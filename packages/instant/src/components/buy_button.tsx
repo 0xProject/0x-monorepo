@@ -13,9 +13,9 @@ export interface BuyButtonProps {
     assetBuyer?: AssetBuyer;
     onAwaitingSignature: (buyQuote: BuyQuote) => void;
     onSignatureDenied: (buyQuote: BuyQuote, preventedError: Error) => void;
-    onBuyProcessing: (buyQuote: BuyQuote, txnHash: string) => void;
-    onBuySuccess: (buyQuote: BuyQuote, txnHash: string) => void;
-    onBuyFailure: (buyQuote: BuyQuote, txnHash?: string) => void; // TODO: make this non-optional
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuyFailure: (buyQuote: BuyQuote, txHash?: string) => void; // TODO: make this non-optional
 }
 
 export class BuyButton extends React.Component<BuyButtonProps> {
@@ -41,10 +41,10 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             return;
         }
 
-        let txnHash: string | undefined;
+        let txHash: string | undefined;
         this.props.onAwaitingSignature(buyQuote);
         try {
-            txnHash = await assetBuyer.executeBuyQuoteAsync(buyQuote);
+            txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote);
         } catch (e) {
             if (e instanceof Error && e.message === AssetBuyerError.SignatureRequestDenied) {
                 this.props.onSignatureDenied(buyQuote, e);
@@ -54,20 +54,20 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         }
 
         // Have to let TS know that txHash is definitely defined now
-        if (!txnHash) {
+        if (!txHash) {
             throw new Error('No txHash available');
         }
 
-        this.props.onBuyProcessing(buyQuote, txnHash);
+        this.props.onBuyProcessing(buyQuote, txHash);
         try {
-            await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
             if (e instanceof Error && e.message.startsWith('Transaction failed')) {
-                this.props.onBuyFailure(buyQuote, txnHash);
+                this.props.onBuyFailure(buyQuote, txHash);
                 return;
             }
             throw e;
         }
-        this.props.onBuySuccess(buyQuote, txnHash);
+        this.props.onBuySuccess(buyQuote, txHash);
     };
 }

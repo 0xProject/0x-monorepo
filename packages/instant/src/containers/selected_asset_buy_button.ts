@@ -20,8 +20,8 @@ interface ConnectedState {
 interface ConnectedDispatch {
     onAwaitingSignature: (buyQuote: BuyQuote) => void;
     onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
-    onBuyProcessing: (buyQuote: BuyQuote, txnHash: string) => void;
-    onBuySuccess: (buyQuote: BuyQuote, txnHash: string) => void;
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote) => void;
 }
 
@@ -35,12 +35,12 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetB
         const newOrderState: OrderState = { processState: OrderProcessState.AWAITING_SIGNATURE };
         dispatch(actions.updateBuyOrderState(newOrderState));
     },
-    onBuyProcessing: (buyQuote: BuyQuote, txnHash: string) => {
-        const newOrderState: OrderState = { processState: OrderProcessState.PROCESSING, txnHash };
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => {
+        const newOrderState: OrderState = { processState: OrderProcessState.PROCESSING, txHash };
         dispatch(actions.updateBuyOrderState(newOrderState));
     },
-    onBuySuccess: (buyQuote: BuyQuote, txnHash: string) =>
-        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.SUCCESS, txnHash })),
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string) =>
+        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.SUCCESS, txHash })),
     onBuyFailure: buyQuote => dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.FAILURE })),
     onSignatureDenied: (buyQuote, error) => {
         dispatch(actions.resetAmount());
