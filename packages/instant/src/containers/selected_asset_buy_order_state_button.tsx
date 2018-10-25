@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { State } from '../redux/reducer';
-import { AsyncProcessState, OrderProcessState } from '../types';
+import { OrderProcessState } from '../types';
 
 import { BuyOrderStateButton } from '../components/buy_order_state_button';
 

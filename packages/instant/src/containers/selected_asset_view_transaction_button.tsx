@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { State } from '../redux/reducer';
 
 import { ViewTransactionButton } from '../components/view_transaction_button';
-import { AsyncProcessState, OrderProcessState } from '../types';
+import { OrderProcessState } from '../types';
 import { etherscanUtil } from '../util/etherscan';
 
 export interface SelectedAssetViewTransactionButtonProps {}
