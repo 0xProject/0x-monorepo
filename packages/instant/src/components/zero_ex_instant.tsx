@@ -11,7 +11,9 @@ import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
 import { AssetMetaData, Network } from '../types';
 import { assetUtils } from '../util/asset';
+import { errorUtil } from '../util/error';
 import { getProvider } from '../util/provider';
+import { web3Wrapper } from '../util/web3_wrapper';
 
 import { ZeroExInstantContainer } from './zero_ex_instant_container';
 
@@ -69,9 +71,15 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
     }
     constructor(props: ZeroExInstantProps) {
         super(props);
-        this._store = store.create(ZeroExInstant._mergeInitialStateWithProps(this.props, INITIAL_STATE));
+        const initialAppState = ZeroExInstant._mergeInitialStateWithProps(this.props, INITIAL_STATE);
+        this._store = store.create(initialAppState);
+    }
+
+    public componentDidMount(): void {
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchAndDispatchToStore(this._store);
+        // tslint:disable-next-line:no-floating-promises
+        this._flashErrorIfWrongNetwork(this._store.getState().network);
     }
 
     public render(): React.ReactNode {
@@ -83,4 +91,13 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
             </Provider>
         );
     }
+
+    private readonly _flashErrorIfWrongNetwork = async (network: Network): Promise<void> => {
+        const msToShowError = 30000; // 30 seconds
+        const networkOfProvider = await web3Wrapper.getNetworkIdAsync();
+        if (network !== networkOfProvider) {
+            const errorMessage = `Wrong network detected. Try switching to ${Network[network]}.`;
+            errorUtil.errorFlasher.flashNewError(this._store.dispatch, errorMessage, msToShowError);
+        }
+    };
 }

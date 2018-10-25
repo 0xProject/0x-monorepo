@@ -1,4 +1,5 @@
 import { AssetBuyerError } from '@0x/asset-buyer';
+import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 
 import { Action, actions } from '../redux/actions';
@@ -54,6 +55,9 @@ export const errorUtil = {
         let bestMessage: string | undefined;
         if (error instanceof Error) {
             bestMessage = humanReadableMessageForError(error, asset);
+        }
+        if (_.isString(error)) {
+            bestMessage = error;
         }
         return {
             icon: '😢',
