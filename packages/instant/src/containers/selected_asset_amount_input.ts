@@ -66,7 +66,9 @@ const updateBuyQuoteAsync = async (
 
     let newBuyQuote: BuyQuote | undefined;
     try {
-        newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue);
+        newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue, {
+            slippagePercentage: 0,
+        });
     } catch (error) {
         dispatch(actions.setQuoteRequestStateFailure());
         errorUtil.errorFlasher.flashNewError(dispatch, error);

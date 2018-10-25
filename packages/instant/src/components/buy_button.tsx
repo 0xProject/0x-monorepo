@@ -48,6 +48,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
             this.props.onBuySuccess(buyQuote, txnHash);
         } catch (e) {
+            console.log(e);
             if (e instanceof Error && e.message === AssetBuyerError.SignatureRequestDenied) {
                 this.props.onBuyPrevented(buyQuote, e);
                 return;
