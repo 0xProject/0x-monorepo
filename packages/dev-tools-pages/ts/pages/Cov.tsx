@@ -15,8 +15,8 @@ import { Intro, IntroLead, IntroAside } from 'ts/components/Intro';
 function Cov() {
     return (
         <Base context={context}>
-            <Intro title="Measure your tests">
-                <IntroLead>
+            <Intro>
+                <IntroLead title="Measure your tests">
                     When it comes to writing smart contracts, testing is one of the most important steps of the process.
                     In order to quantify the robustness of your Solidity testing suite, you need to measure its code
                     coverage.
