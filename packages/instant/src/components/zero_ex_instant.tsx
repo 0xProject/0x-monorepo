@@ -1,5 +1,6 @@
 import { AssetBuyer } from '@0x/asset-buyer';
 import { ObjectMap, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider } from 'react-redux';
@@ -28,6 +29,7 @@ export interface ZeroExInstantRequiredProps {
 }
 
 export interface ZeroExInstantOptionalProps {
+    defaultAssetBuyAmount?: number;
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     network: Network;
 }
@@ -35,12 +37,7 @@ export interface ZeroExInstantOptionalProps {
 export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
     private readonly _store: Store;
     private static _mergeInitialStateWithProps(props: ZeroExInstantProps, state: State = INITIAL_STATE): State {
-        // Create merged object such that properties in props override default settings
-        const optionalPropsWithDefaults: ZeroExInstantOptionalProps = {
-            additionalAssetMetaDataMap: props.additionalAssetMetaDataMap || {},
-            network: props.network || state.network,
-        };
-        const { network } = optionalPropsWithDefaults;
+        const network = props.network || state.network;
         // TODO: Provider needs to not be hard-coded to injected web3.
         const provider = getProvider();
         const assetBuyerOptions = {
@@ -65,6 +62,9 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
             assetBuyer,
             network,
             selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap, network),
+            selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
+                ? state.selectedAssetAmount
+                : new BigNumber(props.defaultAssetBuyAmount),
             assetMetaDataMap: completeAssetMetaDataMap,
         };
         return storeStateFromProps;
