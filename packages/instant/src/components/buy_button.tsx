@@ -15,7 +15,7 @@ export interface BuyButtonProps {
     onSignatureDenied: (buyQuote: BuyQuote, preventedError: Error) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
-    onBuyFailure: (buyQuote: BuyQuote, txHash?: string) => void; // TODO: make this non-optional
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
 }
 
 export class BuyButton extends React.Component<BuyButtonProps> {

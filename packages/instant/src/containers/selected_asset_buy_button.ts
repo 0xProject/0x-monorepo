@@ -22,7 +22,7 @@ interface ConnectedDispatch {
     onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
-    onBuyFailure: (buyQuote: BuyQuote) => void;
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
 }
 
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): ConnectedState => ({
@@ -41,7 +41,8 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetB
     },
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) =>
         dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.SUCCESS, txHash })),
-    onBuyFailure: buyQuote => dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.FAILURE })),
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string) =>
+        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.FAILURE, txHash })),
     onSignatureDenied: (buyQuote, error) => {
         dispatch(actions.resetAmount());
         dispatch(actions.setError(error));

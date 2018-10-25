@@ -29,7 +29,7 @@ interface SuccessfulOrderState {
 }
 interface FailureOrderState {
     processState: OrderProcessState.FAILURE;
-    txHash?: string;
+    txHash: string;
 }
 export type OrderState = RegularOrderState | ProcessingOrderState | SuccessfulOrderState | FailureOrderState;
 
