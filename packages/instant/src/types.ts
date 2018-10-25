@@ -19,7 +19,6 @@ export enum OrderProcessState {
 interface RegularOrderState {
     processState: OrderProcessState.NONE | OrderProcessState.AWAITING_SIGNATURE;
 }
-// TODO: later turn into just a generic OrderStateWithTxn
 interface ProcessingOrderState {
     processState: OrderProcessState.PROCESSING;
     txnHash: string;
