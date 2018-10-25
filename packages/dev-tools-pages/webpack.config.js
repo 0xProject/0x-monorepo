@@ -84,7 +84,11 @@ module.exports = (_env, argv) => {
     let plugins = [
         new CleanWebpackPlugin('public'),
         ...pages.map(p => new HtmlWebpackPlugin(p)),
-        new CopyWebpackPlugin([{ from: 'assets/crawl.html', to: 'index.html' }, { from: 'assets/fonts', to: 'fonts' }]),
+        new CopyWebpackPlugin([
+            { from: 'assets/crawl.html', to: 'index.html' },
+            { from: 'assets/fonts', to: 'fonts' },
+            { from: 'assets/images', to: 'images' },
+        ]),
     ];
     if (argv.mode === 'development') {
         config.mode = 'development';

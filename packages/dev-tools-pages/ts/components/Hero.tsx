@@ -6,16 +6,26 @@ import { withContext, Props } from './withContext';
 import Button from './Button';
 import { Beta } from './Typography';
 
+const IMAGE_WIDTH = 2560;
+const IMAGE_HEIGHT = 800;
+
 function Hero(props: Props) {
-    const { subtitle, tagline } = props;
+    const { subtitle, tagline, title } = props;
+
     return (
-        <StyledHero>
-            <Subtitle>{subtitle}</Subtitle>
-            <Tagline as="p">{tagline}</Tagline>
-            <Button as="a" href="#" large>
-                Read the Docs
-            </Button>
-        </StyledHero>
+        <React.Fragment>
+            <StyledHero>
+                <Subtitle>{subtitle}</Subtitle>
+                <Tagline as="p">{tagline}</Tagline>
+                <Button as="a" href="#" large>
+                    Read the Docs
+                </Button>
+            </StyledHero>
+
+            <ImageContainer>
+                <Image src={`/images/${title}@1x.gif`} srcSet={`/images/${title}@1x.gif, /images/${title}@2x.gif 2x`} />
+            </ImageContainer>
+        </React.Fragment>
     );
 }
 
@@ -49,6 +59,24 @@ const Tagline = styled(Beta)`
     ${media.small`
         margin-bottom: 1.25rem;
     `};
+`;
+
+const ImageContainer = styled.div`
+    width: 100%;
+    height: ${IMAGE_HEIGHT}px;
+    position: absolute;
+    top: 6.875rem;
+    left: 0;
+    overflow: hidden;
+    z-index: -1;
+`;
+
+const Image = styled.img`
+    width: ${IMAGE_WIDTH}px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%);
 `;
 
 export default withContext(Hero);
