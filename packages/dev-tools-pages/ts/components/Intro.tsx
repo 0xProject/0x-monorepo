@@ -45,7 +45,7 @@ interface IntroLeadProps {
 
 function IntroLead(props: IntroLeadProps) {
     return (
-        <StyledIntroLead>
+        <StyledIntroLead as="div">
             <Title>{props.title}</Title>
             {props.children}
         </StyledIntroLead>

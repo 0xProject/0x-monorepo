@@ -17,9 +17,11 @@ function Profiler() {
         <Base context={context}>
             <Intro>
                 <IntroLead title="Headline">
-                    Sol-profiler gathers line-by-line gas usage for any transaction submitted through your provider.
-                    This will help you find unexpected inefficiencies in parts of your smart contract, and take a
-                    data-driven approach to optimizing it.
+                    <p>
+                        Sol-profiler gathers line-by-line gas usage for any transaction submitted through your provider.
+                        This will help you find unexpected inefficiencies in parts of your smart contract, and take a
+                        data-driven approach to optimizing it.
+                    </p>
                 </IntroLead>
                 <IntroAside>
                     <Code language="javascript" diff gutterLength={6} gutter={[15, 15, undefined, 21747, 20303, 1435]}>

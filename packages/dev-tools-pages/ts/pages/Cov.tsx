@@ -17,9 +17,11 @@ function Cov() {
         <Base context={context}>
             <Intro>
                 <IntroLead title="Measure your tests">
-                    When it comes to writing smart contracts, testing is one of the most important steps of the process.
-                    In order to quantify the robustness of your Solidity testing suite, you need to measure its code
-                    coverage.
+                    <p>
+                        When it comes to writing smart contracts, testing is one of the most important steps of the
+                        process. In order to quantify the robustness of your Solidity testing suite, you need to measure
+                        its code coverage.
+                    </p>
                 </IntroLead>
                 <IntroAside>
                     <Code
