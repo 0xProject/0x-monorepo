@@ -6,7 +6,7 @@ import { Dispatch } from 'redux';
 
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { AsyncProcessState } from '../types';
+import { OrderProcessState, OrderState } from '../types';
 
 import { BuyButton } from '../components/buy_button';
 
@@ -18,10 +18,11 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    onClick: (buyQuote: BuyQuote) => void;
-    onBuySuccess: (buyQuote: BuyQuote, txnHash: string) => void;
-    onBuyFailure: (buyQuote: BuyQuote) => void;
-    onBuyPrevented: (buyQuote: BuyQuote, error: Error) => void;
+    onAwaitingSignature: (buyQuote: BuyQuote) => void;
+    onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
 }
 
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): ConnectedState => ({
@@ -30,11 +31,19 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): 
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetBuyButtonProps): ConnectedDispatch => ({
-    onClick: buyQuote => dispatch(actions.updateBuyOrderState({ processState: AsyncProcessState.PENDING })),
-    onBuySuccess: (buyQuote: BuyQuote, txnHash: string) =>
-        dispatch(actions.updateBuyOrderState({ processState: AsyncProcessState.SUCCESS, txnHash })),
-    onBuyFailure: buyQuote => dispatch(actions.updateBuyOrderState({ processState: AsyncProcessState.FAILURE })),
-    onBuyPrevented: (buyQuote, error) => {
+    onAwaitingSignature: (buyQuote: BuyQuote) => {
+        const newOrderState: OrderState = { processState: OrderProcessState.AWAITING_SIGNATURE };
+        dispatch(actions.updateBuyOrderState(newOrderState));
+    },
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => {
+        const newOrderState: OrderState = { processState: OrderProcessState.PROCESSING, txHash };
+        dispatch(actions.updateBuyOrderState(newOrderState));
+    },
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string) =>
+        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.SUCCESS, txHash })),
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string) =>
+        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.FAILURE, txHash })),
+    onSignatureDenied: (buyQuote, error) => {
         dispatch(actions.resetAmount());
         dispatch(actions.setError(error));
     },
