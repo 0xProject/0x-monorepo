@@ -32,7 +32,6 @@ const Blocks = styled.div`
     ${media.small`display: block;`};
 `;
 
-
 const StyledIntroLead = styled(Lead)`
     max-width: 25.9375rem;
 
@@ -41,7 +40,7 @@ const StyledIntroLead = styled(Lead)`
 
 const StyledIntroAside = styled.div`
     max-width: 32.5rem;
-    position: relative; 
+    position: relative;
 `;
 
 interface IntroProps {
@@ -59,17 +58,15 @@ function IntroLead(props: IntroLeadProps) {
             <Title>{props.title}</Title>
             {props.children}
         </StyledIntroLead>
-    )
+    );
 }
 
 function IntroAside(props: IntroProps) {
     return (
         <Breakout>
-            <StyledIntroAside>
-                {props.children}
-            </StyledIntroAside>
+            <StyledIntroAside>{props.children}</StyledIntroAside>
         </Breakout>
-    )
+    );
 }
 
 function Intro(props: IntroProps) {
