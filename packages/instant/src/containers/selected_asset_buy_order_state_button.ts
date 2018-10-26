@@ -9,7 +9,7 @@ import { State } from '../redux/reducer';
 import { OrderProcessState, OrderState } from '../types';
 import { etherscanUtil } from '../util/etherscan';
 
-import { BuyOrderStateButton } from '../components/buy_order_state_button';
+import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
 
 interface ConnectedState {
     buyQuote?: BuyQuote;
@@ -75,4 +75,4 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetB
 export const SelectedAssetBuyOrderStateButton: React.ComponentClass<SelectedAssetButtonProps> = connect(
     mapStateToProps,
     mapDispatchToProps,
-)(BuyOrderStateButton);
+)(BuyOrderStateButtons);

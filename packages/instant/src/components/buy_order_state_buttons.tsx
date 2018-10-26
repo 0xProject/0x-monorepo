@@ -26,7 +26,7 @@ export interface BuyOrderStateButtonProps {
 }
 
 // TODO: rename to buttons
-export const BuyOrderStateButton: React.StatelessComponent<BuyOrderStateButtonProps> = props => {
+export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonProps> = props => {
     if (props.buyOrderProcessingState === OrderProcessState.FAILURE) {
         return (
             <Flex justify="space-between">
