@@ -44,7 +44,7 @@ export interface ERC20AssetMetaData {
 export interface ERC721AssetMetaData {
     assetProxyId: AssetProxyId.ERC721;
     name: string;
-    representationUrl?: string;
+    imageUrl?: string;
     primaryColor?: string;
 }
 
