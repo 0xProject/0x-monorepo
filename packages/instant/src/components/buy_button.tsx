@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
+import { getBestAddress } from '../util/address';
 import { util } from '../util/util';
 import { web3Wrapper } from '../util/web3_wrapper';
 
@@ -45,7 +46,8 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         let txHash: string | undefined;
         this.props.onAwaitingSignature(buyQuote);
         try {
-            txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote);
+            const takerAddress = await getBestAddress();
+            txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, { takerAddress });
         } catch (e) {
             if (e instanceof Error && e.message === AssetBuyerError.SignatureRequestDenied) {
                 this.props.onSignatureDenied(buyQuote, e);
