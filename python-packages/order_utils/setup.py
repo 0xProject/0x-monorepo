@@ -4,7 +4,7 @@
 
 import subprocess  # nosec
 from shutil import rmtree
-from os import environ, path, remove, walk
+from os import environ, path
 from sys import argv
 
 from distutils.command.clean import clean
@@ -26,6 +26,8 @@ class TestCommandExtension(TestCommand):
 # pylint: disable=too-many-ancestors
 class LintCommand(distutils.command.build_py.build_py):
     """Custom setuptools command class for running linters."""
+
+    description = "Run linters"
 
     def run(self):
         """Run linter shell commands."""
@@ -73,31 +75,64 @@ class CleanCommandExtension(clean):
     def run(self):
         """Run the regular clean, followed by our custom commands."""
         super().run()
-        rmtree("build", ignore_errors=True)
+        rmtree("dist", ignore_errors=True)
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
         rmtree("src/order_utils.egg-info", ignore_errors=True)
-        # delete all .pyc files
-        for root, _, files in walk("."):
-            for file in files:
-                (_, extension) = path.splitext(file)
-                if extension == ".pyc":
-                    remove(path.join(root, file))
+
+
+# pylint: disable=too-many-ancestors
+class TestPublishCommand(distutils.command.build_py.build_py):
+    """Custom command to publish to test.pypi.org."""
+
+    description = (
+        "Publish dist/* to test.pypi.org. Run sdist & bdist_wheel first."
+    )
+
+    def run(self):
+        """Run twine to upload to test.pypi.org."""
+        subprocess.check_call(  # nosec
+            (
+                "twine upload --repository-url https://test.pypi.org/legacy/"
+                + " --verbose dist/*"
+            ).split()
+        )
+
+
+# pylint: disable=too-many-ancestors
+class PublishCommand(distutils.command.build_py.build_py):
+    """Custom command to publish to pypi.org."""
+
+    description = "Publish dist/* to pypi.org. Run sdist & bdist_wheel first."
+
+    def run(self):
+        """Run twine to upload to pypi.org."""
+        subprocess.check_call("twine upload dist/*".split())  # nosec
+
+
+with open("README.md", "r") as file_handle:
+    README_MD = file_handle.read()
 
 
 setup(
     name="0x-order-utils",
-    version="0.2.0",
+    version="0.1.0",
     description="Order utilities for 0x applications",
+    long_description=README_MD,
+    long_description_content_type="text/markdown",
+    url="https://github.com/0xproject/0x-monorepo/python-packages/order_utils",
     author="F. Eugene Aumson",
+    author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
         "clean": CleanCommandExtension,
         "lint": LintCommand,
         "test": TestCommandExtension,
+        "test_publish": TestPublishCommand,
+        "publish": PublishCommand,
     },
     include_package_data=True,
-    install_requires=["eth-abi", "web3"],
+    install_requires=["eth-abi", "mypy_extensions", "web3"],
     extras_require={
         "dev": [
             "bandit",
@@ -112,6 +147,7 @@ setup(
             "pytest",
             "sphinx",
             "tox",
+            "twine",
         ]
     },
     python_requires=">=3.6, <4",
@@ -121,9 +157,10 @@ setup(
     keywords=(
         "ethereum cryptocurrency 0x decentralized blockchain dex exchange"
     ),
+    namespace_packages=["zero_ex"],
     packages=["zero_ex.order_utils", "zero_ex.dev_utils"],
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: Financial and Insurance Industry",
         "License :: OSI Approved :: Apache Software License",
@@ -133,7 +170,10 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Topic :: Internet :: WWW/HTTP",
         "Topic :: Office/Business :: Financial",
+        "Topic :: Other/Nonlisted Topic",
+        "Topic :: Security :: Cryptography",
         "Topic :: Software Development :: Libraries",
         "Topic :: Utilities",
     ],

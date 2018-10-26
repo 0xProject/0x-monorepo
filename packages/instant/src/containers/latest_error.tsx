@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 
 import { SlidingError } from '../components/sliding_error';
 import { State } from '../redux/reducer';
-import { DisplayStatus } from '../types';
+import { Asset, DisplayStatus } from '../types';
 import { errorUtil } from '../util/error';
 
 export interface LatestErrorComponentProps {
-    assetData?: string;
+    asset?: Asset;
     latestError?: any;
     slidingDirection: 'down' | 'up';
 }
@@ -17,18 +17,18 @@ export const LatestErrorComponent: React.StatelessComponent<LatestErrorComponent
     if (!props.latestError) {
         return <div />;
     }
-    const { icon, message } = errorUtil.errorDescription(props.latestError, props.assetData);
+    const { icon, message } = errorUtil.errorDescription(props.latestError, props.asset);
     return <SlidingError direction={props.slidingDirection} icon={icon} message={message} />;
 };
 
 interface ConnectedState {
-    assetData?: string;
+    asset?: Asset;
     latestError?: any;
     slidingDirection: 'down' | 'up';
 }
 export interface LatestErrorProps {}
 const mapStateToProps = (state: State, _ownProps: LatestErrorProps): ConnectedState => ({
-    assetData: state.selectedAssetData,
+    asset: state.selectedAsset,
     latestError: state.latestError,
     slidingDirection: state.latestErrorDisplay === DisplayStatus.Present ? 'up' : 'down',
 });

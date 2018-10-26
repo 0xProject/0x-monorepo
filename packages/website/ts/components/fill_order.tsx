@@ -203,7 +203,10 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             .tokenAddress;
         const makerToken = this.props.tokenByAddress[makerTokenAddress];
         const makerAssetToken = {
-            amount: orderMakerAmount.times(takerAssetToken.amount).div(orderTakerAmount),
+            amount: orderMakerAmount
+                .times(takerAssetToken.amount)
+                .div(orderTakerAmount)
+                .floor(),
             symbol: makerToken.symbol,
         };
         const fillAssetToken = {

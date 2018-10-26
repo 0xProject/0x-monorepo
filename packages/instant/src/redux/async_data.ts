@@ -3,10 +3,10 @@ import { coinbaseApi } from '../util/coinbase_api';
 
 import { ActionTypes } from './actions';
 
-import { store } from './store';
+import { Store } from './store';
 
 export const asyncData = {
-    fetchAndDispatchToStore: async () => {
+    fetchAndDispatchToStore: async (store: Store) => {
         let ethUsdPrice = BIG_NUMBER_ZERO;
         try {
             ethUsdPrice = await coinbaseApi.getEthUsdPrice();

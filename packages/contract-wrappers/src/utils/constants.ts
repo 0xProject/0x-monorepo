@@ -14,4 +14,5 @@ export const constants = {
     ZERO_AMOUNT: new BigNumber(0),
     ONE_AMOUNT: new BigNumber(1),
     ETHER_TOKEN_DECIMALS: 18,
+    USER_DENIED_SIGNATURE_PATTERN: 'User denied transaction signature',
 };
