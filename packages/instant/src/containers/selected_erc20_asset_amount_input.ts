@@ -13,6 +13,7 @@ import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { ERC20Asset, OrderProcessState, ZeroExInstantError } from '../types';
 import { getBestAddress } from '../util/address';
+import { balanceUtil } from '../util/balance';
 import { BigNumberInput } from '../util/big_number_input';
 import { errorUtil } from '../util/error';
 import { web3Wrapper } from '../util/web3_wrapper';
@@ -81,11 +82,7 @@ const updateBuyQuoteAsync = async (
 
     // set error if user doesn't have appropriate balance
     const takerAddress = await getBestAddress();
-    const balanceWei = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-    if (balanceWei < newBuyQuote.worstCaseQuoteInfo.totalEthAmount) {
-        const balanceError = new Error(ZeroExInstantError.InsufficientBalance);
-        errorUtil.errorFlasher.flashNewError(dispatch, balanceError);
-    }
+    await balanceUtil.checkSufficientBalanceAndFlashError(takerAddress, newBuyQuote, web3Wrapper, dispatch);
 };
 
 const debouncedUpdateBuyQuoteAsync = _.debounce(updateBuyQuoteAsync, 200, { trailing: true });
