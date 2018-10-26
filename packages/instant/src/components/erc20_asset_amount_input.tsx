@@ -17,6 +17,7 @@ export interface ERC20AssetAmountInputProps {
     onChange: (value?: BigNumberInput, asset?: ERC20Asset) => void;
     startingFontSizePx: number;
     fontColor?: ColorOption;
+    disabled: boolean;
 }
 
 export interface ERC20AssetAmountInputState {
@@ -26,6 +27,7 @@ export interface ERC20AssetAmountInputState {
 export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInputProps, ERC20AssetAmountInputState> {
     public static defaultProps = {
         onChange: util.boundNoop,
+        disabled: false,
     };
     constructor(props: ERC20AssetAmountInputProps) {
         super(props);
@@ -35,9 +37,10 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
     }
     public render(): React.ReactNode {
         const { asset, onChange, ...rest } = this.props;
+        const amountBorderBottom = this.props.disabled ? '' : `1px solid ${transparentWhite}`;
         return (
             <Container whiteSpace="nowrap">
-                <Container borderBottom={`1px solid ${transparentWhite}`} display="inline-block">
+                <Container borderBottom={amountBorderBottom} display="inline-block">
                     <ScalingAmountInput
                         {...rest}
                         textLengthThreshold={this._textLengthThresholdForAsset(asset)}
