@@ -1,6 +1,7 @@
 import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
-import { ObjectMap } from '@0x/types';
+import { AssetProxyId, ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 import { assetMetaDataMap } from '../data/asset_meta_data_map';
@@ -57,11 +58,19 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 selectedAssetAmount: action.data,
             };
         case ActionTypes.UPDATE_LATEST_BUY_QUOTE:
-            return {
-                ...state,
-                latestBuyQuote: action.data,
-                quoteRequestState: AsyncProcessState.SUCCESS,
-            };
+            const newBuyQuoteIfExists = action.data;
+            const shouldUpdate =
+                _.isUndefined(newBuyQuoteIfExists) || doesBuyQuoteMatchState(newBuyQuoteIfExists, state);
+            if (shouldUpdate) {
+                return {
+                    ...state,
+                    latestBuyQuote: newBuyQuoteIfExists,
+                    quoteRequestState: AsyncProcessState.SUCCESS,
+                };
+            } else {
+                return state;
+            }
+
         case ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING:
             return {
                 ...state,
@@ -120,5 +129,31 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             };
         default:
             return state;
+    }
+};
+
+const doesBuyQuoteMatchState = (buyQuote: BuyQuote, state: State): boolean => {
+    const selectedAssetIfExists = state.selectedAsset;
+    const selectedAssetAmountIfExists = state.selectedAssetAmount;
+    // if no selectedAsset or selectedAssetAmount exists on the current state, return false
+    if (_.isUndefined(selectedAssetIfExists) || _.isUndefined(selectedAssetAmountIfExists)) {
+        return false;
+    }
+    // if buyQuote's assetData does not match that of the current selected asset, return false
+    if (selectedAssetIfExists.assetData !== buyQuote.assetData) {
+        return false;
+    }
+    // if ERC20 and buyQuote's assetBuyAmount does not match selectedAssetAmount, return false
+    // if ERC721, return true
+    const selectedAssetMetaData = selectedAssetIfExists.metaData;
+    if (selectedAssetMetaData.assetProxyId === AssetProxyId.ERC20) {
+        const selectedAssetAmountBaseUnits = Web3Wrapper.toBaseUnitAmount(
+            selectedAssetAmountIfExists,
+            selectedAssetMetaData.decimals,
+        );
+        const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(buyQuote.assetBuyAmount);
+        return doesAssetAmountMatch;
+    } else {
+        return true;
     }
 };
