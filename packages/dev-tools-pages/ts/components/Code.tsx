@@ -29,6 +29,13 @@ const Button = styled(BaseButton)`
     }
 `;
 
+const Container = styled.div`
+    position: relative;
+    &:hover ${Button} {
+        opacity: 1;
+    }
+`;
+
 const Base =
     styled.div <
     CodeProps >
@@ -54,10 +61,6 @@ const Base =
 
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-
-    &:hover ${Button} {
-        opacity: 1;
-    }
 `;
 
 const StyledCodeDiff =
@@ -162,20 +165,22 @@ class Code extends React.Component<CodeProps, CodeState> {
         const Code = diff ? StyledCodeDiff : 'code';
 
         return (
-            <Base language={language} diff={diff} light={light}>
-                <StyledPre>
-                    <Code
-                        gutterLength={gutterLength}
-                        dangerouslySetInnerHTML={hlCode ? { __html: this.state.hlCode } : null}
-                    >
-                        {hlCode === undefined ? children : null}
-                    </Code>
-                </StyledPre>
+            <Container>
+                <Base language={language} diff={diff} light={light}>
+                    <StyledPre>
+                        <Code
+                            gutterLength={gutterLength}
+                            dangerouslySetInnerHTML={hlCode ? { __html: this.state.hlCode } : null}
+                        >
+                            {hlCode === undefined ? children : null}
+                        </Code>
+                    </StyledPre>
+                    {!('clipboard' in navigator) ? (
+                        <CopyInput readOnly aria-hidden="true" ref={this.code} value={children} />
+                    ) : null}
+                </Base>
                 {navigator.userAgent !== 'ReactSnap' ? <Button onClick={this.handleCopy}>Copy</Button> : null}
-                {!('clipboard' in navigator) ? (
-                    <CopyInput readOnly aria-hidden="true" ref={this.code} value={children} />
-                ) : null}
-            </Base>
+            </Container>
         );
     }
 }
