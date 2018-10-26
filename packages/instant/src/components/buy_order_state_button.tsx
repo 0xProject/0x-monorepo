@@ -1,15 +1,28 @@
+import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
 import * as React from 'react';
 
 import { Flex } from '../components/ui/flex';
+import { SecondaryButton } from '../components/secondary_button';
+import { BuyButton } from '../components/buy_button';
 
 import { PlacingOrderButton } from '../components/placing_order_button';
-import { SelectedAssetBuyButton } from '../containers/selected_asset_buy_button';
-import { SelectedAssetRetryButton } from '../containers/selected_asset_retry_button';
-import { SelectedAssetViewTransactionButton } from '../containers/selected_asset_view_transaction_button';
+import { ColorOption } from '../style/theme';
 import { OrderProcessState } from '../types';
 
+import { Button } from './ui/button';
+import { Text } from './ui/text';
+
 export interface BuyOrderStateButtonProps {
+    buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
+    assetBuyer?: AssetBuyer;
+    onViewTransaction: () => void;
+    onAwaitingSignature: (buyQuote: BuyQuote) => void;
+    onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
+    onRetry: () => void;
 }
 
 // TODO: rename to buttons
@@ -17,18 +30,34 @@ export const BuyOrderStateButton: React.StatelessComponent<BuyOrderStateButtonPr
     if (props.buyOrderProcessingState === OrderProcessState.FAILURE) {
         return (
             <Flex justify="space-between">
-                <SelectedAssetRetryButton width="48%" />
-                <SelectedAssetViewTransactionButton width="48%" />
+                <Button width="48%" onClick={props.onRetry}>
+                    <Text fontColor={ColorOption.white} fontWeight={600} fontSize="16px">
+                        Back
+                    </Text>
+                </Button>
+                <SecondaryButton width="48%" onClick={props.onViewTransaction}>
+                    Details
+                </SecondaryButton>
             </Flex>
         );
     } else if (
         props.buyOrderProcessingState === OrderProcessState.SUCCESS ||
         props.buyOrderProcessingState === OrderProcessState.PROCESSING
     ) {
-        return <SelectedAssetViewTransactionButton />;
+        return <SecondaryButton onClick={props.onViewTransaction}>View Transaction</SecondaryButton>;
     } else if (props.buyOrderProcessingState === OrderProcessState.AWAITING_SIGNATURE) {
         return <PlacingOrderButton />;
     }
 
-    return <SelectedAssetBuyButton />;
+    return (
+        <BuyButton
+            buyQuote={props.buyQuote}
+            assetBuyer={props.assetBuyer}
+            onAwaitingSignature={props.onAwaitingSignature}
+            onSignatureDenied={props.onSignatureDenied}
+            onBuyProcessing={props.onBuyProcessing}
+            onBuySuccess={props.onBuySuccess}
+            onBuyFailure={props.onBuyFailure}
+        />
+    );
 };
