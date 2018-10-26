@@ -14,7 +14,7 @@
     "scripts": {
         "build": "yarn tsc -b",
         "build:ci": "yarn build",
-        "lint": "tslint --project .",
+        "lint": "tslint --format stylish --project .",
         "test:circleci": "run-s test:coverage",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",

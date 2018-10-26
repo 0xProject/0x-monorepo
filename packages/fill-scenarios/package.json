@@ -8,7 +8,7 @@
         "build": "yarn tsc -b",
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib src/generated_contract_wrappers",
-        "lint": "tslint --project ."
+        "lint": "tslint --format stylish --project ."
     },
     "license": "Apache-2.0",
     "repository": {

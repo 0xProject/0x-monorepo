@@ -11,7 +11,7 @@
         "build": "tsc -b",
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --project .",
+        "lint": "tslint --format stylish --project .",
         "migrate:v2": "run-s build script:migrate:v2",
         "script:migrate:v2": "node ./lib/migrate.js --contracts-version 2.0.0"
     },
