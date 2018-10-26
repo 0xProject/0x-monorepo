@@ -45,7 +45,7 @@ const cards = [
         title: 'Project-centric',
         body: (
             <React.Fragment>
-                It can compile an entire project instead of only individual <InlineCode>.sol</InlineCode> files
+                It can compile an entire project instead of only individual <InlineCode alt>.sol</InlineCode> files
             </React.Fragment>
         ),
     },
