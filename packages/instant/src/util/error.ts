@@ -46,6 +46,10 @@ const humanReadableMessageForError = (error: Error, asset?: Asset): string | und
         return `${assetName} is currently unavailable`;
     }
 
+    if (error.message === AssetBuyerError.SignatureRequestDenied) {
+        return 'You denied this transaction';
+    }
+
     return undefined;
 };
 

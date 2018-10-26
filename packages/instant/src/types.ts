@@ -8,18 +8,22 @@ export enum AsyncProcessState {
     FAILURE = 'Failure',
 }
 
-interface RegularOrderState {
-    processState: AsyncProcessState.NONE | AsyncProcessState.PENDING;
+export enum OrderProcessState {
+    NONE = 'None',
+    AWAITING_SIGNATURE = 'Awaiting Signature',
+    PROCESSING = 'Processing',
+    SUCCESS = 'Success',
+    FAILURE = 'Failure',
 }
-interface SuccessfulOrderState {
-    processState: AsyncProcessState.SUCCESS;
-    txnHash: string;
+
+interface OrderStatePreTx {
+    processState: OrderProcessState.NONE | OrderProcessState.AWAITING_SIGNATURE;
 }
-interface FailureOrderState {
-    processState: AsyncProcessState.FAILURE;
-    txnHash?: string;
+interface OrderStatePostTx {
+    processState: OrderProcessState.PROCESSING | OrderProcessState.SUCCESS | OrderProcessState.FAILURE;
+    txHash: string;
 }
-export type OrderState = RegularOrderState | SuccessfulOrderState | FailureOrderState;
+export type OrderState = OrderStatePreTx | OrderStatePostTx;
 
 export enum DisplayStatus {
     Present,

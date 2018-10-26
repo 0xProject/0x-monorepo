@@ -10,7 +10,7 @@ import { Dispatch } from 'redux';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
-import { AsyncProcessState, ERC20Asset } from '../types';
+import { ERC20Asset, OrderProcessState } from '../types';
 import { errorUtil } from '../util/error';
 
 import { AssetAmountInput } from '../components/asset_amount_input';
@@ -90,7 +90,7 @@ const mapDispatchToProps = (
         // invalidate the last buy quote.
         dispatch(actions.updateLatestBuyQuote(undefined));
         // reset our buy state
-        dispatch(actions.updateBuyOrderState({ processState: AsyncProcessState.NONE }));
+        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.NONE }));
 
         if (!_.isUndefined(value) && !_.isUndefined(asset) && !_.isUndefined(assetBuyer)) {
             // even if it's debounced, give them the illusion it's loading
