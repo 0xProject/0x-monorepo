@@ -14,7 +14,7 @@ export const SecondaryButton: React.StatelessComponent<SecondaryButtonProps> = p
         <Button
             backgroundColor={ColorOption.white}
             borderColor={ColorOption.lightGrey}
-            width="100%"
+            width={props.width}
             onClick={props.onClick}
             {...buttonProps}
         >
@@ -23,4 +23,7 @@ export const SecondaryButton: React.StatelessComponent<SecondaryButtonProps> = p
             </Text>
         </Button>
     );
+};
+SecondaryButton.defaultProps = {
+    width: '100%',
 };
