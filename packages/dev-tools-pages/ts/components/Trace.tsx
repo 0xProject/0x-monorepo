@@ -32,7 +32,7 @@ function Trace(props: Props) {
 
                     <List>
                         <Item>
-                            <Copy>
+                            <Copy dark>
                                 <Gamma as="h3">No location</Gamma>
                                 <p>
                                     The error basically says "anything could have gone wrong here", which keeps you
@@ -43,7 +43,7 @@ function Trace(props: Props) {
                         </Item>
 
                         <Item>
-                            <Copy>
+                            <Copy dark>
                                 <Gamma as="h3">Time-consuming</Gamma>
                                 <p>
                                     Working with a large code-base that contains hundreds of smart contracts, finding
@@ -94,8 +94,8 @@ function Trace(props: Props) {
 
 const StyledSection =
     styled.section <
-        TraceProps >
-        `
+    TraceProps >
+    `
     max-width: 90rem;
     margin: 0 auto;
     background: linear-gradient(to right, ${colors.black} 50%, ${props => props.background} 50%);
@@ -126,8 +126,8 @@ const Wrapper = styled(Container)`
 
 const Block =
     styled.div <
-        TraceProps >
-        `
+    TraceProps >
+    `
     width: 50%;
     background: ${props => (props.background ? props.background : colors.black)};
     color: ${props => (props.background ? 'inherit' : colors.white)};
@@ -181,9 +181,14 @@ const Item = styled.li`
     }
 `;
 
-const Copy = styled.div`
+const Copy = styled.div<{dark?: boolean;}>`
     max-width: 20rem;
     margin-right: 5.875rem;
+    ${props => props.dark && `
+        p {
+            color: #ccc;
+        }
+    `}
 
     ${media.small`margin-right: 2.0625rem;`};
 `;
