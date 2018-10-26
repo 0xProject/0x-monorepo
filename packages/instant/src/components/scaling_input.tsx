@@ -27,7 +27,7 @@ export interface ScalingInputProps {
     placeholder?: string;
     maxLength?: number;
     scalingSettings: ScalingSettings;
-    disabled: boolean;
+    isDisabled: boolean;
 }
 
 export interface ScalingInputState {
@@ -50,7 +50,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         onFontSizeChange: util.boundNoop,
         maxLength: 7,
         scalingSettings: defaultScalingSettings,
-        disabled: false,
+        isDisabled: false,
     };
     public state: ScalingInputState = {
         inputWidthPxAtPhaseChange: undefined,
@@ -123,7 +123,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         }
     }
     public render(): React.ReactNode {
-        const { disabled, fontColor, onChange, placeholder, value, maxLength } = this.props;
+        const { isDisabled, fontColor, onChange, placeholder, value, maxLength } = this.props;
         const phase = ScalingInput.getPhaseFromProps(this.props);
         return (
             <Input
@@ -135,7 +135,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
                 fontSize={`${this._calculateFontSize(phase)}px`}
                 width={this._calculateWidth(phase)}
                 maxLength={maxLength}
-                disabled={disabled}
+                disabled={isDisabled}
             />
         );
     }
