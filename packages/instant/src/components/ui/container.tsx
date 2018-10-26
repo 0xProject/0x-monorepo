@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';
 
@@ -11,6 +9,7 @@ export interface ContainerProps {
     bottom?: string;
     left?: string;
     width?: string;
+    height?: string;
     maxWidth?: string;
     margin?: string;
     marginTop?: string;
@@ -27,14 +26,14 @@ export interface ContainerProps {
     backgroundColor?: ColorOption;
     hasBoxShadow?: boolean;
     zIndex?: number;
+    whiteSpace?: string;
     opacity?: number;
 }
 
-const PlainContainer: React.StatelessComponent<ContainerProps> = ({ children, className }) => (
-    <div className={className}>{children}</div>
-);
-
-export const Container = styled(PlainContainer)`
+export const Container =
+    styled.div <
+    ContainerProps >
+    `
     box-sizing: border-box;
     ${props => cssRuleIfExists(props, 'display')}
     ${props => cssRuleIfExists(props, 'position')}
@@ -43,6 +42,7 @@ export const Container = styled(PlainContainer)`
     ${props => cssRuleIfExists(props, 'bottom')}
     ${props => cssRuleIfExists(props, 'left')}
     ${props => cssRuleIfExists(props, 'width')}
+    ${props => cssRuleIfExists(props, 'height')}
     ${props => cssRuleIfExists(props, 'max-width')}
     ${props => cssRuleIfExists(props, 'margin')}
     ${props => cssRuleIfExists(props, 'margin-top')}
@@ -55,6 +55,7 @@ export const Container = styled(PlainContainer)`
     ${props => cssRuleIfExists(props, 'border-top')}
     ${props => cssRuleIfExists(props, 'border-bottom')}
     ${props => cssRuleIfExists(props, 'z-index')}
+    ${props => cssRuleIfExists(props, 'white-space')}
     ${props => cssRuleIfExists(props, 'opacity')}
     ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};

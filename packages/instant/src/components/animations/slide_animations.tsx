@@ -1,6 +1,7 @@
 import * as React from 'react';
+import { Keyframes } from 'styled-components';
 
-import { keyframes, styled } from '../../style/theme';
+import { css, keyframes, styled } from '../../style/theme';
 
 const slideKeyframeGenerator = (fromY: string, toY: string) => keyframes`
     from {
@@ -15,7 +16,7 @@ const slideKeyframeGenerator = (fromY: string, toY: string) => keyframes`
 `;
 
 export interface SlideAnimationProps {
-    keyframes: string;
+    keyframes: Keyframes;
     animationType: string;
     animationDirection?: string;
 }
@@ -24,7 +25,10 @@ export const SlideAnimation =
     styled.div <
     SlideAnimationProps >
     `
-    animation-name: ${props => props.keyframes};
+    animation-name: ${props =>
+        css`
+            ${props.keyframes};
+        `};
     animation-duration: 0.3s;
     animation-timing-function: ${props => props.animationType};
     animation-delay: 0s;
