@@ -2,7 +2,7 @@ import { AssetProxyId, ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 
 import { assetDataNetworkMapping } from '../data/asset_data_network_mapping';
-import { Asset, AssetMetaData, Network, ZeroExInstantError } from '../types';
+import { Asset, AssetMetaData, ERC20Asset, Network, ZeroExInstantError } from '../types';
 
 export const assetUtils = {
     createAssetFromAssetData: (
@@ -42,6 +42,16 @@ export const assetUtils = {
             default:
                 return defaultName;
         }
+    },
+    formattedSymbolForAsset: (asset?: ERC20Asset, defaultName: string = '???'): string => {
+        if (_.isUndefined(asset)) {
+            return defaultName;
+        }
+        const symbol = asset.metaData.symbol;
+        if (symbol.length <= 5) {
+            return symbol;
+        }
+        return `${symbol.slice(0, 3)}…`;
     },
     getAssociatedAssetDataIfExists: (assetData: string, network: Network): string | undefined => {
         const assetDataGroupIfExists = _.find(assetDataNetworkMapping, value => value[network] === assetData);

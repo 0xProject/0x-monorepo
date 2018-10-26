@@ -20,8 +20,8 @@ describe('format', () => {
         it('converts .432414 ETH in base units to the string `.4324 ETH`', () => {
             expect(format.ethBaseAmount(DECIMAL_ETH_IN_BASE_UNITS)).toBe('0.4324 ETH');
         });
-        it('converts 5.3014059295032 ETH in base units to the string `5.3014 ETH`', () => {
-            expect(format.ethBaseAmount(IRRATIONAL_ETH_IN_BASE_UNITS)).toBe('5.3014 ETH');
+        it('converts 5.3014059295032 ETH in base units to the string `5.301 ETH`', () => {
+            expect(format.ethBaseAmount(IRRATIONAL_ETH_IN_BASE_UNITS)).toBe('5.301 ETH');
         });
         it('returns defaultText param when ethBaseAmount is not defined', () => {
             const defaultText = 'defaultText';
@@ -38,8 +38,8 @@ describe('format', () => {
         it('converts BigNumer(.432414) to the string `.4324 ETH`', () => {
             expect(format.ethUnitAmount(BIG_NUMBER_DECIMAL)).toBe('0.4324 ETH');
         });
-        it('converts BigNumber(5.3014059295032) to the string `5.3014 ETH`', () => {
-            expect(format.ethUnitAmount(BIG_NUMBER_IRRATIONAL)).toBe('5.3014 ETH');
+        it('converts BigNumber(5.3014059295032) to the string `5.301 ETH`', () => {
+            expect(format.ethUnitAmount(BIG_NUMBER_IRRATIONAL)).toBe('5.301 ETH');
         });
         it('returns defaultText param when ethUnitAmount is not defined', () => {
             const defaultText = 'defaultText';
