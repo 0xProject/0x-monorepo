@@ -63,13 +63,10 @@ const Base =
     -webkit-overflow-scrolling: touch;
 `;
 
-const StyledCodeDiff =
-    styled.code <
-    any >
-    `
+const StyledCodeDiff = styled(({ gutterLength, children, ...props }: any) => <code {...props}>{children}</code>)`
     ::before {
         content: '';
-        width: calc(.75rem + ${props => props.gutterLength}ch);
+        width: calc(0.75rem + ${props => props.gutterLength}ch);
         background-color: #e2e5e6;
         position: absolute;
         top: 0;
@@ -87,8 +84,8 @@ const StyledCodeDiff =
             content: attr(data-test);
             font-size: 0.875rem;
             width: ${props => props.gutterLength};
-            padding-left: .375rem;
-            padding-right: .375rem;
+            padding-left: 0.375rem;
+            padding-right: 0.375rem;
             position: absolute;
             top: 50%;
             left: 0;
@@ -162,16 +159,18 @@ class Code extends React.Component<CodeProps, CodeState> {
         const { language, light, diff, children, gutterLength } = this.props;
         const { hlCode } = this.state;
 
-        const Code = diff ? StyledCodeDiff : 'code';
+        let Code = 'code';
+        let codeProps = {};
+        if (diff) {
+            codeProps = { gutterLength };
+            Code = StyledCodeDiff as any;
+        }
 
         return (
             <Container>
                 <Base language={language} diff={diff} light={light}>
                     <StyledPre>
-                        <Code
-                            gutterLength={gutterLength}
-                            dangerouslySetInnerHTML={hlCode ? { __html: this.state.hlCode } : null}
-                        >
+                        <Code {...codeProps} dangerouslySetInnerHTML={hlCode ? { __html: this.state.hlCode } : null}>
                             {hlCode === undefined ? children : null}
                         </Code>
                     </StyledPre>
