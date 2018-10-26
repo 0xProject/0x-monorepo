@@ -7,6 +7,7 @@ import { Dispatch } from 'redux';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { OrderProcessState, OrderState } from '../types';
+import { errorFlasher } from '../util/error_flasher';
 
 import { BuyButton } from '../components/buy_button';
 
@@ -19,7 +20,7 @@ interface ConnectedState {
 
 interface ConnectedDispatch {
     onAwaitingSignature: (buyQuote: BuyQuote) => void;
-    onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
+    onSignatureDenied: (buyQuote: BuyQuote) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
@@ -43,9 +44,10 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetB
         dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.SUCCESS, txHash })),
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) =>
         dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.FAILURE, txHash })),
-    onSignatureDenied: (buyQuote, error) => {
+    onSignatureDenied: () => {
         dispatch(actions.resetAmount());
-        dispatch(actions.setError(error));
+        const errorMessage = 'You denied this transaction';
+        errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
     },
 });
 

@@ -12,7 +12,7 @@ import { fonts } from '../style/fonts';
 import { AssetMetaData, Network } from '../types';
 import { assetUtils } from '../util/asset';
 import { BigNumberInput } from '../util/big_number_input';
-import { errorUtil } from '../util/error';
+import { errorFlasher } from '../util/error_flasher';
 import { getProvider } from '../util/provider';
 import { web3Wrapper } from '../util/web3_wrapper';
 
@@ -98,7 +98,7 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
         const networkOfProvider = await web3Wrapper.getNetworkIdAsync();
         if (network !== networkOfProvider) {
             const errorMessage = `Wrong network detected. Try switching to ${Network[network]}.`;
-            errorUtil.errorFlasher.flashNewError(this._store.dispatch, errorMessage, msToShowError);
+            errorFlasher.flashNewErrorMessage(this._store.dispatch, errorMessage, msToShowError);
         }
     };
 }

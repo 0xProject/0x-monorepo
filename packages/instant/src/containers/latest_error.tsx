@@ -5,32 +5,30 @@ import { connect } from 'react-redux';
 import { SlidingError } from '../components/sliding_error';
 import { State } from '../redux/reducer';
 import { Asset, DisplayStatus } from '../types';
-import { errorUtil } from '../util/error';
 
 export interface LatestErrorComponentProps {
     asset?: Asset;
-    latestError?: any;
+    latestErrorMessage?: string;
     slidingDirection: 'down' | 'up';
 }
 
 export const LatestErrorComponent: React.StatelessComponent<LatestErrorComponentProps> = props => {
-    if (!props.latestError) {
+    if (!props.latestErrorMessage) {
         return <div />;
     }
-    const { icon, message } = errorUtil.errorDescription(props.latestError, props.asset);
-    return <SlidingError direction={props.slidingDirection} icon={icon} message={message} />;
+    return <SlidingError direction={props.slidingDirection} icon="😢" message={props.latestErrorMessage} />;
 };
 
 interface ConnectedState {
     asset?: Asset;
-    latestError?: any;
+    latestErrorMessage?: string;
     slidingDirection: 'down' | 'up';
 }
 export interface LatestErrorProps {}
 const mapStateToProps = (state: State, _ownProps: LatestErrorProps): ConnectedState => ({
     asset: state.selectedAsset,
-    latestError: state.latestError,
-    slidingDirection: state.latestErrorDisplay === DisplayStatus.Present ? 'up' : 'down',
+    latestErrorMessage: state.latestErrorMessage,
+    slidingDirection: state.latestErrorDisplayStatus === DisplayStatus.Present ? 'up' : 'down',
 });
 
 export const LatestError = connect(mapStateToProps)(LatestErrorComponent);
