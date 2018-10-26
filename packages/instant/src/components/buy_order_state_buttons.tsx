@@ -1,9 +1,9 @@
 import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
 import * as React from 'react';
 
-import { Flex } from '../components/ui/flex';
-import { SecondaryButton } from '../components/secondary_button';
 import { BuyButton } from '../components/buy_button';
+import { SecondaryButton } from '../components/secondary_button';
+import { Flex } from '../components/ui/flex';
 
 import { PlacingOrderButton } from '../components/placing_order_button';
 import { ColorOption } from '../style/theme';
