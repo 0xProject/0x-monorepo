@@ -14,6 +14,9 @@ const StyledMain =
             ? `
         background-color: #000;
         color: #fff;
+        p:not([class]) {
+            color: #CCC;
+        }
     `
             : ''};
 `;
