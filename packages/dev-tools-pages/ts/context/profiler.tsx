@@ -9,6 +9,8 @@ export default {
     colors: {
         main: '#FF7144',
         secondary: '#FED7CB',
+        secondary_alt: '#FECEBE',
         type: '#EB8666',
+        type_alt: '#D16745',
     },
 };

@@ -24,7 +24,7 @@ const Button =
   padding: ${props => (props.large ? '1.125rem 2.375rem' : '.5625rem 1.25rem')};
   display: inline-block;
   :hover, :focus {
-    color: ${props => props.colors.main};
+    background-color: ${props => props.colors.secondary_alt};
   } 
   ${props =>
       props.large &&

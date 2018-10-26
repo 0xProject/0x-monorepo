@@ -39,7 +39,7 @@ const Root =
 
         &[aria-selected="false"]:focus,
         &[aria-selected="false"]:hover {
-            color: ${props => props.colors.main};
+            background-color: ${props => props.colors.secondary_alt};
             cursor: pointer;
         }
     }

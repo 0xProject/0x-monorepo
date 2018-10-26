@@ -59,7 +59,7 @@ const BaseStyles = createGlobalStyle`
         text-decoration: none; 
 
         &:hover {
-            text-decoration: underline;
+            color: ${(props: any) => props.colors.type_alt};
         }
     }
     
