@@ -7,17 +7,15 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
+import { ERC20AssetAmountInput } from '../components/erc20_asset_amount_input';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
+import { ERC20Asset, OrderProcessState, ZeroExInstantError } from '../types';
 import { getBestAddress } from '../util/address';
 import { BigNumberInput } from '../util/big_number_input';
 import { errorUtil } from '../util/error';
 import { web3Wrapper } from '../util/web3_wrapper';
-
-import { ERC20AssetAmountInput } from '../components/erc20_asset_amount_input';
-
-import { ERC20Asset, OrderProcessState, ZeroExInstantError } from '../types';
 
 export interface SelectedERC20AssetAmountInputProps {
     fontColor?: ColorOption;
