@@ -30,7 +30,7 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
                 'remainingTakerAssetAmount',
                 order.takerAssetAmount,
             );
-            const remainingFillableMakerAssetAmount = orderUtils.calculateRemainingMakerAssetAmount(
+            const remainingFillableMakerAssetAmount = orderUtils.getRemainingMakerAmount(
                 order,
                 remainingFillableTakerAssetAmount,
             );
