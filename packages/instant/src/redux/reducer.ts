@@ -143,12 +143,17 @@ const doesBuyQuoteMatchState = (buyQuote: BuyQuote, state: State): boolean => {
     if (selectedAssetIfExists.assetData !== buyQuote.assetData) {
         return false;
     }
-    // if buyQuote's assetBuyAmount does not match selectedAssetAmount, return false
+    // if ERC20 and buyQuote's assetBuyAmount does not match selectedAssetAmount, return false
+    // if ERC721, return true
     const selectedAssetMetaData = selectedAssetIfExists.metaData;
-    const selectedAssetAmountBaseUnits =
-        selectedAssetMetaData.assetProxyId === AssetProxyId.ERC20
-            ? Web3Wrapper.toBaseUnitAmount(selectedAssetAmountIfExists, selectedAssetMetaData.decimals)
-            : new BigNumber(1);
-    const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(buyQuote.assetBuyAmount);
-    return doesAssetAmountMatch;
+    if (selectedAssetMetaData.assetProxyId === AssetProxyId.ERC20) {
+        const selectedAssetAmountBaseUnits = Web3Wrapper.toBaseUnitAmount(
+            selectedAssetAmountIfExists,
+            selectedAssetMetaData.decimals,
+        );
+        const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(buyQuote.assetBuyAmount);
+        return doesAssetAmountMatch;
+    } else {
+        return true;
+    }
 };
