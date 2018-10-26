@@ -157,6 +157,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                     >
                         <Container
                             borderBottom={this.state.isSidebarScrolling ? `1px solid ${colors.grey300}` : 'none'}
+                            paddingBottom="2px"
                         >
                             <Container paddingTop="30px" paddingLeft="10px" paddingBottom="8px">
                                 <DocsLogo height={36} />
