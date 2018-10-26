@@ -4,24 +4,24 @@ import * as _ from 'lodash';
 /**
  *  A BigNumber extension that is more flexible about decimal strings.
  *  Such as allowing:
- *  new BigNumberInput(0.) => 0
- *  new BigNumberInput(1.) => 1
- *  new BigNumberInput(1..) => still throws
+ *  new BigNumberInput('0.') => 0
+ *  new BigNumberInput('1.') => 1
+ *  new BigNumberInput('1..') => still throws
  */
 export class BigNumberInput extends BigNumber {
-    private readonly _hasDecimalPeriod: boolean;
+    private readonly _isEndingWithDecimal: boolean;
     constructor(bigNumberString: string) {
         const hasDecimalPeriod = _.endsWith(bigNumberString, '.');
         let internalString = bigNumberString;
         if (hasDecimalPeriod) {
-            internalString = bigNumberString.slice(0, bigNumberString.length - 1);
+            internalString = bigNumberString.slice(0, -1);
         }
         super(internalString);
-        this._hasDecimalPeriod = hasDecimalPeriod;
+        this._isEndingWithDecimal = hasDecimalPeriod;
     }
-    public toString(): string {
+    public toDisplayString(): string {
         const internalString = super.toString();
-        if (this._hasDecimalPeriod) {
+        if (this._isEndingWithDecimal) {
             return `${internalString}.`;
         }
         return internalString;

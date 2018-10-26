@@ -28,4 +28,6 @@ export const theme: Theme = {
     darkOrange: '#F2994C',
 };
 
+export const transparentWhite = 'rgba(255,255,255,0.3)';
+
 export { styled, css, keyframes, ThemeProvider };

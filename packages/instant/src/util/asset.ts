@@ -51,7 +51,7 @@ export const assetUtils = {
         if (symbol.length <= 5) {
             return symbol;
         }
-        return `${symbol.slice(0, 3)}...`;
+        return `${symbol.slice(0, 3)}…`;
     },
     getAssociatedAssetDataIfExists: (assetData: string, network: Network): string | undefined => {
         const assetDataGroupIfExists = _.find(assetDataNetworkMapping, value => value[network] === assetData);

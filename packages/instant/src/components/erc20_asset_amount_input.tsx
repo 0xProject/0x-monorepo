@@ -1,32 +1,33 @@
-import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { ColorOption } from '../style/theme';
+import { ColorOption, transparentWhite } from '../style/theme';
 import { ERC20Asset } from '../types';
 import { assetUtils } from '../util/asset';
+import { BigNumberInput } from '../util/big_number_input';
 import { util } from '../util/util';
 
 import { ScalingAmountInput } from './scaling_amount_input';
 import { Container, Text } from './ui';
 
 // Asset amounts only apply to ERC20 assets
-export interface AssetAmountInputProps {
+export interface ERC20AssetAmountInputProps {
     asset?: ERC20Asset;
-    onChange: (value?: BigNumber, asset?: ERC20Asset) => void;
+    value?: BigNumberInput;
+    onChange: (value?: BigNumberInput, asset?: ERC20Asset) => void;
     startingFontSizePx: number;
     fontColor?: ColorOption;
 }
 
-export interface AssetAmountInputState {
+export interface ERC20AssetAmountInputState {
     currentFontSizePx: number;
 }
 
-export class AssetAmountInput extends React.Component<AssetAmountInputProps, AssetAmountInputState> {
+export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInputProps, ERC20AssetAmountInputState> {
     public static defaultProps = {
         onChange: util.boundNoop,
     };
-    constructor(props: AssetAmountInputProps) {
+    constructor(props: ERC20AssetAmountInputProps) {
         super(props);
         this.state = {
             currentFontSizePx: props.startingFontSizePx,
@@ -36,7 +37,7 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps, Ass
         const { asset, onChange, ...rest } = this.props;
         return (
             <Container whiteSpace="nowrap">
-                <Container borderBottom="1px solid rgba(255,255,255,0.3)" display="inline-block">
+                <Container borderBottom={`1px solid ${transparentWhite}`} display="inline-block">
                     <ScalingAmountInput
                         {...rest}
                         textLengthThreshold={this._textLengthThresholdForAsset(asset)}
@@ -57,7 +58,7 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps, Ass
             </Container>
         );
     }
-    private readonly _handleChange = (value?: BigNumber): void => {
+    private readonly _handleChange = (value?: BigNumberInput): void => {
         this.props.onChange(value, this.props.asset);
     };
     private readonly _handleFontSizeChange = (fontSizePx: number): void => {
@@ -65,6 +66,8 @@ export class AssetAmountInput extends React.Component<AssetAmountInputProps, Ass
             currentFontSizePx: fontSizePx,
         });
     };
+    // For assets with symbols of different length,
+    // start scaling the input at different character lengths
     private readonly _textLengthThresholdForAsset = (asset?: ERC20Asset): number => {
         if (_.isUndefined(asset)) {
             return 3;

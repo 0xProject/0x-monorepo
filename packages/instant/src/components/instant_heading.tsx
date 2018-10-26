@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { SelectedAssetAmountInput } from '../containers/selected_asset_amount_input';
+import { SelectedERC20AssetAmountInput } from '../containers/selected_erc20_asset_amount_input';
 import { ColorOption } from '../style/theme';
 import { AsyncProcessState, OrderState } from '../types';
 import { format } from '../util/format';
@@ -48,7 +48,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                 </Container>
                 <Flex direction="row" justify="space-between">
                     <Flex height="60px">
-                        <SelectedAssetAmountInput startingFontSizePx={38} />
+                        <SelectedERC20AssetAmountInput startingFontSizePx={38} />
                     </Flex>
                     <Flex direction="column" justify="space-between">
                         {iconOrAmounts}

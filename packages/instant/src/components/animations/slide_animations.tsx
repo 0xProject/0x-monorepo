@@ -21,7 +21,10 @@ export interface SlideAnimationProps {
     animationDirection?: string;
 }
 
-export const SlideAnimation = styled<SlideAnimationProps, 'div'>('div')`
+export const SlideAnimation =
+    styled.div <
+    SlideAnimationProps >
+    `
     animation-name: ${props =>
         css`
             ${props.keyframes};
