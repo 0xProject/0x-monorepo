@@ -10,10 +10,14 @@ import { Dispatch } from 'redux';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
-import { ERC20Asset, OrderProcessState } from '../types';
+import { ERC20Asset, OrderProcessState, ZeroExInstantError } from '../types';
+import { getBestAddress } from '../util/address';
 import { errorUtil } from '../util/error';
+import { web3Wrapper } from '../util/web3_wrapper';
 
 import { AssetAmountInput } from '../components/asset_amount_input';
+
+import { ETH_DECIMALS } from '../constants';
 
 export interface SelectedAssetAmountInputProps {
     fontColor?: ColorOption;
@@ -76,6 +80,14 @@ const updateBuyQuoteAsync = async (
     errorUtil.errorFlasher.clearError(dispatch);
     // invalidate the last buy quote.
     dispatch(actions.updateLatestBuyQuote(newBuyQuote));
+
+    // set error if user doesn't have appropriate balance
+    const takerAddress = await getBestAddress();
+    const balanceWei = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+    if (balanceWei < newBuyQuote.worstCaseQuoteInfo.totalEthAmount) {
+        const balanceError = new Error(ZeroExInstantError.InsufficientBalance);
+        errorUtil.errorFlasher.flashNewError(dispatch, balanceError);
+    }
 };
 
 const debouncedUpdateBuyQuoteAsync = _.debounce(updateBuyQuoteAsync, 200, { trailing: true });

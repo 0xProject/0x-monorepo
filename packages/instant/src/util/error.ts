@@ -2,7 +2,7 @@ import { AssetBuyerError } from '@0x/asset-buyer';
 import { Dispatch } from 'redux';
 
 import { Action, actions } from '../redux/actions';
-import { Asset } from '../types';
+import { Asset, ZeroExInstantError } from '../types';
 
 import { assetUtils } from './asset';
 
@@ -48,6 +48,9 @@ const humanReadableMessageForError = (error: Error, asset?: Asset): string | und
 
     if (error.message === AssetBuyerError.SignatureRequestDenied) {
         return 'You denied this transaction';
+    }
+    if (error.message === ZeroExInstantError.InsufficientBalance) {
+        return "You don't have enough ETH";
     }
 
     return undefined;

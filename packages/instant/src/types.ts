@@ -72,4 +72,5 @@ export enum Network {
 
 export enum ZeroExInstantError {
     AssetMetaDataNotAvailable = 'ASSET_META_DATA_NOT_AVAILABLE',
+    InsufficientBalance = 'INSUFFICIENT_BALANCE',
 }
