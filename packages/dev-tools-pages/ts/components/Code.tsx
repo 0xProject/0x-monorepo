@@ -52,7 +52,7 @@ const Base =
         padding: 1.5rem;
     `}
 
-    overflow-y: scroll;
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 
     &:hover ${Button} {
