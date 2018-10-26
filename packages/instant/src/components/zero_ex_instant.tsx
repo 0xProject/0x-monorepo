@@ -31,17 +31,17 @@ export interface ZeroExInstantRequiredProps {
 export interface ZeroExInstantOptionalProps {
     defaultAssetBuyAmount?: number;
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
-    network: Network;
+    networkId: Network;
 }
 
 export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
     private readonly _store: Store;
     private static _mergeInitialStateWithProps(props: ZeroExInstantProps, state: State = INITIAL_STATE): State {
-        const network = props.network || state.network;
+        const networkId = props.networkId || state.network;
         // TODO: Provider needs to not be hard-coded to injected web3.
         const provider = getProvider();
         const assetBuyerOptions = {
-            networkId: network,
+            networkId,
         };
         let assetBuyer;
         if (_.isString(props.liquiditySource)) {
@@ -60,8 +60,8 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
         const storeStateFromProps: State = {
             ...state,
             assetBuyer,
-            network,
-            selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap, network),
+            network: networkId,
+            selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap, networkId),
             selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
                 ? state.selectedAssetAmount
                 : new BigNumber(props.defaultAssetBuyAmount),

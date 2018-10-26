@@ -62,7 +62,7 @@
         const renderOptionsOverrides = {
             liquiditySource: liquiditySourceOverride === 'provided' ? [providedOrder] : liquiditySourceOverride,
             assetData: queryParams.getQueryParamValue('assetData'),
-            network: +queryParams.getQueryParamValue('network') || undefined,
+            networkId: +queryParams.getQueryParamValue('networkId') || undefined,
             defaultAssetBuyAmount: +queryParams.getQueryParamValue('defaultAssetBuyAmount') || undefined,
         }
         const renderOptions = Object.assign({}, renderOptionsDefaults, removeUndefined(renderOptionsOverrides));
