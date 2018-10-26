@@ -7,7 +7,7 @@ Read the [documentation](https://0x.readthedocs.io/projects/order-utils/en/lates
 ## Installing
 
 ```bash
-pip install 0x-order-utils`
+pip install 0x-order-utils
 ```
 
 ## Contributing
