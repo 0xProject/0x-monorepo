@@ -25,15 +25,13 @@ function Footer(props: Props) {
                     <List>
                         {tools.map(({ title, subtitle, icon }) => (
                             <ListItem key={title}>
-                                <Icon as={icon} />
-                                <div>
-                                    <Beta>
-                                        <StyledLink colors={colors} href="#">
-                                            {title}
-                                        </StyledLink>
-                                    </Beta>
-                                    <p>{subtitle}</p>
-                                </div>
+                                <ListLink hoverColor={colors.dark} href="#">
+                                    <Icon as={icon} />
+                                    <div>
+                                        <Beta>{title}</Beta>
+                                        <p>{subtitle}</p>
+                                    </div>
+                                </ListLink>
                             </ListItem>
                         ))}
                     </List>
@@ -89,15 +87,14 @@ const Media = styled.div`
 `;
 
 const List = styled.ul`
-    display: flex;
-    width: 66.693548387%;
-    flex-wrap: wrap;
-    flex-direction: row;
+    list-style: none;
     margin: 0;
     padding: 0;
+    width: 66.693548387%;
+    display: flex;
+    flex-wrap: wrap;
 
     ${media.medium`
-    
         width: 100%; 
     `};
 
@@ -107,11 +104,8 @@ const List = styled.ul`
 `;
 
 const ListItem = styled.li`
-    display: flex;
-    align-items: center;
-    flex-basis: 50%;
     margin-bottom: 3.3125rem;
-
+    flex-basis: 50%;
     :nth-last-of-type(-n + 2) {
         margin-bottom: 0;
 
@@ -126,18 +120,17 @@ const ListItem = styled.li`
     `};
 `;
 
+const ListLink = styled.a<{hoverColor: string;}>`
+    display: flex;
+    align-items: center;
+    :hover {
+        color: ${props => props.hoverColor};
+    }
+`;
+
 const Small = styled.small`
     font-size: 1em;
     max-width: 37.5rem;
-`;
-
-const StyledLink =
-    styled.a <
-    { colors: any } >
-    `
-    :hover {
-        color: ${props => props.colors.main};
-    }
 `;
 
 export default withContext(Footer);
