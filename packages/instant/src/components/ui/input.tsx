@@ -12,11 +12,10 @@ export interface InputProps {
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const PlainInput: React.StatelessComponent<InputProps> = ({ value, className, placeholder, onChange }) => (
-    <input className={className} value={value} onChange={onChange} placeholder={placeholder} />
-);
-
-export const Input = styled(PlainInput)`
+export const Input =
+    styled.input <
+    InputProps >
+    `
     font-size: ${props => props.fontSize};
     width: ${props => props.width};
     padding: 0.1em 0em;

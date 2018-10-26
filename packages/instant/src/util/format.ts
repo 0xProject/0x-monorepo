@@ -24,7 +24,7 @@ export const format = {
         if (_.isUndefined(ethUnitAmount)) {
             return defaultText;
         }
-        const roundedAmount = ethUnitAmount.round(decimalPlaces);
+        const roundedAmount = ethUnitAmount.round(decimalPlaces).toDigits(decimalPlaces);
         return `${roundedAmount} ETH`;
     },
     ethBaseAmountInUsd: (

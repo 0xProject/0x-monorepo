@@ -10,39 +10,39 @@ import { Dispatch } from 'redux';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
-import { ERC20Asset, OrderProcessState, ZeroExInstantError } from '../types';
 import { getBestAddress } from '../util/address';
+import { BigNumberInput } from '../util/big_number_input';
 import { errorUtil } from '../util/error';
 import { web3Wrapper } from '../util/web3_wrapper';
 
-import { AssetAmountInput } from '../components/asset_amount_input';
+import { ERC20AssetAmountInput } from '../components/erc20_asset_amount_input';
 
-import { ETH_DECIMALS } from '../constants';
+import { ERC20Asset, OrderProcessState, ZeroExInstantError } from '../types';
 
-export interface SelectedAssetAmountInputProps {
+export interface SelectedERC20AssetAmountInputProps {
     fontColor?: ColorOption;
-    fontSize?: string;
+    startingFontSizePx: number;
 }
 
 interface ConnectedState {
     assetBuyer?: AssetBuyer;
-    value?: BigNumber;
+    value?: BigNumberInput;
     asset?: ERC20Asset;
 }
 
 interface ConnectedDispatch {
-    updateBuyQuote: (assetBuyer?: AssetBuyer, value?: BigNumber, asset?: ERC20Asset) => void;
+    updateBuyQuote: (assetBuyer?: AssetBuyer, value?: BigNumberInput, asset?: ERC20Asset) => void;
 }
 
 interface ConnectedProps {
-    value?: BigNumber;
+    value?: BigNumberInput;
     asset?: ERC20Asset;
-    onChange: (value?: BigNumber, asset?: ERC20Asset) => void;
+    onChange: (value?: BigNumberInput, asset?: ERC20Asset) => void;
 }
 
-type FinalProps = ConnectedProps & SelectedAssetAmountInputProps;
+type FinalProps = ConnectedProps & SelectedERC20AssetAmountInputProps;
 
-const mapStateToProps = (state: State, _ownProps: SelectedAssetAmountInputProps): ConnectedState => {
+const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputProps): ConnectedState => {
     const selectedAsset = state.selectedAsset;
     if (_.isUndefined(selectedAsset) || selectedAsset.metaData.assetProxyId !== AssetProxyId.ERC20) {
         return {
@@ -94,7 +94,7 @@ const debouncedUpdateBuyQuoteAsync = _.debounce(updateBuyQuoteAsync, 200, { trai
 
 const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
-    _ownProps: SelectedAssetAmountInputProps,
+    _ownProps: SelectedERC20AssetAmountInputProps,
 ): ConnectedDispatch => ({
     updateBuyQuote: (assetBuyer, value, asset) => {
         // Update the input
@@ -116,7 +116,7 @@ const mapDispatchToProps = (
 const mergeProps = (
     connectedState: ConnectedState,
     connectedDispatch: ConnectedDispatch,
-    ownProps: SelectedAssetAmountInputProps,
+    ownProps: SelectedERC20AssetAmountInputProps,
 ): FinalProps => {
     return {
         ...ownProps,
@@ -128,8 +128,8 @@ const mergeProps = (
     };
 };
 
-export const SelectedAssetAmountInput: React.ComponentClass<SelectedAssetAmountInputProps> = connect(
+export const SelectedERC20AssetAmountInput: React.ComponentClass<SelectedERC20AssetAmountInputProps> = connect(
     mapStateToProps,
     mapDispatchToProps,
     mergeProps,
-)(AssetAmountInput);
+)(ERC20AssetAmountInput);
