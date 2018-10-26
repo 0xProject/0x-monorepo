@@ -79,6 +79,8 @@ const updateBuyQuoteAsync = async (
     dispatch(actions.updateLatestBuyQuote(newBuyQuote));
 };
 
+const debouncedUpdateBuyQuoteAsync = _.debounce(updateBuyQuoteAsync, 200, { trailing: true });
+
 const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
     _ownProps: SelectedERC20AssetAmountInputProps,
@@ -95,7 +97,7 @@ const mapDispatchToProps = (
             // even if it's debounced, give them the illusion it's loading
             dispatch(actions.setQuoteRequestStatePending());
             // tslint:disable-next-line:no-floating-promises
-            updateBuyQuoteAsync(assetBuyer, dispatch, asset, value);
+            debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value);
         }
     },
 });
