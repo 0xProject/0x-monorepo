@@ -33,6 +33,7 @@ const Base =
     styled.div <
     CodeProps >
     `
+    font-size: .875rem;
     color: ${props => (props.language === undefined ? colors.white : 'inherit')};
     background-color: ${props =>
         props.light ? 'rgba(255,255,255,.15)' : props.language === undefined ? colors.black : '#F1F4F5'};
