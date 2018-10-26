@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { oc } from 'ts-optchain';
 
 import { State } from '../redux/reducer';
-import { AsyncProcessState } from '../types';
+import { AsyncProcessState, OrderState } from '../types';
 
 import { InstantHeading } from '../components/instant_heading';
 
@@ -16,6 +16,7 @@ interface ConnectedState {
     totalEthBaseAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
     quoteRequestState: AsyncProcessState;
+    buyOrderState: OrderState;
 }
 
 const mapStateToProps = (state: State, _ownProps: InstantHeadingProps): ConnectedState => ({
@@ -23,6 +24,7 @@ const mapStateToProps = (state: State, _ownProps: InstantHeadingProps): Connecte
     totalEthBaseAmount: oc(state).latestBuyQuote.worstCaseQuoteInfo.totalEthAmount(),
     ethUsdPrice: state.ethUsdPrice,
     quoteRequestState: state.quoteRequestState,
+    buyOrderState: state.buyOrderState,
 });
 
 export const SelectedAssetInstantHeading: React.ComponentClass<InstantHeadingProps> = connect(mapStateToProps)(

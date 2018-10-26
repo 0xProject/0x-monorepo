@@ -29,6 +29,14 @@ const schemaErrorTransformer = (error: Error) => {
     return error;
 };
 
+const signatureRequestErrorTransformer = (error: Error) => {
+    if (_.includes(error.message, constants.USER_DENIED_SIGNATURE_PATTERN)) {
+        const errMsg = ContractWrappersError.SignatureRequestDenied;
+        return new Error(errMsg);
+    }
+    return error;
+};
+
 /**
  * Source: https://stackoverflow.com/a/29837695/3546986
  */
@@ -87,7 +95,11 @@ const syncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
 };
 
 // _.flow(f, g) = f ∘ g
-const zeroExErrorTransformer = _.flow(schemaErrorTransformer, contractCallErrorTransformer);
+const zeroExErrorTransformer = _.flow(
+    schemaErrorTransformer,
+    contractCallErrorTransformer,
+    signatureRequestErrorTransformer,
+);
 
 export const decorators = {
     asyncZeroExErrorHandler: asyncErrorHandlerFactory(zeroExErrorTransformer),

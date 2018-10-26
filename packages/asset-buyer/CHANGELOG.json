@@ -25,6 +25,10 @@
             {
                 "note": "Add missing types to public interface",
                 "pr": 1139
+            },
+            {
+                "note": "Throw `SignatureRequestDenied` and `TransactionValueTooLow` errors when executing buy",
+                "pr": 1147
             }
         ],
         "timestamp": 1539871071

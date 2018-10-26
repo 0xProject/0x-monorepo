@@ -110,10 +110,7 @@ function getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
                 traderInfo.makerZrxBalance,
             ]);
             const remainingTakerAssetAmount = order.takerAssetAmount.minus(orderInfo.orderTakerAssetFilledAmount);
-            const remainingMakerAssetAmount = orderUtils.calculateRemainingMakerAssetAmount(
-                order,
-                remainingTakerAssetAmount,
-            );
+            const remainingMakerAssetAmount = orderUtils.getRemainingMakerAmount(order, remainingTakerAssetAmount);
             const remainingFillableCalculator = new RemainingFillableCalculator(
                 order.makerFee,
                 order.makerAssetAmount,

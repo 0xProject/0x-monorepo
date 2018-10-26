@@ -2,7 +2,9 @@ import { AssetBuyerError } from '@0x/asset-buyer';
 import { Dispatch } from 'redux';
 
 import { Action, actions } from '../redux/actions';
-import { assetDataUtil } from '../util/asset_data';
+import { Asset } from '../types';
+
+import { assetUtils } from './asset';
 
 class ErrorFlasher {
     private _timeoutId?: number;
@@ -27,12 +29,12 @@ class ErrorFlasher {
     }
 }
 
-const humanReadableMessageForError = (error: Error, assetData?: string): string | undefined => {
+const humanReadableMessageForError = (error: Error, asset?: Asset): string | undefined => {
     const hasInsufficientLiquidity =
         error.message === AssetBuyerError.InsufficientAssetLiquidity ||
         error.message === AssetBuyerError.InsufficientZrxLiquidity;
     if (hasInsufficientLiquidity) {
-        const assetName = assetDataUtil.bestNameForAsset(assetData, 'of this asset');
+        const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
         return `Not enough ${assetName} available`;
     }
 
@@ -40,8 +42,12 @@ const humanReadableMessageForError = (error: Error, assetData?: string): string 
         error.message === AssetBuyerError.StandardRelayerApiError ||
         error.message.startsWith(AssetBuyerError.AssetUnavailable)
     ) {
-        const assetName = assetDataUtil.bestNameForAsset(assetData, 'This asset');
+        const assetName = assetUtils.bestNameForAsset(asset, 'This asset');
         return `${assetName} is currently unavailable`;
+    }
+
+    if (error.message === AssetBuyerError.SignatureRequestDenied) {
+        return 'You denied this transaction';
     }
 
     return undefined;
@@ -49,10 +55,10 @@ const humanReadableMessageForError = (error: Error, assetData?: string): string 
 
 export const errorUtil = {
     errorFlasher: new ErrorFlasher(),
-    errorDescription: (error?: any, assetData?: string): { icon: string; message: string } => {
+    errorDescription: (error?: any, asset?: Asset): { icon: string; message: string } => {
         let bestMessage: string | undefined;
         if (error instanceof Error) {
-            bestMessage = humanReadableMessageForError(error, assetData);
+            bestMessage = humanReadableMessageForError(error, asset);
         }
         return {
             icon: '😢',

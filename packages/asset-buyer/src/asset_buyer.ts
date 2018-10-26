@@ -1,4 +1,4 @@
-import { ContractWrappers } from '@0x/contract-wrappers';
+import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
@@ -135,9 +135,14 @@ export class AssetBuyer {
         assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
         assert.isNumber('slippagePercentage', slippagePercentage);
         const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+        const isMakerAssetZrxToken = assetData === zrxTokenAssetData;
+        // get the relevant orders for the makerAsset and fees
+        // if the requested assetData is ZRX, don't get the fee info
         const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
             this._getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
-            this._getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
+            isMakerAssetZrxToken
+                ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
+                : this._getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
             shouldForceOrderRefresh,
         ]);
         if (ordersAndFillableAmounts.orders.length === 0) {
@@ -149,6 +154,7 @@ export class AssetBuyer {
             assetBuyAmount,
             feePercentage,
             slippagePercentage,
+            isMakerAssetZrxToken,
         );
         return buyQuote;
     }
@@ -210,21 +216,32 @@ export class AssetBuyer {
                 throw new Error(AssetBuyerError.NoAddressAvailable);
             }
         }
-        // if no ethAmount is provided, default to the worst ethAmount from buyQuote
-        const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
-            orders,
-            assetBuyAmount,
-            finalTakerAddress,
-            ethAmount || worstCaseQuoteInfo.totalEthAmount,
-            feeOrders,
-            feePercentage,
-            feeRecipient,
-            {
-                gasLimit,
-                gasPrice,
-            },
-        );
-        return txHash;
+        try {
+            // if no ethAmount is provided, default to the worst ethAmount from buyQuote
+            const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+                orders,
+                assetBuyAmount,
+                finalTakerAddress,
+                ethAmount || worstCaseQuoteInfo.totalEthAmount,
+                feeOrders,
+                feePercentage,
+                feeRecipient,
+                {
+                    gasLimit,
+                    gasPrice,
+                    shouldValidate: true,
+                },
+            );
+            return txHash;
+        } catch (err) {
+            if (_.includes(err.message, ContractWrappersError.SignatureRequestDenied)) {
+                throw new Error(AssetBuyerError.SignatureRequestDenied);
+            } else if (_.includes(err.message, ForwarderWrapperError.CompleteFillFailed)) {
+                throw new Error(AssetBuyerError.TransactionValueTooLow);
+            } else {
+                throw err;
+            }
+        }
     }
     /**
      * Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders

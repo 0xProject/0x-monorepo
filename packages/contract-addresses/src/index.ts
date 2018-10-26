@@ -25,7 +25,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         etherToken: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
         exchange: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
         assetProxyOwner: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
-        forwarder: '0x7afc2d5107af94c462a194d2c21b5bdd238709d6',
+        forwarder: '0x5468a1dc173652ee28d249c271fa9933144746b1',
         orderValidator: '0x9463e518dea6810309563c81d5266c1b1d149138',
     },
     3: {
@@ -35,7 +35,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         etherToken: '0xc778417e063141139fce010982780140aa0cd5ab',
         exchange: '0x4530c0483a1633c7a1c97d2c53721caff2caaaaf',
         assetProxyOwner: '0xf5fa5b5fed2727a0e44ac67f6772e97977aa358b',
-        forwarder: '0x3983e204b12b3c02fb0638caf2cd406a62e0ead3',
+        forwarder: '0x2240dab907db71e64d3e0dba4800c83b5c502d4e',
         orderValidator: '0x90431a90516ab49af23a0530e04e8c7836e7122f',
     },
     42: {
@@ -45,7 +45,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         etherToken: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
         exchange: '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
         assetProxyOwner: '0x2c824d2882baa668e0d5202b1e7f2922278703f8',
-        forwarder: '0xd85e2fa7e7e252b27b01bf0d65c946959d2f45b8',
+        forwarder: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         orderValidator: '0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d',
     },
 };

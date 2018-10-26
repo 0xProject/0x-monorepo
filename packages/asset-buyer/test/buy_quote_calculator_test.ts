@@ -49,9 +49,9 @@ describe('buyQuoteCalculator', () => {
                 remainingFillableMakerAssetAmounts: [smallFeeOrder.makerAssetAmount],
             };
             const largeFeeOrder = orderFactory.createSignedOrderFromPartial({
-                makerAssetAmount: new BigNumber(110),
+                makerAssetAmount: new BigNumber(113),
                 takerAssetAmount: new BigNumber(200),
-                takerFee: new BigNumber(10),
+                takerFee: new BigNumber(11),
             });
             allFeeOrdersAndFillableAmounts = {
                 orders: [smallFeeOrder, largeFeeOrder],
@@ -70,6 +70,7 @@ describe('buyQuoteCalculator', () => {
                     new BigNumber(500),
                     0,
                     0,
+                    false,
                 ),
             ).to.throw(AssetBuyerError.InsufficientAssetLiquidity);
         });
@@ -82,6 +83,7 @@ describe('buyQuoteCalculator', () => {
                     new BigNumber(300),
                     0,
                     0,
+                    false,
                 ),
             ).to.throw(AssetBuyerError.InsufficientZrxLiquidity);
         });
@@ -97,6 +99,7 @@ describe('buyQuoteCalculator', () => {
                 assetBuyAmount,
                 feePercentage,
                 slippagePercentage,
+                false,
             );
             // test if orders are correct
             expect(buyQuote.orders).to.deep.equal([ordersAndFillableAmounts.orders[0]]);
@@ -134,6 +137,7 @@ describe('buyQuoteCalculator', () => {
                 assetBuyAmount,
                 feePercentage,
                 slippagePercentage,
+                false,
             );
             // test if orders are correct
             expect(buyQuote.orders).to.deep.equal(ordersAndFillableAmounts.orders);
@@ -149,9 +153,9 @@ describe('buyQuoteCalculator', () => {
             expect(buyQuote.bestCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedEthPerAssetPrice);
-            // 100 eth to fill the first order + 200 eth for fees
+            // 100 eth to fill the first order + 208 eth for fees
             const expectedWorstEthAmountForAsset = new BigNumber(100);
-            const expectedWorstEthAmountForZrxFees = new BigNumber(200);
+            const expectedWorstEthAmountForZrxFees = new BigNumber(208);
             const expectedWorstFillEthAmount = expectedWorstEthAmountForAsset.plus(expectedWorstEthAmountForZrxFees);
             const expectedWorstFeeEthAmount = expectedWorstEthAmountForAsset.mul(feePercentage);
             const expectedWorstTotalEthAmount = expectedWorstFillEthAmount.plus(expectedWorstFeeEthAmount);

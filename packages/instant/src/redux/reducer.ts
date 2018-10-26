@@ -1,16 +1,29 @@
-import { BuyQuote } from '@0x/asset-buyer';
+import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
+import { ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { zrxAssetData } from '../constants';
-import { AsyncProcessState, DisplayStatus } from '../types';
+import { assetMetaDataMap } from '../data/asset_meta_data_map';
+import {
+    Asset,
+    AssetMetaData,
+    AsyncProcessState,
+    DisplayStatus,
+    Network,
+    OrderProcessState,
+    OrderState,
+} from '../types';
+import { assetUtils } from '../util/asset';
 
 import { Action, ActionTypes } from './actions';
 
 export interface State {
-    selectedAssetData?: string;
+    network: Network;
+    assetBuyer?: AssetBuyer;
+    assetMetaDataMap: ObjectMap<AssetMetaData>;
+    selectedAsset?: Asset;
     selectedAssetAmount?: BigNumber;
-    buyOrderState: AsyncProcessState;
+    buyOrderState: OrderState;
     ethUsdPrice?: BigNumber;
     latestBuyQuote?: BuyQuote;
     quoteRequestState: AsyncProcessState;
@@ -19,10 +32,10 @@ export interface State {
 }
 
 export const INITIAL_STATE: State = {
-    // TODO: Remove hardcoded zrxAssetData
-    selectedAssetData: zrxAssetData,
+    network: Network.Mainnet,
     selectedAssetAmount: undefined,
-    buyOrderState: AsyncProcessState.NONE,
+    assetMetaDataMap,
+    buyOrderState: { processState: OrderProcessState.NONE },
     ethUsdPrice: undefined,
     latestBuyQuote: undefined,
     latestError: undefined,
@@ -60,7 +73,7 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 latestBuyQuote: undefined,
                 quoteRequestState: AsyncProcessState.FAILURE,
             };
-        case ActionTypes.UPDATE_SELECTED_ASSET_BUY_STATE:
+        case ActionTypes.UPDATE_BUY_ORDER_STATE:
             return {
                 ...state,
                 buyOrderState: action.data,
@@ -81,6 +94,28 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 ...state,
                 latestError: undefined,
                 latestErrorDisplay: DisplayStatus.Hidden,
+            };
+        case ActionTypes.UPDATE_SELECTED_ASSET:
+            const newSelectedAssetData = action.data;
+            let newSelectedAsset: Asset | undefined;
+            if (!_.isUndefined(newSelectedAssetData)) {
+                newSelectedAsset = assetUtils.createAssetFromAssetData(
+                    newSelectedAssetData,
+                    state.assetMetaDataMap,
+                    state.network,
+                );
+            }
+            return {
+                ...state,
+                selectedAsset: newSelectedAsset,
+            };
+        case ActionTypes.RESET_AMOUNT:
+            return {
+                ...state,
+                latestBuyQuote: undefined,
+                quoteRequestState: AsyncProcessState.NONE,
+                buyOrderState: { processState: OrderProcessState.NONE },
+                selectedAssetAmount: undefined,
             };
         default:
             return state;

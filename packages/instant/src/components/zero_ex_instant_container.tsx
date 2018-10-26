@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
-import { SelectedAssetBuyButton } from '../containers/selected_asset_buy_button';
+import { SelectedAssetBuyOrderStateButton } from '../containers/selected_asset_buy_order_state_button';
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 
 import { ColorOption } from '../style/theme';
@@ -26,7 +26,9 @@ export const ZeroExInstantContainer: React.StatelessComponent<ZeroExInstantConta
             <Flex direction="column" justify="flex-start">
                 <SelectedAssetInstantHeading />
                 <LatestBuyQuoteOrderDetails />
-                <SelectedAssetBuyButton />
+                <Container padding="20px" width="100%">
+                    <SelectedAssetBuyOrderStateButton />
+                </Container>
             </Flex>
         </Container>
     </Container>
