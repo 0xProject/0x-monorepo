@@ -26,8 +26,8 @@ interface ConnectedDispatch {
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
     onRetry: () => void;
 }
-export interface SelectedAssetButtonProps {}
-const mapStateToProps = (state: State, _ownProps: SelectedAssetButtonProps): ConnectedState => ({
+export interface SelectedAssetBuyOrderStateButtons {}
+const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => ({
     buyOrderProcessingState: state.buyOrderState.processState,
     assetBuyer: state.assetBuyer,
     buyQuote: state.latestBuyQuote,
@@ -50,7 +50,10 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetButtonProps): Con
     },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetButtonProps): ConnectedDispatch => ({
+const mapDispatchToProps = (
+    dispatch: Dispatch<Action>,
+    ownProps: SelectedAssetBuyOrderStateButtons,
+): ConnectedDispatch => ({
     onAwaitingSignature: (buyQuote: BuyQuote) => {
         const newOrderState: OrderState = { processState: OrderProcessState.AWAITING_SIGNATURE };
         dispatch(actions.updateBuyOrderState(newOrderState));
@@ -72,7 +75,7 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetB
     },
 });
 
-export const SelectedAssetBuyOrderStateButton: React.ComponentClass<SelectedAssetButtonProps> = connect(
+export const SelectedAssetBuyOrderStateButtons: React.ComponentClass<SelectedAssetBuyOrderStateButtons> = connect(
     mapStateToProps,
     mapDispatchToProps,
 )(BuyOrderStateButtons);
