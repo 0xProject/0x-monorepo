@@ -84,8 +84,23 @@ function Cov() {
 const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDir);`}
                             </Code>
                         </TabBlock>
-                        <TabBlock title="Truffle">Truffle</TabBlock>
-                        <TabBlock title="Custom">Custom</TabBlock>
+                        <TabBlock title="Truffle">
+                            <Code language="javascript">
+                                {`import { TruffleArtifactAdapter } from '@0x/sol-trace';
+
+const projectRoot = '.';
+const solcVersion = '0.4.24';
+const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);`}
+                            </Code>
+                        </TabBlock>
+                        <TabBlock title="Custom">
+                            <Code language="javascript">
+                                {`import { AbstractArtifactAdapter } from '@0x/sol-trace';
+
+class YourCustomArtifactsAdapter extends AbstractArtifactAdapter {...};
+const artifactAdapter = new YourCustomArtifactsAdapter(...);`}
+                            </Code>
+                        </TabBlock>
                     </Tabs>
                     <p>
                         Now that we have an <InlineCode>artifactAdapter</InlineCode>, we can create a{' '}
@@ -93,7 +108,7 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
                     </p>
 
                     <Breakout>
-                        <Code language="js">
+                        <Code language="javascript">
                             {`import { ProviderEngine, RpcSubprovider } from 'web3-provider-engine';
 import { RevertTraceSubprovider } from '@0x/sol-cov';
 
