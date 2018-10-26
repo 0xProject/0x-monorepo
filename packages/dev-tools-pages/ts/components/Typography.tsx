@@ -21,7 +21,7 @@ const Gamma = styled.h4`
 
 const Lead = styled.p`
     font-size: 1.25rem;
-
+    line-height: 1.6;
     ${media.small`font-size: 1rem;`};
 `;
 
