@@ -43,6 +43,8 @@ const StyledHeader = styled.header`
 `;
 
 const LogoMark = styled.div`
+    position: relative;
+    height: 1.75rem;
     display: flex;
     align-items: center;
 `;
@@ -50,12 +52,15 @@ const LogoMark = styled.div`
 const StyledLogo = styled.div`
     color: ${props => props.color}
     width: 1.75rem;
-    height: 1.75rem;
+    height: 100%;
 `;
 
 const Title = styled.h1`
     font-size: 1.5rem;
-    margin: 0;
+    line-height: 1;
+    white-space: nowrap;
+    margin-top: 2px;
+    margin-bottom: 0;
     margin-left: 0.8125rem;
 
     ${media.small`font-size: 1.25rem;`};
