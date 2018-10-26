@@ -66,8 +66,7 @@ function Compiler() {
 
                 <ContentBlock title="Production">
                     <p>
-                        Sol compiler uses solidity standard JSON output format for the artifacts. This way, you can
-                        define which parts of the artifact you need.
+                    Sol compiler uses solidity standard JSON output format for the artifacts. This way, you can define which parts of the artifact you need.
                     </p>
                     <Breakout>
                         <Code light language="json">
@@ -84,6 +83,20 @@ function Compiler() {
 }`}
                         </Code>
                     </Breakout>
+                    <Breakout>
+                        <Code light language="json">
+                            {`{
+    ...
+    "compilerOutput": {
+        "abi": [...],
+    },
+    ...
+}`}
+                        </Code>
+                    </Breakout>
+                    </ContentBlock>
+                    <ContentBlock title="Development">
+                    <p>Sometimes you need to use some debuggers or other dev tools and you’ll need more info in the artifact.</p>
                     <Breakout>
                         <Code light language="json">
                             {`{
@@ -105,6 +118,7 @@ function Compiler() {
 }`}
                         </Code>
                     </Breakout>
+
                     <Breakout>
                         <Code light language="json">
                             {`{
