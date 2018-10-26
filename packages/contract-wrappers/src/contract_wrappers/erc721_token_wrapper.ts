@@ -18,11 +18,10 @@ import {
 } from '../types';
 import { assert } from '../utils/assert';
 import { constants } from '../utils/constants';
+import { utils } from '../utils/utils';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ERC721ProxyWrapper } from './erc721_proxy_wrapper';
-
-const removeUndefinedProperties = _.pickBy;
 
 /**
  * This class includes all the functionality related to interacting with ERC721 token contracts.
@@ -31,8 +30,8 @@ const removeUndefinedProperties = _.pickBy;
  */
 export class ERC721TokenWrapper extends ContractWrapper {
     public abi: ContractAbi = ERC721Token.compilerOutput.abi;
-    private _tokenContractsByAddress: { [address: string]: ERC721TokenContract };
-    private _erc721ProxyWrapper: ERC721ProxyWrapper;
+    private readonly _tokenContractsByAddress: { [address: string]: ERC721TokenContract };
+    private readonly _erc721ProxyWrapper: ERC721ProxyWrapper;
     /**
      * Instantiate ERC721TokenWrapper
      * @param web3Wrapper Web3Wrapper instance to use
@@ -235,7 +234,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         const txHash = await tokenContract.setApprovalForAll.sendTransactionAsync(
             normalizedOperatorAddress,
             isApproved,
-            removeUndefinedProperties({
+            utils.removeUndefinedProperties({
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
                 from: normalizedOwnerAddress,
@@ -295,7 +294,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         const txHash = await tokenContract.approve.sendTransactionAsync(
             normalizedApprovedAddress,
             tokenId,
-            removeUndefinedProperties({
+            utils.removeUndefinedProperties({
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
                 from: tokenOwnerAddress,
@@ -366,7 +365,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
             ownerAddress,
             normalizedReceiverAddress,
             tokenId,
-            removeUndefinedProperties({
+            utils.removeUndefinedProperties({
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
                 from: normalizedSenderAddress,

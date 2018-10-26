@@ -46,8 +46,8 @@ export class ExchangeWrapper extends ContractWrapper {
     public address: string;
     public zrxTokenAddress: string;
     private _exchangeContractIfExists?: ExchangeContract;
-    private _erc721TokenWrapper: ERC721TokenWrapper;
-    private _erc20TokenWrapper: ERC20TokenWrapper;
+    private readonly _erc721TokenWrapper: ERC721TokenWrapper;
+    private readonly _erc20TokenWrapper: ERC20TokenWrapper;
     /**
      * Instantiate ExchangeWrapper
      * @param web3Wrapper Web3Wrapper instance to use.

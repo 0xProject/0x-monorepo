@@ -12,7 +12,7 @@
     "scripts": {
         "build": "yarn pre_build && tsc -b",
         "build:ci": "yarn build",
-        "lint": "tslint --project .",
+        "lint": "tslint --format stylish --project .",
         "pre_build": "yarn generate_contract_wrappers",
         "clean": "shx rm -rf lib wrappers",
         "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers"

@@ -18,7 +18,7 @@
         "build": "yarn build:all",
         "build:ci": "yarn build:commonjs",
         "build:all": "run-p build:umd:prod build:commonjs",
-        "lint": "tslint --project . --exclude **/src/generated_contract_wrappers/**/*",
+        "lint": "tslint --format stylish --project .",
         "test:circleci": "run-s test:coverage",
         "rebuild_and_test": "run-s build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",

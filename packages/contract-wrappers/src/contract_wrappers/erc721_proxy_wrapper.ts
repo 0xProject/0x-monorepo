@@ -34,6 +34,9 @@ export class ERC721ProxyWrapper extends ContractWrapper {
      */
     public async getProxyIdAsync(): Promise<AssetProxyId> {
         const ERC721ProxyContractInstance = await this._getERC721ProxyContract();
+        // Note(albrow): Below is a TSLint false positive. Code won't compile if
+        // you remove the type assertion.
+        /* tslint:disable-next-line:no-unnecessary-type-assertion */
         const proxyId = (await ERC721ProxyContractInstance.getProxyId.callAsync()) as AssetProxyId;
         return proxyId;
     }
