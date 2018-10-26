@@ -5,6 +5,7 @@ import * as React from 'react';
 import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
 import { getBestAddress } from '../util/address';
+import { balanceUtil } from '../util/balance';
 import { util } from '../util/util';
 import { web3Wrapper } from '../util/web3_wrapper';
 
@@ -18,6 +19,7 @@ export interface BuyButtonProps {
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
+    validateWalletBeforeBuy: (buyQuote: BuyQuote, takerAddress: string | undefined) => Promise<boolean>;
 }
 
 export class BuyButton extends React.Component<BuyButtonProps> {
@@ -43,10 +45,15 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             return;
         }
 
+        const takerAddress = await getBestAddress();
+        const validWallet = await this.props.validateWalletBeforeBuy(buyQuote, takerAddress);
+        if (!validWallet) {
+            return;
+        }
+
         let txHash: string | undefined;
         this.props.onAwaitingSignature(buyQuote);
         try {
-            const takerAddress = await getBestAddress();
             txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, { takerAddress });
         } catch (e) {
             if (e instanceof Error && e.message === AssetBuyerError.SignatureRequestDenied) {

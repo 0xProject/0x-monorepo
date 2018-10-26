@@ -23,6 +23,7 @@ export interface BuyOrderStateButtonProps {
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
     onRetry: () => void;
+    validateWalletBeforeBuy: (buyQuote: BuyQuote, takerAddress: string | undefined) => Promise<boolean>;
 }
 
 // TODO: rename to buttons
@@ -58,6 +59,7 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
             onBuyProcessing={props.onBuyProcessing}
             onBuySuccess={props.onBuySuccess}
             onBuyFailure={props.onBuyFailure}
+            validateWalletBeforeBuy={props.validateWalletBeforeBuy}
         />
     );
 };
