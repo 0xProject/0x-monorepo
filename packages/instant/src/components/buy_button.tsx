@@ -19,7 +19,7 @@ export interface BuyButtonProps {
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
-    validateWalletBeforeBuy: (buyQuote: BuyQuote, takerAddress: string | undefined) => Promise<boolean>;
+    validateWalletBeforeBuy: (buyQuote: BuyQuote, takerAddress?: string) => Promise<boolean>;
 }
 
 export class BuyButton extends React.Component<BuyButtonProps> {
