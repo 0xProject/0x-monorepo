@@ -25,6 +25,7 @@ interface ConnectedState {
     assetBuyer?: AssetBuyer;
     value?: BigNumberInput;
     asset?: ERC20Asset;
+    isDisabled: boolean;
 }
 
 interface ConnectedDispatch {
@@ -35,21 +36,29 @@ interface ConnectedProps {
     value?: BigNumberInput;
     asset?: ERC20Asset;
     onChange: (value?: BigNumberInput, asset?: ERC20Asset) => void;
+    isDisabled: boolean;
 }
 
 type FinalProps = ConnectedProps & SelectedERC20AssetAmountInputProps;
 
 const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputProps): ConnectedState => {
+    const processState = state.buyOrderState.processState;
+    const isEnabled = processState === OrderProcessState.NONE || processState === OrderProcessState.FAILURE;
+    const isDisabled = !isEnabled;
+
     const selectedAsset = state.selectedAsset;
     if (_.isUndefined(selectedAsset) || selectedAsset.metaData.assetProxyId !== AssetProxyId.ERC20) {
         return {
             value: state.selectedAssetAmount,
+            isDisabled,
         };
     }
+
     return {
         assetBuyer: state.assetBuyer,
         value: state.selectedAssetAmount,
         asset: selectedAsset as ERC20Asset,
+        isDisabled,
     };
 };
 
@@ -114,6 +123,7 @@ const mergeProps = (
         onChange: (value, asset) => {
             connectedDispatch.updateBuyQuote(connectedState.assetBuyer, value, asset);
         },
+        isDisabled: connectedState.isDisabled,
     };
 };
 
