@@ -8,11 +8,6 @@ export const balanceUtil = {
             return false;
         }
         const balanceWei = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-        console.log('balanceWei', balanceWei.toString());
-        console.log(
-            'buyQuote.worstCaseQuoteInfo.totalEthAmount',
-            buyQuote.worstCaseQuoteInfo.totalEthAmount.toString(),
-        );
         return balanceWei >= buyQuote.worstCaseQuoteInfo.totalEthAmount;
     },
 };

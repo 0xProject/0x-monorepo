@@ -7,9 +7,7 @@ import { Dispatch } from 'redux';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { OrderProcessState, OrderState, ZeroExInstantError } from '../types';
-import { balanceUtil } from '../util/balance';
 import { etherscanUtil } from '../util/etherscan';
-import { web3Wrapper } from '../util/web3_wrapper';
 
 import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
 import { errorUtil } from '../util/error';
