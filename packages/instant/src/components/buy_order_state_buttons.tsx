@@ -7,7 +7,7 @@ import { Flex } from '../components/ui/flex';
 
 import { PlacingOrderButton } from '../components/placing_order_button';
 import { ColorOption } from '../style/theme';
-import { OrderProcessState } from '../types';
+import { OrderProcessState, ZeroExInstantError } from '../types';
 
 import { Button } from './ui/button';
 import { Text } from './ui/text';
@@ -17,13 +17,13 @@ export interface BuyOrderStateButtonProps {
     buyOrderProcessingState: OrderProcessState;
     assetBuyer?: AssetBuyer;
     onViewTransaction: () => void;
-    onAwaitingSignature: (buyQuote: BuyQuote) => void;
+    onPendingValidation: (buyQuote: BuyQuote) => void;
     onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
     onRetry: () => void;
-    validateWalletBeforeBuy: (buyQuote: BuyQuote, takerAddress: string | undefined) => Promise<boolean>;
+    onValidationFail: (buyQuote: BuyQuote, error: ZeroExInstantError) => void;
 }
 
 // TODO: rename to buttons
@@ -46,7 +46,7 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
         props.buyOrderProcessingState === OrderProcessState.PROCESSING
     ) {
         return <SecondaryButton onClick={props.onViewTransaction}>View Transaction</SecondaryButton>;
-    } else if (props.buyOrderProcessingState === OrderProcessState.AWAITING_SIGNATURE) {
+    } else if (props.buyOrderProcessingState === OrderProcessState.VALIDATING) {
         return <PlacingOrderButton />;
     }
 
@@ -54,12 +54,12 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
         <BuyButton
             buyQuote={props.buyQuote}
             assetBuyer={props.assetBuyer}
-            onAwaitingSignature={props.onAwaitingSignature}
+            onPendingValidation={props.onPendingValidation}
             onSignatureDenied={props.onSignatureDenied}
             onBuyProcessing={props.onBuyProcessing}
             onBuySuccess={props.onBuySuccess}
             onBuyFailure={props.onBuyFailure}
-            validateWalletBeforeBuy={props.validateWalletBeforeBuy}
+            onValidationFail={props.onValidationFail}
         />
     );
 };

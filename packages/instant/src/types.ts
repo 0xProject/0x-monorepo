@@ -10,14 +10,14 @@ export enum AsyncProcessState {
 
 export enum OrderProcessState {
     NONE = 'None',
-    AWAITING_SIGNATURE = 'Awaiting Signature',
+    VALIDATING = 'Validating',
     PROCESSING = 'Processing',
     SUCCESS = 'Success',
     FAILURE = 'Failure',
 }
 
 interface OrderStatePreTx {
-    processState: OrderProcessState.NONE | OrderProcessState.AWAITING_SIGNATURE;
+    processState: OrderProcessState.NONE | OrderProcessState.VALIDATING;
 }
 interface OrderStatePostTx {
     processState: OrderProcessState.PROCESSING | OrderProcessState.SUCCESS | OrderProcessState.FAILURE;

@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
+import { ZeroExInstantError } from '../types';
 import { getBestAddress } from '../util/address';
 import { balanceUtil } from '../util/balance';
 import { util } from '../util/util';
@@ -14,12 +15,12 @@ import { Button, Text } from './ui';
 export interface BuyButtonProps {
     buyQuote?: BuyQuote;
     assetBuyer?: AssetBuyer;
-    onAwaitingSignature: (buyQuote: BuyQuote) => void;
+    onPendingValidation: (buyQuote: BuyQuote) => void;
+    onValidationFail: (buyQuote: BuyQuote, error: ZeroExInstantError) => void;
     onSignatureDenied: (buyQuote: BuyQuote, preventedError: Error) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
-    validateWalletBeforeBuy: (buyQuote: BuyQuote, takerAddress?: string) => Promise<boolean>;
 }
 
 export class BuyButton extends React.Component<BuyButtonProps> {
@@ -45,14 +46,16 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             return;
         }
 
+        this.props.onPendingValidation(buyQuote);
         const takerAddress = await getBestAddress();
-        const validWallet = await this.props.validateWalletBeforeBuy(buyQuote, takerAddress);
-        if (!validWallet) {
+
+        const hasSufficientFunds = await balanceUtil.hasSufficientFunds(takerAddress, buyQuote, web3Wrapper);
+        if (!hasSufficientFunds) {
+            this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientBalance);
             return;
         }
 
         let txHash: string | undefined;
-        this.props.onAwaitingSignature(buyQuote);
         try {
             txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, { takerAddress });
         } catch (e) {

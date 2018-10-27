@@ -79,10 +79,6 @@ const updateBuyQuoteAsync = async (
     errorUtil.errorFlasher.clearError(dispatch);
     // invalidate the last buy quote.
     dispatch(actions.updateLatestBuyQuote(newBuyQuote));
-
-    // set error if user doesn't have appropriate balance
-    const takerAddress = await getBestAddress();
-    await balanceUtil.checkInsufficientEthBalanceAndFlashError(takerAddress, newBuyQuote, web3Wrapper, dispatch);
 };
 
 const debouncedUpdateBuyQuoteAsync = _.debounce(updateBuyQuoteAsync, 200, { trailing: true });
