@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { ethDecimals } from '../constants';
+import { ETH_DECIMALS } from '../constants';
 
 export const format = {
     ethBaseAmount: (
@@ -13,7 +13,7 @@ export const format = {
         if (_.isUndefined(ethBaseAmount)) {
             return defaultText;
         }
-        const ethUnitAmount = Web3Wrapper.toUnitAmount(ethBaseAmount, ethDecimals);
+        const ethUnitAmount = Web3Wrapper.toUnitAmount(ethBaseAmount, ETH_DECIMALS);
         return format.ethUnitAmount(ethUnitAmount, decimalPlaces);
     },
     ethUnitAmount: (
@@ -36,7 +36,7 @@ export const format = {
         if (_.isUndefined(ethBaseAmount) || _.isUndefined(ethUsdPrice)) {
             return defaultText;
         }
-        const ethUnitAmount = Web3Wrapper.toUnitAmount(ethBaseAmount, ethDecimals);
+        const ethUnitAmount = Web3Wrapper.toUnitAmount(ethBaseAmount, ETH_DECIMALS);
         return format.ethUnitAmountInUsd(ethUnitAmount, ethUsdPrice, decimalPlaces);
     },
     ethUnitAmountInUsd: (

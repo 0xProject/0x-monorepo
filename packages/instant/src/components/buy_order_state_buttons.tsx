@@ -1,4 +1,4 @@
-import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
+import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import * as React from 'react';
 
 import { BuyButton } from '../components/buy_button';
@@ -7,7 +7,7 @@ import { Flex } from '../components/ui/flex';
 
 import { PlacingOrderButton } from '../components/placing_order_button';
 import { ColorOption } from '../style/theme';
-import { OrderProcessState } from '../types';
+import { OrderProcessState, ZeroExInstantError } from '../types';
 
 import { Button } from './ui/button';
 import { Text } from './ui/text';
@@ -17,7 +17,8 @@ export interface BuyOrderStateButtonProps {
     buyOrderProcessingState: OrderProcessState;
     assetBuyer?: AssetBuyer;
     onViewTransaction: () => void;
-    onAwaitingSignature: (buyQuote: BuyQuote) => void;
+    onValidationPending: (buyQuote: BuyQuote) => void;
+    onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
     onSignatureDenied: (buyQuote: BuyQuote) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
@@ -45,7 +46,7 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
         props.buyOrderProcessingState === OrderProcessState.PROCESSING
     ) {
         return <SecondaryButton onClick={props.onViewTransaction}>View Transaction</SecondaryButton>;
-    } else if (props.buyOrderProcessingState === OrderProcessState.AWAITING_SIGNATURE) {
+    } else if (props.buyOrderProcessingState === OrderProcessState.VALIDATING) {
         return <PlacingOrderButton />;
     }
 
@@ -53,7 +54,8 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
         <BuyButton
             buyQuote={props.buyQuote}
             assetBuyer={props.assetBuyer}
-            onAwaitingSignature={props.onAwaitingSignature}
+            onValidationPending={props.onValidationPending}
+            onValidationFail={props.onValidationFail}
             onSignatureDenied={props.onSignatureDenied}
             onBuyProcessing={props.onBuyProcessing}
             onBuySuccess={props.onBuySuccess}

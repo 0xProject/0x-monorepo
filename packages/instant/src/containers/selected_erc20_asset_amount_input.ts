@@ -7,6 +7,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
+import { ERC20AssetAmountInput } from '../components/erc20_asset_amount_input';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
@@ -14,8 +15,6 @@ import { ERC20Asset, OrderProcessState } from '../types';
 import { assetUtils } from '../util/asset';
 import { BigNumberInput } from '../util/big_number_input';
 import { errorFlasher } from '../util/error_flasher';
-
-import { ERC20AssetAmountInput } from '../components/erc20_asset_amount_input';
 
 export interface SelectedERC20AssetAmountInputProps {
     fontColor?: ColorOption;
