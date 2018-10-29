@@ -20,7 +20,7 @@ class TestCommandExtension(TestCommand):
         """Invoke pytest."""
         import pytest
 
-        pytest.main()
+        exit(pytest.main())
 
 
 # pylint: disable=too-many-ancestors

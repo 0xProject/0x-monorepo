@@ -17,7 +17,7 @@
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --project ."
+        "lint": "tslint --format stylish --project ."
     },
     "license": "Apache-2.0",
     "repository": {

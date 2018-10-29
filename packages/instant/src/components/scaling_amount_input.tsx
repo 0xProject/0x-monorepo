@@ -8,6 +8,7 @@ import { util } from '../util/util';
 import { ScalingInput } from './scaling_input';
 
 export interface ScalingAmountInputProps {
+    isDisabled: boolean;
     maxFontSizePx: number;
     textLengthThreshold: number;
     fontColor?: ColorOption;
@@ -20,6 +21,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
     public static defaultProps = {
         onChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,
+        isDisabled: false,
     };
     public render(): React.ReactNode {
         const { textLengthThreshold, fontColor, maxFontSizePx, value, onFontSizeChange } = this.props;
@@ -33,6 +35,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
                 value={!_.isUndefined(value) ? value.toDisplayString() : ''}
                 placeholder="0.00"
                 emptyInputWidthCh={3.5}
+                isDisabled={this.props.isDisabled}
             />
         );
     }

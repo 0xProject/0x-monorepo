@@ -10,7 +10,7 @@
         "build": "tsc -b",
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --project ."
+        "lint": "tslint --format stylish --project ."
     },
     "repository": {
         "type": "git",

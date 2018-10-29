@@ -11,7 +11,7 @@
         "build:ci": "yarn build",
         "build:dev": "../../node_modules/.bin/webpack --mode development",
         "clean": "shx rm -f public/bundle*",
-        "lint": "tslint --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
+        "lint": "tslint --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "dev": "webpack-dev-server --mode development --content-base public"
     },
     "license": "Apache-2.0",

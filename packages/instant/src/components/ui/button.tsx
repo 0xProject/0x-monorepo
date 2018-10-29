@@ -52,6 +52,7 @@ export const Button = styled(PlainButton)`
 
 Button.defaultProps = {
     backgroundColor: ColorOption.primaryColor,
+    borderColor: ColorOption.primaryColor,
     width: 'auto',
     isDisabled: false,
     padding: '1em 2.2em',

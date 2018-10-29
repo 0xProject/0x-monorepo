@@ -8,14 +8,15 @@ import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { OrderProcessState, OrderState } from '../types';
 import { errorFlasher } from '../util/error_flasher';
+import { etherscanUtil } from '../util/etherscan';
 
-import { BuyButton } from '../components/buy_button';
-
-export interface SelectedAssetBuyButtonProps {}
+import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
 
 interface ConnectedState {
-    assetBuyer?: AssetBuyer;
     buyQuote?: BuyQuote;
+    buyOrderProcessingState: OrderProcessState;
+    assetBuyer?: AssetBuyer;
+    onViewTransaction: () => void;
 }
 
 interface ConnectedDispatch {
@@ -24,14 +25,36 @@ interface ConnectedDispatch {
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
+    onRetry: () => void;
 }
-
-const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyButtonProps): ConnectedState => ({
+export interface SelectedAssetBuyOrderStateButtons {}
+const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => ({
+    buyOrderProcessingState: state.buyOrderState.processState,
     assetBuyer: state.assetBuyer,
     buyQuote: state.latestBuyQuote,
+    onViewTransaction: () => {
+        if (
+            state.assetBuyer &&
+            (state.buyOrderState.processState === OrderProcessState.PROCESSING ||
+                state.buyOrderState.processState === OrderProcessState.SUCCESS ||
+                state.buyOrderState.processState === OrderProcessState.FAILURE)
+        ) {
+            const etherscanUrl = etherscanUtil.getEtherScanTxnAddressIfExists(
+                state.buyOrderState.txHash,
+                state.assetBuyer.networkId,
+            );
+            if (etherscanUrl) {
+                window.open(etherscanUrl, '_blank');
+                return;
+            }
+        }
+    },
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetBuyButtonProps): ConnectedDispatch => ({
+const mapDispatchToProps = (
+    dispatch: Dispatch<Action>,
+    ownProps: SelectedAssetBuyOrderStateButtons,
+): ConnectedDispatch => ({
     onAwaitingSignature: (buyQuote: BuyQuote) => {
         const newOrderState: OrderState = { processState: OrderProcessState.AWAITING_SIGNATURE };
         dispatch(actions.updateBuyOrderState(newOrderState));
@@ -49,9 +72,12 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>, ownProps: SelectedAssetB
         const errorMessage = 'You denied this transaction';
         errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
     },
+    onRetry: () => {
+        dispatch(actions.resetAmount());
+    },
 });
 
-export const SelectedAssetBuyButton: React.ComponentClass<SelectedAssetBuyButtonProps> = connect(
+export const SelectedAssetBuyOrderStateButtons: React.ComponentClass<SelectedAssetBuyOrderStateButtons> = connect(
     mapStateToProps,
     mapDispatchToProps,
-)(BuyButton);
+)(BuyOrderStateButtons);
