@@ -78,7 +78,6 @@ const updateBuyQuoteAsync = async (
     try {
         newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue);
     } catch (error) {
-        console.log(error);
         dispatch(actions.setQuoteRequestStateFailure());
         let errorMessage;
         if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
