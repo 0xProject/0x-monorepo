@@ -80,6 +80,8 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchAndDispatchToStore(this._store);
         // tslint:disable-next-line:no-floating-promises
+        // warm up the gas price estimator cache just in case we can't
+        // grab the gas price estimate when submitting the transaction
         gasPriceEstimator.getFastAmountInWeiAsync();
         // tslint:disable-next-line:no-floating-promises
         this._flashErrorIfWrongNetwork();
