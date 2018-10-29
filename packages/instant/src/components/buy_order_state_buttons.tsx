@@ -19,7 +19,7 @@ export interface BuyOrderStateButtonProps {
     onViewTransaction: () => void;
     onValidationPending: (buyQuote: BuyQuote) => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
-    onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
+    onSignatureDenied: (buyQuote: BuyQuote) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;

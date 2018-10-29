@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>0x Instant Dev Environment</title>
     <script type="text/javascript" src="/main.bundle.js" charset="utf-8"></script>
+    <script type="text/javascript" src="https://unpkg.com/jsuri@1.3.1/Uri.js" charset="utf-8"></script>
+    <script type="text/javascript" src="https://unpkg.com/bignumber.js@4.1.0/bignumber.js" charset="utf-8"></script>
     <style>
         #zeroExInstantContainer {
             display: flex;
@@ -24,10 +26,47 @@
 <body>
     <div id="zeroExInstantContainer"></div>
     <script>
-        zeroExInstant.render({
+        const removeUndefined = (obj) => {
+            for (let k in obj) if (obj[k] === undefined) delete obj[k];
+            return obj;
+        }
+        BigNumber.config({
+            EXPONENTIAL_AT: 1000,
+            DECIMAL_PLACES: 78,
+        });
+        const providedOrder = {
+            senderAddress: '0x0000000000000000000000000000000000000000',
+            makerAddress: '0x14e2f1f157e7dd4057d02817436d628a37120fd1',
+            takerAddress: '0x0000000000000000000000000000000000000000',
+            makerFee: new BigNumber('0'),
+            takerFee: new BigNumber('0'),
+            makerAssetAmount: new BigNumber('100000000000000000000'),
+            takerAssetAmount: new BigNumber('10000000000000000'),
+            makerAssetData: '0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa',
+            takerAssetData: '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
+            expirationTimeSeconds: new BigNumber('1591858800'),
+            feeRecipientAddress: '0x0000000000000000000000000000000000000000',
+            salt: new BigNumber(
+                '54983920541892966634674340965984367456810207583416050222519063020710969340046',
+            ),
+            signature:
+                '0x1b949656218421c845995457303569a656764afa2b979d41dcefff0009d57ce15001490268bc7caa4269894fd83b741465fc5a7a53eda6ece17eb91fb32655d83703',
+            exchangeAddress: '0x35dd2932454449b14cee11a94d3674a936d5d7b2',
+        };
+        const queryParams = new Uri(window.location.search);
+        const renderOptionsDefaults = {
             liquiditySource: 'https://api.radarrelay.com/0x/v2/',
             assetData: '0xf47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498',
-        });
+        }
+        const liquiditySourceOverride = queryParams.getQueryParamValue('liquiditySource');
+        const renderOptionsOverrides = {
+            liquiditySource: liquiditySourceOverride === 'provided' ? [providedOrder] : liquiditySourceOverride,
+            assetData: queryParams.getQueryParamValue('assetData'),
+            networkId: +queryParams.getQueryParamValue('networkId') || undefined,
+            defaultAssetBuyAmount: +queryParams.getQueryParamValue('defaultAssetBuyAmount') || undefined,
+        }
+        const renderOptions = Object.assign({}, renderOptionsDefaults, removeUndefined(renderOptionsOverrides));
+        zeroExInstant.render(renderOptions);
     </script>
 </body>
 

@@ -4,13 +4,12 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
+import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { OrderProcessState, OrderState, ZeroExInstantError } from '../types';
+import { errorFlasher } from '../util/error_flasher';
 import { etherscanUtil } from '../util/etherscan';
-
-import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
-import { errorUtil } from '../util/error';
 
 interface ConnectedState {
     buyQuote?: BuyQuote;
@@ -21,7 +20,7 @@ interface ConnectedState {
 
 interface ConnectedDispatch {
     onValidationPending: (buyQuote: BuyQuote) => void;
-    onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
+    onSignatureDenied: (buyQuote: BuyQuote) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
@@ -68,13 +67,19 @@ const mapDispatchToProps = (
         dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.SUCCESS, txHash })),
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) =>
         dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.FAILURE, txHash })),
-    onSignatureDenied: (buyQuote, error) => {
+    onSignatureDenied: () => {
         dispatch(actions.resetAmount());
-        errorUtil.errorFlasher.flashNewError(dispatch, error);
+        const errorMessage = 'You denied this transaction';
+        errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
     },
     onValidationFail: (buyQuote, error) => {
         dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.NONE }));
-        errorUtil.errorFlasher.flashNewError(dispatch, new Error(error));
+        if (error === ZeroExInstantError.InsufficientETH) {
+            const errorMessage = "You don't have enough ETH";
+            errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
+        } else {
+            errorFlasher.flashNewErrorMessage(dispatch);
+        }
     },
     onRetry: () => {
         dispatch(actions.resetAmount());

@@ -29,8 +29,8 @@ export interface State {
     ethUsdPrice?: BigNumber;
     latestBuyQuote?: BuyQuote;
     quoteRequestState: AsyncProcessState;
-    latestError?: any;
-    latestErrorDisplay: DisplayStatus;
+    latestErrorMessage?: string;
+    latestErrorDisplayStatus: DisplayStatus;
 }
 
 export const INITIAL_STATE: State = {
@@ -40,8 +40,8 @@ export const INITIAL_STATE: State = {
     buyOrderState: { processState: OrderProcessState.NONE },
     ethUsdPrice: undefined,
     latestBuyQuote: undefined,
-    latestError: undefined,
-    latestErrorDisplay: DisplayStatus.Hidden,
+    latestErrorMessage: undefined,
+    latestErrorDisplayStatus: DisplayStatus.Hidden,
     quoteRequestState: AsyncProcessState.NONE,
 };
 
@@ -88,22 +88,22 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 ...state,
                 buyOrderState: action.data,
             };
-        case ActionTypes.SET_ERROR:
+        case ActionTypes.SET_ERROR_MESSAGE:
             return {
                 ...state,
-                latestError: action.data,
-                latestErrorDisplay: DisplayStatus.Present,
+                latestErrorMessage: action.data,
+                latestErrorDisplayStatus: DisplayStatus.Present,
             };
         case ActionTypes.HIDE_ERROR:
             return {
                 ...state,
-                latestErrorDisplay: DisplayStatus.Hidden,
+                latestErrorDisplayStatus: DisplayStatus.Hidden,
             };
         case ActionTypes.CLEAR_ERROR:
             return {
                 ...state,
-                latestError: undefined,
-                latestErrorDisplay: DisplayStatus.Hidden,
+                latestErrorMessage: undefined,
+                latestErrorDisplayStatus: DisplayStatus.Hidden,
             };
         case ActionTypes.UPDATE_SELECTED_ASSET:
             const newSelectedAssetData = action.data;

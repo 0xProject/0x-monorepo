@@ -1,4 +1,4 @@
-import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
+import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -12,8 +12,9 @@ import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { ERC20Asset, OrderProcessState } from '../types';
+import { assetUtils } from '../util/asset';
 import { BigNumberInput } from '../util/big_number_input';
-import { errorUtil } from '../util/error';
+import { errorFlasher } from '../util/error_flasher';
 
 export interface SelectedERC20AssetAmountInputProps {
     fontColor?: ColorOption;
@@ -78,11 +79,24 @@ const updateBuyQuoteAsync = async (
         newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue);
     } catch (error) {
         dispatch(actions.setQuoteRequestStateFailure());
-        errorUtil.errorFlasher.flashNewError(dispatch, error);
+        let errorMessage;
+        if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
+            const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
+            errorMessage = `Not enough ${assetName} available`;
+        } else if (error.message === AssetBuyerError.InsufficientZrxLiquidity) {
+            errorMessage = 'Not enough ZRX available';
+        } else if (
+            error.message === AssetBuyerError.StandardRelayerApiError ||
+            error.message.startsWith(AssetBuyerError.AssetUnavailable)
+        ) {
+            const assetName = assetUtils.bestNameForAsset(asset, 'This asset');
+            errorMessage = `${assetName} is currently unavailable`;
+        }
+        errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
         return;
     }
     // We have a successful new buy quote
-    errorUtil.errorFlasher.clearError(dispatch);
+    errorFlasher.clearError(dispatch);
     // invalidate the last buy quote.
     dispatch(actions.updateLatestBuyQuote(newBuyQuote));
 };

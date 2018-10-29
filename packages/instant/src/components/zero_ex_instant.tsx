@@ -1,5 +1,6 @@
 import { AssetBuyer } from '@0x/asset-buyer';
-import { ObjectMap } from '@0x/types';
+import { ObjectMap, SignedOrder } from '@0x/types';
+import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 
@@ -10,7 +11,10 @@ import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
 import { AssetMetaData, Network } from '../types';
 import { assetUtils } from '../util/asset';
+import { BigNumberInput } from '../util/big_number_input';
+import { errorFlasher } from '../util/error_flasher';
 import { getProvider } from '../util/provider';
+import { web3Wrapper } from '../util/web3_wrapper';
 
 import { ZeroExInstantContainer } from './zero_ex_instant_container';
 
@@ -21,28 +25,34 @@ export type ZeroExInstantProps = ZeroExInstantRequiredProps & Partial<ZeroExInst
 export interface ZeroExInstantRequiredProps {
     // TODO: Change API when we allow the selection of different assetDatas
     assetData: string;
-    // TODO: Allow for a function that returns orders
-    liquiditySource: string;
+    liquiditySource: string | SignedOrder[];
 }
 
 export interface ZeroExInstantOptionalProps {
+    defaultAssetBuyAmount?: number;
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
-    network: Network;
+    networkId: Network;
 }
 
 export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
     private readonly _store: Store;
     private static _mergeInitialStateWithProps(props: ZeroExInstantProps, state: State = INITIAL_STATE): State {
-        // Create merged object such that properties in props override default settings
-        const optionalPropsWithDefaults: ZeroExInstantOptionalProps = {
-            additionalAssetMetaDataMap: props.additionalAssetMetaDataMap || {},
-            network: props.network || state.network,
-        };
-        const { network } = optionalPropsWithDefaults;
+        const networkId = props.networkId || state.network;
         // TODO: Provider needs to not be hard-coded to injected web3.
-        const assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(getProvider(), props.liquiditySource, {
-            networkId: network,
-        });
+        const provider = getProvider();
+        const assetBuyerOptions = {
+            networkId,
+        };
+        let assetBuyer;
+        if (_.isString(props.liquiditySource)) {
+            assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(
+                provider,
+                props.liquiditySource,
+                assetBuyerOptions,
+            );
+        } else {
+            assetBuyer = AssetBuyer.getAssetBuyerForProvidedOrders(provider, props.liquiditySource, assetBuyerOptions);
+        }
         const completeAssetMetaDataMap = {
             ...props.additionalAssetMetaDataMap,
             ...state.assetMetaDataMap,
@@ -50,17 +60,26 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
         const storeStateFromProps: State = {
             ...state,
             assetBuyer,
-            network,
-            selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap, network),
+            network: networkId,
+            selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap, networkId),
+            selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
+                ? state.selectedAssetAmount
+                : new BigNumberInput(props.defaultAssetBuyAmount),
             assetMetaDataMap: completeAssetMetaDataMap,
         };
         return storeStateFromProps;
     }
     constructor(props: ZeroExInstantProps) {
         super(props);
-        this._store = store.create(ZeroExInstant._mergeInitialStateWithProps(this.props, INITIAL_STATE));
+        const initialAppState = ZeroExInstant._mergeInitialStateWithProps(this.props, INITIAL_STATE);
+        this._store = store.create(initialAppState);
+    }
+
+    public componentDidMount(): void {
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchAndDispatchToStore(this._store);
+        // tslint:disable-next-line:no-floating-promises
+        this._flashErrorIfWrongNetwork();
     }
 
     public render(): React.ReactNode {
@@ -72,4 +91,14 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
             </Provider>
         );
     }
+
+    private readonly _flashErrorIfWrongNetwork = async (): Promise<void> => {
+        const msToShowError = 30000; // 30 seconds
+        const network = this._store.getState().network;
+        const networkOfProvider = await web3Wrapper.getNetworkIdAsync();
+        if (network !== networkOfProvider) {
+            const errorMessage = `Wrong network detected. Try switching to ${Network[network]}.`;
+            errorFlasher.flashNewErrorMessage(this._store.dispatch, errorMessage, msToShowError);
+        }
+    };
 }

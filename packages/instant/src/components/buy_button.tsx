@@ -17,7 +17,7 @@ export interface BuyButtonProps {
     assetBuyer?: AssetBuyer;
     onValidationPending: (buyQuote: BuyQuote) => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
-    onSignatureDenied: (buyQuote: BuyQuote, preventedError: Error) => void;
+    onSignatureDenied: (buyQuote: BuyQuote) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
@@ -49,8 +49,8 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         this.props.onValidationPending(buyQuote);
         const takerAddress = await getBestAddress();
 
-        const hasSufficentEth = await balanceUtil.hasSufficentEth(takerAddress, buyQuote, web3Wrapper);
-        if (!hasSufficentEth) {
+        const hasSufficientEth = await balanceUtil.hasSufficientEth(takerAddress, buyQuote, web3Wrapper);
+        if (!hasSufficientEth) {
             this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);
             return;
         }
@@ -61,7 +61,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         } catch (e) {
             if (e instanceof Error) {
                 if (e.message === AssetBuyerError.SignatureRequestDenied) {
-                    this.props.onSignatureDenied(buyQuote, e);
+                    this.props.onSignatureDenied(buyQuote);
                     return;
                 } else if (e.message === AssetBuyerError.TransactionValueTooLow) {
                     this.props.onValidationFail(buyQuote, AssetBuyerError.TransactionValueTooLow);

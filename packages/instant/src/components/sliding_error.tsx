@@ -4,7 +4,7 @@ import { ColorOption } from '../style/theme';
 
 import { SlideDownAnimation, SlideUpAnimation } from './animations/slide_animations';
 
-import { Container, Text } from './ui';
+import { Container, Flex, Text } from './ui';
 
 export interface ErrorProps {
     icon: string;
@@ -20,12 +20,14 @@ export const Error: React.StatelessComponent<ErrorProps> = props => (
         borderRadius="6px"
         marginBottom="10px"
     >
-        <Container marginRight="5px" display="inline" top="3px" position="relative">
-            <Text fontSize="20px">{props.icon}</Text>
-        </Container>
-        <Text fontWeight="500" fontColor={ColorOption.darkOrange}>
-            {props.message}
-        </Text>
+        <Flex justify="flex-start">
+            <Container marginRight="5px" display="inline" top="3px" position="relative">
+                <Text fontSize="20px">{props.icon}</Text>
+            </Container>
+            <Text fontWeight="500" fontColor={ColorOption.darkOrange}>
+                {props.message}
+            </Text>
+        </Flex>
     </Container>
 );
 

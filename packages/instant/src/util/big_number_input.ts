@@ -10,14 +10,19 @@ import * as _ from 'lodash';
  */
 export class BigNumberInput extends BigNumber {
     private readonly _isEndingWithDecimal: boolean;
-    constructor(bigNumberString: string) {
-        const hasDecimalPeriod = _.endsWith(bigNumberString, '.');
-        let internalString = bigNumberString;
-        if (hasDecimalPeriod) {
-            internalString = bigNumberString.slice(0, -1);
+    constructor(numberOrString: string | number) {
+        if (_.isString(numberOrString)) {
+            const hasDecimalPeriod = _.endsWith(numberOrString, '.');
+            let internalString = numberOrString;
+            if (hasDecimalPeriod) {
+                internalString = numberOrString.slice(0, -1);
+            }
+            super(internalString);
+            this._isEndingWithDecimal = hasDecimalPeriod;
+        } else {
+            super(numberOrString);
+            this._isEndingWithDecimal = false;
         }
-        super(internalString);
-        this._isEndingWithDecimal = hasDecimalPeriod;
     }
     public toDisplayString(): string {
         const internalString = super.toString();
