@@ -6,6 +6,7 @@ import { withContext, Props } from './withContext';
 import { Alpha, Lead, Gamma } from './Typography';
 import Container from './Container';
 import Code from './Code';
+import Breakout from './Breakout';
 
 import ExactLocation from 'ts/icons/exact-location.svg';
 import NoLocation from 'ts/icons/no-location.svg';
@@ -28,7 +29,9 @@ function Trace(props: Props) {
                         Every time an Ethereum transaction fails, it's extremely hard to trace down the troublemaking
                         line of code. The only hint you'll get is a generic error.
                     </MainCopy>
-                    <Code light>Error: VM Exception while processing transaction: revert</Code>
+                    <Breakout>
+                        <Code light>Error: VM Exception while processing transaction: rever</Code>
+                    </Breakout>
 
                     <List>
                         <Item>
@@ -61,7 +64,8 @@ function Trace(props: Props) {
                         Sol-trace will give you full stack traces, including contract names, line numbers and code
                         snippets, every time you encounter an error.
                     </MainCopy>
-                    <Code light language="javascript">
+                    <Breakout>
+                        <Code light language="javascript">
                         {`contracts/src/2.0.0/protocol/Exchange/MixinSignatureValidator.sol:51:8
     require(
         isValidSignature(
@@ -71,7 +75,8 @@ function Trace(props: Props) {
         ),
         "INVALID_SIGNATURE"
     )`}
-                    </Code>
+                        </Code>
+                    </Breakout>
 
                     <List>
                         <Item>
@@ -110,7 +115,7 @@ const StyledSection =
     margin: 0 auto;
     background: linear-gradient(to right, ${colors.black} 50%, ${props => props.background} 50%);
     
-    ${media.small`
+    ${media.large`
         background: none
         padding-top: 0;
         padding-bottom: 0;
@@ -126,7 +131,7 @@ const Wrapper = styled(Container)`
         ${media.small`padding-bottom: 1.875rem;`};
     }
 
-    ${media.small`
+    ${media.large`
         display: block;
         width: 100%;
     `};
@@ -149,19 +154,22 @@ const Block =
         padding-left: 6.25rem;
     }
 
-    ${media.small`
-        width: 100%;
-        padding-top: 2.5rem;
-        padding-bottom: 3.4375rem;
-
+    ${media.xlarge`
         :first-of-type {
-            padding-left: 1.875rem;
-            padding-right: 1.875rem;
+            padding-right: 2.5rem;
         }
         :last-of-type {
-            padding-left: 1.875rem;
-            padding-right: 1.875rem;
+            padding-left: 2.5rem;
         }
+    `}
+    ${media.large`
+        width: 100%;
+        padding: 2.5rem;
+    `}
+
+    ${media.small`
+        padding-left: 1.875rem;
+        padding-right: 1.875rem;
     `};
 `;
 

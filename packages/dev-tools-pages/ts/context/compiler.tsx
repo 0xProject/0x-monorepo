@@ -12,6 +12,6 @@ export default {
         secondary_alt: '#C4F2FC',
         type: '#30C3E3',
         type_alt: '#16A9C9',
-        dark: '#00404E',
+        dark: '#4B818D',
     },
 };

@@ -6,40 +6,46 @@ import { withContext, Props } from './withContext';
 import Button from './Button';
 import { Beta } from './Typography';
 
-const IMAGE_WIDTH = 2560;
-const IMAGE_HEIGHT = 800;
-
 function Hero(props: Props) {
     const { subtitle, tagline, title } = props;
 
     return (
         <React.Fragment>
             <StyledHero>
-                <Subtitle>{subtitle}</Subtitle>
-                <Tagline as="p">{tagline}</Tagline>
-                <Button as="a" href="#" large>
-                    Read the Docs
-                </Button>
-            </StyledHero>
+                <HeroContainer>
+                    <Subtitle>{subtitle}</Subtitle>
+                    <Tagline as="p">{tagline}</Tagline>
+                    <Button as="a" href="#" large>
+                        Read the Docs
+                    </Button>
+                </HeroContainer>
 
-            <ImageContainer>
-                <Image src={`/images/${title}@1x.gif`} srcSet={`/images/${title}@1x.gif, /images/${title}@2x.gif 2x`} />
-            </ImageContainer>
+                <ImageContainer>
+                    <Image
+                        src={`/images/${title}@1x.gif`}
+                        srcSet={`/images/${title}@1x.gif, /images/${title}@2x.gif 2x`}
+                    />
+                </ImageContainer>
+            </StyledHero>
         </React.Fragment>
     );
 }
 
 const StyledHero = styled.section`
     text-align: center;
-    margin: 0 auto;
     padding-top: 9.375rem;
     padding-bottom: 2rem;
     padding-left: 2.5rem;
     padding-right: 2.5rem;
-    max-width: 590px;
     min-height: min-content;
     max-height: 37.5rem;
     height: 80vh;
+    position: relative;
+`;
+
+const HeroContainer = styled.div`
+    margin: 0 auto;
+    max-width: 590px;
 `;
 
 const Subtitle = styled.h2`
@@ -63,20 +69,37 @@ const Tagline = styled(Beta)`
 
 const ImageContainer = styled.div`
     width: 100%;
-    height: ${IMAGE_HEIGHT}px;
+    height: 800px;
     position: absolute;
-    top: 6.875rem;
+    top: 100%;
     left: 0;
     overflow: hidden;
+    transform: translateY(-50%);
     z-index: -1;
+    ${media.xlarge`
+        height: 533.333333334px;
+        transform: translateY(-60%);
+    `};
+    ${media.small`
+        height: 400px;
+        transform: translateY(-70%);
+    `};
 `;
 
 const Image = styled.img`
-    width: ${IMAGE_WIDTH}px;
+    width: min-content;
+    height: 100%;
     position: absolute;
     top: 0;
     left: 50%;
-    transform: translate(-50%);
+    transform: translateX(-50%);
+    object-fit: contain;
+    ${media.small`
+        height: 100%;
+        width: auto;
+        left: 0;
+        transform: translateX(-15%);
+    `};
 `;
 
 export default withContext(Hero);

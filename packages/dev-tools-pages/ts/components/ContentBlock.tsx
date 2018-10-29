@@ -45,6 +45,11 @@ const Item = styled.div`
 
 const StyledTitle = styled(Alpha)`
     color: ${props => props.color};
+    ${media.small`
+        & + div {
+            margin-top: 1.5rem;
+        }
+    `};
 `;
 
 interface ContentBlockProps extends Props {

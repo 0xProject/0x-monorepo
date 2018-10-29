@@ -4,8 +4,8 @@ import { media } from 'ts/variables';
 
 const Breakout = styled.div`
     ${media.small`
-        margin-left: -30px;
-        width: calc(100% + 60px);
+        margin-left: -2.5rem;
+        width: calc(100% + 5rem);
   `};
 `;
 

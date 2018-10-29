@@ -1,8 +1,14 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { colors } from 'ts/variables';
+import { colors, media } from 'ts/variables';
 import BaseButton from './Button';
+
+const touch = Boolean(
+    'ontouchstart' in window ||
+        (window as any).navigator.maxTouchPoints > 0 ||
+        (window as any).navigator.msMaxTouchPoints > 0,
+);
 
 interface CodeProps {
     children: React.ReactNode;
@@ -19,7 +25,7 @@ interface CodeState {
 }
 
 const Button = styled(BaseButton)`
-    opacity: 0;
+    opacity: ${touch ? '1' : '0'};
     position: absolute;
     top: 1rem;
     right: 1rem;
@@ -80,9 +86,10 @@ const StyledCodeDiff = styled(({ gutterLength, children, ...props }: any) => <co
         position: relative;
         padding-right: 1.5rem;
         padding-left: calc(2.25rem + ${props => props.gutterLength}ch);
+
         ::before {
             content: attr(data-test);
-            font-size: 0.875rem;
+
             width: ${props => props.gutterLength};
             padding-left: 0.375rem;
             padding-right: 0.375rem;

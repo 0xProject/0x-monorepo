@@ -12,8 +12,10 @@ const Main = styled.div`
     display: flex;
     justify-content: space-between;
 
-    ${media.medium`
+    ${media.large`
         padding: 2.5rem 1.875rem
+    `};
+    ${media.medium`
         display: block;     
     `};
 `;
@@ -21,17 +23,24 @@ const Main = styled.div`
 const Title = styled(Alpha)`
     margin-bottom: 2.5rem;
 
-    ${media.small`margin-bottom: 2.25rem;`};
+    ${media.medium`margin-bottom: 2.25rem;`};
 `;
 
 const StyledIntroLead = styled(Lead)`
     max-width: 25.9375rem;
-    ${media.small`margin-bottom: 1.5625rem;`};
+    margin-right: 2rem;
+    ${media.medium`
+        max-width: 100%;
+        margin-bottom: 1.5625rem;
+    `};
 `;
 
 const StyledIntroAside = styled.div`
     max-width: 32.5rem;
     position: relative;
+    ${media.medium`
+        max-width: 100%;
+    `};
 `;
 
 interface IntroProps {

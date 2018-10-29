@@ -15,6 +15,8 @@ interface SizesInterface {
 }
 
 const sizes: SizesInterface = {
+    xlarge: 1420,
+    large: 1000,
     medium: 900,
     small: 650,
 };
