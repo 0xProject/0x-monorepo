@@ -13,6 +13,7 @@ import { AssetMetaData, Network } from '../types';
 import { assetUtils } from '../util/asset';
 import { BigNumberInput } from '../util/big_number_input';
 import { errorFlasher } from '../util/error_flasher';
+import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { getProvider } from '../util/provider';
 import { web3Wrapper } from '../util/web3_wrapper';
 
@@ -78,6 +79,7 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
     public componentDidMount(): void {
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchAndDispatchToStore(this._store);
+        gasPriceEstimator.getFastAmountInWeiAsync();
         // tslint:disable-next-line:no-floating-promises
         this._flashErrorIfWrongNetwork();
     }
