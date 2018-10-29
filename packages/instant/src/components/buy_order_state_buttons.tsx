@@ -1,4 +1,4 @@
-import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
+import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import * as React from 'react';
 
 import { BuyButton } from '../components/buy_button';
@@ -18,7 +18,7 @@ export interface BuyOrderStateButtonProps {
     assetBuyer?: AssetBuyer;
     onViewTransaction: () => void;
     onValidationPending: (buyQuote: BuyQuote) => void;
-    onValidationFail: (buyQuote: BuyQuote, error: ZeroExInstantError) => void;
+    onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
     onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
