@@ -49,8 +49,8 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         this.props.onValidationPending(buyQuote);
         const takerAddress = await getBestAddress();
 
-        const hasSufficentEth = await balanceUtil.hasSufficentEth(takerAddress, buyQuote, web3Wrapper);
-        if (!hasSufficentEth) {
+        const hasSufficientEth = await balanceUtil.hasSufficientEth(takerAddress, buyQuote, web3Wrapper);
+        if (!hasSufficientEth) {
             this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);
             return;
         }
