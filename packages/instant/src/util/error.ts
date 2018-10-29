@@ -49,7 +49,7 @@ const humanReadableMessageForError = (error: Error, asset?: Asset): string | und
     if (error.message === AssetBuyerError.SignatureRequestDenied) {
         return 'You denied this transaction';
     }
-    if (error.message === ZeroExInstantError.InsufficientBalance) {
+    if (error.message === ZeroExInstantError.InsufficientETH) {
         return "You don't have enough ETH";
     }
 

@@ -3,7 +3,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 export const balanceUtil = {
-    hasSufficientFunds: async (takerAddress: string | undefined, buyQuote: BuyQuote, web3Wrapper: Web3Wrapper) => {
+    hasSufficentEth: async (takerAddress: string | undefined, buyQuote: BuyQuote, web3Wrapper: Web3Wrapper) => {
         if (_.isUndefined(takerAddress)) {
             return false;
         }
