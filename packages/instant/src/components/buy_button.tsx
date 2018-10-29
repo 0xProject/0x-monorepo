@@ -15,7 +15,7 @@ import { Button, Text } from './ui';
 export interface BuyButtonProps {
     buyQuote?: BuyQuote;
     assetBuyer?: AssetBuyer;
-    onPendingValidation: (buyQuote: BuyQuote) => void;
+    onValidationPending: (buyQuote: BuyQuote) => void;
     onValidationFail: (buyQuote: BuyQuote, error: ZeroExInstantError) => void;
     onSignatureDenied: (buyQuote: BuyQuote, preventedError: Error) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
@@ -46,7 +46,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             return;
         }
 
-        this.props.onPendingValidation(buyQuote);
+        this.props.onValidationPending(buyQuote);
         const takerAddress = await getBestAddress();
 
         const hasSufficientFunds = await balanceUtil.hasSufficientFunds(takerAddress, buyQuote, web3Wrapper);

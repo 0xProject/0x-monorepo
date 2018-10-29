@@ -17,13 +17,13 @@ export interface BuyOrderStateButtonProps {
     buyOrderProcessingState: OrderProcessState;
     assetBuyer?: AssetBuyer;
     onViewTransaction: () => void;
-    onPendingValidation: (buyQuote: BuyQuote) => void;
+    onValidationPending: (buyQuote: BuyQuote) => void;
+    onValidationFail: (buyQuote: BuyQuote, error: ZeroExInstantError) => void;
     onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
     onRetry: () => void;
-    onValidationFail: (buyQuote: BuyQuote, error: ZeroExInstantError) => void;
 }
 
 // TODO: rename to buttons
@@ -54,12 +54,12 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
         <BuyButton
             buyQuote={props.buyQuote}
             assetBuyer={props.assetBuyer}
-            onPendingValidation={props.onPendingValidation}
+            onValidationPending={props.onValidationPending}
+            onValidationFail={props.onValidationFail}
             onSignatureDenied={props.onSignatureDenied}
             onBuyProcessing={props.onBuyProcessing}
             onBuySuccess={props.onBuySuccess}
             onBuyFailure={props.onBuyFailure}
-            onValidationFail={props.onValidationFail}
         />
     );
 };

@@ -20,7 +20,7 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    onPendingValidation: (buyQuote: BuyQuote) => void;
+    onValidationPending: (buyQuote: BuyQuote) => void;
     onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
@@ -56,7 +56,7 @@ const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
     ownProps: SelectedAssetBuyOrderStateButtons,
 ): ConnectedDispatch => ({
-    onPendingValidation: (buyQuote: BuyQuote) => {
+    onValidationPending: (buyQuote: BuyQuote) => {
         const newOrderState: OrderState = { processState: OrderProcessState.VALIDATING };
         dispatch(actions.updateBuyOrderState(newOrderState));
     },
