@@ -1,4 +1,4 @@
-import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
+import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -6,10 +6,11 @@ import { Dispatch } from 'redux';
 
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { OrderProcessState, OrderState } from '../types';
+import { OrderProcessState, OrderState, ZeroExInstantError } from '../types';
 import { etherscanUtil } from '../util/etherscan';
 
 import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
+import { errorUtil } from '../util/error';
 
 interface ConnectedState {
     buyQuote?: BuyQuote;
@@ -19,12 +20,13 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    onAwaitingSignature: (buyQuote: BuyQuote) => void;
+    onValidationPending: (buyQuote: BuyQuote) => void;
     onSignatureDenied: (buyQuote: BuyQuote, error: Error) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
     onRetry: () => void;
+    onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
 }
 export interface SelectedAssetBuyOrderStateButtons {}
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => ({
@@ -54,8 +56,8 @@ const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
     ownProps: SelectedAssetBuyOrderStateButtons,
 ): ConnectedDispatch => ({
-    onAwaitingSignature: (buyQuote: BuyQuote) => {
-        const newOrderState: OrderState = { processState: OrderProcessState.AWAITING_SIGNATURE };
+    onValidationPending: (buyQuote: BuyQuote) => {
+        const newOrderState: OrderState = { processState: OrderProcessState.VALIDATING };
         dispatch(actions.updateBuyOrderState(newOrderState));
     },
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => {
@@ -68,7 +70,11 @@ const mapDispatchToProps = (
         dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.FAILURE, txHash })),
     onSignatureDenied: (buyQuote, error) => {
         dispatch(actions.resetAmount());
-        dispatch(actions.setError(error));
+        errorUtil.errorFlasher.flashNewError(dispatch, error);
+    },
+    onValidationFail: (buyQuote, error) => {
+        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.NONE }));
+        errorUtil.errorFlasher.flashNewError(dispatch, new Error(error));
     },
     onRetry: () => {
         dispatch(actions.resetAmount());
