@@ -1,9 +1,10 @@
 import { BigNumber } from '@0x/utils';
 
-const baseEndpoint = 'https://api.coinbase.com/v2';
+import { COINBASE_API_BASE_URL } from '../constants';
+
 export const coinbaseApi = {
     getEthUsdPrice: async (): Promise<BigNumber> => {
-        const res = await fetch(`${baseEndpoint}/prices/ETH-USD/buy`);
+        const res = await fetch(`${COINBASE_API_BASE_URL}/prices/ETH-USD/buy`);
         const resJson = await res.json();
         return new BigNumber(resJson.data.amount);
     },

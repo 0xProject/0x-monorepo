@@ -1,8 +1,8 @@
 import { BigNumber } from '@0x/utils';
 
-import { DEFAULT_GAS_PRICE } from '../constants';
+import { DEFAULT_GAS_PRICE, ETH_GAS_STATION_API_BASE_URL } from '../constants';
 
-interface GasStationResult {
+interface EthGasStationResult {
     average: number;
     fastestWait: number;
     fastWait: number;
@@ -16,10 +16,9 @@ interface GasStationResult {
     safeLow: number;
 }
 
-const endpointUrl = 'https://ethgasstation.info/json/ethgasAPI.json';
 const fetchFastAmountInWei = async () => {
-    const res = await fetch(endpointUrl);
-    const gasInfo = (await res.json()) as GasStationResult;
+    const res = await fetch(`${ETH_GAS_STATION_API_BASE_URL}/json/ethgasAPI.json`);
+    const gasInfo = (await res.json()) as EthGasStationResult;
     const gasPriceInGwei = new BigNumber(gasInfo.fast / 10);
     return gasPriceInGwei.mul(1000000000);
 };
