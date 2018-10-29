@@ -1,8 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
-// TODO: merge development and move to constants
-const ENDPOINT_URL = 'https://ethgasstation.info/json/ethgasAPI.json';
-const DEFAULT_GAS_PRICE_WEI = new BigNumber(20000000000);
+import { DEFAULT_GAS_PRICE } from '../constants';
 
 interface GasStationResult {
     average: number;
@@ -18,8 +16,9 @@ interface GasStationResult {
     safeLow: number;
 }
 
+const endpointUrl = 'https://ethgasstation.info/json/ethgasAPI.json';
 const fetchFastAmountInWei = async () => {
-    const res = await fetch(ENDPOINT_URL);
+    const res = await fetch(endpointUrl);
     const gasInfo = (await res.json()) as GasStationResult;
     const gasPriceInGwei = new BigNumber(gasInfo.fast / 10);
     return gasPriceInGwei.mul(1000000000);
@@ -39,7 +38,7 @@ export class GasPriceEstimator {
             this._lastFetched = fetchedAmount;
         }
 
-        return fetchedAmount || this._lastFetched || DEFAULT_GAS_PRICE_WEI;
+        return fetchedAmount || this._lastFetched || DEFAULT_GAS_PRICE;
     }
 }
 export const gasPriceEstimator = new GasPriceEstimator();
