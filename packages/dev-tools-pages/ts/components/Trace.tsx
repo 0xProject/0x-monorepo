@@ -28,7 +28,7 @@ function Trace(props: Props) {
                         Every time an Ethereum transaction fails, it's extremely hard to trace down the troublemaking
                         line of code. The only hint you'll get is a generic error.
                     </MainCopy>
-                    <Code light>Error: VM Exception while processing transaction: rever</Code>
+                    <Code light>Error: VM Exception while processing transaction: revert</Code>
 
                     <List>
                         <Item>
@@ -62,7 +62,7 @@ function Trace(props: Props) {
                         snippets, every time you encounter an error.
                     </MainCopy>
                     <Code light language="javascript">
-                    {`contracts/src/2.0.0/protocol/Exchange/MixinSignatureValidator.sol:51:8
+                        {`contracts/src/2.0.0/protocol/Exchange/MixinSignatureValidator.sol:51:8
     require(
         isValidSignature(
             hash,
@@ -71,7 +71,7 @@ function Trace(props: Props) {
         ),
         "INVALID_SIGNATURE"
     )`}
-        </Code>
+                    </Code>
 
                     <List>
                         <Item>
@@ -104,13 +104,11 @@ function Trace(props: Props) {
 
 const StyledSection =
     styled.section <
-    TraceProps >
-    `
+        TraceProps >
+        `
     max-width: 90rem;
     margin: 0 auto;
     background: linear-gradient(to right, ${colors.black} 50%, ${props => props.background} 50%);
-    padding-top: 6.25rem;
-    padding-bottom: 5.25rem;
     
     ${media.small`
         background: none
@@ -136,11 +134,13 @@ const Wrapper = styled(Container)`
 
 const Block =
     styled.div <
-    TraceProps >
-    `
+        TraceProps >
+        `
     width: 50%;
     background: ${props => (props.background ? props.background : colors.black)};
     color: ${props => (props.background ? 'inherit' : colors.white)};
+    padding-top: 6.25rem;
+    padding-bottom: 5.25rem;
 
     :first-of-type {
         padding-right: 6.25rem;
@@ -191,7 +191,7 @@ const Item = styled.li`
     }
 `;
 
-const Copy = styled.div<{dark?: boolean;}>`
+const Copy = styled.div<{ dark?: boolean; }>`
     max-width: 20rem;
     margin-right: 5.875rem;
     ${props => props.dark && `

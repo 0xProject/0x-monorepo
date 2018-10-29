@@ -9,7 +9,7 @@ interface InlineCodeProps {
 
 const InlineCode = styled(({ alt, children, ...props }: InlineCodeProps) => <code {...props}>{children}</code>)`
     background-color: ${props => (props.alt ? '#E5E8E9' : colors.blueGray)};
-    padding: 0.1875rem;
+    padding: 0.3125rem;
 `;
 
 export default InlineCode;

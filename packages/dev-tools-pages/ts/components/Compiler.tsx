@@ -4,6 +4,7 @@ import { media, colors } from '../variables';
 
 import Container from './Container';
 import InlineCode from './InlineCode';
+import Breakout from './Breakout';
 
 const Cards = styled.dl`
     column-count: 3;
@@ -71,15 +72,17 @@ const cards = [
 
 function Compiler() {
     return (
-        <Container wide>
-            <Cards>
-                {cards.map(card => (
-                    <Card key={card.title.split(' ').join('-')}>
-                        <Dt>{card.title}</Dt>
-                        <Dd>{card.body}</Dd>
-                    </Card>
-                ))}
-            </Cards>
+        <Container>
+            <Breakout>
+                <Cards>
+                    {cards.map(card => (
+                        <Card key={card.title.split(' ').join('-')}>
+                            <Dt>{card.title}</Dt>
+                            <Dd>{card.body}</Dd>
+                        </Card>
+                    ))}
+                </Cards>
+            </Breakout>
         </Container>
     );
 }

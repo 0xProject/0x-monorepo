@@ -178,7 +178,7 @@ class Code extends React.Component<CodeProps, CodeState> {
                         <CopyInput readOnly aria-hidden="true" ref={this.code} value={children} />
                     ) : null}
                 </Base>
-                {navigator.userAgent !== 'ReactSnap' ? <Button onClick={this.handleCopy}>Copy</Button> : null}
+                {navigator.userAgent !== 'ReactSnap' ? <Button onClick={this.handleCopy}>{this.state.copied ? 'Copied' : 'Copy'}</Button> : null}
             </Container>
         );
     }
