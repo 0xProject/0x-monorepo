@@ -19,7 +19,7 @@ export interface BuyButtonProps {
     onValidationPending: (buyQuote: BuyQuote) => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
     onSignatureDenied: (buyQuote: BuyQuote) => void;
-    onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, estimatedTimeMs?: number) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
 }
@@ -73,7 +73,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             throw e;
         }
 
-        this.props.onBuyProcessing(buyQuote, txHash);
+        this.props.onBuyProcessing(buyQuote, txHash, gasInfo.estimatedTimeMs);
         try {
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
