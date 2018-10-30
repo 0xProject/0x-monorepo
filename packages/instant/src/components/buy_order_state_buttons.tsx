@@ -51,17 +51,15 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
     }
 
     return (
-        <div>
-            <BuyButton
-                buyQuote={props.buyQuote}
-                assetBuyer={props.assetBuyer}
-                onValidationPending={props.onValidationPending}
-                onValidationFail={props.onValidationFail}
-                onSignatureDenied={props.onSignatureDenied}
-                onBuyProcessing={props.onBuyProcessing}
-                onBuySuccess={props.onBuySuccess}
-                onBuyFailure={props.onBuyFailure}
-            />
-        </div>
+        <BuyButton
+            buyQuote={props.buyQuote}
+            assetBuyer={props.assetBuyer}
+            onValidationPending={props.onValidationPending}
+            onValidationFail={props.onValidationFail}
+            onSignatureDenied={props.onSignatureDenied}
+            onBuyProcessing={props.onBuyProcessing}
+            onBuySuccess={props.onBuySuccess}
+            onBuyFailure={props.onBuyFailure}
+        />
     );
 };
