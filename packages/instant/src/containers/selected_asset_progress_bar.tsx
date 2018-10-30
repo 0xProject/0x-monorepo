@@ -20,7 +20,7 @@ export const SelectedAssetProgressComponent: React.StatelessComponent<SelectedAs
     const isOrderStateOk = true;
 
     if (isOrderStateOk && percentageDone) {
-        return <ProgressBar percentageDone={percentageDone} />;
+        return <ProgressBar percentageDone={percentageDone} estTimeMs={1000} elapsedTimeMs={2000} />;
     }
 
     return null;
