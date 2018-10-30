@@ -12,10 +12,11 @@ export interface PanelProps {
 export const Panel: React.StatelessComponent<PanelProps> = ({ children, onClose }) => (
     <Container
         backgroundColor={ColorOption.white}
-        position="absolute"
-        top="0px"
-        left="0px"
-        width="100%"
+        // position="absolute"
+        // left="0px"
+        // bottom="0px"
+        // width="100%"
+        // height="100%"
         height="100%"
         zIndex={zIndex.panel}
     >

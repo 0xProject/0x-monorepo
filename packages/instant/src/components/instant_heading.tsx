@@ -60,8 +60,8 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     private _renderAmountsSection(): React.ReactNode {
         return (
             <Container>
-                <Container marginBottom="5px">{this._placeholderOrAmount(this._ethAmount)}</Container>
-                <Container opacity={0.7}>{this._placeholderOrAmount(this._dollarAmount)}</Container>
+                <Container marginBottom="5px">{this._renderPlaceholderOrAmount(this._renderEthAmount)}</Container>
+                <Container opacity={0.7}>{this._renderPlaceholderOrAmount(this._renderDollarAmount)}</Container>
             </Container>
         );
     }
@@ -92,7 +92,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         return 'I want to buy';
     }
 
-    private _placeholderOrAmount(amountFunction: () => React.ReactNode): React.ReactNode {
+    private _renderPlaceholderOrAmount(amountFunction: () => React.ReactNode): React.ReactNode {
         if (this.props.quoteRequestState === AsyncProcessState.PENDING) {
             return <AmountPlaceholder isPulsating={true} color={PLACEHOLDER_COLOR} />;
         }
@@ -102,7 +102,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         return amountFunction();
     }
 
-    private readonly _ethAmount = (): React.ReactNode => {
+    private readonly _renderEthAmount = (): React.ReactNode => {
         return (
             <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
                 {format.ethBaseAmount(
@@ -114,7 +114,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         );
     };
 
-    private readonly _dollarAmount = (): React.ReactNode => {
+    private readonly _renderDollarAmount = (): React.ReactNode => {
         return (
             <Text fontSize="16px" fontColor={ColorOption.white}>
                 {format.ethBaseAmountInUsd(

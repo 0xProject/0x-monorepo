@@ -15,7 +15,7 @@ export interface ERC20AssetAmountInputProps {
     asset?: ERC20Asset;
     value?: BigNumberInput;
     onChange: (value?: BigNumberInput, asset?: ERC20Asset) => void;
-    onSymbolClick: (asset?: ERC20Asset) => void;
+    onSymbolClick?: (asset?: ERC20Asset) => void;
     startingFontSizePx: number;
     fontColor?: ColorOption;
     isDisabled: boolean;
@@ -28,7 +28,6 @@ export interface ERC20AssetAmountInputState {
 export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInputProps, ERC20AssetAmountInputState> {
     public static defaultProps = {
         onChange: util.boundNoop,
-        onSymbolClick: util.boundNoop,
         isDisabled: false,
     };
     constructor(props: ERC20AssetAmountInputProps) {
@@ -112,7 +111,9 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         });
     };
     private readonly _handleSymbolClick = () => {
-        this.props.onSymbolClick(this.props.asset);
+        if (this.props.onSymbolClick) {
+            this.props.onSymbolClick(this.props.asset);
+        }
     };
     // For assets with symbols of different length,
     // start scaling the input at different character lengths

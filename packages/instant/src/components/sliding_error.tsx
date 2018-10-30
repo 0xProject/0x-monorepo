@@ -2,7 +2,8 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 
-import { SlideDownAnimation, SlideUpAnimation } from './animations/slide_animations';
+import { PositionAnimationProps } from './animations/position_animation';
+import { SlideAnimation, SlideAnimationPhase } from './animations/slide_animations';
 
 import { Container, Flex, Text } from './ui';
 
@@ -31,16 +32,29 @@ export const Error: React.StatelessComponent<ErrorProps> = props => (
     </Container>
 );
 
-export type SlidingDirection = 'up' | 'down';
 export interface SlidingErrorProps extends ErrorProps {
-    direction: SlidingDirection;
+    phase: SlideAnimationPhase;
 }
 export const SlidingError: React.StatelessComponent<SlidingErrorProps> = props => {
-    const AnimationComponent = props.direction === 'up' ? SlideUpAnimation : SlideDownAnimation;
-
+    const slideAmount = '120px';
+    const slideUp: PositionAnimationProps = {
+        timingFunction: 'ease-in',
+        top: {
+            from: slideAmount,
+            to: '0px',
+        },
+    };
+    const slideDown: PositionAnimationProps = {
+        timingFunction: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+        top: {
+            from: '0px',
+            to: slideAmount,
+        },
+        direction: 'forwards',
+    };
     return (
-        <AnimationComponent downY="120px">
+        <SlideAnimation slideIn={slideUp} slideOut={slideDown} phase={props.phase}>
             <Error icon={props.icon} message={props.message} />
-        </AnimationComponent>
+        </SlideAnimation>
     );
 };
