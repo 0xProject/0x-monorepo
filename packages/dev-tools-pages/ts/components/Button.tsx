@@ -38,6 +38,7 @@ const Button =
 
   :hover, :focus {
     background-color: ${props => props.colors.secondary_alt};
+    outline: 0;
   } 
 
   ${media.small`
