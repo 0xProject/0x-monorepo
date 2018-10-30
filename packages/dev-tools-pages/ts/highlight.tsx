@@ -38,12 +38,30 @@ function diffHighlight(language: string, code: any, gutter: any) {
         .join('\n');
 }
 
-function highlight(language: string, code: string, diff: boolean, gutter: any) {
+interface highlightProps {
+    language: string;
+    code: string;
+    diff?: boolean;
+    gutter?: boolean;
+    etc?: boolean;
+}
+
+function highlight({ language, code, diff, gutter, etc }: highlightProps) {
     if (diff) {
         return diffHighlight(language, code, gutter);
     }
 
-    return hljs.highlight(language, code).value;
+    let hlCode = hljs.highlight(language, code).value;
+
+    if (!etc) {
+        return hlCode;
+    }
+
+    var hc = hlCode.split(/\r?\n/g);
+    hc.splice(1, 0, '    ...');
+    hc.splice(hc.length - 1, 0, '    ...');
+
+    return hc.join('\n');
 }
 
 export default highlight;

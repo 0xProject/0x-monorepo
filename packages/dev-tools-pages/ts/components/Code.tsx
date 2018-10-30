@@ -18,6 +18,7 @@ interface CodeProps {
     gutter?: Array<number>;
     gutterLength?: number;
     copy?: boolean;
+    etc?: boolean;
 }
 
 interface CodeState {
@@ -134,15 +135,16 @@ class Code extends React.Component<CodeProps, CodeState> {
     }
 
     async componentDidMount() {
-        const { language, children, diff, gutter } = this.props;
+        const { language, children, diff, gutter, etc } = this.props;
 
         const code = children as string;
 
         if (language !== undefined) {
+            /* console.log(code); */
             const { default: highlight } = await System.import(/* webpackChunkName: 'highlightjs' */ 'ts/highlight');
 
             this.setState({
-                hlCode: highlight(language, code, diff, gutter),
+                hlCode: highlight({ language, code, diff, gutter, etc }),
             });
         }
     }
@@ -173,6 +175,8 @@ class Code extends React.Component<CodeProps, CodeState> {
             codeProps = { gutterLength };
             Code = StyledCodeDiff as any;
         }
+
+        /* console.log(hlCode); */
 
         return (
             <Container>

@@ -70,9 +70,8 @@ function Compiler() {
                         define which parts of the artifact you need.
                     </p>
                     <Breakout>
-                        <Code light language="json">
+                        <Code light language="json" etc>
                             {`{
-    ...
     "compilerSettings": {
         "outputSelection": {
             "*": {
@@ -80,18 +79,15 @@ function Compiler() {
             }
         }
     }
-    ...
 }`}
                         </Code>
                     </Breakout>
                     <Breakout>
-                        <Code light language="json">
+                        <Code light language="json" etc>
                             {`{
-    ...
     "compilerOutput": {
         "abi": [...],
     },
-    ...
 }`}
                         </Code>
                     </Breakout>
@@ -102,9 +98,8 @@ function Compiler() {
                         artifact.
                     </p>
                     <Breakout>
-                        <Code light language="json">
+                        <Code light language="json" etc>
                             {`{
-    ...
     "compilerSettings": {
         "outputSelection": {
             "*": {
@@ -118,15 +113,13 @@ function Compiler() {
             }
         }
     }
-    ...
 }`}
                         </Code>
                     </Breakout>
 
                     <Breakout>
-                        <Code light language="json">
+                        <Code light language="json" etc>
                             {`{
-    ...
     "compilerOutput": {
         "abi": [...],
         "evm": {
@@ -145,7 +138,6 @@ function Compiler() {
             "id": 0
         }
     },
-    ...
 }`}
                         </Code>
                     </Breakout>
