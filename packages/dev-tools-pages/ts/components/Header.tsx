@@ -18,7 +18,7 @@ function Header(props: Props) {
                     <Title>{title}</Title>
                 </LogoMark>
 
-                <Link as="a" href="#">
+                <Link as="a" href="https://0xproject.com/">
                     Built by 0x
                 </Link>
             </Container>
