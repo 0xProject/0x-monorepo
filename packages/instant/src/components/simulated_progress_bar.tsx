@@ -23,9 +23,9 @@ export interface SimulatedProgressBarProps {
     ended: boolean;
 }
 enum TickingRunState {
-    None,
-    Running,
-    Finishing,
+    None = 'None',
+    Running = 'Running',
+    Finishing = 'Finishing',
 }
 interface TickingNoneStatus {
     runState: TickingRunState.None;
@@ -53,6 +53,7 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
             throw new Error('End time before start time');
         }
 
+        // TODO: use getFreshState here
         const intervalId = window.setInterval(this._tick.bind(this), PROGRESS_TICK_INTERVAL_MS);
         this.state = {
             percentageDone: 0,
@@ -65,6 +66,7 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
         const percentLeft = 100 - this.state.percentageDone;
         const increasePercentageEveryTick = percentLeft / TICKS_PER_SECOND;
 
+        // if we just switched to ending, having animate to end
         if (prevProps.ended === false && this.props.ended === true) {
             this.setState({
                 tickingStatus: {
@@ -72,10 +74,23 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
                     increasePercentageEveryTick,
                 },
             });
+            return;
+        }
+
+        // later TODO: the new state could be for the wrong order, attach to order state or add concurrency checking
+
+        // if anything else changes, reset internal state
+        if (
+            prevProps.startTimeUnix !== this.props.startTimeUnix ||
+            prevProps.expectedEndTimeUnix !== this.props.expectedEndTimeUnix ||
+            prevProps.ended !== this.props.ended
+        ) {
+            this.setState(this._getFreshState());
         }
     }
 
     public componentWillUnmount(): void {
+        console.log('unmount');
         this._clearTimer();
     }
 
@@ -95,15 +110,24 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
         );
     }
 
+    private _getFreshState(): SimulatedProgressState {
+        this._clearTimer();
+        const intervalId = window.setInterval(this._tick.bind(this), PROGRESS_TICK_INTERVAL_MS);
+        return {
+            percentageDone: 0,
+            intervalId,
+            tickingStatus: { runState: TickingRunState.Running },
+        };
+    }
+
     private _tick(): void {
         const rawPercentageDone =
             this.state.tickingStatus.runState === TickingRunState.Finishing
                 ? this._getNewPercentageFinishing(this.state.tickingStatus)
                 : this._getNewPercentageNormal();
-
         const maxPercentage =
             this.state.tickingStatus.runState === TickingRunState.Finishing ? 100 : PROGRESS_STALL_AT_PERCENTAGE;
-        const percentageDone = Math.floor(Math.min(rawPercentageDone, maxPercentage));
+        const percentageDone = Math.min(rawPercentageDone, maxPercentage);
 
         this.setState({
             percentageDone,

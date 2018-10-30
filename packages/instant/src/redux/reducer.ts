@@ -14,6 +14,7 @@ import {
     OrderProcessState,
     OrderProgress,
     OrderState,
+    SimulatedProgress,
 } from '../types';
 import { assetUtils } from '../util/asset';
 import { BigNumberInput } from '../util/big_number_input';
@@ -32,7 +33,9 @@ export interface State {
     quoteRequestState: AsyncProcessState;
     latestErrorMessage?: string;
     latestErrorDisplayStatus: DisplayStatus;
+    // TODO: this is old, cleanup
     orderProgress?: OrderProgress;
+    simulatedProgress?: SimulatedProgress;
 }
 
 export const INITIAL_STATE: State = {
@@ -121,10 +124,16 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 ...state,
                 selectedAsset: newSelectedAsset,
             };
+        // TODO: this is old, delete
         case ActionTypes.UPDATE_ORDER_PROGRESS_PERCENTAGE:
             return {
                 ...state,
                 orderProgress: { percentageDone: action.data },
+            };
+        case ActionTypes.UPDATE_SIMULATED_ORDER_PROGRESS:
+            return {
+                ...state,
+                simulatedProgress: action.data,
             };
         case ActionTypes.RESET_AMOUNT:
             return {

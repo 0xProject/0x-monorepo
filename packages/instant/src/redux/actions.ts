@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { BigNumberInput } from '../util/big_number_input';
 
-import { ActionsUnion, OrderState } from '../types';
+import { ActionsUnion, OrderState, SimulatedProgress } from '../types';
 
 export interface PlainAction<T extends string> {
     type: T;
@@ -29,6 +29,7 @@ export enum ActionTypes {
     UPDATE_LATEST_BUY_QUOTE = 'UPDATE_LATEST_BUY_QUOTE',
     UPDATE_SELECTED_ASSET = 'UPDATE_SELECTED_ASSET',
     UPDATE_ORDER_PROGRESS_PERCENTAGE = 'UPDATE_ORDER_PROGRESS_PERCENTAGE',
+    UPDATE_SIMULATED_ORDER_PROGRESS = 'UPDATE_SIMULATED_ORDER_PROGRESS',
     SET_QUOTE_REQUEST_STATE_PENDING = 'SET_QUOTE_REQUEST_STATE_PENDING',
     SET_QUOTE_REQUEST_STATE_FAILURE = 'SET_QUOTE_REQUEST_STATE_FAILURE',
     SET_ERROR_MESSAGE = 'SET_ERROR_MESSAGE',
@@ -44,8 +45,11 @@ export const actions = {
     updateBuyOrderState: (orderState: OrderState) => createAction(ActionTypes.UPDATE_BUY_ORDER_STATE, orderState),
     updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UPDATE_LATEST_BUY_QUOTE, buyQuote),
     updateSelectedAsset: (assetData?: string) => createAction(ActionTypes.UPDATE_SELECTED_ASSET, assetData),
+    // TODO: this is old, delete
     updateOrderProgressPercentage: (percentDone: number) =>
         createAction(ActionTypes.UPDATE_ORDER_PROGRESS_PERCENTAGE, percentDone),
+    updateSimulatedOrderProgress: (orderProgress: SimulatedProgress) =>
+        createAction(ActionTypes.UPDATE_SIMULATED_ORDER_PROGRESS, orderProgress),
     setQuoteRequestStatePending: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING),
     setQuoteRequestStateFailure: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE),
     setErrorMessage: (errorMessage: string) => createAction(ActionTypes.SET_ERROR_MESSAGE, errorMessage),

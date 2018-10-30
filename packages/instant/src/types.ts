@@ -16,8 +16,15 @@ export enum OrderProcessState {
     FAILURE = 'Failure',
 }
 
+// TODO: this is old, delete
 export interface OrderProgress {
     percentageDone: number;
+}
+
+export interface SimulatedProgress {
+    startTimeUnix: number;
+    expectedEndTimeUnix: number;
+    ended: boolean;
 }
 
 interface OrderStatePreTx {
