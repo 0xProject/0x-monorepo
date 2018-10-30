@@ -28,7 +28,6 @@ export enum ActionTypes {
     UPDATE_BUY_ORDER_STATE = 'UPDATE_BUY_ORDER_STATE',
     UPDATE_LATEST_BUY_QUOTE = 'UPDATE_LATEST_BUY_QUOTE',
     UPDATE_SELECTED_ASSET = 'UPDATE_SELECTED_ASSET',
-    UPDATE_ORDER_PROGRESS_PERCENTAGE = 'UPDATE_ORDER_PROGRESS_PERCENTAGE',
     UPDATE_SIMULATED_ORDER_PROGRESS = 'UPDATE_SIMULATED_ORDER_PROGRESS',
     SET_QUOTE_REQUEST_STATE_PENDING = 'SET_QUOTE_REQUEST_STATE_PENDING',
     SET_QUOTE_REQUEST_STATE_FAILURE = 'SET_QUOTE_REQUEST_STATE_FAILURE',
@@ -45,9 +44,6 @@ export const actions = {
     updateBuyOrderState: (orderState: OrderState) => createAction(ActionTypes.UPDATE_BUY_ORDER_STATE, orderState),
     updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UPDATE_LATEST_BUY_QUOTE, buyQuote),
     updateSelectedAsset: (assetData?: string) => createAction(ActionTypes.UPDATE_SELECTED_ASSET, assetData),
-    // TODO: this is old, delete
-    updateOrderProgressPercentage: (percentDone: number) =>
-        createAction(ActionTypes.UPDATE_ORDER_PROGRESS_PERCENTAGE, percentDone),
     updateSimulatedOrderProgress: (orderProgress: SimulatedProgress) =>
         createAction(ActionTypes.UPDATE_SIMULATED_ORDER_PROGRESS, orderProgress),
     setQuoteRequestStatePending: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING),

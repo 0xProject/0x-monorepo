@@ -12,7 +12,6 @@ import {
     DisplayStatus,
     Network,
     OrderProcessState,
-    OrderProgress,
     OrderState,
     SimulatedProgress,
 } from '../types';
@@ -33,8 +32,6 @@ export interface State {
     quoteRequestState: AsyncProcessState;
     latestErrorMessage?: string;
     latestErrorDisplayStatus: DisplayStatus;
-    // TODO: this is old, cleanup
-    orderProgress?: OrderProgress;
     simulatedProgress?: SimulatedProgress;
 }
 
@@ -123,12 +120,6 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             return {
                 ...state,
                 selectedAsset: newSelectedAsset,
-            };
-        // TODO: this is old, delete
-        case ActionTypes.UPDATE_ORDER_PROGRESS_PERCENTAGE:
-            return {
-                ...state,
-                orderProgress: { percentageDone: action.data },
             };
         case ActionTypes.UPDATE_SIMULATED_ORDER_PROGRESS:
             return {

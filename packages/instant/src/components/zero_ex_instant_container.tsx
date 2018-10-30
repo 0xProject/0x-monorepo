@@ -5,8 +5,6 @@ import { LatestError } from '../containers/latest_error';
 import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_buy_order_state_buttons';
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 
-// TODO: delete this import and this actual file
-import { SelectedAssetProgressBar } from '../containers/selected_asset_progress_bar';
 import { SelectedAssetSimulatedProgressBar } from '../containers/selected_asset_simulated_progress_bar';
 
 import { ColorOption } from '../style/theme';
@@ -29,7 +27,6 @@ export const ZeroExInstantContainer: React.StatelessComponent<ZeroExInstantConta
             <Flex direction="column" justify="flex-start">
                 <SelectedAssetInstantHeading />
                 <SelectedAssetSimulatedProgressBar />
-                <SelectedAssetProgressBar />
                 <LatestBuyQuoteOrderDetails />
                 <Container padding="20px" width="100%">
                     <SelectedAssetBuyOrderStateButtons />
