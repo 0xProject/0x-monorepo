@@ -39,7 +39,6 @@ export class Progress {
         this._percentageDone = 0;
         this._intervalId = undefined;
         this._tickingStatus = { state: TickingState.None };
-        // TODO: clear interval
     }
 
     public beginRunning(expectedTimeMs: number): void {
