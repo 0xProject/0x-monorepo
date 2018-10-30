@@ -63,8 +63,8 @@ export class Progress {
     private _tick(): void {
         const rawPercentageDone =
             this._tickingStatus.state === TickingState.Finishing
-                ? this._tickFinishing(this._tickingStatus)
-                : this._tickNormal();
+                ? this._getNewPercentageFinishing(this._tickingStatus)
+                : this._getNewPercentageNormal();
 
         const maxPercentage = this._tickingStatus.state === TickingState.Finishing ? 100 : PROGRESS_STALL_AT_PERCENTAGE;
         const percentageDone = Math.min(rawPercentageDone, maxPercentage);
@@ -82,7 +82,7 @@ export class Progress {
         }
     }
 
-    private _tickNormal(): number {
+    private _getNewPercentageNormal(): number {
         if (_.isUndefined(this._startTimeUnix) || _.isUndefined(this._expectedTimeMs)) {
             throw new Error('Cant tick, missing var');
         }
@@ -93,15 +93,7 @@ export class Progress {
         return percentageDone;
     }
 
-    private _tickFinishing(finishingState: TickingFinishingStatus): number {
+    private _getNewPercentageFinishing(finishingState: TickingFinishingStatus): number {
         return this._percentageDone + finishingState.increasePercentageEveryTick;
     }
-
-    private _clearInterval(): void {
-        return window.clearInterval(this._intervalId);
-    }
-
-    // reset function
-
-    // end function
 }
