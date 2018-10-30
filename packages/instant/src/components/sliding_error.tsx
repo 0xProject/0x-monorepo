@@ -3,7 +3,7 @@ import * as React from 'react';
 import { ColorOption } from '../style/theme';
 
 import { PositionAnimationSettings } from './animations/position_animation';
-import { SlideAnimation, SlideAnimationPhase } from './animations/slide_animations';
+import { SlideAnimation, SlideAnimationState } from './animations/slide_animation';
 
 import { Container, Flex, Text } from './ui';
 
@@ -33,7 +33,7 @@ export const Error: React.StatelessComponent<ErrorProps> = props => (
 );
 
 export interface SlidingErrorProps extends ErrorProps {
-    phase: SlideAnimationPhase;
+    animationState: SlideAnimationState;
 }
 export const SlidingError: React.StatelessComponent<SlidingErrorProps> = props => {
     const slideAmount = '120px';
@@ -50,10 +50,14 @@ export const SlidingError: React.StatelessComponent<SlidingErrorProps> = props =
             from: '0px',
             to: slideAmount,
         },
-        direction: 'forwards',
     };
     return (
-        <SlideAnimation position="relative" slideIn={slideUp} slideOut={slideDown} phase={props.phase}>
+        <SlideAnimation
+            position="relative"
+            slideIn={slideUp}
+            slideOut={slideDown}
+            animationState={props.animationState}
+        >
             <Error icon={props.icon} message={props.message} />
         </SlideAnimation>
     );

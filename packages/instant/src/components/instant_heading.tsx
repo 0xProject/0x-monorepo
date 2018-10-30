@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { SelectedERC20AssetAmountInput } from '../containers/selected_erc20_asset_amount_input';
 import { ColorOption } from '../style/theme';
-import { AsyncProcessState, OrderProcessState, OrderState } from '../types';
+import { AsyncProcessState, ERC20Asset, OrderProcessState, OrderState } from '../types';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
@@ -16,6 +16,7 @@ export interface InstantHeadingProps {
     ethUsdPrice?: BigNumber;
     quoteRequestState: AsyncProcessState;
     buyOrderState: OrderState;
+    onSymbolClick?: (asset?: ERC20Asset) => void;
 }
 
 const PLACEHOLDER_COLOR = ColorOption.white;
@@ -47,7 +48,10 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                 </Container>
                 <Flex direction="row" justify="space-between">
                     <Flex height="60px">
-                        <SelectedERC20AssetAmountInput startingFontSizePx={38} />
+                        <SelectedERC20AssetAmountInput
+                            startingFontSizePx={38}
+                            onSymbolClick={this.props.onSymbolClick}
+                        />
                     </Flex>
                     <Flex direction="column" justify="space-between">
                         {iconOrAmounts}

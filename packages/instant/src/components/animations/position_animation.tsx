@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Keyframes } from 'styled-components';
 
 import { css, keyframes, styled } from '../../style/theme';
@@ -51,7 +50,7 @@ export interface PositionAnimationSettings {
     left?: TransitionInfo;
     right?: TransitionInfo;
     timingFunction: string;
-    direction?: string;
+    duration?: string;
 }
 
 export interface PositionAnimationProps extends PositionAnimationSettings {
@@ -66,10 +65,12 @@ export const PositionAnimation =
         css`
             ${slideKeyframeGenerator(props.position, props.top, props.bottom, props.left, props.right)};
         `};
-    animation-duration: 0.3s;
+    animation-duration: ${props => props.duration || '0.3s'};
     animation-timing-function: ${props => props.timingFunction};
     animation-delay: 0s;
     animation-iteration-count: 1;
-    animation-fill-mode: ${props => props.direction || 'none'};
+    animation-fill-mode: forwards;
     position: ${props => props.position};
+    height: 100%;
+    width: 100%;
 `;

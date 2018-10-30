@@ -1,20 +1,20 @@
 import * as React from 'react';
-import { Keyframes } from 'styled-components';
-
-import { css, keyframes, styled } from '../../style/theme';
 
 import { PositionAnimation, PositionAnimationSettings } from './position_animation';
 
-export type SlideAnimationPhase = 'slideIn' | 'slideOut';
+export type SlideAnimationState = 'slidIn' | 'slidOut' | 'none';
 export interface SlideAnimationProps {
     position: string;
-    phase: SlideAnimationPhase;
+    animationState: SlideAnimationState;
     slideIn: PositionAnimationSettings;
     slideOut: PositionAnimationSettings;
 }
 
 export const SlideAnimation: React.StatelessComponent<SlideAnimationProps> = props => {
-    const propsToUse = props.phase === 'slideIn' ? props.slideIn : props.slideOut;
+    if (props.animationState === 'none') {
+        return <React.Fragment>{props.children}</React.Fragment>;
+    }
+    const propsToUse = props.animationState === 'slidIn' ? props.slideIn : props.slideOut;
     return (
         <PositionAnimation position={props.position} {...propsToUse}>
             {props.children}
