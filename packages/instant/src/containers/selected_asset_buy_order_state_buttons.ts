@@ -26,7 +26,6 @@ interface ConnectedDispatch {
     onBuyFailure: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
     onRetry: () => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
-    secondaryProgressDemo: () => void;
 }
 export interface SelectedAssetBuyOrderStateButtons {}
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => ({
@@ -112,29 +111,6 @@ const mapDispatchToProps = (
     },
     onRetry: () => {
         dispatch(actions.resetAmount());
-    },
-    secondaryProgressDemo: () => {
-        const nowTime = new Date().getTime();
-        const futureTime = nowTime + 5000;
-        dispatch(
-            actions.updateSimulatedOrderProgress({
-                startTimeUnix: nowTime,
-                expectedEndTimeUnix: futureTime,
-                ended: false,
-            }),
-        );
-
-        window.setTimeout(() => {
-            console.log('simulate finishing');
-
-            dispatch(
-                actions.updateSimulatedOrderProgress({
-                    startTimeUnix: nowTime,
-                    expectedEndTimeUnix: futureTime,
-                    ended: true,
-                }),
-            );
-        }, 2000);
     },
 });
 

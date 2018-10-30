@@ -25,12 +25,8 @@ export interface BuyOrderStateButtonProps {
     onBuySuccess: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
     onRetry: () => void;
-
-    // TODO: dont commit!
-    secondaryProgressDemo: () => void;
 }
 
-// TODO: rename to buttons
 export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonProps> = props => {
     if (props.buyOrderProcessingState === OrderProcessState.FAILURE) {
         return (
@@ -54,15 +50,8 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
         return <PlacingOrderButton />;
     }
 
-    const curTime = new Date().getTime();
-    const expectedEndTime = curTime + 5000;
     return (
         <div>
-            {/* <div style={{ marginBottom: '20px' }}>
-                <SimulatedProgressBar startTimeUnix={curTime} expectedEndTimeUnix={expectedEndTime} ended={false} />
-            </div> */}
-
-            <SecondaryButton onClick={props.secondaryProgressDemo}>New progress bar demo</SecondaryButton>
             <BuyButton
                 buyQuote={props.buyQuote}
                 assetBuyer={props.assetBuyer}

@@ -39,6 +39,5 @@ interface ConnectedState {
 }
 const mapStateToProps = (state: State, _ownProps: {}): ConnectedState => ({
     buyOrderState: state.buyOrderState,
-    simulatedProgress: state.simulatedProgress,
 });
 export const SelectedAssetSimulatedProgressBar = connect(mapStateToProps)(SelectedAssetSimulatedProgressComponent);

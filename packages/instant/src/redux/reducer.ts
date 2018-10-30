@@ -32,7 +32,6 @@ export interface State {
     quoteRequestState: AsyncProcessState;
     latestErrorMessage?: string;
     latestErrorDisplayStatus: DisplayStatus;
-    simulatedProgress?: SimulatedProgress;
 }
 
 export const INITIAL_STATE: State = {
@@ -120,11 +119,6 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             return {
                 ...state,
                 selectedAsset: newSelectedAsset,
-            };
-        case ActionTypes.UPDATE_SIMULATED_ORDER_PROGRESS:
-            return {
-                ...state,
-                simulatedProgress: action.data,
             };
         case ActionTypes.RESET_AMOUNT:
             return {
