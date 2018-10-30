@@ -39,8 +39,7 @@ function Footer(props: Props) {
                 <Media as="aside">
                     <Icon as={MainIcon} />
                     <Small>
-                        Built by 0x. 0x is an open, permissionless protocol allowing for ERC20 tokens to be traded on
-                        the Ethereum blockchain.
+                    0x is an open, permissionless protocol allowing for tokens to be traded on the Ethereum blockchain.
                     </Small>
                 </Media>
             </Container>
