@@ -23,18 +23,19 @@ const generateTransitionInfoCss = (
 };
 
 const slideKeyframeGenerator = (
+    position: string,
     top?: TransitionInfo,
     bottom?: TransitionInfo,
     left?: TransitionInfo,
     right?: TransitionInfo,
 ) => keyframes`
     from {
-        position: relative;
+        position: ${position};
         ${generateTransitionInfoCss('from', top, bottom, left, right)}
     }
 
     to {
-        position: relative;
+        position: ${position};
         ${generateTransitionInfoCss('to', top, bottom, left, right)}
     }
 `;
@@ -44,7 +45,7 @@ export interface TransitionInfo {
     to: string;
 }
 
-export interface PositionAnimationProps {
+export interface PositionAnimationSettings {
     top?: TransitionInfo;
     bottom?: TransitionInfo;
     left?: TransitionInfo;
@@ -53,18 +54,22 @@ export interface PositionAnimationProps {
     direction?: string;
 }
 
+export interface PositionAnimationProps extends PositionAnimationSettings {
+    position: string;
+}
+
 export const PositionAnimation =
     styled.div <
     PositionAnimationProps >
     `
     animation-name: ${props =>
         css`
-            ${slideKeyframeGenerator(props.top, props.bottom, props.left, props.right)};
+            ${slideKeyframeGenerator(props.position, props.top, props.bottom, props.left, props.right)};
         `};
     animation-duration: 0.3s;
     animation-timing-function: ${props => props.timingFunction};
     animation-delay: 0s;
     animation-iteration-count: 1;
     animation-fill-mode: ${props => props.direction || 'none'};
-    position: relative;
+    position: ${props => props.position};
 `;

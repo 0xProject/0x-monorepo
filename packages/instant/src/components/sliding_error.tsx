@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 
-import { PositionAnimationProps } from './animations/position_animation';
+import { PositionAnimationSettings } from './animations/position_animation';
 import { SlideAnimation, SlideAnimationPhase } from './animations/slide_animations';
 
 import { Container, Flex, Text } from './ui';
@@ -37,14 +37,14 @@ export interface SlidingErrorProps extends ErrorProps {
 }
 export const SlidingError: React.StatelessComponent<SlidingErrorProps> = props => {
     const slideAmount = '120px';
-    const slideUp: PositionAnimationProps = {
+    const slideUp: PositionAnimationSettings = {
         timingFunction: 'ease-in',
         top: {
             from: slideAmount,
             to: '0px',
         },
     };
-    const slideDown: PositionAnimationProps = {
+    const slideDown: PositionAnimationSettings = {
         timingFunction: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
         top: {
             from: '0px',
@@ -53,7 +53,7 @@ export const SlidingError: React.StatelessComponent<SlidingErrorProps> = props =
         direction: 'forwards',
     };
     return (
-        <SlideAnimation slideIn={slideUp} slideOut={slideDown} phase={props.phase}>
+        <SlideAnimation position="relative" slideIn={slideUp} slideOut={slideDown} phase={props.phase}>
             <Error icon={props.icon} message={props.message} />
         </SlideAnimation>
     );
