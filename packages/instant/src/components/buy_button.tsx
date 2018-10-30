@@ -2,11 +2,12 @@ import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { DEFAULT_GAS_PRICE, WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
+import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
 import { ZeroExInstantError } from '../types';
 import { getBestAddress } from '../util/address';
 import { balanceUtil } from '../util/balance';
+import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { util } from '../util/util';
 import { web3Wrapper } from '../util/web3_wrapper';
 
@@ -56,9 +57,9 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         }
 
         let txHash: string | undefined;
+        const gasPrice = await gasPriceEstimator.getFastAmountInWeiAsync();
         try {
-            const gasPrice = DEFAULT_GAS_PRICE;
-            txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, { gasPrice, takerAddress });
+            txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, { takerAddress, gasPrice });
         } catch (e) {
             if (e instanceof Error) {
                 if (e.message === AssetBuyerError.SignatureRequestDenied) {
