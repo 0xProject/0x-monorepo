@@ -16,18 +16,25 @@ interface EthGasStationResult {
     safeLow: number;
 }
 
-const fetchFastAmountInWeiAsync = async () => {
+interface GasInfo {
+    gasPriceInWei: BigNumber;
+    estimatedTimeMs?: number;
+}
+
+const fetchFastAmountInWeiAsync = async (): Promise<GasInfo> => {
     const res = await fetchAsync(`${ETH_GAS_STATION_API_BASE_URL}/json/ethgasAPI.json`);
     const gasInfo = (await res.json()) as EthGasStationResult;
     // Eth Gas Station result is gwei * 10
     const gasPriceInGwei = new BigNumber(gasInfo.fast / 10);
-    return gasPriceInGwei.mul(GWEI_IN_WEI);
+    // Time is in minutes
+    const estimatedTimeMs = gasInfo.fastWait * 60 * 1000; // Minutes to MS
+    return { gasPriceInWei: gasPriceInGwei.mul(GWEI_IN_WEI), estimatedTimeMs };
 };
 
 export class GasPriceEstimator {
-    private _lastFetched?: BigNumber;
-    public async getFastAmountInWeiAsync(): Promise<BigNumber> {
-        let fetchedAmount: BigNumber | undefined;
+    private _lastFetched?: GasInfo;
+    public async getGasInfoAsync(): Promise<GasInfo> {
+        let fetchedAmount: GasInfo | undefined;
         try {
             fetchedAmount = await fetchFastAmountInWeiAsync();
         } catch {
@@ -38,7 +45,7 @@ export class GasPriceEstimator {
             this._lastFetched = fetchedAmount;
         }
 
-        return fetchedAmount || this._lastFetched || DEFAULT_GAS_PRICE;
+        return fetchedAmount || this._lastFetched || { gasPriceInWei: DEFAULT_GAS_PRICE, estimatedTimeMs: undefined };
     }
 }
 export const gasPriceEstimator = new GasPriceEstimator();

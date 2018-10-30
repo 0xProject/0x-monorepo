@@ -22,6 +22,7 @@ interface OrderStatePreTx {
 interface OrderStatePostTx {
     processState: OrderProcessState.PROCESSING | OrderProcessState.SUCCESS | OrderProcessState.FAILURE;
     txHash: string;
+    estimatedTimeMs?: number;
 }
 export type OrderState = OrderStatePreTx | OrderStatePostTx;
 

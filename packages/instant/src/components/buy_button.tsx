@@ -57,9 +57,9 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         }
 
         let txHash: string | undefined;
-        const gasPrice = await gasPriceEstimator.getFastAmountInWeiAsync();
+        const gasInfo = await gasPriceEstimator.getGasInfoAsync();
         try {
-            txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, { takerAddress, gasPrice });
+            txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, { takerAddress, gasPrice: gasInfo.gasPriceInWei });
         } catch (e) {
             if (e instanceof Error) {
                 if (e.message === AssetBuyerError.SignatureRequestDenied) {
