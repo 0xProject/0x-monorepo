@@ -21,7 +21,7 @@ export interface InstantHeadingProps {
 const PLACEHOLDER_COLOR = ColorOption.white;
 const ICON_WIDTH = 34;
 const ICON_HEIGHT = 34;
-const ICON_COLOR = ColorOption.white;
+const ICON_COLOR = 'white';
 
 export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
@@ -48,6 +48,9 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                 <Flex direction="row" justify="space-between">
                     <Flex height="60px">
                         <SelectedERC20AssetAmountInput startingFontSizePx={38} />
+                        <Container marginLeft="5px">
+                            <Icon icon="chevron" width={12} />
+                        </Container>
                     </Flex>
                     <Flex direction="column" justify="space-between">
                         {iconOrAmounts}
