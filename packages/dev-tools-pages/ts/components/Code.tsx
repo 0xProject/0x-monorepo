@@ -17,6 +17,7 @@ interface CodeProps {
     diff?: boolean;
     gutter?: Array<number>;
     gutterLength?: number;
+    copy?: boolean;
 }
 
 interface CodeState {
@@ -163,7 +164,7 @@ class Code extends React.Component<CodeProps, CodeState> {
     };
 
     render() {
-        const { language, light, diff, children, gutterLength } = this.props;
+        const { language, light, diff, children, gutterLength, copy } = this.props;
         const { hlCode } = this.state;
 
         let Code = 'code';
@@ -185,7 +186,9 @@ class Code extends React.Component<CodeProps, CodeState> {
                         <CopyInput readOnly aria-hidden="true" ref={this.code} value={children} />
                     ) : null}
                 </Base>
-                {navigator.userAgent !== 'ReactSnap' ? <Button onClick={this.handleCopy}>{this.state.copied ? 'Copied' : 'Copy'}</Button> : null}
+                {navigator.userAgent !== 'ReactSnap' && copy ? (
+                    <Button onClick={this.handleCopy}>{this.state.copied ? 'Copied' : 'Copy'}</Button>
+                ) : null}
             </Container>
         );
     }

@@ -19,7 +19,7 @@ function Compiler() {
                 <ContentBlock main title="Get started" />
                 <ContentBlock title="Install">
                     <Breakout>
-                        <Code>npm install @0x/sol-compiler --g</Code>
+                        <Code copy>npm install @0x/sol-compiler --g</Code>
                     </Breakout>
                 </ContentBlock>
 
