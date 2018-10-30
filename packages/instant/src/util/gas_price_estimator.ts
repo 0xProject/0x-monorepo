@@ -1,6 +1,11 @@
 import { BigNumber, fetchAsync } from '@0x/utils';
 
-import { DEFAULT_GAS_PRICE, ETH_GAS_STATION_API_BASE_URL, GWEI_IN_WEI } from '../constants';
+import {
+    DEFAULT_ESTIMATED_TRANSACTION_TIME_MS,
+    DEFAULT_GAS_PRICE,
+    ETH_GAS_STATION_API_BASE_URL,
+    GWEI_IN_WEI,
+} from '../constants';
 
 interface EthGasStationResult {
     average: number;
@@ -18,7 +23,7 @@ interface EthGasStationResult {
 
 interface GasInfo {
     gasPriceInWei: BigNumber;
-    estimatedTimeMs?: number;
+    estimatedTimeMs: number;
 }
 
 const fetchFastAmountInWeiAsync = async (): Promise<GasInfo> => {
@@ -45,7 +50,13 @@ export class GasPriceEstimator {
             this._lastFetched = fetchedAmount;
         }
 
-        return fetchedAmount || this._lastFetched || { gasPriceInWei: DEFAULT_GAS_PRICE, estimatedTimeMs: undefined };
+        return (
+            fetchedAmount ||
+            this._lastFetched || {
+                gasPriceInWei: DEFAULT_GAS_PRICE,
+                estimatedTimeMs: DEFAULT_ESTIMATED_TRANSACTION_TIME_MS,
+            }
+        );
     }
 }
 export const gasPriceEstimator = new GasPriceEstimator();
