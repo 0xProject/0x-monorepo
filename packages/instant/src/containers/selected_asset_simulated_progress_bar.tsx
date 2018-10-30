@@ -9,27 +9,23 @@ import { OrderProcessState, OrderState, SimulatedProgress } from '../types';
 
 interface SelectedAssetProgressComponentProps {
     buyOrderState: OrderState;
-    simulatedProgress?: SimulatedProgress;
 }
 export const SelectedAssetSimulatedProgressComponent: React.StatelessComponent<
     SelectedAssetProgressComponentProps
 > = props => {
-    const { buyOrderState, simulatedProgress } = props;
+    const { buyOrderState } = props;
 
-    console.log('simulatedProgress', simulatedProgress);
-
-    // TODO: uncomment after done testing
-    // const isOrderStateOk =
-    //     buyOrderState.processState === OrderProcessState.PROCESSING ||
-    //     buyOrderState.processState === OrderProcessState.SUCCESS;
-    const isOrderStateOk = true;
-
-    if (isOrderStateOk && simulatedProgress) {
+    if (
+        buyOrderState.processState === OrderProcessState.PROCESSING ||
+        buyOrderState.processState === OrderProcessState.SUCCESS ||
+        buyOrderState.processState === OrderProcessState.FAILURE
+    ) {
+        const progress = buyOrderState.progress;
         return (
             <SimulatedProgressBar
-                startTimeUnix={simulatedProgress.startTimeUnix}
-                expectedEndTimeUnix={simulatedProgress.expectedEndTimeUnix}
-                ended={simulatedProgress.ended}
+                startTimeUnix={progress.startTimeUnix}
+                expectedEndTimeUnix={progress.expectedEndTimeUnix}
+                ended={progress.ended}
             />
         );
     }

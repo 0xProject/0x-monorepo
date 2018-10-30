@@ -28,8 +28,7 @@ interface OrderStatePreTx {
 interface OrderStatePostTx {
     processState: OrderProcessState.PROCESSING | OrderProcessState.SUCCESS | OrderProcessState.FAILURE;
     txHash: string;
-    // TODO: move/rename?
-    estimatedTimeMs?: number;
+    progress: SimulatedProgress;
 }
 export type OrderState = OrderStatePreTx | OrderStatePostTx;
 

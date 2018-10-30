@@ -21,11 +21,12 @@ interface ConnectedState {
 interface ConnectedDispatch {
     onValidationPending: (buyQuote: BuyQuote) => void;
     onSignatureDenied: (buyQuote: BuyQuote) => void;
-    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, estimatedTimeMs?: number) => void;
-    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
-    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
     onRetry: () => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
+    secondaryProgressDemo: () => void;
 }
 export interface SelectedAssetBuyOrderStateButtons {}
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => ({
@@ -59,14 +60,42 @@ const mapDispatchToProps = (
         const newOrderState: OrderState = { processState: OrderProcessState.VALIDATING };
         dispatch(actions.updateBuyOrderState(newOrderState));
     },
-    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, estimatedTimeMs?: number) => {
-        const newOrderState: OrderState = { processState: OrderProcessState.PROCESSING, txHash, estimatedTimeMs };
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => {
+        const newOrderState: OrderState = {
+            processState: OrderProcessState.PROCESSING,
+            txHash,
+            progress: {
+                startTimeUnix,
+                expectedEndTimeUnix,
+                ended: false,
+            },
+        };
         dispatch(actions.updateBuyOrderState(newOrderState));
     },
-    onBuySuccess: (buyQuote: BuyQuote, txHash: string) =>
-        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.SUCCESS, txHash })),
-    onBuyFailure: (buyQuote: BuyQuote, txHash: string) =>
-        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.FAILURE, txHash })),
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+        dispatch(
+            actions.updateBuyOrderState({
+                processState: OrderProcessState.SUCCESS,
+                txHash,
+                progress: {
+                    startTimeUnix,
+                    expectedEndTimeUnix,
+                    ended: true,
+                },
+            }),
+        ),
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+        dispatch(
+            actions.updateBuyOrderState({
+                processState: OrderProcessState.FAILURE,
+                txHash,
+                progress: {
+                    startTimeUnix,
+                    expectedEndTimeUnix,
+                    ended: true,
+                },
+            }),
+        ),
     onSignatureDenied: () => {
         dispatch(actions.resetAmount());
         const errorMessage = 'You denied this transaction';
@@ -83,6 +112,29 @@ const mapDispatchToProps = (
     },
     onRetry: () => {
         dispatch(actions.resetAmount());
+    },
+    secondaryProgressDemo: () => {
+        const nowTime = new Date().getTime();
+        const futureTime = nowTime + 5000;
+        dispatch(
+            actions.updateSimulatedOrderProgress({
+                startTimeUnix: nowTime,
+                expectedEndTimeUnix: futureTime,
+                ended: false,
+            }),
+        );
+
+        window.setTimeout(() => {
+            console.log('simulate finishing');
+
+            dispatch(
+                actions.updateSimulatedOrderProgress({
+                    startTimeUnix: nowTime,
+                    expectedEndTimeUnix: futureTime,
+                    ended: true,
+                }),
+            );
+        }, 2000);
     },
 });
 

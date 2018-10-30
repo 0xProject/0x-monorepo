@@ -19,9 +19,9 @@ export interface BuyButtonProps {
     onValidationPending: (buyQuote: BuyQuote) => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
     onSignatureDenied: (buyQuote: BuyQuote) => void;
-    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, estimatedTimeMs?: number) => void;
-    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
-    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
 }
 
 export class BuyButton extends React.Component<BuyButtonProps> {
@@ -73,16 +73,18 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             throw e;
         }
 
-        this.props.onBuyProcessing(buyQuote, txHash, gasInfo.estimatedTimeMs);
+        const startTimeUnix = new Date().getTime();
+        const expectedEndTimeUnix = startTimeUnix + gasInfo.estimatedTimeMs;
+        this.props.onBuyProcessing(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
         try {
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
             if (e instanceof Error && e.message.startsWith(WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX)) {
-                this.props.onBuyFailure(buyQuote, txHash);
+                this.props.onBuyFailure(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
                 return;
             }
             throw e;
         }
-        this.props.onBuySuccess(buyQuote, txHash);
+        this.props.onBuySuccess(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
     };
 }
