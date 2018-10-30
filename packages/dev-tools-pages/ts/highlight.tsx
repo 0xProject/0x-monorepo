@@ -31,7 +31,7 @@ function diffHighlight(language: string, code: any, gutter: any) {
 
             const g = gutter[index];
 
-            return `<span data-test="${g !== undefined ? g + 'x' : ''}" class="line-${type}">${
+            return `<span data-gutter="${g !== undefined ? g + 'x' : ''}" class="line-${type}">${
                 hljs.highlight(language, line).value
             }</span>`;
         })

@@ -90,7 +90,7 @@ const StyledCodeDiff = styled(({ gutterLength, children, ...props }: any) => <co
         padding-left: calc(2.25rem + ${props => props.gutterLength}ch);
 
         ::before {
-            content: attr(data-test);
+            content: attr(data-gutter);
 
             width: ${props => props.gutterLength};
             padding-left: 0.375rem;
