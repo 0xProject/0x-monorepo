@@ -16,12 +16,17 @@ export enum OrderProcessState {
     FAILURE = 'Failure',
 }
 
+export interface OrderProgress {
+    percentageDone: number;
+}
+
 interface OrderStatePreTx {
     processState: OrderProcessState.NONE | OrderProcessState.VALIDATING;
 }
 interface OrderStatePostTx {
     processState: OrderProcessState.PROCESSING | OrderProcessState.SUCCESS | OrderProcessState.FAILURE;
     txHash: string;
+    // TODO: move/rename?
     estimatedTimeMs?: number;
 }
 export type OrderState = OrderStatePreTx | OrderStatePostTx;

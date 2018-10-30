@@ -12,6 +12,7 @@ import {
     DisplayStatus,
     Network,
     OrderProcessState,
+    OrderProgress,
     OrderState,
 } from '../types';
 import { assetUtils } from '../util/asset';
@@ -31,6 +32,7 @@ export interface State {
     quoteRequestState: AsyncProcessState;
     latestErrorMessage?: string;
     latestErrorDisplayStatus: DisplayStatus;
+    orderProgress?: OrderProgress;
 }
 
 export const INITIAL_STATE: State = {
@@ -118,6 +120,11 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             return {
                 ...state,
                 selectedAsset: newSelectedAsset,
+            };
+        case ActionTypes.UPDATE_ORDER_PROGRESS_PERCENTAGE:
+            return {
+                ...state,
+                orderProgress: { percentageDone: action.data },
             };
         case ActionTypes.RESET_AMOUNT:
             return {

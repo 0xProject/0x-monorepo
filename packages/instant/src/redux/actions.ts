@@ -28,6 +28,7 @@ export enum ActionTypes {
     UPDATE_BUY_ORDER_STATE = 'UPDATE_BUY_ORDER_STATE',
     UPDATE_LATEST_BUY_QUOTE = 'UPDATE_LATEST_BUY_QUOTE',
     UPDATE_SELECTED_ASSET = 'UPDATE_SELECTED_ASSET',
+    UPDATE_ORDER_PROGRESS_PERCENTAGE = 'UPDATE_ORDER_PROGRESS_PERCENTAGE',
     SET_QUOTE_REQUEST_STATE_PENDING = 'SET_QUOTE_REQUEST_STATE_PENDING',
     SET_QUOTE_REQUEST_STATE_FAILURE = 'SET_QUOTE_REQUEST_STATE_FAILURE',
     SET_ERROR_MESSAGE = 'SET_ERROR_MESSAGE',
@@ -43,6 +44,8 @@ export const actions = {
     updateBuyOrderState: (orderState: OrderState) => createAction(ActionTypes.UPDATE_BUY_ORDER_STATE, orderState),
     updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UPDATE_LATEST_BUY_QUOTE, buyQuote),
     updateSelectedAsset: (assetData?: string) => createAction(ActionTypes.UPDATE_SELECTED_ASSET, assetData),
+    updateOrderProgressPercentage: (percentDone: number) =>
+        createAction(ActionTypes.UPDATE_ORDER_PROGRESS_PERCENTAGE, percentDone),
     setQuoteRequestStatePending: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING),
     setQuoteRequestStateFailure: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE),
     setErrorMessage: (errorMessage: string) => createAction(ActionTypes.SET_ERROR_MESSAGE, errorMessage),

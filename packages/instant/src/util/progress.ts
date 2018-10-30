@@ -1,3 +1,4 @@
+// TODO: change filename?
 import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 
@@ -26,19 +27,21 @@ interface TickingFinishingStatus {
 type TickingStatus = TickingNoneState | TickingRunningStatus | TickingFinishingStatus;
 
 const TICKS_PER_SECOND = 1000 / PROGRESS_TICK_INTERVAL_MS;
-export class Progress {
+class Progress {
     private _startTimeUnix?: number;
     private _expectedTimeMs?: number;
     private _intervalId?: number;
     private _percentageDone: number;
     private _tickingStatus: TickingStatus;
+    private _dispatcher: Dispatch<Action>;
 
-    constructor() {
+    constructor(dispatcher: Dispatch<Action>) {
         this._startTimeUnix = undefined;
         this._expectedTimeMs = undefined;
         this._percentageDone = 0;
         this._intervalId = undefined;
         this._tickingStatus = { state: TickingState.None };
+        this._dispatcher = dispatcher;
     }
 
     public beginRunning(expectedTimeMs: number): void {
@@ -66,8 +69,9 @@ export class Progress {
                 : this._getNewPercentageNormal();
 
         const maxPercentage = this._tickingStatus.state === TickingState.Finishing ? 100 : PROGRESS_STALL_AT_PERCENTAGE;
-        const percentageDone = Math.min(rawPercentageDone, maxPercentage);
+        const percentageDone = Math.floor(Math.min(rawPercentageDone, maxPercentage));
         this._percentageDone = percentageDone;
+        this._dispatcher(actions.updateOrderProgressPercentage(this._percentageDone));
         console.log('percentageDone', this._percentageDone);
         if (percentageDone >= 100) {
             this._clearTimer();
@@ -96,3 +100,9 @@ export class Progress {
         return this._percentageDone + finishingState.increasePercentageEveryTick;
     }
 }
+
+let _currentProgress: Progress | undefined;
+export const progress = (dispatcher: Dispatch<Action>): Progress => {
+    _currentProgress = _currentProgress || new Progress(dispatcher);
+    return _currentProgress;
+};
