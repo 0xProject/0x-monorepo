@@ -7,3 +7,4 @@ export const GWEI_IN_WEI = new BigNumber(1000000000);
 export const DEFAULT_GAS_PRICE = GWEI_IN_WEI.mul(6);
 export const ETH_GAS_STATION_API_BASE_URL = 'https://ethgasstation.info';
 export const COINBASE_API_BASE_URL = 'https://api.coinbase.com/v2';
+export const PROGRESS_TICK_INTERVAL_MS = 100;
