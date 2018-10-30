@@ -1,6 +1,6 @@
 import { BigNumber, fetchAsync } from '@0x/utils';
 
-import { DEFAULT_GAS_PRICE, ETH_GAS_STATION_API_BASE_URL } from '../constants';
+import { DEFAULT_GAS_PRICE, ETH_GAS_STATION_API_BASE_URL, GWEI_IN_WEI } from '../constants';
 
 interface EthGasStationResult {
     average: number;
@@ -19,8 +19,9 @@ interface EthGasStationResult {
 const fetchFastAmountInWeiAsync = async () => {
     const res = await fetchAsync(`${ETH_GAS_STATION_API_BASE_URL}/json/ethgasAPI.json`);
     const gasInfo = (await res.json()) as EthGasStationResult;
+    // Eth Gas Station result is gwei * 10
     const gasPriceInGwei = new BigNumber(gasInfo.fast / 10);
-    return gasPriceInGwei.mul(1000000000);
+    return gasPriceInGwei.mul(GWEI_IN_WEI);
 };
 
 export class GasPriceEstimator {
