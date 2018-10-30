@@ -96,8 +96,17 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
 
     public render(): React.ReactNode {
         // TODO: Consider moving to seperate component
+
+        const estimatedTimeSeconds = Math.ceil((this.props.expectedEndTimeUnix - this.props.startTimeUnix) / 1000);
         return (
             <Container padding="20px 20px 0px 20px" width="100%">
+                <Container marginBottom="5px">
+                    {/* TODO: consider moving to separate component */}
+                    <Flex justify="space-between">
+                        <Text>Est. Time ({estimatedTimeSeconds} seconds)</Text>
+                        <Text>x</Text>
+                    </Flex>
+                </Container>
                 <Container width="100%" backgroundColor={ColorOption.lightGrey} borderRadius="6px">
                     <Container
                         width={`${this.state.percentageDone}%`}
