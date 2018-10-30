@@ -43,6 +43,7 @@ export interface SimulatedProgressState {
     percentageDone: number;
     intervalId?: number;
     tickingStatus: TickingStatus;
+    elapsedTimeMs: number;
 }
 export class SimulatedProgressBar extends React.Component<SimulatedProgressBarProps, SimulatedProgressState> {
     public constructor(props: SimulatedProgressBarProps) {
@@ -59,6 +60,7 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
             percentageDone: 0,
             intervalId,
             tickingStatus: { runState: TickingRunState.Running },
+            elapsedTimeMs: 0,
         };
     }
 
@@ -98,13 +100,15 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
         // TODO: Consider moving to seperate component
 
         const estimatedTimeSeconds = Math.ceil((this.props.expectedEndTimeUnix - this.props.startTimeUnix) / 1000);
+        const elapsedTimeSeconds = Math.floor(this.state.elapsedTimeMs / 1000);
         return (
             <Container padding="20px 20px 0px 20px" width="100%">
                 <Container marginBottom="5px">
                     {/* TODO: consider moving to separate component */}
                     <Flex justify="space-between">
+                        {/* TODO: should do nice display of these (i.e. 'minutes' and 00:xx) */}
                         <Text>Est. Time ({estimatedTimeSeconds} seconds)</Text>
-                        <Text>x</Text>
+                        <Text>Time: {elapsedTimeSeconds}</Text>
                     </Flex>
                 </Container>
                 <Container width="100%" backgroundColor={ColorOption.lightGrey} borderRadius="6px">
@@ -126,6 +130,7 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
             percentageDone: 0,
             intervalId,
             tickingStatus: { runState: TickingRunState.Running },
+            elapsedTimeMs: 0,
         };
     }
 
@@ -138,8 +143,11 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
             this.state.tickingStatus.runState === TickingRunState.Finishing ? 100 : PROGRESS_STALL_AT_PERCENTAGE;
         const percentageDone = Math.min(rawPercentageDone, maxPercentage);
 
+        const elapsedTimeMs = Math.max(curTimeUnix() - this.props.startTimeUnix, 0);
+
         this.setState({
             percentageDone,
+            elapsedTimeMs,
         });
 
         if (percentageDone >= 100) {
