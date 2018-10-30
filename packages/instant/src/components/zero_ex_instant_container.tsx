@@ -6,6 +6,7 @@ import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 
 import { ColorOption } from '../style/theme';
+import { zIndex } from '../style/z_index';
 
 import { Container, Flex } from './ui';
 
@@ -13,11 +14,11 @@ export interface ZeroExInstantContainerProps {}
 
 export const ZeroExInstantContainer: React.StatelessComponent<ZeroExInstantContainerProps> = props => (
     <Container width="350px">
-        <Container zIndex={1} position="relative">
+        <Container zIndex={zIndex.errorPopup} position="relative">
             <LatestError />
         </Container>
         <Container
-            zIndex={2}
+            zIndex={zIndex.mainContainer}
             position="relative"
             backgroundColor={ColorOption.white}
             borderRadius="3px"
