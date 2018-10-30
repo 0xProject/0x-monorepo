@@ -48,9 +48,6 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                 <Flex direction="row" justify="space-between">
                     <Flex height="60px">
                         <SelectedERC20AssetAmountInput startingFontSizePx={38} />
-                        <Container marginLeft="5px">
-                            <Icon icon="chevron" width={12} />
-                        </Container>
                     </Flex>
                     <Flex direction="column" justify="space-between">
                         {iconOrAmounts}

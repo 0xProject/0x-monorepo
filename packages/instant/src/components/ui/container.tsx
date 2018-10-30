@@ -28,6 +28,7 @@ export interface ContainerProps {
     zIndex?: number;
     whiteSpace?: string;
     opacity?: number;
+    cursor?: string;
 }
 
 export const Container =
@@ -57,6 +58,7 @@ export const Container =
     ${props => cssRuleIfExists(props, 'z-index')}
     ${props => cssRuleIfExists(props, 'white-space')}
     ${props => cssRuleIfExists(props, 'opacity')}
+    ${props => cssRuleIfExists(props, 'cursor')}
     ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
     border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
