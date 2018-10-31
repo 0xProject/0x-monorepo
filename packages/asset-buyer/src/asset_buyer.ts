@@ -77,7 +77,8 @@ export class AssetBuyer {
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.isWebUri('sraApiUrl', sraApiUrl);
-        const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl);
+        const networkId = options.networkId || constants.DEFAULT_ASSET_BUYER_OPTS.networkId;
+        const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl, networkId);
         const assetBuyer = new AssetBuyer(provider, orderProvider, options);
         return assetBuyer;
     }
@@ -239,6 +240,15 @@ export class AssetBuyer {
                 throw err;
             }
         }
+    }
+    /**
+     * Get the asset data of all assets that are purchaseable with ether token (wETH) in the order provider passed in at init.
+     *
+     * @return  An array of asset data strings that can be purchased using wETH.
+     */
+    public async getAvailableAssetDatasAsync(): Promise<string[]> {
+        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
+        return this.orderProvider.getAvailableMakerAssetDatasAsync(etherTokenAssetData);
     }
     /**
      * Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders

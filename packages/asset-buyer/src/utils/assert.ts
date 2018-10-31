@@ -29,7 +29,6 @@ export const assert = {
     isValidOrderProviderRequest(variableName: string, orderFetcherRequest: OrderProviderRequest): void {
         sharedAssert.isHexString(`${variableName}.makerAssetData`, orderFetcherRequest.makerAssetData);
         sharedAssert.isHexString(`${variableName}.takerAssetData`, orderFetcherRequest.takerAssetData);
-        sharedAssert.isNumber(`${variableName}.networkId`, orderFetcherRequest.networkId);
     },
     areValidProvidedOrders(variableName: string, orders: SignedOrder[]): void {
         if (orders.length === 0) {
