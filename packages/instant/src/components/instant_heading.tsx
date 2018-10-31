@@ -16,7 +16,7 @@ export interface InstantHeadingProps {
     ethUsdPrice?: BigNumber;
     quoteRequestState: AsyncProcessState;
     buyOrderState: OrderState;
-    onSymbolClick?: (asset?: ERC20Asset) => void;
+    onSelectAssetClick?: (asset?: ERC20Asset) => void;
 }
 
 const PLACEHOLDER_COLOR = ColorOption.white;
@@ -50,7 +50,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                     <Flex height="60px">
                         <SelectedERC20AssetAmountInput
                             startingFontSizePx={38}
-                            onSymbolClick={this.props.onSymbolClick}
+                            onSelectAssetClick={this.props.onSelectAssetClick}
                         />
                     </Flex>
                     <Flex direction="column" justify="space-between">

@@ -2,6 +2,11 @@ import { Keyframes } from 'styled-components';
 
 import { css, keyframes, styled } from '../../style/theme';
 
+export interface TransitionInfo {
+    from: string;
+    to: string;
+}
+
 const generateTransitionInfoCss = (
     key: keyof TransitionInfo,
     top?: TransitionInfo,
@@ -39,11 +44,6 @@ const slideKeyframeGenerator = (
     }
 `;
 
-export interface TransitionInfo {
-    from: string;
-    to: string;
-}
-
 export interface PositionAnimationSettings {
     top?: TransitionInfo;
     bottom?: TransitionInfo;
@@ -74,3 +74,7 @@ export const PositionAnimation =
     height: 100%;
     width: 100%;
 `;
+
+PositionAnimation.defaultProps = {
+    position: 'relative',
+};

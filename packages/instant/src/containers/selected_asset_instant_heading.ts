@@ -10,7 +10,7 @@ import { AsyncProcessState, ERC20Asset, OrderState } from '../types';
 import { InstantHeading } from '../components/instant_heading';
 
 export interface InstantHeadingProps {
-    onSymbolClick?: (asset?: ERC20Asset) => void;
+    onSelectAssetClick?: (asset?: ERC20Asset) => void;
 }
 
 interface ConnectedState {

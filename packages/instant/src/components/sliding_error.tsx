@@ -37,14 +37,14 @@ export interface SlidingErrorProps extends ErrorProps {
 }
 export const SlidingError: React.StatelessComponent<SlidingErrorProps> = props => {
     const slideAmount = '120px';
-    const slideUp: PositionAnimationSettings = {
+    const slideUpSettings: PositionAnimationSettings = {
         timingFunction: 'ease-in',
         top: {
             from: slideAmount,
             to: '0px',
         },
     };
-    const slideDown: PositionAnimationSettings = {
+    const slideDownSettings: PositionAnimationSettings = {
         timingFunction: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
         top: {
             from: '0px',
@@ -54,8 +54,8 @@ export const SlidingError: React.StatelessComponent<SlidingErrorProps> = props =
     return (
         <SlideAnimation
             position="relative"
-            slideIn={slideUp}
-            slideOut={slideDown}
+            slideInSettings={slideUpSettings}
+            slideOutSettings={slideDownSettings}
             animationState={props.animationState}
         >
             <Error icon={props.icon} message={props.message} />

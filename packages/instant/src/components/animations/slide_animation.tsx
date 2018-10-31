@@ -6,15 +6,15 @@ export type SlideAnimationState = 'slidIn' | 'slidOut' | 'none';
 export interface SlideAnimationProps {
     position: string;
     animationState: SlideAnimationState;
-    slideIn: PositionAnimationSettings;
-    slideOut: PositionAnimationSettings;
+    slideInSettings: PositionAnimationSettings;
+    slideOutSettings: PositionAnimationSettings;
 }
 
 export const SlideAnimation: React.StatelessComponent<SlideAnimationProps> = props => {
     if (props.animationState === 'none') {
         return <React.Fragment>{props.children}</React.Fragment>;
     }
-    const propsToUse = props.animationState === 'slidIn' ? props.slideIn : props.slideOut;
+    const propsToUse = props.animationState === 'slidIn' ? props.slideInSettings : props.slideOutSettings;
     return (
         <PositionAnimation position={props.position} {...propsToUse}>
             {props.children}
