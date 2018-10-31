@@ -35,37 +35,39 @@
             DECIMAL_PLACES: 78,
         });
         const providedOrders = [
+            // Order selling REP
             {
-                "senderAddress": "0x0000000000000000000000000000000000000000",
-                "makerAddress": "0x34a745008a643eebc58920eaa29fb1165b4a288e",
-                "takerAddress": "0x0000000000000000000000000000000000000000",
-                "makerFee": new BigNumber("0"),
-                "takerFee": new BigNumber("0"),
-                "makerAssetAmount": new BigNumber("400000000000000000000"),
-                "takerAssetAmount": new BigNumber("40000000000000000000"),
-                "makerAssetData": "0xf47261b00000000000000000000000008cb3971b8eb709c14616bd556ff6683019e90d9c",
-                "takerAssetData": "0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c",
-                "expirationTimeSeconds": new BigNumber("1543046400"),
-                "feeRecipientAddress": "0x0000000000000000000000000000000000000000",
-                "salt": new BigNumber("47929252863126413473766089649682650973189811771354566206928245255479607883031"),
-                "signature": "0x1c0bf8ba709ceb5b32e6b0b5a8bb7f07e9d19aba88d8530715f8a298d12188e3862fcc0a30ddfad4062b30459f2859323c064052f12cc687466c457934b9419a1b03",
-                "exchangeAddress": "0x35dd2932454449b14cee11a94d3674a936d5d7b2"
+                senderAddress: '0x0000000000000000000000000000000000000000',
+                makerAddress: '0x34a745008a643eebc58920eaa29fb1165b4a288e',
+                takerAddress: '0x0000000000000000000000000000000000000000',
+                makerFee: new BigNumber('0'),
+                takerFee: new BigNumber('0'),
+                makerAssetAmount: new BigNumber('400000000000000000000'),
+                takerAssetAmount: new BigNumber('40000000000000000000'),
+                makerAssetData: '0xf47261b00000000000000000000000008cb3971b8eb709c14616bd556ff6683019e90d9c',
+                takerAssetData: '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
+                expirationTimeSeconds: new BigNumber('1543046400'),
+                feeRecipientAddress: '0x0000000000000000000000000000000000000000',
+                salt: new BigNumber('47929252863126413473766089649682650973189811771354566206928245255479607883031'),
+                signature: '0x1c0bf8ba709ceb5b32e6b0b5a8bb7f07e9d19aba88d8530715f8a298d12188e3862fcc0a30ddfad4062b30459f2859323c064052f12cc687466c457934b9419a1b03',
+                exchangeAddress: '0x35dd2932454449b14cee11a94d3674a936d5d7b2'
             },
+            // Order selling ZRX
             {
-                "senderAddress": "0x0000000000000000000000000000000000000000",
-                "makerAddress": "0x34a745008a643eebc58920eaa29fb1165b4a288e",
-                "takerAddress": "0x0000000000000000000000000000000000000000",
-                "makerFee": new BigNumber("0"),
-                "takerFee": new BigNumber("0"),
-                "makerAssetAmount": new BigNumber("300000000000000000000"),
-                "takerAssetAmount": new BigNumber("31000000000000000000"),
-                "makerAssetData": "0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa",
-                "takerAssetData": "0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c",
-                "expirationTimeSeconds": new BigNumber("2524636800"),
-                "feeRecipientAddress": "0x0000000000000000000000000000000000000000",
-                "salt": new BigNumber("64592004666704945574675477805199411288137454783320798602050822322450089238268"),
-                "signature": "0x1c13cacddca8d7d8248e91f412377e68f8f1f9891a59a6c1b2eea9f7b33558c30c4fb86a448e08ab7def40a28fb3a3062dcb33bb3c45302447fce5c4288b7c7f5b03",
-                "exchangeAddress": "0x35dd2932454449b14cee11a94d3674a936d5d7b2"
+                senderAddress: '0x0000000000000000000000000000000000000000',
+                makerAddress: '0x34a745008a643eebc58920eaa29fb1165b4a288e',
+                takerAddress: '0x0000000000000000000000000000000000000000',
+                makerFee: new BigNumber('0'),
+                takerFee: new BigNumber('0'),
+                makerAssetAmount: new BigNumber('300000000000000000000'),
+                takerAssetAmount: new BigNumber('31000000000000000000'),
+                makerAssetData: '0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa',
+                takerAssetData: '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
+                expirationTimeSeconds: new BigNumber('2524636800'),
+                feeRecipientAddress: '0x0000000000000000000000000000000000000000',
+                salt: new BigNumber('64592004666704945574675477805199411288137454783320798602050822322450089238268'),
+                signature: '0x1c13cacddca8d7d8248e91f412377e68f8f1f9891a59a6c1b2eea9f7b33558c30c4fb86a448e08ab7def40a28fb3a3062dcb33bb3c45302447fce5c4288b7c7f5b03',
+                exchangeAddress: '0x35dd2932454449b14cee11a94d3674a936d5d7b2'
             }
         ];
         const queryParams = new Uri(window.location.search);
