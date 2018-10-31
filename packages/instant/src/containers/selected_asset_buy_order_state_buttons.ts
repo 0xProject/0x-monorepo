@@ -26,6 +26,7 @@ interface ConnectedDispatch {
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
     onRetry: () => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
+    onDemo: () => void;
 }
 export interface SelectedAssetBuyOrderStateButtons {}
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => ({
@@ -79,6 +80,9 @@ const mapDispatchToProps = (
     },
     onRetry: () => {
         dispatch(actions.resetAmount());
+    },
+    onDemo: () => {
+        console.log('demo');
     },
 });
 

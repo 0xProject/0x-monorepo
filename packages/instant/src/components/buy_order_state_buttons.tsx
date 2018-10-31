@@ -2,6 +2,7 @@ import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import * as React from 'react';
 
 import { BuyButton } from '../components/buy_button';
+import { DemoProgress } from '../components/demo_progress';
 import { SecondaryButton } from '../components/secondary_button';
 import { Flex } from '../components/ui/flex';
 
@@ -24,6 +25,8 @@ export interface BuyOrderStateButtonProps {
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
     onRetry: () => void;
+
+    onDemo: () => void;
 }
 
 export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonProps> = props => {
@@ -50,15 +53,21 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
     }
 
     return (
-        <BuyButton
-            buyQuote={props.buyQuote}
-            assetBuyer={props.assetBuyer}
-            onValidationPending={props.onValidationPending}
-            onValidationFail={props.onValidationFail}
-            onSignatureDenied={props.onSignatureDenied}
-            onBuyProcessing={props.onBuyProcessing}
-            onBuySuccess={props.onBuySuccess}
-            onBuyFailure={props.onBuyFailure}
-        />
+        <div>
+            <div style={{ marginBottom: '20px' }}>
+                <DemoProgress expectedTimeMs={20000} />
+            </div>
+            <SecondaryButton onClick={props.onDemo}>Demo</SecondaryButton>
+            <BuyButton
+                buyQuote={props.buyQuote}
+                assetBuyer={props.assetBuyer}
+                onValidationPending={props.onValidationPending}
+                onValidationFail={props.onValidationFail}
+                onSignatureDenied={props.onSignatureDenied}
+                onBuyProcessing={props.onBuyProcessing}
+                onBuySuccess={props.onBuySuccess}
+                onBuyFailure={props.onBuyFailure}
+            />
+        </div>
     );
 };
