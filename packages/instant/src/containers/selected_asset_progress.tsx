@@ -9,10 +9,10 @@ import { Container } from '../components/ui';
 import { State } from '../redux/reducer';
 import { OrderProcessState, OrderState, SimulatedProgress } from '../types';
 
-// TODO: rename this
 interface SelectedAssetProgressComponentProps {
     buyOrderState: OrderState;
 }
+// TODO: rename this component and move to seperate file, and get props using mapStateToProps
 export const SelectedAssetSimulatedProgressComponent: React.StatelessComponent<
     SelectedAssetProgressComponentProps
 > = props => {
@@ -46,4 +46,4 @@ interface ConnectedState {
 const mapStateToProps = (state: State, _ownProps: {}): ConnectedState => ({
     buyOrderState: state.buyOrderState,
 });
-export const SelectedAssetSimulatedProgressBar = connect(mapStateToProps)(SelectedAssetSimulatedProgressComponent);
+export const SelectedAssetProgress = connect(mapStateToProps)(SelectedAssetSimulatedProgressComponent);
