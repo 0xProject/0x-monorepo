@@ -5,6 +5,11 @@
             {
                 "note": "`getAssetBuyerForProvidedOrders` factory function now takes 3 args instead of 4",
                 "pr": 1187
+            },
+            {
+                "note":
+                    "the `OrderProvider` now requires a new method `getAvailableMakerAssetDatasAsync` and the `StandardRelayerAPIOrderProvider` requires the network id at init.",
+                "pr": 1203
             }
         ]
     },
