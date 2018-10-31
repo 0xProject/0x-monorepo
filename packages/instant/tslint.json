@@ -3,7 +3,6 @@
     "rules": {
         "custom-no-magic-numbers": false,
         "semicolon": [true, "always", "ignore-bound-class-methods"],
-        "max-classes-per-file": false,
-        "switch-default": false
+        "max-classes-per-file": false
     }
 }
