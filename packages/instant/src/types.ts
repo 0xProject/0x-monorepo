@@ -19,7 +19,6 @@ export enum OrderProcessState {
 export interface SimulatedProgress {
     startTimeUnix: number;
     expectedEndTimeUnix: number;
-    ended: boolean;
 }
 
 interface OrderStatePreTx {
