@@ -1,11 +1,9 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Dispatch } from 'redux';
 
 import { PROGRESS_STALL_AT_PERCENTAGE, PROGRESS_TICK_INTERVAL_MS } from '../constants';
-import { Action, actions } from '../redux/actions';
-
 import { ColorOption } from '../style/theme';
+import { timeUtil } from '../util/time';
 
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
@@ -106,9 +104,8 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
                 <Container marginBottom="5px">
                     {/* TODO: consider moving to separate component */}
                     <Flex justify="space-between">
-                        {/* TODO: should do nice display of these (i.e. 'minutes' and 00:xx) */}
-                        <Text>Est. Time ({estimatedTimeSeconds} seconds)</Text>
-                        <Text>Time: {elapsedTimeSeconds}</Text>
+                        <Text>Est. Time ({timeUtil.secondsToHumanDescription(estimatedTimeSeconds)})</Text>
+                        <Text>Time: {timeUtil.secondsToStopwatchTime(elapsedTimeSeconds)}</Text>
                     </Flex>
                 </Container>
                 <Container width="100%" backgroundColor={ColorOption.lightGrey} borderRadius="6px">
