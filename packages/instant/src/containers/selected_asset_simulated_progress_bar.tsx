@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { connect } from 'react-redux';
 
-import { SimulatedProgressBar } from '../components/simulated_progress_bar';
 import { TimedProgressBar } from '../components/timed_progress_bar';
 
 import { TimeCounter } from '../components/time_counter';
@@ -11,7 +10,6 @@ import { State } from '../redux/reducer';
 import { OrderProcessState, OrderState, SimulatedProgress } from '../types';
 
 // TODO: rename this
-// TODO: delete SimulatedProgressBar code and anything else remaining
 interface SelectedAssetProgressComponentProps {
     buyOrderState: OrderState;
 }

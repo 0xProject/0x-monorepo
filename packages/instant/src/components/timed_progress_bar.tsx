@@ -1,14 +1,10 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Keyframes } from 'styled-components';
 
 import { PROGRESS_FINISH_ANIMATION_TIME_MS, PROGRESS_STALL_AT_PERCENTAGE } from '../constants';
 import { ColorOption, keyframes, styled } from '../style/theme';
-import { timeUtil } from '../util/time';
 
 import { Container } from './ui/container';
-import { Flex } from './ui/flex';
-import { Text } from './ui/text';
 
 export interface TimedProgressBarProps {
     expectedTimeMs: number;
@@ -29,6 +25,11 @@ export const beginningState = (props: TimedProgressBarProps): TimedProgressBarSt
     };
 };
 
+/**
+ * Timed Progress Bar
+ * Goes from 0% -> PROGRESS_STALL_AT_PERCENTAGE% over time of expectedTimeMs
+ * When ended set to true, goes to 100% through animation of PROGRESS_FINISH_ANIMATION_TIME_MS length
+ */
 export class TimedProgressBar extends React.Component<TimedProgressBarProps, TimedProgressBarState> {
     private readonly _barRef = React.createRef<HTMLDivElement>();
 
