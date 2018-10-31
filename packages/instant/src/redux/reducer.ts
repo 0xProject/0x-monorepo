@@ -104,7 +104,6 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                     progress: {
                         startTimeUnix,
                         expectedEndTimeUnix,
-                        ended: false,
                     },
                 },
             };
