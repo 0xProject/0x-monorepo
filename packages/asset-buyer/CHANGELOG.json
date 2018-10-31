@@ -5,6 +5,10 @@
             {
                 "note": "`getAssetBuyerForProvidedOrders` factory function now takes 3 args instead of 4",
                 "pr": 1187
+            },
+            {
+                "note": "No longer require that provided orders all have the same maker and taker asset data",
+                "pr": 1197
             }
         ]
     },
