@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { PROGRESS_STALL_AT_PERCENTAGE, PROGRESS_TICK_INTERVAL_MS } from '../constants';
-import { ColorOption } from '../style/theme';
+import { ColorOption, styled } from '../style/theme';
 import { timeUtil } from '../util/time';
 
 import { Container } from './ui/container';
@@ -109,11 +109,12 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
                     </Flex>
                 </Container>
                 <Container width="100%" backgroundColor={ColorOption.lightGrey} borderRadius="6px">
-                    <Container
-                        width={`${this.state.percentageDone}%`}
+                    <InnerProgressBarElement
+                        percentageDone={this.state.percentageDone}
                         backgroundColor={ColorOption.primaryColor}
                         borderRadius="6px"
                         height="6px"
+                        transitionTimeMs={200}
                     />
                 </Container>
             </Container>
@@ -172,3 +173,22 @@ export class SimulatedProgressBar extends React.Component<SimulatedProgressBarPr
         return percentageDone;
     }
 }
+
+interface InnerProgressBarElementProps {
+    percentageDone: number;
+    backgroundColor: ColorOption;
+    borderRadius: string;
+    height: string;
+    transitionTimeMs: number;
+}
+
+export const InnerProgressBarElement =
+    styled.div <
+    InnerProgressBarElementProps >
+    `
+    width: ${props => props.percentageDone}%;
+    background-color: ${props => props.theme[props.backgroundColor]};
+    border-radius: ${props => props.borderRadius};
+    height: ${props => props.height};
+    transition: width ${props => props.transitionTimeMs}ms ease-in-out;
+    `;
