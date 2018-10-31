@@ -83,11 +83,71 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 latestBuyQuote: undefined,
                 quoteRequestState: AsyncProcessState.FAILURE,
             };
-        case ActionTypes.UPDATE_BUY_ORDER_STATE:
+        case ActionTypes.SET_BUY_ORDER_STATE_NONE:
             return {
                 ...state,
-                buyOrderState: action.data,
+                buyOrderState: { processState: OrderProcessState.NONE },
             };
+        case ActionTypes.SET_BUY_ORDER_STATE_VALIDATING:
+            return {
+                ...state,
+                buyOrderState: { processState: OrderProcessState.VALIDATING },
+            };
+        case ActionTypes.SET_BUY_ORDER_STATE_PROCESSING:
+            const processingData = action.data;
+            const { startTimeUnix, expectedEndTimeUnix } = processingData;
+            return {
+                ...state,
+                buyOrderState: {
+                    processState: OrderProcessState.PROCESSING,
+                    txHash: processingData.txHash,
+                    progress: {
+                        startTimeUnix,
+                        expectedEndTimeUnix,
+                        ended: false,
+                    },
+                },
+            };
+        case ActionTypes.SET_BUY_ORDER_STATE_FAILURE:
+            const failureTxHash = action.data;
+            if ('txHash' in state.buyOrderState) {
+                if (state.buyOrderState.txHash === failureTxHash) {
+                    const failureProgress = {
+                        startTimeUnix: state.buyOrderState.progress.startTimeUnix,
+                        expectedEndTimeUnix: state.buyOrderState.progress.expectedEndTimeUnix,
+                        ended: true,
+                    };
+                    return {
+                        ...state,
+                        buyOrderState: {
+                            processState: OrderProcessState.FAILURE,
+                            txHash: state.buyOrderState.txHash,
+                            progress: failureProgress,
+                        },
+                    };
+                }
+            }
+            return state;
+        case ActionTypes.SET_BUY_ORDER_STATE_SUCCESS:
+            const successTxHash = action.data;
+            if ('txHash' in state.buyOrderState) {
+                if (state.buyOrderState.txHash === successTxHash) {
+                    const successProgress = {
+                        startTimeUnix: state.buyOrderState.progress.startTimeUnix,
+                        expectedEndTimeUnix: state.buyOrderState.progress.expectedEndTimeUnix,
+                        ended: true,
+                    };
+                    return {
+                        ...state,
+                        buyOrderState: {
+                            processState: OrderProcessState.SUCCESS,
+                            txHash: state.buyOrderState.txHash,
+                            progress: successProgress,
+                        },
+                    };
+                }
+            }
+            return state;
         case ActionTypes.SET_ERROR_MESSAGE:
             return {
                 ...state,

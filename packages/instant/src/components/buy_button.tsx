@@ -20,8 +20,8 @@ export interface BuyButtonProps {
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
     onSignatureDenied: (buyQuote: BuyQuote) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
-    onBuySuccess: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
-    onBuyFailure: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
 }
 
 export class BuyButton extends React.Component<BuyButtonProps> {
@@ -80,11 +80,12 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
             if (e instanceof Error && e.message.startsWith(WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX)) {
-                this.props.onBuyFailure(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
+                this.props.onBuyFailure(buyQuote, txHash);
                 return;
             }
             throw e;
         }
-        this.props.onBuySuccess(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
+
+        this.props.onBuySuccess(buyQuote, txHash);
     };
 }

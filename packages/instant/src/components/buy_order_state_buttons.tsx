@@ -6,7 +6,6 @@ import { SecondaryButton } from '../components/secondary_button';
 import { Flex } from '../components/ui/flex';
 
 import { PlacingOrderButton } from '../components/placing_order_button';
-import { SimulatedProgressBar } from '../components/simulated_progress_bar';
 import { ColorOption } from '../style/theme';
 import { OrderProcessState, ZeroExInstantError } from '../types';
 
@@ -22,8 +21,8 @@ export interface BuyOrderStateButtonProps {
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
     onSignatureDenied: (buyQuote: BuyQuote) => void;
     onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
-    onBuySuccess: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
-    onBuyFailure: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
     onRetry: () => void;
 }
 
