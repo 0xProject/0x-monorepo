@@ -13,7 +13,6 @@ import {
     Network,
     OrderProcessState,
     OrderState,
-    SimulatedProgress,
 } from '../types';
 import { assetUtils } from '../util/asset';
 import { BigNumberInput } from '../util/big_number_input';
