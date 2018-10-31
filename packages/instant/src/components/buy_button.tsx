@@ -2,7 +2,7 @@ import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { DEFAULT_GAS_PRICE, WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
+import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
 import { ZeroExInstantError } from '../types';
 import { getBestAddress } from '../util/address';
