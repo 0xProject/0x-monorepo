@@ -55,7 +55,7 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
     return (
         <div>
             <div style={{ marginBottom: '20px' }}>
-                <DemoProgress expectedTimeMs={20000} />
+                <DemoProgress expectedTimeMs={6000} />
             </div>
             <SecondaryButton onClick={props.onDemo}>Demo</SecondaryButton>
             <BuyButton

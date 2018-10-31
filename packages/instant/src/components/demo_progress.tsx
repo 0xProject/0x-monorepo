@@ -17,13 +17,26 @@ interface DemoProgressProps {
 interface DemoProgressState {
     // max width
     animationTimeMs: number;
+    maxWidthPercent: number;
 }
 export class DemoProgress extends React.Component<DemoProgressProps, DemoProgressState> {
+    public myRef?: any;
     public constructor(props: DemoProgressProps) {
         super(props);
         this.state = {
             animationTimeMs: props.expectedTimeMs,
+            maxWidthPercent: 25,
         };
+        this.myRef = React.createRef();
+
+        window.setTimeout(() => {
+            console.log('going!');
+            console.log(this.myRef);
+            this.setState({
+                animationTimeMs: 1000,
+                maxWidthPercent: 100,
+            });
+        }, 3000);
     }
 
     public render(): React.ReactNode {
@@ -31,28 +44,34 @@ export class DemoProgress extends React.Component<DemoProgressProps, DemoProgres
         return (
             <Container padding="20px 20px 0px 20px" width="100%">
                 <Container width="100%" backgroundColor={ColorOption.lightGrey} borderRadius="6px">
-                    <InnerProgressBarElement timeMs={this.state.animationTimeMs} />
+                    <InnerProgressBarElement
+                        timeMs={this.state.animationTimeMs}
+                        maxWidthPercent={this.state.maxWidthPercent}
+                        ref={this.myRef}
+                    />
                 </Container>
             </Container>
         );
     }
 }
 
+// TODO: 95
+const widthKeyframes = (maxWidthPercent: number) => {
+    // todO: dont use 20%
+    return keyframes`
+        from {
+            width: 0%;
+        }
+        to {
+            width: ${maxWidthPercent}%;
+        }
+    `;
+};
+
 interface InnerProgressBarElementProps {
     timeMs: number;
+    maxWidthPercent: number;
 }
-
-// TODO: 95
-const widthKeyframes = keyframes`
-    from {
-        width: 0%;
-    }
-    to {
-        width: 100%;
-    }
-
-`;
-
 export const InnerProgressBarElement =
     styled.div <
     InnerProgressBarElementProps >
@@ -60,7 +79,7 @@ export const InnerProgressBarElement =
     background-color: black;
     border-radius: 6px;
     height: 6px;
-    animation: ${widthKeyframes} ${props => props.timeMs}ms linear 1;
+    animation: ${props => widthKeyframes(props.maxWidthPercent)} ${props => props.timeMs}ms linear 1 forwards;
     `;
 
 // animation-fill-mode: forwards;
