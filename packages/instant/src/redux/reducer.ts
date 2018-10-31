@@ -187,8 +187,6 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 buyOrderState: { processState: OrderProcessState.NONE },
                 selectedAssetAmount: undefined,
             };
-        default:
-            return state;
     }
 };
 
