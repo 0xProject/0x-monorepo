@@ -65,7 +65,7 @@ interface TimedProgressProps {
     fromWidth: string;
     toWidth: string;
 }
-// TODO use PrimaryColor instead of black
+
 export const TimedProgress =
     styled.div <
     TimedProgressProps >
