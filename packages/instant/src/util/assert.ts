@@ -15,6 +15,9 @@ export const assert = {
         }
         sharedAssert.doesConformToSchema(variableName, orderSource, schemas.signedOrdersSchema);
     },
+    areValidAssetDatas(variableName: string, assetDatas: string[]): void {
+        _.forEach(assetDatas, (assetData, index) => assert.isHexString(`${variableName}[${index}]`, assetData));
+    },
     isValidAssetMetaDataMap(variableName: string, metaDataMap: ObjectMap<AssetMetaData>): void {
         _.forEach(metaDataMap, (metaData, assetData) => {
             assert.isHexString(`key ${assetData} of ${variableName}`, assetData);

@@ -20,5 +20,8 @@ export const render = (props: ZeroExInstantProps, selector: string = DEFAULT_ZER
     if (!_.isUndefined(props.networkId)) {
         assert.isNumber('networkId', props.networkId);
     }
+    if (!_.isUndefined(props.availableAssetDatas)) {
+        assert.areValidAssetDatas('availableAssetDatas', props.availableAssetDatas);
+    }
     ReactDOM.render(React.createElement(ZeroExInstant, props), document.querySelector(selector));
 };
