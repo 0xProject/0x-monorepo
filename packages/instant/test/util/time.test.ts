@@ -1,6 +1,6 @@
 import { timeUtil } from '../../src/util/time';
 
-describe('assetDataUtil', () => {
+describe('timeUtil', () => {
     describe('secondsToHumanDescription', () => {
         const numsToResults: {
             [aNumber: number]: string;
