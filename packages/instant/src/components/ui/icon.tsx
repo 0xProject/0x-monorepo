@@ -1,4 +1,7 @@
+import * as _ from 'lodash';
 import * as React from 'react';
+
+import { styled } from '../../style/theme';
 
 type svgRule = 'evenodd' | 'nonzero' | 'inherit';
 interface IconInfo {
@@ -52,33 +55,57 @@ const ICONS: IconInfoMapping = {
 };
 
 export interface IconProps {
+    className?: string;
     width: number;
     height?: number;
     color?: string;
     icon: keyof IconInfoMapping;
+    onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+    padding?: string;
 }
-export const Icon: React.SFC<IconProps> = props => {
+const PlainIcon: React.SFC<IconProps> = props => {
     const iconInfo = ICONS[props.icon];
-
     return (
-        <svg
-            width={props.width}
-            height={props.height}
-            viewBox={iconInfo.viewBox}
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <path
-                d={iconInfo.path}
-                fill={props.color}
-                fillRule={iconInfo.fillRule || 'nonzero'}
-                clipRule={iconInfo.clipRule || 'nonzero'}
-                stroke={iconInfo.stroke}
-                strokeOpacity={iconInfo.strokeOpacity}
-                strokeWidth={iconInfo.strokeWidth}
-                strokeLinecap={iconInfo.strokeLinecap}
-                strokeLinejoin={iconInfo.strokeLinejoin}
-            />
-        </svg>
+        <div onClick={props.onClick} className={props.className}>
+            <svg
+                width={props.width}
+                height={props.height}
+                viewBox={iconInfo.viewBox}
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    d={iconInfo.path}
+                    fill={props.color}
+                    fillRule={iconInfo.fillRule || 'nonzero'}
+                    clipRule={iconInfo.clipRule || 'nonzero'}
+                    stroke={iconInfo.stroke}
+                    strokeOpacity={iconInfo.strokeOpacity}
+                    strokeWidth={iconInfo.strokeWidth}
+                    strokeLinecap={iconInfo.strokeLinecap}
+                    strokeLinejoin={iconInfo.strokeLinejoin}
+                />
+            </svg>
+        </div>
     );
 };
+
+export const Icon = styled(PlainIcon)`
+    cursor: ${props => (!_.isUndefined(props.onClick) ? 'pointer' : 'default')};
+    transition: opacity 0.5s ease;
+    padding: ${props => props.padding};
+    opacity: ${props => (!_.isUndefined(props.onClick) ? 0.7 : 1)};
+    &:hover {
+        opacity: 1;
+    }
+    &:active {
+        opacity: 1;
+    }
+`;
+
+Icon.defaultProps = {
+    color: 'white',
+    padding: '0em 0em',
+};
+
+Icon.displayName = 'Icon';

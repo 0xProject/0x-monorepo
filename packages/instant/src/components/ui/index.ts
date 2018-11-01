@@ -1,5 +1,5 @@
 export { Text, TextProps, Title } from './text';
-export { Button, ButtonProps, ButtonHoverStyle } from './button';
+export { Button, ButtonProps } from './button';
 export { Flex, FlexProps } from './flex';
 export { Container, ContainerProps } from './container';
 export { Input, InputProps } from './input';

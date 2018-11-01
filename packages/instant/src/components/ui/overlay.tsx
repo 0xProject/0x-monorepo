@@ -1,10 +1,8 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { ColorOption, overlayBlack, styled } from '../../style/theme';
-import { util } from '../../util/util';
+import { overlayBlack, styled } from '../../style/theme';
 
-import { Button, ButtonHoverStyle } from './button';
 import { Container } from './container';
 import { Flex } from './flex';
 import { Icon } from './icon';
@@ -18,15 +16,7 @@ export interface OverlayProps {
 const PlainOverlay: React.StatelessComponent<OverlayProps> = ({ children, className, onClose }) => (
     <Flex height="100vh" className={className}>
         <Container position="absolute" top="0px" right="0px">
-            <Button
-                backgroundColor={ColorOption.clear}
-                borderColor={ColorOption.clear}
-                padding="2em 2em"
-                onClick={onClose}
-                hoverStyle={ButtonHoverStyle.Opacity}
-            >
-                <Icon height={18} width={18} color="white" icon="closeX" />
-            </Button>
+            <Icon height={18} width={18} color="white" icon="closeX" onClick={onClose} padding="2em 2em" />
         </Container>
         <div>{children}</div>
     </Flex>
@@ -42,7 +32,6 @@ export const Overlay = styled(PlainOverlay)`
 `;
 
 Overlay.defaultProps = {
-    onClose: util.boundNoop,
     zIndex: 100,
 };
 
