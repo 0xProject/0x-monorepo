@@ -43,6 +43,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         </Container>
                     </Flex>
                     <SlidingPanel
+                        title="Select Token"
                         animationState={this.state.tokenSelectionPanelAnimationState}
                         onClose={this._handlePanelClose}
                     >

@@ -5,16 +5,26 @@ import { zIndex } from '../style/z_index';
 
 import { PositionAnimationSettings } from './animations/position_animation';
 import { SlideAnimation, SlideAnimationState } from './animations/slide_animation';
-import { Container, Icon } from './ui';
+import { Container, Flex, Icon, Text } from './ui';
 
 export interface PanelProps {
+    title?: string;
     onClose?: () => void;
 }
 
-export const Panel: React.StatelessComponent<PanelProps> = ({ children, onClose }) => (
-    <Container backgroundColor={ColorOption.white} width="100%" height="100%" zIndex={zIndex.panel}>
-        <Icon width={12} color={ColorOption.lightGrey} icon="closeX" onClick={onClose} />
-        {children}
+export const Panel: React.StatelessComponent<PanelProps> = ({ title, children, onClose }) => (
+    <Container backgroundColor={ColorOption.white} width="100%" height="100%" zIndex={zIndex.panel} padding="20px">
+        <Flex justify="space-between">
+            {title && (
+                <Container marginTop="3px">
+                    <Text fontColor={ColorOption.darkGrey} fontSize="18px" fontWeight="600" lineHeight="22px">
+                        {title}
+                    </Text>
+                </Container>
+            )}
+            <Icon width={12} color={ColorOption.lightGrey} icon="closeX" onClick={onClose} />
+        </Flex>
+        <Container marginTop="5px">{children}</Container>
     </Container>
 );
 
