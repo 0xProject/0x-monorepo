@@ -122,18 +122,19 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
             currentFontSizePx: fontSizePx,
         });
     };
-    // We don't want to allow opening the token selection panel if there are no assets.
     private readonly _generateSelectAssetClickHandler = (): (() => void) | undefined => {
-        const { numberOfAssetsAvailable } = this.props;
-        if (_.isUndefined(numberOfAssetsAvailable) || numberOfAssetsAvailable <= 1) {
+        // We don't want to allow opening the token selection panel if there are no assets.
+        // Since styles are inferred from the presence of a click handler, we want to return undefined
+        // instead of providing a noop.
+        const { numberOfAssetsAvailable, onSelectAssetClick } = this.props;
+        if (
+            _.isUndefined(numberOfAssetsAvailable) ||
+            numberOfAssetsAvailable <= 1 ||
+            _.isUndefined(onSelectAssetClick)
+        ) {
             return undefined;
         }
-        return this._handleSelectAssetClick;
-    };
-    private readonly _handleSelectAssetClick = () => {
-        if (this.props.onSelectAssetClick) {
-            this.props.onSelectAssetClick(this.props.asset);
-        }
+        return () => onSelectAssetClick(this.props.asset);
     };
     // For assets with symbols of different length,
     // start scaling the input at different character lengths
