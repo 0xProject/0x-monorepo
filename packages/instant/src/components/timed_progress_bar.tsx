@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { PROGRESS_FINISH_ANIMATION_TIME_MS, PROGRESS_STALL_AT_PERCENTAGE } from '../constants';
+import { PROGRESS_FINISH_ANIMATION_TIME_MS, PROGRESS_STALL_AT_WIDTH } from '../constants';
 import { ColorOption, keyframes, styled } from '../style/theme';
 
 import { Container } from './ui/container';
@@ -13,8 +13,8 @@ export interface TimedProgressBarProps {
 
 /**
  * Timed Progress Bar
- * Goes from 0% -> PROGRESS_STALL_AT_PERCENTAGE% over time of expectedTimeMs
- * When hasEnded set to true, goes to 100% through animation of PROGRESS_FINISH_ANIMATION_TIME_MS length
+ * Goes from 0% -> PROGRESS_STALL_AT_WIDTH over time of expectedTimeMs
+ * When hasEnded set to true, goes to 100% through animation of PROGRESS_FINISH_ANIMATION_TIME_MS length of time
  */
 export class TimedProgressBar extends React.Component<TimedProgressBarProps, {}> {
     private readonly _barRef = React.createRef<HTMLDivElement>();
@@ -37,25 +37,25 @@ export class TimedProgressBar extends React.Component<TimedProgressBarProps, {}>
             return {
                 timeMs: PROGRESS_FINISH_ANIMATION_TIME_MS,
                 fromWidth,
-                maxWidthPercent: 100,
+                toWidth: '100%',
             };
         }
 
         return {
             timeMs: this.props.expectedTimeMs,
             fromWidth: '0px',
-            maxWidthPercent: PROGRESS_STALL_AT_PERCENTAGE,
+            toWidth: PROGRESS_STALL_AT_WIDTH,
         };
     }
 }
 
-const expandingWidthKeyframes = (fromWidth: string, maxWidthPercent: number) => {
+const expandingWidthKeyframes = (fromWidth: string, toWidth: string) => {
     return keyframes`
           from {
-              width: ${fromWidth}
+              width: ${fromWidth};
           }
           to {
-              width: ${maxWidthPercent}%;
+              width: ${toWidth};
           }
       `;
 };
@@ -63,7 +63,7 @@ const expandingWidthKeyframes = (fromWidth: string, maxWidthPercent: number) => 
 interface TimedProgressProps {
     timeMs: number;
     fromWidth: string;
-    maxWidthPercent: number;
+    toWidth: string;
 }
 // TODO use PrimaryColor instead of black
 export const TimedProgress =
@@ -73,6 +73,6 @@ export const TimedProgress =
     background-color: black;
     border-radius: 6px;
     height: 6px;
-    animation: ${props => expandingWidthKeyframes(props.fromWidth, props.maxWidthPercent)}
+    animation: ${props => expandingWidthKeyframes(props.fromWidth, props.toWidth)}
       ${props => props.timeMs}ms linear 1 forwards;
   `;
