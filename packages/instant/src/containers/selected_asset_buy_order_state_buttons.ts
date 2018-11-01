@@ -7,7 +7,7 @@ import { Dispatch } from 'redux';
 import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { OrderProcessState, OrderState, ZeroExInstantError } from '../types';
+import { OrderProcessState, ZeroExInstantError } from '../types';
 import { errorFlasher } from '../util/error_flasher';
 import { etherscanUtil } from '../util/etherscan';
 

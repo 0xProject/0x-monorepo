@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { BigNumberInput } from '../util/big_number_input';
 
-import { ActionsUnion, OrderState, SimulatedProgress } from '../types';
+import { ActionsUnion } from '../types';
 
 export interface PlainAction<T extends string> {
     type: T;
