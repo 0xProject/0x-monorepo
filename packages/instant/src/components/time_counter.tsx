@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { ONE_SECOND_MS } from '../constants';
 import { timeUtil } from '../util/time';
 
 import { Flex } from './ui/flex';
@@ -34,7 +35,7 @@ export class TimeCounter extends React.Component<TimeCounterProps, TimeCounterSt
     }
 
     public render(): React.ReactNode {
-        const estimatedTimeSeconds = this.props.estimatedTimeMs / 1000;
+        const estimatedTimeSeconds = this.props.estimatedTimeMs / ONE_SECOND_MS;
         return (
             <Flex justify="space-between">
                 <Text>Est. Time ({timeUtil.secondsToHumanDescription(estimatedTimeSeconds)})</Text>
@@ -53,7 +54,7 @@ export class TimeCounter extends React.Component<TimeCounterProps, TimeCounterSt
             this.setState({
                 elapsedSeconds: this.state.elapsedSeconds + 1,
             });
-        }, 1000);
+        }, ONE_SECOND_MS);
     }
 
     private _clearTimer(): void {
