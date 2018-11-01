@@ -5,7 +5,7 @@ import { zIndex } from '../style/z_index';
 
 import { PositionAnimationSettings } from './animations/position_animation';
 import { SlideAnimation, SlideAnimationState } from './animations/slide_animation';
-import { Button, Container, Text } from './ui';
+import { Container, Icon } from './ui';
 
 export interface PanelProps {
     onClose?: () => void;
@@ -13,9 +13,7 @@ export interface PanelProps {
 
 export const Panel: React.StatelessComponent<PanelProps> = ({ children, onClose }) => (
     <Container backgroundColor={ColorOption.white} width="100%" height="100%" zIndex={zIndex.panel}>
-        <Button onClick={onClose}>
-            <Text fontColor={ColorOption.white}>Close </Text>
-        </Button>
+        <Icon width={12} color={ColorOption.lightGrey} icon="closeX" onClick={onClose} />
         {children}
     </Container>
 );

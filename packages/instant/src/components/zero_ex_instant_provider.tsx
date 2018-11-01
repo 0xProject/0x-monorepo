@@ -17,8 +17,6 @@ import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { getProvider } from '../util/provider';
 import { web3Wrapper } from '../util/web3_wrapper';
 
-import { ZeroExInstantContainer } from './zero_ex_instant_container';
-
 fonts.include();
 
 export type ZeroExInstantProviderProps = ZeroExInstantProviderRequiredProps &

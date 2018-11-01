@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { styled } from '../../style/theme';
+import { ColorOption, styled, Theme, withTheme } from '../../style/theme';
 
 type svgRule = 'evenodd' | 'nonzero' | 'inherit';
 interface IconInfo {
@@ -58,13 +58,15 @@ export interface IconProps {
     className?: string;
     width: number;
     height?: number;
-    color?: string;
+    color?: ColorOption;
     icon: keyof IconInfoMapping;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
     padding?: string;
+    theme: Theme;
 }
-const PlainIcon: React.SFC<IconProps> = props => {
+const PlainIcon: React.StatelessComponent<IconProps> = props => {
     const iconInfo = ICONS[props.icon];
+    const colorValue = _.isUndefined(props.color) ? undefined : props.theme[props.color];
     return (
         <div onClick={props.onClick} className={props.className}>
             <svg
@@ -76,7 +78,7 @@ const PlainIcon: React.SFC<IconProps> = props => {
             >
                 <path
                     d={iconInfo.path}
-                    fill={props.color}
+                    fill={colorValue}
                     fillRule={iconInfo.fillRule || 'nonzero'}
                     clipRule={iconInfo.clipRule || 'nonzero'}
                     stroke={iconInfo.stroke}
@@ -90,7 +92,7 @@ const PlainIcon: React.SFC<IconProps> = props => {
     );
 };
 
-export const Icon = styled(PlainIcon)`
+export const Icon = withTheme(styled(PlainIcon)`
     cursor: ${props => (!_.isUndefined(props.onClick) ? 'pointer' : 'default')};
     transition: opacity 0.5s ease;
     padding: ${props => props.padding};
@@ -101,7 +103,7 @@ export const Icon = styled(PlainIcon)`
     &:active {
         opacity: 1;
     }
-`;
+`);
 
 Icon.defaultProps = {
     padding: '0em 0em',
