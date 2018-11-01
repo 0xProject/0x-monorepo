@@ -1,8 +1,8 @@
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
-import { BigNumberInput } from '../util/big_number_input';
 import { util } from '../util/util';
 
 import { ScalingInput } from './scaling_input';
@@ -12,8 +12,8 @@ export interface ScalingAmountInputProps {
     maxFontSizePx: number;
     textLengthThreshold: number;
     fontColor?: ColorOption;
-    value?: BigNumberInput;
-    onChange: (value?: BigNumberInput) => void;
+    value?: BigNumber;
+    onChange: (value?: BigNumber) => void;
     onFontSizeChange: (fontSizePx: number) => void;
 }
 
@@ -32,7 +32,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
                 onFontSizeChange={onFontSizeChange}
                 fontColor={fontColor}
                 onChange={this._handleChange}
-                value={!_.isUndefined(value) ? value.toDisplayString() : ''}
+                value={!_.isUndefined(value) ? value.toString() : ''}
                 placeholder="0.00"
                 emptyInputWidthCh={3.5}
                 isDisabled={this.props.isDisabled}
@@ -44,7 +44,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
         let bigNumberValue;
         if (!_.isEmpty(value)) {
             try {
-                bigNumberValue = new BigNumberInput(value);
+                bigNumberValue = new BigNumber(value);
             } catch {
                 // We don't want to allow values that can't be a BigNumber, so don't even call onChange.
                 return;
