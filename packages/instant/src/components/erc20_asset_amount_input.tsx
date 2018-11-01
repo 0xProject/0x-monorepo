@@ -109,8 +109,8 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
             return null;
         }
         return (
-            <Container cursor="pointer" marginLeft="5px" onClick={this._generateSelectAssetClickHandler()}>
-                <Icon icon="chevron" width={12} />
+            <Container marginLeft="5px">
+                <Icon icon="chevron" width={12} onClick={this._generateSelectAssetClickHandler()} />
             </Container>
         );
     };
