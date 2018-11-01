@@ -1,12 +1,12 @@
 import * as React from 'react';
 
 import { ONE_SECOND_MS } from '../constants';
+import { ColorOption } from '../style/theme';
 import { timeUtil } from '../util/time';
 
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 import { Text } from './ui/text';
-import { ColorOption } from '../style/theme';
 
 export interface TimeCounterProps {
     estimatedTimeMs: number;
