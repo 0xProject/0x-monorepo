@@ -11,65 +11,41 @@ export interface TimedProgressBarProps {
     hasEnded: boolean;
 }
 
-interface TimedProgressBarState {
-    animationTimeMs: number;
-    animationStartingWidth: string;
-    maxWidthPercent: number;
-}
-
-const beginningState = (props: TimedProgressBarProps): TimedProgressBarState => {
-    return {
-        animationTimeMs: props.expectedTimeMs,
-        animationStartingWidth: '0%',
-        maxWidthPercent: PROGRESS_STALL_AT_PERCENTAGE,
-    };
-};
-
 /**
  * Timed Progress Bar
  * Goes from 0% -> PROGRESS_STALL_AT_PERCENTAGE% over time of expectedTimeMs
  * When hasEnded set to true, goes to 100% through animation of PROGRESS_FINISH_ANIMATION_TIME_MS length
  */
-export class TimedProgressBar extends React.Component<TimedProgressBarProps, TimedProgressBarState> {
+export class TimedProgressBar extends React.Component<TimedProgressBarProps, {}> {
     private readonly _barRef = React.createRef<HTMLDivElement>();
 
-    public constructor(props: TimedProgressBarProps) {
-        super(props);
-        this.state = beginningState(props);
-    }
-
-    public componentDidUpdate(prevProps: TimedProgressBarProps, prevState: TimedProgressBarState): void {
-        if (prevProps.hasEnded === false && this.props.hasEnded === true) {
-            // Show nice animation going to end
-            // barRef current should always exist, but checking for typesafety
-            if (this._barRef.current) {
-                const curProgressWidth = this._barRef.current.offsetWidth;
-                this.setState({
-                    animationTimeMs: PROGRESS_FINISH_ANIMATION_TIME_MS,
-                    animationStartingWidth: `${curProgressWidth}px`,
-                    maxWidthPercent: 100,
-                });
-            }
-            return;
-        }
-
-        if (prevProps.expectedTimeMs !== this.props.expectedTimeMs || prevProps.hasEnded !== this.props.hasEnded) {
-            // things changed, get fresh state
-            this.setState(beginningState(this.props));
-        }
-    }
-
     public render(): React.ReactNode {
+        const timedProgressProps = this._calculateTimedProgressProps();
         return (
             <Container width="100%" backgroundColor={ColorOption.lightGrey} borderRadius="6px">
-                <TimedProgress
-                    fromWidth={this.state.animationStartingWidth}
-                    timeMs={this.state.animationTimeMs}
-                    maxWidthPercent={this.state.maxWidthPercent}
-                    ref={this._barRef as any}
-                />
+                <TimedProgress {...timedProgressProps} ref={this._barRef as any} />
             </Container>
         );
+    }
+
+    private _calculateTimedProgressProps(): TimedProgressProps {
+        if (this.props.hasEnded) {
+            if (!this._barRef.current) {
+                throw new Error('ended but no reference');
+            }
+            const fromWidth = `${this._barRef.current.offsetWidth}px`;
+            return {
+                timeMs: PROGRESS_FINISH_ANIMATION_TIME_MS,
+                fromWidth,
+                maxWidthPercent: 100,
+            };
+        }
+
+        return {
+            timeMs: this.props.expectedTimeMs,
+            fromWidth: '0px',
+            maxWidthPercent: PROGRESS_STALL_AT_PERCENTAGE,
+        };
     }
 }
 
