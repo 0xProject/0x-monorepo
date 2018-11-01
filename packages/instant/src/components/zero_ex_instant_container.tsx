@@ -46,7 +46,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         animationState={this.state.tokenSelectionPanelAnimationState}
                         onClose={this._handlePanelClose}
                     >
-                        <AvailableERC20TokenSelector />
+                        <AvailableERC20TokenSelector onTokenSelect={this._handlePanelClose} />
                     </SlidingPanel>
                 </Container>
             </Container>
