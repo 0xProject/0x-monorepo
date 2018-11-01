@@ -29,8 +29,8 @@ export interface ZeroExInstantRequiredProps {
 
 export interface ZeroExInstantOptionalProps {
     availableAssetDatas: string[];
-    defaultAssetBuyAmount?: number;
-    defaultSelectedAssetData?: string;
+    defaultAssetBuyAmount: number;
+    defaultSelectedAssetData: string;
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     networkId: Network;
 }
