@@ -2,7 +2,6 @@ import { HttpClient } from '@0x/connect';
 import { APIOrder, AssetPairsResponse, OrderbookResponse } from '@0x/types';
 import * as _ from 'lodash';
 
-import { constants } from '../constants';
 import {
     AssetBuyerError,
     OrderProvider,
@@ -87,7 +86,9 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
      * @return  An array of asset data strings that can be purchased using takerAssetData.
      */
     public async getAvailableMakerAssetDatasAsync(takerAssetData: string): Promise<string[]> {
-        const requestOpts = { networkId: this.networkId, perPage: constants.MAX_PER_PAGE };
+        // Return a maximum of 1000 asset datas
+        const maxPerPage = 1000;
+        const requestOpts = { networkId: this.networkId, perPage: maxPerPage };
         const assetPairsRequest = { assetDataA: takerAssetData };
         const fullRequest = {
             ...requestOpts,
