@@ -14,7 +14,6 @@ import {
     OrderProcessState,
     OrderState,
 } from '../types';
-import { assetUtils } from '../util/asset';
 import { BigNumberInput } from '../util/big_number_input';
 
 import { Action, ActionTypes } from './actions';
@@ -108,18 +107,9 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 latestErrorDisplayStatus: DisplayStatus.Hidden,
             };
         case ActionTypes.UPDATE_SELECTED_ASSET:
-            const newSelectedAssetData = action.data;
-            let newSelectedAsset: Asset | undefined;
-            if (!_.isUndefined(newSelectedAssetData)) {
-                newSelectedAsset = assetUtils.createAssetFromAssetDataOrThrow(
-                    newSelectedAssetData,
-                    state.assetMetaDataMap,
-                    state.network,
-                );
-            }
             return {
                 ...state,
-                selectedAsset: newSelectedAsset,
+                selectedAsset: action.data,
             };
         case ActionTypes.RESET_AMOUNT:
             return {

@@ -43,7 +43,7 @@ export const actions = {
         createAction(ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT, amount),
     updateBuyOrderState: (orderState: OrderState) => createAction(ActionTypes.UPDATE_BUY_ORDER_STATE, orderState),
     updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UPDATE_LATEST_BUY_QUOTE, buyQuote),
-    updateSelectedAsset: (assetData?: string) => createAction(ActionTypes.UPDATE_SELECTED_ASSET, assetData),
+    updateSelectedAsset: (asset: Asset) => createAction(ActionTypes.UPDATE_SELECTED_ASSET, asset),
     setAvailableAssets: (availableAssets: Asset[]) => createAction(ActionTypes.SET_AVAILABLE_ASSETS, availableAssets),
     setQuoteRequestStatePending: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING),
     setQuoteRequestStateFailure: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE),
