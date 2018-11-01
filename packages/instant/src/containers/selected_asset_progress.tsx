@@ -12,4 +12,4 @@ interface ConnectedState {
 const mapStateToProps = (state: State, _ownProps: {}): ConnectedState => ({
     buyOrderState: state.buyOrderState,
 });
-export const SelectedAssetProgress = connect(mapStateToProps)(BuyOrderProgress);
+export const SelectedAssetBuyOrderProgress = connect(mapStateToProps)(BuyOrderProgress);
