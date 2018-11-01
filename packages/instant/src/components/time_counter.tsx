@@ -3,8 +3,10 @@ import * as React from 'react';
 import { ONE_SECOND_MS } from '../constants';
 import { timeUtil } from '../util/time';
 
+import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 import { Text } from './ui/text';
+import { ColorOption } from '../style/theme';
 
 export interface TimeCounterProps {
     estimatedTimeMs: number;
@@ -38,8 +40,19 @@ export class TimeCounter extends React.Component<TimeCounterProps, TimeCounterSt
         const estimatedTimeSeconds = this.props.estimatedTimeMs / ONE_SECOND_MS;
         return (
             <Flex justify="space-between">
-                <Text>Est. Time ({timeUtil.secondsToHumanDescription(estimatedTimeSeconds)})</Text>
-                <Text>Time: {timeUtil.secondsToStopwatchTime(this.state.elapsedSeconds)}</Text>
+                <Container>
+                    <Container marginRight="5px" display="inline">
+                        <Text fontWeight={600} fontColor={ColorOption.grey}>
+                            Est. Time
+                        </Text>
+                    </Container>
+                    <Text fontColor={ColorOption.grey}>
+                        ({timeUtil.secondsToHumanDescription(estimatedTimeSeconds)})
+                    </Text>
+                </Container>
+                <Text fontColor={ColorOption.grey}>
+                    Time: {timeUtil.secondsToStopwatchTime(this.state.elapsedSeconds)}
+                </Text>
             </Flex>
         );
     }
