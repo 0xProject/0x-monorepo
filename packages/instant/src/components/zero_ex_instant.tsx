@@ -37,6 +37,7 @@ export interface ZeroExInstantOptionalProps {
 
 export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
     private readonly _store: Store;
+    // TODO(fragosti): Write tests for this beast once we inject a provider.
     private static _mergeInitialStateWithProps(props: ZeroExInstantProps, state: State = INITIAL_STATE): State {
         const networkId = props.networkId || state.network;
         // TODO: Provider needs to not be hard-coded to injected web3.
@@ -72,6 +73,9 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
             selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
                 ? state.selectedAssetAmount
                 : new BigNumberInput(props.defaultAssetBuyAmount),
+            availableAssets: _.isUndefined(props.availableAssetDatas)
+                ? undefined
+                : assetUtils.createAssetsFromAssetDatas(props.availableAssetDatas, completeAssetMetaDataMap, networkId),
             assetMetaDataMap: completeAssetMetaDataMap,
         };
         return storeStateFromProps;
@@ -87,7 +91,7 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchEthPriceAndDispatchToStore(this._store);
         // fetch available assets if none are specified
-        if (_.isEmpty(state.availableAssets)) {
+        if (_.isUndefined(state.availableAssets)) {
             // tslint:disable-next-line:no-floating-promises
             asyncData.fetchAvailableAssetDatasAndDispatchToStore(this._store);
         }

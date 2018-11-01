@@ -23,7 +23,7 @@ export interface State {
     assetBuyer?: AssetBuyer;
     assetMetaDataMap: ObjectMap<AssetMetaData>;
     selectedAsset?: Asset;
-    availableAssets: Asset[];
+    availableAssets?: Asset[];
     selectedAssetAmount?: BigNumberInput;
     buyOrderState: OrderState;
     ethUsdPrice?: BigNumber;
@@ -36,7 +36,7 @@ export interface State {
 export const INITIAL_STATE: State = {
     network: Network.Mainnet,
     selectedAssetAmount: undefined,
-    availableAssets: [],
+    availableAssets: undefined,
     assetMetaDataMap,
     buyOrderState: { processState: OrderProcessState.NONE },
     ethUsdPrice: undefined,

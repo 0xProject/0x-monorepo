@@ -20,7 +20,7 @@ interface ConnectedDispatch {
 }
 
 const mapStateToProps = (state: State, _ownProps: AvailableERC20TokenSelectorProps): ConnectedState => ({
-    tokens: assetUtils.getERC20AssetsFromAssets(state.availableAssets),
+    tokens: assetUtils.getERC20AssetsFromAssets(state.availableAssets || []),
 });
 
 const mapDispatchToProps = (

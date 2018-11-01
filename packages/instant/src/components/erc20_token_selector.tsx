@@ -11,7 +11,9 @@ export interface ERC20TokenSelectorProps {
 }
 
 export const ERC20TokenSelector: React.StatelessComponent<ERC20TokenSelectorProps> = ({ tokens, onTokenSelect }) => (
-    <Container>{_.map(tokens, token => <TokenSelectorRow token={token} onClick={onTokenSelect} />)}</Container>
+    <Container>
+        {_.map(tokens, token => <TokenSelectorRow key={token.assetData} token={token} onClick={onTokenSelect} />)}
+    </Container>
 );
 
 interface TokenSelectorRowProps {
