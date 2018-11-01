@@ -17,7 +17,7 @@ interface TimedProgressBarState {
     maxWidthPercent: number;
 }
 
-export const beginningState = (props: TimedProgressBarProps): TimedProgressBarState => {
+const beginningState = (props: TimedProgressBarProps): TimedProgressBarState => {
     return {
         animationTimeMs: props.expectedTimeMs,
         animationStartingWidth: '0%',
@@ -28,7 +28,7 @@ export const beginningState = (props: TimedProgressBarProps): TimedProgressBarSt
 /**
  * Timed Progress Bar
  * Goes from 0% -> PROGRESS_STALL_AT_PERCENTAGE% over time of expectedTimeMs
- * When ended set to true, goes to 100% through animation of PROGRESS_FINISH_ANIMATION_TIME_MS length
+ * When hasEnded set to true, goes to 100% through animation of PROGRESS_FINISH_ANIMATION_TIME_MS length
  */
 export class TimedProgressBar extends React.Component<TimedProgressBarProps, TimedProgressBarState> {
     private readonly _barRef = React.createRef<HTMLDivElement>();
