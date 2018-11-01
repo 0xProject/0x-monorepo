@@ -5,11 +5,13 @@ import { connect } from 'react-redux';
 import { oc } from 'ts-optchain';
 
 import { State } from '../redux/reducer';
-import { AsyncProcessState, OrderState } from '../types';
+import { AsyncProcessState, ERC20Asset, OrderState } from '../types';
 
 import { InstantHeading } from '../components/instant_heading';
 
-export interface InstantHeadingProps {}
+export interface InstantHeadingProps {
+    onSelectAssetClick?: (asset?: ERC20Asset) => void;
+}
 
 interface ConnectedState {
     selectedAssetAmount?: BigNumber;
