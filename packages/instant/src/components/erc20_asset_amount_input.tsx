@@ -48,7 +48,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
     private readonly _renderContentForAsset = (asset: ERC20Asset): React.ReactNode => {
         const { onChange, ...rest } = this.props;
         const amountBorderBottom = this.props.isDisabled ? '' : `1px solid ${transparentWhite}`;
-        const onSymbolClick = this._generateSelectAssetClick();
+        const onSymbolClick = this._generateSelectAssetClickHandler();
         return (
             <React.Fragment>
                 <Container borderBottom={amountBorderBottom} display="inline-block">
@@ -95,7 +95,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                     fontColor={ColorOption.white}
                     opacity={0.7}
                     fontWeight="500"
-                    onClick={this._generateSelectAssetClick()}
+                    onClick={this._generateSelectAssetClickHandler()}
                 >
                     {text}
                 </Text>
@@ -109,7 +109,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
             return null;
         }
         return (
-            <Container cursor="pointer" marginLeft="5px" onClick={this._generateSelectAssetClick()}>
+            <Container cursor="pointer" marginLeft="5px" onClick={this._generateSelectAssetClickHandler()}>
                 <Icon icon="chevron" width={12} />
             </Container>
         );
@@ -123,7 +123,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         });
     };
     // We don't want to allow opening the token selection panel if there are no assets.
-    private readonly _generateSelectAssetClick = (): (() => void) | undefined => {
+    private readonly _generateSelectAssetClickHandler = (): (() => void) | undefined => {
         const { numberOfAssetsAvailable } = this.props;
         if (_.isUndefined(numberOfAssetsAvailable) || numberOfAssetsAvailable <= 1) {
             return undefined;
