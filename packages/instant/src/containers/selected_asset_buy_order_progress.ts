@@ -1,5 +1,3 @@
-// TODO: rename file and props to SelectedAssetBuyOrderProgress and use .ts
-
 import { connect } from 'react-redux';
 
 import { BuyOrderProgress } from '../components/buy_order_progress';
