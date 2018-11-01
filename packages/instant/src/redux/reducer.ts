@@ -111,17 +111,13 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             const failureTxHash = action.data;
             if ('txHash' in state.buyOrderState) {
                 if (state.buyOrderState.txHash === failureTxHash) {
-                    const failureProgress = {
-                        startTimeUnix: state.buyOrderState.progress.startTimeUnix,
-                        expectedEndTimeUnix: state.buyOrderState.progress.expectedEndTimeUnix,
-                        ended: true,
-                    };
+                    const { txHash, progress } = state.buyOrderState;
                     return {
                         ...state,
                         buyOrderState: {
                             processState: OrderProcessState.FAILURE,
-                            txHash: state.buyOrderState.txHash,
-                            progress: failureProgress,
+                            txHash,
+                            progress,
                         },
                     };
                 }
@@ -131,17 +127,13 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             const successTxHash = action.data;
             if ('txHash' in state.buyOrderState) {
                 if (state.buyOrderState.txHash === successTxHash) {
-                    const successProgress = {
-                        startTimeUnix: state.buyOrderState.progress.startTimeUnix,
-                        expectedEndTimeUnix: state.buyOrderState.progress.expectedEndTimeUnix,
-                        ended: true,
-                    };
+                    const { txHash, progress } = state.buyOrderState;
                     return {
                         ...state,
                         buyOrderState: {
                             processState: OrderProcessState.SUCCESS,
-                            txHash: state.buyOrderState.txHash,
-                            progress: successProgress,
+                            txHash,
+                            progress,
                         },
                     };
                 }
