@@ -8,13 +8,14 @@ import { BigNumberInput } from '../util/big_number_input';
 import { util } from '../util/util';
 
 import { ScalingAmountInput } from './scaling_amount_input';
-import { Container, Text } from './ui';
+import { Container, Flex, Icon, Text } from './ui';
 
 // Asset amounts only apply to ERC20 assets
 export interface ERC20AssetAmountInputProps {
     asset?: ERC20Asset;
     value?: BigNumberInput;
     onChange: (value?: BigNumberInput, asset?: ERC20Asset) => void;
+    onSelectAssetClick?: (asset?: ERC20Asset) => void;
     startingFontSizePx: number;
     fontColor?: ColorOption;
     isDisabled: boolean;
@@ -36,10 +37,18 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         };
     }
     public render(): React.ReactNode {
-        const { asset, onChange, ...rest } = this.props;
-        const amountBorderBottom = this.props.isDisabled ? '' : `1px solid ${transparentWhite}`;
+        const { asset } = this.props;
         return (
             <Container whiteSpace="nowrap">
+                {_.isUndefined(asset) ? this._renderBackupContent() : this._renderContentForAsset(asset)}
+            </Container>
+        );
+    }
+    private readonly _renderContentForAsset = (asset: ERC20Asset): React.ReactNode => {
+        const { onChange, ...rest } = this.props;
+        const amountBorderBottom = this.props.isDisabled ? '' : `1px solid ${transparentWhite}`;
+        return (
+            <React.Fragment>
                 <Container borderBottom={amountBorderBottom} display="inline-block">
                     <ScalingAmountInput
                         {...rest}
@@ -49,18 +58,50 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                         onFontSizeChange={this._handleFontSizeChange}
                     />
                 </Container>
-                <Container display="inline-flex" marginLeft="10px" title={assetUtils.bestNameForAsset(asset)}>
-                    <Text
-                        fontSize={`${this.state.currentFontSizePx}px`}
-                        fontColor={ColorOption.white}
-                        textTransform="uppercase"
-                    >
-                        {assetUtils.formattedSymbolForAsset(asset)}
-                    </Text>
+                <Container
+                    cursor="pointer"
+                    display="inline-block"
+                    marginLeft="8px"
+                    title={assetUtils.bestNameForAsset(asset, undefined)}
+                >
+                    <Flex inline={true}>
+                        <Text
+                            fontSize={`${this.state.currentFontSizePx}px`}
+                            fontColor={ColorOption.white}
+                            textTransform="uppercase"
+                            onClick={this._handleSymbolClick}
+                        >
+                            {assetUtils.formattedSymbolForAsset(asset)}
+                        </Text>
+                        {this._renderChevronIcon()}
+                    </Flex>
                 </Container>
+            </React.Fragment>
+        );
+    };
+    private readonly _renderBackupContent = (): React.ReactNode => {
+        return (
+            <Flex>
+                <Text
+                    fontSize="30px"
+                    fontColor={ColorOption.white}
+                    opacity={0.7}
+                    fontWeight="500"
+                    onClick={this._handleSymbolClick}
+                >
+                    Select Token
+                </Text>
+                {this._renderChevronIcon()}
+            </Flex>
+        );
+    };
+    private readonly _renderChevronIcon = (): React.ReactNode => {
+        return (
+            <Container marginLeft="5px" onClick={this._handleSymbolClick}>
+                <Icon icon="chevron" width={12} />
             </Container>
         );
-    }
+    };
     private readonly _handleChange = (value?: BigNumberInput): void => {
         this.props.onChange(value, this.props.asset);
     };
@@ -68,6 +109,11 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         this.setState({
             currentFontSizePx: fontSizePx,
         });
+    };
+    private readonly _handleSymbolClick = () => {
+        if (this.props.onSelectAssetClick) {
+            this.props.onSelectAssetClick(this.props.asset);
+        }
     };
     // For assets with symbols of different length,
     // start scaling the input at different character lengths

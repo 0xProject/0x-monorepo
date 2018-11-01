@@ -1,16 +1,13 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import * as React from 'react';
 
-import { BuyButton } from '../components/buy_button';
-import { SecondaryButton } from '../components/secondary_button';
-import { Flex } from '../components/ui/flex';
-
-import { PlacingOrderButton } from '../components/placing_order_button';
 import { ColorOption } from '../style/theme';
 import { OrderProcessState, ZeroExInstantError } from '../types';
 
-import { Button } from './ui/button';
-import { Text } from './ui/text';
+import { BuyButton } from './buy_button';
+import { PlacingOrderButton } from './placing_order_button';
+import { SecondaryButton } from './secondary_button';
+import { Button, Flex, Text } from './ui';
 
 export interface BuyOrderStateButtonProps {
     buyQuote?: BuyQuote;

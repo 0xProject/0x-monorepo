@@ -19,6 +19,7 @@ import { errorFlasher } from '../util/error_flasher';
 export interface SelectedERC20AssetAmountInputProps {
     fontColor?: ColorOption;
     startingFontSizePx: number;
+    onSelectAssetClick?: (asset?: ERC20Asset) => void;
 }
 
 interface ConnectedState {

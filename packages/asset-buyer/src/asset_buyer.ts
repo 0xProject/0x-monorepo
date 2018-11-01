@@ -56,7 +56,6 @@ export class AssetBuyer {
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
-        assert.areValidProvidedOrders('orders', orders);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
         const orderProvider = new BasicOrderProvider(orders);
         const assetBuyer = new AssetBuyer(provider, orderProvider, options);

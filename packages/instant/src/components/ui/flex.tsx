@@ -9,14 +9,14 @@ export interface FlexProps {
     width?: string;
     height?: string;
     backgroundColor?: ColorOption;
-    className?: string;
+    inline?: boolean;
 }
 
 export const Flex =
     styled.div <
     FlexProps >
     `
-    display: flex;
+    display: ${props => (props.inline ? 'inline-flex' : 'flex')};
     flex-direction: ${props => props.direction};
     flex-wrap: ${props => props.flexWrap};
     justify-content: ${props => props.justify};

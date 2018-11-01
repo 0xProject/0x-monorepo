@@ -4,13 +4,11 @@ import * as React from 'react';
 
 import { SelectedERC20AssetAmountInput } from '../containers/selected_erc20_asset_amount_input';
 import { ColorOption } from '../style/theme';
-import { AsyncProcessState, OrderProcessState, OrderState } from '../types';
+import { AsyncProcessState, ERC20Asset, OrderProcessState, OrderState } from '../types';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
-import { Container, Flex, Text } from './ui';
-import { Icon } from './ui/icon';
-import { Spinner } from './ui/spinner';
+import { Container, Flex, Icon, Spinner, Text } from './ui';
 
 export interface InstantHeadingProps {
     selectedAssetAmount?: BigNumber;
@@ -18,12 +16,13 @@ export interface InstantHeadingProps {
     ethUsdPrice?: BigNumber;
     quoteRequestState: AsyncProcessState;
     buyOrderState: OrderState;
+    onSelectAssetClick?: (asset?: ERC20Asset) => void;
 }
 
 const PLACEHOLDER_COLOR = ColorOption.white;
 const ICON_WIDTH = 34;
 const ICON_HEIGHT = 34;
-const ICON_COLOR = ColorOption.white;
+const ICON_COLOR = 'white';
 
 export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
@@ -49,7 +48,10 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
                 </Container>
                 <Flex direction="row" justify="space-between">
                     <Flex height="60px">
-                        <SelectedERC20AssetAmountInput startingFontSizePx={38} />
+                        <SelectedERC20AssetAmountInput
+                            startingFontSizePx={38}
+                            onSelectAssetClick={this.props.onSelectAssetClick}
+                        />
                     </Flex>
                     <Flex direction="column" justify="space-between">
                         {iconOrAmounts}
@@ -62,8 +64,8 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     private _renderAmountsSection(): React.ReactNode {
         return (
             <Container>
-                <Container marginBottom="5px">{this._placeholderOrAmount(this._ethAmount)}</Container>
-                <Container opacity={0.7}>{this._placeholderOrAmount(this._dollarAmount)}</Container>
+                <Container marginBottom="5px">{this._renderPlaceholderOrAmount(this._renderEthAmount)}</Container>
+                <Container opacity={0.7}>{this._renderPlaceholderOrAmount(this._renderDollarAmount)}</Container>
             </Container>
         );
     }
@@ -72,11 +74,11 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         const processState = this.props.buyOrderState.processState;
 
         if (processState === OrderProcessState.FAILURE) {
-            return <Icon icon={'failed'} width={ICON_WIDTH} height={ICON_HEIGHT} color={ICON_COLOR} />;
+            return <Icon icon="failed" width={ICON_WIDTH} height={ICON_HEIGHT} color={ICON_COLOR} />;
         } else if (processState === OrderProcessState.PROCESSING) {
             return <Spinner widthPx={ICON_HEIGHT} heightPx={ICON_HEIGHT} />;
         } else if (processState === OrderProcessState.SUCCESS) {
-            return <Icon icon={'success'} width={ICON_WIDTH} height={ICON_HEIGHT} color={ICON_COLOR} />;
+            return <Icon icon="success" width={ICON_WIDTH} height={ICON_HEIGHT} color={ICON_COLOR} />;
         }
         return undefined;
     }
@@ -94,7 +96,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         return 'I want to buy';
     }
 
-    private _placeholderOrAmount(amountFunction: () => React.ReactNode): React.ReactNode {
+    private _renderPlaceholderOrAmount(amountFunction: () => React.ReactNode): React.ReactNode {
         if (this.props.quoteRequestState === AsyncProcessState.PENDING) {
             return <AmountPlaceholder isPulsating={true} color={PLACEHOLDER_COLOR} />;
         }
@@ -104,7 +106,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         return amountFunction();
     }
 
-    private readonly _ethAmount = (): React.ReactNode => {
+    private readonly _renderEthAmount = (): React.ReactNode => {
         return (
             <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
                 {format.ethBaseAmount(
@@ -116,7 +118,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         );
     };
 
-    private readonly _dollarAmount = (): React.ReactNode => {
+    private readonly _renderDollarAmount = (): React.ReactNode => {
         return (
             <Text fontSize="16px" fontColor={ColorOption.white}>
                 {format.ethBaseAmountInUsd(
