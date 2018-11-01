@@ -1,5 +1,6 @@
 import { AssetBuyer } from '@0x/asset-buyer';
 import { ObjectMap, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider } from 'react-redux';
@@ -11,7 +12,6 @@ import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
 import { AssetMetaData, Network } from '../types';
 import { assetUtils } from '../util/asset';
-import { BigNumberInput } from '../util/big_number_input';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { getProvider } from '../util/provider';
@@ -65,7 +65,7 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
             selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap, networkId),
             selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
                 ? state.selectedAssetAmount
-                : new BigNumberInput(props.defaultAssetBuyAmount),
+                : new BigNumber(props.defaultAssetBuyAmount),
             assetMetaDataMap: completeAssetMetaDataMap,
         };
         return storeStateFromProps;

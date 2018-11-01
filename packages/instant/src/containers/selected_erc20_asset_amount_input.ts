@@ -13,7 +13,6 @@ import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { ERC20Asset, OrderProcessState } from '../types';
 import { assetUtils } from '../util/asset';
-import { BigNumberInput } from '../util/big_number_input';
 import { errorFlasher } from '../util/error_flasher';
 
 export interface SelectedERC20AssetAmountInputProps {
@@ -24,19 +23,19 @@ export interface SelectedERC20AssetAmountInputProps {
 
 interface ConnectedState {
     assetBuyer?: AssetBuyer;
-    value?: BigNumberInput;
+    value?: BigNumber;
     asset?: ERC20Asset;
     isDisabled: boolean;
 }
 
 interface ConnectedDispatch {
-    updateBuyQuote: (assetBuyer?: AssetBuyer, value?: BigNumberInput, asset?: ERC20Asset) => void;
+    updateBuyQuote: (assetBuyer?: AssetBuyer, value?: BigNumber, asset?: ERC20Asset) => void;
 }
 
 interface ConnectedProps {
-    value?: BigNumberInput;
+    value?: BigNumber;
     asset?: ERC20Asset;
-    onChange: (value?: BigNumberInput, asset?: ERC20Asset) => void;
+    onChange: (value?: BigNumber, asset?: ERC20Asset) => void;
     isDisabled: boolean;
 }
 

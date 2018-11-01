@@ -1,10 +1,10 @@
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption, transparentWhite } from '../style/theme';
 import { ERC20Asset } from '../types';
 import { assetUtils } from '../util/asset';
-import { BigNumberInput } from '../util/big_number_input';
 import { util } from '../util/util';
 
 import { ScalingAmountInput } from './scaling_amount_input';
@@ -13,8 +13,9 @@ import { Container, Flex, Icon, Text } from './ui';
 // Asset amounts only apply to ERC20 assets
 export interface ERC20AssetAmountInputProps {
     asset?: ERC20Asset;
-    value?: BigNumberInput;
-    onChange: (value?: BigNumberInput, asset?: ERC20Asset) => void;
+    // TODO: rename to something like numberValue?
+    value?: BigNumber;
+    onChange: (value?: BigNumber, asset?: ERC20Asset) => void;
     onSelectAssetClick?: (asset?: ERC20Asset) => void;
     startingFontSizePx: number;
     fontColor?: ColorOption;
@@ -23,6 +24,7 @@ export interface ERC20AssetAmountInputProps {
 
 export interface ERC20AssetAmountInputState {
     currentFontSizePx: number;
+    valueString: string;
 }
 
 export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInputProps, ERC20AssetAmountInputState> {
@@ -34,6 +36,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         super(props);
         this.state = {
             currentFontSizePx: props.startingFontSizePx,
+            valueString: (props.value && props.value.toString()) || '',
         };
     }
     public render(): React.ReactNode {
@@ -46,12 +49,16 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
     }
     private readonly _renderContentForAsset = (asset: ERC20Asset): React.ReactNode => {
         const { onChange, ...rest } = this.props;
+
+        // TODO: this will be cleaned up / changed when rename value
+        const scalingAmountInputProps = { ...rest, value: this.state.valueString };
+
         const amountBorderBottom = this.props.isDisabled ? '' : `1px solid ${transparentWhite}`;
         return (
             <React.Fragment>
                 <Container borderBottom={amountBorderBottom} display="inline-block">
                     <ScalingAmountInput
-                        {...rest}
+                        {...scalingAmountInputProps}
                         textLengthThreshold={this._textLengthThresholdForAsset(asset)}
                         maxFontSizePx={this.props.startingFontSizePx}
                         onChange={this._handleChange}
@@ -102,8 +109,19 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
             </Container>
         );
     };
-    private readonly _handleChange = (value?: BigNumberInput): void => {
-        this.props.onChange(value, this.props.asset);
+    private readonly _handleChange = (value: string): void => {
+        this.setState({
+            valueString: value,
+        });
+
+        let bigNumberVal: BigNumber | undefined;
+        try {
+            bigNumberVal = new BigNumber(value);
+        } catch (e) {
+            bigNumberVal = undefined;
+        }
+        // maybe rename to onValidNumberChange?
+        this.props.onChange(bigNumberVal, this.props.asset);
     };
     private readonly _handleFontSizeChange = (fontSizePx: number): void => {
         this.setState({
