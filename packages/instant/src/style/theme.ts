@@ -29,5 +29,6 @@ export const theme: Theme = {
 };
 
 export const transparentWhite = 'rgba(255,255,255,0.3)';
+export const overlayBlack = 'rgba(0, 0, 0, 0.6)';
 
 export { styled, css, keyframes, ThemeProvider };
