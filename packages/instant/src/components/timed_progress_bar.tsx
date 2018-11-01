@@ -70,7 +70,7 @@ export const TimedProgress =
     styled.div <
     TimedProgressProps >
     `
-    background-color: black;
+    background-color: ${props => props.theme[ColorOption.primaryColor]};
     border-radius: 6px;
     height: 6px;
     animation: ${props => expandingWidthKeyframes(props.fromWidth, props.toWidth)}
