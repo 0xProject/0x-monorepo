@@ -24,13 +24,13 @@ fonts.include();
 export type ZeroExInstantProps = ZeroExInstantRequiredProps & Partial<ZeroExInstantOptionalProps>;
 
 export interface ZeroExInstantRequiredProps {
-    // TODO: Change API when we allow the selection of different assetDatas
-    assetData: string;
-    liquiditySource: string | SignedOrder[];
+    orderSource: string | SignedOrder[];
 }
 
 export interface ZeroExInstantOptionalProps {
+    availableAssetDatas: string[];
     defaultAssetBuyAmount?: number;
+    defaultSelectedAssetData?: string;
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     networkId: Network;
 }
@@ -45,14 +45,14 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
             networkId,
         };
         let assetBuyer;
-        if (_.isString(props.liquiditySource)) {
+        if (_.isString(props.orderSource)) {
             assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(
                 provider,
-                props.liquiditySource,
+                props.orderSource,
                 assetBuyerOptions,
             );
         } else {
-            assetBuyer = AssetBuyer.getAssetBuyerForProvidedOrders(provider, props.liquiditySource, assetBuyerOptions);
+            assetBuyer = AssetBuyer.getAssetBuyerForProvidedOrders(provider, props.orderSource, assetBuyerOptions);
         }
         const completeAssetMetaDataMap = {
             ...props.additionalAssetMetaDataMap,
@@ -62,7 +62,13 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
             ...state,
             assetBuyer,
             network: networkId,
-            selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap, networkId),
+            selectedAsset: _.isUndefined(props.defaultSelectedAssetData)
+                ? undefined
+                : assetUtils.createAssetFromAssetDataOrThrow(
+                      props.defaultSelectedAssetData,
+                      completeAssetMetaDataMap,
+                      networkId,
+                  ),
             selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
                 ? state.selectedAssetAmount
                 : new BigNumberInput(props.defaultAssetBuyAmount),
@@ -77,8 +83,14 @@ export class ZeroExInstant extends React.Component<ZeroExInstantProps> {
     }
 
     public componentDidMount(): void {
+        const state = this._store.getState();
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchAndDispatchToStore(this._store);
+        asyncData.fetchEthPriceAndDispatchToStore(this._store);
+        // fetch available assets if none are specified
+        if (_.isEmpty(state.availableAssets)) {
+            // tslint:disable-next-line:no-floating-promises
+            asyncData.fetchAvailableAssetDatasAndDispatchToStore(this._store);
+        }
 
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction

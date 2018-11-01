@@ -8,12 +8,12 @@ import { AssetMetaData } from '../types';
 
 export const assert = {
     ...sharedAssert,
-    isValidLiquiditySource(variableName: string, liquiditySource: string | SignedOrder[]): void {
-        if (_.isString(liquiditySource)) {
-            sharedAssert.isUri(variableName, liquiditySource);
+    isValidOrderSource(variableName: string, orderSource: string | SignedOrder[]): void {
+        if (_.isString(orderSource)) {
+            sharedAssert.isUri(variableName, orderSource);
             return;
         }
-        sharedAssert.doesConformToSchema(variableName, liquiditySource, schemas.signedOrdersSchema);
+        sharedAssert.doesConformToSchema(variableName, orderSource, schemas.signedOrdersSchema);
     },
     isValidAssetMetaDataMap(variableName: string, metaDataMap: ObjectMap<AssetMetaData>): void {
         _.forEach(metaDataMap, (metaData, assetData) => {

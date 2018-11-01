@@ -55,15 +55,17 @@
         };
         const queryParams = new Uri(window.location.search);
         const renderOptionsDefaults = {
-            liquiditySource: 'https://api.radarrelay.com/0x/v2/',
+            orderSource: 'https://api.radarrelay.com/0x/v2/',
             assetData: '0xf47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498',
         }
-        const liquiditySourceOverride = queryParams.getQueryParamValue('liquiditySource');
+        const orderSourceOverride = queryParams.getQueryParamValue('orderSource');
         const renderOptionsOverrides = {
-            liquiditySource: liquiditySourceOverride === 'provided' ? [providedOrder] : liquiditySourceOverride,
+            orderSource: orderSourceOverride === 'provided' ? [providedOrder] : orderSourceOverride,
             assetData: queryParams.getQueryParamValue('assetData'),
             networkId: +queryParams.getQueryParamValue('networkId') || undefined,
             defaultAssetBuyAmount: +queryParams.getQueryParamValue('defaultAssetBuyAmount') || undefined,
+            availableAssetIdentifiers: JSON.parse(queryParams.getQueryParamValue('availableAssetIdentifiers') || '[]'),
+            defaultSelectedAssetIdentifier: queryParams.getQueryParamValue('defaultSelectedAssetIdentifier'),
         }
         const renderOptions = Object.assign({}, renderOptionsDefaults, removeUndefined(renderOptionsOverrides));
         zeroExInstant.render(renderOptions);

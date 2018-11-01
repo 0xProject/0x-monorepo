@@ -5,7 +5,31 @@ import { assetDataNetworkMapping } from '../data/asset_data_network_mapping';
 import { Asset, AssetMetaData, ERC20Asset, Network, ZeroExInstantError } from '../types';
 
 export const assetUtils = {
-    createAssetFromAssetData: (
+    createAssetsFromAssetDatas: (
+        assetDatas: string[],
+        assetMetaDataMap: ObjectMap<AssetMetaData>,
+        network: Network,
+    ): Asset[] => {
+        const arrayOfAssetOrUndefined = _.map(assetDatas, assetData =>
+            assetUtils.createAssetFromAssetDataIfExists(assetData, assetMetaDataMap, network),
+        );
+        return _.compact(arrayOfAssetOrUndefined);
+    },
+    createAssetFromAssetDataIfExists: (
+        assetData: string,
+        assetMetaDataMap: ObjectMap<AssetMetaData>,
+        network: Network,
+    ): Asset | undefined => {
+        const metaData = assetUtils.getMetaDataIfExists(assetData, assetMetaDataMap, network);
+        if (_.isUndefined(metaData)) {
+            return;
+        }
+        return {
+            assetData,
+            metaData,
+        };
+    },
+    createAssetFromAssetDataOrThrow: (
         assetData: string,
         assetMetaDataMap: ObjectMap<AssetMetaData>,
         network: Network,
@@ -16,6 +40,17 @@ export const assetUtils = {
         };
     },
     getMetaDataOrThrow: (assetData: string, metaDataMap: ObjectMap<AssetMetaData>, network: Network): AssetMetaData => {
+        const metaDataIfExists = assetUtils.getMetaDataIfExists(assetData, metaDataMap, network);
+        if (_.isUndefined(metaDataIfExists)) {
+            throw new Error(ZeroExInstantError.AssetMetaDataNotAvailable);
+        }
+        return metaDataIfExists;
+    },
+    getMetaDataIfExists: (
+        assetData: string,
+        metaDataMap: ObjectMap<AssetMetaData>,
+        network: Network,
+    ): AssetMetaData | undefined => {
         let mainnetAssetData: string | undefined = assetData;
         if (network !== Network.Mainnet) {
             const mainnetAssetDataIfExists = assetUtils.getAssociatedAssetDataIfExists(assetData, network);
@@ -24,11 +59,11 @@ export const assetUtils = {
             mainnetAssetData = mainnetAssetDataIfExists || assetData;
         }
         if (_.isUndefined(mainnetAssetData)) {
-            throw new Error(ZeroExInstantError.AssetMetaDataNotAvailable);
+            return;
         }
         const metaData = metaDataMap[mainnetAssetData];
         if (_.isUndefined(metaData)) {
-            throw new Error(ZeroExInstantError.AssetMetaDataNotAvailable);
+            return;
         }
         return metaData;
     },

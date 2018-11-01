@@ -7,8 +7,10 @@ import { ZeroExInstant, ZeroExInstantProps } from './index';
 import { assert } from './util/assert';
 
 export const render = (props: ZeroExInstantProps, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
-    assert.isHexString('assetData', props.assetData);
-    assert.isValidLiquiditySource('liquiditySource', props.liquiditySource);
+    assert.isValidOrderSource('orderSource', props.orderSource);
+    if (!_.isUndefined(props.defaultSelectedAssetData)) {
+        assert.isHexString('defaultSelectedAssetData', props.defaultSelectedAssetData);
+    }
     if (!_.isUndefined(props.additionalAssetMetaDataMap)) {
         assert.isValidAssetMetaDataMap('additionalAssetMetaDataMap', props.additionalAssetMetaDataMap);
     }
