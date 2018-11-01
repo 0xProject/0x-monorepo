@@ -7,7 +7,7 @@ import { Text } from './ui/text';
 
 export interface TimeCounterProps {
     estimatedTimeMs: number;
-    ended: boolean;
+    hasEnded: boolean;
 }
 interface TimeCounterState {
     elapsedSeconds: number;
@@ -28,7 +28,7 @@ export class TimeCounter extends React.Component<TimeCounterProps, TimeCounterSt
     }
 
     public componentDidUpdate(prevProps: TimeCounterProps): void {
-        if (prevProps.ended !== this.props.ended) {
+        if (prevProps.hasEnded !== this.props.hasEnded) {
             this._setupTimerBasedOnProps();
         }
     }
@@ -44,7 +44,7 @@ export class TimeCounter extends React.Component<TimeCounterProps, TimeCounterSt
     }
 
     private _setupTimerBasedOnProps(): void {
-        this.props.ended ? this._clearTimer() : this._newTimer();
+        this.props.hasEnded ? this._clearTimer() : this._newTimer();
     }
 
     private _newTimer(): void {

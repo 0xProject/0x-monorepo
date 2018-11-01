@@ -8,7 +8,7 @@ import { Container } from './ui/container';
 
 export interface TimedProgressBarProps {
     expectedTimeMs: number;
-    ended: boolean;
+    hasEnded: boolean;
 }
 
 interface TimedProgressBarState {
@@ -39,7 +39,7 @@ export class TimedProgressBar extends React.Component<TimedProgressBarProps, Tim
     }
 
     public componentDidUpdate(prevProps: TimedProgressBarProps, prevState: TimedProgressBarState): void {
-        if (prevProps.ended === false && this.props.ended === true) {
+        if (prevProps.hasEnded === false && this.props.hasEnded === true) {
             // Show nice animation going to end
             // barRef current should always exist, but checking for typesafety
             if (this._barRef.current) {
@@ -53,7 +53,7 @@ export class TimedProgressBar extends React.Component<TimedProgressBarProps, Tim
             return;
         }
 
-        if (prevProps.expectedTimeMs !== this.props.expectedTimeMs || prevProps.ended !== this.props.ended) {
+        if (prevProps.expectedTimeMs !== this.props.expectedTimeMs || prevProps.hasEnded !== this.props.hasEnded) {
             // things changed, get fresh state
             this.setState(beginningState(this.props));
         }

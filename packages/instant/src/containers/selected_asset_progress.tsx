@@ -24,14 +24,14 @@ export const SelectedAssetSimulatedProgressComponent: React.StatelessComponent<
         buyOrderState.processState === OrderProcessState.FAILURE
     ) {
         const progress = buyOrderState.progress;
-        const ended = buyOrderState.processState !== OrderProcessState.PROCESSING;
+        const hasEnded = buyOrderState.processState !== OrderProcessState.PROCESSING;
         const expectedTimeMs = progress.expectedEndTimeUnix - progress.startTimeUnix;
         return (
             <Container padding="20px 20px 0px 20px" width="100%">
                 <Container marginBottom="5px">
-                    <TimeCounter estimatedTimeMs={expectedTimeMs} ended={ended} key={progress.startTimeUnix} />
+                    <TimeCounter estimatedTimeMs={expectedTimeMs} hasEnded={hasEnded} key={progress.startTimeUnix} />
                 </Container>
-                <TimedProgressBar expectedTimeMs={expectedTimeMs} ended={ended} key={progress.startTimeUnix} />
+                <TimedProgressBar expectedTimeMs={expectedTimeMs} hasEnded={hasEnded} key={progress.startTimeUnix} />
             </Container>
         );
     }
