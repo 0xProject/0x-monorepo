@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 import { MaybeBigNumber } from '../types';
+import { maybeBigNumberUtil } from '../util/maybe_big_number';
 import { util } from '../util/util';
 
 import { ScalingInput } from './scaling_input';
@@ -21,23 +22,7 @@ interface ScalingAmountInputState {
     stringValue: string;
 }
 
-const stringToMaybeBigNumber = (stringValue: string): MaybeBigNumber => {
-    let maybeBigNumber: MaybeBigNumber;
-    try {
-        maybeBigNumber = new BigNumber(stringValue);
-    } catch {
-        maybeBigNumber = undefined;
-    }
-    return _.isNaN(maybeBigNumber) ? undefined : maybeBigNumber;
-};
-
-const areMaybeBigNumbersEqual = (val1: MaybeBigNumber, val2: MaybeBigNumber): boolean => {
-    if (!_.isUndefined(val1) && !_.isUndefined(val2)) {
-        return val1.equals(val2);
-    }
-    return _.isUndefined(val1) && _.isUndefined(val2);
-};
-
+const { stringToMaybeBigNumber, areMaybeBigNumbersEqual } = maybeBigNumberUtil;
 export class ScalingAmountInput extends React.Component<ScalingAmountInputProps, ScalingAmountInputState> {
     public static defaultProps = {
         onChange: util.boundNoop,
@@ -57,6 +42,8 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
         if (!areMaybeBigNumbersEqual(parsedStateValue, currentValue)) {
             // we somehow got into the state in which the value passed in and the string value
             // in state have differed, reset state
+            // we dont expect to ever get into this state, but let's make sure
+            // we reset if we do since we're dealing with important numbers
             this.setState({
                 stringValue: _.isUndefined(currentValue) ? '' : currentValue.toString(),
             });
