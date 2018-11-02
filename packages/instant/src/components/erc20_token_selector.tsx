@@ -54,6 +54,10 @@ class TokenSelectorRow extends React.Component<TokenSelectorRowProps> {
                         <Text fontWeight={700} fontColor={ColorOption.black}>
                             {displaySymbol}
                         </Text>
+                        <Container margin="0px 5px">
+                            <Text> - </Text>
+                        </Container>
+                        <Text>{token.metaData.name}</Text>
                     </Flex>
                 </Container>
             </Container>

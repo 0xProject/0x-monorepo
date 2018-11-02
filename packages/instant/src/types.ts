@@ -39,6 +39,7 @@ export interface ERC20AssetMetaData {
     decimals: number;
     primaryColor?: string;
     symbol: string;
+    name: string;
 }
 
 export interface ERC721AssetMetaData {
