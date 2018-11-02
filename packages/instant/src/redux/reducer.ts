@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 
 import { assetMetaDataMap } from '../data/asset_meta_data_map';
 import {
+    AffiliateInfo,
     Asset,
     AssetMetaData,
     AsyncProcessState,
@@ -31,6 +32,7 @@ export interface State {
     quoteRequestState: AsyncProcessState;
     latestErrorMessage?: string;
     latestErrorDisplayStatus: DisplayStatus;
+    affiliateInfo?: AffiliateInfo;
 }
 
 export const INITIAL_STATE: State = {
@@ -43,6 +45,7 @@ export const INITIAL_STATE: State = {
     latestErrorMessage: undefined,
     latestErrorDisplayStatus: DisplayStatus.Hidden,
     quoteRequestState: AsyncProcessState.NONE,
+    affiliateInfo: undefined,
 };
 
 export const reducer = (state: State = INITIAL_STATE, action: Action): State => {

@@ -2,7 +2,7 @@ import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
-import { OrderProcessState, ZeroExInstantError } from '../types';
+import { AffiliateInfo, OrderProcessState, ZeroExInstantError } from '../types';
 
 import { BuyButton } from './buy_button';
 import { PlacingOrderButton } from './placing_order_button';
@@ -13,6 +13,7 @@ export interface BuyOrderStateButtonProps {
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
     assetBuyer?: AssetBuyer;
+    affiliateInfo?: AffiliateInfo;
     onViewTransaction: () => void;
     onValidationPending: (buyQuote: BuyQuote) => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
@@ -50,6 +51,7 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
         <BuyButton
             buyQuote={props.buyQuote}
             assetBuyer={props.assetBuyer}
+            affiliateInfo={props.affiliateInfo}
             onValidationPending={props.onValidationPending}
             onValidationFail={props.onValidationFail}
             onSignatureDenied={props.onSignatureDenied}
