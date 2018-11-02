@@ -1,4 +1,3 @@
-
 import { styled } from '../../style/theme';
 
 export interface CircleProps {

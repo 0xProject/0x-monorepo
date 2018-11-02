@@ -7,7 +7,6 @@ import { assetUtils } from '../util/asset';
 
 import { SearchInput } from './search_input';
 import { Circle, Container, Flex, Text } from './ui';
-import { bool } from 'prop-types';
 
 export interface ERC20TokenSelectorProps {
     tokens: ERC20Asset[];
