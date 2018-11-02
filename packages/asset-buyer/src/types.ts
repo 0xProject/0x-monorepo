@@ -9,7 +9,6 @@ import { BigNumber } from '@0x/utils';
 export interface OrderProviderRequest {
     makerAssetData: string;
     takerAssetData: string;
-    networkId: number;
 }
 
 /**
@@ -27,10 +26,12 @@ export interface SignedOrderWithRemainingFillableMakerAssetAmount extends Signed
     remainingFillableMakerAssetAmount?: BigNumber;
 }
 /**
- * Given an OrderProviderRequest, get an OrderProviderResponse.
+ * gerOrdersAsync: Given an OrderProviderRequest, get an OrderProviderResponse.
+ * getAvailableMakerAssetDatasAsync: Given a taker asset data string, return all availabled paired maker asset data strings.
  */
 export interface OrderProvider {
     getOrdersAsync: (orderProviderRequest: OrderProviderRequest) => Promise<OrderProviderResponse>;
+    getAvailableMakerAssetDatasAsync: (takerAssetData: string) => Promise<string[]>;
 }
 
 /**

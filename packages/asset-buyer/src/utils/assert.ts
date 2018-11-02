@@ -28,7 +28,6 @@ export const assert = {
     isValidOrderProviderRequest(variableName: string, orderFetcherRequest: OrderProviderRequest): void {
         sharedAssert.isHexString(`${variableName}.makerAssetData`, orderFetcherRequest.makerAssetData);
         sharedAssert.isHexString(`${variableName}.takerAssetData`, orderFetcherRequest.takerAssetData);
-        sharedAssert.isNumber(`${variableName}.networkId`, orderFetcherRequest.networkId);
     },
     isValidPercentage(variableName: string, percentage: number): void {
         assert.isNumber(variableName, percentage);

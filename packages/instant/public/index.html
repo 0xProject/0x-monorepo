@@ -74,6 +74,7 @@
         const renderOptionsDefaults = {
             liquiditySource: 'https://api.radarrelay.com/0x/v2/',
             assetData: '0xf47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498',
+            onClose: () => { console.log('0x Instant Closed') }
         }
         const liquiditySourceOverride = queryParams.getQueryParamValue('liquiditySource');
         const renderOptionsOverrides = {

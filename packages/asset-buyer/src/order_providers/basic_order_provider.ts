@@ -29,4 +29,13 @@ export class BasicOrderProvider implements OrderProvider {
         });
         return { orders };
     }
+    /**
+     * Given a taker asset data string, return all availabled paired maker asset data strings.
+     * @param   takerAssetData   A string representing the taker asset data.
+     * @return  An array of asset data strings that can be purchased using takerAssetData.
+     */
+    public async getAvailableMakerAssetDatasAsync(takerAssetData: string): Promise<string[]> {
+        const ordersWithTakerAssetData = _.filter(this.orders, { takerAssetData });
+        return _.map(ordersWithTakerAssetData, order => order.makerAssetData);
+    }
 }
