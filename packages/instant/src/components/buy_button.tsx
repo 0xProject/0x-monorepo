@@ -1,4 +1,5 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { oc } from 'ts-optchain';
@@ -10,7 +11,6 @@ import { getBestAddress } from '../util/address';
 import { balanceUtil } from '../util/balance';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { util } from '../util/util';
-import { web3Wrapper } from '../util/web3_wrapper';
 
 import { Button, Text } from './ui';
 
@@ -50,7 +50,8 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         }
 
         this.props.onValidationPending(buyQuote);
-        const takerAddress = await getBestAddress();
+        const web3Wrapper = new Web3Wrapper(assetBuyer.provider);
+        const takerAddress = await getBestAddress(web3Wrapper);
 
         const hasSufficientEth = await balanceUtil.hasSufficientEth(takerAddress, buyQuote, web3Wrapper);
         if (!hasSufficientEth) {

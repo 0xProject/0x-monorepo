@@ -30,8 +30,12 @@ export const render = (props: ZeroExInstantOverlayProps, selector: string = DEFA
         assert.isNumber('props.zIndex', props.zIndex);
     }
     if (!_.isUndefined(props.affiliateInfo)) {
-        assert.isValidaffiliateInfo('props.affiliateInfo', props.affiliateInfo);
+        assert.isValidAffiliateInfo('props.affiliateInfo', props.affiliateInfo);
     }
+    if (!_.isUndefined(props.provider)) {
+        assert.isWeb3Provider('props.provider', props.provider);
+    }
+    assert.isString('selector', selector);
     const appendToIfExists = document.querySelector(selector);
     assert.assert(!_.isNull(appendToIfExists), `Could not find div with selector: ${selector}`);
     const appendTo = appendToIfExists as Element;

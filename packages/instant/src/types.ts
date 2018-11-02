@@ -1,6 +1,7 @@
 import { AssetProxyId, ObjectMap } from '@0x/types';
 
 // Reusable
+export type Maybe<T> = T | undefined;
 export enum AsyncProcessState {
     NONE = 'None',
     PENDING = 'Pending',

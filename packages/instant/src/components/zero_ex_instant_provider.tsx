@@ -1,8 +1,12 @@
 import { AssetBuyer } from '@0x/asset-buyer';
 import { ObjectMap, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Provider } from 'react-redux';
+import { Provider as ReduxProvider } from 'react-redux';
+import { oc } from 'ts-optchain';
 
 import { SelectedAssetThemeProvider } from '../containers/selected_asset_theme_provider';
 import { asyncData } from '../redux/async_data';
@@ -11,11 +15,9 @@ import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
 import { AffiliateInfo, AssetMetaData, Network } from '../types';
 import { assetUtils } from '../util/asset';
-import { BigNumberInput } from '../util/big_number_input';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
-import { getProvider } from '../util/provider';
-import { web3Wrapper } from '../util/web3_wrapper';
+import { getInjectedProvider } from '../util/injected_provider';
 
 fonts.include();
 
@@ -27,6 +29,7 @@ export interface ZeroExInstantProviderRequiredProps {
 }
 
 export interface ZeroExInstantProviderOptionalProps {
+    provider: Provider;
     availableAssetDatas: string[];
     defaultAssetBuyAmount: number;
     defaultSelectedAssetData: string;
@@ -40,8 +43,8 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
     // TODO(fragosti): Write tests for this beast once we inject a provider.
     private static _mergeInitialStateWithProps(props: ZeroExInstantProviderProps, state: State = INITIAL_STATE): State {
         const networkId = props.networkId || state.network;
-        // TODO: Provider needs to not be hard-coded to injected web3.
-        const provider = getProvider();
+        // TODO: Proper wallet connect flow
+        const provider = props.provider || getInjectedProvider();
         const assetBuyerOptions = {
             networkId,
         };
@@ -72,7 +75,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
                   ),
             selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
                 ? state.selectedAssetAmount
-                : new BigNumberInput(props.defaultAssetBuyAmount),
+                : new BigNumber(props.defaultAssetBuyAmount),
             availableAssets: _.isUndefined(props.availableAssetDatas)
                 ? undefined
                 : assetUtils.createAssetsFromAssetDatas(props.availableAssetDatas, completeAssetMetaDataMap, networkId),
@@ -108,19 +111,24 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
 
     public render(): React.ReactNode {
         return (
-            <Provider store={this._store}>
+            <ReduxProvider store={this._store}>
                 <SelectedAssetThemeProvider>{this.props.children}</SelectedAssetThemeProvider>
-            </Provider>
+            </ReduxProvider>
         );
     }
 
     private readonly _flashErrorIfWrongNetwork = async (): Promise<void> => {
         const msToShowError = 30000; // 30 seconds
         const network = this._store.getState().network;
-        const networkOfProvider = await web3Wrapper.getNetworkIdAsync();
-        if (network !== networkOfProvider) {
-            const errorMessage = `Wrong network detected. Try switching to ${Network[network]}.`;
-            errorFlasher.flashNewErrorMessage(this._store.dispatch, errorMessage, msToShowError);
+        const assetBuyerIfExists = this._store.getState().assetBuyer;
+        const providerIfExists = oc(assetBuyerIfExists).provider();
+        if (!_.isUndefined(providerIfExists)) {
+            const web3Wrapper = new Web3Wrapper(providerIfExists);
+            const networkOfProvider = await web3Wrapper.getNetworkIdAsync();
+            if (network !== networkOfProvider) {
+                const errorMessage = `Wrong network detected. Try switching to ${Network[network]}.`;
+                errorFlasher.flashNewErrorMessage(this._store.dispatch, errorMessage, msToShowError);
+            }
         }
     };
 }
