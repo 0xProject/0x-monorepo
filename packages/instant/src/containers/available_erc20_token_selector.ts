@@ -31,10 +31,11 @@ const mapDispatchToProps = (
     ownProps: AvailableERC20TokenSelectorProps,
 ): ConnectedDispatch => ({
     onTokenSelect: (token: ERC20Asset) => {
+        dispatch(actions.updateSelectedAsset(token));
+        dispatch(actions.resetAmount());
         if (ownProps.onTokenSelect) {
             ownProps.onTokenSelect(token);
         }
-        dispatch(actions.updateSelectedAsset(token));
     },
 });
 
