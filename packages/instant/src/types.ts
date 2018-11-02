@@ -2,7 +2,7 @@ import { AssetProxyId, ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 // Reusable
-export type MaybeBigNumber = BigNumber | undefined;
+export type Maybe<T> = T | undefined;
 export enum AsyncProcessState {
     NONE = 'None',
     PENDING = 'Pending',

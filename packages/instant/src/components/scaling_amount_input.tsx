@@ -2,8 +2,9 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { Maybe } from '../types';
+
 import { ColorOption } from '../style/theme';
-import { MaybeBigNumber } from '../types';
 import { maybeBigNumberUtil } from '../util/maybe_big_number';
 import { util } from '../util/util';
 
@@ -35,7 +36,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
             stringValue: _.isUndefined(props.value) ? '' : props.value.toString(),
         };
     }
-    public componentDidUpdate(prevProps: ScalingAmountInputProps): void {
+    public componentDidUpdate(): void {
         const parsedStateValue = stringToMaybeBigNumber(this.state.stringValue);
         const currentValue = this.props.value;
 
@@ -73,7 +74,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
         });
 
         // Trigger onAmountChange with a valid BigNumber, or undefined if the sanitizedValue is invalid or empty
-        const bigNumberValue: MaybeBigNumber = _.isEmpty(sanitizedValue)
+        const bigNumberValue: Maybe<BigNumber> = _.isEmpty(sanitizedValue)
             ? undefined
             : stringToMaybeBigNumber(sanitizedValue);
 
