@@ -24,7 +24,7 @@ export const Panel: React.StatelessComponent<PanelProps> = ({ title, children, o
             )}
             <Icon width={12} color={ColorOption.lightGrey} icon="closeX" onClick={onClose} />
         </Flex>
-        <Container marginTop="5px">{children}</Container>
+        <Container marginTop="10px">{children}</Container>
     </Container>
 );
 

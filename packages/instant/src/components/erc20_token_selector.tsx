@@ -5,6 +5,7 @@ import { ColorOption } from '../style/theme';
 import { ERC20Asset } from '../types';
 import { assetUtils } from '../util/asset';
 
+import { SearchInput } from './search_input';
 import { Circle, Container, Flex, Text } from './ui';
 
 export interface ERC20TokenSelectorProps {
@@ -14,7 +15,8 @@ export interface ERC20TokenSelectorProps {
 
 export const ERC20TokenSelector: React.StatelessComponent<ERC20TokenSelectorProps> = ({ tokens, onTokenSelect }) => (
     <Container>
-        <Container overflow="scroll" height="325px">
+        <SearchInput placeholder="Search tokens..." width="100%" />
+        <Container overflow="scroll" height="325px" marginTop="10px">
             {_.map(tokens, token => <TokenSelectorRow key={token.assetData} token={token} onClick={onTokenSelect} />)}
         </Container>
     </Container>
@@ -40,7 +42,7 @@ class TokenSelectorRow extends React.Component<TokenSelectorRowProps> {
                 darkenOnHover={true}
                 cursor="pointer"
             >
-                <Container marginLeft="10px">
+                <Container marginLeft="5px">
                     <Flex justify="flex-start">
                         <Container marginRight="10px">
                             <Circle diameter={30} fillColor={token.metaData.primaryColor}>

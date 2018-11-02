@@ -20,6 +20,7 @@ interface IconInfoMapping {
     failed: IconInfo;
     success: IconInfo;
     chevron: IconInfo;
+    search: IconInfo;
 }
 const ICONS: IconInfoMapping = {
     closeX: {
@@ -51,6 +52,13 @@ const ICONS: IconInfoMapping = {
         strokeWidth: 1.5,
         strokeLinecap: 'round',
         strokeLinejoin: 'round',
+    },
+    search: {
+        viewBox: '0 0 14 14',
+        fillRule: 'evenodd',
+        clipRule: 'evenodd',
+        path:
+            'M8.39404 5.19727C8.39404 6.96289 6.96265 8.39453 5.19702 8.39453C3.4314 8.39453 2 6.96289 2 5.19727C2 3.43164 3.4314 2 5.19702 2C6.96265 2 8.39404 3.43164 8.39404 5.19727ZM8.09668 9.51074C7.26855 10.0684 6.27075 10.3945 5.19702 10.3945C2.3269 10.3945 0 8.06738 0 5.19727C0 2.32715 2.3269 0 5.19702 0C8.06738 0 10.394 2.32715 10.394 5.19727C10.394 6.27051 10.0686 7.26855 9.51074 8.09668L13.6997 12.2861L12.2854 13.7002L8.09668 9.51074Z',
     },
 };
 

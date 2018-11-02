@@ -10,6 +10,7 @@ export enum ColorOption {
     lightGrey = 'lightGrey',
     grey = 'grey',
     feintGrey = 'feintGrey',
+    lightestGrey = 'lightestGrey',
     darkGrey = 'darkGrey',
     white = 'white',
     lightOrange = 'lightOrange',
@@ -17,11 +18,12 @@ export enum ColorOption {
 }
 
 export const theme: Theme = {
-    primaryColor: '#512D80',
+    primaryColor: '#333',
     black: 'black',
     lightGrey: '#999999',
     grey: '#666666',
     feintGrey: '#DEDEDE',
+    lightestGrey: '#EEEEEE',
     darkGrey: '#333333',
     white: 'white',
     lightOrange: '#F9F2ED',

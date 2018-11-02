@@ -9,7 +9,6 @@ export interface InputProps {
     fontSize?: string;
     fontColor?: ColorOption;
     placeholder?: string;
-    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const Input =
