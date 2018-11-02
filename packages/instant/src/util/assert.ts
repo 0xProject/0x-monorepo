@@ -4,7 +4,7 @@ import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId, ObjectMap, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
-import { AssetMetaData } from '../types';
+import { AffiliateInfo, AssetMetaData } from '../types';
 
 export const assert = {
     ...sharedAssert,
@@ -40,5 +40,13 @@ export const assert = {
             assert.isString(`${variableName}.name`, metaData.name);
             assert.isUri(`${variableName}.imageUrl`, metaData.imageUrl);
         }
+    },
+    isValidaffiliateInfo(variableName: string, affiliateInfo: AffiliateInfo): void {
+        assert.isETHAddressHex(`${variableName}.recipientAddress`, affiliateInfo.feeRecipient);
+        assert.isNumber(`${variableName}.percentage`, affiliateInfo.feePercentage);
+        assert.assert(
+            affiliateInfo.feePercentage >= 0 && affiliateInfo.feePercentage <= 0.05,
+            `Expected ${variableName}.percentage to be between 0 and 0.05, but is ${affiliateInfo.feePercentage}`,
+        );
     },
 };

@@ -9,7 +9,7 @@ import { asyncData } from '../redux/async_data';
 import { INITIAL_STATE, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AssetMetaData, Network } from '../types';
+import { AffiliateInfo, AssetMetaData, Network } from '../types';
 import { assetUtils } from '../util/asset';
 import { BigNumberInput } from '../util/big_number_input';
 import { errorFlasher } from '../util/error_flasher';
@@ -29,9 +29,10 @@ export interface ZeroExInstantProviderRequiredProps {
 }
 
 export interface ZeroExInstantProviderOptionalProps {
-    defaultAssetBuyAmount?: number;
+    defaultAssetBuyAmount: number;
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     networkId: Network;
+    affiliateInfo: AffiliateInfo;
 }
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
@@ -66,6 +67,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
                 ? state.selectedAssetAmount
                 : new BigNumberInput(props.defaultAssetBuyAmount),
             assetMetaDataMap: completeAssetMetaDataMap,
+            affiliateInfo: props.affiliateInfo,
         };
         return storeStateFromProps;
     }

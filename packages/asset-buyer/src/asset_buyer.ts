@@ -90,10 +90,11 @@ export class AssetBuyer {
      * @return  An instance of AssetBuyer
      */
     constructor(provider: Provider, orderProvider: OrderProvider, options: Partial<AssetBuyerOpts> = {}) {
-        const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = {
-            ...constants.DEFAULT_ASSET_BUYER_OPTS,
-            ...options,
-        };
+        const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = _.merge(
+            {},
+            constants.DEFAULT_ASSET_BUYER_OPTS,
+            options,
+        );
         assert.isWeb3Provider('provider', provider);
         assert.isValidOrderProvider('orderProvider', orderProvider);
         assert.isNumber('networkId', networkId);
@@ -122,10 +123,11 @@ export class AssetBuyer {
         assetBuyAmount: BigNumber,
         options: Partial<BuyQuoteRequestOpts> = {},
     ): Promise<BuyQuote> {
-        const { feePercentage, shouldForceOrderRefresh, slippagePercentage } = {
-            ...constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
-            ...options,
-        };
+        const { feePercentage, shouldForceOrderRefresh, slippagePercentage } = _.merge(
+            {},
+            constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
+            options,
+        );
         assert.isString('assetData', assetData);
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
         assert.isValidPercentage('feePercentage', feePercentage);
@@ -186,10 +188,11 @@ export class AssetBuyer {
         buyQuote: BuyQuote,
         options: Partial<BuyQuoteExecutionOpts> = {},
     ): Promise<string> {
-        const { ethAmount, takerAddress, feeRecipient, gasLimit, gasPrice } = {
-            ...constants.DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
-            ...options,
-        };
+        const { ethAmount, takerAddress, feeRecipient, gasLimit, gasPrice } = _.merge(
+            {},
+            constants.DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
+            options,
+        );
         assert.isValidBuyQuote('buyQuote', buyQuote);
         if (!_.isUndefined(ethAmount)) {
             assert.isBigNumber('ethAmount', ethAmount);
@@ -198,6 +201,12 @@ export class AssetBuyer {
             assert.isETHAddressHex('takerAddress', takerAddress);
         }
         assert.isETHAddressHex('feeRecipient', feeRecipient);
+        if (!_.isUndefined(gasLimit)) {
+            assert.isNumber('gasLimit', gasLimit);
+        }
+        if (!_.isUndefined(gasPrice)) {
+            assert.isBigNumber('gasPrice', gasPrice);
+        }
         const { orders, feeOrders, feePercentage, assetBuyAmount, worstCaseQuoteInfo } = buyQuote;
         // if no takerAddress is provided, try to get one from the provider
         let finalTakerAddress;

@@ -77,11 +77,21 @@
             onClose: () => { console.log('0x Instant Closed') }
         }
         const liquiditySourceOverride = queryParams.getQueryParamValue('liquiditySource');
+        const feeRecipientOverride = queryParams.getQueryParamValue('feeRecipient');
+        const feePercentageOverride = +queryParams.getQueryParamValue('feePercentage');
+        let affiliateInfoOverride;
+        if (feeRecipientOverride !== undefined && feePercentageOverride !== undefined) {
+            affiliateInfoOverride = {
+                feeRecipient: feeRecipientOverride,
+                feePercentage: feePercentageOverride
+            };
+        }
         const renderOptionsOverrides = {
             liquiditySource: liquiditySourceOverride === 'provided' ? providedOrders : liquiditySourceOverride,
             assetData: queryParams.getQueryParamValue('assetData'),
             networkId: +queryParams.getQueryParamValue('networkId') || undefined,
             defaultAssetBuyAmount: +queryParams.getQueryParamValue('defaultAssetBuyAmount') || undefined,
+            affiliateInfo: affiliateInfoOverride,
         }
         const renderOptions = Object.assign({}, renderOptionsDefaults, removeUndefined(renderOptionsOverrides));
         zeroExInstant.render(renderOptions);

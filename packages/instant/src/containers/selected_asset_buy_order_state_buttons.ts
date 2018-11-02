@@ -7,7 +7,7 @@ import { Dispatch } from 'redux';
 import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { OrderProcessState, ZeroExInstantError } from '../types';
+import { AffiliateInfo, OrderProcessState, ZeroExInstantError } from '../types';
 import { errorFlasher } from '../util/error_flasher';
 import { etherscanUtil } from '../util/etherscan';
 
@@ -15,6 +15,7 @@ interface ConnectedState {
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
     assetBuyer?: AssetBuyer;
+    affiliateInfo?: AffiliateInfo;
     onViewTransaction: () => void;
 }
 
@@ -32,6 +33,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
     buyOrderProcessingState: state.buyOrderState.processState,
     assetBuyer: state.assetBuyer,
     buyQuote: state.latestBuyQuote,
+    affiliateInfo: state.affiliateInfo,
     onViewTransaction: () => {
         if (
             state.assetBuyer &&
