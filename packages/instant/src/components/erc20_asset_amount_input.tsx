@@ -54,7 +54,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                         {...rest}
                         textLengthThreshold={this._textLengthThresholdForAsset(asset)}
                         maxFontSizePx={this.props.startingFontSizePx}
-                        onChange={this._handleChange}
+                        onAmountChange={this._handleChange}
                         onFontSizeChange={this._handleFontSizeChange}
                     />
                 </Container>

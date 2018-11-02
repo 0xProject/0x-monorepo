@@ -15,7 +15,7 @@ export interface ScalingAmountInputProps {
     textLengthThreshold: number;
     fontColor?: ColorOption;
     value?: BigNumber;
-    onChange: (value?: BigNumber) => void;
+    onAmountChange: (value?: BigNumber) => void;
     onFontSizeChange: (fontSizePx: number) => void;
 }
 interface ScalingAmountInputState {
@@ -25,7 +25,7 @@ interface ScalingAmountInputState {
 const { stringToMaybeBigNumber, areMaybeBigNumbersEqual } = maybeBigNumberUtil;
 export class ScalingAmountInput extends React.Component<ScalingAmountInputProps, ScalingAmountInputState> {
     public static defaultProps = {
-        onChange: util.boundNoop,
+        onAmountChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,
         isDisabled: false,
     };
@@ -72,11 +72,11 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
             stringValue: sanitizedValue,
         });
 
-        // Trigger onChange with a valid BigNumber, or undefined if the sanitizedValue is invalid or empty
+        // Trigger onAmountChange with a valid BigNumber, or undefined if the sanitizedValue is invalid or empty
         const bigNumberValue: MaybeBigNumber = _.isEmpty(sanitizedValue)
             ? undefined
             : stringToMaybeBigNumber(sanitizedValue);
 
-        this.props.onChange(bigNumberValue);
+        this.props.onAmountChange(bigNumberValue);
     };
 }
