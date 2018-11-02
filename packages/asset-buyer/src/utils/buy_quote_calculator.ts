@@ -119,7 +119,7 @@ function calculateQuoteInfo(
         ethAmountToBuyZrx = findEthAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
     }
     /// find the eth amount needed to buy the affiliate fee
-    const ethAmountToBuyAffiliateFee = ethAmountToBuyAsset.mul(feePercentage);
+    const ethAmountToBuyAffiliateFee = ethAmountToBuyAsset.mul(feePercentage).ceil();
     const totalEthAmountWithoutAffiliateFee = ethAmountToBuyAsset.plus(ethAmountToBuyZrx);
     const ethAmountTotal = totalEthAmountWithoutAffiliateFee.plus(ethAmountToBuyAffiliateFee);
     // divide into the assetBuyAmount in order to find rate of makerAsset / WETH

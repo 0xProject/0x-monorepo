@@ -18,12 +18,18 @@ export enum OrderProcessState {
     FAILURE = 'Failure',
 }
 
+export interface SimulatedProgress {
+    startTimeUnix: number;
+    expectedEndTimeUnix: number;
+}
+
 interface OrderStatePreTx {
     processState: OrderProcessState.NONE | OrderProcessState.VALIDATING;
 }
 interface OrderStatePostTx {
     processState: OrderProcessState.PROCESSING | OrderProcessState.SUCCESS | OrderProcessState.FAILURE;
     txHash: string;
+    progress: SimulatedProgress;
 }
 export type OrderState = OrderStatePreTx | OrderStatePostTx;
 
@@ -75,4 +81,9 @@ export enum Network {
 export enum ZeroExInstantError {
     AssetMetaDataNotAvailable = 'ASSET_META_DATA_NOT_AVAILABLE',
     InsufficientETH = 'INSUFFICIENT_ETH',
+}
+
+export interface AffiliateInfo {
+    feeRecipient: string;
+    feePercentage: number;
 }

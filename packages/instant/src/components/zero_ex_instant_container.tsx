@@ -4,13 +4,15 @@ import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order
 import { LatestError } from '../containers/latest_error';
 import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_buy_order_state_buttons';
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
+
+import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_order_progress';
+
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 
 import { SlideAnimationState } from './animations/slide_animation';
 import { SlidingPanel } from './sliding_panel';
 import { Container, Flex } from './ui';
-
 export interface ZeroExInstantContainerProps {}
 export interface ZeroExInstantContainerState {
     tokenSelectionPanelAnimationState: SlideAnimationState;
@@ -36,6 +38,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                 >
                     <Flex direction="column" justify="flex-start">
                         <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
+                        <SelectedAssetBuyOrderProgress />
                         <LatestBuyQuoteOrderDetails />
                         <Container padding="20px" width="100%">
                             <SelectedAssetBuyOrderStateButtons />

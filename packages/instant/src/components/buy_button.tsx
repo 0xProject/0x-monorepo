@@ -1,10 +1,11 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { oc } from 'ts-optchain';
 
 import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
-import { ZeroExInstantError } from '../types';
+import { AffiliateInfo, ZeroExInstantError } from '../types';
 import { getBestAddress } from '../util/address';
 import { balanceUtil } from '../util/balance';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
@@ -16,10 +17,11 @@ import { Button, Text } from './ui';
 export interface BuyButtonProps {
     buyQuote?: BuyQuote;
     assetBuyer?: AssetBuyer;
+    affiliateInfo?: AffiliateInfo;
     onValidationPending: (buyQuote: BuyQuote) => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
     onSignatureDenied: (buyQuote: BuyQuote) => void;
-    onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
 }
@@ -42,7 +44,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
     }
     private readonly _handleClick = async () => {
         // The button is disabled when there is no buy quote anyway.
-        const { buyQuote, assetBuyer } = this.props;
+        const { buyQuote, assetBuyer, affiliateInfo } = this.props;
         if (_.isUndefined(buyQuote) || _.isUndefined(assetBuyer)) {
             return;
         }
@@ -57,9 +59,14 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         }
 
         let txHash: string | undefined;
-        const gasPrice = await gasPriceEstimator.getFastAmountInWeiAsync();
+        const gasInfo = await gasPriceEstimator.getGasInfoAsync();
+        const feeRecipient = oc(affiliateInfo).feeRecipient();
         try {
-            txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, { takerAddress, gasPrice });
+            txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, {
+                feeRecipient,
+                takerAddress,
+                gasPrice: gasInfo.gasPriceInWei,
+            });
         } catch (e) {
             if (e instanceof Error) {
                 if (e.message === AssetBuyerError.SignatureRequestDenied) {
@@ -73,7 +80,9 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             throw e;
         }
 
-        this.props.onBuyProcessing(buyQuote, txHash);
+        const startTimeUnix = new Date().getTime();
+        const expectedEndTimeUnix = startTimeUnix + gasInfo.estimatedTimeMs;
+        this.props.onBuyProcessing(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
         try {
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
@@ -83,6 +92,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
             }
             throw e;
         }
+
         this.props.onBuySuccess(buyQuote, txHash);
     };
 }
