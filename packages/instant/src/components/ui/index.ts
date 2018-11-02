@@ -1,4 +1,5 @@
 export { Text, TextProps, Title } from './text';
+export { Circle, CircleProps } from './circle';
 export { Button, ButtonProps } from './button';
 export { Flex, FlexProps } from './flex';
 export { Container, ContainerProps } from './container';

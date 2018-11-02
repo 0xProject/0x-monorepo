@@ -22,7 +22,7 @@ export interface InstantHeadingProps {
 const PLACEHOLDER_COLOR = ColorOption.white;
 const ICON_WIDTH = 34;
 const ICON_HEIGHT = 34;
-const ICON_COLOR = 'white';
+const ICON_COLOR = ColorOption.white;
 
 export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
