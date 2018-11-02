@@ -7,20 +7,57 @@ import { assetUtils } from '../util/asset';
 
 import { SearchInput } from './search_input';
 import { Circle, Container, Flex, Text } from './ui';
+import { bool } from 'prop-types';
 
 export interface ERC20TokenSelectorProps {
     tokens: ERC20Asset[];
     onTokenSelect: (token: ERC20Asset) => void;
 }
 
-export const ERC20TokenSelector: React.StatelessComponent<ERC20TokenSelectorProps> = ({ tokens, onTokenSelect }) => (
-    <Container>
-        <SearchInput placeholder="Search tokens..." width="100%" />
-        <Container overflow="scroll" height="325px" marginTop="10px">
-            {_.map(tokens, token => <TokenSelectorRow key={token.assetData} token={token} onClick={onTokenSelect} />)}
-        </Container>
-    </Container>
-);
+export interface ERC20TokenSelectorState {
+    searchQuery?: string;
+}
+
+export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps> {
+    public state: ERC20TokenSelectorState = {
+        searchQuery: undefined,
+    };
+    public render(): React.ReactNode {
+        const { tokens, onTokenSelect } = this.props;
+        return (
+            <Container>
+                <SearchInput
+                    placeholder="Search tokens..."
+                    width="100%"
+                    value={this.state.searchQuery}
+                    onChange={this._handleSearchInputChange}
+                />
+                <Container overflow="scroll" height="275px" marginTop="10px">
+                    {_.map(tokens, token => {
+                        if (!this._isTokenQueryMatch(token)) {
+                            return null;
+                        }
+                        return <TokenSelectorRow key={token.assetData} token={token} onClick={onTokenSelect} />;
+                    })}
+                </Container>
+            </Container>
+        );
+    }
+    private readonly _handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        const searchQuery = event.target.value;
+        this.setState({
+            searchQuery,
+        });
+    };
+    private readonly _isTokenQueryMatch = (token: ERC20Asset): boolean => {
+        const { searchQuery } = this.state;
+        if (_.isUndefined(searchQuery)) {
+            return true;
+        }
+        const stringToSearch = `${token.metaData.name} ${token.metaData.symbol}`;
+        return _.includes(stringToSearch.toLowerCase(), searchQuery.toLowerCase());
+    };
+}
 
 interface TokenSelectorRowProps {
     token: ERC20Asset;
@@ -53,13 +90,13 @@ class TokenSelectorRow extends React.Component<TokenSelectorRowProps> {
                                 </Flex>
                             </Circle>
                         </Container>
-                        <Text fontWeight={700} fontColor={ColorOption.black}>
+                        <Text fontSize="14px" fontWeight={700} fontColor={ColorOption.black}>
                             {displaySymbol}
                         </Text>
                         <Container margin="0px 5px">
-                            <Text> - </Text>
+                            <Text fontSize="14px"> - </Text>
                         </Container>
-                        <Text>{token.metaData.name}</Text>
+                        <Text fontSize="14px">{token.metaData.name}</Text>
                     </Flex>
                 </Container>
             </Container>
