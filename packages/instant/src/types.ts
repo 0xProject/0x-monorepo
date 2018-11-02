@@ -1,5 +1,4 @@
 import { AssetProxyId, ObjectMap } from '@0x/types';
-import { BigNumber } from '@0x/utils';
 
 // Reusable
 export type Maybe<T> = T | undefined;
