@@ -16,7 +16,6 @@ import {
     OrderState,
 } from '../types';
 import { assetUtils } from '../util/asset';
-import { BigNumberInput } from '../util/big_number_input';
 
 import { Action, ActionTypes } from './actions';
 
@@ -25,7 +24,7 @@ export interface State {
     assetBuyer?: AssetBuyer;
     assetMetaDataMap: ObjectMap<AssetMetaData>;
     selectedAsset?: Asset;
-    selectedAssetAmount?: BigNumberInput;
+    selectedAssetAmount?: BigNumber;
     buyOrderState: OrderState;
     ethUsdPrice?: BigNumber;
     latestBuyQuote?: BuyQuote;

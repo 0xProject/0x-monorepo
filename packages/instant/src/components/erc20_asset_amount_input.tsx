@@ -1,10 +1,10 @@
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption, transparentWhite } from '../style/theme';
 import { ERC20Asset } from '../types';
 import { assetUtils } from '../util/asset';
-import { BigNumberInput } from '../util/big_number_input';
 import { util } from '../util/util';
 
 import { ScalingAmountInput } from './scaling_amount_input';
@@ -13,8 +13,8 @@ import { Container, Flex, Icon, Text } from './ui';
 // Asset amounts only apply to ERC20 assets
 export interface ERC20AssetAmountInputProps {
     asset?: ERC20Asset;
-    value?: BigNumberInput;
-    onChange: (value?: BigNumberInput, asset?: ERC20Asset) => void;
+    value?: BigNumber;
+    onChange: (value?: BigNumber, asset?: ERC20Asset) => void;
     onSelectAssetClick?: (asset?: ERC20Asset) => void;
     startingFontSizePx: number;
     fontColor?: ColorOption;
@@ -54,7 +54,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                         {...rest}
                         textLengthThreshold={this._textLengthThresholdForAsset(asset)}
                         maxFontSizePx={this.props.startingFontSizePx}
-                        onChange={this._handleChange}
+                        onAmountChange={this._handleChange}
                         onFontSizeChange={this._handleFontSizeChange}
                     />
                 </Container>
@@ -102,7 +102,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
             </Container>
         );
     };
-    private readonly _handleChange = (value?: BigNumberInput): void => {
+    private readonly _handleChange = (value?: BigNumber): void => {
         this.props.onChange(value, this.props.asset);
     };
     private readonly _handleFontSizeChange = (fontSizePx: number): void => {

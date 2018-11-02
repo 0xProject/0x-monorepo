@@ -1,5 +1,6 @@
 import { AssetBuyer } from '@0x/asset-buyer';
 import { ObjectMap, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -14,7 +15,6 @@ import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
 import { AffiliateInfo, AssetMetaData, Network } from '../types';
 import { assetUtils } from '../util/asset';
-import { BigNumberInput } from '../util/big_number_input';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { getInjectedProvider } from '../util/injected_provider';
@@ -68,7 +68,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap, networkId),
             selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
                 ? state.selectedAssetAmount
-                : new BigNumberInput(props.defaultAssetBuyAmount),
+                : new BigNumber(props.defaultAssetBuyAmount),
             assetMetaDataMap: completeAssetMetaDataMap,
             affiliateInfo: props.affiliateInfo,
         };

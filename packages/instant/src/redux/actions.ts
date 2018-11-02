@@ -2,8 +2,6 @@ import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { BigNumberInput } from '../util/big_number_input';
-
 import { ActionsUnion } from '../types';
 
 export interface PlainAction<T extends string> {
@@ -42,8 +40,7 @@ export enum ActionTypes {
 
 export const actions = {
     updateEthUsdPrice: (price?: BigNumber) => createAction(ActionTypes.UPDATE_ETH_USD_PRICE, price),
-    updateSelectedAssetAmount: (amount?: BigNumberInput) =>
-        createAction(ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT, amount),
+    updateSelectedAssetAmount: (amount?: BigNumber) => createAction(ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT, amount),
     setBuyOrderStateNone: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_NONE),
     setBuyOrderStateValidating: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_VALIDATING),
     setBuyOrderStateProcessing: (txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
