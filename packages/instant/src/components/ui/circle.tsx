@@ -1,7 +1,6 @@
 import { styled } from '../../style/theme';
 
 export interface CircleProps {
-    className?: string;
     diameter: number;
     fillColor?: string;
 }

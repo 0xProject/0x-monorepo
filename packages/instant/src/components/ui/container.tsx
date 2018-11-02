@@ -70,7 +70,9 @@ export const Container =
     &:hover {
         ${props =>
             props.darkenOnHover
-                ? `background-color: ${darken(0.05, props.theme[props.backgroundColor || 'white'])}`
+                ? `background-color: ${
+                      props.backgroundColor ? darken(0.05, props.theme[props.backgroundColor]) : 'none'
+                  }`
                 : ''};
     }
 `;

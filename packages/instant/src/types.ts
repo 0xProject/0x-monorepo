@@ -75,3 +75,5 @@ export enum ZeroExInstantError {
     AssetMetaDataNotAvailable = 'ASSET_META_DATA_NOT_AVAILABLE',
     InsufficientETH = 'INSUFFICIENT_ETH',
 }
+
+export type SimpleHandler = () => void;

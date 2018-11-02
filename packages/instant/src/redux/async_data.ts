@@ -27,7 +27,7 @@ export const asyncData = {
                 const assets = assetUtils.createAssetsFromAssetDatas(assetDatas, assetMetaDataMap, network);
                 store.dispatch(actions.setAvailableAssets(assets));
             } catch (e) {
-                const errorMessage = 'Error fetching available assets';
+                const errorMessage = 'Could not find any assets';
                 errorFlasher.flashNewErrorMessage(store.dispatch, errorMessage);
                 // On error, just specify that none are available
                 store.dispatch(actions.setAvailableAssets([]));
