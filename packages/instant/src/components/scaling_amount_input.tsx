@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
+import { MaybeBigNumber } from '../types';
 import { util } from '../util/util';
 
 import { ScalingInput } from './scaling_input';
@@ -16,13 +17,52 @@ export interface ScalingAmountInputProps {
     onChange: (value?: BigNumber) => void;
     onFontSizeChange: (fontSizePx: number) => void;
 }
+interface ScalingAmountInputState {
+    stringValue: string;
+}
 
-export class ScalingAmountInput extends React.Component<ScalingAmountInputProps> {
+const stringToMaybeBigNumber = (stringValue: string): MaybeBigNumber => {
+    let maybeBigNumber: MaybeBigNumber;
+    try {
+        maybeBigNumber = new BigNumber(stringValue);
+    } catch {
+        maybeBigNumber = undefined;
+    }
+    return _.isNaN(maybeBigNumber) ? undefined : maybeBigNumber;
+};
+
+const areMaybeBigNumbersEqual = (val1: MaybeBigNumber, val2: MaybeBigNumber): boolean => {
+    if (!_.isUndefined(val1) && !_.isUndefined(val2)) {
+        return val1.equals(val2);
+    }
+    return _.isUndefined(val1) && _.isUndefined(val2);
+};
+
+export class ScalingAmountInput extends React.Component<ScalingAmountInputProps, ScalingAmountInputState> {
     public static defaultProps = {
         onChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,
         isDisabled: false,
     };
+    public constructor(props: ScalingAmountInputProps) {
+        super(props);
+        this.state = {
+            stringValue: _.isUndefined(props.value) ? '' : props.value.toString(),
+        };
+    }
+    public componentDidUpdate(prevProps: ScalingAmountInputProps): void {
+        const parsedStateValue = stringToMaybeBigNumber(this.state.stringValue);
+        const currentValue = this.props.value;
+
+        if (!areMaybeBigNumbersEqual(parsedStateValue, currentValue)) {
+            // we somehow got into the state in which the value passed in and the string value
+            // in state have differed, reset state
+            this.setState({
+                stringValue: _.isUndefined(currentValue) ? '' : currentValue.toString(),
+            });
+        }
+    }
+
     public render(): React.ReactNode {
         const { textLengthThreshold, fontColor, maxFontSizePx, value, onFontSizeChange } = this.props;
         return (
@@ -32,7 +72,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
                 onFontSizeChange={onFontSizeChange}
                 fontColor={fontColor}
                 onChange={this._handleChange}
-                value={!_.isUndefined(value) ? value.toString() : ''}
+                value={this.state.stringValue}
                 placeholder="0.00"
                 emptyInputWidthCh={3.5}
                 isDisabled={this.props.isDisabled}
@@ -40,16 +80,16 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps>
         );
     }
     private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        const value = event.target.value;
-        let bigNumberValue;
-        if (!_.isEmpty(value)) {
-            try {
-                bigNumberValue = new BigNumber(value);
-            } catch {
-                // We don't want to allow values that can't be a BigNumber, so don't even call onChange.
-                return;
-            }
-        }
+        const sanitizedValue = event.target.value.replace(/[^0-9.]/g, ''); // only allow numbers and "."
+        this.setState({
+            stringValue: sanitizedValue,
+        });
+
+        // Trigger onChange with a valid BigNumber, or undefined if the sanitizedValue is invalid or empty
+        const bigNumberValue: MaybeBigNumber = _.isEmpty(sanitizedValue)
+            ? undefined
+            : stringToMaybeBigNumber(sanitizedValue);
+
         this.props.onChange(bigNumberValue);
     };
 }
