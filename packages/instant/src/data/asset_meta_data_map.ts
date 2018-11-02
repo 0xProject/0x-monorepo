@@ -19,7 +19,7 @@ export const assetMetaDataMap: ObjectMap<AssetMetaData> = {
         symbol: 'spank',
         name: 'Spank',
     },
-    '0xf47261b0000000000000000000000000d26114cd6EE289AccF82350c8d8487fedB8A0C07': {
+    '0xf47261b0000000000000000000000000d26114cd6ee289accf82350c8d8487fedb8a0c07': {
         assetProxyId: AssetProxyId.ERC20,
         decimals: 18,
         primaryColor: '#2e61ea',
@@ -29,7 +29,7 @@ export const assetMetaDataMap: ObjectMap<AssetMetaData> = {
     '0xf47261b00000000000000000000000009f8f72aa9304c8b593d555f12ef6589cc3a579a2': {
         assetProxyId: AssetProxyId.ERC20,
         decimals: 18,
-        primaryColor: 'white',
+        primaryColor: '#87e4ca',
         symbol: 'mkr',
         name: 'Maker',
     },
@@ -75,7 +75,7 @@ export const assetMetaDataMap: ObjectMap<AssetMetaData> = {
         symbol: 'dentacoin',
         name: 'Dentacoin',
     },
-    '0xf47261b0000000000000000000000000e94327d07fc17907b4db788e5adf2ed424addff6': {
+    '0xf47261b00000000000000000000000001985365e9f78359a9b6ad760e32412f4a445e862': {
         assetProxyId: AssetProxyId.ERC20,
         decimals: 18,
         primaryColor: '#512D80',

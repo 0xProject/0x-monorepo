@@ -20,7 +20,7 @@ export const assetDataNetworkMapping: AssetDataByNetwork[] = [
     },
     // OMG
     {
-        [Network.Mainnet]: '0xf47261b000000000000000000000000042d6622dece394b54999fbd73d108123806f6a18',
+        [Network.Mainnet]: '0xf47261b0000000000000000000000000d26114cd6ee289accf82350c8d8487fedb8a0c07',
         [Network.Kovan]: '0xf47261b000000000000000000000000046096d8ec059dbaae2950b30e01634ff0dc652ec',
     },
     // MKR
@@ -59,6 +59,6 @@ export const assetDataNetworkMapping: AssetDataByNetwork[] = [
     // REP
     {
         [Network.Kovan]: '0xf47261b00000000000000000000000008cb3971b8eb709c14616bd556ff6683019e90d9c',
-        [Network.Mainnet]: '0xf47261b0000000000000000000000000e94327d07fc17907b4db788e5adf2ed424addff6',
+        [Network.Mainnet]: '0xf47261b00000000000000000000000001985365e9f78359a9b6ad760e32412f4a445e862',
     },
 ];

@@ -53,7 +53,10 @@ export const assetUtils = {
     ): AssetMetaData | undefined => {
         let mainnetAssetData: string | undefined = assetData;
         if (network !== Network.Mainnet) {
-            const mainnetAssetDataIfExists = assetUtils.getAssociatedAssetDataIfExists(assetData, network);
+            const mainnetAssetDataIfExists = assetUtils.getAssociatedAssetDataIfExists(
+                assetData.toLowerCase(),
+                network,
+            );
             // Just so we don't fail in the case where we are on a non-mainnet network,
             // but pass in a valid mainnet assetData.
             mainnetAssetData = mainnetAssetDataIfExists || assetData;
@@ -61,7 +64,7 @@ export const assetUtils = {
         if (_.isUndefined(mainnetAssetData)) {
             return;
         }
-        const metaData = metaDataMap[mainnetAssetData];
+        const metaData = metaDataMap[mainnetAssetData.toLowerCase()];
         if (_.isUndefined(metaData)) {
             return;
         }
