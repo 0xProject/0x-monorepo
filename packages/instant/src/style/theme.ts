@@ -1,6 +1,6 @@
 import * as styledComponents from 'styled-components';
 
-const { default: styled, css, keyframes, ThemeProvider } = styledComponents;
+const { default: styled, css, keyframes, withTheme, ThemeProvider } = styledComponents;
 
 export type Theme = { [key in ColorOption]: string };
 
@@ -10,6 +10,7 @@ export enum ColorOption {
     lightGrey = 'lightGrey',
     grey = 'grey',
     feintGrey = 'feintGrey',
+    lightestGrey = 'lightestGrey',
     darkGrey = 'darkGrey',
     white = 'white',
     lightOrange = 'lightOrange',
@@ -17,11 +18,12 @@ export enum ColorOption {
 }
 
 export const theme: Theme = {
-    primaryColor: '#512D80',
+    primaryColor: '#333',
     black: 'black',
     lightGrey: '#999999',
     grey: '#666666',
     feintGrey: '#DEDEDE',
+    lightestGrey: '#EEEEEE',
     darkGrey: '#333333',
     white: 'white',
     lightOrange: '#F9F2ED',
@@ -31,4 +33,4 @@ export const theme: Theme = {
 export const transparentWhite = 'rgba(255,255,255,0.3)';
 export const overlayBlack = 'rgba(0, 0, 0, 0.6)';
 
-export { styled, css, keyframes, ThemeProvider };
+export { styled, css, keyframes, withTheme, ThemeProvider };

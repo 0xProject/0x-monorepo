@@ -2,7 +2,7 @@ import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { ActionsUnion } from '../types';
+import { ActionsUnion, Asset } from '../types';
 
 export interface PlainAction<T extends string> {
     type: T;
@@ -30,6 +30,7 @@ export enum ActionTypes {
     SET_BUY_ORDER_STATE_SUCCESS = 'SET_BUY_ORDER_STATE_SUCCESS',
     UPDATE_LATEST_BUY_QUOTE = 'UPDATE_LATEST_BUY_QUOTE',
     UPDATE_SELECTED_ASSET = 'UPDATE_SELECTED_ASSET',
+    SET_AVAILABLE_ASSETS = 'SET_AVAILABLE_ASSETS',
     SET_QUOTE_REQUEST_STATE_PENDING = 'SET_QUOTE_REQUEST_STATE_PENDING',
     SET_QUOTE_REQUEST_STATE_FAILURE = 'SET_QUOTE_REQUEST_STATE_FAILURE',
     SET_ERROR_MESSAGE = 'SET_ERROR_MESSAGE',
@@ -48,7 +49,8 @@ export const actions = {
     setBuyOrderStateFailure: (txHash: string) => createAction(ActionTypes.SET_BUY_ORDER_STATE_FAILURE, txHash),
     setBuyOrderStateSuccess: (txHash: string) => createAction(ActionTypes.SET_BUY_ORDER_STATE_SUCCESS, txHash),
     updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UPDATE_LATEST_BUY_QUOTE, buyQuote),
-    updateSelectedAsset: (assetData?: string) => createAction(ActionTypes.UPDATE_SELECTED_ASSET, assetData),
+    updateSelectedAsset: (asset: Asset) => createAction(ActionTypes.UPDATE_SELECTED_ASSET, asset),
+    setAvailableAssets: (availableAssets: Asset[]) => createAction(ActionTypes.SET_AVAILABLE_ASSETS, availableAssets),
     setQuoteRequestStatePending: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING),
     setQuoteRequestStateFailure: () => createAction(ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE),
     setErrorMessage: (errorMessage: string) => createAction(ActionTypes.SET_ERROR_MESSAGE, errorMessage),

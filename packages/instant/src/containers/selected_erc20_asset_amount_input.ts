@@ -27,6 +27,7 @@ interface ConnectedState {
     value?: BigNumber;
     asset?: ERC20Asset;
     isDisabled: boolean;
+    numberOfAssetsAvailable?: number;
     affiliateInfo?: AffiliateInfo;
 }
 
@@ -44,6 +45,7 @@ interface ConnectedProps {
     asset?: ERC20Asset;
     onChange: (value?: BigNumber, asset?: ERC20Asset) => void;
     isDisabled: boolean;
+    numberOfAssetsAvailable?: number;
 }
 
 type FinalProps = ConnectedProps & SelectedERC20AssetAmountInputProps;
@@ -52,20 +54,17 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
     const processState = state.buyOrderState.processState;
     const isEnabled = processState === OrderProcessState.NONE || processState === OrderProcessState.FAILURE;
     const isDisabled = !isEnabled;
-
-    const selectedAsset = state.selectedAsset;
-    if (_.isUndefined(selectedAsset) || selectedAsset.metaData.assetProxyId !== AssetProxyId.ERC20) {
-        return {
-            value: state.selectedAssetAmount,
-            isDisabled,
-        };
-    }
-
+    const selectedAsset =
+        !_.isUndefined(state.selectedAsset) && state.selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
+            ? (state.selectedAsset as ERC20Asset)
+            : undefined;
+    const numberOfAssetsAvailable = _.isUndefined(state.availableAssets) ? undefined : state.availableAssets.length;
     return {
         assetBuyer: state.assetBuyer,
         value: state.selectedAssetAmount,
-        asset: selectedAsset as ERC20Asset,
+        asset: selectedAsset,
         isDisabled,
+        numberOfAssetsAvailable,
         affiliateInfo: state.affiliateInfo,
     };
 };
@@ -151,6 +150,7 @@ const mergeProps = (
             connectedDispatch.updateBuyQuote(connectedState.assetBuyer, value, asset, connectedState.affiliateInfo);
         },
         isDisabled: connectedState.isDisabled,
+        numberOfAssetsAvailable: connectedState.numberOfAssetsAvailable,
     };
 };
 

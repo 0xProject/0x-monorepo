@@ -18,7 +18,6 @@ export interface TextProps {
     fontWeight?: number | string;
     textDecorationLine?: string;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
-    hoverColor?: string;
     noWrap?: boolean;
     display?: string;
 }
@@ -46,9 +45,7 @@ export const Text =
     ${props => (props.textTransform ? `text-transform: ${props.textTransform}` : '')};
     &:hover {
         ${props =>
-            props.onClick
-                ? `color: ${props.hoverColor || darken(darkenOnHoverAmount, props.theme[props.fontColor || 'white'])}`
-                : ''};
+            props.onClick ? `color: ${darken(darkenOnHoverAmount, props.theme[props.fontColor || 'white'])}` : ''};
     }
 `;
 

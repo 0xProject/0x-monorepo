@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption, transparentWhite } from '../style/theme';
-import { ERC20Asset } from '../types';
+import { ERC20Asset, SimpleHandler } from '../types';
 import { assetUtils } from '../util/asset';
 import { util } from '../util/util';
 
@@ -19,6 +19,7 @@ export interface ERC20AssetAmountInputProps {
     startingFontSizePx: number;
     fontColor?: ColorOption;
     isDisabled: boolean;
+    numberOfAssetsAvailable?: number;
 }
 
 export interface ERC20AssetAmountInputState {
@@ -40,13 +41,14 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         const { asset } = this.props;
         return (
             <Container whiteSpace="nowrap">
-                {_.isUndefined(asset) ? this._renderBackupContent() : this._renderContentForAsset(asset)}
+                {_.isUndefined(asset) ? this._renderTokenSelectionContent() : this._renderContentForAsset(asset)}
             </Container>
         );
     }
     private readonly _renderContentForAsset = (asset: ERC20Asset): React.ReactNode => {
         const { onChange, ...rest } = this.props;
         const amountBorderBottom = this.props.isDisabled ? '' : `1px solid ${transparentWhite}`;
+        const onSymbolClick = this._generateSelectAssetClickHandler();
         return (
             <React.Fragment>
                 <Container borderBottom={amountBorderBottom} display="inline-block">
@@ -59,7 +61,6 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                     />
                 </Container>
                 <Container
-                    cursor="pointer"
                     display="inline-block"
                     marginLeft="8px"
                     title={assetUtils.bestNameForAsset(asset, undefined)}
@@ -69,7 +70,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                             fontSize={`${this.state.currentFontSizePx}px`}
                             fontColor={ColorOption.white}
                             textTransform="uppercase"
-                            onClick={this._handleSymbolClick}
+                            onClick={onSymbolClick}
                         >
                             {assetUtils.formattedSymbolForAsset(asset)}
                         </Text>
@@ -79,7 +80,14 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
             </React.Fragment>
         );
     };
-    private readonly _renderBackupContent = (): React.ReactNode => {
+    private readonly _renderTokenSelectionContent = (): React.ReactNode => {
+        const { numberOfAssetsAvailable } = this.props;
+        let text = 'Select Token';
+        if (_.isUndefined(numberOfAssetsAvailable)) {
+            text = 'Loading...';
+        } else if (numberOfAssetsAvailable === 0) {
+            text = 'Assets Unavailable';
+        }
         return (
             <Flex>
                 <Text
@@ -87,18 +95,21 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                     fontColor={ColorOption.white}
                     opacity={0.7}
                     fontWeight="500"
-                    onClick={this._handleSymbolClick}
+                    onClick={this._generateSelectAssetClickHandler()}
                 >
-                    Select Token
+                    {text}
                 </Text>
                 {this._renderChevronIcon()}
             </Flex>
         );
     };
     private readonly _renderChevronIcon = (): React.ReactNode => {
+        if (!this._areMultipleAssetsAvailable()) {
+            return null;
+        }
         return (
-            <Container marginLeft="5px" onClick={this._handleSymbolClick}>
-                <Icon icon="chevron" width={12} />
+            <Container marginLeft="5px">
+                <Icon icon="chevron" width={12} onClick={this._handleSelectAssetClick} />
             </Container>
         );
     };
@@ -110,9 +121,22 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
             currentFontSizePx: fontSizePx,
         });
     };
-    private readonly _handleSymbolClick = () => {
+    private readonly _generateSelectAssetClickHandler = (): SimpleHandler | undefined => {
+        // We don't want to allow opening the token selection panel if there are no assets.
+        // Since styles are inferred from the presence of a click handler, we want to return undefined
+        // instead of providing a noop.
+        if (!this._areMultipleAssetsAvailable() || _.isUndefined(this.props.onSelectAssetClick)) {
+            return undefined;
+        }
+        return this._handleSelectAssetClick;
+    };
+    private readonly _areMultipleAssetsAvailable = (): boolean => {
+        const { numberOfAssetsAvailable } = this.props;
+        return !_.isUndefined(numberOfAssetsAvailable) && numberOfAssetsAvailable > 1;
+    };
+    private readonly _handleSelectAssetClick = (): void => {
         if (this.props.onSelectAssetClick) {
-            this.props.onSelectAssetClick(this.props.asset);
+            this.props.onSelectAssetClick();
         }
     };
     // For assets with symbols of different length,

@@ -7,8 +7,10 @@ import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
 import { assert } from './util/assert';
 
 export const render = (props: ZeroExInstantOverlayProps, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
-    assert.isHexString('props.assetData', props.assetData);
-    assert.isValidLiquiditySource('props.liquiditySource', props.liquiditySource);
+    assert.isValidOrderSource('orderSource', props.orderSource);
+    if (!_.isUndefined(props.defaultSelectedAssetData)) {
+        assert.isHexString('defaultSelectedAssetData', props.defaultSelectedAssetData);
+    }
     if (!_.isUndefined(props.additionalAssetMetaDataMap)) {
         assert.isValidAssetMetaDataMap('props.additionalAssetMetaDataMap', props.additionalAssetMetaDataMap);
     }
@@ -17,6 +19,9 @@ export const render = (props: ZeroExInstantOverlayProps, selector: string = DEFA
     }
     if (!_.isUndefined(props.networkId)) {
         assert.isNumber('props.networkId', props.networkId);
+    }
+    if (!_.isUndefined(props.availableAssetDatas)) {
+        assert.areValidAssetDatas('availableAssetDatas', props.availableAssetDatas);
     }
     if (!_.isUndefined(props.onClose)) {
         assert.isFunction('props.onClose', props.onClose);

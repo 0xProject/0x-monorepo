@@ -24,6 +24,7 @@ export interface State {
     assetBuyer?: AssetBuyer;
     assetMetaDataMap: ObjectMap<AssetMetaData>;
     selectedAsset?: Asset;
+    availableAssets?: Asset[];
     selectedAssetAmount?: BigNumber;
     buyOrderState: OrderState;
     ethUsdPrice?: BigNumber;
@@ -37,6 +38,7 @@ export interface State {
 export const INITIAL_STATE: State = {
     network: Network.Mainnet,
     selectedAssetAmount: undefined,
+    availableAssets: undefined,
     assetMetaDataMap,
     buyOrderState: { processState: OrderProcessState.NONE },
     ethUsdPrice: undefined,
@@ -159,18 +161,9 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 latestErrorDisplayStatus: DisplayStatus.Hidden,
             };
         case ActionTypes.UPDATE_SELECTED_ASSET:
-            const newSelectedAssetData = action.data;
-            let newSelectedAsset: Asset | undefined;
-            if (!_.isUndefined(newSelectedAssetData)) {
-                newSelectedAsset = assetUtils.createAssetFromAssetData(
-                    newSelectedAssetData,
-                    state.assetMetaDataMap,
-                    state.network,
-                );
-            }
             return {
                 ...state,
-                selectedAsset: newSelectedAsset,
+                selectedAsset: action.data,
             };
         case ActionTypes.RESET_AMOUNT:
             return {
@@ -179,6 +172,11 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 quoteRequestState: AsyncProcessState.NONE,
                 buyOrderState: { processState: OrderProcessState.NONE },
                 selectedAssetAmount: undefined,
+            };
+        case ActionTypes.SET_AVAILABLE_ASSETS:
+            return {
+                ...state,
+                availableAssets: action.data,
             };
         default:
             return state;

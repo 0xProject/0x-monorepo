@@ -1,3 +1,5 @@
+import { darken } from 'polished';
+
 import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';
 
@@ -30,6 +32,7 @@ export interface ContainerProps {
     opacity?: number;
     cursor?: string;
     overflow?: string;
+    darkenOnHover?: boolean;
 }
 
 export const Container =
@@ -64,6 +67,14 @@ export const Container =
     ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
     border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
+    &:hover {
+        ${props =>
+            props.darkenOnHover
+                ? `background-color: ${
+                      props.backgroundColor ? darken(0.05, props.theme[props.backgroundColor]) : 'none'
+                  }`
+                : ''};
+    }
 `;
 
 Container.defaultProps = {

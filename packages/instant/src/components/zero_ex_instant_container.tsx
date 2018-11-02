@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
 import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_buy_order_state_buttons';
@@ -45,10 +46,11 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         </Container>
                     </Flex>
                     <SlidingPanel
+                        title="Select Token"
                         animationState={this.state.tokenSelectionPanelAnimationState}
                         onClose={this._handlePanelClose}
                     >
-                        Select Your Token
+                        <AvailableERC20TokenSelector onTokenSelect={this._handlePanelClose} />
                     </SlidingPanel>
                 </Container>
             </Container>

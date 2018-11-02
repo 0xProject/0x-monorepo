@@ -25,14 +25,14 @@ export type ZeroExInstantProviderProps = ZeroExInstantProviderRequiredProps &
     Partial<ZeroExInstantProviderOptionalProps>;
 
 export interface ZeroExInstantProviderRequiredProps {
-    // TODO: Change API when we allow the selection of different assetDatas
-    assetData: string;
-    liquiditySource: string | SignedOrder[];
+    orderSource: string | SignedOrder[];
 }
 
 export interface ZeroExInstantProviderOptionalProps {
     provider: Provider;
+    availableAssetDatas: string[];
     defaultAssetBuyAmount: number;
+    defaultSelectedAssetData: string;
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     networkId: Network;
     affiliateInfo: AffiliateInfo;
@@ -40,6 +40,7 @@ export interface ZeroExInstantProviderOptionalProps {
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
     private readonly _store: Store;
+    // TODO(fragosti): Write tests for this beast once we inject a provider.
     private static _mergeInitialStateWithProps(props: ZeroExInstantProviderProps, state: State = INITIAL_STATE): State {
         const networkId = props.networkId || state.network;
         // TODO: Proper wallet connect flow
@@ -48,14 +49,14 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             networkId,
         };
         let assetBuyer;
-        if (_.isString(props.liquiditySource)) {
+        if (_.isString(props.orderSource)) {
             assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(
                 provider,
-                props.liquiditySource,
+                props.orderSource,
                 assetBuyerOptions,
             );
         } else {
-            assetBuyer = AssetBuyer.getAssetBuyerForProvidedOrders(provider, props.liquiditySource, assetBuyerOptions);
+            assetBuyer = AssetBuyer.getAssetBuyerForProvidedOrders(provider, props.orderSource, assetBuyerOptions);
         }
         const completeAssetMetaDataMap = {
             ...props.additionalAssetMetaDataMap,
@@ -65,10 +66,19 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             ...state,
             assetBuyer,
             network: networkId,
-            selectedAsset: assetUtils.createAssetFromAssetData(props.assetData, completeAssetMetaDataMap, networkId),
+            selectedAsset: _.isUndefined(props.defaultSelectedAssetData)
+                ? undefined
+                : assetUtils.createAssetFromAssetDataOrThrow(
+                      props.defaultSelectedAssetData,
+                      completeAssetMetaDataMap,
+                      networkId,
+                  ),
             selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
                 ? state.selectedAssetAmount
                 : new BigNumber(props.defaultAssetBuyAmount),
+            availableAssets: _.isUndefined(props.availableAssetDatas)
+                ? undefined
+                : assetUtils.createAssetsFromAssetDatas(props.availableAssetDatas, completeAssetMetaDataMap, networkId),
             assetMetaDataMap: completeAssetMetaDataMap,
             affiliateInfo: props.affiliateInfo,
         };
@@ -81,8 +91,14 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
     }
 
     public componentDidMount(): void {
+        const state = this._store.getState();
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchAndDispatchToStore(this._store);
+        asyncData.fetchEthPriceAndDispatchToStore(this._store);
+        // fetch available assets if none are specified
+        if (_.isUndefined(state.availableAssets)) {
+            // tslint:disable-next-line:no-floating-promises
+            asyncData.fetchAvailableAssetDatasAndDispatchToStore(this._store);
+        }
 
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
