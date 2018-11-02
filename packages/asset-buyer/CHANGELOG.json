@@ -14,6 +14,16 @@
             {
                 "note": "No longer require that provided orders all have the same maker and taker asset data",
                 "pr": 1197
+            },
+            {
+                "note":
+                    "Fix bug where `BuyQuoteInfo` objects could return `totalEthAmount` and `feeEthAmount` that were not whole numbers",
+                "pr": 1207
+            },
+            {
+                "note":
+                    "Fix bug where default values for `AssetBuyer` public facing methods could get overriden by `undefined` values",
+                "pr": 1207
             }
         ]
     },
