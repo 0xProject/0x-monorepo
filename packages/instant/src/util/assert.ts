@@ -41,7 +41,7 @@ export const assert = {
             assert.isUri(`${variableName}.imageUrl`, metaData.imageUrl);
         }
     },
-    isValidaffiliateInfo(variableName: string, affiliateInfo: AffiliateInfo): void {
+    isValidAffiliateInfo(variableName: string, affiliateInfo: AffiliateInfo): void {
         assert.isETHAddressHex(`${variableName}.recipientAddress`, affiliateInfo.feeRecipient);
         assert.isNumber(`${variableName}.percentage`, affiliateInfo.feePercentage);
         assert.assert(
