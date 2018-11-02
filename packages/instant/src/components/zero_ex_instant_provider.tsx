@@ -9,7 +9,7 @@ import { asyncData } from '../redux/async_data';
 import { INITIAL_STATE, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AssetMetaData, Network } from '../types';
+import { AffiliateInfo, AssetMetaData, Network } from '../types';
 import { assetUtils } from '../util/asset';
 import { BigNumberInput } from '../util/big_number_input';
 import { errorFlasher } from '../util/error_flasher';
@@ -32,6 +32,7 @@ export interface ZeroExInstantProviderOptionalProps {
     defaultSelectedAssetData: string;
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     networkId: Network;
+    affiliateInfo: AffiliateInfo;
 }
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
@@ -76,6 +77,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
                 ? undefined
                 : assetUtils.createAssetsFromAssetDatas(props.availableAssetDatas, completeAssetMetaDataMap, networkId),
             assetMetaDataMap: completeAssetMetaDataMap,
+            affiliateInfo: props.affiliateInfo,
         };
         return storeStateFromProps;
     }
@@ -98,7 +100,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
         // tslint:disable-next-line:no-floating-promises
-        gasPriceEstimator.getFastAmountInWeiAsync();
+        gasPriceEstimator.getGasInfoAsync();
 
         // tslint:disable-next-line:no-floating-promises
         this._flashErrorIfWrongNetwork();

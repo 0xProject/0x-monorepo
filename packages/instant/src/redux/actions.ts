@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { BigNumberInput } from '../util/big_number_input';
 
-import { ActionsUnion, Asset, OrderState } from '../types';
+import { ActionsUnion, Asset } from '../types';
 
 export interface PlainAction<T extends string> {
     type: T;
@@ -25,7 +25,11 @@ function createAction<T extends string, P>(type: T, data?: P): PlainAction<T> | 
 export enum ActionTypes {
     UPDATE_ETH_USD_PRICE = 'UPDATE_ETH_USD_PRICE',
     UPDATE_SELECTED_ASSET_AMOUNT = 'UPDATE_SELECTED_ASSET_AMOUNT',
-    UPDATE_BUY_ORDER_STATE = 'UPDATE_BUY_ORDER_STATE',
+    SET_BUY_ORDER_STATE_NONE = 'SET_BUY_ORDER_STATE_NONE',
+    SET_BUY_ORDER_STATE_VALIDATING = 'SET_BUY_ORDER_STATE_VALIDATING',
+    SET_BUY_ORDER_STATE_PROCESSING = 'SET_BUY_ORDER_STATE_PROCESSING',
+    SET_BUY_ORDER_STATE_FAILURE = 'SET_BUY_ORDER_STATE_FAILURE',
+    SET_BUY_ORDER_STATE_SUCCESS = 'SET_BUY_ORDER_STATE_SUCCESS',
     UPDATE_LATEST_BUY_QUOTE = 'UPDATE_LATEST_BUY_QUOTE',
     UPDATE_SELECTED_ASSET = 'UPDATE_SELECTED_ASSET',
     SET_AVAILABLE_ASSETS = 'SET_AVAILABLE_ASSETS',
@@ -41,7 +45,12 @@ export const actions = {
     updateEthUsdPrice: (price?: BigNumber) => createAction(ActionTypes.UPDATE_ETH_USD_PRICE, price),
     updateSelectedAssetAmount: (amount?: BigNumberInput) =>
         createAction(ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT, amount),
-    updateBuyOrderState: (orderState: OrderState) => createAction(ActionTypes.UPDATE_BUY_ORDER_STATE, orderState),
+    setBuyOrderStateNone: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_NONE),
+    setBuyOrderStateValidating: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_VALIDATING),
+    setBuyOrderStateProcessing: (txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+        createAction(ActionTypes.SET_BUY_ORDER_STATE_PROCESSING, { txHash, startTimeUnix, expectedEndTimeUnix }),
+    setBuyOrderStateFailure: (txHash: string) => createAction(ActionTypes.SET_BUY_ORDER_STATE_FAILURE, txHash),
+    setBuyOrderStateSuccess: (txHash: string) => createAction(ActionTypes.SET_BUY_ORDER_STATE_SUCCESS, txHash),
     updateLatestBuyQuote: (buyQuote?: BuyQuote) => createAction(ActionTypes.UPDATE_LATEST_BUY_QUOTE, buyQuote),
     updateSelectedAsset: (asset: Asset) => createAction(ActionTypes.UPDATE_SELECTED_ASSET, asset),
     setAvailableAssets: (availableAssets: Asset[]) => createAction(ActionTypes.SET_AVAILABLE_ASSETS, availableAssets),

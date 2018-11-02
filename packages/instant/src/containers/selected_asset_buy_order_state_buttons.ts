@@ -7,7 +7,7 @@ import { Dispatch } from 'redux';
 import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { OrderProcessState, OrderState, ZeroExInstantError } from '../types';
+import { AffiliateInfo, OrderProcessState, ZeroExInstantError } from '../types';
 import { errorFlasher } from '../util/error_flasher';
 import { etherscanUtil } from '../util/etherscan';
 
@@ -15,13 +15,14 @@ interface ConnectedState {
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
     assetBuyer?: AssetBuyer;
+    affiliateInfo?: AffiliateInfo;
     onViewTransaction: () => void;
 }
 
 interface ConnectedDispatch {
     onValidationPending: (buyQuote: BuyQuote) => void;
     onSignatureDenied: (buyQuote: BuyQuote) => void;
-    onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
     onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
     onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
     onRetry: () => void;
@@ -32,6 +33,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
     buyOrderProcessingState: state.buyOrderState.processState,
     assetBuyer: state.assetBuyer,
     buyQuote: state.latestBuyQuote,
+    affiliateInfo: state.affiliateInfo,
     onViewTransaction: () => {
         if (
             state.assetBuyer &&
@@ -56,24 +58,20 @@ const mapDispatchToProps = (
     ownProps: SelectedAssetBuyOrderStateButtons,
 ): ConnectedDispatch => ({
     onValidationPending: (buyQuote: BuyQuote) => {
-        const newOrderState: OrderState = { processState: OrderProcessState.VALIDATING };
-        dispatch(actions.updateBuyOrderState(newOrderState));
+        dispatch(actions.setBuyOrderStateValidating());
     },
-    onBuyProcessing: (buyQuote: BuyQuote, txHash: string) => {
-        const newOrderState: OrderState = { processState: OrderProcessState.PROCESSING, txHash };
-        dispatch(actions.updateBuyOrderState(newOrderState));
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => {
+        dispatch(actions.setBuyOrderStateProcessing(txHash, startTimeUnix, expectedEndTimeUnix));
     },
-    onBuySuccess: (buyQuote: BuyQuote, txHash: string) =>
-        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.SUCCESS, txHash })),
-    onBuyFailure: (buyQuote: BuyQuote, txHash: string) =>
-        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.FAILURE, txHash })),
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => dispatch(actions.setBuyOrderStateSuccess(txHash)),
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => dispatch(actions.setBuyOrderStateFailure(txHash)),
     onSignatureDenied: () => {
         dispatch(actions.resetAmount());
         const errorMessage = 'You denied this transaction';
         errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
     },
     onValidationFail: (buyQuote, error) => {
-        dispatch(actions.updateBuyOrderState({ processState: OrderProcessState.NONE }));
+        dispatch(actions.setBuyOrderStateNone());
         if (error === ZeroExInstantError.InsufficientETH) {
             const errorMessage = "You don't have enough ETH";
             errorFlasher.flashNewErrorMessage(dispatch, errorMessage);

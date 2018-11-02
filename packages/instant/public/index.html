@@ -77,12 +77,22 @@
         }
         const orderSourceOverride = queryParams.getQueryParamValue('orderSource');
         const availableAssetDatasString = queryParams.getQueryParamValue('availableAssetDatas');
+        const feeRecipientOverride = queryParams.getQueryParamValue('feeRecipient');
+        const feePercentageOverride = +queryParams.getQueryParamValue('feePercentage');
+        let affiliateInfoOverride;
+        if (feeRecipientOverride !== undefined && feePercentageOverride !== undefined) {
+            affiliateInfoOverride = {
+                feeRecipient: feeRecipientOverride,
+                feePercentage: feePercentageOverride
+            };
+        }
         const renderOptionsOverrides = {
             orderSource: orderSourceOverride === 'provided' ? [providedOrder] : orderSourceOverride,
             networkId: +queryParams.getQueryParamValue('networkId') || undefined,
             defaultAssetBuyAmount: +queryParams.getQueryParamValue('defaultAssetBuyAmount') || undefined,
             availableAssetDatas: availableAssetDatasString ? JSON.parse(availableAssetDatasString) : undefined,
             defaultSelectedAssetData: queryParams.getQueryParamValue('defaultSelectedAssetData'),
+            affiliateInfo: affiliateInfoOverride,
         }
         const renderOptions = Object.assign({}, renderOptionsDefaults, removeUndefined(renderOptionsOverrides));
         zeroExInstant.render(renderOptions);

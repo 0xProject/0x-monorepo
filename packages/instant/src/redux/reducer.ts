@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 
 import { assetMetaDataMap } from '../data/asset_meta_data_map';
 import {
+    AffiliateInfo,
     Asset,
     AssetMetaData,
     AsyncProcessState,
@@ -31,6 +32,7 @@ export interface State {
     quoteRequestState: AsyncProcessState;
     latestErrorMessage?: string;
     latestErrorDisplayStatus: DisplayStatus;
+    affiliateInfo?: AffiliateInfo;
 }
 
 export const INITIAL_STATE: State = {
@@ -44,6 +46,7 @@ export const INITIAL_STATE: State = {
     latestErrorMessage: undefined,
     latestErrorDisplayStatus: DisplayStatus.Hidden,
     quoteRequestState: AsyncProcessState.NONE,
+    affiliateInfo: undefined,
 };
 
 export const reducer = (state: State = INITIAL_STATE, action: Action): State => {
@@ -84,11 +87,62 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 latestBuyQuote: undefined,
                 quoteRequestState: AsyncProcessState.FAILURE,
             };
-        case ActionTypes.UPDATE_BUY_ORDER_STATE:
+        case ActionTypes.SET_BUY_ORDER_STATE_NONE:
             return {
                 ...state,
-                buyOrderState: action.data,
+                buyOrderState: { processState: OrderProcessState.NONE },
             };
+        case ActionTypes.SET_BUY_ORDER_STATE_VALIDATING:
+            return {
+                ...state,
+                buyOrderState: { processState: OrderProcessState.VALIDATING },
+            };
+        case ActionTypes.SET_BUY_ORDER_STATE_PROCESSING:
+            const processingData = action.data;
+            const { startTimeUnix, expectedEndTimeUnix } = processingData;
+            return {
+                ...state,
+                buyOrderState: {
+                    processState: OrderProcessState.PROCESSING,
+                    txHash: processingData.txHash,
+                    progress: {
+                        startTimeUnix,
+                        expectedEndTimeUnix,
+                    },
+                },
+            };
+        case ActionTypes.SET_BUY_ORDER_STATE_FAILURE:
+            const failureTxHash = action.data;
+            if ('txHash' in state.buyOrderState) {
+                if (state.buyOrderState.txHash === failureTxHash) {
+                    const { txHash, progress } = state.buyOrderState;
+                    return {
+                        ...state,
+                        buyOrderState: {
+                            processState: OrderProcessState.FAILURE,
+                            txHash,
+                            progress,
+                        },
+                    };
+                }
+            }
+            return state;
+        case ActionTypes.SET_BUY_ORDER_STATE_SUCCESS:
+            const successTxHash = action.data;
+            if ('txHash' in state.buyOrderState) {
+                if (state.buyOrderState.txHash === successTxHash) {
+                    const { txHash, progress } = state.buyOrderState;
+                    return {
+                        ...state,
+                        buyOrderState: {
+                            processState: OrderProcessState.SUCCESS,
+                            txHash,
+                            progress,
+                        },
+                    };
+                }
+            }
+            return state;
         case ActionTypes.SET_ERROR_MESSAGE:
             return {
                 ...state,

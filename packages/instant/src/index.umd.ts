@@ -29,6 +29,9 @@ export const render = (props: ZeroExInstantOverlayProps, selector: string = DEFA
     if (!_.isUndefined(props.zIndex)) {
         assert.isNumber('props.zIndex', props.zIndex);
     }
+    if (!_.isUndefined(props.affiliateInfo)) {
+        assert.isValidaffiliateInfo('props.affiliateInfo', props.affiliateInfo);
+    }
     const appendToIfExists = document.querySelector(selector);
     assert.assert(!_.isNull(appendToIfExists), `Could not find div with selector: ${selector}`);
     const appendTo = appendToIfExists as Element;

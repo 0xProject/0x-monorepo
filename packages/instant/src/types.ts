@@ -16,12 +16,18 @@ export enum OrderProcessState {
     FAILURE = 'Failure',
 }
 
+export interface SimulatedProgress {
+    startTimeUnix: number;
+    expectedEndTimeUnix: number;
+}
+
 interface OrderStatePreTx {
     processState: OrderProcessState.NONE | OrderProcessState.VALIDATING;
 }
 interface OrderStatePostTx {
     processState: OrderProcessState.PROCESSING | OrderProcessState.SUCCESS | OrderProcessState.FAILURE;
     txHash: string;
+    progress: SimulatedProgress;
 }
 export type OrderState = OrderStatePreTx | OrderStatePostTx;
 
@@ -77,3 +83,8 @@ export enum ZeroExInstantError {
 }
 
 export type SimpleHandler = () => void;
+
+export interface AffiliateInfo {
+    feeRecipient: string;
+    feePercentage: number;
+}
