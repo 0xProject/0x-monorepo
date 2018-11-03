@@ -9,7 +9,7 @@ from sys import argv
 
 from distutils.command.clean import clean
 import distutils.command.build_py
-from setuptools import setup
+from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
 
@@ -62,6 +62,15 @@ class LintCommand(distutils.command.build_py.build_py):
         with open(path.join(eth_abi_dir, "py.typed"), "a"):
             pass
 
+        # HACK(gene): until eth_utils fixes
+        # https://github.com/ethereum/eth-utils/issues/140 , we need to simply
+        # create an empty file `py.typed` in the eth_abi package directory.
+        import eth_utils
+
+        eth_utils_dir = path.dirname(path.realpath(eth_utils.__file__))
+        with open(path.join(eth_utils_dir, "py.typed"), "a"):
+            pass
+
         for lint_command in lint_commands:
             print(
                 "Running lint command `", " ".join(lint_command).strip(), "`"
@@ -79,7 +88,7 @@ class CleanCommandExtension(clean):
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
-        rmtree("src/order_utils.egg-info", ignore_errors=True)
+        rmtree("src/0x_order_utils.egg-info", ignore_errors=True)
 
 
 # pylint: disable=too-many-ancestors
@@ -111,6 +120,26 @@ class PublishCommand(distutils.command.build_py.build_py):
         subprocess.check_call("twine upload dist/*".split())  # nosec
 
 
+# pylint: disable=too-many-ancestors
+class GanacheCommand(distutils.command.build_py.build_py):
+    """Custom command to publish to pypi.org."""
+
+    description = "Run ganache daemon to support tests."
+
+    def run(self):
+        """Run ganache."""
+        cmd_line = (
+            "docker run -d -p 8545:8545 0xorg/ganache-cli --gasLimit"
+            + " 10000000 --db /snapshot --noVMErrorsOnRPCResponse -p 8545"
+            + " --networkId 50 -m"
+        ).split()
+        cmd_line.append(
+            "concert load couple harbor equip island argue ramp clarify fence"
+            + " smart topic"
+        )
+        subprocess.call(cmd_line)  # nosec
+
+
 with open("README.md", "r") as file_handle:
     README_MD = file_handle.read()
 
@@ -130,9 +159,9 @@ setup(
         "test": TestCommandExtension,
         "test_publish": TestPublishCommand,
         "publish": PublishCommand,
+        "ganache": GanacheCommand,
     },
-    include_package_data=True,
-    install_requires=["eth-abi", "mypy_extensions", "web3"],
+    install_requires=["eth-abi", "eth_utils", "mypy_extensions", "web3"],
     extras_require={
         "dev": [
             "bandit",
@@ -151,14 +180,17 @@ setup(
         ]
     },
     python_requires=">=3.6, <4",
-    package_data={"zero_ex.order_utils": ["py.typed"]},
+    package_data={
+        "zero_ex.order_utils": ["py.typed"],
+        "zero_ex.contract_artifacts": ["artifacts/*"],
+    },
     package_dir={"": "src"},
     license="Apache 2.0",
     keywords=(
         "ethereum cryptocurrency 0x decentralized blockchain dex exchange"
     ),
     namespace_packages=["zero_ex"],
-    packages=["zero_ex.order_utils", "zero_ex.dev_utils"],
+    packages=find_packages("src"),
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",

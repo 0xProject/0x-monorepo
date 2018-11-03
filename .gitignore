@@ -99,6 +99,7 @@ packages/*/scripts/
 .mypy_cache
 .tox
 python-packages/*/build
+python-packages/*/dist
 __pycache__
 python-packages/*/src/*.egg-info
 python-packages/*/.coverage

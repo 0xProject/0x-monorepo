@@ -13,6 +13,9 @@ project = "0x-order-utils"
 copyright = "2018, ZeroEx, Intl."
 author = "F. Eugene Aumson"
 version = "0.1.0"  # The short X.Y version
+# we should modify this version assignment to pull from setup.py like for
+# __version__ in in
+# https://github.com/ethereum/web3.py/blob/4c52f0d592571077ad2573cefe0587a336685d44/web3/__init__.py#L34
 release = ""  # The full version, including alpha/beta/rc tags
 
 extensions = [
