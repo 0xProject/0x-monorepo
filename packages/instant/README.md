@@ -58,7 +58,7 @@ yarn deploy-dogfood
 
 We also have a staging bucket that is to be updated less frequently can be used to share instant externally: http://0x-instant-staging.s3-website-us-east-1.amazonaws.com/
 
-To build and deploy to this bucket, rub
+To build and deploy to this bucket, run
 
 ```
 yarn deploy-staging
