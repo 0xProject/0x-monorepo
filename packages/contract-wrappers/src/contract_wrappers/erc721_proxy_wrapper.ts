@@ -1,7 +1,7 @@
 import { ERC721ProxyContract } from '@0x/abi-gen-wrappers';
 import { ERC721Proxy } from '@0x/contract-artifacts';
-import { AssetProxyId } from '@0x/types';
 import { EthRPCClient } from '@0x/eth-rpc-client';
+import { AssetProxyId } from '@0x/types';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -33,7 +33,7 @@ export class ERC721ProxyWrapper extends ContractWrapper {
      * @return  Proxy id
      */
     public async getProxyIdAsync(): Promise<AssetProxyId> {
-        const ERC721ProxyContractInstance = await this._getERC721ProxyContract();
+        const ERC721ProxyContractInstance = this._getERC721ProxyContract();
         // Note(albrow): Below is a TSLint false positive. Code won't compile if
         // you remove the type assertion.
         /* tslint:disable-next-line:no-unnecessary-type-assertion */
@@ -48,7 +48,7 @@ export class ERC721ProxyWrapper extends ContractWrapper {
     public async isAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
         assert.isETHAddressHex('exchangeContractAddress', exchangeContractAddress);
         const normalizedExchangeContractAddress = exchangeContractAddress.toLowerCase();
-        const ERC721ProxyContractInstance = await this._getERC721ProxyContract();
+        const ERC721ProxyContractInstance = this._getERC721ProxyContract();
         const isAuthorized = await ERC721ProxyContractInstance.authorized.callAsync(normalizedExchangeContractAddress);
         return isAuthorized;
     }
@@ -57,7 +57,7 @@ export class ERC721ProxyWrapper extends ContractWrapper {
      * @return  The list of authorized addresses.
      */
     public async getAuthorizedAddressesAsync(): Promise<string[]> {
-        const ERC721ProxyContractInstance = await this._getERC721ProxyContract();
+        const ERC721ProxyContractInstance = this._getERC721ProxyContract();
         const authorizedAddresses = await ERC721ProxyContractInstance.getAuthorizedAddresses.callAsync();
         return authorizedAddresses;
     }

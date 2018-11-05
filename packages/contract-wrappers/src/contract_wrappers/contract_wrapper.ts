@@ -1,5 +1,5 @@
+import { EthRPCClient, marshaller } from '@0x/eth-rpc-client';
 import { AbiDecoder, intervalUtils, logUtils } from '@0x/utils';
-import { marshaller, EthRPCClient } from '@0x/eth-rpc-client';
 import {
     BlockParamLiteral,
     ContractAbi,
@@ -173,7 +173,7 @@ export abstract class ContractWrapper {
             method: 'eth_getLogs',
             params: [filterOptions],
         });
-        return logs as RawLogEntry[];
+        return logs;
     }
     private _stopBlockAndLogStream(): void {
         if (_.isUndefined(this._blockAndLogStreamerIfExists)) {

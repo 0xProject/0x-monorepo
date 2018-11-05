@@ -21,7 +21,7 @@ import {
     Web3ProviderEngine,
 } from '@0x/subproviders';
 import { SignedOrder, Token as ZeroExToken } from '@0x/types';
-import { BigNumber, intervalUtils, logUtils, promisify } from '@0x/utils';
+import { BigNumber, intervalUtils, logUtils } from '@0x/utils';
 import { BlockParam, LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as moment from 'moment';

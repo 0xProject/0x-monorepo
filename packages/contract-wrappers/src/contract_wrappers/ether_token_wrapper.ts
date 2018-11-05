@@ -1,8 +1,8 @@
 import { WETH9Contract, WETH9EventArgs, WETH9Events } from '@0x/abi-gen-wrappers';
 import { WETH9 } from '@0x/contract-artifacts';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { schemas } from '@0x/json-schemas';
 import { BigNumber } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 

@@ -1,7 +1,7 @@
 import { ERC20ProxyContract } from '@0x/abi-gen-wrappers';
 import { ERC20Proxy } from '@0x/contract-artifacts';
-import { AssetProxyId } from '@0x/types';
 import { EthRPCClient } from '@0x/eth-rpc-client';
+import { AssetProxyId } from '@0x/types';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 

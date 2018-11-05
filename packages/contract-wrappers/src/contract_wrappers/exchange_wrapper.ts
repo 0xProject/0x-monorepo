@@ -1,5 +1,6 @@
 import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from '@0x/abi-gen-wrappers';
 import { Exchange } from '@0x/contract-artifacts';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { schemas } from '@0x/json-schemas';
 import {
     assetDataUtils,
@@ -9,7 +10,6 @@ import {
 } from '@0x/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { EthRPCClient } from '@0x/eth-rpc-client';
 import { BlockParamLiteral, ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
