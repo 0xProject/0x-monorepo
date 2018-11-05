@@ -15,7 +15,6 @@ import {
     OrderProcessState,
     OrderState,
 } from '../types';
-import { assetUtils } from '../util/asset';
 
 import { Action, ActionTypes } from './actions';
 
