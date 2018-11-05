@@ -1,5 +1,5 @@
 import { logUtils } from '@0x/utils';
-import Rollbar = require('rollbar');
+import Rollbar from 'rollbar';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';

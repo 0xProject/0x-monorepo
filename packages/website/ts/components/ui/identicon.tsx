@@ -1,4 +1,4 @@
-import blockies = require('blockies');
+import blockies from 'blockies';
 import * as _ from 'lodash';
 import * as React from 'react';
 

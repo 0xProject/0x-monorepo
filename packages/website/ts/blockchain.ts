@@ -26,7 +26,7 @@ import { BlockParam, LogWithDecodedArgs, Provider, TransactionReceiptWithDecoded
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
-import contract = require('truffle-contract');
+import contract from 'truffle-contract';
 import { BlockchainWatcher } from 'ts/blockchain_watcher';
 import { AssetSendCompleted } from 'ts/components/flash_messages/asset_send_completed';
 import { TransactionSubmitted } from 'ts/components/flash_messages/transaction_submitted';
@@ -55,9 +55,9 @@ import { errorReporter } from 'ts/utils/error_reporter';
 import { fakeTokenRegistry } from 'ts/utils/fake_token_registry';
 import { tokenAddressOverrides } from 'ts/utils/token_address_overrides';
 import { utils } from 'ts/utils/utils';
-import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
+import FilterSubprovider from 'web3-provider-engine/subproviders/filters';
 
-import * as MintableArtifacts from '../contracts/Mintable.json';
+import MintableArtifacts from '../contracts/Mintable.json';
 
 const BLOCK_NUMBER_BACK_TRACK = 50;
 const GWEI_IN_WEI = 1000000000;
