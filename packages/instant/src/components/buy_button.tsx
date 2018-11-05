@@ -12,7 +12,8 @@ import { balanceUtil } from '../util/balance';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { util } from '../util/util';
 
-import { Button, Text } from './ui';
+import { Button } from './ui/button';
+import { Text } from './ui/text';
 
 export interface BuyButtonProps {
     buyQuote?: BuyQuote;
