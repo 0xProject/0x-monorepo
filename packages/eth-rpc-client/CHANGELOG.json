@@ -59,7 +59,7 @@
             },
             {
                 "note":
-                    "EthRPCClient now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned.",
+                    "Web3Wrapper now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned.",
                 "pr": 1102
             }
         ],
@@ -102,7 +102,7 @@
             },
             {
                 "note":
-                    "Expose `sendRawPayloadAsync` so one can easily extend `EthRPCClient` with their own custom JSON RPC calls",
+                    "Expose `sendRawPayloadAsync` so one can easily extend `Web3Wrapper` with their own custom JSON RPC calls",
                 "pr": 1080
             }
         ],
@@ -358,7 +358,7 @@
                 "pr": 485
             },
             {
-                "note": "Export enum `EthRPCClientErrors` with a single value so far: `TransactionMiningTimeout`",
+                "note": "Export enum `Web3WrapperErrors` with a single value so far: `TransactionMiningTimeout`",
                 "pr": 485
             }
         ],
@@ -383,7 +383,7 @@
                 "pr": 426
             },
             {
-                "note": "Add `ethRPCClient.isZeroExEthRPCClient` for runtime instanceOf checks",
+                "note": "Add `ethRPCClient.isZeroExWeb3Wrapper` for runtime instanceOf checks",
                 "pr": 426
             },
             {

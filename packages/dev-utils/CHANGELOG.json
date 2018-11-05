@@ -280,7 +280,7 @@
                 "note": "Reduce npm package size by adding an `.npmignore` file."
             },
             {
-                "note": "Move `@0xproject/eth-rpc-client` to dependencies from devDependencies."
+                "note": "Move `@0xproject/web3-wrapper` to dependencies from devDependencies."
             }
         ],
         "timestamp": 1521298800
@@ -297,7 +297,7 @@
                 "pr": 426
             },
             {
-                "note": "Remove `RPC` class and move it's logic to `EthRPCClient`",
+                "note": "Remove `RPC` class and move it's logic to `Web3Wrapper`",
                 "pr": 426
             }
         ],

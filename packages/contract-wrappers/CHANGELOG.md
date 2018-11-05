@@ -33,9 +33,8 @@ CHANGELOG
     * Removed `setProvider` method in top-level `ContractWrapper` class and added new `unsubscribeAll` method. (#1105)
     * Some properties and methods have been renamed. For example, some methods that previously could throw no longer can, and so their names have been updated accordingly. (#1105)
     * Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from web3-wrapper, which we feel provides enough information. (#1105)
-    * Add `ForwarderWrapperError` to public interface (#1147)
-    * Add `ContractWrapperError.SignatureRequestDenied` to public interface (#1147)
-    * Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from eth-rpc-client, which we feel provides enough information. (#1105)
+    *  Add `ForwarderWrapperError` to public interface (#1147)
+    * Add `ContractWrapperError.SignatureRequestDenied` to public interface (#1147) \* Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from eth-rpc-client, which we feel provides enough information. (#1105)
 
 ## v2.0.2 - _October 4, 2018_
 

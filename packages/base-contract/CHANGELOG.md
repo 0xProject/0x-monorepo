@@ -116,7 +116,7 @@ CHANGELOG
 
 ## v0.2.0 - _April 11, 2018_
 
-    * Contract wrappers now accept Provider and defaults instead of EthRPCClient (#501)
+    * Contract wrappers now accept Provider and defaults instead of Web3Wrapper (#501)
 
 ## v0.1.0 - _April 2, 2018_
 

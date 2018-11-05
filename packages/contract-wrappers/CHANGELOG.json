@@ -94,7 +94,7 @@
             },
             {
                 "note":
-                    "Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from eth-rpc-client, which we feel provides enough information.",
+                    "Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from web3-wrapper, which we feel provides enough information.",
                 "pr": 1105
             },
             {
