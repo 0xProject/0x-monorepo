@@ -942,8 +942,8 @@ describe(ContractName.Forwarder, () => {
                 },
             );
             // Fetch end balances and construct expected outputs
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const primaryTakerAssetFillAmount = ethValue;
             const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
@@ -995,8 +995,8 @@ describe(ContractName.Forwarder, () => {
                 },
             );
             // Fetch end balances and construct expected outputs
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const primaryTakerAssetFillAmount = ethValue;
             const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
@@ -1044,8 +1044,8 @@ describe(ContractName.Forwarder, () => {
                 },
             );
             // Fetch end balances and construct expected outputs
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const primaryTakerAssetFillAmount = ethValue;
             const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
@@ -1096,8 +1096,8 @@ describe(ContractName.Forwarder, () => {
                 },
             );
             // Fetch end balances and construct expected outputs
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const primaryTakerAssetFillAmount = ethValue;
             const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
@@ -1146,8 +1146,8 @@ describe(ContractName.Forwarder, () => {
                 from: takerAddress,
             });
             // Fetch end balances and construct expected outputs
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await ethRPCClient.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await ethRPCClient.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const primaryTakerAssetFillAmount = ethValue;
             const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
