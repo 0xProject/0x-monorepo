@@ -137,6 +137,10 @@ namespace AbiEncoder {
             return this.hexValue;
         }
 
+        public getDataItem(): DataItem {
+            return this.dataItem;
+        }
+
         public abstract assignValue(value: any): void;
 
         // abstract match(type: string): Bool;
@@ -373,15 +377,25 @@ namespace AbiEncoder {
 
     class Pointer extends StaticDataType {
         destDataType: DynamicDataType;
-        static metaDataItem = { name: '[ptr]', type: '[ptr]' } as DataItem;
 
         constructor(destDataType: DynamicDataType) {
-            super(Pointer.metaDataItem);
+            const destDataItem = destDataType.getDataItem();
+            const dataItem = { name: `ptr<${destDataItem.name}>`, type: `ptr<${destDataItem.type}>` } as DataItem;
+            super(dataItem);
             this.destDataType = destDataType;
         }
 
+        /*
         public assignValue(destDataType: DynamicDataType) {
             this.destDataType = destDataType;
+        }*/
+
+        public assignValue(value: any) {
+            this.destDataType.assignValue(value);
+        }
+
+        public getHexValue(): string {
+            return this.destDataType.getHexValue();
         }
     }
 
