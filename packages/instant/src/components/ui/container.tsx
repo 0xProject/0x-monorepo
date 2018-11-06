@@ -33,13 +33,16 @@ export interface ContainerProps {
     cursor?: string;
     overflow?: string;
     darkenOnHover?: boolean;
+    flexGrow?: string | number;
 }
 
+// TODO Dont commit flex grow
 export const Container =
     styled.div <
     ContainerProps >
     `
     box-sizing: border-box;
+    ${props => cssRuleIfExists(props, 'flex-grow')}
     ${props => cssRuleIfExists(props, 'display')}
     ${props => cssRuleIfExists(props, 'position')}
     ${props => cssRuleIfExists(props, 'top')}

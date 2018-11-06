@@ -10,6 +10,7 @@ export interface FlexProps {
     height?: string;
     backgroundColor?: ColorOption;
     inline?: boolean;
+    flexGrow?: number | string;
 }
 
 export const Flex =
@@ -19,6 +20,7 @@ export const Flex =
     display: ${props => (props.inline ? 'inline-flex' : 'flex')};
     flex-direction: ${props => props.direction};
     flex-wrap: ${props => props.flexWrap};
+    ${props => cssRuleIfExists(props, 'flexGrow')}
     justify-content: ${props => props.justify};
     align-items: ${props => props.align};
     ${props => cssRuleIfExists(props, 'width')}

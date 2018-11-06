@@ -14,6 +14,7 @@ import { zIndex } from '../style/z_index';
 import { SlideAnimationState } from './animations/slide_animation';
 import { SlidingPanel } from './sliding_panel';
 import { Container, Flex } from './ui';
+
 export interface ZeroExInstantContainerProps {}
 export interface ZeroExInstantContainerState {
     tokenSelectionPanelAnimationState: SlideAnimationState;
@@ -25,7 +26,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
     };
     public render(): React.ReactNode {
         return (
-            <Container width="350px" position="relative">
+            <Container width="350px" height="100%" position="relative">
                 <Container zIndex={zIndex.errorPopup} position="relative">
                     <LatestError />
                 </Container>
@@ -36,8 +37,9 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                     borderRadius="3px"
                     hasBoxShadow={true}
                     overflow="hidden"
+                    height="100%"
                 >
-                    <Flex direction="column" justify="flex-start">
+                    <Flex direction="column" height="100%" justify="flex-start">
                         <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
                         <SelectedAssetBuyOrderProgress />
                         <LatestBuyQuoteOrderDetails />

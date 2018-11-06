@@ -23,7 +23,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
         const ethTokenFee = buyQuoteAccessor.feeEthAmount();
         const totalEthAmount = buyQuoteAccessor.totalEthAmount();
         return (
-            <Container padding="20px" width="100%">
+            <Container padding="20px" width="100%" flexGrow={1}>
                 <Container marginBottom="10px">
                     <Text
                         letterSpacing="1px"
