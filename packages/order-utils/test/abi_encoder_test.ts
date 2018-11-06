@@ -4,17 +4,13 @@ import ethUtil = require('ethereumjs-util');
 
 var _ = require('lodash');
 
-import { assert } from '@0x/order-utils/src/assert';
+// import { assert } from '@0x/order-utils/src/assert';
 
-import { chaiSetup } from '@0x/order-utils/test/utils/chai_setup';
-import { web3Wrapper } from '@0x/order-utils/test/utils/web3_wrapper';
+import { chaiSetup } from './utils/chai_setup';
 
 import { MethodAbi, DataItem } from 'ethereum-types';
-import { throwError } from 'ethers/errors';
 
 import { BigNumber } from '@0x/utils';
-import { MethodNotFound } from 'json-rpc-error';
-import { power } from 'js-combinatorics';
 
 const simpleAbi = {
     name: 'SimpleAbi',
