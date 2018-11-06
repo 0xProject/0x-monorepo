@@ -227,25 +227,29 @@ namespace AbiEncoder {
             super(dataItem);
             const matches = UInt.matcher.exec(dataItem.type);
             expect(matches).to.be.not.null();
-            console.log(JSON.stringify(matches));
             if (matches !== null && matches.length === 2) {
                 this.width = parseInt(matches[1]);
             } else {
                 this.width = 256;
             }
-            console.log('Width = ' + this.width);
         }
 
-        public getMaxValue() {
+        public getMaxValue(): BigNumber {
             return new BigNumber(2).toPower(this.width - 1);
         }
 
         public assignValue(value: BigNumber) {
-            if (value > this.getMaxValue()) {
-                throw 1;
+            console.log(JSON.stringify(value));
+            console.log(JSON.stringify(this.getMaxValue()));
+            if (value.greaterThan(this.getMaxValue())) {
+                throw `tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`;
+            } else if (value.lessThan(0)) {
+                throw `tried to assign value of ${value} to an unsigned integer.`;
             }
 
-            const valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value), 32);
+            const hexBase = 16;
+            const evmWordWidth = 32;
+            const valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${value.toString(hexBase)}`), evmWordWidth);
             const encodedValue = ethUtil.bufferToHex(valueBuf);
 
             this.assignHexValue(encodedValue);
@@ -424,7 +428,6 @@ namespace AbiEncoder {
             this.params = [];
 
             _.each(abi.inputs, (input: DataItem) => {
-                console.log('--input--\n', input, '--end input--');
                 this.params.push(DataTypeFactory.create(input));
             });
         }
@@ -432,7 +435,9 @@ namespace AbiEncoder {
         encode(args: any[]): string {
             //const calldata = new Calldata(this.name, this.params.length);
             let params = this.params;
-            _.each(params, function(args: any[], i: number, param: DataType) {
+            _.each(params, (param: DataType, i: number) => {
+                console.log('param:\n', param, '\n--end--\n');
+                console.log('arg:\n', args[i], '\n--end\n');
                 param.assignValue(args[i]);
                 console.log(param.getHexValue());
                 //param.encodeToCalldata(calldata);
