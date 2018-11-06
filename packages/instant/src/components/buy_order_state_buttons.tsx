@@ -7,7 +7,10 @@ import { AffiliateInfo, OrderProcessState, ZeroExInstantError } from '../types';
 import { BuyButton } from './buy_button';
 import { PlacingOrderButton } from './placing_order_button';
 import { SecondaryButton } from './secondary_button';
-import { Button, Flex, Text } from './ui';
+
+import { Button } from './ui/button';
+import { Flex } from './ui/flex';
+import { Text } from './ui/text';
 
 export interface BuyOrderStateButtonProps {
     buyQuote?: BuyQuote;

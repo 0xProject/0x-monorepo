@@ -5,7 +5,9 @@ import { ColorOption } from '../style/theme';
 import { PositionAnimationSettings } from './animations/position_animation';
 import { SlideAnimation, SlideAnimationState } from './animations/slide_animation';
 
-import { Container, Flex, Text } from './ui';
+import { Container } from './ui/container';
+import { Flex } from './ui/flex';
+import { Text } from './ui/text';
 
 export interface ErrorProps {
     icon: string;

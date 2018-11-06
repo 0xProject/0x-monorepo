@@ -8,7 +8,10 @@ import { ColorOption } from '../style/theme';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
-import { Container, Flex, Text } from './ui';
+
+import { Container } from './ui/container';
+import { Flex } from './ui/flex';
+import { Text } from './ui/text';
 
 export interface OrderDetailsProps {
     buyQuoteInfo?: BuyQuoteInfo;
