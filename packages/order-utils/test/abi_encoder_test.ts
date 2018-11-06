@@ -120,7 +120,7 @@ namespace AbiEncoder {
 
     class Word {}
 
-    abstract class DataType {
+    export abstract class DataType {
         private dataItem: DataItem;
         private hexValue: string;
 
@@ -148,19 +148,19 @@ namespace AbiEncoder {
 
     class Calldata {}
 
-    abstract class StaticDataType extends DataType {
+    export abstract class StaticDataType extends DataType {
         constructor(dataItem: DataItem) {
             super(dataItem);
         }
     }
 
-    abstract class DynamicDataType extends DataType {
+    export abstract class DynamicDataType extends DataType {
         constructor(dataItem: DataItem) {
             super(dataItem);
         }
     }
 
-    class Address extends StaticDataType {
+    export class Address extends StaticDataType {
         constructor(dataItem: DataItem) {
             super(dataItem);
             expect(Tuple.matchGrammar(dataItem.type)).to.be.true();
@@ -176,7 +176,7 @@ namespace AbiEncoder {
         }
     }
 
-    class Bool extends StaticDataType {
+    export class Bool extends StaticDataType {
         constructor(dataItem: DataItem) {
             super(dataItem);
             expect(Tuple.matchGrammar(dataItem.type)).to.be.true();
@@ -192,7 +192,7 @@ namespace AbiEncoder {
         }
     }
 
-    class Int extends StaticDataType {
+    export class Int extends StaticDataType {
         static matcher = RegExp(
             '^int(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
         );
@@ -219,7 +219,7 @@ namespace AbiEncoder {
         }
     }
 
-    class UInt extends StaticDataType {
+    export class UInt extends StaticDataType {
         static matcher = RegExp(
             '^uint(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
         );
@@ -264,7 +264,7 @@ namespace AbiEncoder {
         }
     }
 
-    class Byte extends StaticDataType {
+    export class Byte extends StaticDataType {
         static matcher = RegExp(
             '^(byte|bytes(1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32))$',
         );
@@ -291,7 +291,7 @@ namespace AbiEncoder {
         }
     }
 
-    class Tuple extends DynamicDataType {
+    export class Tuple extends DynamicDataType {
         constructor(dataItem: DataItem) {
             super(dataItem);
             expect(Tuple.matchGrammar(dataItem.type)).to.be.true();
@@ -307,7 +307,7 @@ namespace AbiEncoder {
         }
     }
 
-    class Bytes extends StaticDataType {
+    export class Bytes extends StaticDataType {
         static UNDEFINED_LENGTH = new BigNumber(-1);
         length: BigNumber = SolArray.UNDEFINED_LENGTH;
 
@@ -326,7 +326,7 @@ namespace AbiEncoder {
         }
     }
 
-    class SolArray extends DynamicDataType {
+    export class SolArray extends DynamicDataType {
         static matcher = RegExp('^.+\\[([0-9]d*)\\]$');
         static UNDEFINED_LENGTH = new BigNumber(-1);
         length: BigNumber = SolArray.UNDEFINED_LENGTH;
@@ -350,14 +350,16 @@ namespace AbiEncoder {
         }
     }
 
-    class SolString extends DynamicDataType {
+    export class SolString extends DynamicDataType {
         constructor(dataItem: DataItem) {
             super(dataItem);
             expect(SolString.matchGrammar(dataItem.type)).to.be.true();
         }
 
         public assignValue(value: string) {
-            const valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value), 32);
+            const wordsForValue = Math.ceil(value.length / 32);
+            const paddedBytesForValue = wordsForValue * 32;
+            const valueBuf = ethUtil.setLengthRight(ethUtil.toBuffer(value), paddedBytesForValue);
             const lengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value.length), 32);
             const encodedValueBuf = Buffer.concat([lengthBuf, valueBuf]);
             const encodedValue = ethUtil.bufferToHex(encodedValueBuf);
@@ -375,7 +377,7 @@ namespace AbiEncoder {
 
     class UFixed extends StaticDataType {}*/
 
-    class Pointer extends StaticDataType {
+    export class Pointer extends StaticDataType {
         destDataType: DynamicDataType;
 
         constructor(destDataType: DynamicDataType) {
@@ -399,7 +401,7 @@ namespace AbiEncoder {
         }
     }
 
-    class DataTypeFactory {
+    export class DataTypeFactory {
         public static mapDataItemToDataType(dataItem: DataItem): DataType {
             console.log(`Type: ${dataItem.type}`);
 
@@ -497,11 +499,34 @@ namespace AbiEncoder {
 }
 
 describe.only('ABI Encoder', () => {
-    describe.only('Just a Greg, Eh', () => {
-        it.only('Yessir', async () => {
+    describe('Just a Greg, Eh', () => {
+        it('Yessir', async () => {
             const method = new AbiEncoder.Method(simpleAbi);
             method.encode([new BigNumber(5), 'five']);
             expect(true).to.be.true();
+        });
+    });
+
+    describe('String', () => {
+        const testStringDataItem = { name: 'testString', type: 'string' };
+        it('Less than 32 bytes', async () => {
+            const stringDataType = new AbiEncoder.SolString(testStringDataItem);
+            stringDataType.assignValue('five');
+            const expectedAbiEncodedString =
+                '0x00000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000';
+
+            console.log(stringDataType.getHexValue());
+            console.log(expectedAbiEncodedString);
+            expect(stringDataType.getHexValue()).to.be.equal(expectedAbiEncodedString);
+        });
+
+        it('Greater than 32 bytes', async () => {
+            const stringDataType = new AbiEncoder.SolString(testStringDataItem);
+            const testValue = 'a'.repeat(40);
+            stringDataType.assignValue(testValue);
+            const expectedAbiEncodedString =
+                '0x000000000000000000000000000000000000000000000000000000000000002861616161616161616161616161616161616161616161616161616161616161616161616161616161000000000000000000000000000000000000000000000000';
+            expect(stringDataType.getHexValue()).to.be.equal(expectedAbiEncodedString);
         });
     });
 });
