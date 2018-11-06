@@ -3,18 +3,18 @@ import { AssetProxyId, ObjectMap } from '@0x/types';
 // Reusable
 export type Maybe<T> = T | undefined;
 export enum AsyncProcessState {
-    NONE = 'None',
-    PENDING = 'Pending',
-    SUCCESS = 'Success',
-    FAILURE = 'Failure',
+    None = 'NONE',
+    Pending = 'PENDING',
+    Success = 'SUCCESS',
+    Failure = 'FAILURE',
 }
 
 export enum OrderProcessState {
-    NONE = 'None',
-    VALIDATING = 'Validating',
-    PROCESSING = 'Processing',
-    SUCCESS = 'Success',
-    FAILURE = 'Failure',
+    None = 'NONE',
+    Validating = 'VALIDATING',
+    Processing = 'PROCESSING',
+    Success = 'SUCCESS',
+    Failure = 'FAILURE',
 }
 
 export interface SimulatedProgress {
@@ -23,10 +23,10 @@ export interface SimulatedProgress {
 }
 
 interface OrderStatePreTx {
-    processState: OrderProcessState.NONE | OrderProcessState.VALIDATING;
+    processState: OrderProcessState.None | OrderProcessState.Validating;
 }
 interface OrderStatePostTx {
-    processState: OrderProcessState.PROCESSING | OrderProcessState.SUCCESS | OrderProcessState.FAILURE;
+    processState: OrderProcessState.Processing | OrderProcessState.Success | OrderProcessState.Failure;
     txHash: string;
     progress: SimulatedProgress;
 }

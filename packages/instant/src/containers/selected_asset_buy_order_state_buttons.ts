@@ -37,9 +37,9 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
     onViewTransaction: () => {
         if (
             state.assetBuyer &&
-            (state.buyOrderState.processState === OrderProcessState.PROCESSING ||
-                state.buyOrderState.processState === OrderProcessState.SUCCESS ||
-                state.buyOrderState.processState === OrderProcessState.FAILURE)
+            (state.buyOrderState.processState === OrderProcessState.Processing ||
+                state.buyOrderState.processState === OrderProcessState.Success ||
+                state.buyOrderState.processState === OrderProcessState.Failure)
         ) {
             const etherscanUrl = etherscanUtil.getEtherScanTxnAddressIfExists(
                 state.buyOrderState.txHash,

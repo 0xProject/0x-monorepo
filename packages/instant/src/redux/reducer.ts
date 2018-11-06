@@ -39,12 +39,12 @@ export const INITIAL_STATE: State = {
     selectedAssetAmount: undefined,
     availableAssets: undefined,
     assetMetaDataMap,
-    buyOrderState: { processState: OrderProcessState.NONE },
+    buyOrderState: { processState: OrderProcessState.None },
     ethUsdPrice: undefined,
     latestBuyQuote: undefined,
     latestErrorMessage: undefined,
     latestErrorDisplayStatus: DisplayStatus.Hidden,
-    quoteRequestState: AsyncProcessState.NONE,
+    quoteRequestState: AsyncProcessState.None,
     affiliateInfo: undefined,
 };
 
@@ -68,7 +68,7 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                 return {
                     ...state,
                     latestBuyQuote: newBuyQuoteIfExists,
-                    quoteRequestState: AsyncProcessState.SUCCESS,
+                    quoteRequestState: AsyncProcessState.Success,
                 };
             } else {
                 return state;
@@ -78,23 +78,23 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             return {
                 ...state,
                 latestBuyQuote: undefined,
-                quoteRequestState: AsyncProcessState.PENDING,
+                quoteRequestState: AsyncProcessState.Pending,
             };
         case ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE:
             return {
                 ...state,
                 latestBuyQuote: undefined,
-                quoteRequestState: AsyncProcessState.FAILURE,
+                quoteRequestState: AsyncProcessState.Failure,
             };
         case ActionTypes.SET_BUY_ORDER_STATE_NONE:
             return {
                 ...state,
-                buyOrderState: { processState: OrderProcessState.NONE },
+                buyOrderState: { processState: OrderProcessState.None },
             };
         case ActionTypes.SET_BUY_ORDER_STATE_VALIDATING:
             return {
                 ...state,
-                buyOrderState: { processState: OrderProcessState.VALIDATING },
+                buyOrderState: { processState: OrderProcessState.Validating },
             };
         case ActionTypes.SET_BUY_ORDER_STATE_PROCESSING:
             const processingData = action.data;
@@ -102,7 +102,7 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             return {
                 ...state,
                 buyOrderState: {
-                    processState: OrderProcessState.PROCESSING,
+                    processState: OrderProcessState.Processing,
                     txHash: processingData.txHash,
                     progress: {
                         startTimeUnix,
@@ -118,7 +118,7 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                     return {
                         ...state,
                         buyOrderState: {
-                            processState: OrderProcessState.FAILURE,
+                            processState: OrderProcessState.Failure,
                             txHash,
                             progress,
                         },
@@ -134,7 +134,7 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
                     return {
                         ...state,
                         buyOrderState: {
-                            processState: OrderProcessState.SUCCESS,
+                            processState: OrderProcessState.Success,
                             txHash,
                             progress,
                         },
@@ -168,8 +168,8 @@ export const reducer = (state: State = INITIAL_STATE, action: Action): State => 
             return {
                 ...state,
                 latestBuyQuote: undefined,
-                quoteRequestState: AsyncProcessState.NONE,
-                buyOrderState: { processState: OrderProcessState.NONE },
+                quoteRequestState: AsyncProcessState.None,
+                buyOrderState: { processState: OrderProcessState.None },
                 selectedAssetAmount: undefined,
             };
         case ActionTypes.SET_AVAILABLE_ASSETS:

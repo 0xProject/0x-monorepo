@@ -52,7 +52,7 @@ type FinalProps = ConnectedProps & SelectedERC20AssetAmountInputProps;
 
 const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputProps): ConnectedState => {
     const processState = state.buyOrderState.processState;
-    const isEnabled = processState === OrderProcessState.NONE || processState === OrderProcessState.FAILURE;
+    const isEnabled = processState === OrderProcessState.None || processState === OrderProcessState.Failure;
     const isDisabled = !isEnabled;
     const selectedAsset =
         !_.isUndefined(state.selectedAsset) && state.selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
