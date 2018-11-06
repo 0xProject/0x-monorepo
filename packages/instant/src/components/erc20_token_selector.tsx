@@ -6,7 +6,11 @@ import { ERC20Asset } from '../types';
 import { assetUtils } from '../util/asset';
 
 import { SearchInput } from './search_input';
-import { Circle, Container, Flex, Text } from './ui';
+
+import { Circle } from './ui/circle';
+import { Container } from './ui/container';
+import { Flex } from './ui/flex';
+import { Text } from './ui/text';
 
 export interface ERC20TokenSelectorProps {
     tokens: ERC20Asset[];

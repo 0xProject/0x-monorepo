@@ -13,7 +13,8 @@ import { zIndex } from '../style/z_index';
 
 import { SlideAnimationState } from './animations/slide_animation';
 import { SlidingPanel } from './sliding_panel';
-import { Container, Flex } from './ui';
+import { Container } from './ui/container';
+import { Flex } from './ui/flex';
 
 export interface ZeroExInstantContainerProps {}
 export interface ZeroExInstantContainerState {

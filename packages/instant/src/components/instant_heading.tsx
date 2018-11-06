@@ -8,7 +8,11 @@ import { AsyncProcessState, ERC20Asset, OrderProcessState, OrderState } from '..
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
-import { Container, Flex, Icon, Spinner, Text } from './ui';
+import { Container } from './ui/container';
+import { Flex } from './ui/flex';
+import { Icon } from './ui/icon';
+import { Spinner } from './ui/spinner';
+import { Text } from './ui/text';
 
 export interface InstantHeadingProps {
     selectedAssetAmount?: BigNumber;

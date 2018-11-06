@@ -3,7 +3,7 @@ import * as React from 'react';
 import { TimedProgressBar } from '../components/timed_progress_bar';
 
 import { TimeCounter } from '../components/time_counter';
-import { Container } from '../components/ui';
+import { Container } from '../components/ui/container';
 import { OrderProcessState, OrderState } from '../types';
 
 export interface BuyOrderProgressProps {

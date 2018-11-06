@@ -2,7 +2,10 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 
-import { Button, Container, Spinner, Text } from './ui';
+import { Button } from './ui/button';
+import { Container } from './ui/container';
+import { Spinner } from './ui/spinner';
+import { Text } from './ui/text';
 
 export const PlacingOrderButton: React.StatelessComponent<{}> = props => (
     <Button isDisabled={true} width="100%">

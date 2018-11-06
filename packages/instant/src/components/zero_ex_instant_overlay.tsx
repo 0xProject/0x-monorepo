@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Overlay } from './ui';
+import { Overlay } from './ui/overlay';
 import { ZeroExInstantContainer } from './zero_ex_instant_container';
 import { ZeroExInstantProvider, ZeroExInstantProviderProps } from './zero_ex_instant_provider';
 

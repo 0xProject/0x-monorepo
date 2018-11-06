@@ -3,7 +3,10 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 
-import { Container, Flex, Icon, Input, InputProps } from './ui';
+import { Container } from './ui/container';
+import { Flex } from './ui/flex';
+import { Icon } from './ui/icon';
+import { Input, InputProps } from './ui/input';
 
 export interface SearchInputProps extends InputProps {
     backgroundColor?: ColorOption;
