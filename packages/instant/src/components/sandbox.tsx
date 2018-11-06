@@ -13,5 +13,5 @@ export const Sandbox =
     display: block;
     border: 1px solid black;
     background-color: yellow;
-    ${props => stylesForMedia(props.width)}
+    ${props => stylesForMedia('width', props.width)}
     `;

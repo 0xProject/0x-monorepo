@@ -28,22 +28,17 @@ export interface ScreenSpecifications {
     lg?: string;
 }
 export type MediaChoice = string | ScreenSpecifications;
-// TODO: handle string too
-export const stylesForMedia = (choice: MediaChoice): InterpolationValue[] => {
-    let res: InterpolationValue[];
+export const stylesForMedia = (cssPropertyName: string, choice: MediaChoice): InterpolationValue[] => {
     if (typeof choice === 'string') {
-        res = css`
-            width: ${choice};
-        `;
-    } else {
-        res = css`
-            width: ${choice.default};
-            ${choice.lg && media.large`width: ${choice.lg}`}
-            ${choice.md && media.medium`width: ${choice.md}`}
-            ${choice.sm && media.small`width: ${choice.sm}`}
+        return css`
+            ${cssPropertyName}: ${choice};
         `;
     }
 
-    console.log(res.toString());
-    return res;
+    return css`
+        ${cssPropertyName}: ${choice.default};
+        ${choice.lg && media.large`${cssPropertyName}: ${choice.lg}`}
+        ${choice.md && media.medium`${cssPropertyName}: ${choice.md}`}
+        ${choice.sm && media.small`${cssPropertyName}: ${choice.sm}`}
+    `;
 };
