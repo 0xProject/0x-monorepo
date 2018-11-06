@@ -28,7 +28,8 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
     public render(): React.ReactNode {
         return (
             <Container width="350px" smallWidth="100%" smallHeight="100%" position="relative">
-                <Sandbox width={{ sm: '10px' }}>Test</Sandbox>
+                {/* <Sandbox width={{ default: '300px', sm: '5px', md: '900px' }}>Test</Sandbox> */}
+                <Sandbox width="100px">Test</Sandbox>
                 <Container zIndex={zIndex.errorPopup} position="relative">
                     <LatestError />
                 </Container>
