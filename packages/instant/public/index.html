@@ -87,7 +87,7 @@
             };
         }
         const renderOptionsOverrides = {
-            orderSource: orderSourceOverride === 'provided' ? [providedOrder] : orderSourceOverride,
+            orderSource: orderSourceOverride === 'provided' ? providedOrders : orderSourceOverride,
             networkId: +queryParams.getQueryParamValue('networkId') || undefined,
             defaultAssetBuyAmount: +queryParams.getQueryParamValue('defaultAssetBuyAmount') || undefined,
             availableAssetDatas: availableAssetDatasString ? JSON.parse(availableAssetDatasString) : undefined,
