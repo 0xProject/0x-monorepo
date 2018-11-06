@@ -116,6 +116,7 @@ const StyledPre = styled.pre`
 `;
 
 const StyledCopyInput = styled.textarea`
+    opacity: 0;
     height: 0;
     position: absolute;
     top: 0;
@@ -155,9 +156,11 @@ class Code extends React.Component<CodeProps, CodeState> {
                 await (navigator as any).clipboard.writeText(this.props.children);
                 this.setState({ copied: true });
             } else {
+                const lastActive = document.activeElement as HTMLElement;
                 this.code.current.focus();
                 this.code.current.select();
                 document.execCommand('copy');
+                lastActive.focus();
                 this.setState({ copied: true });
             }
         } catch (error) {
