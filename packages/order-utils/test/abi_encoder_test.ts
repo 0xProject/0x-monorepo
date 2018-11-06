@@ -13,22 +13,24 @@ import { MethodAbi, DataItem } from 'ethereum-types';
 import { BigNumber } from '@0x/utils';
 
 const simpleAbi = {
-    name: 'SimpleAbi',
+    constant: false,
     inputs: [
         {
-            components: [
-                {
-                    name: 'greg',
-                    type: 'uint256',
-                },
-                {
-                    name: 'gregStr',
-                    type: 'string',
-                },
-            ],
+            name: 'greg',
+            type: 'uint208',
+        },
+        {
+            name: 'gregStr',
+            type: 'string',
         },
     ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
 } as MethodAbi;
+
 const fillOrderAbi = {
     constant: false,
     inputs: [
@@ -198,7 +200,7 @@ namespace AbiEncoder {
             super(dataItem);
             const matches = Byte.matcher.exec(dataItem.type);
             expect(matches).to.be.not.null();
-            if (matches !== null && matches.length === 1) {
+            if (matches !== null && matches.length === 2) {
                 this.width = new BigNumber(matches[1], 10);
             }
         }
@@ -218,16 +220,20 @@ namespace AbiEncoder {
             '^uint(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
         );
 
-        static DEFAULT_WIDTH: number = 1;
+        static DEFAULT_WIDTH: number = 256;
         width: number = UInt.DEFAULT_WIDTH;
 
         constructor(dataItem: DataItem) {
             super(dataItem);
-            const matches = Byte.matcher.exec(dataItem.type);
+            const matches = UInt.matcher.exec(dataItem.type);
             expect(matches).to.be.not.null();
-            if (matches !== null && matches.length === 1) {
+            console.log(JSON.stringify(matches));
+            if (matches !== null && matches.length === 2) {
                 this.width = parseInt(matches[1]);
+            } else {
+                this.width = 256;
             }
+            console.log('Width = ' + this.width);
         }
 
         public getMaxValue() {
@@ -262,7 +268,7 @@ namespace AbiEncoder {
             super(dataItem);
             const matches = Byte.matcher.exec(dataItem.type);
             expect(matches).to.be.not.null();
-            if (matches !== null && matches.length === 1) {
+            if (matches !== null && matches.length === 2) {
                 this.width = new BigNumber(matches[1], 10);
             }
         }
@@ -377,6 +383,8 @@ namespace AbiEncoder {
 
     class DataTypeFactory {
         public static mapDataItemToDataType(dataItem: DataItem): DataType {
+            console.log(`Type: ${dataItem.type}`);
+
             if (SolArray.matchGrammar(dataItem.type)) return new SolArray(dataItem);
             if (Address.matchGrammar(dataItem.type)) return new Address(dataItem);
             if (Bool.matchGrammar(dataItem.type)) return new Bool(dataItem);
@@ -415,7 +423,8 @@ namespace AbiEncoder {
             this.name = abi.name;
             this.params = [];
 
-            _.each(abi.inputs, function(this: Method, input: DataItem) {
+            _.each(abi.inputs, (input: DataItem) => {
+                console.log('--input--\n', input, '--end input--');
                 this.params.push(DataTypeFactory.create(input));
             });
         }
