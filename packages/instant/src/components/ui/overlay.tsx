@@ -14,7 +14,7 @@ export interface OverlayProps {
 }
 
 const PlainOverlay: React.StatelessComponent<OverlayProps> = ({ children, className, onClose }) => (
-    <Flex className={className}>
+    <Flex height="100vh" className={className}>
         <Container position="absolute" top="0px" right="0px">
             <Icon height={18} width={18} color={ColorOption.white} icon="closeX" onClick={onClose} padding="2em 2em" />
         </Container>
