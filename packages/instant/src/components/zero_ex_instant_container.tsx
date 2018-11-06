@@ -42,9 +42,9 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                     borderRadius="3px"
                     hasBoxShadow={true}
                     overflow="hidden"
-                    height={{ default: 'auto', sm: '100%' }}
+                    height="100%"
                 >
-                    <Flex direction="column" height={{ default: 'auto', sm: '100%' }} justify="flex-start">
+                    <Flex direction="column" height={'100%'} justify="flex-start">
                         <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
                         <SelectedAssetBuyOrderProgress />
                         <LatestBuyQuoteOrderDetails />
