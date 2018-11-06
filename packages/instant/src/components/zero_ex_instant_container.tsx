@@ -12,7 +12,6 @@ import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 
 import { SlideAnimationState } from './animations/slide_animation';
-import { Sandbox } from './sandbox';
 import { SlidingPanel } from './sliding_panel';
 import { Container, Flex } from './ui';
 
@@ -27,8 +26,11 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
     };
     public render(): React.ReactNode {
         return (
-            <Container width="350px" smallWidth="100%" smallHeight="100%" position="relative">
-                <Sandbox width={{ default: '300px', sm: '5px', md: '900px' }}>Test</Sandbox>
+            <Container
+                width={{ default: '350px', sm: '100%' }}
+                height={{ default: 'auto', sm: '100%' }}
+                position="relative"
+            >
                 <Container zIndex={zIndex.errorPopup} position="relative">
                     <LatestError />
                 </Container>
@@ -39,9 +41,9 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                     borderRadius="3px"
                     hasBoxShadow={true}
                     overflow="hidden"
-                    smallHeight="100%"
+                    height={{ default: 'auto', sm: '100%' }}
                 >
-                    <Flex direction="column" smallHeight="100%" justify="flex-start">
+                    <Flex direction="column" height={{ default: 'auto', sm: '100%' }} justify="flex-start">
                         <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
                         <SelectedAssetBuyOrderProgress />
                         <LatestBuyQuoteOrderDetails />

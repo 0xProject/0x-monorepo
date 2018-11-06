@@ -14,13 +14,12 @@ const generateMediaWrapper = (screenWidth: ScreenWidths) => (...args: any[]) => 
     }
 `;
 
-export const media = {
+const media = {
     small: generateMediaWrapper(ScreenWidths.Sm),
     medium: generateMediaWrapper(ScreenWidths.Md),
     large: generateMediaWrapper(ScreenWidths.Lg),
 };
 
-/// media helper
 export interface ScreenSpecifications {
     default: string;
     sm?: string;
