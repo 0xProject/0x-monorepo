@@ -24,6 +24,10 @@
                 "note":
                     "Fix bug where default values for `AssetBuyer` public facing methods could get overriden by `undefined` values",
                 "pr": 1207
+            },
+            {
+                "note": "Lower default expiry buffer from 5 minutes to 2 minutes",
+                "pr": 1217
             }
         ]
     },
