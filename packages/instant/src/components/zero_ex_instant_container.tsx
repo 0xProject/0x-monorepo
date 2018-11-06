@@ -12,6 +12,7 @@ import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 
 import { SlideAnimationState } from './animations/slide_animation';
+import { Sandbox } from './sandbox';
 import { SlidingPanel } from './sliding_panel';
 import { Container, Flex } from './ui';
 
@@ -27,6 +28,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
     public render(): React.ReactNode {
         return (
             <Container width="350px" smallWidth="100%" smallHeight="100%" position="relative">
+                <Sandbox width={{ sm: '10px' }}>Test</Sandbox>
                 <Container zIndex={zIndex.errorPopup} position="relative">
                     <LatestError />
                 </Container>
