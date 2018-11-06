@@ -26,7 +26,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
     };
     public render(): React.ReactNode {
         return (
-            <Container width="350px" height="100%" position="relative">
+            <Container width="100%" height="100%" position="relative">
                 <Container zIndex={zIndex.errorPopup} position="relative">
                     <LatestError />
                 </Container>
