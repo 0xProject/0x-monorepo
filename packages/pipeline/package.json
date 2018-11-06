@@ -5,6 +5,7 @@
     "description": "Data pipeline for offline analysis",
     "scripts": {
         "build": "yarn tsc -b",
+        "build:ci": "yarn build",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:circleci": "yarn test:coverage",
