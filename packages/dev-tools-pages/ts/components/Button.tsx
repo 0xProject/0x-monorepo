@@ -40,11 +40,18 @@ const Button =
     background-color: ${props => props.colors.secondary_alt};
     outline: 0;
   } 
-
+  
   ${media.small`
-    font-size: .875rem;
-    padding: .5625rem 1.25rem;
+  font-size: .875rem;
+  padding: .5625rem 1.25rem;
   `}
+
+    ${props =>
+        props.large &&
+        media.small`
+        font-size: 1rem;
+        padding: 1rem 1.5rem .75rem;
+    `}
 `;
 
 export default withContext(Button);
