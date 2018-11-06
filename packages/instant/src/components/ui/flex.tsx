@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import { MediaChoice, stylesForMedia } from '../../style/media';
 import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';
