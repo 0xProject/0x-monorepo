@@ -38,7 +38,6 @@ export interface ContainerProps {
     flexGrow?: string | number;
 }
 
-// TODO Dont commit flex grow
 export const Container =
     styled.div <
     ContainerProps >
