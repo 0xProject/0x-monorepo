@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import { darken } from 'polished';
 
 import { MediaChoice, stylesForMedia } from '../../style/media';
