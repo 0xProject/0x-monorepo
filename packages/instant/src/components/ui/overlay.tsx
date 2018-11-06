@@ -18,7 +18,7 @@ const PlainOverlay: React.StatelessComponent<OverlayProps> = ({ children, classN
         <Container position="absolute" top="0px" right="0px">
             <Icon height={18} width={18} color={ColorOption.white} icon="closeX" onClick={onClose} padding="2em 2em" />
         </Container>
-        <Container width="100%" height="100%">
+        <Container smallWidth="100%" smallHeight="100%">
             {children}
         </Container>
     </Flex>

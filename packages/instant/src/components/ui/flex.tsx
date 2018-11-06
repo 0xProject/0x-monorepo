@@ -1,3 +1,6 @@
+import * as _ from 'lodash';
+
+import { media } from '../../style/media';
 import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';
 
@@ -11,7 +14,21 @@ export interface FlexProps {
     backgroundColor?: ColorOption;
     inline?: boolean;
     flexGrow?: number | string;
+
+    smallWidth?: string;
+    smallHeight?: string;
 }
+
+const mediaStyles = (props: FlexProps) => {
+    if (!_.some([props.smallWidth, props.smallHeight])) {
+        return '';
+    }
+
+    return media.small`
+        width: ${props.smallWidth || props.width || 'auto'}
+        height: ${props.smallHeight || props.height || 'auto'}
+    `;
+};
 
 export const Flex =
     styled.div <
@@ -26,6 +43,7 @@ export const Flex =
     ${props => cssRuleIfExists(props, 'width')}
     ${props => cssRuleIfExists(props, 'height')}
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
+    ${props => mediaStyles(props)}
 `;
 
 Flex.defaultProps = {

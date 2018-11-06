@@ -1,5 +1,7 @@
+import * as _ from 'lodash';
 import { darken } from 'polished';
 
+import { media } from '../../style/media';
 import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';
 
@@ -34,7 +36,21 @@ export interface ContainerProps {
     overflow?: string;
     darkenOnHover?: boolean;
     flexGrow?: string | number;
+
+    smallWidth?: string;
+    smallHeight?: string;
 }
+
+const mediaStyles = (props: ContainerProps) => {
+    if (!_.some([props.smallWidth, props.smallHeight])) {
+        return '';
+    }
+
+    return media.small`
+        width: ${props.smallWidth || props.width || 'auto'}
+        height: ${props.smallHeight || props.height || 'auto'}
+    `;
+};
 
 // TODO Dont commit flex grow
 export const Container =
@@ -68,6 +84,7 @@ export const Container =
     ${props => cssRuleIfExists(props, 'cursor')}
     ${props => cssRuleIfExists(props, 'overflow')}
     ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
+    ${props => mediaStyles(props)}
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
     border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
     &:hover {
