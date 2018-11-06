@@ -1,0 +1,21 @@
+/*
+  CSS file meant to represent an external (integrators) stylesheet and 
+  help ensure that instant looks consistent accross environments. 
+*/
+
+button {
+    font-size: 50px;
+    height: 200px;
+    background-color: red;
+}
+
+input {
+    padding: 100px;
+    font-size: 50px;
+    height: 100px;
+}
+
+p {
+    background-color: green;
+    margin: 10px;
+}
