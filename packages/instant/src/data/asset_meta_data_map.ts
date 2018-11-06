@@ -54,7 +54,7 @@ export const assetMetaDataMap: ObjectMap<AssetMetaData> = {
         symbol: 'mana',
         name: 'Decentraland',
     },
-    '0xf47261b0000000000000000000000000a74476443119A942dE498590Fe1f2454d7D4aC0d': {
+    '0xf47261b0000000000000000000000000a74476443119a942de498590fe1f2454d7d4ac0d': {
         assetProxyId: AssetProxyId.ERC20,
         decimals: 18,
         primaryColor: '#263469',

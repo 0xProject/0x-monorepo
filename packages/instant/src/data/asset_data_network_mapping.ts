@@ -26,7 +26,8 @@ export const assetDataNetworkMapping: AssetDataByNetwork[] = [
     // MKR
     {
         [Network.Mainnet]: '0xf47261b00000000000000000000000009f8f72aa9304c8b593d555f12ef6589cc3a579a2',
-        [Network.Kovan]: '0xf47261b00000000000000000000000000xbf5e8e38659562fda594fbb3ec5a3576d02a9e0a',
+        // ZRX Kovan MKR
+        [Network.Kovan]: '0xf47261b00000000000000000000000007b6b10caa9e8e9552ba72638ea5b47c25afea1f3',
     },
     // BAT
     {
@@ -45,8 +46,9 @@ export const assetDataNetworkMapping: AssetDataByNetwork[] = [
     },
     // GNT
     {
-        [Network.Mainnet]: '0xf47261b0000000000000000000000000a74476443119A942dE498590Fe1f2454d7D4aC0d',
-        [Network.Kovan]: '0xf47261b00000000000000000000000006986fa3646f408905ecb1876bfd355d25039ee3a',
+        [Network.Mainnet]: '0xf47261b0000000000000000000000000a74476443119a942de498590fe1f2454d7d4ac0d',
+        // ZRX Kovan GNT
+        [Network.Kovan]: '0xf47261b000000000000000000000000031fb614e223706f15d0d3c5f4b08bdf0d5c78623',
     },
     // SUB
     {
