@@ -6,7 +6,7 @@ import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';
 
 export interface ContainerProps {
-    display?: string;
+    display?: MediaChoice;
     position?: string;
     top?: string;
     right?: string;
@@ -45,7 +45,6 @@ export const Container =
     `
     box-sizing: border-box;
     ${props => cssRuleIfExists(props, 'flex-grow')}
-    ${props => cssRuleIfExists(props, 'display')}
     ${props => cssRuleIfExists(props, 'position')}
     ${props => cssRuleIfExists(props, 'top')}
     ${props => cssRuleIfExists(props, 'right')}
@@ -68,6 +67,7 @@ export const Container =
     ${props => cssRuleIfExists(props, 'cursor')}
     ${props => cssRuleIfExists(props, 'overflow')}
     ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
+    ${props => stylesForMedia('display', props.display || 'initial')}
     ${props => stylesForMedia('width', props.width || 'auto')}
     ${props => stylesForMedia('height', props.height || 'auto')}
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
