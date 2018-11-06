@@ -15,6 +15,10 @@ input {
     height: 100px;
 }
 
+div {
+    padding: 3px;
+}
+
 p {
     background-color: green;
     margin: 10px;

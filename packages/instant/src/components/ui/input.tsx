@@ -16,17 +16,20 @@ export const Input =
     styled.input <
     InputProps >
     `
-    font-size: ${props => props.fontSize};
-    width: ${props => props.width};
-    padding: 0.1em 0em;
-    font-family: 'Inter UI';
-    color: ${props => props.theme[props.fontColor || 'white']};
-    background: transparent;
-    outline: none;
-    border: none;
-    &::placeholder {
+    && {
+        all: initial;
+        font-size: ${props => props.fontSize};
+        width: ${props => props.width};
+        padding: 0.1em 0em;
+        font-family: 'Inter UI';
         color: ${props => props.theme[props.fontColor || 'white']};
-        opacity: 0.5;
+        background: transparent;
+        outline: none;
+        border: none;
+        &::placeholder {
+            color: ${props => props.theme[props.fontColor || 'white']};
+            opacity: 0.5;
+        }
     }
 `;
 

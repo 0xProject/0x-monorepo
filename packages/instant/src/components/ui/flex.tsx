@@ -16,14 +16,17 @@ export const Flex =
     styled.div <
     FlexProps >
     `
-    display: ${props => (props.inline ? 'inline-flex' : 'flex')};
-    flex-direction: ${props => props.direction};
-    flex-wrap: ${props => props.flexWrap};
-    justify-content: ${props => props.justify};
-    align-items: ${props => props.align};
-    ${props => cssRuleIfExists(props, 'width')}
-    ${props => cssRuleIfExists(props, 'height')}
-    background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
+    && {
+        all: initial;
+        display: ${props => (props.inline ? 'inline-flex' : 'flex')};
+        flex-direction: ${props => props.direction};
+        flex-wrap: ${props => props.flexWrap};
+        justify-content: ${props => props.justify};
+        align-items: ${props => props.align};
+        ${props => cssRuleIfExists(props, 'width')}
+        ${props => cssRuleIfExists(props, 'height')}
+        background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
+    }
 `;
 
 Flex.defaultProps = {

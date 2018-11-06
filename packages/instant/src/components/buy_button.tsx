@@ -36,10 +36,14 @@ export class BuyButton extends React.Component<BuyButtonProps> {
     public render(): React.ReactNode {
         const shouldDisableButton = _.isUndefined(this.props.buyQuote) || _.isUndefined(this.props.assetBuyer);
         return (
-            <Button width="100%" onClick={this._handleClick} isDisabled={shouldDisableButton}>
-                <Text fontColor={ColorOption.white} fontWeight={600} fontSize="20px">
-                    Buy
-                </Text>
+            <Button
+                width="100%"
+                onClick={this._handleClick}
+                isDisabled={shouldDisableButton}
+                fontColor={ColorOption.white}
+                fontSize="20px"
+            >
+                Buy
             </Button>
         );
     }
