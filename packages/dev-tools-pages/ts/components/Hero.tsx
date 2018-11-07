@@ -6,8 +6,12 @@ import { withContext, Props } from './withContext';
 import Button from './Button';
 import { Beta } from './Typography';
 
-function Hero(props: Props) {
-    const { subtitle, tagline, title } = props;
+interface HeroProps extends Props {
+    children: React.ReactNode;
+}
+
+function Hero(props: HeroProps) {
+    const { subtitle, tagline } = props;
 
     return (
         <React.Fragment>
@@ -19,13 +23,7 @@ function Hero(props: Props) {
                         Read the Docs
                     </Button>
                 </HeroContainer>
-
-                <ImageContainer>
-                    <Image
-                        src={`/images/${title}@1x.gif`}
-                        srcSet={`/images/${title}@1x.gif, /images/${title}@2x.gif 2x`}
-                    />
-                </ImageContainer>
+                {navigator.userAgent !== 'ReactSnap' ? props.children : null}
             </StyledHero>
         </React.Fragment>
     );
@@ -64,41 +62,6 @@ const Tagline = styled(Beta)`
     margin-bottom: 2rem;
     ${media.small`
         margin-bottom: 1.25rem;
-    `};
-`;
-
-const ImageContainer = styled.div`
-    width: 100%;
-    height: 800px;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    overflow: hidden;
-    transform: translateY(-50%);
-    z-index: -1;
-    ${media.xlarge`
-        height: 533.333333334px;
-        transform: translateY(-60%);
-    `};
-    ${media.small`
-        height: 400px;
-        transform: translateY(-70%);
-    `};
-`;
-
-const Image = styled.img`
-    width: min-content;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    object-fit: contain;
-    ${media.small`
-        height: 100%;
-        width: auto;
-        left: 0;
-        transform: translateX(-15%);
     `};
 `;
 

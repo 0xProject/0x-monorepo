@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { render, hydrate } from 'react-dom';
+import * as Loadable from 'react-loadable';
 
 import context from 'ts/context/profiler';
 import Base from 'ts/components/Base';
@@ -11,10 +12,20 @@ import Code from 'ts/components/Code';
 import InlineCode from 'ts/components/InlineCode';
 import { List, ListItem } from 'ts/components/List';
 import { Intro, IntroLead, IntroAside } from 'ts/components/Intro';
+import Hero from 'ts/components/Hero';
+
+const Animation = Loadable({
+    loader: () => System.import(/* webpackChunkName: 'profiler-animation' */ 'ts/components/Animations/Profiler'),
+    loading: () => <div />,
+    delay: 1000,
+});
 
 function Profiler() {
     return (
         <Base context={context}>
+            <Hero>
+                <Animation />
+            </Hero>
             <Intro>
                 <IntroLead title="Outline gas usage">
                     <p>

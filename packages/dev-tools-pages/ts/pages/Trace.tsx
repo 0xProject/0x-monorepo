@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { render, hydrate } from 'react-dom';
+import * as Loadable from 'react-loadable';
 
 import context from 'ts/context/trace';
 import Base from 'ts/components/Base';
@@ -11,10 +12,20 @@ import InlineCode from 'ts/components/InlineCode';
 import { List, ListItem } from 'ts/components/List';
 import TraceComponent from 'ts/components/Trace';
 import Breakout from 'ts/components/Breakout';
+import Hero from 'ts/components/Hero';
+
+const Animation = Loadable({
+    loader: () => System.import(/* webpackChunkName: 'trace-animation' */ 'ts/components/Animations/Trace'),
+    loading: () => <div />,
+    delay: 1000,
+});
 
 function Trace() {
     return (
         <Base context={context}>
+            <Hero>
+                <Animation />
+            </Hero>
             <TraceComponent />
             <Content>
                 <ContentBlock main title="Get started" />
