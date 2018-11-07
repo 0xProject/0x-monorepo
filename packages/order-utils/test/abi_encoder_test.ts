@@ -833,7 +833,7 @@ describe.only('ABI Encoder', () => {
         });
     });
 
-    describe.only('Integer', () => {
+    describe('Integer', () => {
         const testIntDataItem = { name: 'testInt', type: 'int' };
         it('Positive - Base case', async () => {
             const intDataType = new AbiEncoder.Int(testIntDataItem);
@@ -862,6 +862,34 @@ describe.only('ABI Encoder', () => {
             const expectedAbiEncodedInt = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffe5e7409f';
             expect(intDataType.getHexValue()).to.be.equal(expectedAbiEncodedInt);
         });
+
+        // TODO: Add bounds tests + tests for different widths
+    });
+
+    describe('Unsigned Integer', () => {
+        const testIntDataItem = { name: 'testUInt', type: 'uint' };
+        it('Lower Bound', async () => {
+            const uintDataType = new AbiEncoder.UInt(testIntDataItem);
+            uintDataType.assignValue(new BigNumber(0));
+            const expectedAbiEncodedUInt = '0x0000000000000000000000000000000000000000000000000000000000000000';
+            expect(uintDataType.getHexValue()).to.be.equal(expectedAbiEncodedUInt);
+        });
+
+        it('Base Case', async () => {
+            const uintDataType = new AbiEncoder.UInt(testIntDataItem);
+            uintDataType.assignValue(new BigNumber(1));
+            const expectedAbiEncodedUInt = '0x0000000000000000000000000000000000000000000000000000000000000001';
+            expect(uintDataType.getHexValue()).to.be.equal(expectedAbiEncodedUInt);
+        });
+
+        it('Random value', async () => {
+            const uintDataType = new AbiEncoder.UInt(testIntDataItem);
+            uintDataType.assignValue(new BigNumber(437829473));
+            const expectedAbiEncodedUInt = '0x000000000000000000000000000000000000000000000000000000001a18bf61';
+            expect(uintDataType.getHexValue()).to.be.equal(expectedAbiEncodedUInt);
+        });
+
+        // TODO: Add bounds tests + tests for different widths
     });
 
     describe('String', () => {
