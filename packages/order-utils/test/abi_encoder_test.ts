@@ -240,12 +240,20 @@ namespace AbiEncoder {
                 case CalldataSection.PARAMS:
                     this.params.push(memblock);
                     memblock.assignLocation(section, new BigNumber(0), this.currentParamOffset);
+
+                    console.log(`Binding ${dataType.getDataItem().name} to PARAMS at ${this.currentParamOffset}`);
                     this.currentParamOffset = this.currentParamOffset.plus(memblock.getSize());
                     break;
 
                 case CalldataSection.DATA:
                     this.data.push(memblock);
                     memblock.assignLocation(section, this.dataOffset, this.currentDataOffset);
+
+                    console.log(
+                        `Binding ${dataType.getDataItem().name} to DATA at ${memblock
+                            .getAbsoluteOffset()
+                            .toString(16)}`,
+                    );
                     this.currentDataOffset = this.currentDataOffset.plus(memblock.getSize());
                     break;
 
@@ -300,12 +308,7 @@ namespace AbiEncoder {
         }
 
         public bind(calldata: Calldata, section: CalldataSection) {
-            if (this.memblock === undefined) {
-                calldata.bind(this, section);
-            }
-            _.each(this.children, (child: DataType) => {
-                child.bind(calldata, CalldataSection.DATA);
-            });
+            calldata.bind(this, section);
         }
 
         public getId(): string {
@@ -320,6 +323,10 @@ namespace AbiEncoder {
         public getAbsoluteOffset(): BigNumber {
             if (this.memblock === undefined) return new BigNumber(0);
             return this.memblock.getAbsoluteOffset();
+        }
+
+        public getChildren(): DataType[] {
+            return this.children;
         }
 
         public abstract assignValue(value: any): void;
@@ -680,12 +687,12 @@ namespace AbiEncoder {
             const lengthBufUnpadded = ethUtil.toBuffer(`0x${this.length.toString(16)}`);
             const lengthBuf = ethUtil.setLengthLeft(lengthBufUnpadded, 32);
             let valueBuf = lengthBuf;
-            for (let idx = new BigNumber(0); idx.lessThan(this.length); idx = idx.plus(1)) {
+            /*for (let idx = new BigNumber(0); idx.lessThan(this.length); idx = idx.plus(1)) {
                 const idxNumber = idx.toNumber();
                 const childValueHex = this.children[idxNumber].getHexValue();
                 const childValueBuf = ethUtil.toBuffer(childValueHex);
                 valueBuf = Buffer.concat([valueBuf, childValueBuf]);
-            }
+            }*/
 
             // Convert value buffer to hex
             const valueHex = ethUtil.bufferToHex(valueBuf);
@@ -815,6 +822,16 @@ namespace AbiEncoder {
         }
     }
 
+    class Queue<T> {
+        private store: T[] = [];
+        push(val: T) {
+            this.store.push(val);
+        }
+        pop(): T | undefined {
+            return this.store.shift();
+        }
+    }
+
     export class Method {
         name: string;
         params: DataType[];
@@ -850,10 +867,22 @@ namespace AbiEncoder {
         encode(args: any[]): string {
             const calldata = new Calldata(this.selector, this.params.length);
             const params = this.params;
+            const paramQueue = new Queue<DataType>();
             _.each(params, (param: DataType, i: number) => {
                 param.assignValue(args[i]);
                 param.bind(calldata, CalldataSection.PARAMS);
+                _.each(param.getChildren(), (child: DataType) => {
+                    paramQueue.push(child);
+                });
             });
+
+            let param: DataType | undefined = undefined;
+            while ((param = paramQueue.pop()) !== undefined) {
+                param.bind(calldata, CalldataSection.DATA);
+                _.each(param.getChildren(), (child: DataType) => {
+                    paramQueue.push(child);
+                });
+            }
 
             console.log(calldata);
 
@@ -897,6 +926,27 @@ namespace AbiEncoder {
 }
 
 describe.only('ABI Encoder', () => {
+    describe.only('Just a Greg, Eh', () => {
+        it('Yessir', async () => {
+            const method = new AbiEncoder.Method(simpleAbi);
+            const calldata = method.encode([new BigNumber(5), 'five']);
+            console.log(calldata);
+            expect(true).to.be.true();
+        });
+
+        it.only('Yessir', async () => {
+            const method = new AbiEncoder.Method(stringAbi);
+            const calldata = method.encode([['five', 'six', 'seven']]);
+            console.log(method.signature);
+            console.log(method.selector);
+
+            console.log(calldata);
+            const expectedCalldata =
+                '0x13e751a900000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000373697800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005736576656e000000000000000000000000000000000000000000000000000000';
+            expect(calldata).to.be.equal(expectedCalldata);
+        });
+    });
+
     describe('Array', () => {
         it('sample', async () => {
             const testDataItem = { name: 'testArray', type: 'int[2]' };
@@ -936,27 +986,6 @@ describe.only('ABI Encoder', () => {
             dataType.bind(calldata, AbiEncoder.CalldataSection.PARAMS);
             console.log('*'.repeat(60));
             console.log(calldata.getHexValue());
-        });
-    });
-
-    describe.only('Just a Greg, Eh', () => {
-        it('Yessir', async () => {
-            const method = new AbiEncoder.Method(simpleAbi);
-            const calldata = method.encode([new BigNumber(5), 'five']);
-            console.log(calldata);
-            expect(true).to.be.true();
-        });
-
-        it.only('Yessir', async () => {
-            const method = new AbiEncoder.Method(stringAbi);
-            const calldata = method.encode([['five', 'six', 'seven']]);
-            console.log(method.signature);
-            console.log(method.selector);
-
-            console.log(calldata);
-            const expectedCalldata =
-                '0x13e751a900000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000373697800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005736576656e000000000000000000000000000000000000000000000000000000';
-            expect(calldata).to.be.equal(expectedCalldata);
         });
     });
 
