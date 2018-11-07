@@ -104,6 +104,7 @@ const List = styled.ul`
 
 const ListItem = styled.li`
     margin-bottom: 3.3125rem;
+    padding-right: 1rem;
     flex-basis: 50%;
     :nth-last-of-type(-n + 2) {
         margin-bottom: 0;
