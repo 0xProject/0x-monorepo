@@ -5,24 +5,25 @@ import { media } from '../variables';
 const StyledList = styled.ul`
     list-style-type: none;
     margin: 0;
-    padding-inline-start: 0rem;
+    padding: 0;
     position: relative;
 `;
 
 const StyledItem = styled.li`
     position: relative;
-    padding-left: 26px;  
+    padding-left: 1.625rem;
 
     :before {
         content: '';
-        position: absolute;
-        left: 0;
         border: 1px solid black;
-        width: 0.6875rem;
-        height: 0.6875rem;
+        width: 0.625rem;
+        height: 0.625rem;
         display: inline-block;
-        transform: rotate(45deg) translateY(-50%);
-        top: 12px;
+        position: absolute;
+        margin-top: 2px;
+        top: 0.3125rem;
+        left: 0;
+        transform: rotate(45deg);
     }
     :not(:last-child) {
         margin-bottom: 0.5625rem;
