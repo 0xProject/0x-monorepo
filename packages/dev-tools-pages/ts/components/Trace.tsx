@@ -114,7 +114,7 @@ const StyledSection =
     max-width: 90rem;
     margin: 0 auto;
     background: linear-gradient(to right, ${colors.black} 50%, ${props => props.background} 50%);
-    
+    overflow: hidden;
     ${media.large`
         background: none
         padding-top: 0;

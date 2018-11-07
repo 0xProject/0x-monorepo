@@ -13,7 +13,7 @@ const Main = styled.div`
     justify-content: space-between;
 
     ${media.large`
-        padding: 2.5rem 1.875rem
+        padding: 2.5rem;
     `};
     ${media.medium`
         display: block;     
