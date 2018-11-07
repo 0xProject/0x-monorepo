@@ -14,9 +14,9 @@ export const SlideAnimation: React.StatelessComponent<SlideAnimationProps> = pro
     if (props.animationState === 'none') {
         return <React.Fragment>{props.children}</React.Fragment>;
     }
-    const propsToUse = props.animationState === 'slidIn' ? props.slideInSettings : props.slideOutSettings;
+    const positionSettings = props.animationState === 'slidIn' ? props.slideInSettings : props.slideOutSettings;
     return (
-        <PositionAnimation position={props.position} {...propsToUse}>
+        <PositionAnimation position={props.position} positionSettings={positionSettings}>
             {props.children}
         </PositionAnimation>
     );

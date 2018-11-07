@@ -20,13 +20,15 @@ export const media = {
     large: generateMediaWrapper(ScreenWidths.Lg),
 };
 
-export interface ScreenSpecifications {
-    default: string;
-    sm?: string;
-    md?: string;
-    lg?: string;
+export interface ScreenSpecification<T> {
+    default: T;
+    sm?: T;
+    md?: T;
+    lg?: T;
 }
-export type MediaChoice = string | ScreenSpecifications;
+export type OptionallyScreenSpecific<T> = T | ScreenSpecification<T>;
+
+export type MediaChoice = OptionallyScreenSpecific<string>;
 export const stylesForMedia = (cssPropertyName: string, choice: MediaChoice): InterpolationValue[] => {
     if (typeof choice === 'string') {
         return css`

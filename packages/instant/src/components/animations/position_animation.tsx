@@ -1,6 +1,6 @@
 import { Keyframes } from 'styled-components';
 
-import { media } from '../../style/media';
+import { media, OptionallyScreenSpecific, ScreenSpecification } from '../../style/media';
 import { css, keyframes, styled } from '../../style/theme';
 
 export interface TransitionInfo {
@@ -54,14 +54,10 @@ export interface PositionAnimationSettings {
     duration?: string;
 }
 
-export interface PositionAnimationProps extends PositionAnimationSettings {
-    position: string;
-}
-
-const generatePositionCss = (positionSettings: PositionAnimationProps) => {
+const generatePositionAnimationCss = (position: string, positionSettings: PositionAnimationSettings) => {
     return css`
         animation-name: ${slideKeyframeGenerator(
-            positionSettings.position,
+            position,
             positionSettings.top,
             positionSettings.bottom,
             positionSettings.left,
@@ -72,18 +68,32 @@ const generatePositionCss = (positionSettings: PositionAnimationProps) => {
         animation-delay: 0s;
         animation-iteration-count: 1;
         animation-fill-mode: forwards;
-        position: ${positionSettings.position};
+        position: ${position};
         height: 100%;
         width: 100%;
     `;
 };
 
+export interface PositionAnimationProps {
+    position: string;
+    positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
+}
+
 export const PositionAnimation =
     styled.div <
     PositionAnimationProps >
     `
-    ${props => generatePositionCss(props)}
+    ${props =>
+        generatePositionAnimationCss(
+            props.position,
+            'default' in props.positionSettings ? props.positionSettings.default : props.positionSettings,
+        )}
+    ${props =>
+        'default' in props.positionSettings &&
+        props.positionSettings.sm &&
+        smallMediaCss(generatePositionAnimationCss(props.position, props.positionSettings.sm))}
 `;
+
 PositionAnimation.defaultProps = {
     position: 'relative',
 };
@@ -91,6 +101,7 @@ PositionAnimation.defaultProps = {
 // TODO: bake into one, and use to handle just sending in PositionAnimationSettings
 // TODO: handle medium too
 // TODO: better than & position
+// TODO: Clean up position setting, maybe just use in setting
 export interface ConditionalPositionAnimationProps {
     default: PositionAnimationSettings & { position: string };
     sm?: PositionAnimationSettings & { position: string };
@@ -109,7 +120,7 @@ export const ConditionalPositionAnimation =
     styled.div <
     ConditionalPositionAnimationProps >
     `
-    ${props => generatePositionCss(props.default)}
-    ${props => props.sm && smallMediaCss(generatePositionCss(props.sm))}
+    ${props => generatePositionAnimationCss(props.default.position, props.default)}
+    ${props => props.sm && smallMediaCss(generatePositionAnimationCss(props.sm.position, props.sm))}
     z-index: 9999;
     `;
