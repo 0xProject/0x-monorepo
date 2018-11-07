@@ -28,7 +28,8 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
     };
     public render(): React.ReactNode {
         return (
-            <CSSReset>
+            <React.Fragment>
+                <CSSReset />
                 <Container width="350px" position="relative">
                     <Container zIndex={zIndex.errorPopup} position="relative">
                         <LatestError />
@@ -58,7 +59,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         </SlidingPanel>
                     </Container>
                 </Container>
-            </CSSReset>
+            </React.Fragment>
         );
     }
     private readonly _handleSymbolClick = (): void => {
