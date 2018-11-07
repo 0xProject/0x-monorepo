@@ -612,14 +612,16 @@ namespace AbiEncoder {
                 return;
             }
 
-            // Parse out array type and length
+            // Parse out array type/length and construct children
             this.type = matches[1];
             this.length = new BigNumber(matches[2], 10);
             if (this.length.lessThan(0)) {
                 throw new Error(`Bad array length: ${JSON.stringify(this.length)}`);
             }
+            this.constructChildren();
+        }
 
-            // Construct children
+        private constructChildren() {
             for (let idx = new BigNumber(0); idx.lessThan(this.length); idx = idx.plus(1)) {
                 const childDataItem = {
                     type: this.type,
@@ -631,8 +633,43 @@ namespace AbiEncoder {
         }
 
         public assignValue(value: any[]) {
-            //const hexValue = ethUtil.bufferToHex(new Buffer(value));
-            //this.assignHexValue(hexValue);
+            // Sanity check length
+            const valueLength = new BigNumber(value.length);
+            if (this.length !== SolArray.UNDEFINED_LENGTH && valueLength.equals(this.length) === false) {
+                throw new Error(
+                    `Expected array of length ${JSON.stringify(this.length)}, but got array of length ${JSON.stringify(
+                        valueLength,
+                    )}`,
+                );
+            }
+
+            // Assign length if not already set
+            if (this.length === SolArray.UNDEFINED_LENGTH) {
+                this.length = valueLength;
+                this.constructChildren();
+            }
+
+            // Assign values to children
+            for (let idx = new BigNumber(0); idx.lessThan(this.length); idx = idx.plus(1)) {
+                const idxNumber = idx.toNumber();
+                this.children[idxNumber].assignValue(value[idxNumber]);
+            }
+        }
+
+        public getHexValue(): string {
+            const lengthBufUnpadded = ethUtil.toBuffer(`0x${this.length.toString(16)}`);
+            const lengthBuf = ethUtil.setLengthLeft(lengthBufUnpadded, 32);
+            let valueBuf = lengthBuf;
+            for (let idx = new BigNumber(0); idx.lessThan(this.length); idx = idx.plus(1)) {
+                const idxNumber = idx.toNumber();
+                const childValueHex = this.children[idxNumber].getHexValue();
+                const childValueBuf = ethUtil.toBuffer(childValueHex);
+                valueBuf = Buffer.concat([valueBuf, childValueBuf]);
+            }
+
+            // Convert value buffer to hex
+            const valueHex = ethUtil.bufferToHex(valueBuf);
+            return valueHex;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -839,9 +876,15 @@ namespace AbiEncoder {
 describe.only('ABI Encoder', () => {
     describe.only('Array', () => {
         it('sample', async () => {
-            const testDataItem = { name: 'testArray', type: 'string[2]' };
+            const testDataItem = { name: 'testArray', type: 'int[2]' };
             const dataType = new AbiEncoder.SolArray(testDataItem);
             console.log(JSON.stringify(dataType, null, 4));
+            console.log('*'.repeat(60));
+            dataType.assignValue([new BigNumber(5), new BigNumber(6)]);
+            console.log(JSON.stringify(dataType, null, 4));
+            const hexValue = dataType.getHexValue();
+            console.log('*'.repeat(60));
+            console.log(hexValue);
         });
     });
 
