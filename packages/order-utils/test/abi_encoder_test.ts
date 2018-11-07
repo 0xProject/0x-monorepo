@@ -371,29 +371,71 @@ namespace AbiEncoder {
             '^int(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
         );
 
-        static DEFAULT_WIDTH = new BigNumber(1);
-        width: BigNumber = Byte.DEFAULT_WIDTH;
+        static DEFAULT_WIDTH: number = 256;
+        width: number = Int.DEFAULT_WIDTH;
 
         constructor(dataItem: DataItem) {
             super(dataItem);
-            const matches = Byte.matcher.exec(dataItem.type);
+            const matches = Int.matcher.exec(dataItem.type);
             expect(matches).to.be.not.null();
-            if (matches !== null && matches.length === 2) {
-                this.width = new BigNumber(matches[1], 10);
+            if (matches !== null && matches.length === 2 && matches[1] !== undefined) {
+                this.width = parseInt(matches[1]);
+            } else {
+                this.width = 256;
             }
         }
 
-        public encodeToCalldata(calldata: Calldata): void {
-            throw 2;
+        public getMaxValue(): BigNumber {
+            return new BigNumber(2).toPower(this.width - 1).sub(1);
         }
 
-        public assignValue(value: string) {
-            //const hexValue = ethUtil.bufferToHex(new Buffer(value));
-            //this.assignHexValue(hexValue);
+        public getMinValue(): BigNumber {
+            return new BigNumber(2).toPower(this.width - 1).times(-1);
+        }
+
+        public assignValue(value: BigNumber) {
+            if (value.greaterThan(this.getMaxValue())) {
+                throw `tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`;
+            } else if (value.lessThan(this.getMinValue())) {
+                throw `tried to assign value of ${value}, which exceeds min value of ${this.getMinValue()}`;
+            }
+
+            const hexBase = 16;
+            const evmWordWidth = 32;
+            let valueBuf: Buffer;
+            if (value.greaterThanOrEqualTo(0)) {
+                valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${value.toString(hexBase)}`), evmWordWidth);
+            } else {
+                // BigNumber can't write a negative hex value, so we use twos-complement conversion to do it ourselves.
+                // Step 1/3: Convert value to positive binary string
+                const binBase = 2;
+                const valueBin = value.times(-1).toString(binBase);
+
+                // Step 2/3: Invert binary value
+                const bitsInEvmWord = 256;
+                let invertedValueBin = '1'.repeat(bitsInEvmWord - valueBin.length);
+                _.each(valueBin, (bit: string) => {
+                    invertedValueBin += bit === '1' ? '0' : '1';
+                });
+                const invertedValue = new BigNumber(invertedValueBin, binBase);
+
+                // Step 3/3: Add 1 to inverted value
+                // The result is the two's-complement represent of the input value.
+                const negativeValue = invertedValue.plus(1);
+
+                // Convert the negated value to a hex string
+                valueBuf = ethUtil.setLengthLeft(
+                    ethUtil.toBuffer(`0x${negativeValue.toString(hexBase)}`),
+                    evmWordWidth,
+                );
+            }
+
+            const encodedValue = ethUtil.bufferToHex(valueBuf);
+            this.assignHexValue(encodedValue);
         }
 
         public getSignature(): string {
-            throw 1;
+            return `uint${this.width}`;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -413,7 +455,7 @@ namespace AbiEncoder {
             super(dataItem);
             const matches = UInt.matcher.exec(dataItem.type);
             expect(matches).to.be.not.null();
-            if (matches !== null && matches.length === 2) {
+            if (matches !== null && matches.length === 2 && matches[1] !== undefined) {
                 this.width = parseInt(matches[1]);
             } else {
                 this.width = 256;
@@ -421,7 +463,7 @@ namespace AbiEncoder {
         }
 
         public getMaxValue(): BigNumber {
-            return new BigNumber(2).toPower(this.width - 1);
+            return new BigNumber(2).toPower(this.width).sub(1);
         }
 
         public assignValue(value: BigNumber) {
@@ -441,10 +483,6 @@ namespace AbiEncoder {
 
         public getSignature(): string {
             return `uint${this.width}`;
-        }
-
-        public encodeToCalldata(calldata: Calldata): void {
-            throw 2;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -789,7 +827,7 @@ describe.only('ABI Encoder', () => {
         });
     });
 
-    describe.only('Bool', () => {
+    describe('Bool', () => {
         const testBoolDataItem = { name: 'testBool', type: 'bool' };
         it('True', async () => {
             const boolDataType = new AbiEncoder.Bool(testBoolDataItem);
@@ -803,6 +841,37 @@ describe.only('ABI Encoder', () => {
             boolDataType.assignValue(false);
             const expectedAbiEncodedBool = '0x0000000000000000000000000000000000000000000000000000000000000000';
             expect(boolDataType.getHexValue()).to.be.equal(expectedAbiEncodedBool);
+        });
+    });
+
+    describe.only('Integer', () => {
+        const testIntDataItem = { name: 'testInt', type: 'int' };
+        it('Positive - Base case', async () => {
+            const intDataType = new AbiEncoder.Int(testIntDataItem);
+            intDataType.assignValue(new BigNumber(1));
+            const expectedAbiEncodedInt = '0x0000000000000000000000000000000000000000000000000000000000000001';
+            expect(intDataType.getHexValue()).to.be.equal(expectedAbiEncodedInt);
+        });
+
+        it('Positive', async () => {
+            const intDataType = new AbiEncoder.Int(testIntDataItem);
+            intDataType.assignValue(new BigNumber(437829473));
+            const expectedAbiEncodedInt = '0x000000000000000000000000000000000000000000000000000000001a18bf61';
+            expect(intDataType.getHexValue()).to.be.equal(expectedAbiEncodedInt);
+        });
+
+        it('Negative - Base case', async () => {
+            const intDataType = new AbiEncoder.Int(testIntDataItem);
+            intDataType.assignValue(new BigNumber(-1));
+            const expectedAbiEncodedInt = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+            expect(intDataType.getHexValue()).to.be.equal(expectedAbiEncodedInt);
+        });
+
+        it('Negative', async () => {
+            const intDataType = new AbiEncoder.Int(testIntDataItem);
+            intDataType.assignValue(new BigNumber(-437829473));
+            const expectedAbiEncodedInt = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffe5e7409f';
+            expect(intDataType.getHexValue()).to.be.equal(expectedAbiEncodedInt);
         });
     });
 
