@@ -62,13 +62,12 @@ const Base =
         display: flex;
         padding-top: 1.5rem;
         padding-bottom: 1.5rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     `
-            : `
-        padding: 1.5rem;
-    `}
+            : ``}
 
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    
 `;
 
 const StyledCodeDiff = styled(({ gutterLength, children, ...props }: any) => <code {...props}>{children}</code>)`
@@ -113,6 +112,14 @@ const StyledCodeDiff = styled(({ gutterLength, children, ...props }: any) => <co
 
 const StyledPre = styled.pre`
     margin: 0;
+    ${(props: { diff: boolean }) =>
+        !props.diff
+            ? `
+        padding: 1.5rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    `
+            : ``};
 `;
 
 const StyledCopyInput = styled.textarea`
@@ -141,7 +148,6 @@ class Code extends React.Component<CodeProps, CodeState> {
         const code = children as string;
 
         if (language !== undefined) {
-            /* console.log(code); */
             const { default: highlight } = await System.import(/* webpackChunkName: 'highlightjs' */ 'ts/highlight');
 
             this.setState({
@@ -182,7 +188,7 @@ class Code extends React.Component<CodeProps, CodeState> {
         return (
             <Container>
                 <Base language={language} diff={diff} light={light}>
-                    <StyledPre>
+                    <StyledPre diff={diff}>
                         <Code {...codeProps} dangerouslySetInnerHTML={hlCode ? { __html: this.state.hlCode } : null}>
                             {hlCode === undefined ? children : null}
                         </Code>
