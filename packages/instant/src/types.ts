@@ -1,4 +1,4 @@
-import { AssetBuyer } from '@0x/asset-buyer';
+import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
 import { AssetProxyId, ObjectMap, SignedOrder } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -93,23 +93,30 @@ export interface AffiliateInfo {
     feePercentage: number;
 }
 
-/**
- * Our provider may be of 3 different types:
- * Props: the provider was passed in a prop to the component
- * Injected: the provider was injected into `window`
- * FallbackEmptyWallet: the provider has no wallet but responds to data requests using infura
- */
-export enum ProviderType {
-    Props = 'PROPS',
-    Injected = 'INJECTED',
-    FallbackEmptyWallet = 'FALLBACK_EMPTY_WALLET',
-}
-
 export interface ProviderState {
-    type: ProviderType;
     provider: Provider;
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;
+    account: Account;
 }
+
+export enum AccountState {
+    Loading = 'LOADING',
+    Ready = 'READY',
+    Locked = 'LOCKED', // TODO(bmillman): break this up into locked / privacy mode enabled
+    Error = 'ERROR',
+    None = 'NONE,',
+}
+
+export interface AccountReady {
+    state: AccountState.Ready;
+    address: string;
+    ethBalanceInWei?: BigNumber;
+}
+export interface AccountNotReady {
+    state: AccountState.None | AccountState.Loading | AccountState.Locked | AccountState.Error;
+}
+
+export type Account = AccountReady | AccountNotReady;
 
 export type OrderSource = string | SignedOrder[];

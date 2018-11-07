@@ -1,6 +1,5 @@
 import { ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -11,12 +10,11 @@ import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AffiliateInfo, AssetMetaData, Network, OrderSource, ProviderState, ProviderType } from '../types';
+import { AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
 import { assetUtils } from '../util/asset';
-import { assetBuyerFactory } from '../util/asset_buyer_factory';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
-import { providerFactory } from '../util/provider_factory';
+import { providerStateFactory } from '../util/provider_state_factory';
 
 fonts.include();
 
@@ -47,27 +45,11 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         // use the networkId passed in with the props, otherwise default to that of the default state (1, mainnet)
         const networkId = props.networkId || defaultState.network;
         // construct the ProviderState
-        let provider: Provider;
-        let providerType: ProviderType;
-        if (!_.isUndefined(props.provider)) {
-            provider = props.provider;
-            providerType = ProviderType.Props;
-        } else {
-            const injectedProviderIfExists = providerFactory.getInjectedProviderIfExists();
-            if (!_.isUndefined(injectedProviderIfExists)) {
-                provider = injectedProviderIfExists;
-                providerType = ProviderType.Injected;
-            } else {
-                provider = providerFactory.getFallbackNoSigningProvider(networkId);
-                providerType = ProviderType.FallbackEmptyWallet;
-            }
-        }
-        const providerState: ProviderState = {
-            provider,
-            type: providerType,
-            web3Wrapper: new Web3Wrapper(provider),
-            assetBuyer: assetBuyerFactory.getAssetBuyer(provider, props.orderSource, networkId),
-        };
+        const providerState = providerStateFactory.getInitialProviderState(
+            props.orderSource,
+            networkId,
+            props.provider,
+        );
         // merge the additional additionalAssetMetaDataMap with our default map
         const completeAssetMetaDataMap = {
             ...props.additionalAssetMetaDataMap,
