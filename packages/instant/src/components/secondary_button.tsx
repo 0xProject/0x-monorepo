@@ -4,7 +4,6 @@ import * as React from 'react';
 import { ColorOption } from '../style/theme';
 
 import { Button, ButtonProps } from './ui/button';
-import { Text } from './ui/text';
 
 export interface SecondaryButtonProps extends ButtonProps {}
 

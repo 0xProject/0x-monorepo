@@ -13,7 +13,6 @@ import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { util } from '../util/util';
 
 import { Button } from './ui/button';
-import { Text } from './ui/text';
 
 export interface BuyButtonProps {
     buyQuote?: BuyQuote;

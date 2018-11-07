@@ -76,5 +76,5 @@ export const TimedProgress =
         height: 6px;
         animation: ${props => expandingWidthKeyframes(props.fromWidth, props.toWidth)}
           ${props => props.timeMs}ms linear 1 forwards;
-      `;
     }
+`;

@@ -10,7 +10,6 @@ import { SecondaryButton } from './secondary_button';
 
 import { Button } from './ui/button';
 import { Flex } from './ui/flex';
-import { Text } from './ui/text';
 
 export interface BuyOrderStateButtonProps {
     buyQuote?: BuyQuote;
