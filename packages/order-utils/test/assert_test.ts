@@ -13,7 +13,7 @@ describe('Assertion library', () => {
     describe('#isSenderAddressHexAsync', () => {
         it('throws when address is invalid', async () => {
             const address = '0xdeadbeef';
-            const varName = 'address';
+            const varName = 'addresss';
             return expect(assert.isSenderAddressAsync(varName, address, web3Wrapper)).to.be.rejectedWith(
                 `Expected ${varName} to be of type ETHAddressHex, encountered: ${address}`,
             );
