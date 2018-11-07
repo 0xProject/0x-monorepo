@@ -33,8 +33,6 @@ const mapStateToProps = (state: State, _ownProps: LatestErrorOverlayProps): Conn
 type ConnectedDispatch = Pick<LatestErrorOverlayComponentProps, 'onOverlayClick'>;
 const mapDispatchToProps = (dispatch: Dispatch<Action>, _ownProps: LatestErrorOverlayProps): ConnectedDispatch => ({
     onOverlayClick: () => {
-        // might need to use the error flasher here to make sure its cleared out
-        console.log('dismissing bro');
         errorFlasher.clearError(dispatch);
     },
 });
