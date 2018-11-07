@@ -3,6 +3,7 @@
 # Reference: http://www.sphinx-doc.org/en/master/config
 
 from typing import List
+import pkg_resources
 
 
 # pylint: disable=invalid-name
@@ -12,7 +13,7 @@ project = "0x-order-utils"
 # pylint: disable=redefined-builtin
 copyright = "2018, ZeroEx, Intl."
 author = "F. Eugene Aumson"
-version = "0.1.0"  # The short X.Y version
+version = pkg_resources.get_distribution("0x-order-utils").version
 release = ""  # The full version, including alpha/beta/rc tags
 
 extensions = [
