@@ -40,7 +40,7 @@ class Animation extends React.PureComponent<AnimationProps, AnimationState> {
 
     handleResize() {
         clearTimeout(this.timeout);
-        this.timeout = setTimeout(this.updateAnimationSize, 200);
+        this.timeout = setTimeout(this.updateAnimationSize, 50);
     }
 
     updateAnimationSize() {
