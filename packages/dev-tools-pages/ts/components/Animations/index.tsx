@@ -47,7 +47,7 @@ class Animation extends React.PureComponent<AnimationProps, AnimationState> {
         const windowWidth = window.innerWidth;
         let width = undefined;
         let height = undefined;
-        if (windowWidth < 1200) {
+        if (windowWidth <= 1000) {
             const maxWidth = windowWidth + 250;
             const ratio = maxWidth / this.props.width;
 
@@ -89,9 +89,9 @@ const Container = styled.div`
     left: 0;
     z-index: -1;
     overflow: hidden;
-    ${media.medium`
-        top: auto;
-        bottom: -3rem;
+    ${media.large`
+        top: 100%;
+        transform: translateY(-50%);
     `};
 `;
 
