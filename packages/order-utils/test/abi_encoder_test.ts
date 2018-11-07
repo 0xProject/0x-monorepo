@@ -211,7 +211,7 @@ namespace AbiEncoder {
             this.data = [];
             const evmWordSize = 32;
             this.dataOffset = new BigNumber(nParams).times(evmWordSize);
-            this.currentDataOffset = this.dataOffset;
+            this.currentDataOffset = new BigNumber(0);
             this.currentParamOffset = new BigNumber(0);
             this.bindList = {};
         }
@@ -243,7 +243,7 @@ namespace AbiEncoder {
         }
 
         public getHexValue(): string {
-            let hexValue = `0x${this.selector}`;
+            let hexValue = `${this.selector}`;
             _.each(this.params, (memblock: Memblock) => {
                 hexValue += memblock.get();
             });
@@ -634,6 +634,8 @@ namespace AbiEncoder {
         public getHexValue(): string {
             let offset = new BigNumber(0);
             if (this.memblock !== undefined) {
+                console.log('Abs Offset = ', JSON.stringify(this.destDataType.getAbsoluteOffset()));
+                console.log('Local Offset = ', JSON.stringify(this.destDataType.getOffset()));
                 switch (this.memblock.getSection()) {
                     case CalldataSection.PARAMS:
                         offset = this.destDataType.getAbsoluteOffset();
