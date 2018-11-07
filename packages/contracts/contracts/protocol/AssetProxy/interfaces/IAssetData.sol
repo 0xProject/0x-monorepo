@@ -18,6 +18,7 @@
 
 // solhint-disable
 pragma solidity 0.4.24;
+pragma experimental ABIEncoderV2;
 
 
 // @dev Interface of the asset proxy's assetData.
@@ -31,8 +32,14 @@ interface IAssetData {
     
     function ERC721Token(
         address tokenContract,
-        uint256 tokenId,
-        bytes receiverData
+        uint256 tokenId
+    )
+        external
+        pure;
+
+    function MultiAsset(
+        uint256[] amounts,
+        bytes[] nestedAssetData
     )
         external
         pure;
