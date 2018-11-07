@@ -102,7 +102,7 @@ export const ConditionalPositionAnimation =
     ConditionalPositionAnimationProps >
     `
     ${props => generatePositionCss(props.default)}
-    @media (min-width: 0px) and (max-width: 40em) {
+    @media (max-width: 40em) {
         ${props => props.sm && generatePositionCss(props.sm)}
     }
     `;
