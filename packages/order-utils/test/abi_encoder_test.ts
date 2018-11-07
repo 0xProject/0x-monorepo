@@ -216,7 +216,7 @@ namespace AbiEncoder {
             this.bindList = {};
         }
 
-        public bind(dataType: DataType, section: CalldataSection = CalldataSection.DATA) {
+        public bind(dataType: DataType, section: CalldataSection) {
             if (dataType.getId() in this.bindList) {
                 throw `Rebind on ${dataType.getId()}`;
             }
@@ -284,12 +284,12 @@ namespace AbiEncoder {
             this.memblock = memblock;
         }
 
-        public bind(calldata: Calldata) {
+        public bind(calldata: Calldata, section: CalldataSection) {
             if (this.memblock === undefined) {
-                calldata.bind(this);
+                calldata.bind(this, section);
             }
             _.each(this.children, (child: DataType) => {
-                child.bind(calldata);
+                child.bind(calldata, CalldataSection.DATA);
             });
         }
 
@@ -729,17 +729,10 @@ namespace AbiEncoder {
 
         encode(args: any[]): string {
             const calldata = new Calldata(this.selector, this.params.length);
-
-            // Write params section
             const params = this.params;
             _.each(params, (param: DataType, i: number) => {
-                // Assign value to param
                 param.assignValue(args[i]);
-                // Binds top-level parameter to the params section of calldata
-                calldata.bind(param, CalldataSection.PARAMS);
-                // Binds parameter's children to the data section of calldata,
-                // while retaining internal pointers
-                param.bind(calldata);
+                param.bind(calldata, CalldataSection.PARAMS);
             });
 
             console.log(calldata);
