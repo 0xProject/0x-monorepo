@@ -28,9 +28,9 @@ let connection: Connection;
     const provider = web3Factory.getRpcProvider({
         rpcUrl: 'https://mainnet.infura.io',
     });
-    // await getExchangeEventsAsync(provider);
-    // await getBlockAsync(provider);
-    // await getTransactionAsync(provider);
+    await getExchangeEventsAsync(provider);
+    await getBlockAsync(provider);
+    await getTransactionAsync(provider);
     await getRelayers(RELAYER_REGISTRY_URL);
     process.exit(0);
 })();
