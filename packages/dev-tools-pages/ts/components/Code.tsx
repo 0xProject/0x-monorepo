@@ -179,8 +179,6 @@ class Code extends React.Component<CodeProps, CodeState> {
             Code = StyledCodeDiff as any;
         }
 
-        /* console.log(hlCode); */
-
         return (
             <Container>
                 <Base language={language} diff={diff} light={light}>

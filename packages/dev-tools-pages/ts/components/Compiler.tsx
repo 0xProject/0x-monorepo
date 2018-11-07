@@ -43,30 +43,30 @@ const Dd = styled.dd`
 
 const cards = [
     {
-        title: 'Project-centric',
+        title: 'A Project-centric',
         body: (
             <React.Fragment>
-                It can compile an entire project instead of only individual <InlineCode alt>.sol</InlineCode> files
+                Compiles an entire project instead of only individual <InlineCode alt>.sol</InlineCode> files.
             </React.Fragment>
         ),
     },
     {
         title: 'Incremental builds',
-        body: 'It only recompiles your smart contracts after they have changed.',
+        body: 'Recompiles your smart contracts after they have changed',
     },
     {
         title: 'Customizable artifacts',
         body:
-            'It allows you to store only the required compiler output in your artifacts and have complete control over your bundle size.',
+            'Stores only the required compiler output in your artifacts, so you can have complete control over your bundle size.',
     },
     {
         title: 'Seamless',
-        body: 'It auto-fetches and caches the required compiler binaries.',
+        body: 'Fetches and caches the required compiler binaries.',
     },
     {
         title: 'Versioning',
         body:
-            'It compiles each contract with the version specified at the top of its file (it even supports version ranges!).',
+            'Compiles each contract with the version specified at the top of its file (sol-compiler even supports version ranges!).',
     },
 ];
 

@@ -16,7 +16,7 @@ function Profiler() {
     return (
         <Base context={context}>
             <Intro>
-                <IntroLead title="Headline">
+                <IntroLead title="Outline gas usage">
                     <p>
                         Sol-profiler gathers line-by-line gas usage for any transaction submitted through your provider.
                         This will help you find unexpected inefficiencies in parts of your smart contract, and take a

@@ -4,7 +4,7 @@ export default {
     title: 'sol-cov',
     name: 'cov',
     subtitle: 'Solidity code coverage',
-    tagline: "Don't get caught with your pants down",
+    tagline: 'Measure Solidity code coverage',
     icon: Icon,
     colors: {
         main: '#BB9200',
