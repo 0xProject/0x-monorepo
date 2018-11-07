@@ -32,6 +32,21 @@ const simpleAbi = {
     type: 'function',
 } as MethodAbi;
 
+const stringAbi = {
+    constant: false,
+    inputs: [
+        {
+            name: 'greg',
+            type: 'string[]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
 const fillOrderAbi = {
     constant: false,
     inputs: [
@@ -145,7 +160,7 @@ namespace AbiEncoder {
         }
     }
 
-    enum CalldataSection {
+    export enum CalldataSection {
         NONE,
         PARAMS,
         DATA,
@@ -195,7 +210,7 @@ namespace AbiEncoder {
         [key: string]: Memblock;
     }
 
-    class Calldata {
+    export class Calldata {
         private selector: string;
         private params: Memblock[];
         private data: Memblock[];
@@ -530,7 +545,7 @@ namespace AbiEncoder {
 
     export class Bytes extends DynamicDataType {
         static UNDEFINED_LENGTH = new BigNumber(-1);
-        length: BigNumber = SolArray.UNDEFINED_LENGTH;
+        length: BigNumber = Bytes.UNDEFINED_LENGTH;
 
         constructor(dataItem: DataItem) {
             super(dataItem);
@@ -682,6 +697,9 @@ namespace AbiEncoder {
         }
 
         public getSignature(): string {
+            if (this.length.equals(SolArray.UNDEFINED_LENGTH)) {
+                return `${this.type}[]`;
+            }
             return `${this.type}[${this.length}]`;
         }
     }
@@ -879,7 +897,7 @@ namespace AbiEncoder {
 }
 
 describe.only('ABI Encoder', () => {
-    describe.only('Array', () => {
+    describe('Array', () => {
         it('sample', async () => {
             const testDataItem = { name: 'testArray', type: 'int[2]' };
             const dataType = new AbiEncoder.SolArray(testDataItem);
@@ -892,7 +910,7 @@ describe.only('ABI Encoder', () => {
             console.log(hexValue);
         });
 
-        it.only('sample undefined size', async () => {
+        it('sample undefined size', async () => {
             const testDataItem = { name: 'testArray', type: 'int[]' };
             const dataType = new AbiEncoder.SolArray(testDataItem);
             console.log(JSON.stringify(dataType, null, 4));
@@ -903,14 +921,42 @@ describe.only('ABI Encoder', () => {
             console.log('*'.repeat(60));
             console.log(hexValue);
         });
+
+        it('sample dynamic types', async () => {
+            const testDataItem = { name: 'testArray', type: 'string[]' };
+            const dataType = new AbiEncoder.SolArray(testDataItem);
+            console.log(JSON.stringify(dataType, null, 4));
+            console.log('*'.repeat(60));
+            dataType.assignValue(['five', 'six', 'seven']);
+            console.log(JSON.stringify(dataType, null, 4));
+            const hexValue = dataType.getHexValue();
+            console.log('*'.repeat(60));
+            console.log(hexValue);
+            const calldata = new AbiEncoder.Calldata('0x01020304', 1);
+            dataType.bind(calldata, AbiEncoder.CalldataSection.PARAMS);
+            console.log('*'.repeat(60));
+            console.log(calldata.getHexValue());
+        });
     });
 
-    describe('Just a Greg, Eh', () => {
+    describe.only('Just a Greg, Eh', () => {
         it('Yessir', async () => {
             const method = new AbiEncoder.Method(simpleAbi);
             const calldata = method.encode([new BigNumber(5), 'five']);
             console.log(calldata);
             expect(true).to.be.true();
+        });
+
+        it.only('Yessir', async () => {
+            const method = new AbiEncoder.Method(stringAbi);
+            const calldata = method.encode([['five', 'six', 'seven']]);
+            console.log(method.signature);
+            console.log(method.selector);
+
+            console.log(calldata);
+            const expectedCalldata =
+                '0x13e751a900000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000373697800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005736576656e000000000000000000000000000000000000000000000000000000';
+            expect(calldata).to.be.equal(expectedCalldata);
         });
     });
 
