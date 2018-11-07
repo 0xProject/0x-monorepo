@@ -29,10 +29,9 @@ export const Button = styled(PlainButton)`
     && {
         all: initial;
         box-sizing: border-box;
-        font-size: 15px;
+        font-size: ${props => props.fontSize};
         font-family: 'Inter UI', sans-serif;
         font-weight: 600;
-        font-size: ${props => props.fontSize};
         color: ${props => props.fontColor && props.theme[props.fontColor]};
         cursor: ${props => (props.isDisabled ? 'default' : 'pointer')};
         transition: background-color, opacity 0.5s ease;
