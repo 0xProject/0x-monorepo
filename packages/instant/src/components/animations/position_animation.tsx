@@ -1,7 +1,7 @@
 import { Keyframes } from 'styled-components';
 
-import { css, keyframes, styled } from '../../style/theme';
 import { media } from '../../style/media';
+import { css, keyframes, styled } from '../../style/theme';
 
 export interface TransitionInfo {
     from: string;
@@ -96,10 +96,15 @@ export interface ConditionalPositionAnimationProps {
     sm?: PositionAnimationSettings & { position: string };
 }
 
+// TODO: use em and helpers
 export const ConditionalPositionAnimation =
     styled.div <
     ConditionalPositionAnimationProps >
     `
-    ${props => generatePositionCss(props.default)}
-    ${props => props.sm && media.small`animation-duration: 5s`};
+    @media (min-width: 0px) and (max-width: 40em) {
+        ${props => props.sm && generatePositionCss(props.sm)}
+    }
+    @media (min-width: 40.00001em) {
+        ${props => generatePositionCss(props.default)}
+    }
     `;
