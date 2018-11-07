@@ -11,6 +11,7 @@ import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 
+import { PositionAnimation, ConditionalPositionAnimation } from './animations/position_animation';
 import { SlideAnimationState } from './animations/slide_animation';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
@@ -32,6 +33,23 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                 height={{ default: 'auto', sm: '100%' }}
                 position="relative"
             >
+                <ConditionalPositionAnimation
+                    default={{
+                        position: 'relative',
+                        duration: '10s',
+                        timingFunction: 'ease-in',
+                        top: { from: '0px', to: '500px' },
+                    }}
+                    sm={{
+                        position: 'relative',
+                        duration: '2s',
+                        timingFunction: 'ease-in',
+                        top: { from: '500px', to: '900px' },
+                    }}
+                >
+                    <h1 style={{ width: '500px', backgroundColor: 'red', border: '1px solid red' }}>yo</h1>
+                </ConditionalPositionAnimation>
+
                 <Container zIndex={zIndex.errorPopup} position="relative">
                     <LatestError />
                 </Container>

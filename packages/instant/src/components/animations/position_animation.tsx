@@ -1,6 +1,7 @@
 import { Keyframes } from 'styled-components';
 
 import { css, keyframes, styled } from '../../style/theme';
+import { media } from '../../style/media';
 
 export interface TransitionInfo {
     from: string;
@@ -57,24 +58,48 @@ export interface PositionAnimationProps extends PositionAnimationSettings {
     position: string;
 }
 
+const generatePositionCss = (positionSettings: PositionAnimationProps) => {
+    return css`
+        animation-name: ${slideKeyframeGenerator(
+            positionSettings.position,
+            positionSettings.top,
+            positionSettings.bottom,
+            positionSettings.left,
+            positionSettings.right,
+        )};
+        animation-duration: ${positionSettings.duration || '0.3s'};
+        animation-timing-function: ${positionSettings.timingFunction};
+        animation-delay: 0s;
+        animation-iteration-count: 1;
+        animation-fill-mode: forwards;
+        position: ${positionSettings.position};
+        height: 100%;
+        width: 100%;
+    `;
+};
+
 export const PositionAnimation =
     styled.div <
     PositionAnimationProps >
     `
-    animation-name: ${props =>
-        css`
-            ${slideKeyframeGenerator(props.position, props.top, props.bottom, props.left, props.right)};
-        `};
-    animation-duration: ${props => props.duration || '0.3s'};
-    animation-timing-function: ${props => props.timingFunction};
-    animation-delay: 0s;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
-    position: ${props => props.position};
-    height: 100%;
-    width: 100%;
+    ${props => generatePositionCss(props)}
 `;
-
 PositionAnimation.defaultProps = {
     position: 'relative',
 };
+
+// TODO: bake into one, and use to handle just sending in PositionAnimationSettings
+// TODO: handle medium too
+// TODO: better than & position
+export interface ConditionalPositionAnimationProps {
+    default: PositionAnimationSettings & { position: string };
+    sm?: PositionAnimationSettings & { position: string };
+}
+
+export const ConditionalPositionAnimation =
+    styled.div <
+    ConditionalPositionAnimationProps >
+    `
+    ${props => generatePositionCss(props.default)}
+    ${props => props.sm && media.small`animation-duration: 5s`};
+    `;

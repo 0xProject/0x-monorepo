@@ -14,7 +14,7 @@ const generateMediaWrapper = (screenWidth: ScreenWidths) => (...args: any[]) => 
     }
 `;
 
-const media = {
+export const media = {
     small: generateMediaWrapper(ScreenWidths.Sm),
     medium: generateMediaWrapper(ScreenWidths.Md),
     large: generateMediaWrapper(ScreenWidths.Lg),
