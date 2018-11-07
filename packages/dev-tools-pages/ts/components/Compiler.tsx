@@ -10,7 +10,7 @@ const Cards = styled.dl`
     column-count: 3;
     column-gap: 1.25rem;
 
-    ${media.small`
+    ${media.medium`
         column-count: 1;
     `}: ;
 `;
@@ -23,7 +23,7 @@ const Card = styled.div`
     margin-bottom: 1.25rem;
     width: 100%;
 
-    ${media.small`
+    ${media.medium`
         padding: 1.875rem;
     `};
 `;
