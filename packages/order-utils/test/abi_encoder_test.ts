@@ -528,7 +528,7 @@ namespace AbiEncoder {
         }
     }
 
-    export class Bytes extends StaticDataType {
+    export class Bytes extends DynamicDataType {
         static UNDEFINED_LENGTH = new BigNumber(-1);
         length: BigNumber = SolArray.UNDEFINED_LENGTH;
 
@@ -565,7 +565,7 @@ namespace AbiEncoder {
         }
     }
 
-    export class SolString extends StaticDataType {
+    export class SolString extends DynamicDataType {
         constructor(dataItem: DataItem) {
             super(dataItem);
             expect(SolString.matchGrammar(dataItem.type)).to.be.true();
@@ -591,6 +591,59 @@ namespace AbiEncoder {
         }
     }
 
+    export class SolArray extends DynamicDataType {
+        static matcher = RegExp('^(.+)\\[([0-9]d*)\\]$');
+        static UNDEFINED_LENGTH = new BigNumber(-1);
+        length: BigNumber = SolArray.UNDEFINED_LENGTH;
+        type: string = '[undefined]';
+
+        constructor(dataItem: DataItem) {
+            super(dataItem);
+            const matches = SolArray.matcher.exec(dataItem.type);
+            expect(matches).to.be.not.null();
+            if (matches === null || matches.length !== 3) {
+                throw new Error(`Could not parse array: ${dataItem.type}`);
+            } else if (matches[1] === undefined) {
+                throw new Error(`Could not parse array type: ${dataItem.type}`);
+            } else if (matches[2] === undefined) {
+                // Parse out array type and length
+                this.type = matches[1];
+                this.length = new BigNumber(SolArray.UNDEFINED_LENGTH);
+                return;
+            }
+
+            // Parse out array type and length
+            this.type = matches[1];
+            this.length = new BigNumber(matches[2], 10);
+            if (this.length.lessThan(0)) {
+                throw new Error(`Bad array length: ${JSON.stringify(this.length)}`);
+            }
+
+            // Construct children
+            for (let idx = new BigNumber(0); idx.lessThan(this.length); idx = idx.plus(1)) {
+                const childDataItem = {
+                    type: this.type,
+                    name: `${this.getDataItem().name}[${idx.toString(10)}]`,
+                } as DataItem;
+                const child = DataTypeFactory.create(childDataItem);
+                this.children.push(child);
+            }
+        }
+
+        public assignValue(value: any[]) {
+            //const hexValue = ethUtil.bufferToHex(new Buffer(value));
+            //this.assignHexValue(hexValue);
+        }
+
+        public static matchGrammar(type: string): boolean {
+            return this.matcher.test(type);
+        }
+
+        public getSignature(): string {
+            return `${this.type}[${this.length}]`;
+        }
+    }
+
     export class Tuple extends DynamicDataType {
         constructor(dataItem: DataItem) {
             super(dataItem);
@@ -612,38 +665,6 @@ namespace AbiEncoder {
 
         public static matchGrammar(type: string): boolean {
             return type === 'tuple';
-        }
-    }
-
-    export class SolArray extends DynamicDataType {
-        static matcher = RegExp('^.+\\[([0-9]d*)\\]$');
-        static UNDEFINED_LENGTH = new BigNumber(-1);
-        length: BigNumber = SolArray.UNDEFINED_LENGTH;
-
-        constructor(dataItem: DataItem) {
-            super(dataItem);
-            const matches = SolArray.matcher.exec(dataItem.type);
-            expect(matches).to.be.not.null();
-            if (matches !== null && matches.length === 1) {
-                this.length = new BigNumber(matches[1], 10);
-            }
-        }
-
-        public assignValue(value: string) {
-            //const hexValue = ethUtil.bufferToHex(new Buffer(value));
-            //this.assignHexValue(hexValue);
-        }
-
-        public encodeToCalldata(calldata: Calldata): void {
-            throw 2;
-        }
-
-        public static matchGrammar(type: string): boolean {
-            return this.matcher.test(type);
-        }
-
-        public getSignature(): string {
-            throw 1;
         }
     }
 
@@ -816,7 +837,15 @@ namespace AbiEncoder {
 }
 
 describe.only('ABI Encoder', () => {
-    describe.only('Just a Greg, Eh', () => {
+    describe.only('Array', () => {
+        it('sample', async () => {
+            const testDataItem = { name: 'testArray', type: 'string[2]' };
+            const dataType = new AbiEncoder.SolArray(testDataItem);
+            console.log(JSON.stringify(dataType, null, 4));
+        });
+    });
+
+    describe('Just a Greg, Eh', () => {
         it('Yessir', async () => {
             const method = new AbiEncoder.Method(simpleAbi);
             const calldata = method.encode([new BigNumber(5), 'five']);
