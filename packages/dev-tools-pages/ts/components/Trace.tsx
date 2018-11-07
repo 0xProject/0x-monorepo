@@ -200,7 +200,6 @@ const Item = styled.li`
 `;
 
 const Copy = styled.div<{ dark?: boolean; }>`
-    max-width: 20rem;
     margin-right: 5.875rem;
     ${props => props.dark && `
         p {
