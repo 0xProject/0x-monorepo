@@ -484,29 +484,43 @@ namespace AbiEncoder {
             '^(byte|bytes(1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32))$',
         );
 
-        static DEFAULT_WIDTH = new BigNumber(1);
-        width: BigNumber = Byte.DEFAULT_WIDTH;
+        static DEFAULT_WIDTH = 1;
+        width: number = Byte.DEFAULT_WIDTH;
 
         constructor(dataItem: DataItem) {
             super(dataItem);
             const matches = Byte.matcher.exec(dataItem.type);
             expect(matches).to.be.not.null();
-            if (matches !== null && matches.length === 2) {
-                this.width = new BigNumber(matches[1], 10);
+            if (matches !== null && matches.length === 3 && matches[2] !== undefined) {
+                this.width = parseInt(matches[2]);
+            } else {
+                this.width = Byte.DEFAULT_WIDTH;
             }
         }
 
-        public assignValue(value: string) {
-            //const hexValue = ethUtil.bufferToHex(new Buffer(value));
-            //this.assignHexValue(hexValue);
+        public assignValue(value: string | Buffer) {
+            // Convert value into a buffer and do bounds checking
+            const valueBuf = ethUtil.toBuffer(value);
+            if (valueBuf.byteLength > this.width) {
+                throw new Error(
+                    `Tried to assign ${value} (${
+                        valueBuf.byteLength
+                    } bytes), which exceeds max bytes that can be stored in a ${this.getSignature()}`,
+                );
+            } else if (value.length % 2 !== 0) {
+                throw new Error(`Tried to assign ${value}, which is contains a half-byte. Use full bytes only.`);
+            }
+
+            // Store value as hex
+            const evmWordWidth = 32;
+            const paddedValue = ethUtil.setLengthRight(valueBuf, evmWordWidth);
+            const hexValue = ethUtil.bufferToHex(paddedValue);
+            this.assignHexValue(hexValue);
         }
 
         public getSignature(): string {
-            throw 1;
-        }
-
-        public encodeToCalldata(calldata: Calldata): void {
-            throw 2;
+            // Note that `byte` reduces to `bytes1`
+            return `bytes${this.width}`;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -890,6 +904,60 @@ describe.only('ABI Encoder', () => {
         });
 
         // TODO: Add bounds tests + tests for different widths
+    });
+
+    describe.only('Static Bytes', () => {
+        it('Byte (padded)', async () => {
+            const testByteDataItem = { name: 'testStaticBytes', type: 'byte' };
+            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
+            byteDataType.assignValue('0x05');
+            const expectedAbiEncodedByte = '0x0500000000000000000000000000000000000000000000000000000000000000';
+            expect(byteDataType.getHexValue()).to.be.equal(expectedAbiEncodedByte);
+        });
+
+        it.skip('Byte (no padding)', async () => {
+            const testByteDataItem = { name: 'testStaticBytes', type: 'byte' };
+            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
+
+            // @TODO: This does not catch the Error
+            expect(byteDataType.assignValue('0x5')).to.throw();
+        });
+
+        it('Bytes1', async () => {
+            const testByteDataItem = { name: 'testStaticBytes', type: 'bytes1' };
+            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
+            byteDataType.assignValue('0x05');
+            const expectedAbiEncodedByte = '0x0500000000000000000000000000000000000000000000000000000000000000';
+            expect(byteDataType.getHexValue()).to.be.equal(expectedAbiEncodedByte);
+        });
+
+        it('Bytes32 (padded)', async () => {
+            const testByteDataItem = { name: 'testStaticBytes', type: 'bytes32' };
+            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
+            byteDataType.assignValue('0x0001020304050607080911121314151617181920212223242526272829303132');
+            const expectedAbiEncodedByte = '0x0001020304050607080911121314151617181920212223242526272829303132';
+            expect(byteDataType.getHexValue()).to.be.equal(expectedAbiEncodedByte);
+        });
+
+        it('Bytes32 (unpadded)', async () => {
+            const testByteDataItem = { name: 'testStaticBytes', type: 'bytes32' };
+            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
+            byteDataType.assignValue('0x1a18bf61');
+            const expectedAbiEncodedByte = '0x1a18bf6100000000000000000000000000000000000000000000000000000000';
+            expect(byteDataType.getHexValue()).to.be.equal(expectedAbiEncodedByte);
+        });
+
+        it.skip('Bytes32 - Too long', async () => {
+            const testByteDataItem = { name: 'testStaticBytes', type: 'bytes32' };
+            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
+
+            // @TODO: This does not catch the Error
+            expect(
+                byteDataType.assignValue('0x000102030405060708091112131415161718192021222324252627282930313233'),
+            ).to.throw(
+                `Tried to assign 0x000102030405060708091112131415161718192021222324252627282930313233 (33 bytes), which exceeds max bytes that can be stored in a bytes32`,
+            );
+        });
     });
 
     describe('String', () => {
