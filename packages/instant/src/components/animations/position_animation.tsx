@@ -96,14 +96,20 @@ export interface ConditionalPositionAnimationProps {
     sm?: PositionAnimationSettings & { position: string };
 }
 
-// TODO: use em and helpers
+// TODO: use helper instead
+const smallMediaCss = (generated: any) => {
+    return css`
+        @media (max-width: 40em) {
+            ${generated};
+        }
+    `;
+};
+
 export const ConditionalPositionAnimation =
     styled.div <
     ConditionalPositionAnimationProps >
     `
     ${props => generatePositionCss(props.default)}
-    @media (max-width: 40em) {
-        ${props => props.sm && generatePositionCss(props.sm)}
-    }
+    ${props => props.sm && smallMediaCss(generatePositionCss(props.sm))}
     z-index: 9999;
     `;
