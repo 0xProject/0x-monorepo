@@ -11,13 +11,14 @@ import { chaiSetup } from './utils/chai_setup';
 import { MethodAbi, DataItem } from 'ethereum-types';
 
 import { BigNumber } from '@0x/utils';
+import { assert } from '@0x/order-utils/src/assert';
 
 const simpleAbi = {
     constant: false,
     inputs: [
         {
             name: 'greg',
-            type: 'uint208',
+            type: 'uint256',
         },
         {
             name: 'gregStr',
@@ -116,17 +117,138 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 namespace AbiEncoder {
-    class Memory {}
+    class Word {
+        private value: string;
 
-    class Word {}
+        constructor(value?: string) {
+            if (value === undefined) {
+                this.value = '';
+            } else {
+                this.value = value;
+            }
+        }
+
+        public set(value: string) {
+            if (value.length !== 64) {
+                throw `Tried to create word that is not 32 bytes: ${value}`;
+            }
+
+            this.value = value;
+        }
+
+        public get(): string {
+            return this.value;
+        }
+
+        public getAsHex(): string {
+            return `0x${this.value}`;
+        }
+    }
+
+    enum CalldataSection {
+        NONE,
+        PARAMS,
+        DATA,
+    }
+
+    class Memblock {
+        private dataType: DataType;
+        private location: { calldataSection: CalldataSection; offset: BigNumber };
+
+        constructor(dataType: DataType) {
+            this.dataType = dataType;
+            this.location = {
+                calldataSection: CalldataSection.NONE,
+                offset: new BigNumber(0),
+            };
+        }
+
+        public getSize(): BigNumber {
+            return new BigNumber(ethUtil.toBuffer(this.dataType.getHexValue()).byteLength);
+        }
+
+        public assignLocation(calldataSection: CalldataSection, offset: BigNumber) {
+            this.location.calldataSection = calldataSection;
+            this.location.offset = offset;
+        }
+
+        public get(): string {
+            return ethUtil.stripHexPrefix(this.dataType.getHexValue());
+        }
+    }
+
+    interface BindList {
+        [key: string]: Memblock;
+    }
+
+    class Calldata {
+        private selector: string;
+        private params: Memblock[];
+        private data: Memblock[];
+        private dataOffset: BigNumber;
+        private currentDataOffset: BigNumber;
+        private currentParamOffset: BigNumber;
+        private bindList: BindList;
+
+        constructor(selector: string, nParams: number) {
+            this.selector = selector;
+            console.log(this.selector);
+            this.params = [];
+            this.data = [];
+            const evmWordSize = 32;
+            this.dataOffset = new BigNumber(nParams).times(evmWordSize);
+            this.currentDataOffset = this.dataOffset;
+            this.currentParamOffset = new BigNumber(0);
+            this.bindList = {};
+        }
+
+        public bind(dataType: DataType, section: CalldataSection = CalldataSection.DATA) {
+            if (dataType.getId() in this.bindList) {
+                throw `Rebind`;
+            }
+            const memblock = new Memblock(dataType);
+            switch (section) {
+                case CalldataSection.PARAMS:
+                    this.params.push(memblock);
+                    memblock.assignLocation(section, this.currentParamOffset);
+                    this.currentParamOffset = this.currentParamOffset.plus(memblock.getSize());
+                    break;
+
+                case CalldataSection.DATA:
+                    this.data.push(memblock);
+                    memblock.assignLocation(section, this.currentDataOffset);
+                    this.currentDataOffset = this.currentDataOffset.plus(memblock.getSize());
+                    break;
+
+                default:
+                    throw `Unrecognized calldata section: ${section}`;
+            }
+
+            this.bindList[dataType.getId()] = memblock;
+        }
+
+        public getHexValue(): string {
+            let hexValue = `0x${this.selector}`;
+            _.each(this.params, (memblock: Memblock) => {
+                hexValue += memblock.get();
+            });
+            _.each(this.data, (memblock: Memblock) => {
+                hexValue += memblock.get();
+            });
+
+            return hexValue;
+        }
+    }
 
     export abstract class DataType {
         private dataItem: DataItem;
         private hexValue: string;
+        private memblock: Memblock | undefined;
 
         constructor(dataItem: DataItem) {
             this.dataItem = dataItem;
             this.hexValue = '0x';
+            this.memblock = undefined;
         }
 
         protected assignHexValue(hexValue: string) {
@@ -141,12 +263,24 @@ namespace AbiEncoder {
             return this.dataItem;
         }
 
+        public rbind(memblock: Memblock) {
+            this.memblock = memblock;
+        }
+
+        public bind(calldata: Calldata) {
+            if (this.memblock !== undefined) return; // already binded
+        }
+
+        public getId(): string {
+            return this.dataItem.name;
+        }
+
         public abstract assignValue(value: any): void;
+        public abstract getSignature(): string;
+        public abstract encodeToCalldata(calldata: Calldata): void;
 
         // abstract match(type: string): Bool;
     }
-
-    class Calldata {}
 
     export abstract class StaticDataType extends DataType {
         constructor(dataItem: DataItem) {
@@ -163,12 +297,20 @@ namespace AbiEncoder {
     export class Address extends StaticDataType {
         constructor(dataItem: DataItem) {
             super(dataItem);
-            expect(Tuple.matchGrammar(dataItem.type)).to.be.true();
+            expect(Address.matchGrammar(dataItem.type)).to.be.true();
         }
 
         public assignValue(value: string) {
             const hexValue = ethUtil.bufferToHex(new Buffer(value));
             this.assignHexValue(hexValue);
+        }
+
+        public getSignature(): string {
+            throw 1;
+        }
+
+        public encodeToCalldata(calldata: Calldata): void {
+            throw 2;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -185,6 +327,14 @@ namespace AbiEncoder {
         public assignValue(value: string) {
             //const hexValue = ethUtil.bufferToHex(new Buffer(value));
             //this.assignHexValue(hexValue);
+        }
+
+        public getSignature(): string {
+            throw 1;
+        }
+
+        public encodeToCalldata(calldata: Calldata): void {
+            throw 2;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -209,9 +359,17 @@ namespace AbiEncoder {
             }
         }
 
+        public encodeToCalldata(calldata: Calldata): void {
+            throw 2;
+        }
+
         public assignValue(value: string) {
             //const hexValue = ethUtil.bufferToHex(new Buffer(value));
             //this.assignHexValue(hexValue);
+        }
+
+        public getSignature(): string {
+            throw 1;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -259,6 +417,14 @@ namespace AbiEncoder {
             this.assignHexValue(encodedValue);
         }
 
+        public getSignature(): string {
+            return `uint${this.width}`;
+        }
+
+        public encodeToCalldata(calldata: Calldata): void {
+            throw 2;
+        }
+
         public static matchGrammar(type: string): boolean {
             return this.matcher.test(type);
         }
@@ -286,6 +452,14 @@ namespace AbiEncoder {
             //this.assignHexValue(hexValue);
         }
 
+        public getSignature(): string {
+            throw 1;
+        }
+
+        public encodeToCalldata(calldata: Calldata): void {
+            throw 2;
+        }
+
         public static matchGrammar(type: string): boolean {
             return this.matcher.test(type);
         }
@@ -300,6 +474,14 @@ namespace AbiEncoder {
         public assignValue(value: string) {
             //const hexValue = ethUtil.bufferToHex(new Buffer(value));
             //this.assignHexValue(hexValue);
+        }
+
+        public getSignature(): string {
+            throw 1;
+        }
+
+        public encodeToCalldata(calldata: Calldata): void {
+            throw 2;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -319,6 +501,14 @@ namespace AbiEncoder {
         public assignValue(value: string) {
             //const hexValue = ethUtil.bufferToHex(new Buffer(value));
             //this.assignHexValue(hexValue);
+        }
+
+        public getSignature(): string {
+            throw 1;
+        }
+
+        public encodeToCalldata(calldata: Calldata): void {
+            throw 2;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -345,8 +535,16 @@ namespace AbiEncoder {
             //this.assignHexValue(hexValue);
         }
 
+        public encodeToCalldata(calldata: Calldata): void {
+            throw 2;
+        }
+
         public static matchGrammar(type: string): boolean {
             return this.matcher.test(type);
+        }
+
+        public getSignature(): string {
+            throw 1;
         }
     }
 
@@ -366,6 +564,12 @@ namespace AbiEncoder {
 
             this.assignHexValue(encodedValue);
         }
+
+        public getSignature(): string {
+            return 'string';
+        }
+
+        public encodeToCalldata(calldata: Calldata): void {}
 
         public static matchGrammar(type: string): boolean {
             return type === 'string';
@@ -398,6 +602,14 @@ namespace AbiEncoder {
 
         public getHexValue(): string {
             return this.destDataType.getHexValue();
+        }
+
+        public getSignature(): string {
+            return this.destDataType.getSignature();
+        }
+
+        public encodeToCalldata(calldata: Calldata): void {
+            throw 2;
         }
     }
 
@@ -437,6 +649,8 @@ namespace AbiEncoder {
     export class Method {
         name: string;
         params: DataType[];
+        signature: string;
+        selector: string;
 
         constructor(abi: MethodAbi) {
             // super();
@@ -446,20 +660,40 @@ namespace AbiEncoder {
             _.each(abi.inputs, (input: DataItem) => {
                 this.params.push(DataTypeFactory.create(input));
             });
+
+            // Compute signature
+            this.signature = `${this.name}(`;
+            _.each(this.params, (param: DataType, i: number) => {
+                this.signature += param.getSignature();
+                if (i < this.params.length - 1) {
+                    this.signature += ',';
+                }
+            });
+            this.signature += ')';
+
+            // Compute selector
+            this.selector = ethUtil.bufferToHex(ethUtil.toBuffer(ethUtil.sha3(this.signature).slice(0, 4)));
+
+            console.log(`--SIGNATURE--\n${this.signature}\n---------\n`);
+            console.log(`--SELECTOR--\n${this.selector}\n---------\n`);
         }
 
         encode(args: any[]): string {
-            //const calldata = new Calldata(this.name, this.params.length);
-            let params = this.params;
+            const calldata = new Calldata(this.selector, this.params.length);
+
+            // Write params section
+            const params = this.params;
             _.each(params, (param: DataType, i: number) => {
-                console.log('param:\n', param, '\n--end--\n');
-                console.log('arg:\n', args[i], '\n--end\n');
+                // Assign value to param
                 param.assignValue(args[i]);
-                console.log(param.getHexValue());
-                //param.encodeToCalldata(calldata);
+                // Binds top-level parameter to the params section of calldata
+                calldata.bind(param, CalldataSection.PARAMS);
+                // Binds parameter's children to the data section of calldata,
+                // while retaining internal pointers
+                param.bind(calldata);
             });
 
-            return '';
+            return calldata.getHexValue();
 
             //return calldata.getRaw();
         }
@@ -499,10 +733,11 @@ namespace AbiEncoder {
 }
 
 describe.only('ABI Encoder', () => {
-    describe('Just a Greg, Eh', () => {
+    describe.only('Just a Greg, Eh', () => {
         it('Yessir', async () => {
             const method = new AbiEncoder.Method(simpleAbi);
-            method.encode([new BigNumber(5), 'five']);
+            const calldata = method.encode([new BigNumber(5), 'five']);
+            console.log(calldata);
             expect(true).to.be.true();
         });
     });
