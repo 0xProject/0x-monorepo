@@ -528,6 +528,69 @@ namespace AbiEncoder {
         }
     }
 
+    export class Bytes extends StaticDataType {
+        static UNDEFINED_LENGTH = new BigNumber(-1);
+        length: BigNumber = SolArray.UNDEFINED_LENGTH;
+
+        constructor(dataItem: DataItem) {
+            super(dataItem);
+            expect(Bytes.matchGrammar(dataItem.type)).to.be.true();
+        }
+
+        public assignValue(value: string | Buffer) {
+            if (typeof value === 'string' && !value.startsWith('0x')) {
+                throw new Error(`Input value must be hex (prefixed with 0x). Actual value is '${value}'`);
+            }
+            const valueBuf = ethUtil.toBuffer(value);
+            if (value.length % 2 !== 0) {
+                throw new Error(`Tried to assign ${value}, which is contains a half-byte. Use full bytes only.`);
+            }
+
+            const wordsForValue = Math.ceil(valueBuf.byteLength / 32);
+            const paddedBytesForValue = wordsForValue * 32;
+            const paddedValueBuf = ethUtil.setLengthRight(ethUtil.toBuffer(value), paddedBytesForValue);
+            const paddedLengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(valueBuf.byteLength), 32);
+            const encodedValueBuf = Buffer.concat([paddedLengthBuf, paddedValueBuf]);
+            const encodedValue = ethUtil.bufferToHex(encodedValueBuf);
+
+            this.assignHexValue(encodedValue);
+        }
+
+        public getSignature(): string {
+            return 'bytes';
+        }
+
+        public static matchGrammar(type: string): boolean {
+            return type === 'bytes';
+        }
+    }
+
+    export class SolString extends StaticDataType {
+        constructor(dataItem: DataItem) {
+            super(dataItem);
+            expect(SolString.matchGrammar(dataItem.type)).to.be.true();
+        }
+
+        public assignValue(value: string) {
+            const wordsForValue = Math.ceil(value.length / 32);
+            const paddedBytesForValue = wordsForValue * 32;
+            const valueBuf = ethUtil.setLengthRight(ethUtil.toBuffer(value), paddedBytesForValue);
+            const lengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value.length), 32);
+            const encodedValueBuf = Buffer.concat([lengthBuf, valueBuf]);
+            const encodedValue = ethUtil.bufferToHex(encodedValueBuf);
+
+            this.assignHexValue(encodedValue);
+        }
+
+        public getSignature(): string {
+            return 'string';
+        }
+
+        public static matchGrammar(type: string): boolean {
+            return type === 'string';
+        }
+    }
+
     export class Tuple extends DynamicDataType {
         constructor(dataItem: DataItem) {
             super(dataItem);
@@ -549,33 +612,6 @@ namespace AbiEncoder {
 
         public static matchGrammar(type: string): boolean {
             return type === 'tuple';
-        }
-    }
-
-    export class Bytes extends StaticDataType {
-        static UNDEFINED_LENGTH = new BigNumber(-1);
-        length: BigNumber = SolArray.UNDEFINED_LENGTH;
-
-        constructor(dataItem: DataItem) {
-            super(dataItem);
-            expect(Bytes.matchGrammar(dataItem.type)).to.be.true();
-        }
-
-        public assignValue(value: string) {
-            //const hexValue = ethUtil.bufferToHex(new Buffer(value));
-            //this.assignHexValue(hexValue);
-        }
-
-        public getSignature(): string {
-            throw 1;
-        }
-
-        public encodeToCalldata(calldata: Calldata): void {
-            throw 2;
-        }
-
-        public static matchGrammar(type: string): boolean {
-            return type === 'bytes';
         }
     }
 
@@ -608,34 +644,6 @@ namespace AbiEncoder {
 
         public getSignature(): string {
             throw 1;
-        }
-    }
-
-    export class SolString extends DynamicDataType {
-        constructor(dataItem: DataItem) {
-            super(dataItem);
-            expect(SolString.matchGrammar(dataItem.type)).to.be.true();
-        }
-
-        public assignValue(value: string) {
-            const wordsForValue = Math.ceil(value.length / 32);
-            const paddedBytesForValue = wordsForValue * 32;
-            const valueBuf = ethUtil.setLengthRight(ethUtil.toBuffer(value), paddedBytesForValue);
-            const lengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value.length), 32);
-            const encodedValueBuf = Buffer.concat([lengthBuf, valueBuf]);
-            const encodedValue = ethUtil.bufferToHex(encodedValueBuf);
-
-            this.assignHexValue(encodedValue);
-        }
-
-        public getSignature(): string {
-            return 'string';
-        }
-
-        public encodeToCalldata(calldata: Calldata): void {}
-
-        public static matchGrammar(type: string): boolean {
-            return type === 'string';
         }
     }
 
@@ -906,7 +914,7 @@ describe.only('ABI Encoder', () => {
         // TODO: Add bounds tests + tests for different widths
     });
 
-    describe.only('Static Bytes', () => {
+    describe('Static Bytes', () => {
         it('Byte (padded)', async () => {
             const testByteDataItem = { name: 'testStaticBytes', type: 'byte' };
             const byteDataType = new AbiEncoder.Byte(testByteDataItem);
@@ -958,6 +966,31 @@ describe.only('ABI Encoder', () => {
                 `Tried to assign 0x000102030405060708091112131415161718192021222324252627282930313233 (33 bytes), which exceeds max bytes that can be stored in a bytes32`,
             );
         });
+    });
+
+    describe.only('Bytes (Dynamic)', () => {
+        const testBytesDataItem = { name: 'testBytes', type: 'bytes' };
+        it('Less than 32 bytes', async () => {
+            const bytesDataType = new AbiEncoder.Bytes(testBytesDataItem);
+            bytesDataType.assignValue('0x010203');
+            const expectedAbiEncodedBytes =
+                '0x00000000000000000000000000000000000000000000000000000000000000030102030000000000000000000000000000000000000000000000000000000000';
+
+            expect(bytesDataType.getHexValue()).to.be.equal(expectedAbiEncodedBytes);
+        });
+
+        it('Greater than 32 bytes', async () => {
+            const bytesDataType = new AbiEncoder.Bytes(testBytesDataItem);
+            const testValue = '0x' + '61'.repeat(40);
+            bytesDataType.assignValue(testValue);
+            const expectedAbiEncodedBytes =
+                '0x000000000000000000000000000000000000000000000000000000000000002861616161616161616161616161616161616161616161616161616161616161616161616161616161000000000000000000000000000000000000000000000000';
+            expect(bytesDataType.getHexValue()).to.be.equal(expectedAbiEncodedBytes);
+        });
+
+        // @TODO: Add test for throw on half-byte
+        // @TODO: Test with no 0x prefix
+        // @TODO: Test with Buffer as input
     });
 
     describe('String', () => {
