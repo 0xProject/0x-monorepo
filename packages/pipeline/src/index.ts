@@ -16,7 +16,10 @@ import { parseRelayers } from './parsers/relayer_registry';
 import { parseBlock, parseTransaction } from './parsers/web3';
 
 const EXCHANGE_START_BLOCK = 6271590; // Block number when the Exchange contract was deployed to mainnet.
-const RELAYER_REGISTRY_URL = 'https://raw.githubusercontent.com/0xProject/0x-relayer-registry/master/relayers.json';
+// NOTE(albrow): We need to manually update this URL for now. Fix this when we
+// have the relayer-registry behind semantic versioning.
+const RELAYER_REGISTRY_URL =
+    'https://raw.githubusercontent.com/0xProject/0x-relayer-registry/4701c85677d161ea729a466aebbc1826c6aa2c0b/relayers.json';
 
 let connection: Connection;
 

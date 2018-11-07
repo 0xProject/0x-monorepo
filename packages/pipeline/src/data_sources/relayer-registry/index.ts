@@ -26,8 +26,8 @@ export class RelayerRegistrySource {
         this._url = url;
     }
 
-    public async getRelayerInfoAsync(): Promise<RelayerResponse[]> {
-        const resp = await axios.get<RelayerResponse[]>(this._url);
+    public async getRelayerInfoAsync(): Promise<Map<string, RelayerResponse>> {
+        const resp = await axios.get<Map<string, RelayerResponse>>(this._url);
         return resp.data;
     }
 }
