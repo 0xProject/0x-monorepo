@@ -36,18 +36,28 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                 <ConditionalPositionAnimation
                     default={{
                         position: 'relative',
-                        duration: '10s',
+                        duration: '0.5s',
                         timingFunction: 'ease-in',
-                        top: { from: '0px', to: '500px' },
+                        top: { from: '120px', to: '0px' },
                     }}
                     sm={{
-                        position: 'relative',
-                        duration: '2s',
+                        position: 'fixed',
+                        duration: '0.5s',
                         timingFunction: 'ease-in',
-                        top: { from: '500px', to: '900px' },
+                        top: { from: '-120px', to: '0px' },
                     }}
                 >
-                    <h1 style={{ width: '500px', backgroundColor: 'red', border: '1px solid red' }}>yo</h1>
+                    <h1
+                        style={{
+                            width: '500px',
+                            margin: '0',
+                            padding: '0',
+                            backgroundColor: 'red',
+                            border: '1px solid red',
+                        }}
+                    >
+                        yo
+                    </h1>
                 </ConditionalPositionAnimation>
 
                 <Container zIndex={zIndex.errorPopup} position="relative">

@@ -105,4 +105,5 @@ export const ConditionalPositionAnimation =
     @media (max-width: 40em) {
         ${props => props.sm && generatePositionCss(props.sm)}
     }
+    z-index: 9999;
     `;
