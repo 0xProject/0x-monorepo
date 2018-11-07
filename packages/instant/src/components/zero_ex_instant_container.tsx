@@ -11,7 +11,7 @@ import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 
-import { PositionAnimation, ConditionalPositionAnimation } from './animations/position_animation';
+import { PositionAnimation } from './animations/position_animation';
 import { SlideAnimationState } from './animations/slide_animation';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
@@ -33,18 +33,21 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                 height={{ default: 'auto', sm: '100%' }}
                 position="relative"
             >
-                <ConditionalPositionAnimation
-                    default={{
-                        position: 'relative',
-                        duration: '0.5s',
-                        timingFunction: 'ease-in',
-                        top: { from: '120px', to: '0px' },
-                    }}
-                    sm={{
-                        position: 'fixed',
-                        duration: '0.5s',
-                        timingFunction: 'ease-in',
-                        top: { from: '-120px', to: '0px' },
+                <PositionAnimation
+                    position="relative"
+                    positionSettings={{
+                        default: {
+                            position: 'relative',
+                            duration: '0.5s',
+                            timingFunction: 'ease-in',
+                            top: { from: '120px', to: '0px' },
+                        },
+                        sm: {
+                            position: 'fixed',
+                            duration: '0.5s',
+                            timingFunction: 'ease-in',
+                            top: { from: '-120px', to: '0px' },
+                        },
                     }}
                 >
                     <h1
@@ -56,9 +59,9 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                             border: '1px solid red',
                         }}
                     >
-                        yo
+                        yo!
                     </h1>
-                </ConditionalPositionAnimation>
+                </PositionAnimation>
 
                 <Container zIndex={zIndex.errorPopup} position="relative">
                     <LatestError />

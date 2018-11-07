@@ -55,6 +55,7 @@ export interface PositionAnimationSettings {
 }
 
 const generatePositionAnimationCss = (position: string, positionSettings: PositionAnimationSettings) => {
+    // TODO: take out zindex
     return css`
         animation-name: ${slideKeyframeGenerator(
             position,
@@ -74,10 +75,20 @@ const generatePositionAnimationCss = (position: string, positionSettings: Positi
     `;
 };
 
+// TODO: clean up position settings
 export interface PositionAnimationProps {
     position: string;
     positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
 }
+
+// TODO: use media helper instead
+const smallMediaCss = (generated: any) => {
+    return css`
+        @media (max-width: 40em) {
+            ${generated};
+        }
+    `;
+};
 
 export const PositionAnimation =
     styled.div <
@@ -97,30 +108,3 @@ export const PositionAnimation =
 PositionAnimation.defaultProps = {
     position: 'relative',
 };
-
-// TODO: bake into one, and use to handle just sending in PositionAnimationSettings
-// TODO: handle medium too
-// TODO: better than & position
-// TODO: Clean up position setting, maybe just use in setting
-export interface ConditionalPositionAnimationProps {
-    default: PositionAnimationSettings & { position: string };
-    sm?: PositionAnimationSettings & { position: string };
-}
-
-// TODO: use helper instead
-const smallMediaCss = (generated: any) => {
-    return css`
-        @media (max-width: 40em) {
-            ${generated};
-        }
-    `;
-};
-
-export const ConditionalPositionAnimation =
-    styled.div <
-    ConditionalPositionAnimationProps >
-    `
-    ${props => generatePositionAnimationCss(props.default.position, props.default)}
-    ${props => props.sm && smallMediaCss(generatePositionAnimationCss(props.sm.position, props.sm))}
-    z-index: 9999;
-    `;
