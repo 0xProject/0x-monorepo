@@ -3,6 +3,7 @@ import * as React from 'react';
 import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
+import { LatestErrorOverlay } from '../containers/latest_error_overlay';
 import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_buy_order_state_buttons';
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 
@@ -15,6 +16,7 @@ import { SlideAnimationState } from './animations/slide_animation';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
+import { OverlayContainer } from './ui/overlay_container';
 
 export interface ZeroExInstantContainerProps {}
 export interface ZeroExInstantContainerState {
@@ -44,14 +46,16 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                     overflow="hidden"
                     height="100%"
                 >
-                    <Flex direction="column" height={'100%'} justify="flex-start">
-                        <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
-                        <SelectedAssetBuyOrderProgress />
-                        <LatestBuyQuoteOrderDetails />
-                        <Container padding="20px" width="100%">
-                            <SelectedAssetBuyOrderStateButtons />
-                        </Container>
-                    </Flex>
+                    <LatestErrorOverlay>
+                        <Flex direction="column" height={'100%'} justify="flex-start">
+                            <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
+                            <SelectedAssetBuyOrderProgress />
+                            <LatestBuyQuoteOrderDetails />
+                            <Container padding="20px" width="100%">
+                                <SelectedAssetBuyOrderStateButtons />
+                            </Container>
+                        </Flex>
+                    </LatestErrorOverlay>
                     <SlidingPanel
                         title="Select Token"
                         animationState={this.state.tokenSelectionPanelAnimationState}
