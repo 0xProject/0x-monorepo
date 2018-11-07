@@ -15,7 +15,7 @@ import { Text } from './ui/text';
 export interface BuyOrderStateButtonProps {
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
-    assetBuyer?: AssetBuyer;
+    assetBuyer: AssetBuyer;
     affiliateInfo?: AffiliateInfo;
     onViewTransaction: () => void;
     onValidationPending: (buyQuote: BuyQuote) => void;
