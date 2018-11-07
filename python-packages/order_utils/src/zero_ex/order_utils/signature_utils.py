@@ -50,6 +50,8 @@ def is_valid_signature(
     ... )
     (True, '')
     """  # noqa: E501 (line too long)
+    # TODO: make this provider check more flexible. pylint: disable=fixme
+    # https://app.asana.com/0/684263176955174/901300863045491/f
     if not isinstance(provider, Web3.HTTPProvider):
         raise TypeError("provider is not a Web3.HTTPProvider")
     assert_is_hex_string(data, "data")
