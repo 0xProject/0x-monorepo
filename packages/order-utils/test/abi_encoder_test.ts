@@ -347,20 +347,18 @@ namespace AbiEncoder {
     export class Bool extends StaticDataType {
         constructor(dataItem: DataItem) {
             super(dataItem);
-            expect(Tuple.matchGrammar(dataItem.type)).to.be.true();
+            expect(Bool.matchGrammar(dataItem.type)).to.be.true();
         }
 
-        public assignValue(value: string) {
-            //const hexValue = ethUtil.bufferToHex(new Buffer(value));
-            //this.assignHexValue(hexValue);
+        public assignValue(value: boolean) {
+            const evmWordWidth = 32;
+            const encodedValue = value === true ? '0x1' : '0x0';
+            const hexValue = ethUtil.bufferToHex(ethUtil.setLengthLeft(ethUtil.toBuffer(encodedValue), evmWordWidth));
+            this.assignHexValue(hexValue);
         }
 
         public getSignature(): string {
-            throw 1;
-        }
-
-        public encodeToCalldata(calldata: Calldata): void {
-            throw 2;
+            return 'bool';
         }
 
         public static matchGrammar(type: string): boolean {
@@ -778,7 +776,7 @@ describe.only('ABI Encoder', () => {
         });
     });
 
-    describe.only('Address', () => {
+    describe('Address', () => {
         const testAddressDataItem = { name: 'testAddress', type: 'address' };
         it('Valid Address', async () => {
             const addressDataType = new AbiEncoder.Address(testAddressDataItem);
@@ -788,6 +786,23 @@ describe.only('ABI Encoder', () => {
             console.log(addressDataType.getHexValue());
             console.log(expectedAbiEncodedAddress);
             expect(addressDataType.getHexValue()).to.be.equal(expectedAbiEncodedAddress);
+        });
+    });
+
+    describe.only('Bool', () => {
+        const testBoolDataItem = { name: 'testBool', type: 'bool' };
+        it('True', async () => {
+            const boolDataType = new AbiEncoder.Bool(testBoolDataItem);
+            boolDataType.assignValue(true);
+            const expectedAbiEncodedBool = '0x0000000000000000000000000000000000000000000000000000000000000001';
+            expect(boolDataType.getHexValue()).to.be.equal(expectedAbiEncodedBool);
+        });
+
+        it('False', async () => {
+            const boolDataType = new AbiEncoder.Bool(testBoolDataItem);
+            boolDataType.assignValue(false);
+            const expectedAbiEncodedBool = '0x0000000000000000000000000000000000000000000000000000000000000000';
+            expect(boolDataType.getHexValue()).to.be.equal(expectedAbiEncodedBool);
         });
     });
 
