@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import { connect } from 'react-redux';
 
 import { SlideAnimationState } from '../components/animations/slide_animation';
