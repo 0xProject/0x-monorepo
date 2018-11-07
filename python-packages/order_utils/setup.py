@@ -5,6 +5,7 @@
 import subprocess  # nosec
 from shutil import rmtree
 from os import environ, path
+from pathlib import Path
 from sys import argv
 
 from distutils.command.clean import clean
@@ -59,8 +60,7 @@ class LintCommand(distutils.command.build_py.build_py):
         import eth_abi
 
         eth_abi_dir = path.dirname(path.realpath(eth_abi.__file__))
-        with open(path.join(eth_abi_dir, "py.typed"), "a"):
-            pass
+        Path(path.join(eth_abi_dir, "py.typed")).touch()
 
         # HACK(gene): until eth_utils fixes
         # https://github.com/ethereum/eth-utils/issues/140 , we need to simply
@@ -68,8 +68,7 @@ class LintCommand(distutils.command.build_py.build_py):
         import eth_utils
 
         eth_utils_dir = path.dirname(path.realpath(eth_utils.__file__))
-        with open(path.join(eth_utils_dir, "py.typed"), "a"):
-            pass
+        Path(path.join(eth_utils_dir, "py.typed")).touch()
 
         for lint_command in lint_commands:
             print(
