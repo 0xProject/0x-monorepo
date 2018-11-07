@@ -592,7 +592,7 @@ namespace AbiEncoder {
     }
 
     export class SolArray extends DynamicDataType {
-        static matcher = RegExp('^(.+)\\[([0-9]d*)\\]$');
+        static matcher = RegExp('^(.+)\\[([0-9]*)\\]$');
         static UNDEFINED_LENGTH = new BigNumber(-1);
         length: BigNumber = SolArray.UNDEFINED_LENGTH;
         type: string = '[undefined]';
@@ -601,14 +601,19 @@ namespace AbiEncoder {
             super(dataItem);
             const matches = SolArray.matcher.exec(dataItem.type);
             expect(matches).to.be.not.null();
+            console.log(JSON.stringify(matches));
             if (matches === null || matches.length !== 3) {
                 throw new Error(`Could not parse array: ${dataItem.type}`);
             } else if (matches[1] === undefined) {
                 throw new Error(`Could not parse array type: ${dataItem.type}`);
             } else if (matches[2] === undefined) {
-                // Parse out array type and length
+                throw new Error(`Could not parse array length: ${dataItem.type}`);
+            }
+
+            // Check if length is undefined
+            if (matches[2] === '') {
                 this.type = matches[1];
-                this.length = new BigNumber(SolArray.UNDEFINED_LENGTH);
+                this.length = SolArray.UNDEFINED_LENGTH;
                 return;
             }
 
@@ -877,6 +882,18 @@ describe.only('ABI Encoder', () => {
     describe.only('Array', () => {
         it('sample', async () => {
             const testDataItem = { name: 'testArray', type: 'int[2]' };
+            const dataType = new AbiEncoder.SolArray(testDataItem);
+            console.log(JSON.stringify(dataType, null, 4));
+            console.log('*'.repeat(60));
+            dataType.assignValue([new BigNumber(5), new BigNumber(6)]);
+            console.log(JSON.stringify(dataType, null, 4));
+            const hexValue = dataType.getHexValue();
+            console.log('*'.repeat(60));
+            console.log(hexValue);
+        });
+
+        it.only('sample undefined size', async () => {
+            const testDataItem = { name: 'testArray', type: 'int[]' };
             const dataType = new AbiEncoder.SolArray(testDataItem);
             console.log(JSON.stringify(dataType, null, 4));
             console.log('*'.repeat(60));
