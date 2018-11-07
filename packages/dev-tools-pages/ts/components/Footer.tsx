@@ -81,6 +81,7 @@ const Media = styled.div`
     align-items: center;
 
     ${Icon} {
+        margin-top: .5rem;
         align-self: flex-start;
     }
 `;
