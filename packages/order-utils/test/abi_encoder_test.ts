@@ -309,9 +309,6 @@ namespace AbiEncoder {
 
         public abstract assignValue(value: any): void;
         public abstract getSignature(): string;
-        public abstract encodeToCalldata(calldata: Calldata): void;
-
-        // abstract match(type: string): Bool;
     }
 
     export abstract class StaticDataType extends DataType {
@@ -333,16 +330,13 @@ namespace AbiEncoder {
         }
 
         public assignValue(value: string) {
-            const hexValue = ethUtil.bufferToHex(new Buffer(value));
+            const evmWordWidth = 32;
+            const hexValue = ethUtil.bufferToHex(ethUtil.setLengthLeft(ethUtil.toBuffer(value), evmWordWidth));
             this.assignHexValue(hexValue);
         }
 
         public getSignature(): string {
-            throw 1;
-        }
-
-        public encodeToCalldata(calldata: Calldata): void {
-            throw 2;
+            return `address`;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -634,8 +628,6 @@ namespace AbiEncoder {
         public getHexValue(): string {
             let offset = new BigNumber(0);
             if (this.memblock !== undefined) {
-                console.log('Abs Offset = ', JSON.stringify(this.destDataType.getAbsoluteOffset()));
-                console.log('Local Offset = ', JSON.stringify(this.destDataType.getOffset()));
                 switch (this.memblock.getSection()) {
                     case CalldataSection.PARAMS:
                         offset = this.destDataType.getAbsoluteOffset();
@@ -783,6 +775,19 @@ describe.only('ABI Encoder', () => {
             const calldata = method.encode([new BigNumber(5), 'five']);
             console.log(calldata);
             expect(true).to.be.true();
+        });
+    });
+
+    describe.only('Address', () => {
+        const testAddressDataItem = { name: 'testAddress', type: 'address' };
+        it('Valid Address', async () => {
+            const addressDataType = new AbiEncoder.Address(testAddressDataItem);
+            addressDataType.assignValue('0xe41d2489571d322189246dafa5ebde1f4699f498');
+            const expectedAbiEncodedAddress = '0x000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498';
+
+            console.log(addressDataType.getHexValue());
+            console.log(expectedAbiEncodedAddress);
+            expect(addressDataType.getHexValue()).to.be.equal(expectedAbiEncodedAddress);
         });
     });
 
