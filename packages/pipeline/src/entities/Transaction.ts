@@ -6,6 +6,8 @@ export class Transaction {
     @PrimaryColumn() public blockHash!: string;
     @PrimaryColumn() public blockNumber!: number;
 
-    @Column() public gasUsed!: number;
-    @Column() public gasPrice!: number;
+    @Column({ type: 'bigint' })
+    public gasUsed!: number;
+    @Column({ type: 'bigint' })
+    public gasPrice!: number;
 }
