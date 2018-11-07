@@ -153,12 +153,13 @@ namespace AbiEncoder {
 
     class Memblock {
         private dataType: DataType;
-        private location: { calldataSection: CalldataSection; offset: BigNumber };
+        private location: { calldataSection: CalldataSection; sectionOffset: BigNumber; offset: BigNumber };
 
         constructor(dataType: DataType) {
             this.dataType = dataType;
             this.location = {
                 calldataSection: CalldataSection.NONE,
+                sectionOffset: new BigNumber(0),
                 offset: new BigNumber(0),
             };
         }
@@ -167,13 +168,26 @@ namespace AbiEncoder {
             return new BigNumber(ethUtil.toBuffer(this.dataType.getHexValue()).byteLength);
         }
 
-        public assignLocation(calldataSection: CalldataSection, offset: BigNumber) {
+        public assignLocation(calldataSection: CalldataSection, sectionOffset: BigNumber, offset: BigNumber) {
             this.location.calldataSection = calldataSection;
+            this.location.sectionOffset = sectionOffset;
             this.location.offset = offset;
         }
 
         public get(): string {
             return ethUtil.stripHexPrefix(this.dataType.getHexValue());
+        }
+
+        public getOffset(): BigNumber {
+            return this.location.offset;
+        }
+
+        public getAbsoluteOffset(): BigNumber {
+            return this.location.sectionOffset.plus(this.location.offset);
+        }
+
+        public getSection(): CalldataSection {
+            return this.location.calldataSection;
         }
     }
 
@@ -204,19 +218,19 @@ namespace AbiEncoder {
 
         public bind(dataType: DataType, section: CalldataSection = CalldataSection.DATA) {
             if (dataType.getId() in this.bindList) {
-                throw `Rebind`;
+                throw `Rebind on ${dataType.getId()}`;
             }
             const memblock = new Memblock(dataType);
             switch (section) {
                 case CalldataSection.PARAMS:
                     this.params.push(memblock);
-                    memblock.assignLocation(section, this.currentParamOffset);
+                    memblock.assignLocation(section, new BigNumber(0), this.currentParamOffset);
                     this.currentParamOffset = this.currentParamOffset.plus(memblock.getSize());
                     break;
 
                 case CalldataSection.DATA:
                     this.data.push(memblock);
-                    memblock.assignLocation(section, this.currentDataOffset);
+                    memblock.assignLocation(section, this.dataOffset, this.currentDataOffset);
                     this.currentDataOffset = this.currentDataOffset.plus(memblock.getSize());
                     break;
 
@@ -225,6 +239,7 @@ namespace AbiEncoder {
             }
 
             this.bindList[dataType.getId()] = memblock;
+            dataType.rbind(memblock);
         }
 
         public getHexValue(): string {
@@ -243,12 +258,14 @@ namespace AbiEncoder {
     export abstract class DataType {
         private dataItem: DataItem;
         private hexValue: string;
-        private memblock: Memblock | undefined;
+        protected memblock: Memblock | undefined;
+        protected children: DataType[];
 
         constructor(dataItem: DataItem) {
             this.dataItem = dataItem;
             this.hexValue = '0x';
             this.memblock = undefined;
+            this.children = [];
         }
 
         protected assignHexValue(hexValue: string) {
@@ -268,11 +285,26 @@ namespace AbiEncoder {
         }
 
         public bind(calldata: Calldata) {
-            if (this.memblock !== undefined) return; // already binded
+            if (this.memblock === undefined) {
+                calldata.bind(this);
+            }
+            _.each(this.children, (child: DataType) => {
+                child.bind(calldata);
+            });
         }
 
         public getId(): string {
             return this.dataItem.name;
+        }
+
+        public getOffset(): BigNumber {
+            if (this.memblock === undefined) return new BigNumber(0);
+            return this.memblock.getOffset();
+        }
+
+        public getAbsoluteOffset(): BigNumber {
+            if (this.memblock === undefined) return new BigNumber(0);
+            return this.memblock.getAbsoluteOffset();
         }
 
         public abstract assignValue(value: any): void;
@@ -401,8 +433,6 @@ namespace AbiEncoder {
         }
 
         public assignValue(value: BigNumber) {
-            console.log(JSON.stringify(value));
-            console.log(JSON.stringify(this.getMaxValue()));
             if (value.greaterThan(this.getMaxValue())) {
                 throw `tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`;
             } else if (value.lessThan(0)) {
@@ -589,6 +619,7 @@ namespace AbiEncoder {
             const dataItem = { name: `ptr<${destDataItem.name}>`, type: `ptr<${destDataItem.type}>` } as DataItem;
             super(dataItem);
             this.destDataType = destDataType;
+            this.children.push(destDataType);
         }
 
         /*
@@ -601,7 +632,23 @@ namespace AbiEncoder {
         }
 
         public getHexValue(): string {
-            return this.destDataType.getHexValue();
+            let offset = new BigNumber(0);
+            if (this.memblock !== undefined) {
+                switch (this.memblock.getSection()) {
+                    case CalldataSection.PARAMS:
+                        offset = this.destDataType.getAbsoluteOffset();
+                        break;
+                    case CalldataSection.DATA:
+                        offset = this.destDataType.getOffset();
+                        break;
+                }
+            }
+
+            const hexBase = 16;
+            const evmWordWidth = 32;
+            const valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${offset.toString(hexBase)}`), evmWordWidth);
+            const encodedValue = ethUtil.bufferToHex(valueBuf);
+            return encodedValue;
         }
 
         public getSignature(): string {
@@ -692,6 +739,8 @@ namespace AbiEncoder {
                 // while retaining internal pointers
                 param.bind(calldata);
             });
+
+            console.log(calldata);
 
             return calldata.getHexValue();
 
