@@ -2,8 +2,9 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Relayer {
-    @PrimaryColumn() public name!: string;
+    @PrimaryColumn() public uuid!: string;
 
+    @Column() public name!: string;
     @Column() public url!: string;
     @Column({ nullable: true, type: String })
     public sraHttpEndpoint!: string | null;

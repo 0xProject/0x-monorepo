@@ -3,10 +3,14 @@ import * as R from 'ramda';
 import { RelayerResponse, RelayerResponseNetwork } from '../../data_sources/relayer-registry';
 import { Relayer } from '../../entities/Relayer';
 
-export const parseRelayers = R.map(parseRelayer);
+export function parseRelayers(rawResp: Map<string, RelayerResponse>): Relayer[] {
+    const parsedAsObject = R.mapObjIndexed(parseRelayer, rawResp);
+    return R.values(parsedAsObject);
+}
 
-function parseRelayer(relayerResp: RelayerResponse): Relayer {
+function parseRelayer(relayerResp: RelayerResponse, uuid: string): Relayer {
     const relayer = new Relayer();
+    relayer.uuid = uuid;
     relayer.name = relayerResp.name;
     relayer.url = relayerResp.homepage_url;
     relayer.appUrl = relayerResp.app_url;
