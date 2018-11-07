@@ -31,7 +31,7 @@ let connection: Connection;
     await getExchangeEventsAsync(provider);
     await getBlockAsync(provider);
     await getTransactionAsync(provider);
-    await getRelayers(RELAYER_REGISTRY_URL);
+    await getRelayers();
     process.exit(0);
 })();
 
@@ -74,7 +74,7 @@ async function getTransactionAsync(provider: Web3ProviderEngine): Promise<void> 
     console.log('Done saving tx.');
 }
 
-async function getRelayers(url: string): Promise<void> {
+async function getRelayers(): Promise<void> {
     console.log('Getting relayer info...');
     const relayerRepository = connection.getRepository(Relayer);
     const relayerSource = new RelayerRegistrySource(RELAYER_REGISTRY_URL);
