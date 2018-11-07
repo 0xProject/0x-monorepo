@@ -366,31 +366,20 @@ namespace AbiEncoder {
         }
     }
 
-    export class Int extends StaticDataType {
-        static matcher = RegExp(
-            '^int(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
-        );
+    abstract class Number extends StaticDataType {
+        static MAX_WIDTH: number = 256;
+        static DEFAULT_WIDTH: number = Number.MAX_WIDTH;
+        width: number = Number.DEFAULT_WIDTH;
 
-        static DEFAULT_WIDTH: number = 256;
-        width: number = Int.DEFAULT_WIDTH;
-
-        constructor(dataItem: DataItem) {
+        constructor(dataItem: DataItem, matcher: RegExp) {
             super(dataItem);
-            const matches = Int.matcher.exec(dataItem.type);
+            const matches = matcher.exec(dataItem.type);
             expect(matches).to.be.not.null();
             if (matches !== null && matches.length === 2 && matches[1] !== undefined) {
                 this.width = parseInt(matches[1]);
             } else {
                 this.width = 256;
             }
-        }
-
-        public getMaxValue(): BigNumber {
-            return new BigNumber(2).toPower(this.width - 1).sub(1);
-        }
-
-        public getMinValue(): BigNumber {
-            return new BigNumber(2).toPower(this.width - 1).times(-1);
         }
 
         public assignValue(value: BigNumber) {
@@ -434,8 +423,29 @@ namespace AbiEncoder {
             this.assignHexValue(encodedValue);
         }
 
+        public abstract getMaxValue(): BigNumber;
+        public abstract getMinValue(): BigNumber;
+    }
+
+    export class Int extends Number {
+        static matcher = RegExp(
+            '^int(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
+        );
+
+        constructor(dataItem: DataItem) {
+            super(dataItem, Int.matcher);
+        }
+
+        public getMaxValue(): BigNumber {
+            return new BigNumber(2).toPower(this.width - 1).sub(1);
+        }
+
+        public getMinValue(): BigNumber {
+            return new BigNumber(2).toPower(this.width - 1).times(-1);
+        }
+
         public getSignature(): string {
-            return `uint${this.width}`;
+            return `int${this.width}`;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -443,42 +453,21 @@ namespace AbiEncoder {
         }
     }
 
-    export class UInt extends StaticDataType {
+    export class UInt extends Number {
         static matcher = RegExp(
             '^uint(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
         );
 
-        static DEFAULT_WIDTH: number = 256;
-        width: number = UInt.DEFAULT_WIDTH;
-
         constructor(dataItem: DataItem) {
-            super(dataItem);
-            const matches = UInt.matcher.exec(dataItem.type);
-            expect(matches).to.be.not.null();
-            if (matches !== null && matches.length === 2 && matches[1] !== undefined) {
-                this.width = parseInt(matches[1]);
-            } else {
-                this.width = 256;
-            }
+            super(dataItem, UInt.matcher);
         }
 
         public getMaxValue(): BigNumber {
             return new BigNumber(2).toPower(this.width).sub(1);
         }
 
-        public assignValue(value: BigNumber) {
-            if (value.greaterThan(this.getMaxValue())) {
-                throw `tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`;
-            } else if (value.lessThan(0)) {
-                throw `tried to assign value of ${value} to an unsigned integer.`;
-            }
-
-            const hexBase = 16;
-            const evmWordWidth = 32;
-            const valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${value.toString(hexBase)}`), evmWordWidth);
-            const encodedValue = ethUtil.bufferToHex(valueBuf);
-
-            this.assignHexValue(encodedValue);
+        public getMinValue(): BigNumber {
+            return new BigNumber(0);
         }
 
         public getSignature(): string {
