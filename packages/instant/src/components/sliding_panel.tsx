@@ -69,6 +69,7 @@ export const SlidingPanel: React.StatelessComponent<SlidingPanelProps> = props =
             slideInSettings={slideUpSettings}
             slideOutSettings={slideDownSettings}
             animationState={animationState}
+            height="100%"
         >
             <Panel {...rest} />
         </SlideAnimation>
