@@ -150,7 +150,7 @@ export class OrderValidationUtils {
             throw new Error('FULLY_FILLED');
         }
         try {
-        OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
+            OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
         } catch (err) {
             throw new Error('EXPIRED');
         }
@@ -228,34 +228,5 @@ export class OrderValidationUtils {
             throw new Error(RevertReason.RoundingError);
         }
         return filledTakerTokenAmount;
-    }
-    /**
-     * Validate a call to fillOrKillOrder and throw if it would fail
-     * @param exchangeTradeEmulator ExchangeTradeEmulator to use
-     * @param provider Web3 provider to use for JSON RPC requests
-     * @param signedOrder SignedOrder of interest
-     * @param fillTakerAssetAmount Amount we'd like to fill the order for
-     * @param takerAddress The taker of the order
-     * @param zrxAssetData ZRX asset data
-     */
-    public async validateFillOrKillOrderThrowIfInvalidAsync(
-        exchangeTradeEmulator: ExchangeTransferSimulator,
-        provider: Provider,
-        signedOrder: SignedOrder,
-        fillTakerAssetAmount: BigNumber,
-        takerAddress: string,
-        zrxAssetData: string,
-    ): Promise<void> {
-        const filledTakerTokenAmount = await this.validateFillOrderThrowIfInvalidAsync(
-            exchangeTradeEmulator,
-            provider,
-            signedOrder,
-            fillTakerAssetAmount,
-            takerAddress,
-            zrxAssetData,
-        );
-        if (filledTakerTokenAmount !== fillTakerAssetAmount) {
-            throw new Error(RevertReason.OrderUnfillable);
-        }
     }
 }
