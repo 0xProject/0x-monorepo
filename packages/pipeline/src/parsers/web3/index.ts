@@ -1,7 +1,6 @@
 import { BlockWithoutTransactionData, Transaction as EthTransaction } from 'ethereum-types';
 
-import { Block } from '../../entities/Block';
-import { Transaction } from '../../entities/Transaction';
+import { Block, Transaction } from '../../entities';
 
 export function parseBlock(rawBlock: BlockWithoutTransactionData): Block {
     if (rawBlock.hash == null) {

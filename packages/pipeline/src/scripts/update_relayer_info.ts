@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { Connection, createConnection } from 'typeorm';
 
 import { RelayerRegistrySource } from '../data_sources/relayer-registry';
-import { Relayer } from '../entities/Relayer';
+import { Relayer } from '../entities';
 import { deployConfig } from '../ormconfig';
 import { parseRelayers } from '../parsers/relayer_registry';
 
