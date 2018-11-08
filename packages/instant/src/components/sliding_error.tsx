@@ -23,6 +23,7 @@ export const Error: React.StatelessComponent<ErrorProps> = props => (
         backgroundColor={ColorOption.lightOrange}
         width="100%"
         borderRadius="6px"
+        marginTop="10px"
         marginBottom="10px"
     >
         <Flex justify="flex-start">
