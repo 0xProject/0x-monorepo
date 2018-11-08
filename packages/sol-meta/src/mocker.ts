@@ -4,6 +4,11 @@ import {identifier, nameParameters, argumentExpressions} from './utils';
 
 // TODO: both Actions and Functions can throw in addition to returning
 
+const bool: S.ElementaryTypeName = ({
+    type: S.NodeType.ElementaryTypeName,
+    name: 'bool'
+});
+
 const uint256: S.ElementaryTypeName = ({
     type: S.NodeType.ElementaryTypeName,
     name: 'uint256'
@@ -115,9 +120,11 @@ const variableDeclaration = (
 const makeResultType = (name: string, fields: S.ParameterList): S.StructDefinition => ({
     type: S.NodeType.StructDefinition,
     name,
-    members: fields.parameters.map(({name, typeName}) =>
-        variableDeclaration(name as string, typeName)
-    )
+    members: [
+        variableDeclaration('reverts', bool),
+        ...fields.parameters.map(({name, typeName}) =>
+            variableDeclaration(name as string, typeName))
+    ]
 });
 
 const userType = (name: string): S.UserDefinedTypeName => ({
@@ -225,6 +232,19 @@ const makeFunction = (
             },
             makeIncrement(counterName),
             {
+                type: S.NodeType.ExpressionStatement,
+                expression: call(identifier('require'), {
+                    type: S.NodeType.UnaryOperation,
+                    operator: '!',
+                    isPrefix: true,
+                    subExpression: {
+                        type: S.NodeType.MemberAccess,
+                        expression: identifier('result'),
+                        memberName: 'reverts'
+                    }
+                })
+            },
+            {
                 type: S.NodeType.ReturnStatement,
                 expression: {
                     type: S.NodeType.TupleExpression,
@@ -312,9 +332,9 @@ const importDirective = (path: string): S.ImportDirective => ({
 
 export function mock(ast: S.SourceUnit): S.SourceUnit {
     
-    // TODO: gp down inheritance hierarchy and expose those events. etc as well
-    // we probably want a separate `flattenInheritance` function or something
-    // that traces the imports and does a fairly simple concatenation.
+    // TODO: go down inheritance hierarchy and expose those events. etc as well.
+    // We probably want a separate `flattenInheritance` function or something
+    // that traces the imports and does a C3 linearization.
     return {
         type: S.NodeType.SourceUnit,
         children: [

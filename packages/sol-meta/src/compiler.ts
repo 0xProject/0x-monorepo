@@ -3,6 +3,8 @@ import { parse } from './parser';
 import { unparse } from './unparser';
 import { expose } from './exposer';
 import { mock } from './mocker';
+import { linearize } from './linearization';
+import { flattenSource } from './flattener';
 
 import * as util from 'util'; // DEBUG
 
@@ -19,18 +21,18 @@ export class Compiler {
         this.opts = opts || {
             contractsDir: '',
             contracts: '',
-        } ;
+        };
     }
 
     public async compileAsync() {
+
         const filePath = this.opts.contracts[0];
         const source = fs.readFileSync(filePath, 'utf8');
         try {
             const ast = parse(source);
-            //console.log(util.inspect(ast, {depth: 40}));
             //console.log(unparse(ast));
-            const astp = mock(ast);
-            console.log(util.inspect(astp, {depth: 4}));
+            const astp = flattenSource(ast, 'MAssetProxyDispatcher');
+            //console.log(util.inspect(astp, {depth: 4}));
             console.log(unparse(astp));
         } catch (e) {
             console.log(e);
