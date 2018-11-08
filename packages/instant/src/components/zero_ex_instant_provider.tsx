@@ -92,12 +92,11 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             // tslint:disable-next-line:no-floating-promises
             asyncData.fetchAvailableAssetDatasAndDispatchToStore(this._store);
         }
-
+        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(this._store);
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
         // tslint:disable-next-line:no-floating-promises
         gasPriceEstimator.getGasInfoAsync();
-
         // tslint:disable-next-line:no-floating-promises
         this._flashErrorIfWrongNetwork();
     }
