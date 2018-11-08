@@ -47,6 +47,31 @@ const stringAbi = {
     type: 'function',
 } as MethodAbi;
 
+const tupleAbi = {
+    constant: false,
+    inputs: [
+        {
+            components: [
+                {
+                    name: 'someUint',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someStr',
+                    type: 'string',
+                },
+            ],
+            name: 'order',
+            type: 'tuple',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
 const fillOrderAbi = {
     constant: false,
     inputs: [
@@ -717,22 +742,90 @@ namespace AbiEncoder {
     }
 
     export class Tuple extends DynamicDataType {
+        private length: BigNumber;
+        private childMap: { [key: string]: number };
+
         constructor(dataItem: DataItem) {
             super(dataItem);
             expect(Tuple.matchGrammar(dataItem.type)).to.be.true();
+            this.length = new BigNumber(0);
+            this.childMap = {};
+            if (dataItem.components !== undefined) {
+                this.constructChildren(dataItem.components);
+                this.length = new BigNumber(dataItem.components.length);
+            }
         }
 
-        public assignValue(value: string) {
-            //const hexValue = ethUtil.bufferToHex(new Buffer(value));
-            //this.assignHexValue(hexValue);
+        private constructChildren(dataItems: DataItem[]) {
+            _.each(dataItems, (dataItem: DataItem) => {
+                const childDataItem = {
+                    type: dataItem.type,
+                    name: `${this.getDataItem().name}.${dataItem.name}`,
+                } as DataItem;
+                const child = DataTypeFactory.create(childDataItem, this);
+                this.childMap[dataItem.name] = this.children.length;
+                this.children.push(child);
+            });
+        }
+
+        private assignValueFromArray(value: any[]) {
+            // Sanity check length
+            const valueLength = new BigNumber(value.length);
+            if (this.length !== SolArray.UNDEFINED_LENGTH && valueLength.equals(this.length) === false) {
+                throw new Error(
+                    `Expected array of length ${JSON.stringify(this.length)}, but got array of length ${JSON.stringify(
+                        valueLength,
+                    )}`,
+                );
+            }
+
+            // Assign values to children
+            for (let idx = new BigNumber(0); idx.lessThan(this.length); idx = idx.plus(1)) {
+                const idxNumber = idx.toNumber();
+                this.children[idxNumber].assignValue(value[idxNumber]);
+            }
+        }
+
+        private assignValueFromObject(obj: object) {
+            let childMap = _.cloneDeep(this.childMap);
+            _.forOwn(obj, (value: any, key: string) => {
+                if (key in childMap === false) {
+                    throw new Error(`Could not assign tuple to object: unrecognized key '${key}'`);
+                }
+                this.children[this.childMap[key]].assignValue(value);
+                delete childMap[key];
+            });
+
+            if (Object.keys(childMap).length !== 0) {
+                throw new Error(`Could not assign tuple to object: missing keys ${Object.keys(childMap)}`);
+            }
+        }
+
+        public assignValue(value: any[] | object) {
+            if (value instanceof Array) {
+                this.assignValueFromArray(value);
+            } else if (typeof value === 'object') {
+                this.assignValueFromObject(value);
+            } else {
+                throw new Error(`Unexpected type for ${value}`);
+            }
+        }
+
+        public getHexValue(): string {
+            return '0x';
         }
 
         public getSignature(): string {
-            throw 1;
-        }
-
-        public encodeToCalldata(calldata: Calldata): void {
-            throw 2;
+            // Compute signature
+            let signature = `(`;
+            _.each(this.children, (child: DataType, i: number) => {
+                signature += child.getSignature();
+                if (i < this.children.length - 1) {
+                    signature += ',';
+                }
+            });
+            signature += ')';
+            return signature;
         }
 
         public static matchGrammar(type: string): boolean {
@@ -948,7 +1041,7 @@ describe.only('ABI Encoder', () => {
             expect(true).to.be.true();
         });
 
-        it.only('Yessir', async () => {
+        it('Array ABI', async () => {
             const method = new AbiEncoder.Method(stringAbi);
             const calldata = method.encode([['five', 'six', 'seven']]);
             console.log(method.getSignature());
@@ -957,6 +1050,58 @@ describe.only('ABI Encoder', () => {
             console.log(calldata);
             const expectedCalldata =
                 '0x13e751a900000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000373697800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005736576656e000000000000000000000000000000000000000000000000000000';
+            expect(calldata).to.be.equal(expectedCalldata);
+        });
+
+        it('Object ABI (Array input)', async () => {
+            const method = new AbiEncoder.Method(tupleAbi);
+            const calldata = method.encode([[new BigNumber(5), 'five']]);
+            console.log(method.getSignature());
+            console.log(method.selector);
+
+            console.log(calldata);
+            const expectedCalldata =
+                '0x5b998f3500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000';
+            expect(calldata).to.be.equal(expectedCalldata);
+        });
+
+        it('Object ABI (Object input)', async () => {
+            const method = new AbiEncoder.Method(tupleAbi);
+            const calldata = method.encode([{ someUint: new BigNumber(5), someStr: 'five' }]);
+            console.log(method.getSignature());
+            console.log(method.selector);
+
+            console.log(calldata);
+            const expectedCalldata =
+                '0x5b998f3500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000';
+            expect(calldata).to.be.equal(expectedCalldata);
+        });
+
+        it.skip('Object ABI (Object input - Missing Key)', async () => {
+            const method = new AbiEncoder.Method(tupleAbi);
+            const calldata = method.encode([{ someUint: new BigNumber(5) }]);
+            console.log(method.getSignature());
+            console.log(method.selector);
+
+            console.log(calldata);
+            const expectedCalldata =
+                '0x5b998f3500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000';
+
+            // @TODO: Figure out how to catch throw
+            expect(calldata).to.be.equal(expectedCalldata);
+        });
+
+        it.skip('Object ABI (Object input - Too Many Keys)', async () => {
+            const method = new AbiEncoder.Method(tupleAbi);
+            const calldata = method.encode([{ someUint: new BigNumber(5), someStr: 'five', unwantedKey: 14 }]);
+            console.log(method.getSignature());
+            console.log(method.selector);
+
+            console.log(calldata);
+            const expectedCalldata =
+                '0x5b998f3500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000';
+
+            // @TODO: Figure out how to catch throw
             expect(calldata).to.be.equal(expectedCalldata);
         });
     });
