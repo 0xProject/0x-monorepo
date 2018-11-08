@@ -51,6 +51,7 @@ export class Dropdown extends React.Component<DropdownProps, DropdownState> {
                         cursor={hasItems ? 'pointer' : undefined}
                         onClick={this._handleDropdownClick}
                         hasBoxShadow={isOpen}
+                        boxShadowOnHover={true}
                         borderRadius={borderRadius}
                         border="1px solid"
                         borderColor={ColorOption.feintGrey}
