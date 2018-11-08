@@ -14,6 +14,7 @@ export class AccountUpdateHeartbeat {
         }
         this._store = store;
         // Kick off initial first request
+        // tslint:disable-next-line:no-floating-promises
         this._performActionAsync(true);
         // Set interval for heartbeat
         this._intervalId = window.setInterval(this._performActionAsync.bind(this, false), intervalTimeMs);
