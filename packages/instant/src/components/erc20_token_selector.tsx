@@ -85,7 +85,7 @@ class TokenSelectorRow extends React.Component<TokenSelectorRowProps> {
                 <Container marginLeft="5px">
                     <Flex justify="flex-start">
                         <Container marginRight="10px">
-                            <Circle diameter={30} fillColor={token.metaData.primaryColor}>
+                            <Circle diameter={30} rawColor={token.metaData.primaryColor}>
                                 <Flex height="100%">
                                     <Text fontColor={ColorOption.white} fontSize="8px">
                                         {displaySymbol}
