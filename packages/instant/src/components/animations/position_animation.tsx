@@ -1,6 +1,4 @@
-import { Keyframes } from 'styled-components';
-
-import { media, MediaChoice, OptionallyScreenSpecific, ScreenSpecification, stylesForMedia } from '../../style/media';
+import { MediaChoice, OptionallyScreenSpecific, stylesForMedia } from '../../style/media';
 import { css, keyframes, styled } from '../../style/theme';
 
 export interface TransitionInfo {
