@@ -64,7 +64,6 @@ export const SlidingPanel: React.StatelessComponent<SlidingPanelProps> = props =
     };
     return (
         <SlideAnimation
-            position="absolute"
             slideInSettings={slideUpSettings}
             slideOutSettings={slideDownSettings}
             animationState={animationState}

@@ -83,7 +83,6 @@ export const SlidingError: React.StatelessComponent<SlidingErrorProps> = props =
 
     return (
         <SlideAnimation
-            position="relative"
             slideInSettings={slideUpSettings}
             slideOutSettings={slideOutSettings}
             zIndex={{ sm: zIndex.errorPopUp.toString(), default: zIndex.errorPopBehind.toString() }}
