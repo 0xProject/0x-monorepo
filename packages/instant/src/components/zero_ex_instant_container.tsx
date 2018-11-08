@@ -30,7 +30,11 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
         return (
             <React.Fragment>
                 <CSSReset />
-                <Container width="350px" position="relative">
+                <Container
+                    width={{ default: '350px', sm: '100%' }}
+                    height={{ default: 'auto', sm: '100%' }}
+                    position="relative"
+                >
                     <Container zIndex={zIndex.errorPopup} position="relative">
                         <LatestError />
                     </Container>
@@ -41,8 +45,9 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         borderRadius="3px"
                         hasBoxShadow={true}
                         overflow="hidden"
+                        height="100%"
                     >
-                        <Flex direction="column" justify="flex-start">
+                        <Flex direction="column" justify="flex-start" height="100%">
                             <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
                             <SelectedAssetBuyOrderProgress />
                             <LatestBuyQuoteOrderDetails />

@@ -14,7 +14,7 @@ import { Flex } from './ui/flex';
 export interface BuyOrderStateButtonProps {
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
-    assetBuyer?: AssetBuyer;
+    assetBuyer: AssetBuyer;
     affiliateInfo?: AffiliateInfo;
     onViewTransaction: () => void;
     onValidationPending: (buyQuote: BuyQuote) => void;
@@ -27,7 +27,7 @@ export interface BuyOrderStateButtonProps {
 }
 
 export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonProps> = props => {
-    if (props.buyOrderProcessingState === OrderProcessState.FAILURE) {
+    if (props.buyOrderProcessingState === OrderProcessState.Failure) {
         return (
             <Flex justify="space-between">
                 <Button width="48%" onClick={props.onRetry} fontColor={ColorOption.white} fontSize="16px">
@@ -39,11 +39,11 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
             </Flex>
         );
     } else if (
-        props.buyOrderProcessingState === OrderProcessState.SUCCESS ||
-        props.buyOrderProcessingState === OrderProcessState.PROCESSING
+        props.buyOrderProcessingState === OrderProcessState.Success ||
+        props.buyOrderProcessingState === OrderProcessState.Processing
     ) {
         return <SecondaryButton onClick={props.onViewTransaction}>View Transaction</SecondaryButton>;
-    } else if (props.buyOrderProcessingState === OrderProcessState.VALIDATING) {
+    } else if (props.buyOrderProcessingState === OrderProcessState.Validating) {
         return <PlacingOrderButton />;
     }
 
