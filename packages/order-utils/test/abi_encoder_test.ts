@@ -72,6 +72,165 @@ const tupleAbi = {
     type: 'function',
 } as MethodAbi;
 
+const crazyAbi = {
+    constant: false,
+    inputs: [
+        /*{
+            name: 'someUInt256',
+            type: 'uint256',
+        },
+        {
+            name: 'someInt256',
+            type: 'int256',
+        },
+        {
+            name: 'someInt32',
+            type: 'int32',
+        },*/
+        {
+            name: 'someByte',
+            type: 'byte',
+        },
+        {
+            name: 'someBytes32',
+            type: 'bytes32',
+        },
+        {
+            name: 'someBytes',
+            type: 'bytes',
+        },
+        {
+            name: 'someString',
+            type: 'string',
+        },
+        /*{
+            name: 'someAddress',
+            type: 'address',
+        },
+        {
+            name: 'someBool',
+            type: 'bool',
+        },*/
+
+        /*
+
+        {
+            name: 'someStaticArray',
+            type: 'uint8[3]',
+        },
+        {
+            name: 'someStaticArrayWithDynamicMembers',
+            type: 'string[2]',
+        },
+        {
+            name: 'someDynamicArrayWithDynamicMembers',
+            type: 'bytes[]',
+        },
+        {
+            name: 'some2DArray',
+            type: 'string[][]',
+        },
+        {
+            name: 'someTuple',
+            type: 'tuple',
+            components: [
+                {
+                    name: 'someUint32',
+                    type: 'uint32',
+                },
+                {
+                    name: 'someStr',
+                    type: 'string',
+                },
+            ],
+        },
+        {
+            name: 'someTupleWithDynamicTypes',
+            type: 'tuple',
+            components: [
+                {
+                    name: 'someUint',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someStr',
+                    type: 'string',
+                },
+                //{
+              //      name: 'someStrArray',
+               //     type: 'string[]',
+               /// },
+                {
+                    name: 'someBytes',
+                    type: 'bytes',
+                },
+                {
+                    name: 'someAddress',
+                    type: 'address',
+                },
+            ],
+        } /*,
+        {
+            name: 'someArrayOfTuplesWithDynamicTypes',
+            type: 'tuple[]',
+            components: [
+                {
+                    name: 'someUint',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someStr',
+                    type: 'string',
+                },
+                {
+                    name: 'someStrArray',
+                    type: 'string[]',
+                },
+                {
+                    name: 'someBytes',
+                    type: 'bytes',
+                },
+                {
+                    name: 'someAddress',
+                    type: 'address',
+                },
+            ],
+        },*/
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
+const simpleAbi2 = {
+    constant: false,
+    inputs: [
+        {
+            name: 'someByte',
+            type: 'byte',
+        },
+        {
+            name: 'someBytes32',
+            type: 'bytes32',
+        },
+        {
+            name: 'someBytes',
+            type: 'bytes',
+        },
+        {
+            name: 'someString',
+            type: 'string',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
 const fillOrderAbi = {
     constant: false,
     inputs: [
@@ -734,10 +893,24 @@ namespace AbiEncoder {
         }
 
         public getSignature(): string {
-            if (this.length.equals(SolArray.UNDEFINED_LENGTH)) {
-                return `${this.type}[]`;
+            let type = this.type;
+            if (this.type === 'tuple') {
+                let tupleDataItem = {
+                    type: 'tuple',
+                    name: 'N/A',
+                } as DataItem;
+                const tupleComponents = this.getDataItem().components;
+                if (tupleComponents !== undefined) {
+                    tupleDataItem.components = tupleComponents;
+                }
+                const tuple = new Tuple(tupleDataItem);
+                type = tuple.getSignature();
             }
-            return `${this.type}[${this.length}]`;
+
+            if (this.length.equals(SolArray.UNDEFINED_LENGTH)) {
+                return `${type}[]`;
+            }
+            return `${type}[${this.length}]`;
         }
     }
 
@@ -753,6 +926,8 @@ namespace AbiEncoder {
             if (dataItem.components !== undefined) {
                 this.constructChildren(dataItem.components);
                 this.length = new BigNumber(dataItem.components.length);
+            } else {
+                throw new Error('Components undefined');
             }
         }
 
@@ -773,9 +948,9 @@ namespace AbiEncoder {
             const valueLength = new BigNumber(value.length);
             if (this.length !== SolArray.UNDEFINED_LENGTH && valueLength.equals(this.length) === false) {
                 throw new Error(
-                    `Expected array of length ${JSON.stringify(this.length)}, but got array of length ${JSON.stringify(
-                        valueLength,
-                    )}`,
+                    `Expected array of ${JSON.stringify(
+                        this.length,
+                    )} elements, but got array of length ${JSON.stringify(valueLength)}`,
                 );
             }
 
@@ -971,7 +1146,12 @@ namespace AbiEncoder {
             const params = this.params;
             const paramQueue = new Queue<DataType>();
             _.each(params, (param: DataType, i: number) => {
-                param.assignValue(args[i]);
+                try {
+                    param.assignValue(args[i]);
+                } catch (e) {
+                    console.log('Failed to assign to ', param.getDataItem().name);
+                    throw e;
+                }
                 param.bind(calldata, CalldataSection.PARAMS);
                 _.each(param.getChildren(), (child: DataType) => {
                     paramQueue.push(child);
@@ -1034,6 +1214,154 @@ namespace AbiEncoder {
 
 describe.only('ABI Encoder', () => {
     describe.only('Just a Greg, Eh', () => {
+        it.skip('Crazy ABI', async () => {
+            const method = new AbiEncoder.Method(crazyAbi);
+            console.log(method.getSignature());
+
+            /*
+            (uint256 b,int256 c,int32 d,
+                bytes1 e,bytes32 f,
+                bytes g,string h,address i,bool j,uint8[3] k,string[2] l,bytes[] m, string[][] n, O o,P p, P[]) 
+
+                struct P {
+                    uint256 a;
+                    string b;
+                    string[] c;
+                    bytes d;
+                    address e;
+                }*/
+
+            const args = [
+                /*new BigNumber(437829473), // b
+                new BigNumber(-437829473), // c
+                new BigNumber(-14), // d*/
+                '0xaf', // e (bytes1)
+                '0x0001020304050607080911121314151617181920212223242526272829303132', // f (bytes32)
+                '0x616161616161616161616161616161616161616161616161616161616161616161616161616161611114f324567838475647382938475677448899338457668899002020202020', // g
+                'My first name is Greg and my last name is Hysen, what do ya know!', // h
+            ];
+            const a2 = [
+                /*'0xe41d2489571d322189246dafa5ebde1f4699f498', // i
+                true, // j*/
+                [new BigNumber(127), new BigNumber(14), new BigNumber(54)], // k
+                [
+                    'the little piping piper piped a piping pipper papper',
+                    'the kid knows how to write poems, what can I say -- I guess theres a lot I could say to try to fill this line with a lot of text.',
+                ], // l
+                [
+                    '0x38745637834987324827439287423897238947239847',
+                    '0x7283472398237423984723984729847248927498748974284728947239487498749847874329423743492347329847239842374892374892374892347238947289478947489374289472894738942749823743298742389472389473289472389437249823749823742893472398',
+                    '0x283473298473248923749238742398742398472894729843278942374982374892374892743982',
+                ], // m
+                [
+                    [
+                        'some string',
+                        'some another string',
+                        'there are just too many stringsup in',
+                        'here',
+                        'yall ghonna make me lose my mind',
+                    ],
+                    [
+                        'the little piping piper piped a piping pipper papper',
+                        'the kid knows how to write poems, what can I say -- I guess theres a lot I could say to try to fill this line with a lot of text.',
+                    ],
+                    [],
+                ], // n
+                [
+                    new BigNumber(4037824789),
+                    'the kid knows how to write poems, what can I say -- I guess theres a lot I could say to try to fill this line with a lot of text.',
+                ], // o
+                [
+                    new BigNumber('239048320948320948230', 10),
+                    'akdhjasjkdhasjkldshdjahdkjsahdajksdhsajkdhsajkdhadjkashdjksadhajkdhsajkdhsadjk',
+                    /*[
+                        [
+                            '23432423342',
+                            'skdjfhdsjkfdhsfkjsdhfjkdshfdsjkfhsdjkfhsdjkfhdsjkfhdsjfhsdfjdshjkfsdhf',
+                            'sdfsdfdfdffsdf',
+                        ],
+                        [],
+                        [],
+                        ['23ehsdjkfhsiufhwfuefhesfhauhesufheuifhsefushfsufehfeuif'],
+                    ],*/
+                    '0xf74848484848484848484848484848484848483847576879809433994458585848932091',
+                    '0xe41d2489571d322189246dafa5ebde1f4699f498',
+                ], // p
+                /*[
+                    [
+                        new BigNumber('23904848320948230', 10),
+                        'akdhjasshdjahdkjsahdajksdhsajkdhsajkdhadjkashdjksadhajkdhsajkdhsadjk',
+                        [
+                            [
+                                '234324342',
+                                'skdjfhdsjkfdhsfkjsjkfhsdjkfhsdjkfhdsjkfhdsjfhsdfjdshjkfsdhf',
+                                'sdffdfdffsdf',
+                            ],
+                            [],
+                            [],
+                            ['23ehsdjkfhsiufhwfuefsufheuifhsefushfsufehfeuif'],
+                        ],
+                        '0xf7484848484848484848484848484876879809433994458585848932091',
+                        '0xe41d2489571d322189246dafa6ebde1f4699f498',
+                    ],
+                    [
+                        new BigNumber('23904832094832030', 10),
+                        'akdhjasjkdhasjkldshdjahdkjsahdajksdhsajkdhsajkdhadjkashdkdhsajkdhsadjk',
+                        [
+                            [
+                                '2343342',
+                                'skdjfhdsjkfdhsfkjsdhfjkdshfdsjkfhsdjkfhsdjkfhdssjfhsdfjdshjkfsdhf',
+                                'sdfsdfdfdffsf',
+                            ],
+                            [],
+                            [],
+                            ['jkfhsiufhwfuefhesfhauhesufhefeuif'],
+                        ],
+                        '0xf7484848484848484848484848484848484848384757687980943091',
+                        '0xe41d2489571d322189246dafa5ebde1f469af498',
+                    ],
+                    [],
+                    [],
+                ],*/
+            ];
+
+            const calldata = method.encode(args);
+            console.log(calldata);
+            console.log('*'.repeat(40));
+            console.log(JSON.stringify(args));
+
+            /*const expectedCalldata =
+                '0x89771c30af00000000000000000000000000000000000000000000000000000000000000000102030405060708091112131415161718192021222324252627282930313200000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000007f000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000036000000000000000000000000000000000000000000000000000000000000028000000000000000000000000000000000000000000000000000000000000003e000000000000000000000000000000000000000000000000000000000000005a000000000000000000000000000000000000000000000000000000000000009e00000000000000000000000000000000000000000000000000000000000000ae00000000000000000000000000000000000000000000000000000000000000047616161616161616161616161616161616161616161616161616161616161616161616161616161611114f3245678384756473829384756774488993384576688990020202020200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000414d79206669727374206e616d65206973204772656720616e64206d79206c617374206e616d6520697320487973656e2c207768617420646f207961206b6e6f772100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000034746865206c6974746c6520706970696e67207069706572207069706564206120706970696e6720706970706572207061707065720000000000000000000000000000000000000000000000000000000000000000000000000000000000000081746865206b6964206b6e6f777320686f7720746f20777269746520706f656d732c20776861742063616e204920736179202d2d2049206775657373207468657265732061206c6f74204920636f756c642073617920746f2074727920746f2066696c6c2074686973206c696e6520776974682061206c6f74206f6620746578742e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000163874563783498732482743928742389723894723984700000000000000000000000000000000000000000000000000000000000000000000000000000000006e72834723982374239847239847298472489274987489742847289472394874987498478743294237434923473298472398423748923748923748923472389472894789474893742894728947389427498237432987423894723894732894723894372498237498237428934723980000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000027283473298473248923749238742398742398472894729843278942374982374892374892743982000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000002800000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000500000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000018000000000000000000000000000000000000000000000000000000000000001c0000000000000000000000000000000000000000000000000000000000000000b736f6d6520737472696e670000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000013736f6d6520616e6f7468657220737472696e67000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024746865726520617265206a75737420746f6f206d616e7920737472696e6773757020696e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000046865726500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002079616c6c2067686f6e6e61206d616b65206d65206c6f7365206d79206d696e640000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000034746865206c6974746c6520706970696e67207069706572207069706564206120706970696e6720706970706572207061707065720000000000000000000000000000000000000000000000000000000000000000000000000000000000000081746865206b6964206b6e6f777320686f7720746f20777269746520706f656d732c20776861742063616e204920736179202d2d2049206775657373207468657265732061206c6f74204920636f756c642073617920746f2074727920746f2066696c6c2074686973206c696e6520776974682061206c6f74206f6620746578742e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f0ac511500000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000081746865206b6964206b6e6f777320686f7720746f20777269746520706f656d732c20776861742063616e204920736179202d2d2049206775657373207468657265732061206c6f74204920636f756c642073617920746f2074727920746f2066696c6c2074686973206c696e6520776974682061206c6f74206f6620746578742e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000cf5763d5ec63d500600000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000100000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498000000000000000000000000000000000000000000000000000000000000004e616b64686a61736a6b646861736a6b6c647368646a6168646b6a73616864616a6b73646873616a6b646873616a6b646861646a6b617368646a6b73616468616a6b646873616a6b64687361646a6b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000024f7484848484848484848484848484848484848384757687980943399445858584893209100000000000000000000000000000000000000000000000000000000';
+            */
+
+            //expect(calldata).to.be.equal(expectedCalldata);
+
+            /*const calldata = method.encode([{ someUint: new BigNumber(5), someStr: 'five' }]);
+            console.log(method.getSignature());
+            console.log(method.selector);
+
+            console.log(calldata);
+            const expectedCalldata =
+                '0x5b998f3500000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000';
+            expect(calldata).to.be.equal(expectedCalldata);*/
+        });
+
+        it.only('Simple ABI 2', async () => {
+            const method = new AbiEncoder.Method(crazyAbi);
+
+            const args = [
+                '0xaf', // e (bytes1)
+                '0x0001020304050607080911121314151617181920212223242526272829303132', // f (bytes32)
+                '0x616161616161616161616161616161616161616161616161616161616161616161616161616161611114f324567838475647382938475677448899338457668899002020202020', // g
+                'My first name is Greg and my last name is Hysen, what do ya know!', // h
+            ];
+
+            const calldata = method.encode(args);
+            const expectedCalldata =
+                '0x7ac2bd96af000000000000000000000000000000000000000000000000000000000000000001020304050607080911121314151617181920212223242526272829303132000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000047616161616161616161616161616161616161616161616161616161616161616161616161616161611114f3245678384756473829384756774488993384576688990020202020200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000414d79206669727374206e616d65206973204772656720616e64206d79206c617374206e616d6520697320487973656e2c207768617420646f207961206b6e6f772100000000000000000000000000000000000000000000000000000000000000';
+            expect(calldata).to.be.equal(expectedCalldata);
+        });
+
         it('Yessir', async () => {
             const method = new AbiEncoder.Method(simpleAbi);
             const calldata = method.encode([new BigNumber(5), 'five']);
@@ -1291,7 +1619,7 @@ describe.only('ABI Encoder', () => {
         });
     });
 
-    describe.only('Bytes (Dynamic)', () => {
+    describe('Bytes (Dynamic)', () => {
         const testBytesDataItem = { name: 'testBytes', type: 'bytes' };
         it('Less than 32 bytes', async () => {
             const bytesDataType = new AbiEncoder.Bytes(testBytesDataItem);
