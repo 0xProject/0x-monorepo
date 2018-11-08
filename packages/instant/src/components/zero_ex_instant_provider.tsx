@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
+import { ACCOUNT_UPDATE_INTERVAL_TIME_MS } from '../constants';
 import { SelectedAssetThemeProvider } from '../containers/selected_asset_theme_provider';
 import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
@@ -14,6 +15,7 @@ import { AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
+import { AccountUpdateHeartbeat } from '../util/hearbeats';
 import { providerStateFactory } from '../util/provider_state_factory';
 
 fonts.include();
@@ -37,6 +39,7 @@ export interface ZeroExInstantProviderOptionalProps {
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
     private readonly _store: Store;
+    private _accountUpdateHeartbeat?: AccountUpdateHeartbeat;
     // TODO(fragosti): Write tests for this beast once we inject a provider.
     private static _mergeDefaultStateWithProps(
         props: ZeroExInstantProviderProps,
@@ -93,13 +96,21 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             asyncData.fetchAvailableAssetDatasAndDispatchToStore(this._store);
         }
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchAccountInfoAndDispatchToStore(this._store);
+        // asyncData.fetchAccountInfoAndDispatchToStore(this._store);
+        this._accountUpdateHeartbeat = new AccountUpdateHeartbeat();
+        this._accountUpdateHeartbeat.start(this._store, ACCOUNT_UPDATE_INTERVAL_TIME_MS);
+
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
         // tslint:disable-next-line:no-floating-promises
         gasPriceEstimator.getGasInfoAsync();
         // tslint:disable-next-line:no-floating-promises
         this._flashErrorIfWrongNetwork();
+    }
+    public componentWillUnmount(): void {
+        if (this._accountUpdateHeartbeat) {
+            this._accountUpdateHeartbeat.stop();
+        }
     }
     public render(): React.ReactNode {
         return (

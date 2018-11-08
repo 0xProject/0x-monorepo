@@ -34,10 +34,10 @@ export const asyncData = {
             store.dispatch(actions.setAvailableAssets([]));
         }
     },
-    fetchAccountInfoAndDispatchToStore: async (store: Store) => {
+    fetchAccountInfoAndDispatchToStore: async (store: Store, options = { setLoading: true }) => {
         const { providerState } = store.getState();
         const web3Wrapper = providerState.web3Wrapper;
-        if (providerState.account.state !== AccountState.Loading) {
+        if (options.setLoading && providerState.account.state !== AccountState.Loading) {
             store.dispatch(actions.setAccountStateLoading());
         }
         let availableAddresses: string[];
