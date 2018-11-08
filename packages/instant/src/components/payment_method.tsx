@@ -1,7 +1,9 @@
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
+import { Network } from '../types';
 
 import { PaymentMethodDropdown } from './payment_method_dropdown';
 import { Circle } from './ui/circle';
@@ -34,6 +36,10 @@ export const PaymentMethod: React.StatelessComponent<PaymentMethodProps> = () =>
                 </Flex>
             </Flex>
         </Container>
-        <PaymentMethodDropdown />
+        <PaymentMethodDropdown
+            selectedEthAddress="0xa1b2c3d4e5f6g7h8j9k10"
+            addressEthBaseAmount={new BigNumber(10500000000000000000)}
+            network={Network.Mainnet}
+        />
     </Container>
 );

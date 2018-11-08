@@ -11,7 +11,6 @@ import { zIndex } from '../style/z_index';
 
 import { SlideAnimationState } from './animations/slide_animation';
 import { CSSReset } from './css_reset';
-import { PaymentMethod } from './payment_method';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
@@ -49,7 +48,6 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         <Flex direction="column" justify="flex-start" height="100%">
                             <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
                             <SelectedAssetBuyOrderProgress />
-                            <PaymentMethod />
                             <LatestBuyQuoteOrderDetails />
                             <Container padding="20px" width="100%">
                                 <SelectedAssetBuyOrderStateButtons />

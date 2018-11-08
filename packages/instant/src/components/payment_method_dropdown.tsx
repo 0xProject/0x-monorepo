@@ -15,11 +15,6 @@ export interface PaymentMethodDropdownProps {
 }
 
 export class PaymentMethodDropdown extends React.Component<PaymentMethodDropdownProps> {
-    public static defaultProps = {
-        selectedEthAddress: '0xa1b2c3d4e5f6g7h8j9k10',
-        addressEthBaseAmount: new BigNumber(10500000000000000000),
-        network: Network.Mainnet,
-    };
     public render(): React.ReactNode {
         const { selectedEthAddress, addressEthBaseAmount } = this.props;
         const value = format.ethAddress(selectedEthAddress);
