@@ -65,11 +65,11 @@ export class Dropdown extends React.Component<DropdownProps, DropdownState> {
                         borderBottom="1px solid"
                     >
                         <Flex justify="space-between">
-                            <Text fontSize="16px" lineHeight="19px" fontColor={ColorOption.darkGrey}>
+                            <Text fontSize="16px" fontColor={ColorOption.darkGrey}>
                                 {value}
                             </Text>
                             <Container>
-                                <Text fontSize="16px" lineHeight="17px" fontColor={ColorOption.lightGrey}>
+                                <Text fontSize="16px" fontColor={ColorOption.lightGrey}>
                                     {label}
                                 </Text>
                                 {hasItems && (
