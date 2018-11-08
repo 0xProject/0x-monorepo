@@ -7,11 +7,12 @@ import { Dispatch } from 'redux';
 import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { AffiliateInfo, OrderProcessState, ZeroExInstantError } from '../types';
+import { AccountState, AffiliateInfo, OrderProcessState, ZeroExInstantError } from '../types';
 import { errorFlasher } from '../util/error_flasher';
 import { etherscanUtil } from '../util/etherscan';
 
 interface ConnectedState {
+    accountAddress?: string;
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
     assetBuyer: AssetBuyer;
@@ -31,7 +32,10 @@ interface ConnectedDispatch {
 export interface SelectedAssetBuyOrderStateButtons {}
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => {
     const assetBuyer = state.providerState.assetBuyer;
+    const account = state.providerState.account;
+    const accountAddress = account.state === AccountState.Ready ? account.address : undefined;
     return {
+        accountAddress,
         buyOrderProcessingState: state.buyOrderState.processState,
         assetBuyer,
         buyQuote: state.latestBuyQuote,

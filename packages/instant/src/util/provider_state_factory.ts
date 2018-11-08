@@ -2,17 +2,11 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { LOADING_ACCOUNT, NO_ACCOUNT } from '../constants';
 import { AccountNotReady, AccountState, Maybe, Network, OrderSource, ProviderState } from '../types';
 
 import { assetBuyerFactory } from './asset_buyer_factory';
 import { providerFactory } from './provider_factory';
-
-const LOADING_ACCOUNT: AccountNotReady = {
-    state: AccountState.Loading,
-};
-const NO_ACCOUNT: AccountNotReady = {
-    state: AccountState.None,
-};
 
 export const providerStateFactory = {
     getInitialProviderState: (orderSource: OrderSource, network: Network, provider?: Provider): ProviderState => {

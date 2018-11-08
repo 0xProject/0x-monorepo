@@ -13,6 +13,7 @@ import { Flex } from './ui/flex';
 import { Text } from './ui/text';
 
 export interface BuyOrderStateButtonProps {
+    accountAddress?: string;
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
     assetBuyer: AssetBuyer;
@@ -52,6 +53,7 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
 
     return (
         <BuyButton
+            accountAddress={props.accountAddress}
             buyQuote={props.buyQuote}
             assetBuyer={props.assetBuyer}
             affiliateInfo={props.affiliateInfo}

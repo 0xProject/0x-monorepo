@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 
 import { BIG_NUMBER_ZERO } from '../constants';
+import { AccountState } from '../types';
 import { assetUtils } from '../util/asset';
 import { coinbaseApi } from '../util/coinbase_api';
 import { errorFlasher } from '../util/error_flasher';
@@ -31,6 +32,26 @@ export const asyncData = {
             errorFlasher.flashNewErrorMessage(store.dispatch, errorMessage);
             // On error, just specify that none are available
             store.dispatch(actions.setAvailableAssets([]));
+        }
+    },
+    fetchAccountInfoAndDispatchToStore: async (store: Store) => {
+        const { providerState } = store.getState();
+        const web3Wrapper = providerState.web3Wrapper;
+        if (providerState.account.state !== AccountState.Loading) {
+            store.dispatch(actions.setAccountStateLoading());
+        }
+        let availableAddresses: string[];
+        try {
+            availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        } catch (e) {
+            store.dispatch(actions.setAccountStateError());
+            return;
+        }
+        if (!_.isEmpty(availableAddresses)) {
+            const activeAddress = availableAddresses[0];
+            store.dispatch(actions.setAccountStateReady(activeAddress));
+        } else {
+            store.dispatch(actions.setAccountStateLocked());
         }
     },
 };

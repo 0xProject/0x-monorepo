@@ -21,6 +21,10 @@ function createAction<T extends string, P>(type: T, data?: P): PlainAction<T> | 
 }
 
 export enum ActionTypes {
+    SET_ACCOUNT_STATE_LOADING = 'SET_ACCOUNT_STATE_LOADING',
+    SET_ACCOUNT_STATE_LOCKED = 'SET_ACCOUNT_STATE_LOCKED',
+    SET_ACCOUNT_STATE_ERROR = 'SET_ACCOUNT_STATE_ERROR',
+    SET_ACCOUNT_STATE_READY = 'SET_ACCOUNT_STATE_READY',
     UPDATE_ETH_USD_PRICE = 'UPDATE_ETH_USD_PRICE',
     UPDATE_SELECTED_ASSET_AMOUNT = 'UPDATE_SELECTED_ASSET_AMOUNT',
     SET_BUY_ORDER_STATE_NONE = 'SET_BUY_ORDER_STATE_NONE',
@@ -40,6 +44,10 @@ export enum ActionTypes {
 }
 
 export const actions = {
+    setAccountStateLoading: () => createAction(ActionTypes.SET_ACCOUNT_STATE_LOADING),
+    setAccountStateLocked: () => createAction(ActionTypes.SET_ACCOUNT_STATE_LOCKED),
+    setAccountStateError: () => createAction(ActionTypes.SET_ACCOUNT_STATE_ERROR),
+    setAccountStateReady: (address: string) => createAction(ActionTypes.SET_ACCOUNT_STATE_READY, address),
     updateEthUsdPrice: (price?: BigNumber) => createAction(ActionTypes.UPDATE_ETH_USD_PRICE, price),
     updateSelectedAssetAmount: (amount?: BigNumber) => createAction(ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT, amount),
     setBuyOrderStateNone: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_NONE),
