@@ -34,6 +34,93 @@ export const stringAbi = {
     type: 'function',
 } as MethodAbi;
 
+export const multiDimensionalArraysStaticTypeAbi = {
+    constant: false,
+    inputs: [
+        {
+            name: 'a',
+            type: 'uint8[][][]',
+        },
+        {
+            name: 'b',
+            type: 'uint8[][][2]',
+        },
+        {
+            name: 'c',
+            type: 'uint8[][2][]',
+        },
+        {
+            name: 'd',
+            type: 'uint8[2][][]',
+        },
+        {
+            name: 'e',
+            type: 'uint8[][2][2]',
+        },
+        {
+            name: 'f',
+            type: 'uint8[2][2][]',
+        },
+        {
+            name: 'g',
+            type: 'uint8[2][][2]',
+        },
+        {
+            name: 'h',
+            type: 'uint8[2][2][2]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
+export const multiDimensionalArraysDynamicTypeAbi = {
+    constant: false,
+    inputs: [
+        {
+            name: 'a',
+            type: 'string[][][2]',
+        },
+        {
+            name: 'a',
+            type: 'string[][1][]',
+        },
+        {
+            name: 'a',
+            type: 'string[1][1][2]',
+        },
+        {
+            name: 'a',
+            type: 'string[][][]',
+        },
+        {
+            name: 'a',
+            type: 'uint[][][]',
+        },
+        {
+            name: 'b',
+            type: 'uint8[][2][]',
+        },
+        {
+            name: 'c',
+            type: 'uint8[1][2][]',
+        },
+
+        {
+            name: 'c',
+            type: 'uint8[1][2][2]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
 export const dynamicTupleAbi = {
     constant: false,
     inputs: [

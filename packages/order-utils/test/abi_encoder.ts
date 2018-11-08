@@ -690,7 +690,6 @@ export class SolArray extends DynamicDataType {
             this.elements.push(child);
             if (child instanceof Pointer) {
                 const pointsTo = child.getChildren()[0];
-                console.log(JSON.stringify(pointsTo));
                 this.children.push(pointsTo); // DataType pointing to
             }
         }
