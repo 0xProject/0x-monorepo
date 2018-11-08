@@ -2,10 +2,10 @@ import { web3Factory } from '@0x/dev-utils';
 import 'reflect-metadata';
 import { Connection, createConnection } from 'typeorm';
 
-import { ExchangeEventsSource } from './data_sources/contract-wrappers/exchange_events';
-import { ExchangeFillEvent } from './entities/ExchangeFillEvent';
-import { deployConfig } from './ormconfig';
-import { parseExchangeEvents } from './parsers/events';
+import { ExchangeEventsSource } from '../data_sources/contract-wrappers/exchange_events';
+import { ExchangeFillEvent } from '../entities/ExchangeFillEvent';
+import { deployConfig } from '../ormconfig';
+import { parseExchangeEvents } from '../parsers/events';
 
 let connection: Connection;
 
