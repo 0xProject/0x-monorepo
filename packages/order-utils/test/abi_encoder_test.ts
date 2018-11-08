@@ -22,7 +22,7 @@ describe.only('ABI Encoder', () => {
     describe.only('Just a Greg, Eh', () => {
 
 
-        it.skip('Crazy ABI', async () => {
+        it('Crazy ABI', async () => {
             const method = new AbiEncoder.Method(AbiSamples.crazyAbi);
             console.log(method.getSignature());
 
@@ -211,7 +211,7 @@ describe.only('ABI Encoder', () => {
             expect(calldata).to.be.equal(expectedCalldata);
         });
 
-        it.only('Static Tuple', async () => {
+        it('Static Tuple', async () => {
             // This is dynamic because it has dynamic members
             const method = new AbiEncoder.Method(AbiSamples.staticTupleAbi);
             const calldata = method.encode([[new BigNumber(5), new BigNumber(10), new BigNumber(15), false]]);

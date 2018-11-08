@@ -89,6 +89,10 @@ class Memblock {
     public getSection(): CalldataSection {
         return this.location.calldataSection;
     }
+
+    public getName(): string {
+        return this.dataType.getDataItem().name;
+    }
 }
 
 interface BindList {
@@ -120,13 +124,18 @@ export class Calldata {
             throw `Rebind on ${dataType.getId()}`;
         }
         const memblock = new Memblock(dataType);
+
+        this.params.push(memblock);
+        memblock.assignLocation(section, new BigNumber(0), this.currentParamOffset);
+
+        console.log(`Binding ${dataType.getDataItem().name} to PARAMS at ${this.currentParamOffset}`);
+        this.currentParamOffset = this.currentParamOffset.plus(memblock.getSize());
+        console.log("CURRENT PARAM OFFSET -------- 0x", this.currentParamOffset.toString(16));
+
+        /*
         switch (section) {
             case CalldataSection.PARAMS:
-                this.params.push(memblock);
-                memblock.assignLocation(section, new BigNumber(0), this.currentParamOffset);
-
-                console.log(`Binding ${dataType.getDataItem().name} to PARAMS at ${this.currentParamOffset}`);
-                this.currentParamOffset = this.currentParamOffset.plus(memblock.getSize());
+                ;
                 break;
 
             case CalldataSection.DATA:
@@ -143,7 +152,7 @@ export class Calldata {
 
             default:
                 throw `Unrecognized calldata section: ${section}`;
-        }
+        }*/
 
         this.bindList[dataType.getId()] = memblock;
         dataType.rbind(memblock);
@@ -159,6 +168,26 @@ export class Calldata {
         });
 
         return hexValue;
+    }
+
+    public printAnnotated() {
+        let hexValue = `${this.selector}`;
+        console.log(hexValue);
+        let offset = new BigNumber(0);
+        _.each(this.params, (memblock: Memblock) => {
+            const offsetStr = `0x${offset.toString(16)}`;
+            const hexValue = memblock.get();
+            const annotation = memblock.getName();
+
+            console.log(`${offsetStr} ${hexValue} ${annotation}`);
+        });
+        _.each(this.data, (memblock: Memblock) => {
+            const offsetStr = `0x${offset.toString(16)}`;
+            const hexValue = memblock.get();
+            const annotation = memblock.getName();
+
+            console.log(`${offsetStr} ${hexValue} ${annotation}`);
+        });
     }
 }
 
@@ -793,7 +822,7 @@ export class Tuple extends DynamicDataType {
                 name: `${this.getDataItem().name}.${dataItem.name}`,
             } as DataItem;
             const child = DataTypeFactory.create(childDataItem, this);
-            this.childMap[dataItem.name] = this.children.length;
+            this.childMap[dataItem.name] = this.members.length;
 
             if (child instanceof Pointer) {
                 this.children.push(child.getChildren()[0]);
@@ -1065,6 +1094,7 @@ export class Method extends DataType {
     public encode(args: any[]): string {
         this.assignValue(args);
         const calldata = new Calldata(this.selector, this.params.length);
+        calldata.printAnnotated();
         this.bind(calldata, CalldataSection.PARAMS);
 
         return calldata.getHexValue();
