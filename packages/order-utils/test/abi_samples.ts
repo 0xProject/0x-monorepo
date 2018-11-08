@@ -34,7 +34,7 @@ export const stringAbi = {
     type: 'function',
 } as MethodAbi;
 
-export const tupleAbi = {
+export const dynamicTupleAbi = {
     constant: false,
     inputs: [
         {
@@ -46,6 +46,39 @@ export const tupleAbi = {
                 {
                     name: 'someStr',
                     type: 'string',
+                },
+            ],
+            name: 'order',
+            type: 'tuple',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
+export const staticTupleAbi = {
+    constant: false,
+    inputs: [
+        {
+            components: [
+                {
+                    name: 'someUint1',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someUint2',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someUint3',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someBool',
+                    type: 'bool',
                 },
             ],
             name: 'order',
@@ -171,10 +204,10 @@ export const crazyAbi = {
             name: 'someDynamicArrayWithDynamicMembers',
             type: 'bytes[]',
         },
-        {
+        /* {
             name: 'some2DArray',
             type: 'string[][]',
-        },
+        }, */
         {
             name: 'someTuple',
             type: 'tuple',
