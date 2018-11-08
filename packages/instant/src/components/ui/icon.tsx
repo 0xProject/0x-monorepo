@@ -101,16 +101,18 @@ const PlainIcon: React.StatelessComponent<IconProps> = props => {
 };
 
 export const Icon = withTheme(styled(PlainIcon)`
-    display: inline-block;
-    ${props => (!_.isUndefined(props.onClick) ? 'cursor: pointer' : '')};
-    transition: opacity 0.5s ease;
-    padding: ${props => props.padding};
-    opacity: ${props => (!_.isUndefined(props.onClick) ? 0.7 : 1)};
-    &:hover {
-        opacity: 1;
-    }
-    &:active {
-        opacity: 1;
+    && {
+        display: inline-block;
+        ${props => (!_.isUndefined(props.onClick) ? 'cursor: pointer' : '')};
+        transition: opacity 0.5s ease;
+        padding: ${props => props.padding};
+        opacity: ${props => (!_.isUndefined(props.onClick) ? 0.7 : 1)};
+        &:hover {
+            opacity: 1;
+        }
+        &:active {
+            opacity: 1;
+        }
     }
 `);
 

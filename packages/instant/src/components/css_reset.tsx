@@ -27,7 +27,6 @@ export const CSSReset = createGlobalStyle`
             text-align: left;
             text-decoration: none;
             vertical-align: baseline;
-            z-index: 1;
         }
     }
 `;
