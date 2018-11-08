@@ -2,6 +2,7 @@ import { schemas as jsonSchemas } from '@0x/json-schemas';
 
 // Only include schemas we actually need
 const {
+    wholeNumberSchema,
     numberSchema,
     addressSchema,
     hexSchema,
@@ -28,6 +29,7 @@ const {
 } = jsonSchemas;
 
 const usedSchemas = {
+    wholeNumberSchema,
     numberSchema,
     addressSchema,
     hexSchema,

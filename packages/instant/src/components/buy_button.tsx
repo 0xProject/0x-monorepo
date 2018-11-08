@@ -13,7 +13,6 @@ import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { util } from '../util/util';
 
 import { Button } from './ui/button';
-import { Text } from './ui/text';
 
 export interface BuyButtonProps {
     buyQuote?: BuyQuote;
@@ -36,10 +35,14 @@ export class BuyButton extends React.Component<BuyButtonProps> {
     public render(): React.ReactNode {
         const shouldDisableButton = _.isUndefined(this.props.buyQuote);
         return (
-            <Button width="100%" onClick={this._handleClick} isDisabled={shouldDisableButton}>
-                <Text fontColor={ColorOption.white} fontWeight={600} fontSize="20px">
-                    Buy
-                </Text>
+            <Button
+                width="100%"
+                onClick={this._handleClick}
+                isDisabled={shouldDisableButton}
+                fontColor={ColorOption.white}
+                fontSize="20px"
+            >
+                Buy
             </Button>
         );
     }
