@@ -5,6 +5,7 @@ import { RelayerRegistrySource } from '../data_sources/relayer-registry';
 import { Relayer } from '../entities';
 import { deployConfig } from '../ormconfig';
 import { parseRelayers } from '../parsers/relayer_registry';
+import { handleError } from '../utils';
 
 // NOTE(albrow): We need to manually update this URL for now. Fix this when we
 // have the relayer-registry behind semantic versioning.
@@ -17,7 +18,7 @@ let connection: Connection;
     connection = await createConnection(deployConfig);
     await getRelayers();
     process.exit(0);
-})();
+})().catch(handleError);
 
 async function getRelayers(): Promise<void> {
     console.log('Getting latest relayer info...');

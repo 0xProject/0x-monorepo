@@ -8,6 +8,7 @@ import { ExchangeEventsSource } from '../data_sources/contract-wrappers/exchange
 import { ExchangeFillEvent } from '../entities';
 import { deployConfig } from '../ormconfig';
 import { parseExchangeEvents } from '../parsers/events';
+import { handleError } from '../utils';
 
 const EXCHANGE_START_BLOCK = 6271590; // Block number when the Exchange contract was deployed to mainnet.
 const START_BLOCK_OFFSET = 1000; // Number of blocks before the last known block to consider when updating fill events.
@@ -22,7 +23,7 @@ let connection: Connection;
     });
     await getExchangeEventsAsync(provider);
     process.exit(0);
-})();
+})().catch(handleError);
 
 async function getExchangeEventsAsync(provider: Web3ProviderEngine): Promise<void> {
     console.log('Checking existing event logs...');
@@ -53,8 +54,8 @@ async function getStartBlockAsync(eventsRepository: Repository<ExchangeFillEvent
         return EXCHANGE_START_BLOCK;
     }
     const queryResult = await connection.query(
-        'SELECT "blockNumber" FROM exchange_fill_event ORDER BY "blockNumber" DESC LIMIT 1',
+        'SELECT block_number FROM exchange_fill_events ORDER BY block_number DESC LIMIT 1',
     );
-    const lastKnownBlock = queryResult[0].blockNumber;
+    const lastKnownBlock = queryResult[0].block_number;
     return lastKnownBlock - START_BLOCK_OFFSET;
 }
