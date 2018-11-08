@@ -1,6 +1,7 @@
 export const zIndex = {
-    errorPopup: 1,
-    mainContainer: 2,
-    dropdownItems: 3,
-    panel: 4,
+    errorPopup: 10,
+    mainContainer: 20,
+    dropdownItems: 30,
+    panel: 40,
+    overlayDefault: 100,
 };

@@ -1,12 +1,13 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { ColorOption } from '../../style/theme';
+import { ColorOption, completelyTransparent } from '../../style/theme';
 import { zIndex } from '../../style/z_index';
 
 import { Container } from './container';
 import { Flex } from './flex';
 import { Icon } from './icon';
+import { Overlay } from './overlay';
 import { Text } from './text';
 
 export interface DropdownItemConfig {
@@ -27,12 +28,12 @@ export interface DropdownState {
 export class Dropdown extends React.Component<DropdownProps, DropdownState> {
     public static defaultProps = {
         items: [
-            {
-                text: 'Item 1',
-            },
-            {
-                text: 'Item 2',
-            },
+            // {
+            //     text: 'Item 1',
+            // },
+            // {
+            //     text: 'Item 2',
+            // },
         ],
     };
     public state: DropdownState = {
@@ -44,48 +45,57 @@ export class Dropdown extends React.Component<DropdownProps, DropdownState> {
         const hasItems = !_.isEmpty(items);
         const borderRadius = isOpen ? '4px 4px 0px 0px' : '4px';
         return (
-            <Container position="relative">
-                <Container
-                    cursor={hasItems ? 'pointer' : undefined}
-                    onClick={this._handleDropdownClick}
-                    hasBoxShadow={true}
-                    borderRadius={borderRadius}
-                    border="1px solid"
-                    borderColor={ColorOption.feintGrey}
-                    padding="0.8em"
-                    borderBottom="1px solid"
-                >
-                    <Flex justify="space-between">
-                        <Text fontSize="16px" lineHeight="19px" fontColor={ColorOption.darkGrey}>
-                            {value}
-                        </Text>
-                        <Container>
-                            <Text fontSize="16px" lineHeight="17px" fontColor={ColorOption.lightGrey}>
-                                {label}
-                            </Text>
-                            {hasItems && (
-                                <Container marginLeft="5px" display="inline-block" position="relative" bottom="2px">
-                                    <Icon padding="3px" icon="chevron" width={12} stroke={ColorOption.grey} />
-                                </Container>
-                            )}
-                        </Container>
-                    </Flex>
-                </Container>
+            <React.Fragment>
                 {isOpen && (
-                    <Container
-                        width="100%"
-                        position="absolute"
+                    <Overlay
+                        zIndex={zIndex.dropdownItems - 1}
+                        backgroundColor={completelyTransparent}
                         onClick={this._closeDropdown}
-                        backgroundColor={ColorOption.white}
-                        hasBoxShadow={true}
-                        zIndex={zIndex.dropdownItems}
-                    >
-                        {_.map(items, (item, index) => (
-                            <DropdownItem key={item.text} {...item} isLast={index === items.length - 1} />
-                        ))}
-                    </Container>
+                    />
                 )}
-            </Container>
+                <Container position="relative">
+                    <Container
+                        cursor={hasItems ? 'pointer' : undefined}
+                        onClick={this._handleDropdownClick}
+                        hasBoxShadow={true}
+                        borderRadius={borderRadius}
+                        border="1px solid"
+                        borderColor={ColorOption.feintGrey}
+                        padding="0.8em"
+                        borderBottom="1px solid"
+                    >
+                        <Flex justify="space-between">
+                            <Text fontSize="16px" lineHeight="19px" fontColor={ColorOption.darkGrey}>
+                                {value}
+                            </Text>
+                            <Container>
+                                <Text fontSize="16px" lineHeight="17px" fontColor={ColorOption.lightGrey}>
+                                    {label}
+                                </Text>
+                                {hasItems && (
+                                    <Container marginLeft="5px" display="inline-block" position="relative" bottom="2px">
+                                        <Icon padding="3px" icon="chevron" width={12} stroke={ColorOption.grey} />
+                                    </Container>
+                                )}
+                            </Container>
+                        </Flex>
+                    </Container>
+                    {isOpen && (
+                        <Container
+                            width="100%"
+                            position="absolute"
+                            onClick={this._closeDropdown}
+                            backgroundColor={ColorOption.white}
+                            hasBoxShadow={true}
+                            zIndex={zIndex.dropdownItems}
+                        >
+                            {_.map(items, (item, index) => (
+                                <DropdownItem key={item.text} {...item} isLast={index === items.length - 1} />
+                            ))}
+                        </Container>
+                    )}
+                </Container>
+            </React.Fragment>
         );
     }
     private readonly _handleDropdownClick = (): void => {
