@@ -2,10 +2,10 @@ import * as React from 'react';
 
 import { generateMediaWrapper, ScreenWidths } from '../../style/media';
 import { styled } from '../../style/theme';
+import { zIndex } from '../../style/z_index';
 
 import { Container, ContainerProps } from './container';
 
-// TODO: move z-index to constant
 interface OverlayProps {
     showMaxWidth?: ScreenWidths;
 }
@@ -15,7 +15,7 @@ const Overlay =
     `
     top: 0;
     left: 0;
-    z-index: 10;
+    z-index: ${zIndex.containerOverlay};
     width: 100%;
     height: 100%;
     display: ${props => (props.showMaxWidth ? 'none' : 'block')};
