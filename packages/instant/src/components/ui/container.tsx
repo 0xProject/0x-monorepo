@@ -1,17 +1,18 @@
 import { darken } from 'polished';
 
+import { MediaChoice, stylesForMedia } from '../../style/media';
 import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';
 
 export interface ContainerProps {
-    display?: string;
+    display?: MediaChoice;
     position?: string;
     top?: string;
     right?: string;
     bottom?: string;
     left?: string;
-    width?: string;
-    height?: string;
+    width?: MediaChoice;
+    height?: MediaChoice;
     maxWidth?: string;
     margin?: string;
     marginTop?: string;
@@ -33,6 +34,7 @@ export interface ContainerProps {
     cursor?: string;
     overflow?: string;
     darkenOnHover?: boolean;
+    flexGrow?: string | number;
 }
 
 export const Container =
@@ -40,14 +42,12 @@ export const Container =
     ContainerProps >
     `
     box-sizing: border-box;
-    ${props => cssRuleIfExists(props, 'display')}
+    ${props => cssRuleIfExists(props, 'flex-grow')}
     ${props => cssRuleIfExists(props, 'position')}
     ${props => cssRuleIfExists(props, 'top')}
     ${props => cssRuleIfExists(props, 'right')}
     ${props => cssRuleIfExists(props, 'bottom')}
     ${props => cssRuleIfExists(props, 'left')}
-    ${props => cssRuleIfExists(props, 'width')}
-    ${props => cssRuleIfExists(props, 'height')}
     ${props => cssRuleIfExists(props, 'max-width')}
     ${props => cssRuleIfExists(props, 'margin')}
     ${props => cssRuleIfExists(props, 'margin-top')}
@@ -65,6 +65,9 @@ export const Container =
     ${props => cssRuleIfExists(props, 'cursor')}
     ${props => cssRuleIfExists(props, 'overflow')}
     ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
+    ${props => props.display && stylesForMedia('display', props.display)}
+    ${props => stylesForMedia('width', props.width || 'auto')}
+    ${props => stylesForMedia('height', props.height || 'auto')}
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
     border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
     &:hover {
