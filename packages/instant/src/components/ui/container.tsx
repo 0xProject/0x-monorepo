@@ -67,9 +67,9 @@ export const Container =
         ${props => cssRuleIfExists(props, 'cursor')}
         ${props => cssRuleIfExists(props, 'overflow')}
         ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
-        ${props => props.display && stylesForMedia('display', props.display)}
-        ${props => (props.width ? stylesForMedia('width', props.width) : '')}
-        ${props => (props.height ? stylesForMedia('height', props.height) : '')}
+        ${props => props.display && stylesForMedia<string>('display', props.display)}
+        ${props => props.width && stylesForMedia<string>('width', props.width)}
+        ${props => props.height && stylesForMedia<string>('height', props.height)}
         background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
         border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
         &:hover {

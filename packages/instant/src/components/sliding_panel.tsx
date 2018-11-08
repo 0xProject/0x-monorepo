@@ -51,6 +51,7 @@ export const SlidingPanel: React.StatelessComponent<SlidingPanelProps> = props =
             from: slideAmount,
             to: '0px',
         },
+        position: 'absolute',
     };
     const slideDownSettings: PositionAnimationSettings = {
         duration: '0.3s',
@@ -59,10 +60,10 @@ export const SlidingPanel: React.StatelessComponent<SlidingPanelProps> = props =
             from: '0px',
             to: slideAmount,
         },
+        position: 'absolute',
     };
     return (
         <SlideAnimation
-            position="absolute"
             slideInSettings={slideUpSettings}
             slideOutSettings={slideDownSettings}
             animationState={animationState}
