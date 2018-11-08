@@ -1,3 +1,4 @@
+import { MediaChoice, stylesForMedia } from '../../style/media';
 import { ColorOption, styled } from '../../style/theme';
 import { cssRuleIfExists } from '../../style/util';
 
@@ -6,10 +7,11 @@ export interface FlexProps {
     flexWrap?: 'wrap' | 'nowrap';
     justify?: 'flex-start' | 'center' | 'space-around' | 'space-between' | 'space-evenly' | 'flex-end';
     align?: 'flex-start' | 'center' | 'space-around' | 'space-between' | 'space-evenly' | 'flex-end';
-    width?: string;
-    height?: string;
+    width?: MediaChoice;
+    height?: MediaChoice;
     backgroundColor?: ColorOption;
     inline?: boolean;
+    flexGrow?: number | string;
 }
 
 export const Flex =
@@ -19,11 +21,12 @@ export const Flex =
     display: ${props => (props.inline ? 'inline-flex' : 'flex')};
     flex-direction: ${props => props.direction};
     flex-wrap: ${props => props.flexWrap};
+    ${props => cssRuleIfExists(props, 'flexGrow')}
     justify-content: ${props => props.justify};
     align-items: ${props => props.align};
-    ${props => cssRuleIfExists(props, 'width')}
-    ${props => cssRuleIfExists(props, 'height')}
     background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
+    ${props => stylesForMedia('width', props.width || 'auto')}
+    ${props => stylesForMedia('height', props.height || 'auto')}
 `;
 
 Flex.defaultProps = {

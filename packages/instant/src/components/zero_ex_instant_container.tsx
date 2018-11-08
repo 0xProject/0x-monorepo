@@ -26,7 +26,11 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
     };
     public render(): React.ReactNode {
         return (
-            <Container width="350px" position="relative">
+            <Container
+                width={{ default: '350px', sm: '100%' }}
+                height={{ default: 'auto', sm: '100%' }}
+                position="relative"
+            >
                 <Container zIndex={zIndex.errorPopup} position="relative">
                     <LatestError />
                 </Container>
@@ -37,8 +41,9 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                     borderRadius="3px"
                     hasBoxShadow={true}
                     overflow="hidden"
+                    height="100%"
                 >
-                    <Flex direction="column" justify="flex-start">
+                    <Flex direction="column" height="100%" justify="flex-start">
                         <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
                         <PaymentMethod />
                         <SelectedAssetBuyOrderProgress />
