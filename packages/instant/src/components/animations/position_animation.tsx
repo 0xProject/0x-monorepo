@@ -1,6 +1,6 @@
 import { Keyframes } from 'styled-components';
 
-import { media, OptionallyScreenSpecific, ScreenSpecification } from '../../style/media';
+import { media, MediaChoice, OptionallyScreenSpecific, ScreenSpecification, stylesForMedia } from '../../style/media';
 import { css, keyframes, styled } from '../../style/theme';
 
 export interface TransitionInfo {
@@ -52,13 +52,13 @@ export interface PositionAnimationSettings {
     right?: TransitionInfo;
     timingFunction: string;
     duration?: string;
+    position?: string;
 }
 
-const generatePositionAnimationCss = (position: string, positionSettings: PositionAnimationSettings) => {
-    // TODO: take out zindex
+const generatePositionAnimationCss = (positionSettings: PositionAnimationSettings) => {
     return css`
         animation-name: ${slideKeyframeGenerator(
-            position,
+            positionSettings.position || 'relative',
             positionSettings.top,
             positionSettings.bottom,
             positionSettings.left,
@@ -69,16 +69,15 @@ const generatePositionAnimationCss = (position: string, positionSettings: Positi
         animation-delay: 0s;
         animation-iteration-count: 1;
         animation-fill-mode: forwards;
-        position: ${position};
-        height: 100%;
+        position: ${positionSettings.position || 'relative'};
         width: 100%;
     `;
 };
 
 // TODO: clean up position settings
 export interface PositionAnimationProps {
-    position: string;
     positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
+    zIndex?: MediaChoice;
 }
 
 // TODO: use media helper instead
@@ -90,21 +89,18 @@ const smallMediaCss = (generated: any) => {
     `;
 };
 
+// TODO: z-index default value
 export const PositionAnimation =
     styled.div <
     PositionAnimationProps >
     `
+    ${props => props.zIndex && stylesForMedia('z-index', props.zIndex)}
     ${props =>
         generatePositionAnimationCss(
-            props.position,
             'default' in props.positionSettings ? props.positionSettings.default : props.positionSettings,
         )}
     ${props =>
         'default' in props.positionSettings &&
         props.positionSettings.sm &&
-        smallMediaCss(generatePositionAnimationCss(props.position, props.positionSettings.sm))}
+        smallMediaCss(generatePositionAnimationCss(props.positionSettings.sm))}
 `;
-
-PositionAnimation.defaultProps = {
-    position: 'relative',
-};

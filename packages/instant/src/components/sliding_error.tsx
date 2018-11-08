@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
+import { ScreenSpecification } from '../style/media';
+import { zIndex } from '../style/z_index';
 
 import { PositionAnimationSettings } from './animations/position_animation';
 import { SlideAnimation, SlideAnimationState } from './animations/slide_animation';
@@ -39,25 +41,52 @@ export interface SlidingErrorProps extends ErrorProps {
 }
 export const SlidingError: React.StatelessComponent<SlidingErrorProps> = props => {
     const slideAmount = '120px';
-    const slideUpSettings: PositionAnimationSettings = {
+
+    const desktopSlideIn: PositionAnimationSettings = {
         timingFunction: 'ease-in',
         top: {
             from: slideAmount,
             to: '0px',
         },
+        position: 'relative',
     };
-    const slideDownSettings: PositionAnimationSettings = {
+    const desktopSlideOut: PositionAnimationSettings = {
         timingFunction: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
         top: {
             from: '0px',
             to: slideAmount,
         },
+        position: 'relative',
     };
+
+    const mobileSlideIn: PositionAnimationSettings = {
+        duration: '0.5s',
+        timingFunction: 'ease-in',
+        top: { from: '-120px', to: '0px' },
+        position: 'fixed',
+    };
+    const moblieSlideOut: PositionAnimationSettings = {
+        duration: '0.5s',
+        timingFunction: 'ease-in',
+        top: { from: '0px', to: '-120px' },
+        position: 'fixed',
+    };
+
+    const slideUpSettings: ScreenSpecification<PositionAnimationSettings> = {
+        default: desktopSlideIn,
+        sm: mobileSlideIn,
+    };
+    const slideOutSettings: ScreenSpecification<PositionAnimationSettings> = {
+        default: desktopSlideOut,
+        sm: moblieSlideOut,
+    };
+
     return (
         <SlideAnimation
             position="relative"
             slideInSettings={slideUpSettings}
-            slideOutSettings={slideDownSettings}
+            slideOutSettings={slideOutSettings}
+            zIndex={{ sm: zIndex.errorPopUp.toString(), default: zIndex.errorPopBehind.toString() }}
             animationState={props.animationState}
         >
             <Error icon={props.icon} message={props.message} />

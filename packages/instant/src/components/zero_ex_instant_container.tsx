@@ -33,37 +33,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                 height={{ default: 'auto', sm: '100%' }}
                 position="relative"
             >
-                <PositionAnimation
-                    position="relative"
-                    positionSettings={{
-                        default: {
-                            position: 'relative',
-                            duration: '0.5s',
-                            timingFunction: 'ease-in',
-                            top: { from: '120px', to: '0px' },
-                        },
-                        sm: {
-                            position: 'fixed',
-                            duration: '0.5s',
-                            timingFunction: 'ease-in',
-                            top: { from: '-120px', to: '0px' },
-                        },
-                    }}
-                >
-                    <h1
-                        style={{
-                            width: '500px',
-                            margin: '0',
-                            padding: '0',
-                            backgroundColor: 'red',
-                            border: '1px solid red',
-                        }}
-                    >
-                        yo!
-                    </h1>
-                </PositionAnimation>
-
-                <Container zIndex={zIndex.errorPopup} position="relative">
+                <Container position="relative">
                     <LatestError />
                 </Container>
                 <Container
