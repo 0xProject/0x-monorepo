@@ -67,12 +67,25 @@ export const createReducer = (initialState: State) => {
                 return reduceStateWithAccount(state, LOCKED_ACCOUNT);
             case ActionTypes.SET_ACCOUNT_STATE_ERROR:
                 return reduceStateWithAccount(state, ERROR_ACCOUNT);
-            case ActionTypes.SET_ACCOUNT_STATE_READY:
+            case ActionTypes.SET_ACCOUNT_STATE_READY: {
                 const account: AccountReady = {
                     state: AccountState.Ready,
                     address: action.data,
                 };
                 return reduceStateWithAccount(state, account);
+            }
+            case ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE: {
+                const account = state.providerState.account;
+                if (account.state !== AccountState.Ready) {
+                    return state;
+                } else {
+                    const newAccount: AccountReady = {
+                        ...account,
+                        ethBalanceInWei: action.data,
+                    };
+                    return reduceStateWithAccount(state, newAccount);
+                }
+            }
             case ActionTypes.UPDATE_ETH_USD_PRICE:
                 return {
                     ...state,

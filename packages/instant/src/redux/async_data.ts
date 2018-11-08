@@ -50,8 +50,24 @@ export const asyncData = {
         if (!_.isEmpty(availableAddresses)) {
             const activeAddress = availableAddresses[0];
             store.dispatch(actions.setAccountStateReady(activeAddress));
+            await asyncData.fetchAccountBalanceAndDispatchToStore(store);
         } else {
             store.dispatch(actions.setAccountStateLocked());
+        }
+    },
+    fetchAccountBalanceAndDispatchToStore: async (store: Store) => {
+        const { providerState } = store.getState();
+        const web3Wrapper = providerState.web3Wrapper;
+        const account = providerState.account;
+        if (account.state !== AccountState.Ready) {
+            return;
+        }
+        try {
+            const ethBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(account.address);
+            store.dispatch(actions.updateAccountEthBalance(ethBalanceInWei));
+        } catch (e) {
+            // leave balance as is
+            return;
         }
     },
 };
