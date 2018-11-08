@@ -1,6 +1,6 @@
-import { RevertReason } from '@0xproject/types';
-import { logUtils } from '@0xproject/utils';
-import { NodeType } from '@0xproject/web3-wrapper';
+import { RevertReason } from '@0x/types';
+import { logUtils } from '@0x/utils';
+import { NodeType } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceipt, TransactionReceiptStatus, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -159,7 +159,7 @@ export async function expectTransactionFailedWithoutReasonAsync(p: sendTransacti
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export async function expectContractCallFailed<T>(p: Promise<T>, reason: RevertReason): Promise<void> {
+export async function expectContractCallFailedAsync<T>(p: Promise<T>, reason: RevertReason): Promise<void> {
     return expect(p).to.be.rejectedWith(reason);
 }
 
@@ -180,7 +180,20 @@ export async function expectContractCallFailedWithoutReasonAsync<T>(p: Promise<T
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export async function expectContractCreationFailedWithoutReason<T>(p: Promise<T>): Promise<void> {
+export async function expectContractCreationFailedAsync<T>(
+    p: sendTransactionResult,
+    reason: RevertReason,
+): Promise<void> {
+    return expectTransactionFailedAsync(p, reason);
+}
+
+/**
+ * Resolves if the contract creation/deployment fails without a revert reason.
+ * @param p a Promise resulting from a contract creation/deployment
+ * @returns a new Promise which will reject if the conditions are not met and
+ * otherwise resolve with no value.
+ */
+export async function expectContractCreationFailedWithoutReasonAsync<T>(p: Promise<T>): Promise<void> {
     const errMessage = await _getTransactionFailedErrorMessageAsync();
     return expect(p).to.be.rejectedWith(errMessage);
 }

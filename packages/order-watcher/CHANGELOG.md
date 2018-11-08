@@ -5,7 +5,55 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.1-rc.3 - _August 13, 2018_
+## v2.2.0 - _October 18, 2018_
+
+    * Added getStats function and returns a Stats object (#1118)
+    * Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers. Constructor has a new optional `contractAddresses` parameter. (#1105)
+
+## v2.1.1 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v2.1.0 - _September 28, 2018_
+
+    * Export ExpirationWatcher (#1097)
+
+## v2.0.0 - _September 25, 2018_
+
+    * Fixes dropped events issue by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too. (#1080)
+    * Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it (#1080)
+    * Add `transactionHash` to `OrderState` emitted by `OrderWatcher` subscriptions if the order's state change originated from a transaction. (#1087)
+
+## v1.0.5 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.4 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v1.0.3 - _September 19, 2018_
+
+    * Drastically reduce the bundle size by removing unused parts of included contract artifacts.
+
+## v1.0.2 - _September 18, 2018_
+
+    * Add ZRX & WETH mainnet contract addresses into the included artifacts
+
+## v1.0.1 - _September 5, 2018_
+
+    * Dependencies updated
+
+## v1.0.1-rc.5 - _August 27, 2018_
+
+    * Fix missing `BlockParamLiteral` type import issue
+
+## v1.0.1-rc.4 - _August 24, 2018_
+
+    * Export types: `ExchangeContractErrs`, `OrderRelevantState`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload` (#924)
+    * Remove exporting types: `BlockParamLiteral`, `BlockParam`, `Order` (#924)
+
+## v1.0.1-rc.3 - _August 14, 2018_
 
     * Dependencies updated
 

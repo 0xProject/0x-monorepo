@@ -1,5 +1,5 @@
-import { assert } from '@0xproject/assert';
-import { addressUtils } from '@0xproject/utils';
+import { assert } from '@0x/assert';
+import { addressUtils } from '@0x/utils';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
@@ -186,6 +186,16 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             await this._destroyLedgerClientAsync();
             throw err;
         }
+    }
+    /**
+     * eth_signTypedData is currently not supported on Ledger devices.
+     * @param address Address of the account to sign with
+     * @param data the typed data object
+     * @return Signature hex string (order: rsv)
+     */
+    // tslint:disable-next-line:prefer-function-over-method
+    public async signTypedDataAsync(address: string, typedData: any): Promise<string> {
+        throw new Error(WalletSubproviderErrors.MethodNotSupported);
     }
     private async _createLedgerClientAsync(): Promise<LedgerEthereumClient> {
         await this._connectionLock.acquire();

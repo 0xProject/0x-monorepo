@@ -1,6 +1,6 @@
-import { colors, constants as sharedConstants } from '@0xproject/react-shared';
-import { BigNumber, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { colors, constants as sharedConstants } from '@0x/react-shared';
+import { BigNumber, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -64,7 +64,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
     }
     public render(): React.ReactNode {
         const dialogActions = [
-            <FlatButton key="ledgerConnectCancel" label="Cancel" onTouchTap={this._onClose.bind(this)} />,
+            <FlatButton key="ledgerConnectCancel" label="Cancel" onClick={this._onClose.bind(this)} />,
         ];
         const dialogTitle =
             this.state.stepIndex === LedgerSteps.CONNECT ? 'Connect to your Ledger' : 'Select desired address';

@@ -5,7 +5,47 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.5 - _August 13, 2018_
+## v1.0.15 - _October 18, 2018_
+
+    * Dependencies updated
+
+## v1.0.14 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v1.0.13 - _October 2, 2018_
+
+    * Dependencies updated
+
+## v1.0.12 - _September 28, 2018_
+
+    * Dependencies updated
+
+## v1.0.11 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.10 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.9 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v1.0.8 - _September 5, 2018_
+
+    * Dependencies updated
+
+## v1.0.7 - _August 27, 2018_
+
+    * Dependencies updated
+
+## v1.0.6 - _August 24, 2018_
+
+    * Dependencies updated
+
+## v1.0.5 - _August 14, 2018_
 
     * Fix a bug where RelativeFSResolver would crash when trying to read a directory (#909)
     * Fix a bug where NpmResolver would crash when trying to read a directory (#961)

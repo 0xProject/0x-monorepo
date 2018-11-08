@@ -1,147 +1,40 @@
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import {
+    APIOrder,
+    AssetPairsItem,
+    AssetPairsRequestOpts,
+    FeeRecipientsResponse,
+    OrderbookRequest,
+    OrderbookResponse,
+    OrderConfigRequest,
+    OrderConfigResponse,
+    OrdersChannelSubscriptionOpts,
+    OrdersRequestOpts,
+    PagedRequestOpts,
+    PaginatedCollection,
+    SignedOrder,
+} from '@0x/types';
 
 export interface Client {
-    getTokenPairsAsync: (requestOpts?: TokenPairsRequestOpts & PagedRequestOpts) => Promise<TokenPairsItem[]>;
-    getOrdersAsync: (requestOpts?: OrdersRequestOpts & PagedRequestOpts) => Promise<SignedOrder[]>;
-    getOrderAsync: (orderHash: string) => Promise<SignedOrder>;
+    getAssetPairsAsync: (
+        requestOpts?: AssetPairsRequestOpts & PagedRequestOpts,
+    ) => Promise<PaginatedCollection<AssetPairsItem>>;
+    getOrdersAsync: (requestOpts?: OrdersRequestOpts & PagedRequestOpts) => Promise<PaginatedCollection<APIOrder>>;
+    getOrderAsync: (orderHash: string) => Promise<APIOrder>;
     getOrderbookAsync: (request: OrderbookRequest, requestOpts?: PagedRequestOpts) => Promise<OrderbookResponse>;
-    getFeesAsync: (request: FeesRequest) => Promise<FeesResponse>;
+    getOrderConfigAsync: (request: OrderConfigRequest) => Promise<OrderConfigResponse>;
+    getFeeRecipientsAsync: (requestOpts?: PagedRequestOpts) => Promise<FeeRecipientsResponse>;
     submitOrderAsync: (signedOrder: SignedOrder) => Promise<void>;
 }
 
-export interface OrderbookChannel {
-    subscribe: (subscriptionOpts: OrderbookChannelSubscriptionOpts) => void;
+export interface OrdersChannel {
+    subscribe: (subscriptionOpts: OrdersChannelSubscriptionOpts) => void;
     close: () => void;
 }
 
-/**
- * baseTokenAddress: The address of token designated as the baseToken in the currency pair calculation of price
- * quoteTokenAddress: The address of token designated as the quoteToken in the currency pair calculation of price
- * snapshot: If true, a snapshot of the orderbook will be sent before the updates to the orderbook
- * limit: Maximum number of bids and asks in orderbook snapshot
- */
-export interface OrderbookChannelSubscriptionOpts {
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-    snapshot: boolean;
-    limit: number;
-}
-
-export interface OrderbookChannelHandler {
-    onSnapshot: (
-        channel: OrderbookChannel,
-        subscriptionOpts: OrderbookChannelSubscriptionOpts,
-        snapshot: OrderbookResponse,
-    ) => void;
-    onUpdate: (
-        channel: OrderbookChannel,
-        subscriptionOpts: OrderbookChannelSubscriptionOpts,
-        order: SignedOrder,
-    ) => void;
-    onError: (channel: OrderbookChannel, err: Error, subscriptionOpts?: OrderbookChannelSubscriptionOpts) => void;
-    onClose: (channel: OrderbookChannel) => void;
-}
-
-export type OrderbookChannelMessage =
-    | SnapshotOrderbookChannelMessage
-    | UpdateOrderbookChannelMessage
-    | UnknownOrderbookChannelMessage;
-
-export enum OrderbookChannelMessageTypes {
-    Snapshot = 'snapshot',
-    Update = 'update',
-    Unknown = 'unknown',
-}
-
-export interface SnapshotOrderbookChannelMessage {
-    type: OrderbookChannelMessageTypes.Snapshot;
-    requestId: number;
-    payload: OrderbookResponse;
-}
-
-export interface UpdateOrderbookChannelMessage {
-    type: OrderbookChannelMessageTypes.Update;
-    requestId: number;
-    payload: SignedOrder;
-}
-
-export interface UnknownOrderbookChannelMessage {
-    type: OrderbookChannelMessageTypes.Unknown;
-    requestId: number;
-    payload: undefined;
-}
-
-export enum WebsocketConnectionEventType {
-    Close = 'close',
-    Error = 'error',
-    Message = 'message',
-}
-
-export enum WebsocketClientEventType {
-    Connect = 'connect',
-    ConnectFailed = 'connectFailed',
-}
-
-export interface TokenPairsRequestOpts {
-    tokenA?: string;
-    tokenB?: string;
-}
-
-export interface TokenPairsItem {
-    tokenA: TokenTradeInfo;
-    tokenB: TokenTradeInfo;
-}
-
-export interface TokenTradeInfo {
-    address: string;
-    minAmount: BigNumber;
-    maxAmount: BigNumber;
-    precision: number;
-}
-
-export interface OrdersRequestOpts {
-    exchangeContractAddress?: string;
-    tokenAddress?: string;
-    makerTokenAddress?: string;
-    takerTokenAddress?: string;
-    maker?: string;
-    taker?: string;
-    trader?: string;
-    feeRecipient?: string;
-}
-
-export interface OrderbookRequest {
-    baseTokenAddress: string;
-    quoteTokenAddress: string;
-}
-
-export interface OrderbookResponse {
-    bids: SignedOrder[];
-    asks: SignedOrder[];
-}
-
-export interface FeesRequest {
-    exchangeContractAddress: string;
-    maker: string;
-    taker: string;
-    makerTokenAddress: string;
-    takerTokenAddress: string;
-    makerTokenAmount: BigNumber;
-    takerTokenAmount: BigNumber;
-    expirationUnixTimestampSec: BigNumber;
-    salt: BigNumber;
-}
-
-export interface FeesResponse {
-    feeRecipient: string;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
-}
-
-export interface PagedRequestOpts {
-    page?: number;
-    perPage?: number;
+export interface OrdersChannelHandler {
+    onUpdate: (channel: OrdersChannel, subscriptionOpts: OrdersChannelSubscriptionOpts, orders: APIOrder[]) => void;
+    onError: (channel: OrdersChannel, err: Error, subscriptionOpts?: OrdersChannelSubscriptionOpts) => void;
+    onClose: (channel: OrdersChannel) => void;
 }
 
 export interface HttpRequestOptions {

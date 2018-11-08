@@ -1,74 +1,45 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages } from 'ts/types';
-import { constants } from 'ts/utils/constants';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/order_utils/1.0.0/introduction');
-const InstallationMarkdownV1 = require('md/docs/order_utils/1.0.0/installation');
+const IntroMarkdown1 = require('md/docs/order_utils/1/introduction');
+const InstallationMarkdown1 = require('md/docs/order_utils/1/installation');
+const IntroMarkdown2 = require('md/docs/order_utils/2/introduction');
+const InstallationMarkdown2 = require('md/docs/order_utils/2/installation');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
-    usage: 'usage',
-    types: 'types',
 };
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.OrderUtils,
+    packageName: '@0x/order-utils',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Order utils',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        usage: [docSections.usage],
-        types: [docSections.types],
+    markdownMenu: {
+        'getting-started': [markdownSections.introduction, markdownSections.installation],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+        },
+        '2.0.0': {
+            [markdownSections.introduction]: IntroMarkdown2,
+            [markdownSections.installation]: InstallationMarkdown2,
         },
     },
-    sectionNameToModulePath: {
-        [docSections.usage]: [
-            '"order-utils/src/order_hash"',
-            '"order-utils/src/signature_utils"',
-            '"order-utils/src/order_factory"',
-            '"order-utils/src/salt"',
-            '"order-utils/src/assert"',
-            '"order-utils/src/constants"',
-        ],
-        [docSections.types]: ['"order-utils/src/types"', '"types/src/index"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
-    sections: docSections,
-    visibleConstructors: [],
-    typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [
-            'OrderError',
-            'Order',
-            'SignedOrder',
-            'ECSignature',
-            'Provider',
-            'JSONRPCRequestPayload',
-            'JSONRPCResponsePayload',
-            'JSONRPCErrorCallback',
-        ],
-        typeNameToExternalLink: {
-            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
-        },
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 
@@ -77,6 +48,7 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -88,6 +60,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
     docsInfo,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

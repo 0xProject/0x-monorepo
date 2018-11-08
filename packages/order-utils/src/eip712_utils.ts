@@ -1,93 +1,83 @@
-import ethUtil = require('ethereumjs-util');
+import { assert } from '@0x/assert';
+import { schemas } from '@0x/json-schemas';
+import { EIP712Object, EIP712TypedData, EIP712Types, Order, ZeroExTransaction } from '@0x/types';
 import * as _ from 'lodash';
 
-import { crypto } from './crypto';
-import { EIP712Schema, EIP712Types } from './types';
+import { constants } from './constants';
 
-const EIP191_PREFIX = '\x19\x01';
-const EIP712_DOMAIN_NAME = '0x Protocol';
-const EIP712_DOMAIN_VERSION = '2';
-const EIP712_VALUE_LENGTH = 32;
-
-const EIP712_DOMAIN_SCHEMA: EIP712Schema = {
-    name: 'EIP712Domain',
-    parameters: [
-        { name: 'name', type: EIP712Types.String },
-        { name: 'version', type: EIP712Types.String },
-        { name: 'verifyingContract', type: EIP712Types.Address },
-    ],
-};
-
-export const EIP712Utils = {
+export const eip712Utils = {
     /**
-     * Compiles the EIP712Schema and returns the hash of the schema.
-     * @param   schema The EIP712 schema.
-     * @return  The hash of the compiled schema
+     * Creates a EIP712TypedData object specific to the 0x protocol for use with signTypedData.
+     * @param   primaryType The primary type found in message
+     * @param   types The additional types for the data in message
+     * @param   message The contents of the message
+     * @param   exchangeAddress The address of the exchange contract
+     * @return  A typed data object
      */
-    compileSchema(schema: EIP712Schema): Buffer {
-        const eip712Schema = EIP712Utils._encodeType(schema);
-        const eip712SchemaHashBuffer = crypto.solSHA3([eip712Schema]);
-        return eip712SchemaHashBuffer;
+    createTypedData: (
+        primaryType: string,
+        types: EIP712Types,
+        message: EIP712Object,
+        exchangeAddress: string,
+    ): EIP712TypedData => {
+        assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+        assert.isString('primaryType', primaryType);
+        const typedData = {
+            types: {
+                EIP712Domain: constants.EIP712_DOMAIN_SCHEMA.parameters,
+                ...types,
+            },
+            domain: {
+                name: constants.EIP712_DOMAIN_NAME,
+                version: constants.EIP712_DOMAIN_VERSION,
+                verifyingContract: exchangeAddress,
+            },
+            message,
+            primaryType,
+        };
+        assert.doesConformToSchema('typedData', typedData, schemas.eip712TypedDataSchema);
+        return typedData;
     },
     /**
-     * Merges the EIP712 hash of a struct with the DomainSeparator for 0x v2.
-     * @param   hashStruct the EIP712 hash of a struct
-     * @param   contractAddress the exchange contract address
-     * @return  The hash of an EIP712 message with domain separator prefixed
+     * Creates an Order EIP712TypedData object for use with signTypedData.
+     * @param   Order the order
+     * @return  A typed data object
      */
-    createEIP712Message(hashStruct: Buffer, contractAddress: string): Buffer {
-        const domainSeparatorHashBuffer = EIP712Utils._getDomainSeparatorHashBuffer(contractAddress);
-        const messageBuff = crypto.solSHA3([EIP191_PREFIX, domainSeparatorHashBuffer, hashStruct]);
-        return messageBuff;
-    },
-    pad32Address(address: string): Buffer {
-        const addressBuffer = ethUtil.toBuffer(address);
-        const addressPadded = EIP712Utils.pad32Buffer(addressBuffer);
-        return addressPadded;
-    },
-    pad32Buffer(buffer: Buffer): Buffer {
-        const bufferPadded = ethUtil.setLengthLeft(buffer, EIP712_VALUE_LENGTH);
-        return bufferPadded;
-    },
-    _getDomainSeparatorSchemaBuffer(): Buffer {
-        return EIP712Utils.compileSchema(EIP712_DOMAIN_SCHEMA);
-    },
-    _getDomainSeparatorHashBuffer(exchangeAddress: string): Buffer {
-        const domainSeparatorSchemaBuffer = EIP712Utils._getDomainSeparatorSchemaBuffer();
-        const encodedData = EIP712Utils._encodeData(EIP712_DOMAIN_SCHEMA, {
-            name: EIP712_DOMAIN_NAME,
-            version: EIP712_DOMAIN_VERSION,
-            verifyingContract: exchangeAddress,
+    createOrderTypedData: (order: Order): EIP712TypedData => {
+        assert.doesConformToSchema('order', order, schemas.orderSchema, [schemas.hexSchema]);
+        const normalizedOrder = _.mapValues(order, value => {
+            return !_.isString(value) ? value.toString() : value;
         });
-        const domainSeparatorHashBuff2 = crypto.solSHA3([domainSeparatorSchemaBuffer, ...encodedData]);
-        return domainSeparatorHashBuff2;
+        const typedData = eip712Utils.createTypedData(
+            constants.EIP712_ORDER_SCHEMA.name,
+            { Order: constants.EIP712_ORDER_SCHEMA.parameters },
+            normalizedOrder,
+            order.exchangeAddress,
+        );
+        return typedData;
     },
-    _encodeType(schema: EIP712Schema): string {
-        const namedTypes = _.map(schema.parameters, ({ name, type }) => `${type} ${name}`);
-        const namedTypesJoined = namedTypes.join(',');
-        const encodedType = `${schema.name}(${namedTypesJoined})`;
-        return encodedType;
-    },
-    _encodeData(schema: EIP712Schema, data: { [key: string]: any }): any {
-        const encodedValues = [];
-        for (const parameter of schema.parameters) {
-            const value = data[parameter.name];
-            if (parameter.type === EIP712Types.String || parameter.type === EIP712Types.Bytes) {
-                encodedValues.push(crypto.solSHA3([ethUtil.toBuffer(value)]));
-            } else if (parameter.type === EIP712Types.Uint256) {
-                encodedValues.push(value);
-            } else if (parameter.type === EIP712Types.Address) {
-                encodedValues.push(EIP712Utils.pad32Address(value));
-            } else {
-                throw new Error(`Unable to encode ${parameter.type}`);
-            }
-        }
-        return encodedValues;
-    },
-    structHash(schema: EIP712Schema, data: { [key: string]: any }): Buffer {
-        const encodedData = EIP712Utils._encodeData(schema, data);
-        const schemaHash = EIP712Utils.compileSchema(schema);
-        const hashBuffer = crypto.solSHA3([schemaHash, ...encodedData]);
-        return hashBuffer;
+    /**
+     * Creates an ExecuteTransaction EIP712TypedData object for use with signTypedData and
+     * 0x Exchange executeTransaction.
+     * @param   ZeroExTransaction the 0x transaction
+     * @param   exchangeAddress The address of the exchange contract
+     * @return  A typed data object
+     */
+    createZeroExTransactionTypedData: (
+        zeroExTransaction: ZeroExTransaction,
+        exchangeAddress: string,
+    ): EIP712TypedData => {
+        assert.isETHAddressHex('exchangeAddress', exchangeAddress);
+        assert.doesConformToSchema('zeroExTransaction', zeroExTransaction, schemas.zeroExTransactionSchema);
+        const normalizedTransaction = _.mapValues(zeroExTransaction, value => {
+            return !_.isString(value) ? value.toString() : value;
+        });
+        const typedData = eip712Utils.createTypedData(
+            constants.EIP712_ZEROEX_TRANSACTION_SCHEMA.name,
+            { ZeroExTransaction: constants.EIP712_ZEROEX_TRANSACTION_SCHEMA.parameters },
+            normalizedTransaction,
+            exchangeAddress,
+        );
+        return typedData;
     },
 };

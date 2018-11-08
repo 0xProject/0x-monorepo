@@ -1,11 +1,11 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { RevertReason } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { RevertReason } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
-import { artifacts } from '../utils/artifacts';
-import { expectContractCallFailed } from '../utils/assertions';
+import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
+import { artifacts } from '../../src/artifacts';
+import { expectContractCallFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
@@ -54,7 +54,7 @@ describe('UnlimitedAllowanceToken', () => {
         it('should throw if owner has insufficient balance', async () => {
             const ownerBalance = await token.balanceOf.callAsync(owner);
             const amountToTransfer = ownerBalance.plus(1);
-            return expectContractCallFailed(
+            return expectContractCallFailedAsync(
                 token.transfer.callAsync(spender, amountToTransfer, { from: owner }),
                 RevertReason.Erc20InsufficientBalance,
             );
@@ -93,7 +93,7 @@ describe('UnlimitedAllowanceToken', () => {
                 await token.approve.sendTransactionAsync(spender, amountToTransfer, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expectContractCallFailed(
+            return expectContractCallFailedAsync(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),
@@ -109,7 +109,7 @@ describe('UnlimitedAllowanceToken', () => {
             const isSpenderAllowanceInsufficient = spenderAllowance.cmp(amountToTransfer) < 0;
             expect(isSpenderAllowanceInsufficient).to.be.true();
 
-            return expectContractCallFailed(
+            return expectContractCallFailedAsync(
                 token.transferFrom.callAsync(owner, spender, amountToTransfer, {
                     from: spender,
                 }),

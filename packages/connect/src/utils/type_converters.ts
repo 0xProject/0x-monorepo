@@ -1,30 +1,26 @@
-import { BigNumber } from '@0xproject/utils';
+import { orderParsingUtils } from '@0x/order-utils';
 import * as _ from 'lodash';
+
+import { APIOrder } from '@0x/types';
 
 export const typeConverters = {
     convertOrderbookStringFieldsToBigNumber(orderbook: any): any {
         const bids = _.get(orderbook, 'bids', []);
         const asks = _.get(orderbook, 'asks', []);
+        const convertedBids = {
+            ...bids,
+            records: bids.records.map((order: any) => typeConverters.convertAPIOrderStringFieldsToBigNumber(order)),
+        };
+        const convertedAsks = {
+            ...asks,
+            records: asks.records.map((order: any) => typeConverters.convertAPIOrderStringFieldsToBigNumber(order)),
+        };
         return {
-            bids: bids.map((order: any) => typeConverters.convertOrderStringFieldsToBigNumber(order)),
-            asks: asks.map((order: any) => typeConverters.convertOrderStringFieldsToBigNumber(order)),
+            bids: convertedBids,
+            asks: convertedAsks,
         };
     },
-    convertOrderStringFieldsToBigNumber(order: any): any {
-        return typeConverters.convertStringsFieldsToBigNumbers(order, [
-            'makerTokenAmount',
-            'takerTokenAmount',
-            'makerFee',
-            'takerFee',
-            'expirationUnixTimestampSec',
-            'salt',
-        ]);
-    },
-    convertStringsFieldsToBigNumbers(obj: any, fields: string[]): any {
-        const result = _.assign({}, obj);
-        _.each(fields, field => {
-            _.update(result, field, (value: string) => new BigNumber(value));
-        });
-        return result;
+    convertAPIOrderStringFieldsToBigNumber(apiOrder: any): APIOrder {
+        return { ...apiOrder, order: orderParsingUtils.convertOrderStringFieldsToBigNumber(apiOrder.order) };
     },
 };

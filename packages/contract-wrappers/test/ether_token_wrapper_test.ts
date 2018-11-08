@@ -1,7 +1,8 @@
-import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
-import { DoneCallback } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ContractAddresses } from '@0x/contract-addresses';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
+import { DoneCallback } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import 'mocha';
 
@@ -10,17 +11,17 @@ import {
     BlockRange,
     ContractWrappers,
     ContractWrappersError,
-    DecodedLogEvent,
     WETH9ApprovalEventArgs,
     WETH9DepositEventArgs,
     WETH9Events,
     WETH9TransferEventArgs,
     WETH9WithdrawalEventArgs,
 } from '../src';
+import { DecodedLogEvent } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
-import { tokenUtils } from './utils/token_utils';
+import { migrateOnceAsync } from './utils/migrate';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -35,6 +36,7 @@ const MAX_REASONABLE_GAS_COST_IN_WEI = 62517;
 
 describe('EtherTokenWrapper', () => {
     let contractWrappers: ContractWrappers;
+    let contractAddresses: ContractAddresses;
     let userAddresses: string[];
     let addressWithETH: string;
     let wethContractAddress: string;
@@ -42,19 +44,22 @@ describe('EtherTokenWrapper', () => {
     const decimalPlaces = 7;
     let addressWithoutFunds: string;
     const gasPrice = new BigNumber(1);
-    const zeroExConfig = {
-        gasPrice,
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
     const transferAmount = new BigNumber(42);
     const allowanceAmount = new BigNumber(42);
     const depositAmount = new BigNumber(42);
     const withdrawalAmount = new BigNumber(42);
     before(async () => {
-        contractWrappers = new ContractWrappers(provider, zeroExConfig);
+        contractAddresses = await migrateOnceAsync();
+        const config = {
+            gasPrice,
+            networkId: constants.TESTRPC_NETWORK_ID,
+            contractAddresses,
+            blockPollingIntervalMs: 10,
+        };
+        contractWrappers = new ContractWrappers(provider, config);
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         addressWithETH = userAddresses[0];
-        wethContractAddress = contractWrappers.etherToken.getContractAddressIfExists() as string;
+        wethContractAddress = contractAddresses.etherToken;
         depositWeiAmount = Web3Wrapper.toWei(new BigNumber(5));
         addressWithoutFunds = userAddresses[1];
     });
@@ -66,7 +71,7 @@ describe('EtherTokenWrapper', () => {
     });
     describe('#getContractAddressIfExists', async () => {
         it('should return contract address if connected to a known network', () => {
-            const contractAddressIfExists = contractWrappers.etherToken.getContractAddressIfExists();
+            const contractAddressIfExists = contractAddresses.etherToken;
             expect(contractAddressIfExists).to.not.be.undefined();
         });
         it('should throw if connected to a private network and contract addresses are not specified', () => {
@@ -171,7 +176,7 @@ describe('EtherTokenWrapper', () => {
         const indexFilterValues = {};
         let etherTokenAddress: string;
         before(async () => {
-            etherTokenAddress = tokenUtils.getWethTokenAddress();
+            etherTokenAddress = contractAddresses.etherToken;
         });
         afterEach(() => {
             contractWrappers.etherToken.unsubscribeAll();
@@ -278,7 +283,7 @@ describe('EtherTokenWrapper', () => {
                 await contractWrappers.etherToken.withdrawAsync(etherTokenAddress, withdrawalAmount, addressWithETH);
             })().catch(done);
         });
-        it('should cancel outstanding subscriptions when ZeroEx.setProvider is called', (done: DoneCallback) => {
+        it('should cancel outstanding subscriptions when contractWrappers.unsubscribeAll is called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
                     (_logEvent: DecodedLogEvent<WETH9ApprovalEventArgs>) => {
@@ -292,7 +297,7 @@ describe('EtherTokenWrapper', () => {
                     callbackNeverToBeCalled,
                 );
                 const callbackToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)();
-                contractWrappers.setProvider(provider, constants.TESTRPC_NETWORK_ID);
+                contractWrappers.unsubscribeAll();
                 await contractWrappers.etherToken.depositAsync(etherTokenAddress, transferAmount, addressWithETH);
                 contractWrappers.etherToken.subscribe(
                     etherTokenAddress,
@@ -340,10 +345,10 @@ describe('EtherTokenWrapper', () => {
         let txHash: string;
         before(async () => {
             addressWithETH = userAddresses[0];
-            etherTokenAddress = tokenUtils.getWethTokenAddress();
-            erc20ProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
+            etherTokenAddress = contractAddresses.etherToken;
+            erc20ProxyAddress = contractWrappers.erc20Proxy.address;
             // Start the block range after all migrations to avoid unexpected logs
-            const currentBlock = await web3Wrapper.getBlockNumberAsync();
+            const currentBlock: number = await web3Wrapper.getBlockNumberAsync();
             const fromBlock = currentBlock + 1;
             blockRange = {
                 fromBlock,

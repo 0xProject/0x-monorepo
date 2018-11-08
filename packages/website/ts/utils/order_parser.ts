@@ -1,12 +1,13 @@
-import { logUtils } from '@0xproject/utils';
+import { orderParsingUtils } from '@0x/order-utils';
+import { logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { portalOrderSchema } from 'ts/schemas/portal_order_schema';
 import { validator } from 'ts/schemas/validator';
-import { Order } from 'ts/types';
+import { PortalOrder } from 'ts/types';
 
 export const orderParser = {
-    parse(queryString: string): Order | undefined {
+    parseQueryString(queryString: string): PortalOrder | undefined {
         if (queryString.length === 0) {
             return undefined;
         }
@@ -28,6 +29,22 @@ export const orderParser = {
             logUtils.log(`Invalid shared order: ${validationResult.errors}`);
             return undefined;
         }
-        return order;
+        const signedOrder = _.get(order, 'signedOrder');
+        const convertedSignedOrder = orderParsingUtils.convertOrderStringFieldsToBigNumber(signedOrder);
+        const result = {
+            ...order,
+            signedOrder: convertedSignedOrder,
+        };
+        return result;
+    },
+    parseJsonString(orderJson: string): PortalOrder {
+        const order = JSON.parse(orderJson);
+        const signedOrder = _.get(order, 'signedOrder');
+        const convertedSignedOrder = orderParsingUtils.convertOrderStringFieldsToBigNumber(signedOrder);
+        const result = {
+            ...order,
+            signedOrder: convertedSignedOrder,
+        };
+        return result;
     },
 };

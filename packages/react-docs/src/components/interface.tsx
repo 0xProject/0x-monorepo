@@ -1,27 +1,30 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { CustomType, TypeDefinitionByName } from '@0x/types';
+
 import { DocsInfo } from '../docs_info';
-import { CustomType, TypeDocTypes } from '../types';
 
 import { Signature } from './signature';
 import { Type } from './type';
+
+const defaultProps = {};
 
 export interface InterfaceProps {
     type: CustomType;
     sectionName: string;
     docsInfo: DocsInfo;
+    typeDefinitionByName: TypeDefinitionByName;
+    isInPopover: boolean;
 }
 
-export const Interface = (props: InterfaceProps) => {
+export const Interface: React.SFC<InterfaceProps> = (props: InterfaceProps): any => {
     const type = props.type;
-    const properties = _.map(type.children, property => {
+    const properties = _.map(type.children, (property, i) => {
         return (
-            <span key={`property-${property.name}-${property.type}-${type.name}`}>
+            <span key={`property-${property.name}-${property.type}-${type.name}-${i}`}>
                 {property.name}:{' '}
-                {property.type && property.type.typeDocType !== TypeDocTypes.Reflection ? (
-                    <Type type={property.type} sectionName={props.sectionName} docsInfo={props.docsInfo} />
-                ) : (
+                {property.type && !_.isUndefined(property.type.method) ? (
                     <Signature
                         name={property.type.method.name}
                         returnType={property.type.method.returnType}
@@ -31,6 +34,16 @@ export const Interface = (props: InterfaceProps) => {
                         shouldHideMethodName={true}
                         shouldUseArrowSyntax={true}
                         docsInfo={props.docsInfo}
+                        typeDefinitionByName={props.typeDefinitionByName}
+                        isInPopover={props.isInPopover}
+                    />
+                ) : (
+                    <Type
+                        type={property.type}
+                        sectionName={props.sectionName}
+                        docsInfo={props.docsInfo}
+                        typeDefinitionByName={props.typeDefinitionByName}
+                        isInPopover={props.isInPopover}
                     />
                 )},
             </span>
@@ -41,7 +54,14 @@ export const Interface = (props: InterfaceProps) => {
         const is = type.indexSignature;
         const param = (
             <span key={`indexSigParams-${is.keyName}-${is.keyType}-${type.name}`}>
-                {is.keyName}: <Type type={is.keyType} sectionName={props.sectionName} docsInfo={props.docsInfo} />
+                {is.keyName}:{' '}
+                <Type
+                    type={is.keyType}
+                    sectionName={props.sectionName}
+                    docsInfo={props.docsInfo}
+                    typeDefinitionByName={props.typeDefinitionByName}
+                    isInPopover={props.isInPopover}
+                />
             </span>
         );
         properties.push(
@@ -64,3 +84,5 @@ export const Interface = (props: InterfaceProps) => {
         </span>
     );
 };
+
+Interface.defaultProps = defaultProps;

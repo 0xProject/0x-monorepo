@@ -1,9 +1,9 @@
-import { colors } from '@0xproject/react-shared';
-import { BigNumber } from '@0xproject/utils';
+import { colors, Link } from '@0x/react-shared';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import { Link, Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 
 import { Blockchain } from 'ts/blockchain';
 import { BlockchainErrDialog } from 'ts/components/dialogs/blockchain_err_dialog';
@@ -18,7 +18,7 @@ import { Loading } from 'ts/components/portal/loading';
 import { Menu, MenuTheme } from 'ts/components/portal/menu';
 import { Section } from 'ts/components/portal/section';
 import { TextHeader } from 'ts/components/portal/text_header';
-import { RelayerIndex } from 'ts/components/relayer_index/relayer_index';
+import { RelayerIndex, RelayerIndexCellStyle } from 'ts/components/relayer_index/relayer_index';
 import { TokenBalances } from 'ts/components/token_balances';
 import { TopBar, TopBarDisplayType } from 'ts/components/top_bar/top_bar';
 import { TradeHistory } from 'ts/components/trade_history/trade_history';
@@ -39,7 +39,7 @@ import {
     BlockchainErrs,
     HashData,
     ItemByAddress,
-    Order,
+    PortalOrder,
     ProviderType,
     ScreenWidths,
     Token,
@@ -71,7 +71,7 @@ export interface PortalProps {
     userEtherBalanceInWei?: BigNumber;
     userAddress: string;
     shouldBlockchainErrDialogBeOpen: boolean;
-    userSuppliedOrderCache: Order;
+    userSuppliedOrderCache: PortalOrder;
     location: Location;
     flashMessage?: string | React.ReactNode;
     lastForceTokenStateRefetch: number;
@@ -114,11 +114,11 @@ const DOCUMENT_DESCRIPTION = 'Learn about and trade on 0x Relayers';
 
 export class Portal extends React.Component<PortalProps, PortalState> {
     private _blockchain: Blockchain;
-    private readonly _sharedOrderIfExists: Order;
+    private readonly _sharedOrderIfExists: PortalOrder;
     private readonly _throttledScreenWidthUpdate: () => void;
     constructor(props: PortalProps) {
         super(props);
-        this._sharedOrderIfExists = orderParser.parse(window.location.search);
+        this._sharedOrderIfExists = orderParser.parseQueryString(window.location.search);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
         const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
         const hasAcceptedDisclaimer =
@@ -210,12 +210,16 @@ export class Portal extends React.Component<PortalProps, PortalState> {
                     isLoaded: false,
                 };
             }
-            this.setState({
-                trackedTokenStateByAddress,
-            });
-            // Fetch the actual balance/allowance.
-            // tslint:disable-next-line:no-floating-promises
-            this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
+            this.setState(
+                {
+                    trackedTokenStateByAddress,
+                },
+                () => {
+                    // Fetch the actual balance/allowance.
+                    // tslint:disable-next-line:no-floating-promises
+                    this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
+                },
+            );
         }
     }
     public render(): React.ReactNode {
@@ -317,7 +321,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         };
         return (
             <Section
-                header={<BackButton to={`${WebsitePaths.Portal}`} labelText="back to Relayers" />}
+                header={<BackButton to={WebsitePaths.Portal} labelText="back to Relayers" />}
                 body={<Menu selectedPath={routeComponentProps.location.pathname} theme={menuTheme} />}
             />
         );
@@ -389,9 +393,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             </Container>
         );
         return !shouldStartOnboarding ? (
-            <Link to={{ pathname: `${WebsitePaths.Portal}/account` }} style={{ textDecoration: 'none' }}>
-                {startOnboarding}
-            </Link>
+            <Link to={`${WebsitePaths.Portal}/account`}>{startOnboarding}</Link>
         ) : (
             startOnboarding
         );
@@ -541,17 +543,22 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
     private _renderRelayerIndexSection(): React.ReactNode {
         const isMobile = utils.isMobileWidth(this.props.screenWidth);
+        // TODO(bmillman): revert RelayerIndex cellStyle to Expanded once data pipeline is tracking v2 volume
         return (
             <Section
                 header={!isMobile && <TextHeader labelText="0x Relayers" />}
                 body={
-                    <Container className="flex flex-column items-center">
+                    <Container className="flex flex-column">
                         {isMobile && (
                             <Container marginTop="20px" marginBottom="20px">
                                 {this._renderStartOnboarding()}
                             </Container>
                         )}
-                        <RelayerIndex networkId={this.props.networkId} screenWidth={this.props.screenWidth} />
+                        <RelayerIndex
+                            networkId={this.props.networkId}
+                            screenWidth={this.props.screenWidth}
+                            cellStyle={RelayerIndexCellStyle.Minimized}
+                        />
                     </Container>
                 }
             />
@@ -641,6 +648,9 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     }
 
     private async _fetchBalancesAndAllowancesAsync(tokenAddresses: string[]): Promise<void> {
+        if (_.isEmpty(tokenAddresses)) {
+            return;
+        }
         const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
         const userAddressIfExists = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
         const balancesAndAllowances = await Promise.all(

@@ -1,89 +1,50 @@
-import { constants as docConstants, DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages } from 'ts/types';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/sol_cov/introduction');
-const InstallationMarkdownV1 = require('md/docs/sol_cov/installation');
-const UsageMarkdown = require('md/docs/sol_cov/usage');
+const IntroMarkdown1 = require('md/docs/sol_cov/1/introduction');
+const InstallationMarkdown1 = require('md/docs/sol_cov/1/installation');
+const UsageMarkdown1 = require('md/docs/sol_cov/1/usage');
+const IntroMarkdown2 = require('md/docs/sol_cov/2/introduction');
+const InstallationMarkdown2 = require('md/docs/sol_cov/2/installation');
+const UsageMarkdown2 = require('md/docs/sol_cov/2/usage');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     usage: 'usage',
-    coverageSubprovider: 'coverageSubprovider',
-    abstractArtifactAdapter: 'abstractArtifactAdapter',
-    solCompilerArtifactAdapter: 'solCompilerArtifactAdapter',
-    truffleArtifactAdapter: 'truffleArtifactAdapter',
-    types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.SolCov,
+    packageName: '@0x/sol-cov',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Sol-cov',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        usage: [docSections.usage],
-        'coverage-subprovider': [docSections.coverageSubprovider],
-        'abstract-artifact-adapter': [docSections.abstractArtifactAdapter],
-        'sol-compiler-artifact-adapter': [docSections.solCompilerArtifactAdapter],
-        'truffle-artifact-adapter': [docSections.truffleArtifactAdapter],
-        types: [docSections.types],
+    markdownMenu: {
+        'getting-started': [markdownSections.introduction, markdownSections.installation, markdownSections.usage],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
-            [docSections.usage]: UsageMarkdown,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+            [markdownSections.usage]: UsageMarkdown1,
+        },
+        '2.1.8': {
+            [markdownSections.introduction]: IntroMarkdown2,
+            [markdownSections.installation]: InstallationMarkdown2,
+            [markdownSections.usage]: UsageMarkdown2,
         },
     },
-    sectionNameToModulePath: {
-        [docSections.coverageSubprovider]: ['"sol-cov/src/coverage_subprovider"'],
-        [docSections.abstractArtifactAdapter]: ['"sol-cov/src/artifact_adapters/abstract_artifact_adapter"'],
-        [docSections.solCompilerArtifactAdapter]: ['"sol-cov/src/artifact_adapters/sol_compiler_artifact_adapter"'],
-        [docSections.truffleArtifactAdapter]: ['"sol-cov/src/artifact_adapters/truffle_artifact_adapter"'],
-        [docSections.types]: ['"subproviders/src/types"', '"types/src/index"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
-    sections: docSections,
-    visibleConstructors: [
-        docSections.coverageSubprovider,
-        docSections.abstractArtifactAdapter,
-        docSections.solCompilerArtifactAdapter,
-        docSections.truffleArtifactAdapter,
-    ],
-    typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [
-            'JSONRPCRequestPayload',
-            'NextCallback',
-            'ErrorCallback',
-            'AbstractArtifactAdapter',
-            'CoverageSubprovider',
-            'TruffleArtifactAdapter',
-            'SolCompilerArtifactAdapter',
-            'ContractData',
-        ],
-        typeNameToExternalLink: {},
-        typeNameToPrefix: {},
-        typeNameToDocSection: {
-            AbstractArtifactAdapter: docSections.abstractArtifactAdapter,
-            CoverageSubprovider: docSections.coverageSubprovider,
-            TruffleArtifactAdapter: docSections.truffleArtifactAdapter,
-            SolCompilerArtifactAdapter: docSections.solCompilerArtifactAdapter,
-        },
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 
@@ -92,6 +53,7 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -103,6 +65,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
     docsInfo,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

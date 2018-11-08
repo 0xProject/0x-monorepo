@@ -5,7 +5,47 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.1-rc.4 - _August 13, 2018_
+## v2.0.0 - _October 18, 2018_
+
+    * Convert all schemas to JSON files so that they can be used with `json-schema` implemenations in other programming languages. (#1145)
+
+## v1.0.7 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v1.0.6 - _October 2, 2018_
+
+    * Dependencies updated
+
+## v1.0.5 - _September 28, 2018_
+
+    * Dependencies updated
+
+## v1.0.4 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.3 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.0.2 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v1.0.1 - _September 5, 2018_
+
+    * Dependencies updated
+
+## v1.0.1-rc.6 - _August 27, 2018_
+
+    * Dependencies updated
+
+## v1.0.1-rc.5 - _August 24, 2018_
+
+    * Update incorrect relayer api fee recipients response schema (#974)
+
+## v1.0.1-rc.4 - _August 14, 2018_
 
     * Allow for additional properties in txData schema (#938)
     * Change hexSchema to match `0x` (#937)

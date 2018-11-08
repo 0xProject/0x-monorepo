@@ -1,3 +1,29 @@
 export { Compiler } from './compiler';
-export { CompilerOptions } from './utils/types';
-export { ContractArtifact, ContractNetworks } from './utils/types';
+export {
+    AbiDefinition,
+    CompilerOptions,
+    CompilerSettings,
+    DataItem,
+    DevdocOutput,
+    ErrorSeverity,
+    ErrorType,
+    EventAbi,
+    EventParameter,
+    EvmBytecodeOutput,
+    EvmOutput,
+    FallbackAbi,
+    FunctionAbi,
+    MethodAbi,
+    ConstructorAbi,
+    ConstructorStateMutability,
+    ContractAbi,
+    OutputField,
+    CompilerSettingsMetadata,
+    OptimizerSettings,
+    ParamDescription,
+    SolcError,
+    StandardContractOutput,
+    StandardOutput,
+    StateMutability,
+    SourceLocation,
+} from 'ethereum-types';

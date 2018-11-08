@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors } from '@0x/react-shared';
 import * as _ from 'lodash';
 import TextField from 'material-ui/TextField';
 import * as moment from 'moment';

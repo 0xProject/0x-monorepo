@@ -1,5 +1,5 @@
-import { colors } from '@0xproject/react-shared';
-import { errorUtils } from '@0xproject/utils';
+import { colors } from '@0x/react-shared';
+import { errorUtils } from '@0x/utils';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
 
@@ -71,7 +71,7 @@ export class LifeCycleRaisedButton extends React.Component<LifeCycleRaisedButton
                 style={{ width: '100%' }}
                 backgroundColor={this.props.backgroundColor}
                 labelColor={this.props.labelColor}
-                onTouchTap={this.onClickAsync.bind(this)}
+                onClick={this.onClickAsync.bind(this)}
                 disabled={this.props.isDisabled || this.state.buttonState !== ButtonState.READY}
             />
         );

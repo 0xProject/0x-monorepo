@@ -1,7 +1,7 @@
-import { devConstants, env, EnvVars, web3Factory } from '@0xproject/dev-utils';
-import { prependSubprovider } from '@0xproject/subproviders';
-import { logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { devConstants, env, EnvVars, web3Factory } from '@0x/dev-utils';
+import { prependSubprovider, Web3ProviderEngine } from '@0x/subproviders';
+import { logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 import { coverage } from './coverage';
@@ -47,7 +47,7 @@ const ganacheConfigs = {
 };
 const providerConfigs = testProvider === ProviderType.Ganache ? ganacheConfigs : gethConfigs;
 
-export const provider = web3Factory.getRpcProvider(providerConfigs);
+export const provider: Web3ProviderEngine = web3Factory.getRpcProvider(providerConfigs);
 const isCoverageEnabled = env.parseBoolean(EnvVars.SolidityCoverage);
 const isProfilerEnabled = env.parseBoolean(EnvVars.SolidityProfiler);
 const isRevertTraceEnabled = env.parseBoolean(EnvVars.SolidityRevertTrace);

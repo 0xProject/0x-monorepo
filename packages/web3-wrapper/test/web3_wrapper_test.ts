@@ -1,5 +1,5 @@
 import * as chai from 'chai';
-import { BlockParamLiteral } from 'ethereum-types';
+import { BlockParamLiteral, JSONRPCErrorCallback, JSONRPCRequestPayload } from 'ethereum-types';
 import * as Ganache from 'ganache-core';
 import * as _ from 'lodash';
 import 'mocha';
@@ -78,6 +78,19 @@ describe('Web3Wrapper tests', () => {
             const signatureLength = 132;
             expect(signature.length).to.be.equal(signatureLength);
         });
+        it('should throw if the provider returns an error', async () => {
+            const message = '0xdeadbeef';
+            const signer = addresses[1];
+            const fakeProvider = {
+                async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
+                    callback(new Error('User denied message signature'));
+                },
+            };
+            const errorWeb3Wrapper = new Web3Wrapper(fakeProvider);
+            expect(errorWeb3Wrapper.signMessageAsync(signer, message)).to.be.rejectedWith(
+                'User denied message signature',
+            );
+        });
     });
     describe('#getBlockNumberAsync', () => {
         it('get block number', async () => {
@@ -85,28 +98,40 @@ describe('Web3Wrapper tests', () => {
             expect(typeof blockNumber).to.be.equal('number');
         });
     });
-    describe('#getBlockAsync', () => {
+    describe('#getBlockIfExistsAsync', () => {
         it('gets block when supplied a valid BlockParamLiteral value', async () => {
             const blockParamLiteral = BlockParamLiteral.Earliest;
-            const block = await web3Wrapper.getBlockAsync(blockParamLiteral);
-            expect(block.number).to.be.equal(0);
-            expect(utils.isBigNumber(block.difficulty)).to.equal(true);
-            expect(_.isNumber(block.gasLimit)).to.equal(true);
+            const blockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockParamLiteral);
+            if (_.isUndefined(blockIfExists)) {
+                throw new Error('Expected block to exist');
+            }
+            expect(blockIfExists.number).to.be.equal(0);
+            expect(utils.isBigNumber(blockIfExists.difficulty)).to.equal(true);
+            expect(_.isNumber(blockIfExists.gasLimit)).to.equal(true);
         });
         it('gets block when supplied a block number', async () => {
             const blockParamLiteral = 0;
-            const block = await web3Wrapper.getBlockAsync(blockParamLiteral);
-            expect(block.number).to.be.equal(0);
+            const blockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockParamLiteral);
+            if (_.isUndefined(blockIfExists)) {
+                throw new Error('Expected block to exist');
+            }
+            expect(blockIfExists.number).to.be.equal(0);
         });
         it('gets block when supplied a block hash', async () => {
             const blockParamLiteral = 0;
-            const block = await web3Wrapper.getBlockAsync(blockParamLiteral);
-            const sameBlock = await web3Wrapper.getBlockAsync(block.hash as string);
-            expect(sameBlock.number).to.be.equal(0);
+            const blockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockParamLiteral);
+            if (_.isUndefined(blockIfExists)) {
+                throw new Error('Expected block to exist');
+            }
+            const sameBlockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockIfExists.hash as string);
+            if (_.isUndefined(sameBlockIfExists)) {
+                throw new Error('Expected block to exist');
+            }
+            expect(sameBlockIfExists.number).to.be.equal(0);
         });
         it('should throw if supplied invalid blockParam value', async () => {
             const invalidBlockParam = 'deadbeef';
-            expect(web3Wrapper.getBlockAsync(invalidBlockParam)).to.eventually.to.be.rejected();
+            expect(web3Wrapper.getBlockIfExistsAsync(invalidBlockParam)).to.eventually.to.be.rejected();
         });
     });
     describe('#getBlockWithTransactionDataAsync', () => {

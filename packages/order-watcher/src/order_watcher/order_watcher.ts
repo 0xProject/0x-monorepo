@@ -1,5 +1,8 @@
 // tslint:disable:no-unnecessary-type-assertion
+import { ContractAddresses } from '@0x/contract-addresses';
+import * as artifacts from '@0x/contract-artifacts';
 import {
+    AssetBalanceAndProxyAllowanceFetcher,
     ContractWrappers,
     ERC20TokenApprovalEventArgs,
     ERC20TokenEventArgs,
@@ -15,27 +18,25 @@ import {
     ExchangeEventArgs,
     ExchangeEvents,
     ExchangeFillEventArgs,
+    OrderFilledCancelledFetcher,
     WETH9DepositEventArgs,
     WETH9EventArgs,
     WETH9Events,
     WETH9WithdrawalEventArgs,
-} from '@0xproject/contract-wrappers';
-import { schemas } from '@0xproject/json-schemas';
+} from '@0x/contract-wrappers';
+import { schemas } from '@0x/json-schemas';
 import {
     assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
     OrderFilledCancelledLazyStore,
     orderHashUtils,
     OrderStateUtils,
-} from '@0xproject/order-utils';
-import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder } from '@0xproject/types';
-import { errorUtils, intervalUtils } from '@0xproject/utils';
+} from '@0x/order-utils';
+import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder, Stats } from '@0x/types';
+import { errorUtils, intervalUtils } from '@0x/utils';
 import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
-import { AssetBalanceAndProxyAllowanceFetcher } from '../fetchers/asset_balance_and_proxy_allowance_fetcher';
-import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_fetcher';
 import { orderWatcherPartialConfigSchema } from '../schemas/order_watcher_partial_config_schema';
 import { OnOrderStateChangeCallback, OrderWatcherConfig, OrderWatcherError } from '../types';
 import { assert } from '../utils/assert';
@@ -87,9 +88,18 @@ export class OrderWatcher {
     private readonly _cleanupJobInterval: number;
     private _cleanupJobIntervalIdIfExists?: NodeJS.Timer;
     private _callbackIfExists?: OnOrderStateChangeCallback;
+    /**
+     * Instantiate a new OrderWatcher
+     * @param provider Web3 provider to use for JSON RPC calls
+     * @param networkId NetworkId to watch orders on
+     * @param contractAddresses Optional contract addresses. Defaults to known
+     * addresses based on networkId.
+     * @param partialConfig Optional configurations
+     */
     constructor(
         provider: Provider,
         networkId: number,
+        contractAddresses?: ContractAddresses,
         partialConfig: Partial<OrderWatcherConfig> = DEFAULT_ORDER_WATCHER_CONFIG,
     ) {
         assert.isWeb3Provider('provider', provider);
@@ -104,9 +114,14 @@ export class OrderWatcher {
         this._collisionResistantAbiDecoder = new CollisionResistanceAbiDecoder(
             artifacts.ERC20Token.compilerOutput.abi,
             artifacts.ERC721Token.compilerOutput.abi,
-            [artifacts.EtherToken.compilerOutput.abi, artifacts.Exchange.compilerOutput.abi],
+            [artifacts.WETH9.compilerOutput.abi, artifacts.Exchange.compilerOutput.abi],
         );
-        const contractWrappers = new ContractWrappers(provider, { networkId });
+        const contractWrappers = new ContractWrappers(provider, {
+            networkId,
+            // Note(albrow): We let the contract-wrappers package handle
+            // default values for contractAddresses.
+            contractAddresses,
+        });
         this._eventWatcher = new EventWatcher(provider, config.eventPollingIntervalMs, STATE_LAYER, config.isVerbose);
         const balanceAndProxyAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
             contractWrappers.erc20Token,
@@ -207,6 +222,14 @@ export class OrderWatcher {
         this._expirationWatcher.unsubscribe();
         intervalUtils.clearAsyncExcludingInterval(this._cleanupJobIntervalIdIfExists);
     }
+    /**
+     * Gets statistics of the OrderWatcher Instance.
+     */
+    public getStats(): Stats {
+        return {
+            orderCount: _.size(this._orderByOrderHash),
+        };
+    }
     private async _cleanupAsync(): Promise<void> {
         for (const orderHash of _.keys(this._orderByOrderHash)) {
             this._cleanupOrderRelatedState(orderHash);
@@ -269,6 +292,7 @@ export class OrderWatcher {
             return; // noop
         }
         const decodedLog = (maybeDecodedLog as any) as LogWithDecodedArgs<ContractEventArgs>;
+        const transactionHash = decodedLog.transactionHash;
         switch (decodedLog.event) {
             case ERC20TokenEvents.Approval:
             case ERC721TokenEvents.Approval: {
@@ -284,7 +308,7 @@ export class OrderWatcher {
                         args._owner,
                         tokenAssetData,
                     );
-                    await this._emitRevalidateOrdersAsync(orderHashes);
+                    await this._emitRevalidateOrdersAsync(orderHashes, transactionHash);
                     break;
                 } else {
                     // ERC721
@@ -297,7 +321,7 @@ export class OrderWatcher {
                         args._owner,
                         tokenAssetData,
                     );
-                    await this._emitRevalidateOrdersAsync(orderHashes);
+                    await this._emitRevalidateOrdersAsync(orderHashes, transactionHash);
                     break;
                 }
             }
@@ -316,7 +340,7 @@ export class OrderWatcher {
                         args._from,
                         tokenAssetData,
                     );
-                    await this._emitRevalidateOrdersAsync(orderHashes);
+                    await this._emitRevalidateOrdersAsync(orderHashes, transactionHash);
                     break;
                 } else {
                     // ERC721
@@ -330,7 +354,7 @@ export class OrderWatcher {
                         args._from,
                         tokenAssetData,
                     );
-                    await this._emitRevalidateOrdersAsync(orderHashes);
+                    await this._emitRevalidateOrdersAsync(orderHashes, transactionHash);
                     break;
                 }
             }
@@ -344,7 +368,7 @@ export class OrderWatcher {
                     args._owner,
                     tokenAddress,
                 );
-                await this._emitRevalidateOrdersAsync(orderHashes);
+                await this._emitRevalidateOrdersAsync(orderHashes, transactionHash);
                 break;
             }
             case WETH9Events.Deposit: {
@@ -357,7 +381,7 @@ export class OrderWatcher {
                     args._owner,
                     tokenAssetData,
                 );
-                await this._emitRevalidateOrdersAsync(orderHashes);
+                await this._emitRevalidateOrdersAsync(orderHashes, transactionHash);
                 break;
             }
             case WETH9Events.Withdrawal: {
@@ -370,7 +394,7 @@ export class OrderWatcher {
                     args._owner,
                     tokenAssetData,
                 );
-                await this._emitRevalidateOrdersAsync(orderHashes);
+                await this._emitRevalidateOrdersAsync(orderHashes, transactionHash);
                 break;
             }
             case ExchangeEvents.Fill: {
@@ -381,7 +405,7 @@ export class OrderWatcher {
                 const orderHash = args.orderHash;
                 const isOrderWatched = !_.isUndefined(this._orderByOrderHash[orderHash]);
                 if (isOrderWatched) {
-                    await this._emitRevalidateOrdersAsync([orderHash]);
+                    await this._emitRevalidateOrdersAsync([orderHash], transactionHash);
                 }
                 break;
             }
@@ -393,7 +417,7 @@ export class OrderWatcher {
                 const orderHash = args.orderHash;
                 const isOrderWatched = !_.isUndefined(this._orderByOrderHash[orderHash]);
                 if (isOrderWatched) {
-                    await this._emitRevalidateOrdersAsync([orderHash]);
+                    await this._emitRevalidateOrdersAsync([orderHash], transactionHash);
                 }
                 break;
             }
@@ -404,7 +428,7 @@ export class OrderWatcher {
                 this._orderFilledCancelledLazyStore.deleteAllIsCancelled();
                 // Revalidate orders
                 const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByMaker(args.makerAddress);
-                await this._emitRevalidateOrdersAsync(orderHashes);
+                await this._emitRevalidateOrdersAsync(orderHashes, transactionHash);
                 break;
             }
 
@@ -412,12 +436,12 @@ export class OrderWatcher {
                 throw errorUtils.spawnSwitchErr('decodedLog.event', decodedLog.event);
         }
     }
-    private async _emitRevalidateOrdersAsync(orderHashes: string[]): Promise<void> {
+    private async _emitRevalidateOrdersAsync(orderHashes: string[], transactionHash?: string): Promise<void> {
         for (const orderHash of orderHashes) {
             const signedOrder = this._orderByOrderHash[orderHash];
             // Most of these calls will never reach the network because the data is fetched from stores
             // and only updated when cache is invalidated
-            const orderState = await this._orderStateUtils.getOpenOrderStateAsync(signedOrder);
+            const orderState = await this._orderStateUtils.getOpenOrderStateAsync(signedOrder, transactionHash);
             if (_.isUndefined(this._callbackIfExists)) {
                 break; // Unsubscribe was called
             }

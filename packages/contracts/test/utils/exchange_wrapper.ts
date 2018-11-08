@@ -1,9 +1,9 @@
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
+import { ExchangeContract } from '../../generated-wrappers/exchange';
 
 import { formatters } from './formatters';
 import { LogDecoder } from './log_decoder';

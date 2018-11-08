@@ -1,14 +1,15 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { FillScenarios } from '@0xproject/fill-scenarios';
-import { assetDataUtils, ecSignOrderHashAsync, generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils';
-import { SignedOrder, SignerType } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { FillScenarios } from '@0x/fill-scenarios';
+import { assetDataUtils, generatePseudoRandomSalt, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import 'mocha';
 
 import { ContractWrappers } from '../src';
 import { TransactionEncoder } from '../src/utils/transaction_encoder';
 
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -31,23 +32,26 @@ describe('TransactionEncoder', () => {
     const fillableAmount = new BigNumber(5);
     const takerTokenFillAmount = new BigNumber(5);
     let signedOrder: SignedOrder;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-        blockPollingIntervalMs: 0,
-    };
+
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
+        const config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+            contractAddresses,
+            blockPollingIntervalMs: 10,
+        };
         contractWrappers = new ContractWrappers(provider, config);
-        exchangeContractAddress = contractWrappers.exchange.getContractAddress();
+        exchangeContractAddress = contractWrappers.exchange.address;
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        const zrxTokenAddress = tokenUtils.getProtocolTokenAddress();
+        const zrxTokenAddress = contractWrappers.exchange.zrxTokenAddress;
         fillScenarios = new FillScenarios(
             provider,
             userAddresses,
             zrxTokenAddress,
             exchangeContractAddress,
-            contractWrappers.erc20Proxy.getContractAddress(),
-            contractWrappers.erc721Proxy.getContractAddress(),
+            contractWrappers.erc20Proxy.address,
+            contractWrappers.erc721Proxy.address,
         );
         [coinbase, makerAddress, takerAddress, senderAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
@@ -80,12 +84,7 @@ describe('TransactionEncoder', () => {
         ): Promise<void> => {
             const salt = generatePseudoRandomSalt();
             const encodedTransaction = encoder.getTransactionHex(data, salt, signerAddress);
-            const signature = await ecSignOrderHashAsync(
-                provider,
-                encodedTransaction,
-                signerAddress,
-                SignerType.Default,
-            );
+            const signature = await signatureUtils.ecSignHashAsync(provider, encodedTransaction, signerAddress);
             txHash = await contractWrappers.exchange.executeTransactionAsync(
                 salt,
                 signerAddress,

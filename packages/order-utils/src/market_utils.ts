@@ -1,11 +1,16 @@
-import { schemas } from '@0xproject/json-schemas';
-import { Order } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { schemas } from '@0x/json-schemas';
+import { Order } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
 import { constants } from './constants';
-import { FindFeeOrdersThatCoverFeesForTargetOrdersOpts, FindOrdersThatCoverMakerAssetFillAmountOpts } from './types';
+import {
+    FeeOrdersAndRemainingFeeAmount,
+    FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
+    FindOrdersThatCoverMakerAssetFillAmountOpts,
+    OrdersAndRemainingFillAmount,
+} from './types';
 
 export const marketUtils = {
     /**
@@ -22,7 +27,7 @@ export const marketUtils = {
         orders: T[],
         makerAssetFillAmount: BigNumber,
         opts?: FindOrdersThatCoverMakerAssetFillAmountOpts,
-    ): { resultOrders: T[]; remainingFillAmount: BigNumber } {
+    ): OrdersAndRemainingFillAmount<T> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         assert.isValidBaseUnitAmount('makerAssetFillAmount', makerAssetFillAmount);
         // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from orders
@@ -46,17 +51,23 @@ export const marketUtils = {
         // iterate through the orders input from left to right until we have enough makerAsset to fill totalFillAmount
         const result = _.reduce(
             orders,
-            ({ resultOrders, remainingFillAmount }, order, index) => {
+            ({ resultOrders, remainingFillAmount, ordersRemainingFillableMakerAssetAmounts }, order, index) => {
                 if (remainingFillAmount.lessThanOrEqualTo(constants.ZERO_AMOUNT)) {
-                    return { resultOrders, remainingFillAmount: constants.ZERO_AMOUNT };
+                    return {
+                        resultOrders,
+                        remainingFillAmount: constants.ZERO_AMOUNT,
+                        ordersRemainingFillableMakerAssetAmounts,
+                    };
                 } else {
                     const makerAssetAmountAvailable = remainingFillableMakerAssetAmounts[index];
+                    const shouldIncludeOrder = makerAssetAmountAvailable.gt(constants.ZERO_AMOUNT);
                     // if there is no makerAssetAmountAvailable do not append order to resultOrders
                     // if we have exceeded the total amount we want to fill set remainingFillAmount to 0
                     return {
-                        resultOrders: makerAssetAmountAvailable.gt(constants.ZERO_AMOUNT)
-                            ? _.concat(resultOrders, order)
-                            : resultOrders,
+                        resultOrders: shouldIncludeOrder ? _.concat(resultOrders, order) : resultOrders,
+                        ordersRemainingFillableMakerAssetAmounts: shouldIncludeOrder
+                            ? _.concat(ordersRemainingFillableMakerAssetAmounts, makerAssetAmountAvailable)
+                            : ordersRemainingFillableMakerAssetAmounts,
                         remainingFillAmount: BigNumber.max(
                             constants.ZERO_AMOUNT,
                             remainingFillAmount.minus(makerAssetAmountAvailable),
@@ -64,7 +75,11 @@ export const marketUtils = {
                     };
                 }
             },
-            { resultOrders: [] as T[], remainingFillAmount: totalFillAmount },
+            {
+                resultOrders: [] as T[],
+                remainingFillAmount: totalFillAmount,
+                ordersRemainingFillableMakerAssetAmounts: [] as BigNumber[],
+            },
         );
         return result;
     },
@@ -84,7 +99,7 @@ export const marketUtils = {
         orders: T[],
         feeOrders: T[],
         opts?: FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
-    ): { resultOrders: T[]; remainingFeeAmount: BigNumber } {
+    ): FeeOrdersAndRemainingFeeAmount<T> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         assert.doesConformToSchema('feeOrders', feeOrders, schemas.ordersSchema);
         // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from orders
@@ -123,22 +138,23 @@ export const marketUtils = {
                 const makerAssetAmountAvailable = remainingFillableMakerAssetAmounts[index];
                 const feeToFillMakerAssetAmountAvailable = makerAssetAmountAvailable
                     .mul(order.takerFee)
-                    .div(order.makerAssetAmount);
+                    .dividedToIntegerBy(order.makerAssetAmount);
                 return accFees.plus(feeToFillMakerAssetAmountAvailable);
             },
             constants.ZERO_AMOUNT,
         );
-        const { resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
-            feeOrders,
-            totalFeeAmount,
-            {
-                remainingFillableMakerAssetAmounts: remainingFillableFeeAmounts,
-                slippageBufferAmount,
-            },
-        );
-        return {
+        const {
             resultOrders,
+            remainingFillAmount,
+            ordersRemainingFillableMakerAssetAmounts,
+        } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(feeOrders, totalFeeAmount, {
+            remainingFillableMakerAssetAmounts: remainingFillableFeeAmounts,
+            slippageBufferAmount,
+        });
+        return {
+            resultFeeOrders: resultOrders,
             remainingFeeAmount: remainingFillAmount,
+            feeOrdersRemainingFillableMakerAssetAmounts: ordersRemainingFillableMakerAssetAmounts,
         };
         // TODO: add more orders here to cover rounding
         // https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarding-contract-specification.md#over-buying-zrx

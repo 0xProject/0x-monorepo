@@ -1,4 +1,4 @@
-import { colors, Networks } from '@0xproject/react-shared';
+import { colors, Networks } from '@0x/react-shared';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
@@ -22,7 +22,7 @@ export class BlockchainErrDialog extends React.Component<BlockchainErrDialogProp
                 key="blockchainErrOk"
                 label="Ok"
                 primary={true}
-                onTouchTap={this.props.toggleDialogFn.bind(this.props.toggleDialogFn, false)}
+                onClick={this.props.toggleDialogFn.bind(this.props.toggleDialogFn, false)}
             />,
         ];
 

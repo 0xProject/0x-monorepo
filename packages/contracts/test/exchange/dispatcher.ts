@@ -1,19 +1,19 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetDataUtils } from '@0xproject/order-utils';
-import { AssetProxyId, RevertReason } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { assetDataUtils } from '@0x/order-utils';
+import { AssetProxyId, RevertReason } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
-import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
-import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
+import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
+import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
+import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import {
     TestAssetProxyDispatcherAssetProxyRegisteredEventArgs,
     TestAssetProxyDispatcherContract,
-} from '../../generated_contract_wrappers/test_asset_proxy_dispatcher';
-import { artifacts } from '../utils/artifacts';
+} from '../../generated-wrappers/test_asset_proxy_dispatcher';
+import { artifacts } from '../../src/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
@@ -203,6 +203,60 @@ describe('AssetProxyDispatcher', () => {
             expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[takerAddress][zrxToken.address].add(amount),
             );
+        });
+
+        it('should not dispatch a transfer if amount == 0', async () => {
+            // Register ERC20 proxy
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            // Construct metadata for ERC20 proxy
+            const encodedAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+
+            // Perform a transfer from makerAddress to takerAddress
+            const erc20Balances = await erc20Wrapper.getBalancesAsync();
+            const amount = constants.ZERO_AMOUNT;
+            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
+                await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
+                    encodedAssetData,
+                    makerAddress,
+                    takerAddress,
+                    amount,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            expect(txReceipt.logs.length).to.be.equal(0);
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            expect(newBalances).to.deep.equal(erc20Balances);
+        });
+
+        it('should not dispatch a transfer if from == to', async () => {
+            // Register ERC20 proxy
+            await web3Wrapper.awaitTransactionSuccessAsync(
+                await assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            // Construct metadata for ERC20 proxy
+            const encodedAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+
+            // Perform a transfer from makerAddress to takerAddress
+            const erc20Balances = await erc20Wrapper.getBalancesAsync();
+            const amount = new BigNumber(10);
+            const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
+                await assetProxyDispatcher.publicDispatchTransferFrom.sendTransactionAsync(
+                    encodedAssetData,
+                    makerAddress,
+                    makerAddress,
+                    amount,
+                    { from: owner },
+                ),
+                constants.AWAIT_TRANSACTION_MINED_MS,
+            );
+            expect(txReceipt.logs.length).to.be.equal(0);
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            expect(newBalances).to.deep.equal(erc20Balances);
         });
 
         it('should throw if dispatching to unregistered proxy', async () => {

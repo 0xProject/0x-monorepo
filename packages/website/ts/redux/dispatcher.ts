@@ -1,5 +1,4 @@
-import { ECSignature } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 import { Dispatch } from 'redux';
 import { State } from 'ts/redux/reducer';
 import {
@@ -7,7 +6,7 @@ import {
     AssetToken,
     BlockchainErrs,
     Language,
-    Order,
+    PortalOrder,
     ProviderType,
     ScreenWidths,
     Side,
@@ -50,7 +49,7 @@ export class Dispatcher {
             type: ActionTypes.UpdateOrderSalt,
         });
     }
-    public updateUserSuppliedOrderCache(order: Order): void {
+    public updateUserSuppliedOrderCache(order: PortalOrder): void {
         this._dispatch({
             data: order,
             type: ActionTypes.UpdateUserSuppliedOrderCache,
@@ -149,10 +148,10 @@ export class Dispatcher {
             type: ActionTypes.ForceTokenStateRefetch,
         });
     }
-    public updateECSignature(ecSignature: ECSignature): void {
+    public updateSignature(signature: string): void {
         this._dispatch({
-            data: ecSignature,
-            type: ActionTypes.UpdateOrderECSignature,
+            data: signature,
+            type: ActionTypes.UpdateOrderSignature,
         });
     }
     public updateUserWeiBalance(balance?: BigNumber): void {

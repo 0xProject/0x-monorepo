@@ -1,4 +1,4 @@
-## @0xproject/testnet-faucets
+## @0x/testnet-faucets
 
 This faucet dispenses 0.1 test ether to one recipient per second and 0.1 test ZRX every 5 seconds. It has a max queue size of 1000.
 
@@ -31,13 +31,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/testnet-faucets yarn build
+PKG=@0x/testnet-faucets yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/testnet-faucets yarn watch
+PKG=@0x/testnet-faucets yarn watch
 ```
 
 ### Clean

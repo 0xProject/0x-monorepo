@@ -5,8 +5,8 @@ import {
     OrderStateInvalid,
     OrderStateValid,
     SignedOrder,
-} from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+} from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
@@ -81,7 +81,7 @@ export class OrderStateUtils {
         const remainingTakerAssetAmount = signedOrder.takerAssetAmount.minus(
             sidedOrderRelevantState.filledTakerAssetAmount,
         );
-        const isRoundingError = OrderValidationUtils.isRoundingError(
+        const isRoundingError = OrderValidationUtils.isRoundingErrorFloor(
             remainingTakerAssetAmount,
             signedOrder.takerAssetAmount,
             signedOrder.makerAssetAmount,
@@ -91,6 +91,14 @@ export class OrderStateUtils {
         }
         return { isValid: true };
     }
+    /**
+     * Instantiate OrderStateUtils
+     * @param balanceAndProxyAllowanceFetcher A class that is capable of fetching balances
+     * and proxyAllowances for Ethereum addresses. It must implement AbstractBalanceAndProxyAllowanceFetcher
+     * @param orderFilledCancelledFetcher A class that is capable of fetching whether an order
+     * is cancelled and how much of it has been filled. It must implement AbstractOrderFilledCancelledFetcher
+     * @return Instance of OrderStateUtils
+     */
     constructor(
         balanceAndProxyAllowanceFetcher: AbstractBalanceAndProxyAllowanceFetcher,
         orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher,
@@ -98,7 +106,15 @@ export class OrderStateUtils {
         this._balanceAndProxyAllowanceFetcher = balanceAndProxyAllowanceFetcher;
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
     }
-    public async getOpenOrderStateAsync(signedOrder: SignedOrder): Promise<OrderState> {
+    /**
+     * Get the orderState for an "open" order (i.e where takerAddress=NULL_ADDRESS)
+     * This method will only check the maker's balance/allowance to calculate the
+     * OrderState.
+     * @param signedOrder The order of interest
+     * @return State relevant to the signedOrder, as well as whether the signedOrder is "valid".
+     * Validity is defined as a non-zero amount of the order can still be filled.
+     */
+    public async getOpenOrderStateAsync(signedOrder: SignedOrder, transactionHash?: string): Promise<OrderState> {
         const orderRelevantState = await this.getOpenOrderRelevantStateAsync(signedOrder);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const isOrderCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(orderHash);
@@ -118,6 +134,7 @@ export class OrderStateUtils {
                 isValid: true,
                 orderHash,
                 orderRelevantState,
+                transactionHash,
             };
             return orderState;
         } else {
@@ -125,10 +142,16 @@ export class OrderStateUtils {
                 isValid: false,
                 orderHash,
                 error: orderValidationResult.error,
+                transactionHash,
             };
             return orderState;
         }
     }
+    /**
+     * Get state relevant to an order (i.e makerBalance, makerAllowance, filledTakerAssetAmount, etc...
+     * @param signedOrder Order of interest
+     * @return An instance of OrderRelevantState
+     */
     public async getOpenOrderRelevantStateAsync(signedOrder: SignedOrder): Promise<OrderRelevantState> {
         const isMaker = true;
         const sidedOrderRelevantState = await this._getSidedOrderRelevantStateAsync(
@@ -151,6 +174,12 @@ export class OrderStateUtils {
         };
         return orderRelevantState;
     }
+    /**
+     * Get the max amount of the supplied order's takerAmount that could still be filled
+     * @param signedOrder Order of interest
+     * @param takerAddress Hypothetical taker of the order
+     * @return fillableTakerAssetAmount
+     */
     public async getMaxFillableTakerAssetAmountAsync(
         signedOrder: SignedOrder,
         takerAddress: string,
@@ -164,7 +193,7 @@ export class OrderStateUtils {
         );
         const remainingFillableTakerAssetAmountGivenMakersStatus = signedOrder.makerAssetAmount.eq(0)
             ? new BigNumber(0)
-            : utils.getPartialAmount(
+            : utils.getPartialAmountFloor(
                   orderRelevantMakerState.remainingFillableAssetAmount,
                   signedOrder.makerAssetAmount,
                   signedOrder.takerAssetAmount,
@@ -182,32 +211,6 @@ export class OrderStateUtils {
         ]);
 
         return fillableTakerAssetAmount;
-    }
-    public async getMaxFillableTakerAssetAmountForFailingOrderAsync(
-        signedOrder: SignedOrder,
-        takerAddress: string,
-    ): Promise<BigNumber> {
-        // Get min of taker balance & allowance
-        const takerAssetBalanceOfTaker = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(
-            signedOrder.takerAssetData,
-            takerAddress,
-        );
-        const takerAssetAllowanceOfTaker = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
-            signedOrder.takerAssetData,
-            takerAddress,
-        );
-        const minTakerAssetAmount = BigNumber.min([takerAssetBalanceOfTaker, takerAssetAllowanceOfTaker]);
-
-        // get remainingFillAmount
-        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        const filledTakerAssetAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
-        const remainingFillTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerAssetAmount);
-
-        if (minTakerAssetAmount.gte(remainingFillTakerAssetAmount)) {
-            return remainingFillTakerAssetAmount;
-        } else {
-            return minTakerAssetAmount;
-        }
     }
     private async _getSidedOrderRelevantStateAsync(
         isMakerSide: boolean,

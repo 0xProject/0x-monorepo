@@ -1,6 +1,6 @@
 ## 0x.js
 
-A TypeScript/Javascript library for interacting with the 0x protocol.
+A TypeScript/Javascript library for interacting with the 0x protocol. It is a high level package which combines a number of underlying packages such as order-utils and order-watcher.
 
 ### Read the [Documentation](https://0xproject.com/docs/0x.js).
 
@@ -19,14 +19,21 @@ npm install 0x.js --save
 **Import**
 
 ```javascript
-import { ZeroEx } from '0x.js';
+import {
+    assetDataUtils,
+    BigNumber,
+    ContractWrappers,
+    generatePseudoRandomSalt,
+    orderHashUtils,
+    signatureUtils,
+} from '0x.js';
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 

@@ -1,7 +1,6 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 
 import { CallToAction } from 'ts/components/ui/button';
 
@@ -13,7 +12,7 @@ interface TopBarMenuItemProps {
     title: string;
     path?: string;
     isPrimary?: boolean;
-    isExternal: boolean;
+    shouldOpenInNewTab?: boolean;
     style?: React.CSSProperties;
     className?: string;
     isNightVersion?: boolean;
@@ -26,6 +25,7 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
         isPrimary: false,
         style: DEFAULT_STYLE,
         className: '',
+        shouldOpenInNewTab: false,
         isNightVersion: false,
     };
     public render(): React.ReactNode {
@@ -38,20 +38,9 @@ export class TopBarMenuItem extends React.Component<TopBarMenuItemProps, TopBarM
         );
         return (
             <div className={`center ${this.props.className}`} style={{ ...this.props.style, color: menuItemColor }}>
-                {this.props.isExternal ? (
-                    <a
-                        className="text-decoration-none"
-                        style={{ color: linkColor }}
-                        target="_blank"
-                        href={this.props.path}
-                    >
-                        {itemContent}
-                    </a>
-                ) : (
-                    <Link to={this.props.path} className="text-decoration-none" style={{ color: linkColor }}>
-                        {itemContent}
-                    </Link>
-                )}
+                <Link to={this.props.path} shouldOpenInNewTab={this.props.shouldOpenInNewTab} fontColor={linkColor}>
+                    {itemContent}
+                </Link>
             </div>
         );
     }

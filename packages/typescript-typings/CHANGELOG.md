@@ -5,7 +5,39 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.4 - _August 13, 2018_
+## v3.0.3 - _October 18, 2018_
+
+    * Dependencies updated
+
+## v3.0.2 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v3.0.1 - _October 2, 2018_
+
+    * Dependencies updated
+
+## v3.0.0 - _September 28, 2018_
+
+    * Remove types for ethers.js (#1069)
+
+## v2.0.2 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v2.0.1 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v2.0.0 - _September 5, 2018_
+
+    * Remove types for web3-provider-engine, newman, ganache-core, detect-node, eth-lightwallet (#1052)
+
+## v1.0.5 - _August 24, 2018_
+
+    * Dependencies updated
+
+## v1.0.4 - _August 14, 2018_
 
     * Dependencies updated
 

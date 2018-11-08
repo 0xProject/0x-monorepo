@@ -1,12 +1,185 @@
 [
     {
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Fix bug in `ForwarderWrapper` where `feeRecipientAddress` was not correctly normalized.",
+                "pr": 1178
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Add optional validation to the forwarder wrapper methods"
+            },
+            {
+                "note": "Updated to use new modularized artifacts.",
+                "pr": 1105
+            },
+            {
+                "note": "Top-level `ContractWrappers` class has a new optional `contractAddresses` parameter.",
+                "pr": 1105
+            },
+            {
+                "note":
+                    "Default contract addresses are no longer stored in artifacts and are instead loaded from the `@0xproject/contract-addresses` package.",
+                "pr": 1105
+            },
+            {
+                "note":
+                    "Most contract addresses are now defined at instantiation time and are available as properties (e.g., `exchangeWrapper.address`) instead of methods (e.g., `exchangeWrapper.getContractAddress()`).",
+                "pr": 1105
+            },
+            {
+                "note":
+                    "Removed `setProvider` method in top-level `ContractWrapper` class and added new `unsubscribeAll` method.",
+                "pr": 1105
+            },
+            {
+                "note":
+                    "Some properties and methods have been renamed. For example, some methods that previously could throw no longer can, and so their names have been updated accordingly.",
+                "pr": 1105
+            },
+            {
+                "note":
+                    "Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from web3-wrapper, which we feel provides enough information.",
+                "pr": 1105
+            },
+            {
+                "note": "Add `ForwarderWrapperError` to public interface",
+                "pr": 1147
+            },
+            {
+                "note": "Add `ContractWrapperError.SignatureRequestDenied` to public interface",
+                "pr": 1147
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1538693146
+    },
+    {
+        "timestamp": 1538157789,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note":
+                    "Fixes dropped events in subscriptions by fetching logs by blockHash instead of blockNumber. Support for fetching by blockHash was added in Geth > v1.8.13 and Parity > v2.1.0. Infura works too.",
+                "pr": 1080
+            },
+            {
+                "note":
+                    "Fix misunderstanding about blockstream interface callbacks and pass the raw JSON RPC responses to it",
+                "pr": 1080
+            }
+        ],
+        "timestamp": 1537907159
+    },
+    {
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1537875740
+    },
+    {
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1537541580
+    },
+    {
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Drastically reduce the bundle size by removing unused parts of included contract artifacts."
+            }
+        ],
+        "timestamp": 1537369748
+    },
+    {
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Add ZRX & WETH mainnet contract addresses into the included artifacts"
+            }
+        ],
+        "timestamp": 1537265493
+    },
+    {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Add `OrderValidatorWrapper`"
+            },
+            {
+                "note":
+                    "Fix bug where contracts not deployed on a network showed an `EXCHANGE_CONTRACT_DOES_NOT_EXIST` error instead of `CONTRACT_NOT_DEPLOYED_ON_NETWORK`",
+                "pr": 1044
+            },
+            {
+                "note":
+                    "Export `AssetBalanceAndProxyAllowanceFetcher` and `OrderFilledCancelledFetcher` implementations",
+                "pr": 1054
+            },
+            {
+                "note":
+                    "Add `validateOrderFillableOrThrowAsync` and `validateFillOrderThrowIfInvalidAsync` to ExchangeWrapper",
+                "pr": 1054
+            }
+        ],
+        "timestamp": 1536142250
+    },
+    {
+        "version": "1.0.1-rc.5",
+        "changes": [
+            {
+                "note": "Fix missing `BlockParamLiteral` type import issue"
+            }
+        ],
+        "timestamp": 1535377027
+    },
+    {
         "version": "1.0.1-rc.4",
         "changes": [
             {
-                "pr": 975,
-                "note": "Added Transaction Encoder for use with 0x Exchange executeTransaction"
+                "note":
+                    "Export missing types: `TransactionEncoder`, `ContractAbi`, `JSONRPCRequestPayload`, `JSONRPCResponsePayload`, `JSONRPCErrorCallback`, `AbiDefinition`, `FunctionAbi`, `EventAbi`, `EventParameter`, `DecodedLogArgs`, `MethodAbi`, `ConstructorAbi`, `FallbackAbi`, `DataItem`, `ConstructorStateMutability`, `StateMutability` & `ExchangeSignatureValidatorApprovalEventArgs`",
+                "pr": 924
+            },
+            {
+                "note":
+                    "Remove superfluous exported types: `ContractEvent`, `Token`, `OrderFillRequest`, `ContractEventArgs`, `LogEvent`, `OnOrderStateChangeCallback`,     `ECSignature`, `OrderStateValid`, `OrderStateInvalid`, `OrderState`, `FilterObject`, `TransactionReceipt` & `TransactionReceiptWithDecodedLogs`",
+                "pr": 924
+            },
+            {
+                "note": "Added Transaction Encoder for use with 0x Exchange executeTransaction",
+                "pr": 975
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "1.0.1-rc.3",

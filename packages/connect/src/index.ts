@@ -1,19 +1,20 @@
 export { HttpClient } from './http_client';
-export { orderbookChannelFactory } from './orderbook_channel_factory';
+export { ordersChannelFactory } from './orders_channel_factory';
+export { Client, OrdersChannel, OrdersChannelHandler } from './types';
 export {
-    Client,
-    FeesRequest,
-    FeesResponse,
-    OrderbookChannel,
-    OrderbookChannelHandler,
-    OrderbookChannelSubscriptionOpts,
+    APIOrder,
+    AssetPairsRequestOpts,
+    AssetPairsResponse,
+    FeeRecipientsResponse,
     OrderbookRequest,
     OrderbookResponse,
+    OrderConfigRequest,
+    OrderConfigResponse,
+    OrdersChannelSubscriptionOpts,
     OrdersRequestOpts,
+    OrdersResponse,
     PagedRequestOpts,
-    TokenPairsItem,
-    TokenPairsRequestOpts,
-    TokenTradeInfo,
-} from './types';
-
-export { Order, SignedOrder } from '@0xproject/types';
+    PaginatedCollection,
+    RequestOpts,
+    SignedOrder,
+} from '@0x/types';

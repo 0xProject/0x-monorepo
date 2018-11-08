@@ -1,5 +1,6 @@
-import { assert } from '@0xproject/assert';
-import { addressUtils } from '@0xproject/utils';
+import { assert } from '@0x/assert';
+import { EIP712TypedData } from '@0x/types';
+import { addressUtils } from '@0x/utils';
 import * as bip39 from 'bip39';
 import HDNode = require('hdkey');
 import * as _ from 'lodash';
@@ -90,10 +91,10 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
     }
     /**
      * Sign a personal Ethereum signed message. The signing account will be the account
-     * associated with the provided address.
-     * If you've added the MnemonicWalletSubprovider to your app's provider, you can simply send an `eth_sign`
-     * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
-     * If you are not using this via a ProviderEngine instance, you can call it directly.
+     * associated with the provided address. If you've added the MnemonicWalletSubprovider to
+     * your app's provider, you can simply send an `eth_sign` or `personal_sign` JSON RPC request,
+     * and this method will be called auto-magically. If you are not using this via a ProviderEngine
+     * instance, you can call it directly.
      * @param data Hex string message to sign
      * @param address Address of the account to sign with
      * @return Signature hex string (order: rsv)
@@ -106,6 +107,25 @@ export class MnemonicWalletSubprovider extends BaseWalletSubprovider {
         assert.isETHAddressHex('address', address);
         const privateKeyWallet = this._privateKeyWalletForAddress(address);
         const sig = await privateKeyWallet.signPersonalMessageAsync(data, address);
+        return sig;
+    }
+    /**
+     * Sign an EIP712 Typed Data message. The signing account will be the account
+     * associated with the provided address. If you've added this MnemonicWalletSubprovider to
+     * your app's provider, you can simply send an `eth_signTypedData` JSON RPC request, and
+     * this method will be called auto-magically. If you are not using this via a ProviderEngine
+     *  instance, you can call it directly.
+     * @param address Address of the account to sign with
+     * @param data the typed data object
+     * @return Signature hex string (order: rsv)
+     */
+    public async signTypedDataAsync(address: string, typedData: EIP712TypedData): Promise<string> {
+        if (_.isUndefined(typedData)) {
+            throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
+        }
+        assert.isETHAddressHex('address', address);
+        const privateKeyWallet = this._privateKeyWalletForAddress(address);
+        const sig = await privateKeyWallet.signTypedDataAsync(address, typedData);
         return sig;
     }
     private _privateKeyWalletForAddress(address: string): PrivateKeyWalletSubprovider {

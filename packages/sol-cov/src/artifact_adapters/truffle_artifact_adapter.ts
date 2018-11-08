@@ -1,4 +1,4 @@
-import { Compiler, CompilerOptions } from '@0xproject/sol-compiler';
+import { Compiler, CompilerOptions } from '@0x/sol-compiler';
 import * as fs from 'fs';
 import * as glob from 'glob';
 import * as path from 'path';
@@ -18,6 +18,11 @@ interface TruffleConfig {
 export class TruffleArtifactAdapter extends AbstractArtifactAdapter {
     private readonly _solcVersion: string;
     private readonly _projectRoot: string;
+    /**
+     * Instantiates a TruffleArtifactAdapter
+     * @param projectRoot Path to the truffle project's root directory
+     * @param solcVersion Solidity version with which to compile all the contracts
+     */
     constructor(projectRoot: string, solcVersion: string) {
         super();
         this._solcVersion = solcVersion;

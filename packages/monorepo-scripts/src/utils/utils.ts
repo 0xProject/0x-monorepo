@@ -48,13 +48,20 @@ export const utils = {
                     };
                     packages.push(pkg);
                 } catch (err) {
-                    utils.log(`Couldn't find a 'package.json' for ${subpackageName}. Skipping.`);
+                    // Couldn't find a 'package.json' for package. Skipping.
                 }
             }
         }
         return packages;
     },
-    async getUpdatedPackagesAsync(shouldIncludePrivate: boolean): Promise<Package[]> {
+    async getPackagesByNameAsync(packageNames: string[]): Promise<Package[]> {
+        const allPackages = utils.getPackages(constants.monorepoRootPath);
+        const updatedPackages = _.filter(allPackages, pkg => {
+            return _.includes(packageNames, pkg.packageJson.name);
+        });
+        return updatedPackages;
+    },
+    async getPackagesToPublishAsync(shouldIncludePrivate: boolean): Promise<Package[]> {
         const updatedPublicPackages = await utils.getLernaUpdatedPackagesAsync(shouldIncludePrivate);
         const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
 

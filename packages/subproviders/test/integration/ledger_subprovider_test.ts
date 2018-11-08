@@ -1,5 +1,5 @@
-import { DoneCallback } from '@0xproject/types';
-import { promisify } from '@0xproject/utils';
+import { DoneCallback } from '@0x/types';
+import { promisify } from '@0x/utils';
 import Eth from '@ledgerhq/hw-app-eth';
 // HACK: This dependency is optional and tslint skips optional dependencies
 // tslint:disable-next-line:no-implicit-dependencies

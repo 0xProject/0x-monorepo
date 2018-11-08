@@ -72,37 +72,34 @@ TODO.md
 .vscode
 
 packages/website/public/bundle*
+packages/dev-tools-pages/public/bundle*
 packages/react-docs/example/public/bundle*
 
 # server cli
 packages/testnet-faucets/server/
 
 # generated contract artifacts/
+packages/contracts/generated-artifacts/
 packages/sol-cov/test/fixtures/artifacts/
 packages/metacoin/artifacts/
-packages/order-watcher/test/artifacts/
-packages/contract-wrappers/test/artifacts/
-packages/contract-wrappers/src/artifacts/
-packages/order-watcher/src/artifacts/
-packages/0x.js/src/artifacts/
 
-# unstable generated contract artifacts:
-packages/migrations/artifacts/2.0.0/
-
-# generated contract watcher
-packages/0x.js/src/generated_contract_wrappers/
-packages/contracts/generated_contract_wrappers/
-packages/contract-wrappers/src/contract_wrappers/generated/
+# generated contract wrappers
+packages/abi-gen-wrappers/wrappers
+packages/contracts/generated-wrappers/
 packages/metacoin/src/contract_wrappers
-packages/fill-scenarios/src/generated_contract_wrappers/
-packages/order-watcher/src/generated_contract_wrappers/
-packages/order-utils/src/generated_contract_wrappers/
-packages/migrations/src/1.0.0/contract_wrappers
-packages/migrations/src/2.0.0/contract_wrappers
-packages/migrations/src/2.0.0-beta-testnet/contract_wrappers
 
 # solc-bin in sol-compiler
 packages/sol-compiler/solc_bin/
 
 # Monorepo scripts
 packages/*/scripts/
+
+# python stuff
+.eggs
+.mypy_cache
+.tox
+python-packages/*/build
+python-packages/*/dist
+__pycache__
+python-packages/*/src/*.egg-info
+python-packages/*/.coverage

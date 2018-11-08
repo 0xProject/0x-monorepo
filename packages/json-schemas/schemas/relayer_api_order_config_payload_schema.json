@@ -1,0 +1,24 @@
+{
+    "id": "/relayerApiOrderConfigPayloadSchema",
+    "type": "object",
+    "properties": {
+        "makerAddress": { "$ref": "/addressSchema" },
+        "takerAddress": { "$ref": "/addressSchema" },
+        "makerAssetAmount": { "$ref": "/wholeNumberSchema" },
+        "takerAssetAmount": { "$ref": "/wholeNumberSchema" },
+        "makerAssetData": { "$ref": "/hexSchema" },
+        "takerAssetData": { "$ref": "/hexSchema" },
+        "exchangeAddress": { "$ref": "/addressSchema" },
+        "expirationTimeSeconds": { "$ref": "/wholeNumberSchema" }
+    },
+    "required": [
+        "makerAddress",
+        "takerAddress",
+        "makerAssetAmount",
+        "takerAssetAmount",
+        "makerAssetData",
+        "takerAssetData",
+        "exchangeAddress",
+        "expirationTimeSeconds"
+    ]
+}

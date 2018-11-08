@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
@@ -119,6 +119,26 @@ describe('OrderStateUtils', () => {
             const orderStateUtils = new OrderStateUtils(mockBalanceFetcher, mockOrderFilledFetcher);
             const orderState = await orderStateUtils.getOpenOrderStateAsync(signedOrder);
             expect(orderState.isValid).to.eq(false);
+        });
+        it('should include the transactionHash in orderState if supplied in method invocation', async () => {
+            const makerAssetAmount = new BigNumber(10);
+            const takerAssetAmount = new BigNumber(10000000000000000);
+            const takerBalance = takerAssetAmount;
+            const orderFilledAmount = new BigNumber(0);
+            const mockBalanceFetcher = buildMockBalanceFetcher(takerBalance);
+            const mockOrderFilledFetcher = buildMockOrderFilledFetcher(orderFilledAmount);
+            const [signedOrder] = testOrderFactory.generateTestSignedOrders(
+                {
+                    makerAssetAmount,
+                    takerAssetAmount,
+                },
+                1,
+            );
+
+            const orderStateUtils = new OrderStateUtils(mockBalanceFetcher, mockOrderFilledFetcher);
+            const transactionHash = '0xdeadbeef';
+            const orderState = await orderStateUtils.getOpenOrderStateAsync(signedOrder, transactionHash);
+            expect(orderState.transactionHash).to.eq(transactionHash);
         });
     });
 });

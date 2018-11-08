@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 export const utils = {
@@ -37,7 +37,7 @@ export const utils = {
         const hexBase = 16;
         const valueHex = valueBigNumber.toString(hexBase);
 
-        return valueBigNumber.lessThan(0) ? '-0x' + valueHex.substr(1) : '0x' + valueHex;
+        return valueBigNumber.lessThan(0) ? `-0x${valueHex.substr(1)}` : `0x${valueHex}`;
     },
     numberToHex(value: number): string {
         if (!isFinite(value) && !utils.isHexStrict(value)) {
@@ -48,7 +48,7 @@ export const utils = {
         const hexBase = 16;
         const result = valueBigNumber.toString(hexBase);
 
-        return valueBigNumber.lt(0) ? '-0x' + result.substr(1) : '0x' + result;
+        return valueBigNumber.lt(0) ? `-0x${result.substr(1)}` : `0x${result}`;
     },
     isHexStrict(hex: string | number): boolean {
         return (

@@ -1,4 +1,3 @@
-import { RevertReason } from '@0xproject/types';
 import * as _ from 'lodash';
 
 import { AsyncMethod, ContractWrappersError, SyncMethod } from '../types';
@@ -24,7 +23,15 @@ const contractCallErrorTransformer = (error: Error) => {
 const schemaErrorTransformer = (error: Error) => {
     if (_.includes(error.message, constants.INVALID_TAKER_FORMAT)) {
         const errMsg =
-            'Order taker must be of type string. If you want anyone to be able to fill an order - pass ZeroEx.NULL_ADDRESS';
+            'Order taker must be of type string. If you want anyone to be able to fill an order - pass NULL_ADDRESS';
+        return new Error(errMsg);
+    }
+    return error;
+};
+
+const signatureRequestErrorTransformer = (error: Error) => {
+    if (_.includes(error.message, constants.USER_DENIED_SIGNATURE_PATTERN)) {
+        const errMsg = ContractWrappersError.SignatureRequestDenied;
         return new Error(errMsg);
     }
     return error;
@@ -46,7 +53,7 @@ const asyncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
         // tslint:disable-next-line:only-arrow-functions
         descriptor.value = async function(...args: any[]): Promise<any> {
             try {
-                const result = await originalMethod.apply(this, args);
+                const result = await originalMethod.apply(this, args); // tslint:disable-line:no-invalid-this
                 return result;
             } catch (error) {
                 const transformedError = errorTransformer(error);
@@ -73,7 +80,7 @@ const syncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
         // tslint:disable-next-line:only-arrow-functions
         descriptor.value = function(...args: any[]): any {
             try {
-                const result = originalMethod.apply(this, args);
+                const result = originalMethod.apply(this, args); // tslint:disable-line:no-invalid-this
                 return result;
             } catch (error) {
                 const transformedError = errorTransformer(error);
@@ -88,7 +95,11 @@ const syncErrorHandlerFactory = (errorTransformer: ErrorTransformer) => {
 };
 
 // _.flow(f, g) = f ∘ g
-const zeroExErrorTransformer = _.flow(schemaErrorTransformer, contractCallErrorTransformer);
+const zeroExErrorTransformer = _.flow(
+    schemaErrorTransformer,
+    contractCallErrorTransformer,
+    signatureRequestErrorTransformer,
+);
 
 export const decorators = {
     asyncZeroExErrorHandler: asyncErrorHandlerFactory(zeroExErrorTransformer),

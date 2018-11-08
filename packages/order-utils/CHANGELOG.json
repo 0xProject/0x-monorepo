@@ -1,5 +1,112 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note":
+                    "Added `ecSignOrderAsync` to first sign an order using `eth_signTypedData` and fallback to `eth_sign`.",
+                "pr": 1102
+            },
+            {
+                "note": "Added `ecSignTypedDataOrderAsync` to sign an order exclusively using `eth_signTypedData`.",
+                "pr": 1102
+            },
+            {
+                "note": "Rename `ecSignOrderHashAsync` to `ecSignHashAsync` removing `SignerType` parameter.",
+                "pr": 1102
+            },
+            {
+                "note": "Use `AssetData` union type for function return values.",
+                "pr": 1131
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
+        "version": "1.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1538693146
+    },
+    {
+        "version": "1.0.6",
+        "changes": [
+            {
+                "note":
+                    "Add signerAddress normalization to `isValidECSignature` to avoid `invalid address recovery` error if caller supplies a checksummed address",
+                "pr": 1096
+            }
+        ],
+        "timestamp": 1538157789
+    },
+    {
+        "timestamp": 1537907159,
+        "version": "1.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537875740,
+        "version": "1.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1537541580,
+        "version": "1.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.2",
+        "changes": [
+            {
+                "note": "Drastically reduce the bundle size by removing unused parts of included contract artifacts."
+            }
+        ],
+        "timestamp": 1537369748
+    },
+    {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Export `orderParsingUtils`",
+                "pr": 1044
+            }
+        ],
+        "timestamp": 1536142250
+    },
+    {
+        "version": "1.0.1-rc.6",
+        "changes": [
+            {
+                "note": "Fix missing `BlockParamLiteral` type import issue"
+            }
+        ],
+        "timestamp": 1535377027
+    },
+    {
+        "version": "1.0.1-rc.5",
+        "changes": [
+            {
+                "note": "Remove Caller and Trezor SignatureTypes",
+                "pr": 1015
+            }
+        ]
+    },
+    {
         "version": "1.0.1-rc.4",
         "changes": [
             {
@@ -14,8 +121,33 @@
                 "note":
                     "Update marketUtils api such that all optional parameters are bundled into one optional param and more defaults are provided",
                 "pr": 954
+            },
+            {
+                "note":
+                    "Instead of exporting signature util methods individually, they are now exported as `signatureUtils`",
+                "pr": 924
+            },
+            {
+                "note":
+                    "Export types: `SignedOrder`, `Order`, `OrderRelevantState`, `OrderState`, `ECSignature`, `ERC20AssetData`, `ERC721AssetData`, `AssetProxyId`, `SignerType`, `SignatureType`, `OrderStateValid`, `OrderStateInvalid`, `ExchangeContractErrs`, `TradeSide`, `TransferType`, `FindFeeOrdersThatCoverFeesForTargetOrdersOpts`, `FindOrdersThatCoverMakerAssetFillAmountOpts`, `FeeOrdersAndRemainingFeeAmount`, `OrdersAndRemainingFillAmount`, `Provider`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload`",
+                "pr": 924
+            },
+            {
+                "note":
+                    "Rename `resultOrders` to `resultFeeOrders` for object returned by `findFeeOrdersThatCoverFeesForTargetOrders` in `marketUtils` api",
+                "pr": 997
+            },
+            {
+                "note": "Make `sortFeeOrdersByFeeAdjustedRate` in `sortingUtils` generic",
+                "pr": 997
+            },
+            {
+                "note":
+                    "Update `findFeeOrdersThatCoverFeesForTargetOrders` to round the the nearest integer when calculating required fees",
+                "pr": 997
             }
-        ]
+        ],
+        "timestamp": 1535133899
     },
     {
         "version": "1.0.1-rc.3",

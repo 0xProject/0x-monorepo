@@ -1,7 +1,14 @@
-import { ContractArtifact } from '@0xproject/sol-compiler';
-import { AbiDecoder, intervalUtils, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { BlockParamLiteral, ContractAbi, FilterObject, LogEntry, LogWithDecodedArgs, RawLog } from 'ethereum-types';
+import { AbiDecoder, intervalUtils, logUtils } from '@0x/utils';
+import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
+import {
+    BlockParamLiteral,
+    ContractAbi,
+    FilterObject,
+    LogEntry,
+    LogWithDecodedArgs,
+    RawLog,
+    RawLogEntry,
+} from 'ethereum-types';
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
@@ -16,27 +23,15 @@ import {
 import { constants } from '../utils/constants';
 import { filterUtils } from '../utils/filter_utils';
 
-const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {
-    [contractName: string]: ContractWrappersError;
-} = {
-    ZRX: ContractWrappersError.ZRXContractDoesNotExist,
-    EtherToken: ContractWrappersError.EtherTokenContractDoesNotExist,
-    ERC20Token: ContractWrappersError.ERC20TokenContractDoesNotExist,
-    ERC20Proxy: ContractWrappersError.ERC20ProxyContractDoesNotExist,
-    ERC721Token: ContractWrappersError.ERC721TokenContractDoesNotExist,
-    ERC721Proxy: ContractWrappersError.ERC721ProxyContractDoesNotExist,
-    Exchange: ContractWrappersError.ExchangeContractDoesNotExist,
-};
-
 export abstract class ContractWrapper {
     public abstract abi: ContractAbi;
-    protected _web3Wrapper: Web3Wrapper;
     protected _networkId: number;
+    protected _web3Wrapper: Web3Wrapper;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
-    private _blockPollingIntervalMs: number;
+    private readonly _blockPollingIntervalMs: number;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
-    private _filters: { [filterToken: string]: FilterObject };
-    private _filterCallbacks: {
+    private readonly _filters: { [filterToken: string]: FilterObject };
+    private readonly _filterCallbacks: {
         [filterToken: string]: EventCallback<ContractEventArgs>;
     };
     private _onLogAddedSubscriptionToken: string | undefined;
@@ -116,38 +111,8 @@ export abstract class ContractWrapper {
         const logWithDecodedArgs = abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
-    protected async _getContractAbiAndAddressFromArtifactsAsync(
-        artifact: ContractArtifact,
-        addressIfExists?: string,
-    ): Promise<[ContractAbi, string]> {
-        let contractAddress: string;
-        if (_.isUndefined(addressIfExists)) {
-            if (_.isUndefined(artifact.networks[this._networkId])) {
-                throw new Error(ContractWrappersError.ContractNotDeployedOnNetwork);
-            }
-            contractAddress = artifact.networks[this._networkId].address.toLowerCase();
-        } else {
-            contractAddress = addressIfExists;
-        }
-        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
-        if (!doesContractExist) {
-            throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contractName]);
-        }
-        const abiAndAddress: [ContractAbi, string] = [artifact.compilerOutput.abi, contractAddress];
-        return abiAndAddress;
-    }
-    protected _getContractAddress(artifact: ContractArtifact, addressIfExists?: string): string {
-        if (_.isUndefined(addressIfExists)) {
-            const contractAddress = artifact.networks[this._networkId].address;
-            if (_.isUndefined(contractAddress)) {
-                throw new Error(ContractWrappersError.ExchangeContractDoesNotExist);
-            }
-            return contractAddress;
-        } else {
-            return addressIfExists;
-        }
-    }
-    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, log: LogEntry): void {
+    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, rawLog: RawLogEntry): void {
+        const log: LogEntry = marshaller.unmarshalLog(rawLog);
         _.forEach(this._filters, (filter: FilterObject, filterToken: string) => {
             if (filterUtils.matchesFilter(log, filter)) {
                 const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
@@ -164,8 +129,8 @@ export abstract class ContractWrapper {
             throw new Error(ContractWrappersError.SubscriptionAlreadyPresent);
         }
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
-            this._web3Wrapper.getBlockAsync.bind(this._web3Wrapper),
-            this._web3Wrapper.getLogsAsync.bind(this._web3Wrapper),
+            this._blockstreamGetBlockOrNullAsync.bind(this),
+            this._blockstreamGetLogsAsync.bind(this),
             ContractWrapper._onBlockAndLogStreamerError.bind(this, isVerbose),
         );
         const catchAllLogFilter = {};
@@ -184,13 +149,31 @@ export abstract class ContractWrapper {
             this._onLogStateChanged.bind(this, isRemoved),
         );
     }
-    // HACK: This should be a package-scoped method (which doesn't exist in TS)
-    // We don't want this method available in the public interface for all classes
-    // who inherit from ContractWrapper, and it is only used by the internal implementation
-    // of those higher classes.
-    // tslint:disable-next-line:no-unused-variable
-    private _setNetworkId(networkId: number): void {
-        this._networkId = networkId;
+    // This method only exists in order to comply with the expected interface of Blockstream's constructor
+    private async _blockstreamGetBlockOrNullAsync(hash: string): Promise<Block | null> {
+        const shouldIncludeTransactionData = false;
+        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync<Block | null>({
+            method: 'eth_getBlockByHash',
+            params: [hash, shouldIncludeTransactionData],
+        });
+        return blockOrNull;
+    }
+    // This method only exists in order to comply with the expected interface of Blockstream's constructor
+    private async _blockstreamGetLatestBlockOrNullAsync(): Promise<Block | null> {
+        const shouldIncludeTransactionData = false;
+        const blockOrNull = await this._web3Wrapper.sendRawPayloadAsync<Block | null>({
+            method: 'eth_getBlockByNumber',
+            params: [BlockParamLiteral.Latest, shouldIncludeTransactionData],
+        });
+        return blockOrNull;
+    }
+    // This method only exists in order to comply with the expected interface of Blockstream's constructor
+    private async _blockstreamGetLogsAsync(filterOptions: FilterObject): Promise<RawLogEntry[]> {
+        const logs = await this._web3Wrapper.sendRawPayloadAsync<RawLogEntry[]>({
+            method: 'eth_getLogs',
+            params: [filterOptions],
+        });
+        return logs as RawLogEntry[];
     }
     private _stopBlockAndLogStream(): void {
         if (_.isUndefined(this._blockAndLogStreamerIfExists)) {
@@ -202,11 +185,14 @@ export abstract class ContractWrapper {
         delete this._blockAndLogStreamerIfExists;
     }
     private async _reconcileBlockAsync(): Promise<void> {
-        const latestBlock = await this._web3Wrapper.getBlockAsync(BlockParamLiteral.Latest);
+        const latestBlockOrNull = await this._blockstreamGetLatestBlockOrNullAsync();
+        if (_.isNull(latestBlockOrNull)) {
+            return; // noop
+        }
         // We need to coerce to Block type cause Web3.Block includes types for mempool blocks
         if (!_.isUndefined(this._blockAndLogStreamerIfExists)) {
             // If we clear the interval while fetching the block - this._blockAndLogStreamer will be undefined
-            await this._blockAndLogStreamerIfExists.reconcileNewBlock((latestBlock as any) as Block);
+            await this._blockAndLogStreamerIfExists.reconcileNewBlock(latestBlockOrNull);
         }
     }
 }

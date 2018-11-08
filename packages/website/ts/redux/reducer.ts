@@ -1,19 +1,19 @@
-import { constants, generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { ECSignature } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { generatePseudoRandomSalt } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import {
     Action,
     ActionTypes,
     BlockchainErrs,
-    Order,
+    PortalOrder,
     ProviderType,
     ScreenWidths,
     Side,
     SideToAssetToken,
     TokenByAddress,
 } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -30,7 +30,7 @@ export interface State {
     orderExpiryTimestamp: BigNumber;
     orderFillAmount: BigNumber;
     orderTakerAddress: string;
-    orderECSignature: ECSignature;
+    orderSignature: string;
     orderSalt: BigNumber;
     nodeVersion: string;
     screenWidth: ScreenWidths;
@@ -44,7 +44,7 @@ export interface State {
     isPortalOnboardingShowing: boolean;
     hasPortalOnboardingBeenClosed: boolean;
     // Note: cache of supplied orderJSON in fill order step. Do not use for anything else.
-    userSuppliedOrderCache: Order;
+    userSuppliedOrderCache: PortalOrder;
 
     // Docs
     docsVersion: string;
@@ -64,11 +64,7 @@ export const INITIAL_STATE: State = {
     networkId: undefined,
     orderExpiryTimestamp: utils.initialOrderExpiryUnixTimestampSec(),
     orderFillAmount: undefined,
-    orderECSignature: {
-        r: '',
-        s: '',
-        v: 27,
-    },
+    orderSignature: '',
     orderTakerAddress: constants.NULL_ADDRESS,
     orderSalt: generatePseudoRandomSalt(),
     nodeVersion: undefined,
@@ -89,7 +85,6 @@ export const INITIAL_STATE: State = {
     // Docs
     docsVersion: DEFAULT_DOCS_VERSION,
     availableDocVersions: [DEFAULT_DOCS_VERSION],
-
     // Shared
     flashMessage: undefined,
     providerType: ProviderType.Injected,
@@ -206,10 +201,10 @@ export function reducer(state: State = INITIAL_STATE, action: Action): State {
                 lastForceTokenStateRefetch: moment().unix(),
             };
 
-        case ActionTypes.UpdateOrderECSignature: {
+        case ActionTypes.UpdateOrderSignature: {
             return {
                 ...state,
-                orderECSignature: action.data,
+                orderSignature: action.data,
             };
         }
 

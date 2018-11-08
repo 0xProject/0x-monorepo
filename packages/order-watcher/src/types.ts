@@ -1,4 +1,4 @@
-import { OrderState } from '@0xproject/types';
+import { OrderState } from '@0x/types';
 import { LogEntryEvent } from 'ethereum-types';
 
 export enum OrderWatcherError {

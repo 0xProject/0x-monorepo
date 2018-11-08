@@ -1,4 +1,4 @@
-import { assert } from '@0xproject/assert';
+import { assert } from '@0x/assert';
 import {
     FallthroughResolver,
     FSResolver,
@@ -7,9 +7,10 @@ import {
     RelativeFSResolver,
     Resolver,
     URLResolver,
-} from '@0xproject/sol-resolver';
-import { fetchAsync, logUtils } from '@0xproject/utils';
+} from '@0x/sol-resolver';
+import { fetchAsync, logUtils } from '@0x/utils';
 import chalk from 'chalk';
+import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as fs from 'fs';
 import * as _ from 'lodash';
@@ -29,7 +30,6 @@ import {
 } from './utils/compiler';
 import { constants } from './utils/constants';
 import { fsWrapper } from './utils/fs_wrapper';
-import { CompilerOptions, ContractArtifact, ContractVersionData } from './utils/types';
 import { utils } from './utils/utils';
 
 type TYPE_ALL_FILES_IDENTIFIER = '*';
@@ -94,7 +94,7 @@ export class Compiler {
         if (await fsWrapper.doesFileExistAsync(compilerBinFilename)) {
             solcjs = (await fsWrapper.readFileAsync(compilerBinFilename)).toString();
         } else {
-            logUtils.log(`Downloading ${fullSolcVersion}...`);
+            logUtils.warn(`Downloading ${fullSolcVersion}...`);
             const url = `${constants.BASE_COMPILER_URL}${fullSolcVersion}`;
             const response = await fetchAsync(url);
             const SUCCESS_STATUS = 200;
@@ -110,8 +110,24 @@ export class Compiler {
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
         return { solcInstance, fullSolcVersion };
     }
+    private static _addHexPrefixToContractBytecode(compiledContract: solc.StandardContractOutput): void {
+        if (!_.isUndefined(compiledContract.evm)) {
+            if (!_.isUndefined(compiledContract.evm.bytecode) && !_.isUndefined(compiledContract.evm.bytecode.object)) {
+                compiledContract.evm.bytecode.object = ethUtil.addHexPrefix(compiledContract.evm.bytecode.object);
+            }
+            if (
+                !_.isUndefined(compiledContract.evm.deployedBytecode) &&
+                !_.isUndefined(compiledContract.evm.deployedBytecode.object)
+            ) {
+                compiledContract.evm.deployedBytecode.object = ethUtil.addHexPrefix(
+                    compiledContract.evm.deployedBytecode.object,
+                );
+            }
+        }
+    }
     /**
      * Instantiates a new instance of the Compiler class.
+     * @param opts Optional compiler options
      * @return An instance of the Compiler class.
      */
     constructor(opts?: CompilerOptions) {
@@ -143,22 +159,40 @@ export class Compiler {
     public async compileAsync(): Promise<void> {
         await createDirIfDoesNotExistAsync(this._artifactsDir);
         await createDirIfDoesNotExistAsync(SOLC_BIN_DIR);
-        let contractNamesToCompile: string[] = [];
+        await this._compileContractsAsync(this._getContractNamesToCompile(), true);
+    }
+    /**
+     * Compiles Solidity files specified during instantiation, and returns the
+     * compiler output given by solc.  Return value is an array of outputs:
+     * Solidity modules are batched together by version required, and each
+     * element of the returned array corresponds to a compiler version, and
+     * each element contains the output for all of the modules compiled with
+     * that version.
+     */
+    public async getCompilerOutputsAsync(): Promise<StandardOutput[]> {
+        const promisedOutputs = this._compileContractsAsync(this._getContractNamesToCompile(), false);
+        return promisedOutputs;
+    }
+    private _getContractNamesToCompile(): string[] {
+        let contractNamesToCompile;
         if (this._specifiedContracts === ALL_CONTRACTS_IDENTIFIER) {
             const allContracts = this._nameResolver.getAll();
             contractNamesToCompile = _.map(allContracts, contractSource =>
                 path.basename(contractSource.path, constants.SOLIDITY_FILE_EXTENSION),
             );
         } else {
-            contractNamesToCompile = this._specifiedContracts;
+            contractNamesToCompile = this._specifiedContracts.map(specifiedContract =>
+                path.basename(specifiedContract, constants.SOLIDITY_FILE_EXTENSION),
+            );
         }
-        await this._compileContractsAsync(contractNamesToCompile);
+        return contractNamesToCompile;
     }
     /**
-     * Compiles contract and saves artifact to artifactsDir.
+     * Compiles contracts, and, if `shouldPersist` is true, saves artifacts to artifactsDir.
      * @param fileName Name of contract with '.sol' extension.
+     * @return an array of compiler outputs, where each element corresponds to a different version of solc-js.
      */
-    private async _compileContractsAsync(contractNames: string[]): Promise<void> {
+    private async _compileContractsAsync(contractNames: string[], shouldPersist: boolean): Promise<StandardOutput[]> {
         // batch input contracts together based on the version of the compiler that they require.
         const versionToInputs: VersionToInputs = {};
 
@@ -199,10 +233,12 @@ export class Compiler {
             versionToInputs[solcVersion].contractsToCompile.push(contractSource.path);
         }
 
+        const compilerOutputs: StandardOutput[] = [];
+
         const solcVersions = _.keys(versionToInputs);
         for (const solcVersion of solcVersions) {
             const input = versionToInputs[solcVersion];
-            logUtils.log(
+            logUtils.warn(
                 `Compiling ${input.contractsToCompile.length} contracts (${
                     input.contractsToCompile
                 }) with Solidity v${solcVersion}...`,
@@ -211,18 +247,34 @@ export class Compiler {
             const { solcInstance, fullSolcVersion } = await Compiler._getSolcAsync(solcVersion);
 
             const compilerOutput = this._compile(solcInstance, input.standardInput);
+            compilerOutputs.push(compilerOutput);
 
             for (const contractPath of input.contractsToCompile) {
-                await this._verifyAndPersistCompiledContractAsync(
-                    contractPath,
-                    contractPathToData[contractPath].currentArtifactIfExists,
-                    contractPathToData[contractPath].sourceTreeHashHex,
-                    contractPathToData[contractPath].contractName,
-                    fullSolcVersion,
-                    compilerOutput,
-                );
+                const contractName = contractPathToData[contractPath].contractName;
+
+                const compiledContract = compilerOutput.contracts[contractPath][contractName];
+                if (_.isUndefined(compiledContract)) {
+                    throw new Error(
+                        `Contract ${contractName} not found in ${contractPath}. Please make sure your contract has the same name as it's file name`,
+                    );
+                }
+
+                Compiler._addHexPrefixToContractBytecode(compiledContract);
+
+                if (shouldPersist) {
+                    await this._persistCompiledContractAsync(
+                        contractPath,
+                        contractPathToData[contractPath].currentArtifactIfExists,
+                        contractPathToData[contractPath].sourceTreeHashHex,
+                        contractName,
+                        fullSolcVersion,
+                        compilerOutput,
+                    );
+                }
             }
         }
+
+        return compilerOutputs;
     }
     private _shouldCompile(contractData: ContractData): boolean {
         if (_.isUndefined(contractData.currentArtifactIfExists)) {
@@ -235,7 +287,7 @@ export class Compiler {
             return !isUserOnLatestVersion || didCompilerSettingsChange || didSourceChange;
         }
     }
-    private async _verifyAndPersistCompiledContractAsync(
+    private async _persistCompiledContractAsync(
         contractPath: string,
         currentArtifactIfExists: ContractArtifact | void,
         sourceTreeHashHex: string,
@@ -243,33 +295,17 @@ export class Compiler {
         fullSolcVersion: string,
         compilerOutput: solc.StandardOutput,
     ): Promise<void> {
-        const compiledData = compilerOutput.contracts[contractPath][contractName];
-        if (_.isUndefined(compiledData)) {
-            throw new Error(
-                `Contract ${contractName} not found in ${contractPath}. Please make sure your contract has the same name as it's file name`,
-            );
-        }
-        if (!_.isUndefined(compiledData.evm)) {
-            if (!_.isUndefined(compiledData.evm.bytecode) && !_.isUndefined(compiledData.evm.bytecode.object)) {
-                compiledData.evm.bytecode.object = ethUtil.addHexPrefix(compiledData.evm.bytecode.object);
-            }
-            if (
-                !_.isUndefined(compiledData.evm.deployedBytecode) &&
-                !_.isUndefined(compiledData.evm.deployedBytecode.object)
-            ) {
-                compiledData.evm.deployedBytecode.object = ethUtil.addHexPrefix(
-                    compiledData.evm.deployedBytecode.object,
-                );
-            }
-        }
+        const compiledContract = compilerOutput.contracts[contractPath][contractName];
 
-        const sourceCodes = _.mapValues(
-            compilerOutput.sources,
-            (_1, sourceFilePath) => this._resolver.resolve(sourceFilePath).source,
-        );
+        // need to gather sourceCodes for this artifact, but compilerOutput.sources (the list of contract modules)
+        // contains listings for for every contract compiled during the compiler invocation that compiled the contract
+        // to be persisted, which could include many that are irrelevant to the contract at hand.  So, gather up only
+        // the relevant sources:
+        const { sourceCodes, sources } = this._getSourcesWithDependencies(contractPath, compilerOutput.sources);
+
         const contractVersion: ContractVersionData = {
-            compilerOutput: compiledData,
-            sources: compilerOutput.sources,
+            compilerOutput: compiledContract,
+            sources,
             sourceCodes,
             sourceTreeHashHex,
             compiler: {
@@ -298,7 +334,81 @@ export class Compiler {
         const artifactString = utils.stringifyWithFormatting(newArtifact);
         const currentArtifactPath = `${this._artifactsDir}/${contractName}.json`;
         await fsWrapper.writeFileAsync(currentArtifactPath, artifactString);
-        logUtils.log(`${contractName} artifact saved!`);
+        logUtils.warn(`${contractName} artifact saved!`);
+    }
+    /**
+     * For the given @param contractPath, populates JSON objects to be used in the ContractVersionData interface's
+     * properties `sources` (source code file names mapped to ID numbers) and `sourceCodes` (source code content of
+     * contracts) for that contract.  The source code pointed to by contractPath is read and parsed directly (via
+     * `this._resolver.resolve().source`), as are its imports, recursively.  The ID numbers for @return `sources` are
+     * taken from the corresponding ID's in @param fullSources, and the content for @return sourceCodes is read from
+     * disk (via the aforementioned `resolver.source`).
+     */
+    private _getSourcesWithDependencies(
+        contractPath: string,
+        fullSources: { [sourceName: string]: { id: number } },
+    ): { sourceCodes: { [sourceName: string]: string }; sources: { [sourceName: string]: { id: number } } } {
+        const sources = { [contractPath]: { id: fullSources[contractPath].id } };
+        const sourceCodes = { [contractPath]: this._resolver.resolve(contractPath).source };
+        this._recursivelyGatherDependencySources(
+            contractPath,
+            sourceCodes[contractPath],
+            fullSources,
+            sources,
+            sourceCodes,
+        );
+        return { sourceCodes, sources };
+    }
+    private _recursivelyGatherDependencySources(
+        contractPath: string,
+        contractSource: string,
+        fullSources: { [sourceName: string]: { id: number } },
+        sourcesToAppendTo: { [sourceName: string]: { id: number } },
+        sourceCodesToAppendTo: { [sourceName: string]: string },
+    ): void {
+        const importStatementMatches = contractSource.match(/\nimport[^;]*;/g);
+        if (importStatementMatches === null) {
+            return;
+        }
+        for (const importStatementMatch of importStatementMatches) {
+            const importPathMatches = importStatementMatch.match(/\"([^\"]*)\"/);
+            if (importPathMatches === null || importPathMatches.length === 0) {
+                continue;
+            }
+
+            let importPath = importPathMatches[1];
+            // HACK(ablrow): We have, e.g.:
+            //
+            //      importPath   = "../../utils/LibBytes/LibBytes.sol"
+            //      contractPath = "2.0.0/protocol/AssetProxyOwner/AssetProxyOwner.sol"
+            //
+            // Resolver doesn't understand "../" so we want to pass
+            // "2.0.0/utils/LibBytes/LibBytes.sol" to resolver.
+            //
+            // This hack involves using path.resolve. But path.resolve returns
+            // absolute directories by default. We trick it into thinking that
+            // contractPath is a root directory by prepending a '/' and then
+            // removing the '/' the end.
+            //
+            //      path.resolve("/a/b/c", ""../../d/e") === "/a/d/e"
+            //
+            const lastPathSeparatorPos = contractPath.lastIndexOf('/');
+            const contractFolder = lastPathSeparatorPos === -1 ? '' : contractPath.slice(0, lastPathSeparatorPos + 1);
+            importPath = path.resolve('/' + contractFolder, importPath).replace('/', '');
+
+            if (_.isUndefined(sourcesToAppendTo[importPath])) {
+                sourcesToAppendTo[importPath] = { id: fullSources[importPath].id };
+                sourceCodesToAppendTo[importPath] = this._resolver.resolve(importPath).source;
+
+                this._recursivelyGatherDependencySources(
+                    importPath,
+                    this._resolver.resolve(importPath).source,
+                    fullSources,
+                    sourcesToAppendTo,
+                    sourceCodesToAppendTo,
+                );
+            }
+        }
     }
     private _compile(solcInstance: solc.SolcInstance, standardInput: solc.StandardInput): solc.StandardOutput {
         const compiled: solc.StandardOutput = JSON.parse(
@@ -314,13 +424,13 @@ export class Compiler {
             if (!_.isEmpty(errors)) {
                 errors.forEach(error => {
                     const normalizedErrMsg = getNormalizedErrMsg(error.formattedMessage || error.message);
-                    logUtils.log(chalk.red(normalizedErrMsg));
+                    logUtils.warn(chalk.red(normalizedErrMsg));
                 });
                 throw new Error('Compilation errors encountered');
             } else {
                 warnings.forEach(warning => {
                     const normalizedWarningMsg = getNormalizedErrMsg(warning.formattedMessage || warning.message);
-                    logUtils.log(chalk.yellow(normalizedWarningMsg));
+                    logUtils.warn(chalk.yellow(normalizedWarningMsg));
                 });
             }
         }

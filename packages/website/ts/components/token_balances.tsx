@@ -4,9 +4,9 @@ import {
     Networks,
     Styles,
     utils as sharedUtils,
-} from '@0xproject/react-shared';
-import { BigNumber, errorUtils, fetchAsync, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+} from '@0x/react-shared';
+import { BigNumber, errorUtils, fetchAsync, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
@@ -165,7 +165,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                 key="errorOkBtn"
                 label="Ok"
                 primary={true}
-                onTouchTap={this._onErrorDialogToggle.bind(this, false)}
+                onClick={this._onErrorDialogToggle.bind(this, false)}
             />,
         ];
         const isTestNetwork = utils.isTestNetwork(this.props.networkId);
@@ -337,14 +337,8 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         const isMintable =
             (_.includes(configs.SYMBOLS_OF_MINTABLE_KOVAN_TOKENS, token.symbol) &&
                 this.props.networkId === sharedConstants.NETWORK_ID_BY_NAME[Networks.Kovan]) ||
-            (_.includes(configs.SYMBOLS_OF_MINTABLE_RINKEBY_ROPSTEN_TOKENS, token.symbol) &&
-                _.includes(
-                    [
-                        sharedConstants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
-                        sharedConstants.NETWORK_ID_BY_NAME[Networks.Ropsten],
-                    ],
-                    this.props.networkId,
-                ));
+            (_.includes(configs.SYMBOLS_OF_MINTABLE_ROPSTEN_TOKENS, token.symbol) &&
+                this.props.networkId === sharedConstants.NETWORK_ID_BY_NAME[Networks.Ropsten]);
         return (
             <TableRow key={token.address} style={{ height: TOKEN_TABLE_ROW_HEIGHT }}>
                 <TableRowColumn colSpan={tokenColSpan}>
@@ -390,14 +384,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
                                 labelLoading={<span style={{ fontSize: 12 }}>Minting...</span>}
                                 labelComplete="Minted!"
                                 onClickAsyncFn={this._onMintTestTokensAsync.bind(this, token)}
-                            />
-                        )}
-                        {token.symbol === ZRX_TOKEN_SYMBOL && (
-                            <LifeCycleRaisedButton
-                                labelReady="Request"
-                                labelLoading="Sending..."
-                                labelComplete="Sent!"
-                                onClickAsyncFn={this._faucetRequestAsync.bind(this, false)}
                             />
                         )}
                     </TableRowColumn>

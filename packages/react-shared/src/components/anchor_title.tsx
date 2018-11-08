@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { Link as ScrollLink } from 'react-scroll';
+import styled from 'styled-components';
 
 import { HeaderSizes, Styles } from '../types';
+import { colors } from '../utils/colors';
 import { constants } from '../utils/constants';
-import { utils } from '../utils/utils';
 
 const headerSizeToScrollOffset: { [headerSize: string]: number } = {
     h2: -20,
@@ -15,20 +16,14 @@ export interface AnchorTitleProps {
     id: string;
     headerSize: HeaderSizes;
     shouldShowAnchor: boolean;
+    isDisabled: boolean;
 }
 
-export interface AnchorTitleState {
-    isHovering: boolean;
-}
+export interface AnchorTitleState {}
 
 const styles: Styles = {
-    anchor: {
-        fontSize: 20,
-        transform: 'rotate(45deg)',
-        cursor: 'pointer',
-    },
     h1: {
-        fontSize: '1.8em',
+        fontSize: '1.875em',
     },
     h2: {
         fontSize: '1.5em',
@@ -39,18 +34,28 @@ const styles: Styles = {
     },
 };
 
+interface AnchorIconProps {
+    shouldShowAnchor: boolean;
+}
+
+const AnchorIcon =
+    styled.i <
+    AnchorIconProps >
+    `
+            opacity: ${props => (props.shouldShowAnchor ? 1 : 0)};
+            &:hover {
+                opacity: ${props => (props.shouldShowAnchor ? 0.6 : 0)};
+            }
+            font-size: 20px;
+            transform: rotate(45deg);
+            cursor: pointer;
+        `;
+
 export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleState> {
-    constructor(props: AnchorTitleProps) {
-        super(props);
-        this.state = {
-            isHovering: false,
-        };
-    }
+    public static defaultProps: Partial<AnchorTitleProps> = {
+        isDisabled: false,
+    };
     public render(): React.ReactNode {
-        let opacity = 0;
-        if (this.props.shouldShowAnchor) {
-            opacity = this.state.isHovering ? 0.6 : 1;
-        }
         return (
             <div
                 className="relative flex"
@@ -64,29 +69,21 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
                     } as any
                 }
             >
-                <div className="inline-block" style={{ paddingRight: 4 }}>
+                <div className="inline-block" style={{ paddingRight: 4, color: colors.darkestGrey }}>
                     {this.props.title}
                 </div>
-                <ScrollLink
-                    to={this.props.id}
-                    offset={headerSizeToScrollOffset[this.props.headerSize]}
-                    duration={constants.DOCS_SCROLL_DURATION_MS}
-                    containerId={constants.DOCS_CONTAINER_ID}
-                >
-                    <i
-                        className="zmdi zmdi-link"
-                        onClick={utils.setUrlHash.bind(utils, this.props.id)}
-                        style={{ ...styles.anchor, opacity }}
-                        onMouseOver={this._setHoverState.bind(this, true)}
-                        onMouseOut={this._setHoverState.bind(this, false)}
-                    />
-                </ScrollLink>
+                {!this.props.isDisabled && (
+                    <ScrollLink
+                        to={this.props.id}
+                        hashSpy={true}
+                        offset={headerSizeToScrollOffset[this.props.headerSize]}
+                        duration={constants.DOCS_SCROLL_DURATION_MS}
+                        containerId={constants.SCROLL_CONTAINER_ID}
+                    >
+                        <AnchorIcon className="zmdi zmdi-link" shouldShowAnchor={this.props.shouldShowAnchor} />
+                    </ScrollLink>
+                )}
             </div>
         );
-    }
-    private _setHoverState(isHovering: boolean): void {
-        this.setState({
-            isHovering,
-        });
     }
 }

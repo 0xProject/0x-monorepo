@@ -1,6 +1,6 @@
 {
-    "name": "@0xproject/dev-utils",
-    "version": "1.0.4",
+    "name": "@0x/dev-utils",
+    "version": "1.0.13",
     "engines": {
         "node": ">=6.12"
     },
@@ -8,17 +8,16 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "watch_without_deps": "tsc -w",
-        "build": "tsc && copyfiles -u 3 './lib/src/monorepo_scripts/**/*' ./scripts",
+        "build": "tsc -b",
+        "build:ci": "yarn build",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s clean build test",
         "test:circleci": "yarn test:coverage",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "clean": "shx rm -rf lib scripts",
-        "lint": "tslint --project .",
-        "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
+        "clean": "shx rm -rf lib",
+        "lint": "tslint --format stylish --project ."
     },
     "license": "Apache-2.0",
     "repository": {
@@ -30,12 +29,9 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/dev-utils/README.md",
     "devDependencies": {
-        "@0xproject/monorepo-scripts": "^1.0.5",
-        "@0xproject/tslint-config": "^1.0.5",
+        "@0x/tslint-config": "^1.0.9",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
-        "chai": "^4.0.1",
-        "copyfiles": "^2.0.0",
         "make-promises-safe": "^1.1.0",
         "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
@@ -45,12 +41,14 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0xproject/subproviders": "^1.0.5",
-        "@0xproject/types": "^1.0.1-rc.4",
-        "@0xproject/typescript-typings": "^1.0.4",
-        "@0xproject/utils": "^1.0.5",
-        "@0xproject/web3-wrapper": "^1.2.0",
-        "ethereum-types": "^1.0.4",
+        "@0x/subproviders": "^2.1.0",
+        "@0x/types": "^1.2.0",
+        "@0x/typescript-typings": "^3.0.3",
+        "@0x/utils": "^2.0.3",
+        "@0x/web3-wrapper": "^3.1.0",
+        "@types/web3-provider-engine": "^14.0.0",
+        "chai": "^4.0.1",
+        "ethereum-types": "^1.1.1",
         "lodash": "^4.17.5"
     },
     "publishConfig": {

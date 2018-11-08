@@ -1,13 +1,13 @@
-import { assetDataUtils } from '@0xproject/order-utils';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { assetDataUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
-import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
+import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
+import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
+import { artifacts } from '../../src/artifacts';
 
-import { artifacts } from './artifacts';
 import { constants } from './constants';
 import { ERC20BalancesByOwner } from './types';
 import { txDefaults } from './web3_wrapper';
@@ -20,6 +20,13 @@ export class ERC20Wrapper {
     private readonly _dummyTokenContracts: DummyERC20TokenContract[];
     private _proxyContract?: ERC20ProxyContract;
     private _proxyIdIfExists?: string;
+    /**
+     * Instanitates an ERC20Wrapper
+     * @param provider Web3 provider to use for all JSON RPC requests
+     * @param tokenOwnerAddresses Addresses that we want to endow as owners for dummy ERC20 tokens
+     * @param contractOwnerAddress Desired owner of the contract
+     * Instance of ERC20Wrapper
+     */
     constructor(provider: Provider, tokenOwnerAddresses: string[], contractOwnerAddress: string) {
         this._dummyTokenContracts = [];
         this._web3Wrapper = new Web3Wrapper(provider);

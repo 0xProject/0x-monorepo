@@ -2,34 +2,27 @@ import {
     BlockRange,
     ContractWrappers,
     DecodedLogEvent,
-    ExchangeContractEventArgs,
+    ExchangeCancelEventArgs,
+    ExchangeEventArgs,
     ExchangeEvents,
+    ExchangeFillEventArgs,
     IndexedFilterValues,
-    LogCancelContractEventArgs,
-    LogFillContractEventArgs,
-    Token as ZeroExToken,
-} from '@0xproject/contract-wrappers';
-import { isValidOrderHash, signOrderHashAsync } from '@0xproject/order-utils';
-import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0xproject/react-shared';
+} from '@0x/contract-wrappers';
+import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
+import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0x/react-shared';
 import {
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
+    MetamaskSubprovider,
     RedundantSubprovider,
     RPCSubprovider,
     SignerSubprovider,
     Web3ProviderEngine,
-} from '@0xproject/subproviders';
-import {
-    BlockParam,
-    ECSignature,
-    LogWithDecodedArgs,
-    Order,
-    Provider,
-    SignedOrder,
-    TransactionReceiptWithDecodedLogs,
-} from '@0xproject/types';
-import { BigNumber, intervalUtils, logUtils, promisify } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+} from '@0x/subproviders';
+import { SignedOrder, Token as ZeroExToken } from '@0x/types';
+import { BigNumber, intervalUtils, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+import { BlockParam, LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
@@ -45,10 +38,9 @@ import {
     BlockchainErrs,
     ContractInstance,
     Fill,
+    InjectedProvider,
     InjectedProviderObservable,
     InjectedProviderUpdate,
-    InjectedWeb3,
-    Order as PortalOrder,
     Providers,
     ProviderType,
     Side,
@@ -60,13 +52,12 @@ import { backendClient } from 'ts/utils/backend_client';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
+import { fakeTokenRegistry } from 'ts/utils/fake_token_registry';
+import { tokenAddressOverrides } from 'ts/utils/token_address_overrides';
 import { utils } from 'ts/utils/utils';
 import FilterSubprovider = require('web3-provider-engine/subproviders/filters');
 
 import * as MintableArtifacts from '../contracts/Mintable.json';
-
-// HACK: remove this hard-coded abi and use @0xproject/contract-wrappers
-import * as Exchange from './artifacts/Exchange.json';
 
 const BLOCK_NUMBER_BACK_TRACK = 50;
 const GWEI_IN_WEI = 1000000000;
@@ -75,7 +66,7 @@ const providerToName: { [provider: string]: string } = {
     [Providers.Metamask]: constants.PROVIDER_NAME_METAMASK,
     [Providers.Parity]: constants.PROVIDER_NAME_PARITY_SIGNER,
     [Providers.Mist]: constants.PROVIDER_NAME_MIST,
-    [Providers.Toshi]: constants.PROVIDER_NAME_TOSHI,
+    [Providers.CoinbaseWallet]: constants.PROVIDER_NAME_COINBASE_WALLET,
     [Providers.Cipher]: constants.PROVIDER_NAME_CIPHER,
 };
 
@@ -92,6 +83,7 @@ export class Blockchain {
     private _ledgerSubprovider: LedgerSubprovider;
     private _defaultGasPrice: BigNumber;
     private _watchGasPriceIntervalId: NodeJS.Timer;
+    private _injectedProviderIfExists?: InjectedProvider;
     private static _getNameGivenProvider(provider: Provider): string {
         const providerType = utils.getProviderType(provider);
         const providerNameIfExists = providerToName[providerType];
@@ -100,48 +92,12 @@ export class Blockchain {
         }
         return providerNameIfExists;
     }
-    private static _getInjectedWeb3(): InjectedWeb3 {
-        const injectedWeb3IfExists = (window as any).web3;
-        // Our core assumptions about the injected web3 object is that it has the following
-        // properties and methods.
-        if (
-            _.isUndefined(injectedWeb3IfExists) ||
-            _.isUndefined(injectedWeb3IfExists.version) ||
-            _.isUndefined(injectedWeb3IfExists.version.getNetwork) ||
-            _.isUndefined(injectedWeb3IfExists.currentProvider)
-        ) {
-            return undefined;
-        }
-        return injectedWeb3IfExists;
-    }
-    private static async _getInjectedWeb3ProviderNetworkIdIfExistsAsync(): Promise<number | undefined> {
-        // Hack: We need to know the networkId the injectedWeb3 is connected to (if it is defined) in
-        // order to properly instantiate the web3Wrapper. Since we must use the async call, we cannot
-        // retrieve it from within the web3Wrapper constructor. This is and should remain the only
-        // call to a web3 instance outside of web3Wrapper in the entire dapp.
-        // In addition, if the user has an injectedWeb3 instance that is disconnected from a backing
-        // Ethereum node, this call will throw. We need to handle this case gracefully
-        const injectedWeb3IfExists = Blockchain._getInjectedWeb3();
-        let networkIdIfExists: number;
-        if (!_.isUndefined(injectedWeb3IfExists)) {
-            try {
-                networkIdIfExists = _.parseInt(
-                    await promisify<string>(
-                        injectedWeb3IfExists.version.getNetwork.bind(injectedWeb3IfExists.version),
-                    )(),
-                );
-            } catch (err) {
-                // Ignore error and proceed with networkId undefined
-            }
-        }
-        return networkIdIfExists;
-    }
     private static async _getProviderAsync(
-        injectedWeb3: InjectedWeb3,
-        networkIdIfExists: number,
+        injectedProviderIfExists?: InjectedProvider,
+        networkIdIfExists?: number,
         shouldUserLedgerProvider: boolean = false,
     ): Promise<[Provider, LedgerSubprovider | undefined]> {
-        const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3);
+        const doesInjectedProviderExist = !_.isUndefined(injectedProviderIfExists);
         const isNetworkIdAvailable = !_.isUndefined(networkIdIfExists);
         const publicNodeUrlsIfExistsForNetworkId = configs.PUBLIC_NODE_URLS_BY_NETWORK_ID[networkIdIfExists];
         const isPublicNodeAvailableForNetworkId = !_.isUndefined(publicNodeUrlsIfExistsForNetworkId);
@@ -165,11 +121,17 @@ export class Blockchain {
             provider.addProvider(new RedundantSubprovider(rpcSubproviders));
             provider.start();
             return [provider, ledgerSubprovider];
-        } else if (doesInjectedWeb3Exist && isPublicNodeAvailableForNetworkId) {
+        } else if (doesInjectedProviderExist && isPublicNodeAvailableForNetworkId) {
             // We catch all requests involving a users account and send it to the injectedWeb3
             // instance. All other requests go to the public hosted node.
             const provider = new Web3ProviderEngine();
-            provider.addProvider(new SignerSubprovider(injectedWeb3.currentProvider));
+            const providerName = this._getNameGivenProvider(injectedProviderIfExists);
+            // Wrap Metamask in a compatability wrapper MetamaskSubprovider (to handle inconsistencies)
+            const signerSubprovider =
+                providerName === constants.PROVIDER_NAME_METAMASK
+                    ? new MetamaskSubprovider(injectedProviderIfExists)
+                    : new SignerSubprovider(injectedProviderIfExists);
+            provider.addProvider(signerSubprovider);
             provider.addProvider(new FilterSubprovider());
             const rpcSubproviders = _.map(publicNodeUrlsIfExistsForNetworkId, publicNodeUrl => {
                 return new RPCSubprovider(publicNodeUrl);
@@ -177,9 +139,9 @@ export class Blockchain {
             provider.addProvider(new RedundantSubprovider(rpcSubproviders));
             provider.start();
             return [provider, undefined];
-        } else if (doesInjectedWeb3Exist) {
+        } else if (doesInjectedProviderExist) {
             // Since no public node for this network, all requests go to injectedWeb3 instance
-            return [injectedWeb3.currentProvider, undefined];
+            return [injectedProviderIfExists, undefined];
         } else {
             // If no injectedWeb3 instance, all requests fallback to our public hosted mainnet/testnet node
             // We do this so that users can still browse the 0x Portal DApp even if they do not have web3
@@ -230,9 +192,16 @@ export class Blockchain {
         }
     }
     public async isAddressInTokenRegistryAsync(tokenAddress: string): Promise<boolean> {
-        utils.assert(!_.isUndefined(this._contractWrappers), 'Contract Wrappers must be instantiated.');
-        const tokenIfExists = await this._contractWrappers.tokenRegistry.getTokenIfExistsAsync(tokenAddress);
-        return !_.isUndefined(tokenIfExists);
+        const tokens = fakeTokenRegistry[this.networkId];
+        const tokenIfExists = _.find(tokens, { address: tokenAddress });
+
+        // HACK: Override token addresses on testnets
+        const tokenSymbolToAddressOverrides = tokenAddressOverrides[this.networkId];
+        let isTokenAddressInOverrides = false;
+        if (!_.isUndefined(tokenSymbolToAddressOverrides)) {
+            isTokenAddressInOverrides = _.values(tokenSymbolToAddressOverrides).includes(tokenAddress);
+        }
+        return !_.isUndefined(tokenIfExists) || isTokenAddressInOverrides;
     }
     public getLedgerDerivationPathIfExists(): string {
         if (_.isUndefined(this._ledgerSubprovider)) {
@@ -257,7 +226,7 @@ export class Blockchain {
         const shouldUserLedgerProvider = false;
         this._dispatcher.updateBlockchainIsLoaded(false);
         // We don't want to be out of sync with the network the injected provider declares.
-        const networkId = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
+        const networkId = await this._getInjectedProviderNetworkIdIfExistsAsync();
         await this._resetOrInitializeAsync(networkId, shouldPollUserAddress, shouldUserLedgerProvider);
     }
     public async setProxyAllowanceAsync(token: Token, amountInBaseUnits: BigNumber): Promise<void> {
@@ -266,7 +235,7 @@ export class Blockchain {
         utils.assert(!_.isUndefined(this._contractWrappers), 'Contract Wrappers must be instantiated.');
 
         this._showFlashMessageIfLedger();
-        const txHash = await this._contractWrappers.token.setProxyAllowanceAsync(
+        const txHash = await this._contractWrappers.erc20Token.setProxyAllowanceAsync(
             token.address,
             this._userAddressIfExists,
             amountInBaseUnits,
@@ -307,7 +276,7 @@ export class Blockchain {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
 
         this._showFlashMessageIfLedger();
-        const txHash = await this._contractWrappers.token.transferAsync(
+        const txHash = await this._contractWrappers.erc20Token.transferAsync(
             token.address,
             this._userAddressIfExists,
             toAddress,
@@ -332,70 +301,45 @@ export class Blockchain {
             }),
         );
     }
-    public portalOrderToZeroExOrder(portalOrder: PortalOrder): SignedOrder {
-        const exchangeContractAddress = this.getExchangeContractAddressIfExists();
-        const zeroExSignedOrder = {
-            exchangeContractAddress,
-            maker: portalOrder.signedOrder.maker,
-            taker: portalOrder.signedOrder.taker,
-            makerTokenAddress: portalOrder.signedOrder.makerTokenAddress,
-            takerTokenAddress: portalOrder.signedOrder.takerTokenAddress,
-            makerTokenAmount: new BigNumber(portalOrder.signedOrder.makerTokenAmount),
-            takerTokenAmount: new BigNumber(portalOrder.signedOrder.takerTokenAmount),
-            makerFee: new BigNumber(portalOrder.signedOrder.makerFee),
-            takerFee: new BigNumber(portalOrder.signedOrder.takerFee),
-            expirationUnixTimestampSec: new BigNumber(portalOrder.signedOrder.expirationUnixTimestampSec),
-            feeRecipient: portalOrder.signedOrder.feeRecipient,
-            ecSignature: portalOrder.signedOrder.ecSignature,
-            salt: new BigNumber(portalOrder.signedOrder.salt),
-        };
-        return zeroExSignedOrder;
-    }
     public async fillOrderAsync(signedOrder: SignedOrder, fillTakerTokenAmount: BigNumber): Promise<BigNumber> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
-
-        const shouldThrowOnInsufficientBalanceOrAllowance = true;
-
         this._showFlashMessageIfLedger();
         const txHash = await this._contractWrappers.exchange.fillOrderAsync(
             signedOrder,
             fillTakerTokenAmount,
-            shouldThrowOnInsufficientBalanceOrAllowance,
             this._userAddressIfExists,
             {
                 gasPrice: this._defaultGasPrice,
             },
         );
         const receipt = await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
-        const logs: Array<LogWithDecodedArgs<ExchangeContractEventArgs>> = receipt.logs as any;
-        this._contractWrappers.exchange.throwLogErrorsAsErrors(logs);
-        const logFill = _.find(logs, { event: 'LogFill' });
-        const args = (logFill.args as any) as LogFillContractEventArgs;
-        const filledTakerTokenAmount = args.filledTakerTokenAmount;
-        return filledTakerTokenAmount;
+        const logs: Array<LogWithDecodedArgs<ExchangeEventArgs>> = receipt.logs as any;
+        const logFill = _.find(logs, { event: ExchangeEvents.Fill });
+        const args = (logFill.args as any) as ExchangeFillEventArgs;
+        const takerAssetFilledAmount = args.takerAssetFilledAmount;
+        return takerAssetFilledAmount;
     }
-    public async cancelOrderAsync(signedOrder: SignedOrder, cancelTakerTokenAmount: BigNumber): Promise<BigNumber> {
+    public async cancelOrderAsync(signedOrder: SignedOrder): Promise<string> {
         this._showFlashMessageIfLedger();
-        const txHash = await this._contractWrappers.exchange.cancelOrderAsync(signedOrder, cancelTakerTokenAmount, {
+        const txHash = await this._contractWrappers.exchange.cancelOrderAsync(signedOrder, {
             gasPrice: this._defaultGasPrice,
         });
         const receipt = await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
-        const logs: Array<LogWithDecodedArgs<ExchangeContractEventArgs>> = receipt.logs as any;
-        this._contractWrappers.exchange.throwLogErrorsAsErrors(logs);
-        const logCancel = _.find(logs, { event: ExchangeEvents.LogCancel });
-        const args = (logCancel.args as any) as LogCancelContractEventArgs;
-        const cancelledTakerTokenAmount = args.cancelledTakerTokenAmount;
-        return cancelledTakerTokenAmount;
+        const logs: Array<LogWithDecodedArgs<ExchangeEventArgs>> = receipt.logs as any;
+        const logCancel = _.find(logs, { event: ExchangeEvents.Cancel });
+        const args = (logCancel.args as any) as ExchangeCancelEventArgs;
+        const cancelledOrderHash = args.orderHash;
+        return cancelledOrderHash;
     }
     public async getUnavailableTakerAmountAsync(orderHash: string): Promise<BigNumber> {
-        utils.assert(isValidOrderHash(orderHash), 'Must be valid orderHash');
+        utils.assert(orderHashUtils.isValidOrderHash(orderHash), 'Must be valid orderHash');
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
-        const unavailableTakerAmount = await this._contractWrappers.exchange.getUnavailableTakerAmountAsync(orderHash);
+        const unavailableTakerAmount = await this._contractWrappers.exchange.getFilledTakerAssetAmountAsync(orderHash);
         return unavailableTakerAmount;
     }
     public getExchangeContractAddressIfExists(): string | undefined {
-        return this._contractWrappers.exchange.getContractAddress();
+        return this._contractWrappers.exchange.address;
     }
     public async validateFillOrderThrowIfInvalidAsync(
         signedOrder: SignedOrder,
@@ -408,15 +352,18 @@ export class Blockchain {
             takerAddress,
         );
     }
-    public async validateCancelOrderThrowIfInvalidAsync(
-        order: Order,
-        cancelTakerTokenAmount: BigNumber,
-    ): Promise<void> {
-        await this._contractWrappers.exchange.validateCancelOrderThrowIfInvalidAsync(order, cancelTakerTokenAmount);
-    }
     public isValidAddress(address: string): boolean {
         const lowercaseAddress = address.toLowerCase();
         return Web3Wrapper.isAddress(lowercaseAddress);
+    }
+    public async isValidSignatureAsync(data: string, signature: string, signerAddress: string): Promise<boolean> {
+        const result = await signatureUtils.isValidSignatureAsync(
+            this._contractWrappers.getProvider(),
+            data,
+            signature,
+            signerAddress,
+        );
+        return result;
     }
     public async pollTokenBalanceAsync(token: Token): Promise<BigNumber> {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
@@ -446,7 +393,7 @@ export class Blockchain {
 
         return newTokenBalancePromise;
     }
-    public async signOrderHashAsync(orderHash: string): Promise<ECSignature> {
+    public async signOrderHashAsync(orderHash: string): Promise<string> {
         utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
         const makerAddress = this._userAddressIfExists;
         // If makerAddress is undefined, this means they have a web3 instance injected into their browser
@@ -454,20 +401,11 @@ export class Blockchain {
         if (_.isUndefined(makerAddress)) {
             throw new Error('Tried to send a sign request but user has no associated addresses');
         }
-
         this._showFlashMessageIfLedger();
-        const nodeVersion = await this._web3Wrapper.getNodeVersionAsync();
-        const isParityNode = utils.isParityNode(nodeVersion);
-        const isTestRpc = utils.isTestRpc(nodeVersion);
-        const isLedgerSigner = !_.isUndefined(this._ledgerSubprovider);
-        let shouldAddPersonalMessagePrefix = true;
-        if ((isParityNode && !isLedgerSigner) || isTestRpc || isLedgerSigner) {
-            shouldAddPersonalMessagePrefix = false;
-        }
         const provider = this._contractWrappers.getProvider();
-        const ecSignature = await signOrderHashAsync(provider, orderHash, makerAddress, shouldAddPersonalMessagePrefix);
-        this._dispatcher.updateECSignature(ecSignature);
-        return ecSignature;
+        const ecSignatureString = await signatureUtils.ecSignHashAsync(provider, orderHash, makerAddress);
+        this._dispatcher.updateSignature(ecSignatureString);
+        return ecSignatureString;
     }
     public async mintTestTokensAsync(token: Token): Promise<void> {
         utils.assert(this._doesUserAddressExist(), BlockchainCallErrs.UserHasNoAssociatedAddresses);
@@ -540,8 +478,8 @@ export class Blockchain {
         let allowance = new BigNumber(0);
         if (this._doesUserAddressExist()) {
             [balance, allowance] = await Promise.all([
-                this._contractWrappers.token.getBalanceAsync(tokenAddress, ownerAddressIfExists),
-                this._contractWrappers.token.getProxyAllowanceAsync(tokenAddress, ownerAddressIfExists),
+                this._contractWrappers.erc20Token.getBalanceAsync(tokenAddress, ownerAddressIfExists),
+                this._contractWrappers.erc20Token.getProxyAllowanceAsync(tokenAddress, ownerAddressIfExists),
             ]);
         }
         return [balance, allowance];
@@ -638,6 +576,45 @@ export class Blockchain {
 
         this._dispatcher.updateBlockchainIsLoaded(true);
     }
+    private async _getInjectedProviderIfExistsAsync(): Promise<InjectedProvider | undefined> {
+        if (!_.isUndefined(this._injectedProviderIfExists)) {
+            return this._injectedProviderIfExists;
+        }
+        let injectedProviderIfExists = (window as any).ethereum;
+        if (!_.isUndefined(injectedProviderIfExists)) {
+            if (!_.isUndefined(injectedProviderIfExists.enable)) {
+                try {
+                    await injectedProviderIfExists.enable();
+                } catch (err) {
+                    errorReporter.report(err);
+                }
+            }
+        } else {
+            const injectedWeb3IfExists = (window as any).web3;
+            if (!_.isUndefined(injectedWeb3IfExists.currentProvider)) {
+                injectedProviderIfExists = injectedWeb3IfExists.currentProvider;
+            } else {
+                return undefined;
+            }
+        }
+        this._injectedProviderIfExists = injectedProviderIfExists;
+        return injectedProviderIfExists;
+    }
+    private async _getInjectedProviderNetworkIdIfExistsAsync(): Promise<number | undefined> {
+        // If the user has an injectedWeb3 instance that is disconnected from a backing
+        // Ethereum node, this call will throw. We need to handle this case gracefully
+        const injectedProviderIfExists = await this._getInjectedProviderIfExistsAsync();
+        let networkIdIfExists: number;
+        if (!_.isUndefined(injectedProviderIfExists)) {
+            try {
+                const injectedWeb3Wrapper = new Web3Wrapper(injectedProviderIfExists);
+                networkIdIfExists = await injectedWeb3Wrapper.getNetworkIdAsync();
+            } catch (err) {
+                // Ignore error and proceed with networkId undefined
+            }
+        }
+        return networkIdIfExists;
+    }
     private async _showEtherScanLinkAndAwaitTransactionMinedAsync(
         txHash: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
@@ -653,8 +630,7 @@ export class Blockchain {
         );
         const provider = this._contractWrappers.getProvider();
         const web3Wrapper = new Web3Wrapper(provider);
-        // HACK: remove this hard-coded abi and use @0xproject/contract-wrappers
-        const exchangeAbi = _.get(Exchange, 'abi', []);
+        const exchangeAbi = this._contractWrappers.exchange.abi;
         web3Wrapper.abiDecoder.addABI(exchangeAbi);
         const receipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         return receipt;
@@ -699,9 +675,9 @@ export class Blockchain {
 
         // Start a subscription for new logs
         this._contractWrappers.exchange.subscribe(
-            ExchangeEvents.LogFill,
+            ExchangeEvents.Fill,
             indexFilterValues,
-            async (err: Error, decodedLogEvent: DecodedLogEvent<LogFillContractEventArgs>) => {
+            async (err: Error, decodedLogEvent: DecodedLogEvent<ExchangeFillEventArgs>) => {
                 if (err) {
                     // Note: it's not entirely clear from the documentation which
                     // errors will be thrown by `watch`. For now, let's log the error
@@ -732,8 +708,8 @@ export class Blockchain {
             fromBlock,
             toBlock: 'latest' as BlockParam,
         };
-        const decodedLogs = await this._contractWrappers.exchange.getLogsAsync<LogFillContractEventArgs>(
-            ExchangeEvents.LogFill,
+        const decodedLogs = await this._contractWrappers.exchange.getLogsAsync<ExchangeFillEventArgs>(
+            ExchangeEvents.Fill,
             blockRange,
             indexFilterValues,
         );
@@ -746,28 +722,28 @@ export class Blockchain {
             tradeHistoryStorage.addFillToUser(this._userAddressIfExists, this.networkId, fill);
         }
     }
-    private async _convertDecodedLogToFillAsync(
-        decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>,
-    ): Promise<Fill> {
+    private async _convertDecodedLogToFillAsync(decodedLog: LogWithDecodedArgs<ExchangeFillEventArgs>): Promise<Fill> {
         const args = decodedLog.args;
         const blockTimestamp = await this._web3Wrapper.getBlockTimestampAsync(decodedLog.blockHash);
+        const makerToken = assetDataUtils.decodeERC20AssetData(args.makerAssetData).tokenAddress;
+        const takerToken = assetDataUtils.decodeERC20AssetData(args.takerAssetData).tokenAddress;
         const fill = {
-            filledTakerTokenAmount: args.filledTakerTokenAmount,
-            filledMakerTokenAmount: args.filledMakerTokenAmount,
+            filledTakerTokenAmount: args.takerAssetFilledAmount,
+            filledMakerTokenAmount: args.makerAssetFilledAmount,
             logIndex: decodedLog.logIndex,
-            maker: args.maker,
+            maker: args.makerAddress,
             orderHash: args.orderHash,
-            taker: args.taker,
-            makerToken: args.makerToken,
-            takerToken: args.takerToken,
-            paidMakerFee: args.paidMakerFee,
-            paidTakerFee: args.paidTakerFee,
+            taker: args.takerAddress,
+            makerToken,
+            takerToken,
+            paidMakerFee: args.makerFeePaid,
+            paidTakerFee: args.takerFeePaid,
             transactionHash: decodedLog.transactionHash,
             blockTimestamp,
         };
         return fill;
     }
-    private _doesLogEventInvolveUser(decodedLog: LogWithDecodedArgs<LogFillContractEventArgs>): boolean {
+    private _doesLogEventInvolveUser(decodedLog: LogWithDecodedArgs<ExchangeFillEventArgs>): boolean {
         const args = decodedLog.args;
         const isUserMakerOrTaker = args.maker === this._userAddressIfExists || args.taker === this._userAddressIfExists;
         return isUserMakerOrTaker;
@@ -796,8 +772,21 @@ export class Blockchain {
         if (this.networkId === constants.NETWORK_ID_MAINNET) {
             tokenRegistryTokens = await backendClient.getTokenInfosAsync();
         } else {
-            utils.assert(!_.isUndefined(this._contractWrappers), 'ContractWrappers must be instantiated.');
-            tokenRegistryTokens = await this._contractWrappers.tokenRegistry.getTokensAsync();
+            tokenRegistryTokens = fakeTokenRegistry[this.networkId];
+            const tokenSymbolToAddressOverrides = tokenAddressOverrides[this.networkId];
+            if (!_.isUndefined(tokenAddressOverrides)) {
+                // HACK: Override token addresses on testnets
+                tokenRegistryTokens = _.map(tokenRegistryTokens, (token: ZeroExToken) => {
+                    const overrideIfExists = tokenSymbolToAddressOverrides[token.symbol];
+                    if (!_.isUndefined(overrideIfExists)) {
+                        return {
+                            ...token,
+                            address: overrideIfExists,
+                        };
+                    }
+                    return token;
+                });
+            }
         }
         const tokenByAddress: TokenByAddress = {};
         _.each(tokenRegistryTokens, (t: ZeroExToken) => {
@@ -819,17 +808,17 @@ export class Blockchain {
     }
     private async _onPageLoadInitFireAndForgetAsync(): Promise<void> {
         await utils.onPageLoadPromise; // wait for page to load
-        const networkIdIfExists = await Blockchain._getInjectedWeb3ProviderNetworkIdIfExistsAsync();
+        const networkIdIfExists = await this._getInjectedProviderNetworkIdIfExistsAsync();
         this.networkId = !_.isUndefined(networkIdIfExists) ? networkIdIfExists : constants.NETWORK_ID_MAINNET;
-        const injectedWeb3IfExists = Blockchain._getInjectedWeb3();
-        if (!_.isUndefined(injectedWeb3IfExists) && !_.isUndefined(injectedWeb3IfExists.currentProvider)) {
-            const injectedProviderObservable = injectedWeb3IfExists.currentProvider.publicConfigStore;
+        const injectedProviderIfExists = await this._getInjectedProviderIfExistsAsync();
+        if (!_.isUndefined(injectedProviderIfExists)) {
+            const injectedProviderObservable = injectedProviderIfExists.publicConfigStore;
             if (!_.isUndefined(injectedProviderObservable) && _.isUndefined(this._injectedProviderObservable)) {
                 this._injectedProviderObservable = injectedProviderObservable;
                 this._injectedProviderObservable.subscribe(this._injectedProviderUpdateHandler);
             }
         }
-        this._updateProviderName(injectedWeb3IfExists);
+        this._updateProviderName(injectedProviderIfExists);
         const shouldPollUserAddress = true;
         const shouldUseLedgerProvider = false;
         this._startWatchingGasPrice();
@@ -866,21 +855,24 @@ export class Blockchain {
         }
         this._dispatcher.updateUserWeiBalance(undefined);
         this.networkId = networkId;
-        const injectedWeb3IfExists = Blockchain._getInjectedWeb3();
+        const injectedProviderIfExists = await this._getInjectedProviderIfExistsAsync();
         const [provider, ledgerSubproviderIfExists] = await Blockchain._getProviderAsync(
-            injectedWeb3IfExists,
+            injectedProviderIfExists,
             networkId,
             shouldUserLedgerProvider,
         );
+        this._web3Wrapper = new Web3Wrapper(provider);
+        this.networkId = await this._web3Wrapper.getNetworkIdAsync();
         if (!_.isUndefined(this._contractWrappers)) {
-            this._contractWrappers.setProvider(provider, networkId);
-        } else {
-            this._contractWrappers = new ContractWrappers(provider, { networkId });
+            this._contractWrappers.unsubscribeAll();
         }
+        const contractWrappersConfig = {
+            networkId,
+        };
+        this._contractWrappers = new ContractWrappers(provider, contractWrappersConfig);
         if (!_.isUndefined(this._blockchainWatcher)) {
             this._blockchainWatcher.destroy();
         }
-        this._web3Wrapper = new Web3Wrapper(provider);
         this._blockchainWatcher = new BlockchainWatcher(this._dispatcher, this._web3Wrapper, shouldPollUserAddress);
         if (shouldUserLedgerProvider && !_.isUndefined(ledgerSubproviderIfExists)) {
             delete this._userAddressIfExists;
@@ -892,7 +884,7 @@ export class Blockchain {
             const userAddresses = await this._web3Wrapper.getAvailableAddressesAsync();
             this._userAddressIfExists = userAddresses[0];
             this._dispatcher.updateUserAddress(this._userAddressIfExists);
-            if (!_.isUndefined(injectedWeb3IfExists)) {
+            if (!_.isUndefined(injectedProviderIfExists)) {
                 this._dispatcher.updateProviderType(ProviderType.Injected);
             }
             await this.fetchTokenInformationAsync();
@@ -901,10 +893,10 @@ export class Blockchain {
         this._dispatcher.updateNetworkId(networkId);
         await this._rehydrateStoreWithContractEventsAsync();
     }
-    private _updateProviderName(injectedWeb3IfExists: InjectedWeb3): void {
-        const doesInjectedWeb3Exist = !_.isUndefined(injectedWeb3IfExists);
-        const providerName = doesInjectedWeb3Exist
-            ? Blockchain._getNameGivenProvider(injectedWeb3IfExists.currentProvider)
+    private _updateProviderName(injectedProviderIfExists?: InjectedProvider): void {
+        const doesInjectedProviderExist = !_.isUndefined(injectedProviderIfExists);
+        const providerName = doesInjectedProviderExist
+            ? Blockchain._getNameGivenProvider(injectedProviderIfExists)
             : constants.PROVIDER_NAME_PUBLIC;
         this._dispatcher.updateInjectedProviderName(providerName);
     }

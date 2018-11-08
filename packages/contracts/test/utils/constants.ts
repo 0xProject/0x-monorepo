@@ -1,5 +1,5 @@
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -51,4 +51,17 @@ export const constants = {
     WORD_LENGTH: 32,
     ZERO_AMOUNT: new BigNumber(0),
     PERCENTAGE_DENOMINATOR: new BigNumber(10).pow(18),
+    FUNCTIONS_WITH_MUTEX: [
+        'FILL_ORDER',
+        'FILL_OR_KILL_ORDER',
+        'BATCH_FILL_ORDERS',
+        'BATCH_FILL_OR_KILL_ORDERS',
+        'MARKET_BUY_ORDERS',
+        'MARKET_SELL_ORDERS',
+        'MATCH_ORDERS',
+        'CANCEL_ORDER',
+        'BATCH_CANCEL_ORDERS',
+        'CANCEL_ORDERS_UP_TO',
+        'SET_SIGNATURE_VALIDATOR_APPROVAL',
+    ],
 };

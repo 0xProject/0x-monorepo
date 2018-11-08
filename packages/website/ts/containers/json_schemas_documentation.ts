@@ -1,63 +1,69 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages } from 'ts/types';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/json_schemas/1.0.0/introduction');
-const InstallationMarkdownV1 = require('md/docs/json_schemas/1.0.0/installation');
-const UsageMarkdownV1 = require('md/docs/json_schemas/1.0.0/usage');
-const SchemasMarkdownV1 = require('md/docs/json_schemas/1.0.0/schemas');
+const IntroMarkdown1 = require('md/docs/json_schemas/1/introduction');
+const IntroMarkdown3 = require('md/docs/json_schemas/3/introduction');
+const InstallationMarkdown1 = require('md/docs/json_schemas/1/installation');
+const InstallationMarkdown3 = require('md/docs/json_schemas/3/installation');
+const usageMarkdown1 = require('md/docs/json_schemas/1/usage');
+const usageMarkdown3 = require('md/docs/json_schemas/3/usage');
+const SchemasMarkdown1 = require('md/docs/json_schemas/1/schemas');
+const SchemasMarkdown2 = require('md/docs/json_schemas/2/schemas');
+const SchemasMarkdown3 = require('md/docs/json_schemas/3/schemas');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     usage: 'usage',
-    schemaValidator: 'schemaValidator',
     schemas: 'schemas',
 };
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.JSONSchemas,
+    packageName: '@0x/json-schemas',
     type: SupportedDocJson.TypeDoc,
     displayName: 'JSON Schemas',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        usage: [docSections.usage],
-        schemaValidator: [docSections.schemaValidator],
-        schemas: [docSections.schemas],
+    markdownMenu: {
+        'getting-started': [markdownSections.introduction, markdownSections.installation, markdownSections.usage],
+        schemas: [markdownSections.schemas],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
-            [docSections.schemas]: SchemasMarkdownV1,
-            [docSections.usage]: UsageMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+            [markdownSections.schemas]: SchemasMarkdown1,
+            [markdownSections.usage]: usageMarkdown1,
+        },
+        '1.0.0': {
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+            [markdownSections.schemas]: SchemasMarkdown2,
+            [markdownSections.usage]: usageMarkdown1,
+        },
+        '2.0.0': {
+            [markdownSections.introduction]: IntroMarkdown3,
+            [markdownSections.installation]: InstallationMarkdown3,
+            [markdownSections.schemas]: SchemasMarkdown2,
+            [markdownSections.usage]: usageMarkdown3,
+        },
+        '2.0.1': {
+            [markdownSections.introduction]: IntroMarkdown3,
+            [markdownSections.installation]: InstallationMarkdown3,
+            [markdownSections.schemas]: SchemasMarkdown3,
+            [markdownSections.usage]: usageMarkdown3,
         },
     },
-    sectionNameToModulePath: {
-        [docSections.schemaValidator]: ['"json-schemas/src/schema_validator"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
-    sections: docSections,
-    visibleConstructors: [docSections.schemaValidator],
-    typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [],
-        typeNameToExternalLink: {
-            Schema:
-                'https://github.com/tdegrunt/jsonschema/blob/5c2edd4baba149964aec0f23c87ad12c25a50dfb/lib/index.d.ts#L49',
-        },
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 
@@ -66,6 +72,7 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -77,6 +84,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
     docsInfo,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

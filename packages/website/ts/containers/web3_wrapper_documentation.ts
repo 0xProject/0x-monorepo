@@ -1,98 +1,44 @@
-import { constants as docConstants, DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages } from 'ts/types';
-import { constants } from 'ts/utils/constants';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/web3_wrapper/introduction');
-const InstallationMarkdownV1 = require('md/docs/web3_wrapper/installation');
+const IntroMarkdown1 = require('md/docs/web3_wrapper/1/introduction');
+const InstallationMarkdown1 = require('md/docs/web3_wrapper/1/installation');
+const InstallationMarkdown2 = require('md/docs/web3_wrapper/2/installation');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
-    web3Wrapper: 'web3Wrapper',
-    types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.Web3Wrapper,
+    packageName: '@0x/web3-wrapper',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Web3Wrapper',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        web3Wrapper: [docSections.web3Wrapper],
-        types: [docSections.types],
+    markdownMenu: {
+        'getting-started': [markdownSections.introduction, markdownSections.installation],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+        },
+        '3.1.0': {
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown2,
         },
     },
-    sectionNameToModulePath: {
-        [docSections.web3Wrapper]: ['"web3-wrapper/src/web3_wrapper"'],
-        [docSections.types]: ['"types/src/index"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
-    sections: docSections,
-    visibleConstructors: [docSections.web3Wrapper],
-    typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [
-            'TxData',
-            'TransactionReceipt',
-            'RawLogEntry',
-            'ContractAbi',
-            'BlockParam',
-            'FilterObject',
-            'LogEntry',
-            'BlockWithoutTransactionData',
-            'CallData',
-            'LogEntryEvent',
-            'Provider',
-            'AbiDefinition',
-            'LogTopic',
-            'JSONRPCRequestPayload',
-            'JSONRPCResponsePayload',
-            'BlockParamLiteral',
-            'FunctionAbi',
-            'EventAbi',
-            'JSONRPCErrorCallback',
-            'MethodAbi',
-            'ConstructorAbi',
-            'FallbackAbi',
-            'EventParameter',
-            'DataItem',
-            'StateMutability',
-            'Function',
-            'Fallback',
-            'Constructor',
-            'Event',
-            'ConstructorStateMutability',
-            'TransactionReceiptWithDecodedLogs',
-            'DecodedLogArgs',
-            'LogWithDecodedArgs',
-            'ContractEventArg',
-        ],
-        typeNameToExternalLink: {
-            Web3: constants.URL_WEB3_DOCS,
-            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
-        },
-        typeNameToPrefix: {},
-        typeNameToDocSection: {
-            Web3Wrapper: docSections.web3Wrapper,
-        },
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 
@@ -101,6 +47,7 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -112,6 +59,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
     docsInfo,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

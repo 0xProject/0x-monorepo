@@ -1,14 +1,14 @@
 {
+    "extends": "../../tsconfig",
     "compilerOptions": {
         "outDir": "lib",
-        "lib": ["es2017"],
-        "skipLibCheck": true,
+        "rootDir": ".",
         "typeRoots": [
             "comment: for building within 0x-monorepo:",
-            "../../node_modules/@0xproject/typescript-typings/types",
+            "../../node_modules/@0x/typescript-typings/types",
             "../../node_modules/@types",
             "comment: for building in an isolated environment:",
-            "node_modules/@0xproject/typescript-typings/types",
+            "node_modules/@0x/typescript-typings/types",
             "node_modules/@types"
         ]
     },

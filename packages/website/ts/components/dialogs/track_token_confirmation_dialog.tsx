@@ -43,12 +43,12 @@ export class TrackTokenConfirmationDialog extends React.Component<
                     <FlatButton
                         key="trackNo"
                         label="No"
-                        onTouchTap={this._onTrackConfirmationRespondedAsync.bind(this, false)}
+                        onClick={this._onTrackConfirmationRespondedAsync.bind(this, false)}
                     />,
                     <FlatButton
                         key="trackYes"
                         label="Yes"
-                        onTouchTap={this._onTrackConfirmationRespondedAsync.bind(this, true)}
+                        onClick={this._onTrackConfirmationRespondedAsync.bind(this, true)}
                     />,
                 ]}
                 open={this.props.isOpen}

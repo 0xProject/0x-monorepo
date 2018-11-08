@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 
 export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
@@ -15,4 +15,5 @@ export const constants = {
     DUMMY_TOKEN_TOTAL_SUPPLY: new BigNumber(10 ** 27), // tslint:disable-line:custom-no-magic-numbers
     NUM_DUMMY_ERC20_TO_DEPLOY: 3,
     NUM_DUMMY_ERC721_TO_DEPLOY: 1,
+    ZERO_AMOUNT: new BigNumber(0),
 };

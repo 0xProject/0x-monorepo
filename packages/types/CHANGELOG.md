@@ -5,7 +5,52 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.1-rc.4 - _August 13, 2018_
+## v1.2.0 - _October 18, 2018_
+
+    * Added `EIP712Parameter` `EIP712Types` `EIP712TypedData` for EIP712 signing (#1102)
+    * Added `ZeroExTransaction` type for Exchange executeTransaction (#1102)
+    * Add `AssetData` union type (`type AssetData = ERC20AssetData | ERC721AssetData`) (#1131)
+
+## v1.1.4 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v1.1.3 - _October 2, 2018_
+
+    * Dependencies updated
+
+## v1.1.2 - _September 28, 2018_
+
+    * Dependencies updated
+
+## v1.1.1 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v1.1.0 - _September 25, 2018_
+
+    * Add ObjectMap type (#1037)
+    * Add SRA types from connect (#1085)
+
+## v1.0.2 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v1.0.1 - _September 5, 2018_
+
+    * Add AssetProxyOwner revert reasons (#1041)
+    * Add MultiSigWalletWithTimeLock revert reasons (#1050)
+
+## v1.0.1-rc.6 - _August 27, 2018_
+
+    * Add WalletError and ValidatorError revert reasons (#1012)
+    * Remove Caller and Trezor SignatureTypes (#1015)
+
+## v1.0.1-rc.5 - _August 24, 2018_
+
+    * Add revert reasons for ERC721Token (#933)
+
+## v1.0.1-rc.4 - _August 14, 2018_
 
     * Added SignerType to handle different signing prefix scenarios (#914)
 

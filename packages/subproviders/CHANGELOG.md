@@ -5,7 +5,45 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.0.5 - _August 13, 2018_
+## v2.1.0 - _October 18, 2018_
+
+    * Add `MetamaskSubprovider` to handle inconsistent JSON RPC behaviour (#1102)
+    * Add support for `eth_signTypedData` in wallets Mnemonic, Private and EthLightWallet (#1102)
+    * Make web3-provider-engine types a 'dependency' so it's available to users of the library (#1105)
+
+## v2.0.7 - _October 4, 2018_
+
+    * Dependencies updated
+
+## v2.0.6 - _September 28, 2018_
+
+    * Dependencies updated
+
+## v2.0.5 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v2.0.4 - _September 25, 2018_
+
+    * Dependencies updated
+
+## v2.0.3 - _September 21, 2018_
+
+    * Dependencies updated
+
+## v2.0.2 - _September 5, 2018_
+
+    * Dependencies updated
+
+## v2.0.1 - _August 27, 2018_
+
+    * Dependencies updated
+
+## v2.0.0 - _August 24, 2018_
+
+    * Export types: `PartialTxParams`, `JSONRPCRequestPayloadWithMethod`, `ECSignatureString`, `AccountFetchingConfigs`, `LedgerEthereumClientFactoryAsync`, `OnNextCompleted`, `MnemonicWalletSubproviderConfigs`, LedgerGetAddressResult, `JSONRPCRequestPayload`, `Provider`, `JSONRPCResponsePayload` and `JSONRPCErrorCallback` (#924)
+
+## v1.0.5 - _August 14, 2018_
 
     * Dependencies updated
 

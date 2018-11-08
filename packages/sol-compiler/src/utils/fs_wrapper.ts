@@ -1,4 +1,4 @@
-import { promisify } from '@0xproject/utils';
+import { promisify } from '@0x/utils';
 import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 

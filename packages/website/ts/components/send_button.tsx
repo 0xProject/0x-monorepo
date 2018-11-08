@@ -1,4 +1,4 @@
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { BigNumber, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';

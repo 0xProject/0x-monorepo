@@ -1,6 +1,6 @@
 {
-    "artifactsDir": "../migrations/artifacts/2.0.0",
-    "contractsDir": "src/",
+    "artifactsDir": "./generated-artifacts",
+    "contractsDir": "./contracts",
     "compilerSettings": {
         "optimizer": {
             "enabled": true,
@@ -23,6 +23,7 @@
         "DummyERC20Token",
         "DummyERC721Receiver",
         "DummyERC721Token",
+        "DummyMultipleReturnERC20Token",
         "DummyNoReturnERC20Token",
         "ERC20Proxy",
         "ERC20Token",
@@ -39,6 +40,8 @@
         "MixinAuthorizable",
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",
+        "OrderValidator",
+        "ReentrantERC20Token",
         "TestAssetProxyOwner",
         "TestAssetProxyDispatcher",
         "TestConstants",
@@ -46,7 +49,7 @@
         "TestLibs",
         "TestExchangeInternals",
         "TestSignatureValidator",
-        "TokenRegistry",
+        "TestStaticCallReceiver",
         "Validator",
         "Wallet",
         "WETH9",

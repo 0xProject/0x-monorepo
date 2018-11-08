@@ -1,12 +1,20 @@
-import { schemas } from '@0xproject/json-schemas';
-import { assetDataUtils } from '@0xproject/order-utils';
-import { AssetProxyId, Order, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
-import { ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
+import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from '@0x/abi-gen-wrappers';
+import { Exchange } from '@0x/contract-artifacts';
+import { schemas } from '@0x/json-schemas';
+import {
+    assetDataUtils,
+    BalanceAndProxyAllowanceLazyStore,
+    ExchangeTransferSimulator,
+    OrderValidationUtils,
+} from '@0x/order-utils';
+import { AssetProxyId, Order, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+import { BlockParamLiteral, ContractAbi, LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
+import { AssetBalanceAndProxyAllowanceFetcher } from '../fetchers/asset_balance_and_proxy_allowance_fetcher';
+import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_fetcher';
 import { methodOptsSchema } from '../schemas/method_opts_schema';
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
@@ -18,33 +26,57 @@ import {
     MethodOpts,
     OrderInfo,
     OrderTransactionOpts,
+    ValidateOrderFillableOpts,
 } from '../types';
 import { assert } from '../utils/assert';
+import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 import { decorators } from '../utils/decorators';
 import { TransactionEncoder } from '../utils/transaction_encoder';
 
 import { ContractWrapper } from './contract_wrapper';
-import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from './generated/exchange';
+import { ERC20TokenWrapper } from './erc20_token_wrapper';
+import { ERC721TokenWrapper } from './erc721_token_wrapper';
 
 /**
  * This class includes all the functionality related to calling methods, sending transactions and subscribing to
  * events of the 0x V2 Exchange smart contract.
  */
 export class ExchangeWrapper extends ContractWrapper {
-    public abi: ContractAbi = artifacts.Exchange.compilerOutput.abi;
+    public abi: ContractAbi = Exchange.compilerOutput.abi;
+    public address: string;
+    public zrxTokenAddress: string;
     private _exchangeContractIfExists?: ExchangeContract;
-    private _contractAddressIfExists?: string;
-    private _zrxContractAddressIfExists?: string;
+    private readonly _erc721TokenWrapper: ERC721TokenWrapper;
+    private readonly _erc20TokenWrapper: ERC20TokenWrapper;
+    /**
+     * Instantiate ExchangeWrapper
+     * @param web3Wrapper Web3Wrapper instance to use.
+     * @param networkId Desired networkId.
+     * @param erc20TokenWrapper ERC20TokenWrapper instance to use.
+     * @param erc721TokenWrapper ERC721TokenWrapper instance to use.
+     * @param address The address of the Exchange contract. If undefined, will
+     * default to the known address corresponding to the networkId.
+     * @param zrxTokenAddress The address of the ZRXToken contract. If
+     * undefined, will default to the known address corresponding to the
+     * networkId.
+     * @param blockPollingIntervalMs The block polling interval to use for active subscriptions.
+     */
     constructor(
         web3Wrapper: Web3Wrapper,
         networkId: number,
-        contractAddressIfExists?: string,
-        zrxContractAddressIfExists?: string,
+        erc20TokenWrapper: ERC20TokenWrapper,
+        erc721TokenWrapper: ERC721TokenWrapper,
+        address?: string,
+        zrxTokenAddress?: string,
         blockPollingIntervalMs?: number,
     ) {
         super(web3Wrapper, networkId, blockPollingIntervalMs);
-        this._contractAddressIfExists = contractAddressIfExists;
-        this._zrxContractAddressIfExists = zrxContractAddressIfExists;
+        this._erc20TokenWrapper = erc20TokenWrapper;
+        this._erc721TokenWrapper = erc721TokenWrapper;
+        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
+        this.zrxTokenAddress = _.isUndefined(zrxTokenAddress)
+            ? _getDefaultContractAddresses(networkId).zrxToken
+            : zrxTokenAddress;
     }
     /**
      * Retrieve the address of an asset proxy by signature.
@@ -666,6 +698,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param leftSignedOrder  First order to match.
      * @param rightSignedOrder Second order to match.
      * @param takerAddress     The address that sends the transaction and gets the spread.
+     * @param orderTransactionOpts Optional arguments this method accepts.
      * @return Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -724,6 +757,7 @@ export class ExchangeWrapper extends ContractWrapper {
      * @param signerAddress Address that should have signed the given hash.
      * @param signature     Proof that the hash has been signed by signer.
      * @param senderAddress Address that should send the transaction.
+     * @param orderTransactionOpts Optional arguments this method accepts.
      * @returns Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -902,7 +936,7 @@ export class ExchangeWrapper extends ContractWrapper {
     /**
      * Cancel a given order.
      * @param   order           An object that conforms to the Order or SignedOrder interface. The order you would like to cancel.
-     * @param   transactionOpts Optional arguments this method accepts.
+     * @param   orderTransactionOpts Optional arguments this method accepts.
      * @return  Transaction hash.
      */
     @decorators.asyncZeroExErrorHandler
@@ -1022,12 +1056,11 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
-        const exchangeContractAddress = this.getContractAddress();
         const subscriptionToken = this._subscribe<ArgsType>(
-            exchangeContractAddress,
+            this.address,
             eventName,
             indexFilterValues,
-            artifacts.Exchange.compilerOutput.abi,
+            Exchange.compilerOutput.abi,
             callback,
             isVerbose,
         );
@@ -1062,40 +1095,79 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesBelongToStringEnum('eventName', eventName, ExchangeEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
-        const exchangeContractAddress = this.getContractAddress();
         const logs = await this._getLogsAsync<ArgsType>(
-            exchangeContractAddress,
+            this.address,
             eventName,
             blockRange,
             indexFilterValues,
-            artifacts.Exchange.compilerOutput.abi,
+            Exchange.compilerOutput.abi,
         );
         return logs;
     }
     /**
-     * Retrieves the Ethereum address of the Exchange contract deployed on the network
-     * that the user-passed web3 provider is connected to.
-     * @returns The Ethereum address of the Exchange contract being used.
+     * Validate if the supplied order is fillable, and throw if it isn't
+     * @param signedOrder SignedOrder of interest
+     * @param opts ValidateOrderFillableOpts options (e.g expectedFillTakerTokenAmount.
+     * If it isn't supplied, we check if the order is fillable for a non-zero amount)
      */
-    public getContractAddress(): string {
-        const contractAddress = this._getContractAddress(artifacts.Exchange, this._contractAddressIfExists);
-        return contractAddress;
+    public async validateOrderFillableOrThrowAsync(
+        signedOrder: SignedOrder,
+        opts: ValidateOrderFillableOpts = {},
+    ): Promise<void> {
+        const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
+            this._erc20TokenWrapper,
+            this._erc721TokenWrapper,
+            BlockParamLiteral.Latest,
+        );
+        const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+        const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
+
+        const expectedFillTakerTokenAmountIfExists = opts.expectedFillTakerTokenAmount;
+        const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        await orderValidationUtils.validateOrderFillableOrThrowAsync(
+            exchangeTradeSimulator,
+            signedOrder,
+            this.getZRXAssetData(),
+            expectedFillTakerTokenAmountIfExists,
+        );
     }
     /**
-     * Returns the ZRX token address used by the exchange contract.
-     * @return Address of ZRX token
+     * Validate a call to FillOrder and throw if it wouldn't succeed
+     * @param signedOrder SignedOrder of interest
+     * @param fillTakerAssetAmount Amount we'd like to fill the order for
+     * @param takerAddress The taker of the order
      */
-    public getZRXTokenAddress(): string {
-        const contractAddress = this._getContractAddress(artifacts.ZRXToken, this._zrxContractAddressIfExists);
-        return contractAddress;
+    public async validateFillOrderThrowIfInvalidAsync(
+        signedOrder: SignedOrder,
+        fillTakerAssetAmount: BigNumber,
+        takerAddress: string,
+    ): Promise<void> {
+        const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
+            this._erc20TokenWrapper,
+            this._erc721TokenWrapper,
+            BlockParamLiteral.Latest,
+        );
+        const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+        const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
+
+        const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
+            exchangeTradeSimulator,
+            this._web3Wrapper.getProvider(),
+            signedOrder,
+            fillTakerAssetAmount,
+            takerAddress,
+            this.getZRXAssetData(),
+        );
     }
     /**
      * Returns the ZRX asset data used by the exchange contract.
      * @return ZRX asset data
      */
     public getZRXAssetData(): string {
-        const zrxTokenAddress = this.getZRXTokenAddress();
-        const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxTokenAddress);
+        const zrxAssetData = assetDataUtils.encodeERC20AssetData(this.zrxTokenAddress);
         return zrxAssetData;
     }
     /**
@@ -1108,23 +1180,14 @@ export class ExchangeWrapper extends ContractWrapper {
         const encoder = new TransactionEncoder(exchangeInstance);
         return encoder;
     }
-    // tslint:disable:no-unused-variable
-    private _invalidateContractInstances(): void {
-        this.unsubscribeAll();
-        delete this._exchangeContractIfExists;
-    }
     // tslint:enable:no-unused-variable
     private async _getExchangeContractAsync(): Promise<ExchangeContract> {
         if (!_.isUndefined(this._exchangeContractIfExists)) {
             return this._exchangeContractIfExists;
         }
-        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(
-            artifacts.Exchange,
-            this._contractAddressIfExists,
-        );
         const contractInstance = new ExchangeContract(
-            abi,
-            address,
+            this.abi,
+            this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

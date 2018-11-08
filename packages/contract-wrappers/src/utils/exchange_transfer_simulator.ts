@@ -1,5 +1,5 @@
-import { ExchangeContractErrs } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { ExchangeContractErrs } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 import { AbstractBalanceAndProxyAllowanceLazyStore } from '../abstract/abstract_balance_and_proxy_allowance_lazy_store';
 import { TradeSide, TransferType } from '../types';
@@ -34,7 +34,7 @@ const ERR_MSG_MAPPING = {
 };
 
 export class ExchangeTransferSimulator {
-    private _store: AbstractBalanceAndProxyAllowanceLazyStore;
+    private readonly _store: AbstractBalanceAndProxyAllowanceLazyStore;
     private static _throwValidationError(
         failureReason: FailureReason,
         tradeSide: TradeSide,

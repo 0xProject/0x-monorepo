@@ -1,5 +1,7 @@
+import { assetDataUtils } from '@0x/order-utils';
+import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
-import { ObjectMap, Order } from 'ts/types';
+import { PortalOrder } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 export interface HeapAnalytics {
@@ -53,12 +55,16 @@ export class Analytics {
     }
     // tslint:enable:no-floating-promises
     // Custom methods
-    public trackOrderEvent(eventName: string, order: Order): void {
+    public trackOrderEvent(eventName: string, order: PortalOrder): void {
+        const takerTokenAmount = order.signedOrder.takerAssetAmount.toString();
+        const makerTokenAmount = order.signedOrder.makerAssetAmount.toString();
+        const takerToken = assetDataUtils.decodeERC20AssetData(order.signedOrder.takerAssetData).tokenAddress;
+        const makerToken = assetDataUtils.decodeERC20AssetData(order.signedOrder.makerAssetData).tokenAddress;
         const orderLoggingData = {
-            takerTokenAmount: order.signedOrder.takerTokenAmount,
-            makeTokenAmount: order.signedOrder.makerTokenAmount,
-            takerToken: order.metadata.takerToken.symbol,
-            makerToken: order.metadata.makerToken.symbol,
+            takerTokenAmount,
+            makerTokenAmount,
+            takerToken,
+            makerToken,
         };
         this.track(eventName, orderLoggingData);
     }

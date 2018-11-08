@@ -1,9 +1,11 @@
-import { Order } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { Order } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { constants, orderHashUtils } from '../src';
+import { orderHashUtils } from '../src';
+
+import { constants } from '../src/constants';
 
 import { chaiSetup } from './utils/chai_setup';
 
@@ -31,6 +33,20 @@ describe('Order hashing', () => {
         };
         it('calculates the order hash', async () => {
             const orderHash = orderHashUtils.getOrderHashHex(order);
+            expect(orderHash).to.be.equal(expectedOrderHash);
+        });
+        it('calculates the order hash if amounts are strings', async () => {
+            // It's common for developers using javascript to provide the amounts
+            // as strings. Since we eventually toString() the BigNumber
+            // before encoding we should result in the same orderHash in this scenario
+            // tslint:disable-next-line:no-unnecessary-type-assertion
+            const orderHash = orderHashUtils.getOrderHashHex({
+                ...order,
+                makerAssetAmount: '0',
+                takerAssetAmount: '0',
+                makerFee: '0',
+                takerFee: '0',
+            } as any);
             expect(orderHash).to.be.equal(expectedOrderHash);
         });
         it('throws a readable error message if taker format is invalid', async () => {

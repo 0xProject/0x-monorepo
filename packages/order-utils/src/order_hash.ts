@@ -1,30 +1,12 @@
-import { schemas, SchemaValidator } from '@0xproject/json-schemas';
-import { Order, SignedOrder } from '@0xproject/types';
+import { schemas, SchemaValidator } from '@0x/json-schemas';
+import { Order, SignedOrder } from '@0x/types';
+import { signTypedDataUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
-import { EIP712Utils } from './eip712_utils';
-import { EIP712Schema, EIP712Types } from './types';
+import { eip712Utils } from './eip712_utils';
 
 const INVALID_TAKER_FORMAT = 'instance.takerAddress is not of a type(s) string';
-
-const EIP712_ORDER_SCHEMA: EIP712Schema = {
-    name: 'Order',
-    parameters: [
-        { name: 'makerAddress', type: EIP712Types.Address },
-        { name: 'takerAddress', type: EIP712Types.Address },
-        { name: 'feeRecipientAddress', type: EIP712Types.Address },
-        { name: 'senderAddress', type: EIP712Types.Address },
-        { name: 'makerAssetAmount', type: EIP712Types.Uint256 },
-        { name: 'takerAssetAmount', type: EIP712Types.Uint256 },
-        { name: 'makerFee', type: EIP712Types.Uint256 },
-        { name: 'takerFee', type: EIP712Types.Uint256 },
-        { name: 'expirationTimeSeconds', type: EIP712Types.Uint256 },
-        { name: 'salt', type: EIP712Types.Uint256 },
-        { name: 'makerAssetData', type: EIP712Types.Bytes },
-        { name: 'takerAssetData', type: EIP712Types.Bytes },
-    ],
-};
 
 export const orderHashUtils = {
     /**
@@ -45,7 +27,7 @@ export const orderHashUtils = {
     /**
      * Computes the orderHash for a supplied order.
      * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
-     * @return  The resulting orderHash from hashing the supplied order.
+     * @return  Hex encoded string orderHash from hashing the supplied order.
      */
     getOrderHashHex(order: SignedOrder | Order): string {
         try {
@@ -64,16 +46,13 @@ export const orderHashUtils = {
         return orderHashHex;
     },
     /**
-     * Computes the orderHash for a supplied order and returns it as a Buffer
+     * Computes the orderHash for a supplied order
      * @param   order   An object that conforms to the Order or SignedOrder interface definitions.
-     * @return  The resulting orderHash from hashing the supplied order as a Buffer
+     * @return  A Buffer containing the resulting orderHash from hashing the supplied order
      */
     getOrderHashBuffer(order: SignedOrder | Order): Buffer {
-        const orderParamsHashBuff = EIP712Utils.structHash(EIP712_ORDER_SCHEMA, order);
-        const orderHashBuff = EIP712Utils.createEIP712Message(orderParamsHashBuff, order.exchangeAddress);
+        const typedData = eip712Utils.createOrderTypedData(order);
+        const orderHashBuff = signTypedDataUtils.generateTypedDataHash(typedData);
         return orderHashBuff;
-    },
-    _getOrderSchemaBuffer(): Buffer {
-        return EIP712Utils.compileSchema(EIP712_ORDER_SCHEMA);
     },
 };

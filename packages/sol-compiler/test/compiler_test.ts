@@ -1,11 +1,11 @@
 import { join } from 'path';
 
 import * as chai from 'chai';
+import { CompilerOptions, ContractArtifact } from 'ethereum-types';
 import 'mocha';
 
 import { Compiler } from '../src/compiler';
 import { fsWrapper } from '../src/utils/fs_wrapper';
-import { CompilerOptions, ContractArtifact } from '../src/utils/types';
 
 import { exchange_binary } from './fixtures/exchange_bin';
 import { chaiSetup } from './util/chai_setup';
@@ -80,7 +80,7 @@ describe('#Compiler', function(): void {
         it('recompilation should update artifact when source has changed', async () => {
             // append some meaningless data to the contract, so that its hash
             // will change, so that the compiler will decide to recompile it.
-            fsWrapper.appendFileAsync(join(contractsDir, `${contract}.sol`), ' ');
+            await fsWrapper.appendFileAsync(join(contractsDir, `${contract}.sol`), ' ');
 
             await new Compiler(compilerOpts).compileAsync();
 

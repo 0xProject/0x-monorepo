@@ -1,4 +1,4 @@
-import { colors } from '@0xproject/react-shared';
+import { colors } from '@0x/react-shared';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
@@ -14,7 +14,7 @@ export const U2fNotSupportedDialog = (props: U2fNotSupportedDialogProps) => {
         <Dialog
             title="U2F Not Supported"
             titleStyle={{ fontWeight: 100 }}
-            actions={[<FlatButton key="u2fNo" label="Ok" onTouchTap={props.onToggleDialog} />]}
+            actions={[<FlatButton key="u2fNo" label="Ok" onClick={props.onToggleDialog} />]}
             open={props.isOpen}
             onRequestClose={props.onToggleDialog}
             autoScrollBodyContent={true}

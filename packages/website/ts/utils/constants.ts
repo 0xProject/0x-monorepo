@@ -1,4 +1,9 @@
-import { BigNumber } from '@0xproject/utils';
+import { ALink } from '@0x/react-shared';
+import { BigNumber } from '@0x/utils';
+import { Key, WebsitePaths } from 'ts/types';
+
+const URL_FORUM = 'https://forum.0xproject.com';
+const URL_ZEROEX_CHAT = 'https://chat.0xproject.com';
 
 export const constants = {
     DECIMAL_PLACES_ETH: 18,
@@ -24,13 +29,14 @@ export const constants = {
     NETWORK_ID_MAINNET: 1,
     NETWORK_ID_KOVAN: 42,
     NETWORK_ID_TESTRPC: 50,
+    NETWORK_ID_ROPSTEN: 3,
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     PROVIDER_NAME_LEDGER: 'Ledger',
     PROVIDER_NAME_METAMASK: 'MetaMask',
     PROVIDER_NAME_PARITY_SIGNER: 'Parity Signer',
     PROVIDER_NAME_MIST: 'Mist',
     PROVIDER_NAME_CIPHER: 'Cipher Browser',
-    PROVIDER_NAME_TOSHI: 'Toshi',
+    PROVIDER_NAME_COINBASE_WALLET: 'Coinbase Wallet',
     PROVIDER_NAME_GENERIC: 'Injected Web3',
     PROVIDER_NAME_PUBLIC: '0x Public',
     ROLLBAR_ACCESS_TOKEN: '32c39bfa4bb6440faedc1612a9c13d28',
@@ -73,20 +79,22 @@ export const constants = {
     URL_TESTNET_FAUCET: 'https://faucet.0xproject.com',
     URL_GITHUB_ORG: 'https://github.com/0xProject',
     URL_GITHUB_WIKI: 'https://github.com/0xProject/wiki',
+    URL_FORUM,
     URL_METAMASK_CHROME_STORE: 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn',
     URL_METAMASK_FIREFOX_STORE: 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/',
-    URL_TOSHI_IOS_APP_STORE: 'https://itunes.apple.com/us/app/toshi-ethereum-wallet/id1278383455?mt=8',
-    URL_TOSHI_ANDROID_APP_STORE: 'https://play.google.com/store/apps/details?id=org.toshi&hl=en_US',
+    URL_COINBASE_WALLET_IOS_APP_STORE: 'https://itunes.apple.com/us/app/coinbase-wallet/id1278383455?mt=8',
+    URL_COINBASE_WALLET_ANDROID_APP_STORE: 'https://play.google.com/store/apps/details?id=org.toshi&hl=en',
     URL_METAMASK_HOMEPAGE: 'https://metamask.io/',
     URL_METAMASK_OPERA_STORE: 'https://addons.opera.com/en/extensions/details/metamask/',
     URL_MIST_DOWNLOAD: 'https://github.com/ethereum/mist/releases',
     URL_PARITY_CHROME_STORE:
         'https://chrome.google.com/webstore/detail/parity-ethereum-integrati/himekenlppkgeaoeddcliojfddemadig',
     URL_REDDIT: 'https://reddit.com/r/0xproject',
+    URL_SANDBOX: 'https://codesandbox.io/s/1qmjyp7p5j',
     URL_STANDARD_RELAYER_API_GITHUB: 'https://github.com/0xProject/standard-relayer-api/blob/master/README.md',
     URL_TWITTER: 'https://twitter.com/0xproject',
     URL_WETH_IO: 'https://weth.io/',
-    URL_ZEROEX_CHAT: 'https://chat.0xproject.com',
+    URL_ZEROEX_CHAT,
     URL_WEB3_DOCS: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
     URL_WEB3_DECODED_LOG_ENTRY_EVENT:
         'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L123',
@@ -94,4 +102,24 @@ export const constants = {
     URL_WEB3_PROVIDER_DOCS: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L150',
     URL_BIGNUMBERJS_GITHUB: 'http://mikemcl.github.io/bignumber.js',
     URL_MISSION_AND_VALUES_BLOG_POST: 'https://blog.0xproject.com/the-0x-mission-and-values-181a58706f9f',
+    DEVELOPER_TOPBAR_LINKS: [
+        {
+            title: Key.Home,
+            to: WebsitePaths.Home,
+        },
+        {
+            title: Key.Wiki,
+            to: WebsitePaths.Wiki,
+        },
+        {
+            title: Key.Forum,
+            to: URL_FORUM,
+            shouldOpenInNewTab: true,
+        },
+        {
+            title: Key.LiveChat,
+            to: URL_ZEROEX_CHAT,
+            shouldOpenInNewTab: true,
+        },
+    ] as ALink[],
 };

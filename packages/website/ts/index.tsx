@@ -3,9 +3,9 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
-import * as injectTapEventPlugin from 'react-tap-event-plugin';
 import { MetaTags } from 'ts/components/meta_tags';
 import { About } from 'ts/containers/about';
+import { DocsHome } from 'ts/containers/docs_home';
 import { FAQ } from 'ts/containers/faq';
 import { Jobs } from 'ts/containers/jobs';
 import { Landing } from 'ts/containers/landing';
@@ -17,8 +17,6 @@ import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
-// Polyfills
-injectTapEventPlugin();
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();
@@ -29,41 +27,50 @@ import 'less/all.less';
 
 // We pass modulePromise returning lambda instead of module promise,
 // cause we only want to import the module when the user navigates to the page.
-// At the same time webpack statically parses for System.import() to determine bundle chunk split points
-// so each lazy import needs it's own `System.import()` declaration.
+// At the same time webpack statically parses for import() to determine bundle chunk split points
+// so each lazy import needs it's own `import()` declaration.
 
 const LazyPortal = createLazyComponent('Portal', async () =>
-    System.import<any>(/* webpackChunkName: "portal" */ 'ts/containers/portal'),
+    import(/* webpackChunkName: "portal" */ 'ts/containers/portal'),
 );
 const LazyZeroExJSDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "zeroExDocs" */ 'ts/containers/zero_ex_js_documentation'),
+    import(/* webpackChunkName: "zeroExDocs" */ 'ts/containers/zero_ex_js_documentation'),
+);
+const LazyContractWrappersDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "contractWrapperDocs" */ 'ts/containers/contract_wrappers_documentation'),
+);
+const LazyOrderWatcherDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "orderWatcherDocs" */ 'ts/containers/order_watcher_documentation'),
 );
 const LazySmartContractsDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "smartContractDocs" */ 'ts/containers/smart_contracts_documentation'),
+    import(/* webpackChunkName: "smartContractDocs" */ 'ts/containers/smart_contracts_documentation'),
 );
 const LazyConnectDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
+    import(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
 );
 const LazyWeb3WrapperDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "web3WrapperDocs" */ 'ts/containers/web3_wrapper_documentation'),
+    import(/* webpackChunkName: "web3WrapperDocs" */ 'ts/containers/web3_wrapper_documentation'),
 );
 const LazySolCompilerDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "solCompilerDocs" */ 'ts/containers/sol_compiler_documentation'),
+    import(/* webpackChunkName: "solCompilerDocs" */ 'ts/containers/sol_compiler_documentation'),
 );
 const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
+    import(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
 );
 const LazySolCovDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "solCovDocs" */ 'ts/containers/sol_cov_documentation'),
+    import(/* webpackChunkName: "solCovDocs" */ 'ts/containers/sol_cov_documentation'),
 );
 const LazySubprovidersDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "subproviderDocs" */ 'ts/containers/subproviders_documentation'),
+    import(/* webpackChunkName: "subproviderDocs" */ 'ts/containers/subproviders_documentation'),
 );
 const LazyOrderUtilsDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "orderUtilsDocs" */ 'ts/containers/order_utils_documentation'),
+    import(/* webpackChunkName: "orderUtilsDocs" */ 'ts/containers/order_utils_documentation'),
 );
 const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', async () =>
-    System.import<any>(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
+    import(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
+);
+const LazyAssetBuyerDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "assetBuyerDocs" */ 'ts/containers/asset_buyer_documentation'),
 );
 
 const DOCUMENT_TITLE = '0x: The Protocol for Trading Tokens';
@@ -88,6 +95,14 @@ render(
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
                                     component={LazyZeroExJSDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.ContractWrappers}/:version?`}
+                                    component={LazyContractWrappersDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.OrderWatcher}/:version?`}
+                                    component={LazyOrderWatcherDocumentation}
                                 />
                                 <Route
                                     path={`${WebsitePaths.Connect}/:version?`}
@@ -122,7 +137,11 @@ render(
                                     path={`${WebsitePaths.EthereumTypes}/:version?`}
                                     component={LazyEthereumTypesDocumentation}
                                 />
-
+                                <Route
+                                    path={`${WebsitePaths.AssetBuyer}/:version?`}
+                                    component={LazyAssetBuyerDocumentation}
+                                />
+                                <Route path={WebsitePaths.Docs} component={DocsHome as any} />
                                 {/* Legacy endpoints */}
                                 <Route
                                     path={`${WebsiteLegacyPaths.ZeroExJs}/:version?`}
@@ -137,7 +156,6 @@ render(
                                     component={LazySolCompilerDocumentation}
                                 />
                                 <Route path={WebsiteLegacyPaths.Jobs} component={Jobs as any} />
-                                <Route path={`${WebsitePaths.Docs}`} component={LazyZeroExJSDocumentation} />
                                 <Route component={NotFound as any} />
                             </Switch>
                         </div>

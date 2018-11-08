@@ -3,14 +3,20 @@ import CircularProgress from 'material-ui/CircularProgress';
 import { GridList } from 'material-ui/GridList';
 import * as React from 'react';
 
-import { RelayerGridTile } from 'ts/components/relayer_index/relayer_grid_tile';
+import { RelayerGridTile, RelayerGridTileStyle } from 'ts/components/relayer_index/relayer_grid_tile';
 import { Retry } from 'ts/components/ui/retry';
 import { ScreenWidths, WebsiteBackendRelayerInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 
+export enum RelayerIndexCellStyle {
+    Expanded = 0,
+    Minimized,
+}
+
 export interface RelayerIndexProps {
     networkId: number;
     screenWidth: ScreenWidths;
+    cellStyle: RelayerIndexCellStyle;
 }
 
 interface RelayerIndexState {
@@ -18,7 +24,8 @@ interface RelayerIndexState {
     error?: Error;
 }
 
-const CELL_HEIGHT = 290;
+const CELL_HEIGHT_EXPANDED = 290;
+const CELL_HEIGHT_MINIMIZED = 225;
 const NUMBER_OF_COLUMNS_LARGE = 3;
 const NUMBER_OF_COLUMNS_MEDIUM = 2;
 const NUMBER_OF_COLUMNS_SMALL = 2;
@@ -56,16 +63,28 @@ export class RelayerIndex extends React.Component<RelayerIndexProps, RelayerInde
                 </div>
             );
         } else {
-            const numberOfColumns = this._numberOfColumnsForScreenWidth(this.props.screenWidth);
+            const numberOfRelayers = this.state.relayerInfos.length;
+            const numberOfColumns = Math.min(
+                numberOfRelayers,
+                this._numberOfColumnsForScreenWidth(this.props.screenWidth),
+            );
+            const isExpanded = this.props.cellStyle === RelayerIndexCellStyle.Expanded;
+            const cellHeight = isExpanded ? CELL_HEIGHT_EXPANDED : CELL_HEIGHT_MINIMIZED;
+            const gridTileStyle = isExpanded ? RelayerGridTileStyle.Expanded : RelayerGridTileStyle.Minimized;
             return (
                 <GridList
-                    cellHeight={CELL_HEIGHT}
+                    cellHeight={cellHeight}
                     cols={numberOfColumns}
                     padding={GRID_PADDING}
                     style={{ marginTop: -10, marginBottom: 0 }}
                 >
                     {this.state.relayerInfos.map((relayerInfo: WebsiteBackendRelayerInfo, index) => (
-                        <RelayerGridTile key={index} relayerInfo={relayerInfo} networkId={this.props.networkId} />
+                        <RelayerGridTile
+                            key={index}
+                            relayerInfo={relayerInfo}
+                            networkId={this.props.networkId}
+                            style={gridTileStyle}
+                        />
                     ))}
                 </GridList>
             );

@@ -1,8 +1,8 @@
-import { logUtils } from '@0xproject/utils';
+import { logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { CustomType } from '../types';
+import { CustomType } from '@0x/types';
 
 const STRING_ENUM_CODE_PREFIX = ' strEnum(';
 

@@ -1,11 +1,11 @@
-import { OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 import { constants } from './constants';
 import { CancelOrder, MatchOrder } from './types';
 
 export const orderUtils = {
-    getPartialAmount(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
+    getPartialAmountFloor(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
         const partialAmount = numerator
             .mul(target)
             .div(denominator)

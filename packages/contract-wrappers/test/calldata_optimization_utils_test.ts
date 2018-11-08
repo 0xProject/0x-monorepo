@@ -1,9 +1,8 @@
-import { orderFactory } from '@0xproject/order-utils';
+import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { assert } from '../src/utils/assert';
 import { calldataOptimizationUtils } from '../src/utils/calldata_optimization_utils';
 import { constants } from '../src/utils/constants';
 

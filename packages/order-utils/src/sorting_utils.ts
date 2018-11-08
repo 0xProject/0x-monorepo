@@ -1,6 +1,6 @@
-import { schemas } from '@0xproject/json-schemas';
-import { Order } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { schemas } from '@0x/json-schemas';
+import { Order } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
@@ -32,7 +32,7 @@ export const sortingUtils = {
      *                          the makerAsset and WETH as the takerAsset.
      * @return  The input orders sorted by rate in ascending order
      */
-    sortFeeOrdersByFeeAdjustedRate(feeOrders: Order[]): Order[] {
+    sortFeeOrdersByFeeAdjustedRate<T extends Order>(feeOrders: T[]): T[] {
         assert.doesConformToSchema('feeOrders', feeOrders, schemas.ordersSchema);
         const rateCalculator = rateUtils.getFeeAdjustedRateOfFeeOrder.bind(rateUtils);
         const sortedOrders = sortOrders(feeOrders, rateCalculator);

@@ -1,9 +1,9 @@
-import { AnchorTitle, colors, HeaderSizes } from '@0xproject/react-shared';
+import { AnchorTitle, colors, HeaderSizes } from '@0x/react-shared';
+import { Event, EventArg } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';
-import { Event, EventArg } from '../types';
 
 import { Type } from './type';
 
@@ -53,7 +53,12 @@ export class EventDefinition extends React.Component<EventDefinitionProps, Event
         const indexed = <span style={{ color: colors.green }}> indexed</span>;
         const eventArgs = _.map(this.props.event.eventArgs, (eventArg: EventArg) => {
             const type = (
-                <Type type={eventArg.type} sectionName={this.props.sectionName} docsInfo={this.props.docsInfo} />
+                <Type
+                    type={eventArg.type}
+                    sectionName={this.props.sectionName}
+                    docsInfo={this.props.docsInfo}
+                    isInPopover={false}
+                />
             );
             return (
                 <span key={`eventArg-${eventArg.name}`}>

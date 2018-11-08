@@ -1,82 +1,49 @@
-import { constants as docConstants, DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages } from 'ts/types';
-import { constants } from 'ts/utils/constants';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/connect/1.0.0/introduction');
-const InstallationMarkdownV1 = require('md/docs/connect/1.0.0/installation');
+const IntroMarkdown1 = require('md/docs/connect/1/introduction');
+const IntroMarkdown2 = require('md/docs/connect/2/introduction');
+const InstallationMarkdown1 = require('md/docs/connect/1/installation');
+const InstallationMarkdown3 = require('md/docs/connect/3/installation');
 /* tslint:enable:no-var-requires */
 
-const connectDocSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
-    httpClient: 'httpClient',
-    webSocketOrderbookChannel: 'webSocketOrderbookChannel',
-    types: docConstants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.Connect,
+    packageName: '@0x/connect',
     type: SupportedDocJson.TypeDoc,
     displayName: '0x Connect',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
-    menu: {
-        introduction: [connectDocSections.introduction],
-        install: [connectDocSections.installation],
-        httpClient: [connectDocSections.httpClient],
-        webSocketOrderbookChannel: [connectDocSections.webSocketOrderbookChannel],
-        types: [connectDocSections.types],
+    markdownMenu: {
+        'getting-started': [markdownSections.introduction, markdownSections.installation],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [connectDocSections.introduction]: IntroMarkdownV1,
-            [connectDocSections.installation]: InstallationMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+        },
+        '2.0.0-rc.1': {
+            [markdownSections.introduction]: IntroMarkdown2,
+            [markdownSections.installation]: InstallationMarkdown1,
+        },
+        '3.0.2': {
+            [markdownSections.introduction]: IntroMarkdown2,
+            [markdownSections.installation]: InstallationMarkdown3,
         },
     },
-    sectionNameToModulePath: {
-        [connectDocSections.httpClient]: ['"src/http_client"'],
-        [connectDocSections.webSocketOrderbookChannel]: ['"src/ws_orderbook_channel"'],
-        [connectDocSections.types]: ['"src/types"', '"types/src/index"'],
-    },
-    menuSubsectionToVersionWhenIntroduced: {},
-    sections: connectDocSections,
-    visibleConstructors: [connectDocSections.httpClient, connectDocSections.webSocketOrderbookChannel],
-    typeConfigs: {
-        typeNameToExternalLink: {
-            Provider: constants.URL_WEB3_PROVIDER_DOCS,
-            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
-        },
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [
-            'Client',
-            'FeesRequest',
-            'FeesResponse',
-            'OrderbookChannel',
-            'OrderbookChannelHandler',
-            'OrderbookChannelSubscriptionOpts',
-            'OrderbookRequest',
-            'OrderbookResponse',
-            'OrdersRequest',
-            'OrdersRequestOpts',
-            'PagedRequestOpts',
-            'TokenPairsItem',
-            'TokenPairsRequest',
-            'TokenPairsRequestOpts',
-            'TokenTradeInfo',
-            'WebSocketOrderbookChannelConfig',
-            'Order',
-            'SignedOrder',
-            'ECSignature',
-        ],
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 
@@ -85,6 +52,7 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -96,6 +64,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
     docsInfo,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

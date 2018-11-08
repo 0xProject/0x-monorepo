@@ -1,3 +1,4 @@
+import { EIP712TypedData } from '@0x/types';
 import * as lightwallet from 'eth-lightwallet';
 
 import { PartialTxParams } from '../types';
@@ -14,6 +15,12 @@ import { PrivateKeyWalletSubprovider } from './private_key_wallet';
 export class EthLightwalletSubprovider extends BaseWalletSubprovider {
     private readonly _keystore: lightwallet.keystore;
     private readonly _pwDerivedKey: Uint8Array;
+    /**
+     * Instantiate an EthLightwalletSubprovider
+     * @param keystore The EthLightWallet keystore you wish to use
+     * @param pwDerivedKey The password derived key to use
+     * @return EthLightwalletSubprovider instance
+     */
     constructor(keystore: lightwallet.keystore, pwDerivedKey: Uint8Array) {
         super();
         this._keystore = keystore;
@@ -42,16 +49,16 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
         // Lightwallet loses the chain id information when hex encoding the transaction
         // this results in a different signature on certain networks. PrivateKeyWallet
         // respects this as it uses the parameters passed in
-        let privKey = this._keystore.exportPrivateKey(txParams.from, this._pwDerivedKey);
-        const privKeyWallet = new PrivateKeyWalletSubprovider(privKey);
-        privKey = '';
-        const privKeySignature = await privKeyWallet.signTransactionAsync(txParams);
-        return privKeySignature;
+        let privateKey = this._keystore.exportPrivateKey(txParams.from, this._pwDerivedKey);
+        const privateKeyWallet = new PrivateKeyWalletSubprovider(privateKey);
+        privateKey = '';
+        const privateKeySignature = await privateKeyWallet.signTransactionAsync(txParams);
+        return privateKeySignature;
     }
     /**
      * Sign a personal Ethereum signed message. The signing account will be the account
      * associated with the provided address.
-     * If you've added the MnemonicWalletSubprovider to your app's provider, you can simply send an `eth_sign`
+     * If you've added this Subprovider to your app's provider, you can simply send an `eth_sign`
      * or `personal_sign` JSON RPC request, and this method will be called auto-magically.
      * If you are not using this via a ProviderEngine instance, you can call it directly.
      * @param data Hex string message to sign
@@ -59,10 +66,26 @@ export class EthLightwalletSubprovider extends BaseWalletSubprovider {
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
-        let privKey = this._keystore.exportPrivateKey(address, this._pwDerivedKey);
-        const privKeyWallet = new PrivateKeyWalletSubprovider(privKey);
-        privKey = '';
-        const result = privKeyWallet.signPersonalMessageAsync(data, address);
+        let privateKey = this._keystore.exportPrivateKey(address, this._pwDerivedKey);
+        const privateKeyWallet = new PrivateKeyWalletSubprovider(privateKey);
+        privateKey = '';
+        const result = privateKeyWallet.signPersonalMessageAsync(data, address);
+        return result;
+    }
+    /**
+     * Sign an EIP712 Typed Data message. The signing address will associated with the provided address.
+     * If you've added this Subprovider to your app's provider, you can simply send an `eth_signTypedData`
+     * JSON RPC request, and this method will be called auto-magically.
+     * If you are not using this via a ProviderEngine instance, you can call it directly.
+     * @param address Address of the account to sign with
+     * @param data the typed data object
+     * @return Signature hex string (order: rsv)
+     */
+    public async signTypedDataAsync(address: string, typedData: EIP712TypedData): Promise<string> {
+        let privateKey = this._keystore.exportPrivateKey(address, this._pwDerivedKey);
+        const privateKeyWallet = new PrivateKeyWalletSubprovider(privateKey);
+        privateKey = '';
+        const result = privateKeyWallet.signTypedDataAsync(address, typedData);
         return result;
     }
 }

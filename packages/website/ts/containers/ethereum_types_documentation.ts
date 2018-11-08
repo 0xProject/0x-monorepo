@@ -1,12 +1,11 @@
-import { constants as docConstants, DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { constants as docConstants, DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages } from 'ts/types';
-import { constants } from 'ts/utils/constants';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
@@ -14,7 +13,7 @@ const IntroMarkdown = require('md/docs/ethereum_types/introduction');
 const InstallationMarkdown = require('md/docs/ethereum_types/installation');
 /* tslint:enable:no-var-requires */
 
-const docSections = {
+const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     types: docConstants.TYPES_SECTION_NAME,
@@ -22,78 +21,20 @@ const docSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.EthereumTypes,
+    packageName: 'ethereum-types',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Ethereum Types',
     packageUrl: 'https://github.com/0xProject/0x-monorepo/packages/ethereum-types',
-    menu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        types: [docSections.types],
+    markdownMenu: {
+        'getting-started': [markdownSections.introduction, markdownSections.installation],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdown,
-            [docSections.installation]: InstallationMarkdown,
+            [markdownSections.introduction]: IntroMarkdown,
+            [markdownSections.installation]: InstallationMarkdown,
         },
     },
-    sectionNameToModulePath: {
-        [docSections.types]: ['"index"'],
-    },
-    visibleConstructors: [],
-    menuSubsectionToVersionWhenIntroduced: {},
-    sections: docSections,
-    typeConfigs: {
-        // Note: This needs to be kept in sync with the types exported in index.ts. Unfortunately there is
-        // currently no way to extract the re-exported types from index.ts via TypeDoc :(
-        publicTypes: [
-            'Provider',
-            'JSONRPCErrorCallback',
-            'Provider',
-            'ContractAbi',
-            'AbiDefinition',
-            'FunctionAbi',
-            'ConstructorStateMutability',
-            'StateMutability',
-            'MethodAbi',
-            'ConstructorAbi',
-            'FallbackAbi',
-            'EventParameter',
-            'EventAbi',
-            'DataItem',
-            'OpCode',
-            // 'StructLog', // TODO: This type breaks the docs so we don't render it for now
-            'TransactionTrace',
-            'Unit',
-            'JSONRPCRequestPayload',
-            'JSONRPCResponsePayload',
-            'BlockWithoutTransactionData',
-            'BlockWithTransactionData',
-            'Transaction',
-            'TxData',
-            'CallData',
-            'FilterObject',
-            'LogTopic',
-            'DecodedLogEntry',
-            'DecodedLogEntryEvent',
-            'LogEntryEvent',
-            'LogEntry',
-            'TxDataPayable',
-            'TransactionReceipt',
-            'AbiType',
-            'ContractEventArg',
-            'DecodedLogArgs',
-            'LogWithDecodedArgs',
-            'RawLog',
-            'BlockParamLiteral',
-            'BlockParam',
-            'RawLogEntry',
-            'SolidityTypes',
-            'TransactionReceiptWithDecodedLogs',
-        ],
-        typeNameToExternalLink: {
-            BigNumber: constants.URL_BIGNUMBERJS_GITHUB,
-        },
-    },
+    markdownSections,
 };
 const docsInfo = new DocsInfo(docsInfoConfig);
 
@@ -102,6 +43,7 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -113,6 +55,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
     docsInfo,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({
