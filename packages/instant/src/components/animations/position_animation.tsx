@@ -72,12 +72,6 @@ const generatePositionAnimationCss = (positionSettings: PositionAnimationSetting
     `;
 };
 
-// TODO: clean up position settings
-export interface PositionAnimationProps {
-    positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
-    zIndex?: MediaChoice;
-}
-
 // TODO: use media helper instead
 const smallMediaCss = (generated: any) => {
     return css`
@@ -87,7 +81,10 @@ const smallMediaCss = (generated: any) => {
     `;
 };
 
-// TODO: z-index default value
+export interface PositionAnimationProps {
+    positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
+    zIndex?: MediaChoice;
+}
 export const PositionAnimation =
     styled.div <
     PositionAnimationProps >
