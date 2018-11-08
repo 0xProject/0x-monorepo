@@ -11,7 +11,6 @@ import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 
-import { PositionAnimation } from './animations/position_animation';
 import { SlideAnimationState } from './animations/slide_animation';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
