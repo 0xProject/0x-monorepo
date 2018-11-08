@@ -1,4 +1,4 @@
-import { MediaChoice, OptionallyScreenSpecific, stylesForMedia } from '../../style/media';
+import { MediaChoice, OptionallyScreenSpecific, stylesForMedia, media } from '../../style/media';
 import { css, keyframes, styled } from '../../style/theme';
 
 export interface TransitionInfo {
@@ -72,15 +72,6 @@ const generatePositionAnimationCss = (positionSettings: PositionAnimationSetting
     `;
 };
 
-// TODO: use media helper instead
-const smallMediaCss = (generated: any) => {
-    return css`
-        @media (max-width: 40em) {
-            ${generated};
-        }
-    `;
-};
-
 export interface PositionAnimationProps {
     positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
     zIndex?: OptionallyScreenSpecific<number>;
@@ -97,5 +88,5 @@ export const PositionAnimation =
     ${props =>
         'default' in props.positionSettings &&
         props.positionSettings.sm &&
-        smallMediaCss(generatePositionAnimationCss(props.positionSettings.sm))}
+        media.small`${generatePositionAnimationCss(props.positionSettings.sm)}`}
 `;
