@@ -1,9 +1,10 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'blocks' })
 export class Block {
     @PrimaryColumn() public hash!: string;
     @PrimaryColumn() public number!: number;
 
-    @Column() public unixTimestampSeconds!: number;
+    @Column({ name: 'unix_timestamp_seconds' })
+    public unixTimestampSeconds!: number;
 }

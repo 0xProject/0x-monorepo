@@ -48,7 +48,7 @@ export function _convertToEntity(apiOrder: APIOrder): SraOrder {
     sraOrder.takerTokenAddress = takerAssetData.tokenAddress;
     sraOrder.takerTokenId = bigNumbertoStringOrNull((takerAssetData as ERC721AssetData).tokenId);
 
-    sraOrder.metaDataJson = JSON.stringify(apiOrder.metaData);
+    sraOrder.metadataJson = JSON.stringify(apiOrder.metaData);
 
     return sraOrder;
 }
