@@ -4,7 +4,7 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import 'mocha';
 
-import { ExchangeFillEvent } from '../../../src/entities/ExchangeFillEvent';
+import { ExchangeFillEvent } from '../../../src/entities';
 import { _convertToEntity } from '../../../src/parsers/events';
 import { chaiSetup } from '../../utils/chai_setup';
 

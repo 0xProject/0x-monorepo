@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { Connection, createConnection } from 'typeorm';
 
 import { ExchangeEventsSource } from '../data_sources/contract-wrappers/exchange_events';
-import { ExchangeFillEvent } from '../entities/ExchangeFillEvent';
+import { ExchangeFillEvent } from '../entities';
 import { deployConfig } from '../ormconfig';
 import { parseExchangeEvents } from '../parsers/events';
 

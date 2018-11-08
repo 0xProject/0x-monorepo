@@ -1,26 +1,16 @@
-import { BigNumber } from '@0x/utils';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-import { bigNumberTransformer, numberToBigIntTransformer } from '../utils';
-
-@Entity({ name: 'exchange_cancel_up_to_events', schema: 'raw' })
+@Entity()
 export class ExchangeCancelUpToEvent {
-    @PrimaryColumn({ name: 'contract_address' })
-    public contractAddress!: string;
-    @PrimaryColumn({ name: 'log_index' })
-    public logIndex!: number;
-    @PrimaryColumn({ name: 'block_number', transformer: numberToBigIntTransformer })
-    public blockNumber!: number;
+    @PrimaryColumn() public contractAddress!: string;
+    @PrimaryColumn() public logIndex!: number;
+    @PrimaryColumn() public blockNumber!: number;
 
-    @Column({ name: 'raw_data' })
-    public rawData!: string;
+    // TODO(albrow): Include transaction hash
+    @Column() public rawData!: string;
 
-    @Column({ name: 'transaction_hash' })
-    public transactionHash!: string;
-    @Column({ name: 'maker_address' })
-    public makerAddress!: string;
-    @Column({ name: 'sender_address' })
-    public senderAddress!: string;
-    @Column({ name: 'order_epoch', type: 'numeric', transformer: bigNumberTransformer })
-    public orderEpoch!: BigNumber;
+    @Column() public makerAddress!: string;
+    @Column() public senderAddress!: string;
+    @Column() public orderEpoch!: string;
+    // TODO(albrow): Include topics?
 }
