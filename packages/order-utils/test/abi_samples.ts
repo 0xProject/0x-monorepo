@@ -82,36 +82,19 @@ export const multiDimensionalArraysDynamicTypeAbi = {
     inputs: [
         {
             name: 'a',
-            type: 'string[][][2]',
-        },
-        {
-            name: 'a',
-            type: 'string[][1][]',
-        },
-        {
-            name: 'a',
-            type: 'string[1][1][2]',
-        },
-        {
-            name: 'a',
             type: 'string[][][]',
         },
         {
-            name: 'a',
-            type: 'uint[][][]',
-        },
-        {
             name: 'b',
-            type: 'uint8[][2][]',
+            type: 'string[][][2]',
         },
         {
             name: 'c',
-            type: 'uint8[1][2][]',
+            type: 'string[][2][]',
         },
-
         {
-            name: 'c',
-            type: 'uint8[1][2][2]',
+            name: 'h',
+            type: 'string[2][2][2]',
         },
     ],
     name: 'simpleFunction',
