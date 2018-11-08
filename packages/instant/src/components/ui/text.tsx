@@ -28,7 +28,6 @@ export const Text =
     TextProps >
     `
     && {
-        all: initial;
         font-family: 'Inter UI', sans-serif;
         font-style: ${props => props.fontStyle};
         font-weight: ${props => props.fontWeight};

@@ -42,7 +42,6 @@ export const Container =
     ContainerProps >
     `
     && {
-        all: initial;
         box-sizing: border-box;
         ${props => cssRuleIfExists(props, 'flex-grow')}
         ${props => cssRuleIfExists(props, 'position')}
