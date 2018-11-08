@@ -17,7 +17,7 @@ export interface DropdownItemConfig {
 
 export interface DropdownProps {
     value: string;
-    label: string;
+    label?: string;
     items: DropdownItemConfig[];
 }
 
@@ -27,14 +27,7 @@ export interface DropdownState {
 
 export class Dropdown extends React.Component<DropdownProps, DropdownState> {
     public static defaultProps = {
-        items: [
-            {
-                text: 'Item 1',
-            },
-            {
-                text: 'Item 2',
-            },
-        ],
+        items: [],
     };
     public state: DropdownState = {
         isOpen: false,
@@ -57,7 +50,7 @@ export class Dropdown extends React.Component<DropdownProps, DropdownState> {
                     <Container
                         cursor={hasItems ? 'pointer' : undefined}
                         onClick={this._handleDropdownClick}
-                        hasBoxShadow={true}
+                        hasBoxShadow={isOpen}
                         borderRadius={borderRadius}
                         border="1px solid"
                         borderColor={ColorOption.feintGrey}
@@ -69,9 +62,11 @@ export class Dropdown extends React.Component<DropdownProps, DropdownState> {
                                 {value}
                             </Text>
                             <Container>
-                                <Text fontSize="16px" fontColor={ColorOption.lightGrey}>
-                                    {label}
-                                </Text>
+                                {label && (
+                                    <Text fontSize="16px" fontColor={ColorOption.lightGrey}>
+                                        {label}
+                                    </Text>
+                                )}
                                 {hasItems && (
                                     <Container marginLeft="5px" display="inline-block" position="relative" bottom="2px">
                                         <Icon padding="3px" icon="chevron" width={12} stroke={ColorOption.grey} />

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { ColorOption, overlayBlack, styled } from '../style/theme';
+import { ColorOption } from '../style/theme';
 
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';

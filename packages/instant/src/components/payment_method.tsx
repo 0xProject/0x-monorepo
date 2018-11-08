@@ -3,8 +3,8 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 
+import { PaymentMethodDropdown } from './payment_method_dropdown';
 import { Container } from './ui/container';
-import { Dropdown } from './ui/dropdown';
 import { Text } from './ui/text';
 
 export interface PaymentMethodProps {}
@@ -24,7 +24,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                         Payment Method
                     </Text>
                 </Container>
-                <Dropdown value="0x00000000000000" label="25.33 ETH" />
+                <PaymentMethodDropdown />
             </Container>
         );
     }

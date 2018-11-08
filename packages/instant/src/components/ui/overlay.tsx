@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import * as React from 'react';
 
 import { overlayBlack, styled } from '../../style/theme';
 import { zIndex } from '../../style/z_index';
