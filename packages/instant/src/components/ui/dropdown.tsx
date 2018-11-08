@@ -55,7 +55,6 @@ export class Dropdown extends React.Component<DropdownProps, DropdownState> {
                         border="1px solid"
                         borderColor={ColorOption.feintGrey}
                         padding="0.8em"
-                        borderBottom="1px solid"
                     >
                         <Flex justify="space-between">
                             <Text fontSize="16px" fontColor={ColorOption.darkGrey}>
@@ -127,6 +126,8 @@ export const DropdownItem: React.StatelessComponent<DropdownItemProps> = ({ text
         width="100%"
         borderColor={ColorOption.feintGrey}
     >
-        <Text>{text}</Text>
+        <Text fontSize="14px" fontColor={ColorOption.darkGrey}>
+            {text}
+        </Text>
     </Container>
 );
