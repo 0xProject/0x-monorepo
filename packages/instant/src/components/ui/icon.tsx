@@ -9,7 +9,6 @@ interface IconInfo {
     path: string;
     fillRule?: svgRule;
     clipRule?: svgRule;
-    stroke?: string;
     strokeOpacity?: number;
     strokeWidth?: number;
     strokeLinecap?: 'butt' | 'round' | 'square' | 'inherit';
@@ -47,7 +46,6 @@ const ICONS: IconInfoMapping = {
     chevron: {
         viewBox: '0 0 12 7',
         path: 'M11 1L6 6L1 1',
-        stroke: 'white',
         strokeOpacity: 0.5,
         strokeWidth: 1.5,
         strokeLinecap: 'round',
@@ -67,6 +65,7 @@ export interface IconProps {
     width: number;
     height?: number;
     color?: ColorOption;
+    stroke?: ColorOption;
     icon: keyof IconInfoMapping;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
     padding?: string;
@@ -75,6 +74,7 @@ export interface IconProps {
 const PlainIcon: React.StatelessComponent<IconProps> = props => {
     const iconInfo = ICONS[props.icon];
     const colorValue = _.isUndefined(props.color) ? undefined : props.theme[props.color];
+    const strokeValue = _.isUndefined(props.stroke) ? undefined : props.theme[props.stroke];
     return (
         <div onClick={props.onClick} className={props.className}>
             <svg
@@ -89,7 +89,7 @@ const PlainIcon: React.StatelessComponent<IconProps> = props => {
                     fill={colorValue}
                     fillRule={iconInfo.fillRule || 'nonzero'}
                     clipRule={iconInfo.clipRule || 'nonzero'}
-                    stroke={iconInfo.stroke}
+                    stroke={strokeValue}
                     strokeOpacity={iconInfo.strokeOpacity}
                     strokeWidth={iconInfo.strokeWidth}
                     strokeLinecap={iconInfo.strokeLinecap}
@@ -101,7 +101,8 @@ const PlainIcon: React.StatelessComponent<IconProps> = props => {
 };
 
 export const Icon = withTheme(styled(PlainIcon)`
-    cursor: ${props => (!_.isUndefined(props.onClick) ? 'pointer' : 'default')};
+    display: inline-block;
+    ${props => (!_.isUndefined(props.onClick) ? 'cursor: pointer' : '')};
     transition: opacity 0.5s ease;
     padding: ${props => props.padding};
     opacity: ${props => (!_.isUndefined(props.onClick) ? 0.7 : 1)};

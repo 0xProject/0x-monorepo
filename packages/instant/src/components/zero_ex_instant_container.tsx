@@ -3,15 +3,15 @@ import * as React from 'react';
 import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
+import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_order_progress';
 import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_buy_order_state_buttons';
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
-
-import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_order_progress';
 
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 
 import { SlideAnimationState } from './animations/slide_animation';
+import { PaymentMethod } from './payment_method';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
@@ -41,6 +41,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                 >
                     <Flex direction="column" justify="flex-start">
                         <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
+                        <PaymentMethod />
                         <SelectedAssetBuyOrderProgress />
                         <LatestBuyQuoteOrderDetails />
                         <Container padding="20px" width="100%">
