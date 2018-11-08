@@ -12,11 +12,11 @@ import { balanceUtil } from '../util/balance';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { util } from '../util/util';
 
-import { Button, Text } from './ui';
+import { Button } from './ui/button';
 
 export interface BuyButtonProps {
     buyQuote?: BuyQuote;
-    assetBuyer?: AssetBuyer;
+    assetBuyer: AssetBuyer;
     affiliateInfo?: AffiliateInfo;
     onValidationPending: (buyQuote: BuyQuote) => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
@@ -33,23 +33,29 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         onBuyFailure: util.boundNoop,
     };
     public render(): React.ReactNode {
-        const shouldDisableButton = _.isUndefined(this.props.buyQuote) || _.isUndefined(this.props.assetBuyer);
+        const shouldDisableButton = _.isUndefined(this.props.buyQuote);
         return (
-            <Button width="100%" onClick={this._handleClick} isDisabled={shouldDisableButton}>
-                <Text fontColor={ColorOption.white} fontWeight={600} fontSize="20px">
-                    Buy
-                </Text>
+            <Button
+                width="100%"
+                onClick={this._handleClick}
+                isDisabled={shouldDisableButton}
+                fontColor={ColorOption.white}
+                fontSize="20px"
+            >
+                Buy
             </Button>
         );
     }
     private readonly _handleClick = async () => {
         // The button is disabled when there is no buy quote anyway.
         const { buyQuote, assetBuyer, affiliateInfo } = this.props;
-        if (_.isUndefined(buyQuote) || _.isUndefined(assetBuyer)) {
+        if (_.isUndefined(buyQuote)) {
             return;
         }
 
         this.props.onValidationPending(buyQuote);
+
+        // TODO(bmillman): move address and balance fetching to the async state
         const web3Wrapper = new Web3Wrapper(assetBuyer.provider);
         const takerAddress = await getBestAddress(web3Wrapper);
 

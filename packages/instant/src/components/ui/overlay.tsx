@@ -15,20 +15,24 @@ export interface OverlayProps {
 
 const PlainOverlay: React.StatelessComponent<OverlayProps> = ({ children, className, onClose }) => (
     <Flex height="100vh" className={className}>
-        <Container position="absolute" top="0px" right="0px">
+        <Container position="absolute" top="0px" right="0px" display={{ default: 'initial', sm: 'none' }}>
             <Icon height={18} width={18} color={ColorOption.white} icon="closeX" onClick={onClose} padding="2em 2em" />
         </Container>
-        <div>{children}</div>
+        <Container width={{ default: 'auto', sm: '100%' }} height={{ default: 'auto', sm: '100%' }}>
+            {children}
+        </Container>
     </Flex>
 );
 export const Overlay = styled(PlainOverlay)`
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: ${props => props.zIndex}
-    background-color: ${overlayBlack};
+    && {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: ${props => props.zIndex}
+        background-color: ${overlayBlack};
+    }
 `;
 
 Overlay.defaultProps = {

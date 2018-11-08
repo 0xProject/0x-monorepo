@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 
-import { Button, ButtonProps, Text } from './ui';
+import { Button, ButtonProps } from './ui/button';
 
 export interface SecondaryButtonProps extends ButtonProps {}
 
@@ -15,11 +15,11 @@ export const SecondaryButton: React.StatelessComponent<SecondaryButtonProps> = p
             borderColor={ColorOption.lightGrey}
             width={props.width}
             onClick={props.onClick}
+            fontColor={ColorOption.primaryColor}
+            fontSize="16px"
             {...buttonProps}
         >
-            <Text fontColor={ColorOption.primaryColor} fontWeight={600} fontSize="16px">
-                {props.children}
-            </Text>
+            {props.children}
         </Button>
     );
 };

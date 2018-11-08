@@ -46,3 +46,13 @@ def assert_is_int(value: Any, name: str) -> None:
             f"expected variable '{name}', with value {str(value)}, to have"
             + f" type 'int', not '{type(value).__name__}'"
         )
+
+
+def assert_is_hex_string(value: Any, name: str) -> None:
+    """Assert that :param value: is a string of hex chars.
+
+    If :param value: isn't a str, raise a TypeError.  If it is a string but
+    contains non-hex characters ("0x" prefix permitted), raise a ValueError.
+    """
+    assert_is_string(value, name)
+    int(value, 16)  # raises a ValueError if value isn't a base-16 str

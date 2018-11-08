@@ -8,7 +8,11 @@ import { AsyncProcessState, ERC20Asset, OrderProcessState, OrderState } from '..
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
-import { Container, Flex, Icon, Spinner, Text } from './ui';
+import { Container } from './ui/container';
+import { Flex } from './ui/flex';
+import { Icon } from './ui/icon';
+import { Spinner } from './ui/spinner';
+import { Text } from './ui/text';
 
 export interface InstantHeadingProps {
     selectedAssetAmount?: BigNumber;
@@ -73,11 +77,11 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     private _renderIcon(): React.ReactNode {
         const processState = this.props.buyOrderState.processState;
 
-        if (processState === OrderProcessState.FAILURE) {
+        if (processState === OrderProcessState.Failure) {
             return <Icon icon="failed" width={ICON_WIDTH} height={ICON_HEIGHT} color={ICON_COLOR} />;
-        } else if (processState === OrderProcessState.PROCESSING) {
+        } else if (processState === OrderProcessState.Processing) {
             return <Spinner widthPx={ICON_HEIGHT} heightPx={ICON_HEIGHT} />;
-        } else if (processState === OrderProcessState.SUCCESS) {
+        } else if (processState === OrderProcessState.Success) {
             return <Icon icon="success" width={ICON_WIDTH} height={ICON_HEIGHT} color={ICON_COLOR} />;
         }
         return undefined;
@@ -85,11 +89,11 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
 
     private _renderTopText(): React.ReactNode {
         const processState = this.props.buyOrderState.processState;
-        if (processState === OrderProcessState.FAILURE) {
+        if (processState === OrderProcessState.Failure) {
             return 'Order failed';
-        } else if (processState === OrderProcessState.PROCESSING) {
+        } else if (processState === OrderProcessState.Processing) {
             return 'Processing Order...';
-        } else if (processState === OrderProcessState.SUCCESS) {
+        } else if (processState === OrderProcessState.Success) {
             return 'Tokens received!';
         }
 
@@ -97,7 +101,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     }
 
     private _renderPlaceholderOrAmount(amountFunction: () => React.ReactNode): React.ReactNode {
-        if (this.props.quoteRequestState === AsyncProcessState.PENDING) {
+        if (this.props.quoteRequestState === AsyncProcessState.Pending) {
             return <AmountPlaceholder isPulsating={true} color={PLACEHOLDER_COLOR} />;
         }
         if (_.isUndefined(this.props.selectedAssetAmount)) {

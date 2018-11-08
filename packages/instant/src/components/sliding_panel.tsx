@@ -5,7 +5,11 @@ import { zIndex } from '../style/z_index';
 
 import { PositionAnimationSettings } from './animations/position_animation';
 import { SlideAnimation, SlideAnimationState } from './animations/slide_animation';
-import { Container, Flex, Icon, Text } from './ui';
+
+import { Container } from './ui/container';
+import { Flex } from './ui/flex';
+import { Icon } from './ui/icon';
+import { Text } from './ui/text';
 
 export interface PanelProps {
     title?: string;
@@ -47,6 +51,7 @@ export const SlidingPanel: React.StatelessComponent<SlidingPanelProps> = props =
             from: slideAmount,
             to: '0px',
         },
+        position: 'absolute',
     };
     const slideDownSettings: PositionAnimationSettings = {
         duration: '0.3s',
@@ -55,10 +60,10 @@ export const SlidingPanel: React.StatelessComponent<SlidingPanelProps> = props =
             from: '0px',
             to: slideAmount,
         },
+        position: 'absolute',
     };
     return (
         <SlideAnimation
-            position="absolute"
             slideInSettings={slideUpSettings}
             slideOutSettings={slideDownSettings}
             animationState={animationState}
