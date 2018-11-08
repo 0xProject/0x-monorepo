@@ -34,6 +34,41 @@ export const stringAbi = {
     type: 'function',
 } as MethodAbi;
 
+export const typesWithDefaultWidthsAbi = {
+    constant: false,
+    inputs: [
+        {
+            name: 'someUint',
+            type: 'uint',
+        },
+        {
+            name: 'someInt',
+            type: 'int',
+        },
+        {
+            name: 'someByte',
+            type: 'byte',
+        },
+        {
+            name: 'someUint',
+            type: 'uint[]',
+        },
+        {
+            name: 'someInt',
+            type: 'int[]',
+        },
+        {
+            name: 'someByte',
+            type: 'byte[]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
 export const multiDimensionalArraysStaticTypeAbi = {
     constant: false,
     inputs: [
