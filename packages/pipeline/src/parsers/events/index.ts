@@ -9,9 +9,7 @@ import { AssetProxyId, ERC721AssetData } from '@0x/types';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as R from 'ramda';
 
-import { ExchangeCancelEvent } from '../../entities/ExchangeCancelEvent';
-import { ExchangeCancelUpToEvent } from '../../entities/ExchangeCancelUpToEvent';
-import { ExchangeFillEvent } from '../../entities/ExchangeFillEvent';
+import { ExchangeCancelEvent, ExchangeCancelUpToEvent, ExchangeFillEvent } from '../../entities';
 import { bigNumbertoStringOrNull } from '../../utils';
 
 export type ExchangeEventEntity = ExchangeFillEvent | ExchangeCancelEvent | ExchangeCancelUpToEvent;

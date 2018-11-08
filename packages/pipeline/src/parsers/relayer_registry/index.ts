@@ -1,7 +1,7 @@
 import * as R from 'ramda';
 
 import { RelayerResponse, RelayerResponseNetwork } from '../../data_sources/relayer-registry';
-import { Relayer } from '../../entities/Relayer';
+import { Relayer } from '../../entities';
 
 export function parseRelayers(rawResp: Map<string, RelayerResponse>): Relayer[] {
     const parsedAsObject = R.mapObjIndexed(parseRelayer, rawResp);

@@ -3,7 +3,7 @@ import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { AssetProxyId, ERC721AssetData } from '@0x/types';
 import * as R from 'ramda';
 
-import { SraOrder } from '../../entities/SraOrder';
+import { SraOrder } from '../../entities';
 import { bigNumbertoStringOrNull } from '../../utils';
 
 export function parseSraOrders(rawOrdersResponse: OrdersResponse): SraOrder[] {
