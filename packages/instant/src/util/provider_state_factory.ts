@@ -3,7 +3,7 @@ import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { LOADING_ACCOUNT, NO_ACCOUNT } from '../constants';
-import { AccountNotReady, AccountState, Maybe, Network, OrderSource, ProviderState } from '../types';
+import { Maybe, Network, OrderSource, ProviderState } from '../types';
 
 import { assetBuyerFactory } from './asset_buyer_factory';
 import { providerFactory } from './provider_factory';
