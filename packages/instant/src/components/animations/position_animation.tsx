@@ -83,13 +83,13 @@ const smallMediaCss = (generated: any) => {
 
 export interface PositionAnimationProps {
     positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
-    zIndex?: MediaChoice;
+    zIndex?: OptionallyScreenSpecific<number>;
 }
 export const PositionAnimation =
     styled.div <
     PositionAnimationProps >
     `
-    ${props => props.zIndex && stylesForMedia('z-index', props.zIndex)}
+    ${props => props.zIndex && stylesForMedia<number>('z-index', props.zIndex)}
     ${props =>
         generatePositionAnimationCss(
             'default' in props.positionSettings ? props.positionSettings.default : props.positionSettings,

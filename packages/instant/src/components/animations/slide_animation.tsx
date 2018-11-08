@@ -9,7 +9,7 @@ export interface SlideAnimationProps {
     animationState: SlideAnimationState;
     slideInSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
     slideOutSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
-    zIndex?: MediaChoice;
+    zIndex?: OptionallyScreenSpecific<number>;
 }
 
 export const SlideAnimation: React.StatelessComponent<SlideAnimationProps> = props => {

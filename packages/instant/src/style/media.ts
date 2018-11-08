@@ -29,17 +29,21 @@ export interface ScreenSpecification<T> {
 export type OptionallyScreenSpecific<T> = T | ScreenSpecification<T>;
 
 export type MediaChoice = OptionallyScreenSpecific<string>;
-export const stylesForMedia = (cssPropertyName: string, choice: MediaChoice): InterpolationValue[] => {
-    if (typeof choice === 'string') {
-        return css`
-            ${cssPropertyName}: ${choice};
-        `;
-    }
 
-    return css`
+export function stylesForMedia<T extends string | number>(
+    cssPropertyName: string,
+    choice: OptionallyScreenSpecific<T>,
+): InterpolationValue[] {
+    if (typeof choice === 'object') {
+        return css`
         ${cssPropertyName}: ${choice.default};
         ${choice.lg && media.large`${cssPropertyName}: ${choice.lg}`}
         ${choice.md && media.medium`${cssPropertyName}: ${choice.md}`}
         ${choice.sm && media.small`${cssPropertyName}: ${choice.sm}`}
     `;
-};
+    } else {
+        return css`
+            ${cssPropertyName}: ${choice};
+        `;
+    }
+}
