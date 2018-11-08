@@ -8,7 +8,7 @@ export enum ScreenWidths {
     Lg = 64,
 }
 
-const generateMediaWrapper = (screenWidth: ScreenWidths) => (...args: any[]) => css`
+export const generateMediaWrapper = (screenWidth: ScreenWidths) => (...args: any[]) => css`
     @media (max-width: ${screenWidth}em) {
         ${css.apply(css, args)};
     }

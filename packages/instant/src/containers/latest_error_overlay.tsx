@@ -6,6 +6,7 @@ import { Container, ContainerProps } from '../components/ui/container';
 import { OverlayContainer } from '../components/ui/overlay_container';
 import { Action } from '../redux/actions';
 import { State } from '../redux/reducer';
+import { ScreenWidths } from '../style/media';
 import { DisplayStatus } from '../types';
 import { errorFlasher } from '../util/error_flasher';
 
@@ -15,10 +16,11 @@ interface LatestErrorOverlayComponentProps extends ContainerProps {
 }
 // TODO: move to dismissable overlay (? - better name) component
 // or move this into one component, i.e. OverlayableComponent
+
 export const LatestErrorOverlayComponent: React.StatelessComponent<LatestErrorOverlayComponentProps> = props => {
     const { showOverlay, onOverlayClick, ...containerProps } = props;
     if (showOverlay) {
-        return <OverlayContainer {...containerProps} onClick={onOverlayClick} />;
+        return <OverlayContainer {...containerProps} onClick={onOverlayClick} showMaxWidthEm={ScreenWidths.Sm} />;
     } else {
         return <Container {...containerProps} />;
     }
