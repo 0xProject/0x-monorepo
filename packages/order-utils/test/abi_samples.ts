@@ -129,6 +129,156 @@ export const dynamicTupleAbi = {
     type: 'function',
 } as MethodAbi;
 
+export const arrayOfStaticTuplesWithDefinedLengthAbi = {
+    constant: false,
+    inputs: [
+        {
+            components: [
+                {
+                    name: 'someUint',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someUint2',
+                    type: 'uint256',
+                },
+            ],
+            name: 'order',
+            type: 'tuple[8]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
+export const arrayOfStaticTuplesWithDynamicLengthAbi = {
+    constant: false,
+    inputs: [
+        {
+            components: [
+                {
+                    name: 'someUint',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someUint2',
+                    type: 'uint256',
+                },
+            ],
+            name: 'order',
+            type: 'tuple[]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
+export const arrayOfDynamicTuplesWithDefinedLengthAbi = {
+    constant: false,
+    inputs: [
+        {
+            components: [
+                {
+                    name: 'someUint',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someString',
+                    type: 'string',
+                },
+            ],
+            name: 'order',
+            type: 'tuple[8]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
+export const arrayOfDynamicTuplesWithUndefinedLengthAbi = {
+    constant: false,
+    inputs: [
+        {
+            components: [
+                {
+                    name: 'someUint',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someString',
+                    type: 'string',
+                },
+            ],
+            name: 'order',
+            type: 'tuple[]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
+export const arrayOfDynamicTuplesAbi = {
+    constant: false,
+    inputs: [
+        {
+            components: [
+                {
+                    name: 'someUint',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someString',
+                    type: 'string',
+                },
+            ],
+            name: 'order',
+            type: 'tuple[]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
+export const multidimensionalArrayOfDynamicTuplesAbi = {
+    constant: false,
+    inputs: [
+        {
+            components: [
+                {
+                    name: 'someUint',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someString',
+                    type: 'string',
+                },
+            ],
+            name: 'order',
+            type: 'tuple[][2][]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
 export const staticTupleAbi = {
     constant: false,
     inputs: [
