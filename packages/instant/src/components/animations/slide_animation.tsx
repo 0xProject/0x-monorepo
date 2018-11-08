@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { MediaChoice, OptionallyScreenSpecific } from '../../style/media';
+import { OptionallyScreenSpecific } from '../../style/media';
 
 import { PositionAnimation, PositionAnimationSettings } from './position_animation';
 

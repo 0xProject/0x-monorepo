@@ -27,9 +27,11 @@ export interface ScreenSpecification<T> {
     lg?: T;
 }
 export type OptionallyScreenSpecific<T> = T | ScreenSpecification<T>;
-
 export type MediaChoice = OptionallyScreenSpecific<string>;
-
+/**
+ * Given a css property name and a OptionallyScreenSpecific value,
+ * generates css properties with screen-specific viewport styling
+ */
 export function stylesForMedia<T extends string | number>(
     cssPropertyName: string,
     choice: OptionallyScreenSpecific<T>,

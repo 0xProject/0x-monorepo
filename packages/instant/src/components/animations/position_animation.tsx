@@ -1,6 +1,6 @@
 import { InterpolationValue } from 'styled-components';
 
-import { media, MediaChoice, OptionallyScreenSpecific, stylesForMedia } from '../../style/media';
+import { media, OptionallyScreenSpecific, stylesForMedia } from '../../style/media';
 import { css, keyframes, styled } from '../../style/theme';
 
 export interface TransitionInfo {

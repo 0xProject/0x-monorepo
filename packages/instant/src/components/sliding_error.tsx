@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { ColorOption } from '../style/theme';
 import { ScreenSpecification } from '../style/media';
+import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 
 import { PositionAnimationSettings } from './animations/position_animation';
