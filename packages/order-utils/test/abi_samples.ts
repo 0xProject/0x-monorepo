@@ -407,10 +407,10 @@ export const dynamicArrayStaticMembersAbi = {
     type: 'function',
 } as MethodAbi;
 
-export const crazyAbi = {
+export const crazyAbi1 = {
     constant: false,
     inputs: [
-        /*{
+        {
             name: 'someUInt256',
             type: 'uint256',
         },
@@ -437,16 +437,26 @@ export const crazyAbi = {
         {
             name: 'someString',
             type: 'string',
-        },*/
-        /*{
+        },
+        {
             name: 'someAddress',
             type: 'address',
         },
         {
             name: 'someBool',
             type: 'bool',
-        },*/
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
 
+export const crazyAbi = {
+    constant: false,
+    inputs: [
         {
             name: 'someStaticArray',
             type: 'uint8[3]',
@@ -459,10 +469,10 @@ export const crazyAbi = {
             name: 'someDynamicArrayWithDynamicMembers',
             type: 'bytes[]',
         },
-        /* {
+        {
             name: 'some2DArray',
             type: 'string[][]',
-        }, */
+        },
         {
             name: 'someTuple',
             type: 'tuple',
@@ -489,10 +499,10 @@ export const crazyAbi = {
                     name: 'someStr',
                     type: 'string',
                 },
-                //{
-                //      name: 'someStrArray',
-                //     type: 'string[]',
-                /// },
+                /*{
+                    name: 'someStrArray',
+                    type: 'string[]',
+                },*/
                 {
                     name: 'someBytes',
                     type: 'bytes',
@@ -502,7 +512,7 @@ export const crazyAbi = {
                     type: 'address',
                 },
             ],
-        } /*,
+        },
         {
             name: 'someArrayOfTuplesWithDynamicTypes',
             type: 'tuple[]',
@@ -515,10 +525,10 @@ export const crazyAbi = {
                     name: 'someStr',
                     type: 'string',
                 },
-                {
+                /*{
                     name: 'someStrArray',
                     type: 'string[]',
-                },
+                },*/
                 {
                     name: 'someBytes',
                     type: 'bytes',
@@ -528,7 +538,7 @@ export const crazyAbi = {
                     type: 'address',
                 },
             ],
-        },*/,
+        }
     ],
     name: 'simpleFunction',
     outputs: [],
