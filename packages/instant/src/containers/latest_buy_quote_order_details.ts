@@ -22,7 +22,7 @@ const mapStateToProps = (state: State, _ownProps: LatestBuyQuoteOrderDetailsProp
     // use the worst case quote info
     buyQuoteInfo: oc(state).latestBuyQuote.worstCaseQuoteInfo(),
     ethUsdPrice: state.ethUsdPrice,
-    isLoading: state.quoteRequestState === AsyncProcessState.PENDING,
+    isLoading: state.quoteRequestState === AsyncProcessState.Pending,
 });
 
 export const LatestBuyQuoteOrderDetails: React.ComponentClass<LatestBuyQuoteOrderDetailsProps> = connect(

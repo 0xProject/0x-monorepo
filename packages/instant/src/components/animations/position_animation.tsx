@@ -98,9 +98,11 @@ export const PositionAnimation =
     styled.div <
     PositionAnimationProps >
     `
-    ${props => props.zIndex && stylesForMedia<number>('z-index', props.zIndex)}
-    ${props => defaultAnimation(props.positionSettings)}
-    ${props => animationForSize(props.positionSettings, 'sm', media.small)}
-    ${props => animationForSize(props.positionSettings, 'md', media.medium)}
-    ${props => animationForSize(props.positionSettings, 'lg', media.large)}
+    && {
+        ${props => props.zIndex && stylesForMedia<number>('z-index', props.zIndex)}
+        ${props => defaultAnimation(props.positionSettings)}
+        ${props => animationForSize(props.positionSettings, 'sm', media.small)}
+        ${props => animationForSize(props.positionSettings, 'md', media.medium)}
+        ${props => animationForSize(props.positionSettings, 'lg', media.large)}
+    }
 `;
