@@ -770,12 +770,14 @@ export class SolArray extends DynamicDataType {
 export class Tuple extends DynamicDataType {
     private length: BigNumber;
     private childMap: { [key: string]: number };
+    private members: DataType[];
 
     constructor(dataItem: DataItem) {
         super(dataItem);
         expect(Tuple.matchGrammar(dataItem.type)).to.be.true();
         this.length = new BigNumber(0);
         this.childMap = {};
+        this.members = [];
         if (dataItem.components !== undefined) {
             this.constructChildren(dataItem.components);
             this.length = new BigNumber(dataItem.components.length);
@@ -792,7 +794,11 @@ export class Tuple extends DynamicDataType {
             } as DataItem;
             const child = DataTypeFactory.create(childDataItem, this);
             this.childMap[dataItem.name] = this.children.length;
-            this.children.push(child);
+
+            if (child instanceof Pointer) {
+                this.children.push(child.getChildren()[0]);
+            }
+            this.members.push(child);
         });
     }
 
@@ -810,7 +816,7 @@ export class Tuple extends DynamicDataType {
         // Assign values to children
         for (let idx = new BigNumber(0); idx.lessThan(this.length); idx = idx.plus(1)) {
             const idxNumber = idx.toNumber();
-            this.children[idxNumber].assignValue(value[idxNumber]);
+            this.members[idxNumber].assignValue(value[idxNumber]);
         }
     }
 
@@ -820,7 +826,7 @@ export class Tuple extends DynamicDataType {
             if (key in childMap === false) {
                 throw new Error(`Could not assign tuple to object: unrecognized key '${key}'`);
             }
-            this.children[this.childMap[key]].assignValue(value);
+            this.members[this.childMap[key]].assignValue(value);
             delete childMap[key];
         });
 
@@ -840,7 +846,14 @@ export class Tuple extends DynamicDataType {
     }
 
     public getHexValue(): string {
-        return '0x';
+        let paramBufs: Buffer[] = [];
+        _.each(this.members, (member: DataType) => {
+            paramBufs.push(ethUtil.toBuffer(member.getHexValue()));
+        });
+
+        const value = Buffer.concat(paramBufs);
+        const hexValue = ethUtil.bufferToHex(value);
+        return hexValue;
     }
 
     public getHeaderSize(): BigNumber {
@@ -856,9 +869,9 @@ export class Tuple extends DynamicDataType {
     public getSignature(): string {
         // Compute signature
         let signature = `(`;
-        _.each(this.children, (child: DataType, i: number) => {
-            signature += child.getSignature();
-            if (i < this.children.length - 1) {
+        _.each(this.members, (member: DataType, i: number) => {
+            signature += member.getSignature();
+            if (i < this.members.length - 1) {
                 signature += ',';
             }
         });
@@ -867,7 +880,8 @@ export class Tuple extends DynamicDataType {
     }
 
     public isStatic(): boolean {
-        return false; // @TODO: True in every case or only when dynamic data?
+        const isStaticTuple = this.children.length === 0;
+        return isStaticTuple; // @TODO: True in every case or only when dynamic data?
     }
 
     public static matchGrammar(type: string): boolean {
