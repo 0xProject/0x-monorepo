@@ -134,6 +134,18 @@ describe.only('ABI Encoder', () => {
             expect(calldata).to.be.equal(expectedCalldata);*/
         });
 
+        it.only('Types with default widths', async () => {
+            const method = new AbiEncoder.Method(AbiSamples.typesWithDefaultWidthsAbi);
+            const args = [new BigNumber(1), new BigNumber(-1), '0x56', [new BigNumber(1)], [new BigNumber(-1)], ['0x56']];
+            const calldata = method.encode(args);
+            console.log(calldata);
+            console.log('*'.repeat(40));
+            console.log(method.getSignature());
+            console.log(JSON.stringify(args));
+            const expectedCalldata = '0x09f2b0c30000000000000000000000000000000000000000000000000000000000000001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff560000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000015600000000000000000000000000000000000000000000000000000000000000';
+            expect(calldata).to.be.equal(expectedCalldata);
+        });
+
         it('Array of Static Tuples (Array has defined length)', async () => {
             const method = new AbiEncoder.Method(AbiSamples.arrayOfStaticTuplesWithDefinedLengthAbi);
 

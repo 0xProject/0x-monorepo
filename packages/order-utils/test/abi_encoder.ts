@@ -781,20 +781,16 @@ export class SolArray extends DynamicDataType {
     }
 
     public getSignature(): string {
-        let type = this.type;
-        if (this.type === 'tuple') {
-            let tupleDataItem = {
-                type: 'tuple',
-                name: 'N/A',
-            } as DataItem;
-            const tupleComponents = this.getDataItem().components;
-            if (tupleComponents !== undefined) {
-                tupleDataItem.components = tupleComponents;
-            }
-            const tuple = new Tuple(tupleDataItem);
-            type = tuple.getSignature();
+        let dataItem = {
+            type: this.type,
+            name: 'N/A',
+        } as DataItem;
+        const components = this.getDataItem().components;
+        if (components !== undefined) {
+            dataItem.components = components;
         }
-
+        const elementDataType = DataTypeFactory.mapDataItemToDataType(dataItem);
+        const type = elementDataType.getSignature();
         if (this.length.equals(SolArray.UNDEFINED_LENGTH)) {
             return `${type}[]`;
         }
