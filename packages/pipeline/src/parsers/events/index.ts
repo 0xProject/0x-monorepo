@@ -79,7 +79,7 @@ export function _convertToExchangeCancelEvent(
     exchangeCancelEvent.makerAddress = eventLog.args.makerAddress.toString();
     exchangeCancelEvent.takerAddress =
         eventLog.args.takerAddress == null ? null : eventLog.args.takerAddress.toString();
-    exchangeCancelEvent.feeRecepientAddress = eventLog.args.feeRecipientAddress;
+    exchangeCancelEvent.feeRecipientAddress = eventLog.args.feeRecipientAddress;
     exchangeCancelEvent.senderAddress = eventLog.args.senderAddress;
     exchangeCancelEvent.orderHash = eventLog.args.orderHash;
     exchangeCancelEvent.rawMakerAssetData = eventLog.args.makerAssetData;
