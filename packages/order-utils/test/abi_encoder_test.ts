@@ -325,6 +325,11 @@ namespace AbiEncoder {
             return this.memblock.getAbsoluteOffset();
         }
 
+        public getSize(): BigNumber {
+            if (this.memblock === undefined) return new BigNumber(0);
+            return this.memblock.getSize();
+        }
+
         public getChildren(): DataType[] {
             return this.children;
         }
@@ -654,7 +659,7 @@ namespace AbiEncoder {
                     type: this.type,
                     name: `${this.getDataItem().name}[${idx.toString(10)}]`,
                 } as DataItem;
-                const child = DataTypeFactory.create(childDataItem);
+                const child = DataTypeFactory.create(childDataItem, this);
                 this.children.push(child);
             }
         }
@@ -742,12 +747,14 @@ namespace AbiEncoder {
 
     export class Pointer extends StaticDataType {
         destDataType: DynamicDataType;
+        parentDataType: DataType;
 
-        constructor(destDataType: DynamicDataType) {
+        constructor(destDataType: DynamicDataType, parentDataType: DataType) {
             const destDataItem = destDataType.getDataItem();
             const dataItem = { name: `ptr<${destDataItem.name}>`, type: `ptr<${destDataItem.type}>` } as DataItem;
             super(dataItem);
             this.destDataType = destDataType;
+            this.parentDataType = parentDataType;
             this.children.push(destDataType);
         }
 
@@ -761,18 +768,16 @@ namespace AbiEncoder {
         }
 
         public getHexValue(): string {
-            let offset = new BigNumber(0);
-            if (this.memblock !== undefined) {
-                switch (this.memblock.getSection()) {
-                    case CalldataSection.PARAMS:
-                        offset = this.destDataType.getAbsoluteOffset();
-                        break;
-                    case CalldataSection.DATA:
-                        offset = this.destDataType.getOffset();
-                        break;
-                }
-            }
+            console.log(
+                '*'.repeat(40),
+                this.destDataType.getAbsoluteOffset().toString(16),
+                '^'.repeat(150),
+                this.parentDataType.getAbsoluteOffset().toString(16),
+            );
 
+            let offset = this.destDataType
+                .getAbsoluteOffset()
+                .minus(this.parentDataType.getAbsoluteOffset().plus(this.parentDataType.getSize()));
             const hexBase = 16;
             const evmWordWidth = 32;
             const valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${offset.toString(hexBase)}`), evmWordWidth);
@@ -809,12 +814,12 @@ namespace AbiEncoder {
             throw new Error(`Unrecognized data type: '${dataItem.type}'`);
         }
 
-        public static create(dataItem: DataItem): DataType {
+        public static create(dataItem: DataItem, parentDataType: DataType): DataType {
             const dataType = DataTypeFactory.mapDataItemToDataType(dataItem);
             if (dataType instanceof StaticDataType) {
                 return dataType;
             } else if (dataType instanceof DynamicDataType) {
-                const pointer = new Pointer(dataType);
+                const pointer = new Pointer(dataType, parentDataType);
                 return pointer;
             }
 
@@ -832,19 +837,19 @@ namespace AbiEncoder {
         }
     }
 
-    export class Method {
+    export class Method extends DataType {
         name: string;
         params: DataType[];
-        signature: string;
+        private signature: string;
         selector: string;
 
         constructor(abi: MethodAbi) {
-            // super();
+            super({ type: 'method', name: abi.name });
             this.name = abi.name;
             this.params = [];
 
             _.each(abi.inputs, (input: DataItem) => {
-                this.params.push(DataTypeFactory.create(input));
+                this.params.push(DataTypeFactory.create(input, this));
             });
 
             // Compute signature
@@ -864,7 +869,11 @@ namespace AbiEncoder {
             console.log(`--SELECTOR--\n${this.selector}\n---------\n`);
         }
 
-        encode(args: any[]): string {
+        public getSignature(): string {
+            return this.signature;
+        }
+
+        public assignValue(args: any[]) {
             const calldata = new Calldata(this.selector, this.params.length);
             const params = this.params;
             const paramQueue = new Queue<DataType>();
@@ -886,9 +895,14 @@ namespace AbiEncoder {
 
             console.log(calldata);
 
-            return calldata.getHexValue();
+            this.assignHexValue(calldata.getHexValue());
 
             //return calldata.getRaw();
+        }
+
+        public encode(args: any[]): string {
+            this.assignValue(args);
+            return this.getHexValue();
         }
 
         /*
@@ -937,7 +951,7 @@ describe.only('ABI Encoder', () => {
         it.only('Yessir', async () => {
             const method = new AbiEncoder.Method(stringAbi);
             const calldata = method.encode([['five', 'six', 'seven']]);
-            console.log(method.signature);
+            console.log(method.getSignature());
             console.log(method.selector);
 
             console.log(calldata);
