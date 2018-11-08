@@ -1,16 +1,23 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'exchange_cancel_up_to_event' })
 export class ExchangeCancelUpToEvent {
-    @PrimaryColumn() public contractAddress!: string;
-    @PrimaryColumn() public logIndex!: number;
-    @PrimaryColumn() public blockNumber!: number;
+    @PrimaryColumn({ name: 'contract_address' })
+    public contractAddress!: string;
+    @PrimaryColumn({ name: 'log_index' })
+    public logIndex!: number;
+    @PrimaryColumn({ name: 'block_number' })
+    public blockNumber!: number;
 
     // TODO(albrow): Include transaction hash
-    @Column() public rawData!: string;
+    @Column({ name: 'raw_data' })
+    public rawData!: string;
 
-    @Column() public makerAddress!: string;
-    @Column() public senderAddress!: string;
-    @Column() public orderEpoch!: string;
+    @Column({ name: 'maker_address' })
+    public makerAddress!: string;
+    @Column({ name: 'sender_address' })
+    public senderAddress!: string;
+    @Column({ name: 'order_epoch' })
+    public orderEpoch!: string;
     // TODO(albrow): Include topics?
 }
