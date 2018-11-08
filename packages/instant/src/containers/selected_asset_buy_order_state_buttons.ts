@@ -14,7 +14,7 @@ import { etherscanUtil } from '../util/etherscan';
 interface ConnectedState {
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
-    assetBuyer?: AssetBuyer;
+    assetBuyer: AssetBuyer;
     affiliateInfo?: AffiliateInfo;
     onViewTransaction: () => void;
 }
@@ -29,29 +29,31 @@ interface ConnectedDispatch {
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
 }
 export interface SelectedAssetBuyOrderStateButtons {}
-const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => ({
-    buyOrderProcessingState: state.buyOrderState.processState,
-    assetBuyer: state.assetBuyer,
-    buyQuote: state.latestBuyQuote,
-    affiliateInfo: state.affiliateInfo,
-    onViewTransaction: () => {
-        if (
-            state.assetBuyer &&
-            (state.buyOrderState.processState === OrderProcessState.PROCESSING ||
-                state.buyOrderState.processState === OrderProcessState.SUCCESS ||
-                state.buyOrderState.processState === OrderProcessState.FAILURE)
-        ) {
-            const etherscanUrl = etherscanUtil.getEtherScanTxnAddressIfExists(
-                state.buyOrderState.txHash,
-                state.assetBuyer.networkId,
-            );
-            if (etherscanUrl) {
-                window.open(etherscanUrl, '_blank');
-                return;
+const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => {
+    const assetBuyer = state.providerState.assetBuyer;
+    return {
+        buyOrderProcessingState: state.buyOrderState.processState,
+        assetBuyer,
+        buyQuote: state.latestBuyQuote,
+        affiliateInfo: state.affiliateInfo,
+        onViewTransaction: () => {
+            if (
+                state.buyOrderState.processState === OrderProcessState.Processing ||
+                state.buyOrderState.processState === OrderProcessState.Success ||
+                state.buyOrderState.processState === OrderProcessState.Failure
+            ) {
+                const etherscanUrl = etherscanUtil.getEtherScanTxnAddressIfExists(
+                    state.buyOrderState.txHash,
+                    assetBuyer.networkId,
+                );
+                if (etherscanUrl) {
+                    window.open(etherscanUrl, '_blank');
+                    return;
+                }
             }
-        }
-    },
-});
+        },
+    };
+};
 
 const mapDispatchToProps = (
     dispatch: Dispatch<Action>,

@@ -23,7 +23,7 @@ export interface SelectedERC20AssetAmountInputProps {
 }
 
 interface ConnectedState {
-    assetBuyer?: AssetBuyer;
+    assetBuyer: AssetBuyer;
     value?: BigNumber;
     asset?: ERC20Asset;
     isDisabled: boolean;
@@ -33,7 +33,7 @@ interface ConnectedState {
 
 interface ConnectedDispatch {
     updateBuyQuote: (
-        assetBuyer?: AssetBuyer,
+        assetBuyer: AssetBuyer,
         value?: BigNumber,
         asset?: ERC20Asset,
         affiliateInfo?: AffiliateInfo,
@@ -52,15 +52,16 @@ type FinalProps = ConnectedProps & SelectedERC20AssetAmountInputProps;
 
 const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputProps): ConnectedState => {
     const processState = state.buyOrderState.processState;
-    const isEnabled = processState === OrderProcessState.NONE || processState === OrderProcessState.FAILURE;
+    const isEnabled = processState === OrderProcessState.None || processState === OrderProcessState.Failure;
     const isDisabled = !isEnabled;
     const selectedAsset =
         !_.isUndefined(state.selectedAsset) && state.selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
             ? (state.selectedAsset as ERC20Asset)
             : undefined;
     const numberOfAssetsAvailable = _.isUndefined(state.availableAssets) ? undefined : state.availableAssets.length;
+    const assetBuyer = state.providerState.assetBuyer;
     return {
-        assetBuyer: state.assetBuyer,
+        assetBuyer,
         value: state.selectedAssetAmount,
         asset: selectedAsset,
         isDisabled,
@@ -128,7 +129,7 @@ const mapDispatchToProps = (
         // reset our buy state
         dispatch(actions.setBuyOrderStateNone());
 
-        if (!_.isUndefined(value) && value.greaterThan(0) && !_.isUndefined(asset) && !_.isUndefined(assetBuyer)) {
+        if (!_.isUndefined(value) && value.greaterThan(0) && !_.isUndefined(asset)) {
             // even if it's debounced, give them the illusion it's loading
             dispatch(actions.setQuoteRequestStatePending());
             // tslint:disable-next-line:no-floating-promises

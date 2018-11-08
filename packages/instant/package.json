@@ -49,6 +49,7 @@
         "@0x/asset-buyer": "^2.1.0",
         "@0x/json-schemas": "^2.0.0",
         "@0x/order-utils": "^2.0.0",
+        "@0x/subproviders": "^2.1.0",
         "@0x/types": "^1.2.0",
         "@0x/typescript-typings": "^3.0.3",
         "@0x/utils": "^2.0.3",

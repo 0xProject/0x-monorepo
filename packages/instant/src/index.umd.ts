@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { DEFAULT_ZERO_EX_CONTAINER_SELECTOR, INJECTED_DIV_ID } from './constants';
+import { DEFAULT_ZERO_EX_CONTAINER_SELECTOR, INJECTED_DIV_CLASS, INJECTED_DIV_ID } from './constants';
 import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
 import { assert } from './util/assert';
 
@@ -41,6 +41,7 @@ export const render = (props: ZeroExInstantOverlayProps, selector: string = DEFA
     const appendTo = appendToIfExists as Element;
     const injectedDiv = document.createElement('div');
     injectedDiv.setAttribute('id', INJECTED_DIV_ID);
+    injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
     appendTo.appendChild(injectedDiv);
     const instantOverlayProps = {
         ...props,
