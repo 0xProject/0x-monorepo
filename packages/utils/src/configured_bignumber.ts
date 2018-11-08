@@ -11,4 +11,27 @@ BigNumber.config({
     DECIMAL_PLACES: 78,
 });
 
+// Set a debug print function for NodeJS
+// Upstream issue: https://github.com/MikeMcl/bignumber.js/issues/188
+import isNode = require('detect-node');
+if (isNode) {
+    // Dynamically load a NodeJS specific module.
+    // Typescript requires all imports to be global, so we need to use
+    // `const` here and disable the tslint warning.
+    // tslint:disable-next-line: no-var-requires
+    const util = require('util');
+
+    // Set a custom util.inspect function
+    // HACK: We add a function to the BigNumber class by assigning to the
+    //       prototype. The function name is a symbol provided by Node.
+    (BigNumber.prototype as any)[util.inspect.custom] = function(): string {
+        // HACK: When executed, `this` will refer to the BigNumber instance.
+        //       This is also why we need a function expression instead of an
+        //       arrow function, as the latter does not have a `this`.
+        // Return the readable string representation
+        // tslint:disable-next-line: no-invalid-this
+        return this.toString();
+    };
+}
+
 export { BigNumber };
