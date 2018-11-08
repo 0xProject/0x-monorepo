@@ -157,7 +157,7 @@ export class Web3Wrapper {
         this.abiDecoder = new AbiDecoder([]);
         this._provider = provider;
         this._txDefaults = txDefaults || {};
-        this._jsonRpcRequestId = 0;
+        this._jsonRpcRequestId = 1;
     }
     /**
      * Get the contract defaults set to the Web3Wrapper instance
