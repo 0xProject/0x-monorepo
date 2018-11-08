@@ -14,7 +14,7 @@ BigNumber.config({
 // Set a debug print function for NodeJS
 // Upstream issue: https://github.com/MikeMcl/bignumber.js/issues/188
 import isNode = require('detect-node');
-if (!isNode) {
+if (isNode) {
     // Dynamically load a NodeJS specific module.
     // Typescript requires all imports to be global, so we need to use
     // `const` here and disable the tslint warning.
