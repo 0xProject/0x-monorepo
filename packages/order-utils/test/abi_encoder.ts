@@ -74,6 +74,7 @@ class Memblock {
     }
 
     public get(): string {
+        console.log(`Unstripped = '${this.dataType.getHexValue()}' and Stripped = '${ethUtil.stripHexPrefix(this.dataType.getHexValue())}'`);
         return ethUtil.stripHexPrefix(this.dataType.getHexValue());
     }
 
@@ -472,6 +473,7 @@ export class Byte extends StaticDataType {
         const evmWordWidth = 32;
         const paddedValue = ethUtil.setLengthRight(valueBuf, evmWordWidth);
         const hexValue = ethUtil.bufferToHex(paddedValue);
+
         this.assignHexValue(hexValue);
     }
 
@@ -538,7 +540,9 @@ export class Bytes extends DynamicDataType {
     }
 
     public getBodySize(): BigNumber {
-        return new BigNumber(this.getHexValue().length);
+        const valueBuf = ethUtil.toBuffer(this.getHexValue());
+        const size = new BigNumber(valueBuf.byteLength);
+        return size;
     }
 
     public static matchGrammar(type: string): boolean {
@@ -576,7 +580,9 @@ export class SolString extends DynamicDataType {
     }
 
     public getBodySize(): BigNumber {
-        return new BigNumber(this.getHexValue().length);
+        const valueBuf = ethUtil.toBuffer(this.getHexValue());
+        const size = new BigNumber(valueBuf.byteLength);
+        return size;
     }
 
     public static matchGrammar(type: string): boolean {
@@ -1032,12 +1038,14 @@ export class Method extends DataType {
     }
 
     public getHexValue(): string {
-        let value = "";
+        let paramBufs: Buffer[] = [];
         _.each(this.params, (param: DataType) => {
-            value += param.getHexValue();
+            paramBufs.push(ethUtil.toBuffer(param.getHexValue()));
         });
 
-        return value;
+        const value = Buffer.concat(paramBufs);
+        const hexValue = ethUtil.bufferToHex(value);
+        return hexValue;
     }
 
     public encode(args: any[]): string {
