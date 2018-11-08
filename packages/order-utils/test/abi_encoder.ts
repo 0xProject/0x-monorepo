@@ -686,6 +686,10 @@ export class SolArray extends DynamicDataType {
                 type: this.type,
                 name: `${this.getDataItem().name}[${idx.toString(10)}]`,
             } as DataItem;
+            const components = this.getDataItem().components;
+            if (components !== undefined) {
+                childDataItem.components = components;
+            }
             const child = DataTypeFactory.create(childDataItem, this);
             this.elements.push(child);
             if (child instanceof Pointer) {
@@ -706,6 +710,9 @@ export class SolArray extends DynamicDataType {
     }*/
 
     public assignValue(value: any[]) {
+        console.log('GREG'.repeat(15), JSON.stringify(value));
+
+
         // Sanity check length
         const valueLength = new BigNumber(value.length);
         if (this.length !== SolArray.UNDEFINED_LENGTH && valueLength.equals(this.length) === false) {
