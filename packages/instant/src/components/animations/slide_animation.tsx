@@ -1,22 +1,24 @@
 import * as React from 'react';
 
+import { OptionallyScreenSpecific } from '../../style/media';
+
 import { PositionAnimation, PositionAnimationSettings } from './position_animation';
 
 export type SlideAnimationState = 'slidIn' | 'slidOut' | 'none';
 export interface SlideAnimationProps {
-    position: string;
     animationState: SlideAnimationState;
-    slideInSettings: PositionAnimationSettings;
-    slideOutSettings: PositionAnimationSettings;
+    slideInSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
+    slideOutSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
+    zIndex?: OptionallyScreenSpecific<number>;
 }
 
 export const SlideAnimation: React.StatelessComponent<SlideAnimationProps> = props => {
     if (props.animationState === 'none') {
         return <React.Fragment>{props.children}</React.Fragment>;
     }
-    const propsToUse = props.animationState === 'slidIn' ? props.slideInSettings : props.slideOutSettings;
+    const positionSettings = props.animationState === 'slidIn' ? props.slideInSettings : props.slideOutSettings;
     return (
-        <PositionAnimation position={props.position} {...propsToUse}>
+        <PositionAnimation positionSettings={positionSettings} zIndex={props.zIndex}>
             {props.children}
         </PositionAnimation>
     );

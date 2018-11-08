@@ -33,7 +33,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                     height={{ default: 'auto', sm: '100%' }}
                     position="relative"
                 >
-                    <Container zIndex={zIndex.errorPopup} position="relative">
+                    <Container position="relative">
                         <LatestError />
                     </Container>
                     <Container
