@@ -1,6 +1,7 @@
 """Signature utilities."""
 
 from typing import Dict, Tuple
+
 import json
 from pkg_resources import resource_string
 
@@ -12,12 +13,11 @@ from web3.utils import datatypes
 from zero_ex.dev_utils.type_assertions import assert_is_hex_string
 
 
-# prefer `black` formatting. pylint: disable=C0330
 EXCHANGE_ABI = json.loads(
     resource_string("zero_ex.contract_artifacts", "artifacts/Exchange.json")
 )["compilerOutput"]["abi"]
 
-network_to_exchange_addr: Dict[str, str] = {
+NETWORK_TO_EXCHANGE_ADDR: Dict[str, str] = {
     "1": "0x4f833a24e1f95d70f028921e27040ca56e09ab0b",
     "3": "0x4530c0483a1633c7a1c97d2c53721caff2caaaaf",
     "42": "0x35dd2932454449b14cee11a94d3674a936d5d7b2",
@@ -63,7 +63,7 @@ def is_valid_signature(
     web3_instance = Web3(provider)
     # false positive from pylint: disable=no-member
     network_id = web3_instance.net.version
-    contract_address = network_to_exchange_addr[network_id]
+    contract_address = NETWORK_TO_EXCHANGE_ADDR[network_id]
     # false positive from pylint: disable=no-member
     contract: datatypes.Contract = web3_instance.eth.contract(
         address=to_checksum_address(contract_address), abi=EXCHANGE_ABI
