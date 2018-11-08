@@ -1,4 +1,6 @@
-import { MediaChoice, OptionallyScreenSpecific, stylesForMedia, media } from '../../style/media';
+import { InterpolationValue } from 'styled-components';
+
+import { media, MediaChoice, OptionallyScreenSpecific, stylesForMedia } from '../../style/media';
 import { css, keyframes, styled } from '../../style/theme';
 
 export interface TransitionInfo {
@@ -76,17 +78,29 @@ export interface PositionAnimationProps {
     positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
     zIndex?: OptionallyScreenSpecific<number>;
 }
+
+const defaultAnimation = (positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>) => {
+    const bestDefault = 'default' in positionSettings ? positionSettings.default : positionSettings;
+    return generatePositionAnimationCss(bestDefault);
+};
+const animationForSize = (
+    positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>,
+    sizeKey: 'sm' | 'md' | 'lg',
+    mediaFn: (...args: any[]) => InterpolationValue[],
+) => {
+    // checking default makes sure we have a PositionAnimationSettings object
+    // and then we check to see if we have a setting for the specific `sizeKey`
+    const animationSettingsForSize = 'default' in positionSettings && positionSettings[sizeKey];
+    return animationSettingsForSize && mediaFn`${generatePositionAnimationCss(animationSettingsForSize)}`;
+};
+
 export const PositionAnimation =
     styled.div <
     PositionAnimationProps >
     `
     ${props => props.zIndex && stylesForMedia<number>('z-index', props.zIndex)}
-    ${props =>
-        generatePositionAnimationCss(
-            'default' in props.positionSettings ? props.positionSettings.default : props.positionSettings,
-        )}
-    ${props =>
-        'default' in props.positionSettings &&
-        props.positionSettings.sm &&
-        media.small`${generatePositionAnimationCss(props.positionSettings.sm)}`}
+    ${props => defaultAnimation(props.positionSettings)}
+    ${props => animationForSize(props.positionSettings, 'sm', media.small)}
+    ${props => animationForSize(props.positionSettings, 'md', media.medium)}
+    ${props => animationForSize(props.positionSettings, 'lg', media.large)}
 `;
