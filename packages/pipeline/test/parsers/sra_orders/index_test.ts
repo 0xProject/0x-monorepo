@@ -61,7 +61,7 @@ describe('sra_orders', () => {
             expected.takerAssetProxyId = '0xf47261b0';
             expected.takerTokenAddress = '0x42d6622dece394b54999fbd73d108123806f6a18';
             expected.takerTokenId = null;
-            expected.metaDataJson = '{"isThisArbitraryData":true,"powerLevel":9001}';
+            expected.metadataJson = '{"isThisArbitraryData":true,"powerLevel":9001}';
 
             const actual = _convertToEntity(input);
             expect(actual).deep.equal(expected);
