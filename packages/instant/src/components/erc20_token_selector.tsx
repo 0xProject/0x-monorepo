@@ -28,14 +28,14 @@ export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps>
     public render(): React.ReactNode {
         const { tokens, onTokenSelect } = this.props;
         return (
-            <Container>
+            <Container height="100%">
                 <SearchInput
                     placeholder="Search tokens..."
                     width="100%"
                     value={this.state.searchQuery}
                     onChange={this._handleSearchInputChange}
                 />
-                <Container overflow="scroll" height={{ default: '390px', sm: '75vh' }} marginTop="10px">
+                <Container overflow="scroll" height="calc(100% - 80px)" marginTop="10px">
                     {_.map(tokens, token => {
                         if (!this._isTokenQueryMatch(token)) {
                             return null;
