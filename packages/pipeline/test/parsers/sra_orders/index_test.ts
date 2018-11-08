@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { SraOrder } from '../../../src/entities/SraOrder';
+import { SraOrder } from '../../../src/entities';
 import { _convertToEntity } from '../../../src/parsers/sra_orders';
 import { chaiSetup } from '../../utils/chai_setup';
 
