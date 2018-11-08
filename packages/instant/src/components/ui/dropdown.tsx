@@ -28,12 +28,12 @@ export interface DropdownState {
 export class Dropdown extends React.Component<DropdownProps, DropdownState> {
     public static defaultProps = {
         items: [
-            // {
-            //     text: 'Item 1',
-            // },
-            // {
-            //     text: 'Item 2',
-            // },
+            {
+                text: 'Item 1',
+            },
+            {
+                text: 'Item 2',
+            },
         ],
     };
     public state: DropdownState = {
