@@ -5,7 +5,9 @@ import {
     assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
     ExchangeTransferSimulator,
+    orderHashUtils,
     OrderValidationUtils,
+    signatureUtils,
 } from '@0x/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -18,6 +20,7 @@ import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_
 import { methodOptsSchema } from '../schemas/method_opts_schema';
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
+import { validateOrderFillableOptsSchema } from '../schemas/validate_order_fillable_opts_schema';
 import {
     BlockRange,
     EventCallback,
@@ -1114,6 +1117,20 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrder: SignedOrder,
         opts: ValidateOrderFillableOpts = {},
     ): Promise<void> {
+        assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
+        assert.doesConformToSchema('opts', opts, validateOrderFillableOptsSchema);
+
+        const orderHash = await orderHashUtils.getOrderHashHex(signedOrder);
+        const isValidSignature = await signatureUtils.isValidSignatureAsync(
+            this._web3Wrapper.getProvider(),
+            orderHash,
+            signedOrder.signature,
+            signedOrder.makerAddress,
+        );
+        if (!isValidSignature) {
+            throw new Error('INVALID_ORDER_SIGNATURE');
+        }
+
         const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
             this._erc20TokenWrapper,
             this._erc721TokenWrapper,

@@ -282,6 +282,18 @@ describe('ExchangeWrapper', () => {
             expect(ordersInfo[1].orderHash).to.be.equal(anotherOrderHash);
         });
     });
+    describe('#validateOrderFillableOrThrowAsync', () => {
+        it('should throw if signature is invalid', async () => {
+            const signedOrderWithInvalidSignature = {
+                ...signedOrder,
+                signature: '0xdeadbeef',
+            };
+
+            expect(
+                contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrderWithInvalidSignature),
+            ).to.eventually.to.be.rejected();
+        });
+    });
     describe('#isValidSignature', () => {
         it('should check if the signature is valid', async () => {
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);

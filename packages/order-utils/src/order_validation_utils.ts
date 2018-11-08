@@ -109,14 +109,6 @@ export class OrderValidationUtils {
             throw new Error(RevertReason.TransferFailed);
         }
     }
-    private static _validateRemainingFillAmountNotZeroOrThrow(
-        takerAssetAmount: BigNumber,
-        filledTakerTokenAmount: BigNumber,
-    ): void {
-        if (takerAssetAmount.eq(filledTakerTokenAmount)) {
-            throw new Error(RevertReason.OrderUnfillable);
-        }
-    }
     private static _validateOrderNotExpiredOrThrow(expirationTimeSeconds: BigNumber): void {
         const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
         if (expirationTimeSeconds.lessThan(currentUnixTimestampSec)) {
@@ -125,12 +117,15 @@ export class OrderValidationUtils {
     }
     /**
      * Instantiate OrderValidationUtils
-     * @param orderFilledCancelledFetcher A module that implements the AbstractOrderFilledCancelledFetcher
+     * @param orderFilledCancelledFetcher A module that implements the AbstractOrderInfoFetcher
      * @return An instance of OrderValidationUtils
      */
     constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher) {
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
     }
+    // TODO(fabio): remove this method once the smart contracts have been refactored
+    // to return helpful revert reasons instead of ORDER_UNFILLABLE. Instruct devs
+    // to make "calls" to validate order fillability + getOrderInfo for fillable amount.
     /**
      * Validate if the supplied order is fillable, and throw if it isn't
      * @param exchangeTradeEmulator ExchangeTradeEmulator instance
@@ -146,12 +141,19 @@ export class OrderValidationUtils {
         expectedFillTakerTokenAmount?: BigNumber,
     ): Promise<void> {
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+        const isCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(signedOrder);
+        if (isCancelled) {
+            throw new Error('CANCELLED');
+        }
         const filledTakerTokenAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
-        OrderValidationUtils._validateRemainingFillAmountNotZeroOrThrow(
-            signedOrder.takerAssetAmount,
-            filledTakerTokenAmount,
-        );
+        if (signedOrder.takerAssetAmount.eq(filledTakerTokenAmount)) {
+            throw new Error('FULLY_FILLED');
+        }
+        try {
         OrderValidationUtils._validateOrderNotExpiredOrThrow(signedOrder.expirationTimeSeconds);
+        } catch (err) {
+            throw new Error('EXPIRED');
+        }
         let fillTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
         if (!_.isUndefined(expectedFillTakerTokenAmount)) {
             fillTakerAssetAmount = expectedFillTakerTokenAmount;
@@ -198,10 +200,9 @@ export class OrderValidationUtils {
             throw new Error(OrderError.InvalidSignature);
         }
         const filledTakerTokenAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
-        OrderValidationUtils._validateRemainingFillAmountNotZeroOrThrow(
-            signedOrder.takerAssetAmount,
-            filledTakerTokenAmount,
-        );
+        if (signedOrder.takerAssetAmount.eq(filledTakerTokenAmount)) {
+            throw new Error(RevertReason.OrderUnfillable);
+        }
         if (signedOrder.takerAddress !== constants.NULL_ADDRESS && signedOrder.takerAddress !== takerAddress) {
             throw new Error(RevertReason.InvalidTaker);
         }

@@ -219,6 +219,10 @@ export class ExchangeWrapper {
         const isCancelled = await this._exchange.cancelled.callAsync(orderHashHex);
         return isCancelled;
     }
+    public async getOrderEpochAsync(makerAddress: string, takerAddress: string): Promise<BigNumber> {
+        const orderEpoch = new BigNumber(await this._exchange.orderEpoch.callAsync(makerAddress, takerAddress));
+        return orderEpoch;
+    }
     public async getOrderInfoAsync(signedOrder: SignedOrder): Promise<OrderInfo> {
         const orderInfo = (await this._exchange.getOrderInfo.callAsync(signedOrder)) as OrderInfo;
         return orderInfo;
