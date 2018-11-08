@@ -20,7 +20,9 @@ interface LatestErrorOverlayComponentProps extends ContainerProps {
 export const LatestErrorOverlayComponent: React.StatelessComponent<LatestErrorOverlayComponentProps> = props => {
     const { showOverlay, onOverlayClick, ...containerProps } = props;
     if (showOverlay) {
-        return <OverlayContainer {...containerProps} onClick={onOverlayClick} showMaxWidthEm={ScreenWidths.Sm} />;
+        return (
+            <OverlayContainer {...containerProps} onOverlayClick={onOverlayClick} showMaxWidthEm={ScreenWidths.Sm} />
+        );
     } else {
         return <Container {...containerProps} />;
     }

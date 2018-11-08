@@ -7,7 +7,7 @@ import { Container, ContainerProps } from './container';
 
 // TODO: move z-index to constant
 interface OverlayProps {
-    showMaxWidthEm?: ScreenWidths;
+    showMaxWidth?: ScreenWidths;
 }
 const Overlay =
     styled.div <
@@ -18,26 +18,25 @@ const Overlay =
     z-index: 10;
     width: 100%;
     height: 100%;
-    display: ${props => (props.showMaxWidthEm ? 'none' : 'block')};
+    display: ${props => (props.showMaxWidth ? 'none' : 'block')};
     position: absolute;
     background: black;
     opacity: 0.6;
-    ${props => props.showMaxWidthEm && generateMediaWrapper(props.showMaxWidthEm)`display: block;`}
+    ${props => props.showMaxWidth && generateMediaWrapper(props.showMaxWidth)`display: block;`}
 `;
 
 interface PlainOverlayContainerProps extends ContainerProps {
     showMaxWidthEm?: number;
 }
-// TODO: rename onClick to onOverlayClick
 export interface OverlayContainerProps extends PlainOverlayContainerProps {
-    onClick: () => void;
+    onOverlayClick: () => void;
 }
 export const OverlayContainer: React.StatelessComponent<OverlayContainerProps> = props => {
-    const { onClick, showMaxWidthEm, ...otherProps } = props;
+    const { onOverlayClick, showMaxWidthEm, ...otherProps } = props;
     return (
         <React.Fragment>
             <Container {...otherProps} />
-            <Overlay onClick={onClick} showMaxWidthEm={showMaxWidthEm} />
+            <Overlay onClick={onOverlayClick} showMaxWidth={showMaxWidthEm} />
         </React.Fragment>
     );
 };
