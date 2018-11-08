@@ -22,7 +22,12 @@ if (isNode) {
     const util = require('util');
 
     // Set a custom util.inspect function
+    // HACK: We add a function to the BigNumber class by assigning to the
+    //       prototype. The function name is a symbol provided by Node.
     (BigNumber.prototype as any)[util.inspect.custom] = function(): string {
+        // HACK: When executed, `this` will refer to the BigNumber instance.
+        //       This is also why we need a function expression instead of an
+        //       arrow function, as the latter does not have a `this`.
         // Return the readable string representation
         // tslint:disable-next-line: no-invalid-this
         return this.toString();
