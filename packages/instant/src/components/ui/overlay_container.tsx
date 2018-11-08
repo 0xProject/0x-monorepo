@@ -26,17 +26,18 @@ const Overlay =
 `;
 
 interface PlainOverlayContainerProps extends ContainerProps {
+    showOverlay: boolean;
     showMaxWidth?: number;
 }
 export interface OverlayContainerProps extends PlainOverlayContainerProps {
-    onOverlayClick: () => void;
+    onOverlayClick?: () => void;
 }
 export const OverlayContainer: React.StatelessComponent<OverlayContainerProps> = props => {
     const { onOverlayClick, showMaxWidth, ...otherProps } = props;
     return (
         <React.Fragment>
             <Container {...otherProps} />
-            <Overlay onClick={onOverlayClick} showMaxWidth={showMaxWidth} />
+            {props.showOverlay && <Overlay onClick={onOverlayClick} showMaxWidth={showMaxWidth} />}
         </React.Fragment>
     );
 };
