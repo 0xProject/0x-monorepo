@@ -43,14 +43,14 @@ export const StandardPanelContent: React.StatelessComponent<StandardPanelContent
             </Container>
             <Container marginBottom={spacingBetweenPx}>
                 {moreInfoSettings && (
-                    <a href={moreInfoSettings.href}>
+                    <a href={moreInfoSettings.href} target="_blank">
                         <Text
                             center={true}
                             fontSize="13px"
                             textDecorationLine="underline"
                             fontColor={ColorOption.lightGrey}
                         >
-                            {moreInfoSettings.text}>
+                            {moreInfoSettings.text}
                         </Text>
                     </a>
                 )}
