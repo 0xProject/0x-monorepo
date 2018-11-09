@@ -3,6 +3,8 @@ import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
 
+export type ButtonOnClickHandler = (event: React.MouseEvent<HTMLElement>) => void;
+
 export interface ButtonProps {
     backgroundColor?: ColorOption;
     borderColor?: ColorOption;
@@ -12,15 +14,30 @@ export interface ButtonProps {
     padding?: string;
     type?: string;
     isDisabled?: boolean;
-    onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+    href?: string;
+    onClick?: ButtonOnClickHandler;
     className?: string;
 }
 
-const PlainButton: React.StatelessComponent<ButtonProps> = ({ children, isDisabled, onClick, type, className }) => (
-    <button type={type} className={className} onClick={isDisabled ? undefined : onClick} disabled={isDisabled}>
-        {children}
-    </button>
-);
+const createHrefOnClick = (href: string) => () => {
+    window.open(href, '_blank');
+};
+
+const PlainButton: React.StatelessComponent<ButtonProps> = ({
+    children,
+    isDisabled,
+    onClick,
+    href,
+    type,
+    className,
+}) => {
+    const computedOnClick = isDisabled ? undefined : href ? createHrefOnClick(href) : onClick;
+    return (
+        <button type={type} className={className} onClick={computedOnClick} disabled={isDisabled}>
+            {children}
+        </button>
+    );
+};
 
 const darkenOnHoverAmount = 0.1;
 const darkenOnActiveAmount = 0.2;

@@ -17,6 +17,8 @@ export const ETH_GAS_STATION_API_BASE_URL = 'https://ethgasstation.info';
 export const COINBASE_API_BASE_URL = 'https://api.coinbase.com/v2';
 export const PROGRESS_STALL_AT_WIDTH = '95%';
 export const PROGRESS_FINISH_ANIMATION_TIME_MS = 200;
+export const METAMASK_CHROME_STORE_URL =
+    'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en';
 export const ETHEREUM_NODE_URL_BY_NETWORK = {
     [Network.Mainnet]: 'https://mainnet.infura.io/',
     [Network.Kovan]: 'https://kovan.infura.io/',
