@@ -74,7 +74,8 @@ export const asyncData = {
             return;
         }
     },
-    fetchCurrentBuyQuoteAndDispatchToStore: async (store: Store, setPending: boolean) => {
+    fetchCurrentBuyQuoteAndDispatchToStore: async (options: { store: Store; setPending: boolean }) => {
+        const { store, setPending } = options;
         const { buyOrderState, providerState, selectedAsset, selectedAssetAmount, affiliateInfo } = store.getState();
         const assetBuyer = providerState.assetBuyer;
         if (

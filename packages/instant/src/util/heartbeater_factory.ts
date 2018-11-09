@@ -3,14 +3,20 @@ import { Store } from '../redux/store';
 
 import { Heartbeater } from './heartbeater';
 
-export const generateAccountHeartbeater = (store: Store, performImmediatelyOnStart: boolean): Heartbeater => {
+export interface HeartbeatFactoryOptions {
+    store: Store;
+    performImmediatelyOnStart: boolean;
+}
+export const generateAccountHeartbeater = (options: HeartbeatFactoryOptions): Heartbeater => {
+    const { store, performImmediatelyOnStart } = options;
     return new Heartbeater(async () => {
         await asyncData.fetchAccountInfoAndDispatchToStore(store, { setLoading: false });
     }, performImmediatelyOnStart);
 };
 
-export const generateBuyQuoteHeartbeater = (store: Store, performImmediatelyOnStart: boolean): Heartbeater => {
+export const generateBuyQuoteHeartbeater = (options: HeartbeatFactoryOptions): Heartbeater => {
+    const { store, performImmediatelyOnStart } = options;
     return new Heartbeater(async () => {
-        await asyncData.fetchCurrentBuyQuoteAndDispatchToStore(store, false);
+        await asyncData.fetchCurrentBuyQuoteAndDispatchToStore({ store, setPending: false });
     }, performImmediatelyOnStart);
 };
