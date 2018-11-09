@@ -2,7 +2,7 @@ import { AssetProxyId } from '@0x/types';
 import * as _ from 'lodash';
 
 import { BIG_NUMBER_ZERO } from '../constants';
-import { ERC20Asset } from '../types';
+import { AccountState, ERC20Asset } from '../types';
 import { assetUtils } from '../util/asset';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
 import { coinbaseApi } from '../util/coinbase_api';
@@ -34,6 +34,44 @@ export const asyncData = {
             errorFlasher.flashNewErrorMessage(store.dispatch, errorMessage);
             // On error, just specify that none are available
             store.dispatch(actions.setAvailableAssets([]));
+        }
+    },
+    fetchAccountInfoAndDispatchToStore: async (store: Store) => {
+        const { providerState } = store.getState();
+        const web3Wrapper = providerState.web3Wrapper;
+        if (providerState.account.state !== AccountState.Loading) {
+            store.dispatch(actions.setAccountStateLoading());
+        }
+        let availableAddresses: string[];
+        try {
+            availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
+        } catch (e) {
+            store.dispatch(actions.setAccountStateError());
+            return;
+        }
+        if (!_.isEmpty(availableAddresses)) {
+            const activeAddress = availableAddresses[0];
+            store.dispatch(actions.setAccountStateReady(activeAddress));
+            // tslint:disable-next-line:no-floating-promises
+            asyncData.fetchAccountBalanceAndDispatchToStore(store);
+        } else {
+            store.dispatch(actions.setAccountStateLocked());
+        }
+    },
+    fetchAccountBalanceAndDispatchToStore: async (store: Store) => {
+        const { providerState } = store.getState();
+        const web3Wrapper = providerState.web3Wrapper;
+        const account = providerState.account;
+        if (account.state !== AccountState.Ready) {
+            return;
+        }
+        try {
+            const address = account.address;
+            const ethBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(address);
+            store.dispatch(actions.updateAccountEthBalance({ address, ethBalanceInWei }));
+        } catch (e) {
+            // leave balance as is
+            return;
         }
     },
     fetchCurrentBuyQuoteAndDispatchToStore: async (store: Store) => {
