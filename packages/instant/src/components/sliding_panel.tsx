@@ -30,7 +30,9 @@ export const Panel: React.StatelessComponent<PanelProps> = ({ title, children, o
                 <Icon width={12} color={ColorOption.lightGrey} icon="closeX" onClick={onClose} />
             </Container>
         </Flex>
-        <Container marginTop="10px">{children}</Container>
+        <Container marginTop="10px" height="100%">
+            {children}
+        </Container>
     </Container>
 );
 
@@ -67,6 +69,7 @@ export const SlidingPanel: React.StatelessComponent<SlidingPanelProps> = props =
             slideInSettings={slideUpSettings}
             slideOutSettings={slideDownSettings}
             animationState={animationState}
+            height="100%"
         >
             <Panel {...rest} />
         </SlideAnimation>

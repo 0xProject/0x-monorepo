@@ -120,3 +120,8 @@ export interface AccountNotReady {
 export type Account = AccountReady | AccountNotReady;
 
 export type OrderSource = string | SignedOrder[];
+
+export interface AddressAndEthBalanceInWei {
+    address: string;
+    ethBalanceInWei: BigNumber;
+}

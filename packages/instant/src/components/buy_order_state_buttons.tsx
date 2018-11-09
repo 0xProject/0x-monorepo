@@ -1,4 +1,6 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
@@ -12,9 +14,12 @@ import { Button } from './ui/button';
 import { Flex } from './ui/flex';
 
 export interface BuyOrderStateButtonProps {
+    accountAddress?: string;
+    accountEthBalanceInWei?: BigNumber;
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
     assetBuyer: AssetBuyer;
+    web3Wrapper: Web3Wrapper;
     affiliateInfo?: AffiliateInfo;
     onViewTransaction: () => void;
     onValidationPending: (buyQuote: BuyQuote) => void;
@@ -49,8 +54,11 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
 
     return (
         <BuyButton
+            accountAddress={props.accountAddress}
+            accountEthBalanceInWei={props.accountEthBalanceInWei}
             buyQuote={props.buyQuote}
             assetBuyer={props.assetBuyer}
+            web3Wrapper={props.web3Wrapper}
             affiliateInfo={props.affiliateInfo}
             onValidationPending={props.onValidationPending}
             onValidationFail={props.onValidationFail}
