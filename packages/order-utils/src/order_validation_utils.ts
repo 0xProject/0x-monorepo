@@ -1,4 +1,4 @@
-import { RevertReason, SignedOrder } from '@0x/types';
+import { ExchangeContractErrs, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -57,57 +57,53 @@ export class OrderValidationUtils {
         senderAddress: string,
         zrxAssetData: string,
     ): Promise<void> {
-        try {
-            const fillMakerTokenAmount = utils.getPartialAmountFloor(
-                fillTakerAssetAmount,
-                signedOrder.takerAssetAmount,
-                signedOrder.makerAssetAmount,
-            );
-            await exchangeTradeEmulator.transferFromAsync(
-                signedOrder.makerAssetData,
-                signedOrder.makerAddress,
-                senderAddress,
-                fillMakerTokenAmount,
-                TradeSide.Maker,
-                TransferType.Trade,
-            );
-            await exchangeTradeEmulator.transferFromAsync(
-                signedOrder.takerAssetData,
-                senderAddress,
-                signedOrder.makerAddress,
-                fillTakerAssetAmount,
-                TradeSide.Taker,
-                TransferType.Trade,
-            );
-            const makerFeeAmount = utils.getPartialAmountFloor(
-                fillTakerAssetAmount,
-                signedOrder.takerAssetAmount,
-                signedOrder.makerFee,
-            );
-            await exchangeTradeEmulator.transferFromAsync(
-                zrxAssetData,
-                signedOrder.makerAddress,
-                signedOrder.feeRecipientAddress,
-                makerFeeAmount,
-                TradeSide.Maker,
-                TransferType.Fee,
-            );
-            const takerFeeAmount = utils.getPartialAmountFloor(
-                fillTakerAssetAmount,
-                signedOrder.takerAssetAmount,
-                signedOrder.takerFee,
-            );
-            await exchangeTradeEmulator.transferFromAsync(
-                zrxAssetData,
-                senderAddress,
-                signedOrder.feeRecipientAddress,
-                takerFeeAmount,
-                TradeSide.Taker,
-                TransferType.Fee,
-            );
-        } catch (err) {
-            throw new Error(RevertReason.TransferFailed);
-        }
+        const fillMakerTokenAmount = utils.getPartialAmountFloor(
+            fillTakerAssetAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerAssetAmount,
+        );
+        await exchangeTradeEmulator.transferFromAsync(
+            signedOrder.makerAssetData,
+            signedOrder.makerAddress,
+            senderAddress,
+            fillMakerTokenAmount,
+            TradeSide.Maker,
+            TransferType.Trade,
+        );
+        await exchangeTradeEmulator.transferFromAsync(
+            signedOrder.takerAssetData,
+            senderAddress,
+            signedOrder.makerAddress,
+            fillTakerAssetAmount,
+            TradeSide.Taker,
+            TransferType.Trade,
+        );
+        const makerFeeAmount = utils.getPartialAmountFloor(
+            fillTakerAssetAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.makerFee,
+        );
+        await exchangeTradeEmulator.transferFromAsync(
+            zrxAssetData,
+            signedOrder.makerAddress,
+            signedOrder.feeRecipientAddress,
+            makerFeeAmount,
+            TradeSide.Maker,
+            TransferType.Fee,
+        );
+        const takerFeeAmount = utils.getPartialAmountFloor(
+            fillTakerAssetAmount,
+            signedOrder.takerAssetAmount,
+            signedOrder.takerFee,
+        );
+        await exchangeTradeEmulator.transferFromAsync(
+            zrxAssetData,
+            senderAddress,
+            signedOrder.feeRecipientAddress,
+            takerFeeAmount,
+            TradeSide.Taker,
+            TransferType.Fee,
+        );
     }
     private static _validateOrderNotExpiredOrThrow(expirationTimeSeconds: BigNumber): void {
         const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
@@ -211,13 +207,30 @@ export class OrderValidationUtils {
         const desiredFillTakerTokenAmount = remainingTakerTokenAmount.lessThan(fillTakerAssetAmount)
             ? remainingTakerTokenAmount
             : fillTakerAssetAmount;
-        await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
-            exchangeTradeEmulator,
-            signedOrder,
-            desiredFillTakerTokenAmount,
-            takerAddress,
-            zrxAssetData,
-        );
+        try {
+            await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
+                exchangeTradeEmulator,
+                signedOrder,
+                desiredFillTakerTokenAmount,
+                takerAddress,
+                zrxAssetData,
+            );
+        } catch (err) {
+            const transferFailedErrorMessages = [
+                ExchangeContractErrs.InsufficientMakerBalance,
+                ExchangeContractErrs.InsufficientMakerFeeBalance,
+                ExchangeContractErrs.InsufficientTakerBalance,
+                ExchangeContractErrs.InsufficientTakerFeeBalance,
+                ExchangeContractErrs.InsufficientMakerAllowance,
+                ExchangeContractErrs.InsufficientMakerFeeAllowance,
+                ExchangeContractErrs.InsufficientTakerAllowance,
+                ExchangeContractErrs.InsufficientTakerFeeAllowance,
+            ];
+            if (_.includes(transferFailedErrorMessages, err.message)) {
+                throw new Error(RevertReason.TransferFailed);
+            }
+            throw err;
+        }
 
         const wouldRoundingErrorOccur = OrderValidationUtils.isRoundingErrorFloor(
             desiredFillTakerTokenAmount,
