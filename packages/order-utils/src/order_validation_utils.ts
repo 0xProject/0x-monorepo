@@ -17,6 +17,7 @@ import { utils } from './utils';
  */
 export class OrderValidationUtils {
     private readonly _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
+    private readonly _provider: Provider;
     /**
      * A Typescript implementation mirroring the implementation of isRoundingError in the
      * Exchange smart contract
@@ -116,8 +117,9 @@ export class OrderValidationUtils {
      * @param orderFilledCancelledFetcher A module that implements the AbstractOrderFilledCancelledFetcher
      * @return An instance of OrderValidationUtils
      */
-    constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher) {
+    constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher, provider: Provider) {
         this._orderFilledCancelledFetcher = orderFilledCancelledFetcher;
+        this._provider = provider;
     }
     // TODO(fabio): remove this method once the smart contracts have been refactored
     // to return helpful revert reasons instead of ORDER_UNFILLABLE. Instruct devs
@@ -137,6 +139,16 @@ export class OrderValidationUtils {
         expectedFillTakerTokenAmount?: BigNumber,
     ): Promise<void> {
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+        const isValidSignature = await signatureUtils.isValidSignatureAsync(
+            this._provider,
+            orderHash,
+            signedOrder.signature,
+            signedOrder.makerAddress,
+        );
+        if (!isValidSignature) {
+            throw new Error('INVALID_ORDER_SIGNATURE');
+        }
+
         const isCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(signedOrder);
         if (isCancelled) {
             throw new Error('CANCELLED');

@@ -1120,17 +1120,6 @@ export class ExchangeWrapper extends ContractWrapper {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         assert.doesConformToSchema('opts', opts, validateOrderFillableOptsSchema);
 
-        const orderHash = await orderHashUtils.getOrderHashHex(signedOrder);
-        const isValidSignature = await signatureUtils.isValidSignatureAsync(
-            this._web3Wrapper.getProvider(),
-            orderHash,
-            signedOrder.signature,
-            signedOrder.makerAddress,
-        );
-        if (!isValidSignature) {
-            throw new Error('INVALID_ORDER_SIGNATURE');
-        }
-
         const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
             this._erc20TokenWrapper,
             this._erc721TokenWrapper,
@@ -1141,7 +1130,7 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const expectedFillTakerTokenAmountIfExists = opts.expectedFillTakerTokenAmount;
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
-        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
         await orderValidationUtils.validateOrderFillableOrThrowAsync(
             exchangeTradeSimulator,
             signedOrder,
@@ -1169,7 +1158,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
 
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
-        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
         await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
             exchangeTradeSimulator,
             this._web3Wrapper.getProvider(),
