@@ -6,7 +6,8 @@
                 "pr": 1192,
                 "note": "Update Forwarder addresses"
             }
-        ]
+        ],
+        "timestamp": 1541740904
     },
     {
         "version": "1.0.1",

@@ -4,8 +4,12 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
+import { ERROR_ACCOUNT, LOADING_ACCOUNT, LOCKED_ACCOUNT } from '../constants';
 import { assetMetaDataMap } from '../data/asset_meta_data_map';
 import {
+    Account,
+    AccountReady,
+    AccountState,
     AffiliateInfo,
     Asset,
     AssetMetaData,
@@ -57,6 +61,32 @@ export const DEFAULT_STATE: DefaultState = {
 export const createReducer = (initialState: State) => {
     const reducer = (state: State = initialState, action: Action): State => {
         switch (action.type) {
+            case ActionTypes.SET_ACCOUNT_STATE_LOADING:
+                return reduceStateWithAccount(state, LOADING_ACCOUNT);
+            case ActionTypes.SET_ACCOUNT_STATE_LOCKED:
+                return reduceStateWithAccount(state, LOCKED_ACCOUNT);
+            case ActionTypes.SET_ACCOUNT_STATE_ERROR:
+                return reduceStateWithAccount(state, ERROR_ACCOUNT);
+            case ActionTypes.SET_ACCOUNT_STATE_READY: {
+                const account: AccountReady = {
+                    state: AccountState.Ready,
+                    address: action.data,
+                };
+                return reduceStateWithAccount(state, account);
+            }
+            case ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE: {
+                const { address, ethBalanceInWei } = action.data;
+                const currentAccount = state.providerState.account;
+                if (currentAccount.state !== AccountState.Ready || currentAccount.address !== address) {
+                    return state;
+                } else {
+                    const newAccount: AccountReady = {
+                        ...currentAccount,
+                        ethBalanceInWei,
+                    };
+                    return reduceStateWithAccount(state, newAccount);
+                }
+            }
             case ActionTypes.UPDATE_ETH_USD_PRICE:
                 return {
                     ...state,
@@ -80,7 +110,6 @@ export const createReducer = (initialState: State) => {
                 } else {
                     return state;
                 }
-
             case ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING:
                 return {
                     ...state,
@@ -189,6 +218,18 @@ export const createReducer = (initialState: State) => {
         }
     };
     return reducer;
+};
+
+const reduceStateWithAccount = (state: State, account: Account) => {
+    const oldProviderState = state.providerState;
+    const newProviderState: ProviderState = {
+        ...oldProviderState,
+        account,
+    };
+    return {
+        ...state,
+        providerState: newProviderState,
+    };
 };
 
 const doesBuyQuoteMatchState = (buyQuote: BuyQuote, state: State): boolean => {

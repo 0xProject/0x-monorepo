@@ -1,4 +1,6 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -7,14 +9,17 @@ import { Dispatch } from 'redux';
 import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { AffiliateInfo, OrderProcessState, ZeroExInstantError } from '../types';
+import { AccountState, AffiliateInfo, OrderProcessState, ZeroExInstantError } from '../types';
 import { errorFlasher } from '../util/error_flasher';
 import { etherscanUtil } from '../util/etherscan';
 
 interface ConnectedState {
+    accountAddress?: string;
+    accountEthBalanceInWei?: BigNumber;
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
     assetBuyer: AssetBuyer;
+    web3Wrapper: Web3Wrapper;
     affiliateInfo?: AffiliateInfo;
     onViewTransaction: () => void;
 }
@@ -31,9 +36,16 @@ interface ConnectedDispatch {
 export interface SelectedAssetBuyOrderStateButtons {}
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => {
     const assetBuyer = state.providerState.assetBuyer;
+    const web3Wrapper = state.providerState.web3Wrapper;
+    const account = state.providerState.account;
+    const accountAddress = account.state === AccountState.Ready ? account.address : undefined;
+    const accountEthBalanceInWei = account.state === AccountState.Ready ? account.ethBalanceInWei : undefined;
     return {
+        accountAddress,
+        accountEthBalanceInWei,
         buyOrderProcessingState: state.buyOrderState.processState,
         assetBuyer,
+        web3Wrapper,
         buyQuote: state.latestBuyQuote,
         affiliateInfo: state.affiliateInfo,
         onViewTransaction: () => {

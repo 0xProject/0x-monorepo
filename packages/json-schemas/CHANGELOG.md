@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.1 - _November 9, 2018_
+
+    * Improve schemas by enforcing that amounts that must be whole numbers (e.g Order asset amounts) no longer allow decimal amounts (#1173)
+
 ## v2.0.0 - _October 18, 2018_
 
     * Convert all schemas to JSON files so that they can be used with `json-schema` implemenations in other programming languages. (#1145)

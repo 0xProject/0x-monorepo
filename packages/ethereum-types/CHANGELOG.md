@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.2 - _November 9, 2018_
+
+    * Dependencies updated
+
 ## v1.1.1 - _October 18, 2018_
 
     * Add `JSONRPCResponseError` and error field on `JSONRPCResponsePayload`. (#1102)

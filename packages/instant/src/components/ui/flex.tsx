@@ -19,7 +19,6 @@ export const Flex =
     FlexProps >
     `
     && {
-        all: initial;
         display: ${props => (props.inline ? 'inline-flex' : 'flex')};
         flex-direction: ${props => props.direction};
         flex-wrap: ${props => props.flexWrap};

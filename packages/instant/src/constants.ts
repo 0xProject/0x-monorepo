@@ -1,6 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
-import { Network } from './types';
+import { AccountNotReady, AccountState, Network } from './types';
 
 export const BIG_NUMBER_ZERO = new BigNumber(0);
 export const ETH_DECIMALS = 18;
@@ -22,3 +22,15 @@ export const ETHEREUM_NODE_URL_BY_NETWORK = {
     [Network.Kovan]: 'https://kovan.infura.io/',
 };
 export const BLOCK_POLLING_INTERVAL_MS = 10000; // 10s
+export const NO_ACCOUNT: AccountNotReady = {
+    state: AccountState.None,
+};
+export const LOADING_ACCOUNT: AccountNotReady = {
+    state: AccountState.Loading,
+};
+export const LOCKED_ACCOUNT: AccountNotReady = {
+    state: AccountState.Locked,
+};
+export const ERROR_ACCOUNT: AccountNotReady = {
+    state: AccountState.Error,
+};

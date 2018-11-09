@@ -3,11 +3,9 @@ import * as React from 'react';
 import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
+import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_order_progress';
 import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_buy_order_state_buttons';
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
-
-import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_order_progress';
-
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 
@@ -35,7 +33,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                     height={{ default: 'auto', sm: '100%' }}
                     position="relative"
                 >
-                    <Container zIndex={zIndex.errorPopup} position="relative">
+                    <Container position="relative">
                         <LatestError />
                     </Container>
                     <Container
