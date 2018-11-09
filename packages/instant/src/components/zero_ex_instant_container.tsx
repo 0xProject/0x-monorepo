@@ -46,16 +46,15 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         overflow="hidden"
                         height="100%"
                     >
-                        <LatestErrorOverlay>
-                            <Flex direction="column" justify="flex-start" height="100%">
-                                <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
-                                <SelectedAssetBuyOrderProgress />
-                                <LatestBuyQuoteOrderDetails />
-                                <Container padding="20px" width="100%">
-                                    <SelectedAssetBuyOrderStateButtons />
-                                </Container>
-                            </Flex>
-                        </LatestErrorOverlay>
+                        <Flex direction="column" justify="flex-start" height="100%">
+                            <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
+                            <SelectedAssetBuyOrderProgress />
+                            <LatestBuyQuoteOrderDetails />
+                            <Container padding="20px" width="100%">
+                                <SelectedAssetBuyOrderStateButtons />
+                            </Container>
+                        </Flex>
+                        <LatestErrorOverlay />
                         <SlidingPanel
                             title="Select Token"
                             animationState={this.state.tokenSelectionPanelAnimationState}
