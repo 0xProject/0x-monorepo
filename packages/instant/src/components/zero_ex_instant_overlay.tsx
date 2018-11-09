@@ -1,12 +1,12 @@
 import * as React from 'react';
 
+import { ConnectedZeroExInstantContainer } from '../containers/connected_zero_ex_instant_container';
 import { ColorOption } from '../style/theme';
 
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 import { Icon } from './ui/icon';
 import { Overlay } from './ui/overlay';
-import { ZeroExInstantContainer } from './zero_ex_instant_container';
 import { ZeroExInstantProvider, ZeroExInstantProviderProps } from './zero_ex_instant_provider';
 
 export interface ZeroExInstantOverlayProps extends ZeroExInstantProviderProps {
@@ -31,7 +31,7 @@ export const ZeroExInstantOverlay: React.StatelessComponent<ZeroExInstantOverlay
                         />
                     </Container>
                     <Container width={{ default: 'auto', sm: '100%' }} height={{ default: 'auto', sm: '100%' }}>
-                        <ZeroExInstantContainer />
+                        <ConnectedZeroExInstantContainer />
                     </Container>
                 </Flex>
             </Overlay>

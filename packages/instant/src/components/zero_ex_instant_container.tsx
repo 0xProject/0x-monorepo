@@ -9,14 +9,16 @@ import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
-import { SlideAnimationState } from '../types';
+import { OrderProcessState, SlideAnimationState } from '../types';
 
 import { CSSReset } from './css_reset';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 
-export interface ZeroExInstantContainerProps {}
+export interface ZeroExInstantContainerProps {
+    orderProcessState: OrderProcessState;
+}
 export interface ZeroExInstantContainerState {
     tokenSelectionPanelAnimationState: SlideAnimationState;
 }
@@ -48,7 +50,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                     >
                         <Flex direction="column" justify="flex-start" height="100%">
                             <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
-                            <SelectedAssetBuyOrderProgress />
+                            {this._renderPaymentMethodOrBuyOrderProgress()}
                             <LatestBuyQuoteOrderDetails />
                             <Container padding="20px" width="100%">
                                 <SelectedAssetBuyOrderStateButtons />
@@ -75,5 +77,19 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
         this.setState({
             tokenSelectionPanelAnimationState: 'slidOut',
         });
+    };
+    private readonly _renderPaymentMethodOrBuyOrderProgress = (): React.ReactNode => {
+        const { orderProcessState } = this.props;
+        if (
+            orderProcessState === OrderProcessState.Processing ||
+            orderProcessState === OrderProcessState.Success ||
+            orderProcessState === OrderProcessState.Failure
+        ) {
+            return <SelectedAssetBuyOrderProgress />;
+        }
+        if (orderProcessState === OrderProcessState.None) {
+            return <SelectedAssetBuyOrderProgress />;
+        }
+        return null;
     };
 }
