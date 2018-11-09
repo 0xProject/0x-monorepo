@@ -1,28 +1,14 @@
 """Signature utilities."""
 
-from typing import Dict, Tuple
-
-import json
-from pkg_resources import resource_string
+from typing import Tuple
 
 from eth_utils import is_address, to_checksum_address
 from web3 import Web3
 import web3.exceptions
 from web3.utils import datatypes
 
+from zero_ex.order_utils import NETWORK_TO_EXCHANGE_ADDR, EXCHANGE_ABI
 from zero_ex.dev_utils.type_assertions import assert_is_hex_string
-
-
-EXCHANGE_ABI = json.loads(
-    resource_string("zero_ex.contract_artifacts", "artifacts/Exchange.json")
-)["compilerOutput"]["abi"]
-
-NETWORK_TO_EXCHANGE_ADDR: Dict[str, str] = {
-    "1": "0x4f833a24e1f95d70f028921e27040ca56e09ab0b",
-    "3": "0x4530c0483a1633c7a1c97d2c53721caff2caaaaf",
-    "42": "0x35dd2932454449b14cee11a94d3674a936d5d7b2",
-    "50": "0x48bacb9266a570d521063ef5dd96e61686dbe788",
-}
 
 
 # prefer `black` formatting. pylint: disable=C0330

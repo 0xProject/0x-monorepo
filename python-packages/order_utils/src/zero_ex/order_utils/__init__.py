@@ -10,6 +10,10 @@ just this purpose.  To start it: ``docker run -d -p 8545:8545 0xorg/ganache-cli
 fence smart topic"``.
 """
 
+import json
+from typing import Dict
+from pkg_resources import resource_string
+
 from mypy_extensions import TypedDict
 
 from eth_utils import is_address, keccak, to_checksum_address, to_bytes
@@ -17,6 +21,17 @@ from web3 import Web3
 from web3.utils import datatypes
 import web3.exceptions
 
+
+EXCHANGE_ABI = json.loads(
+    resource_string("zero_ex.contract_artifacts", "artifacts/Exchange.json")
+)["compilerOutput"]["abi"]
+
+NETWORK_TO_EXCHANGE_ADDR: Dict[str, str] = {
+    "1": "0x4f833a24e1f95d70f028921e27040ca56e09ab0b",
+    "3": "0x4530c0483a1633c7a1c97d2c53721caff2caaaaf",
+    "42": "0x35dd2932454449b14cee11a94d3674a936d5d7b2",
+    "50": "0x48bacb9266a570d521063ef5dd96e61686dbe788",
+}
 
 NULL_ADDRESS = "0x0000000000000000000000000000000000000000"
 
@@ -36,7 +51,6 @@ class Order(TypedDict):  # pylint: disable=too-many-instance-attributes
     salt: int
     maker_asset_data: str
     taker_asset_data: str
-    exchange_address: str
 
 
 def make_empty_order() -> Order:
@@ -48,7 +62,6 @@ def make_empty_order() -> Order:
         "fee_recipient_address": NULL_ADDRESS,
         "maker_asset_data": NULL_ADDRESS,
         "taker_asset_data": NULL_ADDRESS,
-        "exchange_address": NULL_ADDRESS,
         "salt": 0,
         "maker_fee": 0,
         "taker_fee": 0,
@@ -58,7 +71,7 @@ def make_empty_order() -> Order:
     }
 
 
-def generate_order_hash_hex(order: Order) -> str:
+def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
     # docstring considered all one line by pylint: disable=line-too-long
     """Calculate the hash of the given order as a hexadecimal string.
 
@@ -76,8 +89,8 @@ def generate_order_hash_hex(order: Order) -> str:
     ...         'salt': 12345,
     ...         'maker_asset_data': "0000000000000000000000000000000000000000",
     ...         'taker_asset_data': "0000000000000000000000000000000000000000",
-    ...         'exchange_address': "0x0000000000000000000000000000000000000000",
     ...     },
+    ...     exchange_address="0x0000000000000000000000000000000000000000",
     ... )
     '55eaa6ec02f3224d30873577e9ddd069a288c16d6fb407210eecbc501fa76692'
     """  # noqa: E501 (line too long)
@@ -93,7 +106,7 @@ def generate_order_hash_hex(order: Order) -> str:
         + keccak(b"0x Protocol")
         + keccak(b"2")
         + bytes(12)
-        + to_bytes(hexstr=order["exchange_address"])
+        + to_bytes(hexstr=exchange_address)
     )
 
     eip712_order_schema_hash = keccak(
