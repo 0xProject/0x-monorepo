@@ -3,12 +3,12 @@ import * as _ from 'lodash';
 type HeartbeatableFunction = () => Promise<void>;
 export class Heartbeater {
     private _intervalId?: number;
-    private _pendingRequest: boolean;
-    private _performingFunctionAsync: HeartbeatableFunction;
+    private _hasPendingRequest: boolean;
+    private _performFunction: HeartbeatableFunction;
 
     public constructor(_performingFunctionAsync: HeartbeatableFunction) {
-        this._performingFunctionAsync = _performingFunctionAsync;
-        this._pendingRequest = false;
+        this._performFunction = _performingFunctionAsync;
+        this._hasPendingRequest = false;
     }
 
     public start(intervalTimeMs: number): void {
@@ -24,19 +24,19 @@ export class Heartbeater {
             window.clearInterval(this._intervalId);
         }
         this._intervalId = undefined;
-        this._pendingRequest = false;
+        this._hasPendingRequest = false;
     }
 
     private async _trackAndPerformAsync(): Promise<void> {
-        if (this._pendingRequest) {
+        if (this._hasPendingRequest) {
             return;
         }
 
-        this._pendingRequest = true;
+        this._hasPendingRequest = true;
         try {
-            await this._performingFunctionAsync();
+            await this._performFunction();
         } finally {
-            this._pendingRequest = false;
+            this._hasPendingRequest = false;
         }
     }
 }
