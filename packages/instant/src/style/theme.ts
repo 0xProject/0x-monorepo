@@ -35,7 +35,10 @@ export const theme: Theme = {
 };
 
 export const transparentWhite = 'rgba(255,255,255,0.3)';
-export const overlayBlack = 'rgba(0, 0, 0, 0.6)';
 export const completelyTransparent = 'rga(0, 0, 0, 0)';
+
+export const generateOverlayBlack = (opacity = 0.6) => {
+    return `rgba(0, 0, 0, ${opacity})`;
+};
 
 export { styled, css, keyframes, withTheme, createGlobalStyle, ThemeProvider };
