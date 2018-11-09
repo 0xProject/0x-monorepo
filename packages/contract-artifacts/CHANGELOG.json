@@ -6,7 +6,8 @@
                 "pr": 1192,
                 "note": "Update Forwarder artifact"
             }
-        ]
+        ],
+        "timestamp": 1541740904
     },
     {
         "version": "1.0.1",

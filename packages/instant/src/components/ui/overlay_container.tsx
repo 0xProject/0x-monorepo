@@ -13,16 +13,18 @@ const Overlay =
     styled.div <
     OverlayProps >
     `
-    top: 0;
-    left: 0;
-    z-index: ${zIndex.containerOverlay};
-    width: 100%;
-    height: 100%;
-    display: ${props => (props.showMaxWidth ? 'none' : 'block')};
-    position: absolute;
-    background: black;
-    opacity: 0.6;
-    ${props => props.showMaxWidth && generateMediaWrapper(props.showMaxWidth)`display: block;`}
+    && {
+        top: 0;
+        left: 0;
+        z-index: ${zIndex.containerOverlay};
+        width: 100%;
+        height: 100%;
+        display: ${props => (props.showMaxWidth ? 'none' : 'block')};
+        position: absolute;
+        background: black;
+        opacity: 0.6;
+        ${props => props.showMaxWidth && generateMediaWrapper(props.showMaxWidth)`display: block;`}
+    }
 `;
 
 interface PlainOverlayContainerProps extends ContainerProps {

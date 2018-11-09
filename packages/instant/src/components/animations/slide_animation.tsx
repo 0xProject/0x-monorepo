@@ -10,6 +10,7 @@ export interface SlideAnimationProps {
     slideInSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
     slideOutSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
     zIndex?: OptionallyScreenSpecific<number>;
+    height?: string;
 }
 
 export const SlideAnimation: React.StatelessComponent<SlideAnimationProps> = props => {
@@ -18,7 +19,7 @@ export const SlideAnimation: React.StatelessComponent<SlideAnimationProps> = pro
     }
     const positionSettings = props.animationState === 'slidIn' ? props.slideInSettings : props.slideOutSettings;
     return (
-        <PositionAnimation positionSettings={positionSettings} zIndex={props.zIndex}>
+        <PositionAnimation height={props.height} positionSettings={positionSettings} zIndex={props.zIndex}>
             {props.children}
         </PositionAnimation>
     );

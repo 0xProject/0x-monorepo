@@ -77,6 +77,7 @@ const generatePositionAnimationCss = (positionSettings: PositionAnimationSetting
 export interface PositionAnimationProps {
     positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
     zIndex?: OptionallyScreenSpecific<number>;
+    height?: string;
 }
 
 const defaultAnimation = (positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>) => {
@@ -98,9 +99,12 @@ export const PositionAnimation =
     styled.div <
     PositionAnimationProps >
     `
-    ${props => props.zIndex && stylesForMedia<number>('z-index', props.zIndex)}
-    ${props => defaultAnimation(props.positionSettings)}
-    ${props => animationForSize(props.positionSettings, 'sm', media.small)}
-    ${props => animationForSize(props.positionSettings, 'md', media.medium)}
-    ${props => animationForSize(props.positionSettings, 'lg', media.large)}
+    && {
+        ${props => props.zIndex && stylesForMedia<number>('z-index', props.zIndex)}
+        ${props => defaultAnimation(props.positionSettings)}
+        ${props => animationForSize(props.positionSettings, 'sm', media.small)}
+        ${props => animationForSize(props.positionSettings, 'md', media.medium)}
+        ${props => animationForSize(props.positionSettings, 'lg', media.large)}
+        ${props => (props.height ? `height: ${props.height};` : '')}
+    }
 `;

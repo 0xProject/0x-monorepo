@@ -4,19 +4,17 @@ import { AvailableERC20TokenSelector } from '../containers/available_erc20_token
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
 import { LatestErrorOverlay } from '../containers/latest_error_overlay';
+import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_order_progress';
 import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_buy_order_state_buttons';
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
-
-import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_order_progress';
-
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 
 import { SlideAnimationState } from './animations/slide_animation';
+import { CSSReset } from './css_reset';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
-import { OverlayContainer } from './ui/overlay_container';
 
 export interface ZeroExInstantContainerProps {}
 export interface ZeroExInstantContainerState {
@@ -29,42 +27,45 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
     };
     public render(): React.ReactNode {
         return (
-            <Container
-                width={{ default: '350px', sm: '100%' }}
-                height={{ default: 'auto', sm: '100%' }}
-                position="relative"
-            >
-                <Container position="relative">
-                    <LatestError />
-                </Container>
+            <React.Fragment>
+                <CSSReset />
                 <Container
-                    zIndex={zIndex.mainContainer}
+                    width={{ default: '350px', sm: '100%' }}
+                    height={{ default: 'auto', sm: '100%' }}
                     position="relative"
-                    backgroundColor={ColorOption.white}
-                    borderRadius="3px"
-                    hasBoxShadow={true}
-                    overflow="hidden"
-                    height="100%"
                 >
-                    <LatestErrorOverlay>
-                        <Flex direction="column" height="100%" justify="flex-start">
-                            <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
-                            <SelectedAssetBuyOrderProgress />
-                            <LatestBuyQuoteOrderDetails />
-                            <Container padding="20px" width="100%">
-                                <SelectedAssetBuyOrderStateButtons />
-                            </Container>
-                        </Flex>
-                    </LatestErrorOverlay>
-                    <SlidingPanel
-                        title="Select Token"
-                        animationState={this.state.tokenSelectionPanelAnimationState}
-                        onClose={this._handlePanelClose}
+                    <Container position="relative">
+                        <LatestError />
+                    </Container>
+                    <Container
+                        zIndex={zIndex.mainContainer}
+                        position="relative"
+                        backgroundColor={ColorOption.white}
+                        borderRadius="3px"
+                        hasBoxShadow={true}
+                        overflow="hidden"
+                        height="100%"
                     >
-                        <AvailableERC20TokenSelector onTokenSelect={this._handlePanelClose} />
-                    </SlidingPanel>
+                        <LatestErrorOverlay>
+                            <Flex direction="column" justify="flex-start" height="100%">
+                                <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
+                                <SelectedAssetBuyOrderProgress />
+                                <LatestBuyQuoteOrderDetails />
+                                <Container padding="20px" width="100%">
+                                    <SelectedAssetBuyOrderStateButtons />
+                                </Container>
+                            </Flex>
+                        </LatestErrorOverlay>
+                        <SlidingPanel
+                            title="Select Token"
+                            animationState={this.state.tokenSelectionPanelAnimationState}
+                            onClose={this._handlePanelClose}
+                        >
+                            <AvailableERC20TokenSelector onTokenSelect={this._handlePanelClose} />
+                        </SlidingPanel>
+                    </Container>
                 </Container>
-            </Container>
+            </React.Fragment>
         );
     }
     private readonly _handleSymbolClick = (): void => {

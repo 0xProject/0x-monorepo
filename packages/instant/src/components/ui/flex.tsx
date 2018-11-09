@@ -18,15 +18,17 @@ export const Flex =
     styled.div <
     FlexProps >
     `
-    display: ${props => (props.inline ? 'inline-flex' : 'flex')};
-    flex-direction: ${props => props.direction};
-    flex-wrap: ${props => props.flexWrap};
-    ${props => cssRuleIfExists(props, 'flexGrow')}
-    justify-content: ${props => props.justify};
-    align-items: ${props => props.align};
-    background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
-    ${props => stylesForMedia('width', props.width || 'auto')}
-    ${props => stylesForMedia('height', props.height || 'auto')}
+    && {
+        display: ${props => (props.inline ? 'inline-flex' : 'flex')};
+        flex-direction: ${props => props.direction};
+        flex-wrap: ${props => props.flexWrap};
+        ${props => cssRuleIfExists(props, 'flexGrow')}
+        justify-content: ${props => props.justify};
+        align-items: ${props => props.align};
+        background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
+        ${props => (props.width ? stylesForMedia('width', props.width) : '')}
+        ${props => (props.height ? stylesForMedia('height', props.height) : '')}
+    }
 `;
 
 Flex.defaultProps = {

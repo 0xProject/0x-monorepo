@@ -21,4 +21,11 @@ export const etherscanUtil = {
         }
         return `https://${prefix}etherscan.io/tx/${txHash}`;
     },
+    getEtherScanEthAddressIfExists: (ethAddress: string, networkId: number) => {
+        const prefix = etherscanPrefix(networkId);
+        if (_.isUndefined(prefix)) {
+            return;
+        }
+        return `https://${prefix}etherscan.io/address/${ethAddress}`;
+    },
 };
