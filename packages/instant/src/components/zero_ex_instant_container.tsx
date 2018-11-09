@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
+import { ConnectedAccountPaymentMethod } from '../containers/connected_account_payment_method';
 import { CurrentStandardSlidingPanel } from '../containers/current_standard_sliding_panel';
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
@@ -88,7 +89,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
             return <SelectedAssetBuyOrderProgress />;
         }
         if (orderProcessState === OrderProcessState.None) {
-            return <SelectedAssetBuyOrderProgress />;
+            return <ConnectedAccountPaymentMethod />;
         }
         return null;
     };
