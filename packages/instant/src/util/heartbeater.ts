@@ -22,6 +22,7 @@ export class Heartbeater {
             this._performFunction();
         }
 
+        // tslint:disable-next-line:no-unbound-method
         this._intervalId = intervalUtils.setAsyncExcludingInterval(this._performFunction, intervalTimeMs, _.noop);
     }
 
