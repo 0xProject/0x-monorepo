@@ -5,6 +5,7 @@ import * as React from 'react';
 import { ColorOption } from '../style/theme';
 import { Account, AccountState, Network } from '../types';
 
+import { MetaMaskLogo } from './meta_mask_logo';
 import { PaymentMethodDropdown } from './payment_method_dropdown';
 import { Circle } from './ui/circle';
 import { Container } from './ui/container';
@@ -20,7 +21,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
     public render(): React.ReactNode {
         return (
             <Container padding="20px" width="100%">
-                <Container marginBottom="10px">
+                <Container marginBottom="12px">
                     <Flex justify="space-between">
                         <Text
                             letterSpacing="1px"
@@ -77,7 +78,24 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
             case AccountState.Error:
             case AccountState.Locked:
             case AccountState.None:
-                return 'connect your wallet';
+                return (
+                    <Container
+                        padding="12px"
+                        border={`1px solid ${ColorOption.darkOrange}`}
+                        backgroundColor={ColorOption.lightOrange}
+                        width="100%"
+                        borderRadius="4px"
+                    >
+                        <Flex>
+                            <Container marginRight="10px">
+                                <MetaMaskLogo width={19} height={18} />
+                            </Container>
+                            <Text fontSize="16px" fontColor={ColorOption.darkOrange}>
+                                Connect MetaMask
+                            </Text>
+                        </Flex>
+                    </Container>
+                );
             case AccountState.Ready:
                 return (
                     <PaymentMethodDropdown
