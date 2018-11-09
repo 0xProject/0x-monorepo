@@ -37,8 +37,8 @@ export const PaymentMethod: React.StatelessComponent<PaymentMethodProps> = () =>
             </Flex>
         </Container>
         <PaymentMethodDropdown
-            selectedEthAddress="0xa1b2c3d4e5f6g7h8j9k10"
-            addressEthBaseAmount={new BigNumber(10500000000000000000)}
+            accountAddress="0xa1b2c3d4e5f6g7h8j9k10"
+            accountEthBalanceInWei={new BigNumber(10500000000000000000)}
             network={Network.Mainnet}
         />
     </Container>
