@@ -1,49 +1,53 @@
 import * as S from 'solidity-parser-antlr';
+
 import * as utils from './utils';
-import {identifier, nameParameters, argumentExpressions} from './utils';
+import { identifier, nameParameters, argumentExpressions } from './utils';
+import { visit, Visitor } from './visitor';
 
 // TODO: both Actions and Functions can throw in addition to returning
 
-const bool: S.ElementaryTypeName = ({
+const bool: S.ElementaryTypeName = {
     type: S.NodeType.ElementaryTypeName,
-    name: 'bool'
-});
+    name: 'bool',
+};
 
-const uint256: S.ElementaryTypeName = ({
+const uint256: S.ElementaryTypeName = {
     type: S.NodeType.ElementaryTypeName,
-    name: 'uint256'
-});
+    name: 'uint256',
+};
 
-const zero: S.NumberLiteral = ({
+const zero: S.NumberLiteral = {
     type: S.NodeType.NumberLiteral,
     number: '0',
-    subdenomination: null // TODO
-});
+    subdenomination: null, // TODO
+};
 
 const call = (func: S.Expression, ...args: S.Expression[]): S.FunctionCall => ({
     type: S.NodeType.FunctionCall,
     expression: func,
     arguments: args,
-    names: []
+    names: [],
 });
 
 const emit = (name: string, ...args: S.Expression[]): S.EmitStatement => ({
     type: S.NodeType.EmitStatement,
-    eventCall: call(identifier(name), ...args)
+    eventCall: call(identifier(name), ...args),
 });
 
 const makeCounter = (name: string): S.StateVariableDeclaration => ({
     type: S.NodeType.StateVariableDeclaration,
-    variables: [{
-        type: S.NodeType.VariableDeclaration,
-        typeName: uint256,
-        name,
-        expression: zero,
-        visibility: S.Visibility.Internal,
-        isStateVar: true,
-        isDeclaredConst: false,
-        isIndexed: false
-    }],
+    variables: [
+        {
+            type: S.NodeType.VariableDeclaration,
+            typeName: uint256,
+            name,
+            expression: zero,
+            visibility: S.Visibility.Internal,
+            isStateVar: true,
+            isDeclaredConst: false,
+            isIndexed: false,
+        },
+    ],
     initialValue: zero,
 });
 
@@ -51,23 +55,24 @@ const makeEvent = (name: string, parameters: S.ParameterList): S.EventDefinition
     type: S.NodeType.EventDefinition,
     name,
     parameters,
-    isAnonymous: false
+    isAnonymous: false,
 });
 
 const makeCountedEvent = (name: string, parameters: S.ParameterList) =>
     makeEvent(name, {
         ...parameters,
         parameters: [
-        {
-            type: S.NodeType.Parameter,
-            name: 'counter',
-            typeName: uint256,
-            storageLocation: S.StorageLocation.Default
-        },
-        ...parameters.parameters.map(param => ({
-            ...param,
-            storageLocation: S.StorageLocation.Default
-        }))]
+            {
+                type: S.NodeType.Parameter,
+                name: 'counter',
+                typeName: uint256,
+                storageLocation: S.StorageLocation.Default,
+            },
+            ...parameters.parameters.map(param => ({
+                ...param,
+                storageLocation: S.StorageLocation.Default,
+            })),
+        ],
     });
 
 const makeIncrement = (name: string): S.ExpressionStatement => ({
@@ -76,16 +81,16 @@ const makeIncrement = (name: string): S.ExpressionStatement => ({
         type: S.NodeType.UnaryOperation,
         operator: '++',
         subExpression: identifier(name),
-        isPrefix: false
-    }
-})
+        isPrefix: false,
+    },
+});
 
 const makeAction = (
     name: string,
     visibility: S.Visibility,
     counterName: string,
     eventName: string,
-    parameters: S.ParameterList
+    parameters: S.ParameterList,
 ): S.FunctionDefinition => ({
     type: S.NodeType.FunctionDefinition,
     name,
@@ -94,43 +99,38 @@ const makeAction = (
     body: {
         type: S.NodeType.Block,
         statements: [
-            emit(eventName, identifier(counterName),
-                ...argumentExpressions(parameters)),
-            makeIncrement(counterName)
-        ]
+            emit(eventName, identifier(counterName), ...argumentExpressions(parameters)),
+            makeIncrement(counterName),
+        ],
     },
-    visibility: visibility,
+    visibility,
     modifiers: [],
     isConstructor: false,
-    stateMutability: S.StateMutability.Default, 
+    stateMutability: S.StateMutability.Default,
 });
 
-const variableDeclaration = (
-    name: string,
-    typeName: S.Type
-): S.VariableDeclaration => ({
+const variableDeclaration = (name: string, typeName: S.Type): S.VariableDeclaration => ({
     type: S.NodeType.VariableDeclaration,
     name,
     typeName,
     storageLocation: S.StorageLocation.Default,
     isStateVar: false,
-    isIndexed: false
-})
+    isIndexed: false,
+});
 
 const makeResultType = (name: string, fields: S.ParameterList): S.StructDefinition => ({
     type: S.NodeType.StructDefinition,
     name,
     members: [
         variableDeclaration('reverts', bool),
-        ...fields.parameters.map(({name, typeName}) =>
-            variableDeclaration(name as string, typeName))
-    ]
+        ...fields.parameters.map(({ name, typeName }) => variableDeclaration(name as string, typeName)),
+    ],
 });
 
 const userType = (name: string): S.UserDefinedTypeName => ({
     type: S.NodeType.UserDefinedTypeName,
-    namePath: name
-})
+    namePath: name,
+});
 
 const mapping = (keyType: S.Type, valueType: S.Type): S.Type => ({
     type: S.NodeType.Mapping,
@@ -138,39 +138,35 @@ const mapping = (keyType: S.Type, valueType: S.Type): S.Type => ({
     valueType,
 });
 
-const makeStorageVariable = (
-    name: string,
-    type: S.Type
-): S.StateVariableDeclaration => ({
+const makeStorageVariable = (name: string, type: S.Type): S.StateVariableDeclaration => ({
     type: S.NodeType.StateVariableDeclaration,
     variables: [variableDeclaration(name, type)],
-    initialValue: null
-})
+    initialValue: null,
+});
 
-const makeSetter = (
-    name: string,
-    resultTypeName: string,
-    resultMapName: string
-): S.FunctionDefinition => ({
+const makeSetter = (name: string, resultTypeName: string, resultMapName: string): S.FunctionDefinition => ({
     type: S.NodeType.FunctionDefinition,
     name,
     parameters: {
         type: S.NodeType.ParameterList,
-        parameters: [{
-            type: S.NodeType.Parameter,
-            name: '_counter',
-            typeName: uint256,
-            storageLocation: S.StorageLocation.Default,
-            isStateVar: false,
-            isIndexed: false
-        }, {
-            type: S.NodeType.Parameter,
-            name: '_value',
-            typeName: userType(resultTypeName),
-            storageLocation: S.StorageLocation.Default,
-            isStateVar: false,
-            isIndexed: false
-        }]
+        parameters: [
+            {
+                type: S.NodeType.Parameter,
+                name: '_counter',
+                typeName: uint256,
+                storageLocation: S.StorageLocation.Default,
+                isStateVar: false,
+                isIndexed: false,
+            },
+            {
+                type: S.NodeType.Parameter,
+                name: '_value',
+                typeName: userType(resultTypeName),
+                storageLocation: S.StorageLocation.Default,
+                isStateVar: false,
+                isIndexed: false,
+            },
+        ],
     },
     returnParameters: null,
     visibility: S.Visibility.Public,
@@ -179,21 +175,23 @@ const makeSetter = (
     stateMutability: S.StateMutability.Default,
     body: {
         type: S.NodeType.Block,
-        statements: [{
-            type: S.NodeType.ExpressionStatement,
-            expression: {
-                type: S.NodeType.BinaryOperation,
-                operator: '=',
-                left: {
-                    type: S.NodeType.IndexAccess,
-                    base: identifier(resultMapName),
-                    index: identifier('_counter')
+        statements: [
+            {
+                type: S.NodeType.ExpressionStatement,
+                expression: {
+                    type: S.NodeType.BinaryOperation,
+                    operator: '=',
+                    left: {
+                        type: S.NodeType.IndexAccess,
+                        base: identifier(resultMapName),
+                        index: identifier('_counter'),
+                    },
+                    right: identifier('_value'),
                 },
-                right: identifier('_value')
-            }
-        }]
-    }
-})
+            },
+        ],
+    },
+});
 
 const makeFunction = (
     name: string,
@@ -203,32 +201,33 @@ const makeFunction = (
     resultTypeName: string,
     resultMapName: string,
     parameters: S.ParameterList,
-    returnParameters: S.ParameterList
+    returnParameters: S.ParameterList,
 ): S.FunctionDefinition => ({
     type: S.NodeType.FunctionDefinition,
     name,
     parameters,
     returnParameters,
-    visibility: visibility,
+    visibility,
     modifiers: [],
     isConstructor: false,
     stateMutability: S.StateMutability.Default,
     body: {
         type: S.NodeType.Block,
         statements: [
-            emit(eventName, identifier(counterName),
-                ...argumentExpressions(parameters)),
+            emit(eventName, identifier(counterName), ...argumentExpressions(parameters)),
             {
                 type: S.NodeType.VariableDeclarationStatement,
-                variables: [{
-                    ...variableDeclaration('result', userType(resultTypeName)),
-                    storageLocation: S.StorageLocation.Storage,
-                }],
+                variables: [
+                    {
+                        ...variableDeclaration('result', userType(resultTypeName)),
+                        storageLocation: S.StorageLocation.Storage,
+                    },
+                ],
                 initialValue: {
                     type: S.NodeType.IndexAccess,
                     base: identifier(resultMapName),
-                    index: identifier(counterName)
-                }
+                    index: identifier(counterName),
+                },
             },
             makeIncrement(counterName),
             {
@@ -240,26 +239,24 @@ const makeFunction = (
                     subExpression: {
                         type: S.NodeType.MemberAccess,
                         expression: identifier('result'),
-                        memberName: 'reverts'
-                    }
-                })
+                        memberName: 'reverts',
+                    },
+                }),
             },
             {
                 type: S.NodeType.ReturnStatement,
                 expression: {
                     type: S.NodeType.TupleExpression,
                     isArray: false,
-                    components: returnParameters.parameters.map(
-                        ({name}): S.MemberAccess => ({
-                            type: S.NodeType.MemberAccess,
-                            expression: identifier('result'),
-                            memberName: name as string
-                        })
-                    )
-                }
-            }
-        ]
-    }
+                    components: returnParameters.parameters.map(({ name: memberName }): S.MemberAccess => ({
+                        type: S.NodeType.MemberAccess,
+                        expression: identifier('result'),
+                        memberName: memberName as string,
+                    })),
+                },
+            },
+        ],
+    },
 });
 
 const mockAction = (func: S.FunctionDefinition): S.ContractMember[] => {
@@ -269,7 +266,7 @@ const mockAction = (func: S.FunctionDefinition): S.ContractMember[] => {
     return [
         makeCounter(counterName),
         makeCountedEvent(eventName, params),
-        makeAction(func.name, func.visibility, counterName, eventName, params)
+        makeAction(func.name, func.visibility, counterName, eventName, params),
     ];
 };
 
@@ -280,58 +277,56 @@ const mockFunction = (func: S.FunctionDefinition): S.ContractMember[] => {
     const eventName = `_${func.name}_log`;
     const setterName = `_${func.name}_set`;
     const params = nameParameters(func.parameters);
-    const returns = nameParameters(func.returnParameters as S.ParameterList,
-        '_ret');
+    const returns = nameParameters(func.returnParameters as S.ParameterList, '_ret');
     return [
         makeCounter(counterName),
         makeCountedEvent(eventName, params),
         makeResultType(resultTypeName, returns),
-        makeStorageVariable(resultMapName,
-            mapping(uint256, userType(resultTypeName))),
+        makeStorageVariable(resultMapName, mapping(uint256, userType(resultTypeName))),
         makeSetter(setterName, resultTypeName, resultMapName),
-        makeFunction(func.name, func.visibility, counterName, eventName,
-            resultTypeName, resultMapName, params, returns)
+        makeFunction(
+            func.name,
+            func.visibility,
+            counterName,
+            eventName,
+            resultTypeName,
+            resultMapName,
+            params,
+            returns,
+        ),
     ];
-}
+};
 
 const isDeclaration = (func: S.FunctionDefinition) => func.body === null;
 
 const hasReturns = (func: S.FunctionDefinition) => func.returnParameters !== null;
 
-const visitor = {
-    
-    FunctionDefinition: (func) => 
-        isDeclaration(func)
-        ? (
-            hasReturns(func)
-            ? mockFunction(func)
-            : mockAction(func)
-        ) 
-        : [],
-    
-    default: (node) => node,
-}
+const visitor: Visitor<S.ContractMember[]> = {
+    FunctionDefinition: (func: S.FunctionDefinition) =>
+        isDeclaration(func) ? (hasReturns(func) ? mockFunction(func) : mockAction(func)) : [],
+
+    ContractMember: (node: S.ContractMember) => [node],
+};
 
 const pragmaSolVersion: S.PragmaDirective = {
     type: S.NodeType.PragmaDirective,
     name: 'solidity',
-    value: '^0.4.24'
+    value: '^0.4.24',
 };
 
 const pragmaAbiV2: S.PragmaDirective = {
     type: S.NodeType.PragmaDirective,
     name: 'experimental',
-    value: 'ABIEncoderV2'
+    value: 'ABIEncoderV2',
 };
 
 const importDirective = (path: string): S.ImportDirective => ({
     type: S.NodeType.ImportDirective,
     path,
-    symbolAliases: null
-})
+    symbolAliases: null,
+});
 
 export function mock(ast: S.SourceUnit): S.SourceUnit {
-    
     // TODO: go down inheritance hierarchy and expose those events. etc as well.
     // We probably want a separate `flattenInheritance` function or something
     // that traces the imports and does a C3 linearization.
@@ -341,21 +336,21 @@ export function mock(ast: S.SourceUnit): S.SourceUnit {
             pragmaSolVersion,
             pragmaAbiV2,
             importDirective('interface.sol'),
-            ...utils.contracts(ast).map((ctr) => ({
+            ...utils.contracts(ast).map(ctr => ({
                 type: S.NodeType.ContractDefinition,
                 kind: S.ContractKind.Contract,
                 name: `${ctr.name}Mock`,
-                baseContracts: [{
-                    type: S.NodeType.InheritanceSpecifier,
-                    baseName: {
-                        type: S.NodeType.UserDefinedTypeName,
-                        namePath: ctr.name,
-                    }
-                }],
-                subNodes: utils.flatMap(ctr.subNodes, node =>
-                    (visitor[node.type] || visitor.default)(node)
-                ),
-            }))
-        ]
-    }
+                baseContracts: [
+                    {
+                        type: S.NodeType.InheritanceSpecifier,
+                        baseName: {
+                            type: S.NodeType.UserDefinedTypeName,
+                            namePath: ctr.name,
+                        },
+                    },
+                ],
+                subNodes: utils.flatMap(ctr.subNodes, (node: S.ContractMember) => visit(node, visitor)),
+            })),
+        ],
+    };
 }
