@@ -15,7 +15,8 @@ import { AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
-import { generateAccountHeartbeater, Heartbeater, generateBuyQuoteHeartbeater } from '../util/hearbeats';
+import { Heartbeater } from '../util/heartbeater';
+import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
 
 fonts.include();

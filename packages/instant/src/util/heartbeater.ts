@@ -1,14 +1,4 @@
-// TODO: rename file
-
 import * as _ from 'lodash';
-import { Dispatch } from 'redux';
-
-import { Action } from '../redux/actions';
-import { asyncData } from '../redux/async_data';
-import { State } from '../redux/reducer';
-import { Store } from '../redux/store';
-
-import { updateBuyQuoteOrFlashErrorAsyncForState } from './buy_quote_fetcher';
 
 type HeartbeatableFunction = () => Promise<void>;
 export class Heartbeater {
@@ -50,16 +40,3 @@ export class Heartbeater {
         }
     }
 }
-
-export const generateAccountHeartbeater = (store: Store): Heartbeater => {
-    return new Heartbeater(async () => {
-        await asyncData.fetchAccountInfoAndDispatchToStore(store, { setLoading: false });
-    });
-};
-
-export const generateBuyQuoteHeartbeater = (store: Store): Heartbeater => {
-    return new Heartbeater(async () => {
-        await updateBuyQuoteOrFlashErrorAsyncForState(store.getState(), store.dispatch);
-        return Promise.resolve();
-    });
-};
