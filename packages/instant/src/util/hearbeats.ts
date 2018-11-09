@@ -1,48 +1,53 @@
+// TODO: rename file
+
 import * as _ from 'lodash';
 
 import { asyncData } from './../redux/async_data';
 import { Store } from './../redux/store';
 
-export class AccountUpdateHeartbeat {
+type HeartbeatableFunction = () => Promise<void>;
+export class Heartbeater {
     private _intervalId?: number;
-    private _pendingRequest?: boolean;
-    private _store?: Store;
+    private _pendingRequest: boolean;
+    private _performingFunctionAsync: HeartbeatableFunction;
 
-    public start(store: Store, intervalTimeMs: number): void {
+    public constructor(_performingFunctionAsync: HeartbeatableFunction) {
+        this._performingFunctionAsync = _performingFunctionAsync;
+        this._pendingRequest = false;
+    }
+
+    public start(intervalTimeMs: number): void {
         if (!_.isUndefined(this._intervalId)) {
             throw new Error('Heartbeat is running, please stop before restarting');
         }
-        this._store = store;
-        // Kick off initial first request
-        // tslint:disable-next-line:no-floating-promises
-        this._performActionAsync(true);
-        // Set interval for heartbeat
-        this._intervalId = window.setInterval(this._performActionAsync.bind(this, false), intervalTimeMs);
+        this._trackAndPerformAsync();
+        this._intervalId = window.setInterval(this._trackAndPerformAsync.bind(this), intervalTimeMs);
     }
 
     public stop(): void {
-        if (!_.isUndefined(this._intervalId)) {
+        if (this._intervalId) {
             window.clearInterval(this._intervalId);
-            this._resetState();
         }
-    }
-
-    private _resetState(): void {
         this._intervalId = undefined;
         this._pendingRequest = false;
-        this._store = undefined;
     }
 
-    private async _performActionAsync(setLoading: boolean): Promise<void> {
-        if (this._pendingRequest || _.isUndefined(this._store)) {
+    private async _trackAndPerformAsync(): Promise<void> {
+        if (this._pendingRequest) {
             return;
         }
 
         this._pendingRequest = true;
         try {
-            await asyncData.fetchAccountInfoAndDispatchToStore(this._store, { setLoading });
+            this._performingFunctionAsync();
         } finally {
             this._pendingRequest = false;
         }
     }
 }
+
+export const generateAccountHeartbeater = (store: Store): Heartbeater => {
+    return new Heartbeater(async () => {
+        await asyncData.fetchAccountInfoAndDispatchToStore(store, { setLoading: false });
+    });
+};

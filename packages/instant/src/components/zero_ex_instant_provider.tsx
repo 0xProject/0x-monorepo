@@ -15,7 +15,7 @@ import { AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
-import { AccountUpdateHeartbeat } from '../util/hearbeats';
+import { generateAccountHeartbeater, Heartbeater } from '../util/hearbeats';
 import { providerStateFactory } from '../util/provider_state_factory';
 
 fonts.include();
@@ -39,7 +39,7 @@ export interface ZeroExInstantProviderOptionalProps {
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
     private readonly _store: Store;
-    private _accountUpdateHeartbeat?: AccountUpdateHeartbeat;
+    private _accountUpdateHeartbeat?: Heartbeater;
     // TODO(fragosti): Write tests for this beast once we inject a provider.
     private static _mergeDefaultStateWithProps(
         props: ZeroExInstantProviderProps,
@@ -97,8 +97,9 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         }
         // tslint:disable-next-line:no-floating-promises
         // asyncData.fetchAccountInfoAndDispatchToStore(this._store);
-        this._accountUpdateHeartbeat = new AccountUpdateHeartbeat();
-        this._accountUpdateHeartbeat.start(this._store, ACCOUNT_UPDATE_INTERVAL_TIME_MS);
+
+        this._accountUpdateHeartbeat = generateAccountHeartbeater(this._store);
+        this._accountUpdateHeartbeat.start(ACCOUNT_UPDATE_INTERVAL_TIME_MS);
 
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
