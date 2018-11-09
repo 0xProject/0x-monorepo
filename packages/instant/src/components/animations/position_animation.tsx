@@ -1,5 +1,6 @@
-import { Keyframes } from 'styled-components';
+import { InterpolationValue } from 'styled-components';
 
+import { media, OptionallyScreenSpecific, stylesForMedia } from '../../style/media';
 import { css, keyframes, styled } from '../../style/theme';
 
 export interface TransitionInfo {
@@ -51,30 +52,57 @@ export interface PositionAnimationSettings {
     right?: TransitionInfo;
     timingFunction: string;
     duration?: string;
+    position?: string;
 }
 
-export interface PositionAnimationProps extends PositionAnimationSettings {
-    position: string;
+const generatePositionAnimationCss = (positionSettings: PositionAnimationSettings) => {
+    return css`
+        animation-name: ${slideKeyframeGenerator(
+            positionSettings.position || 'relative',
+            positionSettings.top,
+            positionSettings.bottom,
+            positionSettings.left,
+            positionSettings.right,
+        )};
+        animation-duration: ${positionSettings.duration || '0.3s'};
+        animation-timing-function: ${positionSettings.timingFunction};
+        animation-delay: 0s;
+        animation-iteration-count: 1;
+        animation-fill-mode: forwards;
+        position: ${positionSettings.position || 'relative'};
+        width: 100%;
+    `;
+};
+
+export interface PositionAnimationProps {
+    positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>;
+    zIndex?: OptionallyScreenSpecific<number>;
 }
+
+const defaultAnimation = (positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>) => {
+    const bestDefault = 'default' in positionSettings ? positionSettings.default : positionSettings;
+    return generatePositionAnimationCss(bestDefault);
+};
+const animationForSize = (
+    positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>,
+    sizeKey: 'sm' | 'md' | 'lg',
+    mediaFn: (...args: any[]) => InterpolationValue[],
+) => {
+    // checking default makes sure we have a PositionAnimationSettings object
+    // and then we check to see if we have a setting for the specific `sizeKey`
+    const animationSettingsForSize = 'default' in positionSettings && positionSettings[sizeKey];
+    return animationSettingsForSize && mediaFn`${generatePositionAnimationCss(animationSettingsForSize)}`;
+};
 
 export const PositionAnimation =
     styled.div <
     PositionAnimationProps >
     `
-    animation-name: ${props =>
-        css`
-            ${slideKeyframeGenerator(props.position, props.top, props.bottom, props.left, props.right)};
-        `};
-    animation-duration: ${props => props.duration || '0.3s'};
-    animation-timing-function: ${props => props.timingFunction};
-    animation-delay: 0s;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
-    position: ${props => props.position};
-    height: 100%;
-    width: 100%;
+    && {
+        ${props => props.zIndex && stylesForMedia<number>('z-index', props.zIndex)}
+        ${props => defaultAnimation(props.positionSettings)}
+        ${props => animationForSize(props.positionSettings, 'sm', media.small)}
+        ${props => animationForSize(props.positionSettings, 'md', media.medium)}
+        ${props => animationForSize(props.positionSettings, 'lg', media.large)}
+    }
 `;
-
-PositionAnimation.defaultProps = {
-    position: 'relative',
-};

@@ -24,13 +24,15 @@ const PlainOverlay: React.StatelessComponent<OverlayProps> = ({ children, classN
     </Flex>
 );
 export const Overlay = styled(PlainOverlay)`
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: ${props => props.zIndex}
-    background-color: ${overlayBlack};
+    && {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: ${props => props.zIndex}
+        background-color: ${overlayBlack};
+    }
 `;
 
 Overlay.defaultProps = {
