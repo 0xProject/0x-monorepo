@@ -113,7 +113,7 @@ export class OrderValidationUtils {
     }
     /**
      * Instantiate OrderValidationUtils
-     * @param orderFilledCancelledFetcher A module that implements the AbstractOrderInfoFetcher
+     * @param orderFilledCancelledFetcher A module that implements the AbstractOrderFilledCancelledFetcher
      * @return An instance of OrderValidationUtils
      */
     constructor(orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher) {
