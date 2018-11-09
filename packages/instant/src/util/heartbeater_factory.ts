@@ -13,6 +13,5 @@ export const generateAccountHeartbeater = (store: Store): Heartbeater => {
 export const generateBuyQuoteHeartbeater = (store: Store): Heartbeater => {
     return new Heartbeater(async () => {
         await updateBuyQuoteOrFlashErrorAsyncForState(store.getState(), store.dispatch);
-        return Promise.resolve();
     });
 };
