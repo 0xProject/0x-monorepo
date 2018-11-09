@@ -4,6 +4,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 
 // Reusable
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type Maybe<T> = T | undefined;
 export enum AsyncProcessState {
     None = 'NONE',
