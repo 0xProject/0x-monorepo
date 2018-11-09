@@ -22,7 +22,7 @@ export class Heartbeater {
             this._performFunction();
         }
 
-        this._intervalId = intervalUtils.setAsyncExcludingInterval(this._performFunction, intervalTimeMs, () => {});
+        this._intervalId = intervalUtils.setAsyncExcludingInterval(this._performFunction, intervalTimeMs, _.noop);
     }
 
     public stop(): void {
