@@ -2,7 +2,7 @@ import { AssetProxyId } from '@0x/types';
 import * as _ from 'lodash';
 
 import { BIG_NUMBER_ZERO } from '../constants';
-import { AccountState, ERC20Asset } from '../types';
+import { AccountState, ERC20Asset, OrderProcessState } from '../types';
 import { assetUtils } from '../util/asset';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
 import { coinbaseApi } from '../util/coinbase_api';
@@ -75,11 +75,12 @@ export const asyncData = {
         }
     },
     fetchCurrentBuyQuoteAndDispatchToStore: async (store: Store, setPending: boolean) => {
-        const { providerState, selectedAsset, selectedAssetAmount, affiliateInfo } = store.getState();
+        const { buyOrderState, providerState, selectedAsset, selectedAssetAmount, affiliateInfo } = store.getState();
         const assetBuyer = providerState.assetBuyer;
         if (
             !_.isUndefined(selectedAssetAmount) &&
             !_.isUndefined(selectedAsset) &&
+            buyOrderState.processState === OrderProcessState.None &&
             selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
         ) {
             await buyQuoteUpdater.updateBuyQuoteAsync(
