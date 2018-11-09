@@ -2,6 +2,7 @@ import { darken } from 'polished';
 import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
+import { util } from '../../util/util';
 
 export interface TextProps {
     fontColor?: ColorOption;
@@ -20,10 +21,16 @@ export interface TextProps {
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
     noWrap?: boolean;
     display?: string;
+    href?: string;
 }
 
+export const Text: React.StatelessComponent<TextProps> = ({ href, onClick, ...rest }) => {
+    const computedOnClick = href ? util.createHrefOnClick(href) : onClick;
+    return <StyledText {...rest} onClick={computedOnClick} />;
+};
+
 const darkenOnHoverAmount = 0.3;
-export const Text =
+export const StyledText =
     styled.div <
     TextProps >
     `

@@ -2,6 +2,7 @@ import { darken, saturate } from 'polished';
 import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
+import { util } from '../../util/util';
 
 export type ButtonOnClickHandler = (event: React.MouseEvent<HTMLElement>) => void;
 
@@ -19,10 +20,6 @@ export interface ButtonProps {
     className?: string;
 }
 
-const createHrefOnClick = (href: string) => () => {
-    window.open(href, '_blank');
-};
-
 const PlainButton: React.StatelessComponent<ButtonProps> = ({
     children,
     isDisabled,
@@ -31,7 +28,7 @@ const PlainButton: React.StatelessComponent<ButtonProps> = ({
     type,
     className,
 }) => {
-    const computedOnClick = isDisabled ? undefined : href ? createHrefOnClick(href) : onClick;
+    const computedOnClick = isDisabled ? undefined : href ? util.createHrefOnClick(href) : onClick;
     return (
         <button type={type} className={className} onClick={computedOnClick} disabled={isDisabled}>
             {children}
@@ -48,7 +45,7 @@ export const Button = styled(PlainButton)`
         box-sizing: border-box;
         font-size: ${props => props.fontSize};
         font-family: 'Inter UI', sans-serif;
-        font-weight: 600;
+        font-weight: 500;
         color: ${props => props.fontColor && props.theme[props.fontColor]};
         cursor: ${props => (props.isDisabled ? 'default' : 'pointer')};
         transition: background-color, opacity 0.5s ease;
@@ -83,7 +80,7 @@ Button.defaultProps = {
     backgroundColor: ColorOption.primaryColor,
     width: 'auto',
     isDisabled: false,
-    padding: '.6em 1.2em',
+    padding: '.82em 1.2em',
     fontSize: '15px',
 };
 

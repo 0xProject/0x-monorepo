@@ -29,7 +29,7 @@ export const StandardPanelContent: React.StatelessComponent<StandardPanelContent
     action,
 }) => (
     <Container height="100%">
-        <Flex direction="column" height="calc(100% - 55px)">
+        <Flex direction="column" height="calc(100% - 58px)">
             <Container marginBottom={spacingBetweenPx}>{image}</Container>
             <Container marginBottom={spacingBetweenPx}>
                 <Text fontSize="20px" fontWeight={700} fontColor={ColorOption.black}>
@@ -43,16 +43,15 @@ export const StandardPanelContent: React.StatelessComponent<StandardPanelContent
             </Container>
             <Container marginBottom={spacingBetweenPx}>
                 {moreInfoSettings && (
-                    <a href={moreInfoSettings.href} target="_blank">
-                        <Text
-                            center={true}
-                            fontSize="13px"
-                            textDecorationLine="underline"
-                            fontColor={ColorOption.lightGrey}
-                        >
-                            {moreInfoSettings.text}
-                        </Text>
-                    </a>
+                    <Text
+                        center={true}
+                        fontSize="13px"
+                        textDecorationLine="underline"
+                        fontColor={ColorOption.lightGrey}
+                        href={moreInfoSettings.href}
+                    >
+                        {moreInfoSettings.text}
+                    </Text>
                 )}
             </Container>
         </Flex>
