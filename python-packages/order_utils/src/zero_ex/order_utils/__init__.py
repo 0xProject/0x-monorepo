@@ -22,18 +22,54 @@ from web3.utils import datatypes
 import web3.exceptions
 
 
-EXCHANGE_ABI = json.loads(
-    resource_string("zero_ex.contract_artifacts", "artifacts/Exchange.json")
-)["compilerOutput"]["abi"]
+class Constants:  # pylint: disable=too-few-public-methods
+    """Static data used by order utilities."""
 
-NETWORK_TO_EXCHANGE_ADDR: Dict[str, str] = {
-    "1": "0x4f833a24e1f95d70f028921e27040ca56e09ab0b",
-    "3": "0x4530c0483a1633c7a1c97d2c53721caff2caaaaf",
-    "42": "0x35dd2932454449b14cee11a94d3674a936d5d7b2",
-    "50": "0x48bacb9266a570d521063ef5dd96e61686dbe788",
-}
+    contract_name_to_abi = {
+        "Exchange": json.loads(
+            resource_string(
+                "zero_ex.contract_artifacts", "artifacts/Exchange.json"
+            )
+        )["compilerOutput"]["abi"]
+    }
 
-NULL_ADDRESS = "0x0000000000000000000000000000000000000000"
+    network_to_exchange_addr: Dict[str, str] = {
+        "1": "0x4f833a24e1f95d70f028921e27040ca56e09ab0b",
+        "3": "0x4530c0483a1633c7a1c97d2c53721caff2caaaaf",
+        "42": "0x35dd2932454449b14cee11a94d3674a936d5d7b2",
+        "50": "0x48bacb9266a570d521063ef5dd96e61686dbe788",
+    }
+
+    null_address = "0x0000000000000000000000000000000000000000"
+
+    eip191_header = b"\x19\x01"
+
+    eip712_domain_separator_schema_hash = keccak(
+        b"EIP712Domain(string name,string version,address verifyingContract)"
+    )
+
+    eip712_domain_struct_header = (
+        eip712_domain_separator_schema_hash
+        + keccak(b"0x Protocol")
+        + keccak(b"2")
+    )
+
+    eip712_order_schema_hash = keccak(
+        b"Order("
+        + b"address makerAddress,"
+        + b"address takerAddress,"
+        + b"address feeRecipientAddress,"
+        + b"address senderAddress,"
+        + b"uint256 makerAssetAmount,"
+        + b"uint256 takerAssetAmount,"
+        + b"uint256 makerFee,"
+        + b"uint256 takerFee,"
+        + b"uint256 expirationTimeSeconds,"
+        + b"uint256 salt,"
+        + b"bytes makerAssetData,"
+        + b"bytes takerAssetData"
+        + b")"
+    )
 
 
 class Order(TypedDict):  # pylint: disable=too-many-instance-attributes
@@ -56,12 +92,12 @@ class Order(TypedDict):  # pylint: disable=too-many-instance-attributes
 def make_empty_order() -> Order:
     """Construct an empty order."""
     return {
-        "maker_address": NULL_ADDRESS,
-        "taker_address": NULL_ADDRESS,
-        "sender_address": NULL_ADDRESS,
-        "fee_recipient_address": NULL_ADDRESS,
-        "maker_asset_data": NULL_ADDRESS,
-        "taker_asset_data": NULL_ADDRESS,
+        "maker_address": Constants.null_address,
+        "taker_address": Constants.null_address,
+        "sender_address": Constants.null_address,
+        "fee_recipient_address": Constants.null_address,
+        "maker_asset_data": Constants.null_address,
+        "taker_asset_data": Constants.null_address,
         "salt": 0,
         "maker_fee": 0,
         "taker_fee": 0,
@@ -95,45 +131,19 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
     '55eaa6ec02f3224d30873577e9ddd069a288c16d6fb407210eecbc501fa76692'
     """  # noqa: E501 (line too long)
     # TODO: use JSON schema validation to validate order. pylint: disable=fixme
-    eip191_header = b"\x19\x01"
-
-    eip712_domain_separator_schema_hash = keccak(
-        b"EIP712Domain(string name,string version,address verifyingContract)"
-    )
-
-    eip712_domain_struct_hash = keccak(
-        eip712_domain_separator_schema_hash
-        + keccak(b"0x Protocol")
-        + keccak(b"2")
-        + bytes(12)
-        + to_bytes(hexstr=exchange_address)
-    )
-
-    eip712_order_schema_hash = keccak(
-        b"Order("
-        + b"address makerAddress,"
-        + b"address takerAddress,"
-        + b"address feeRecipientAddress,"
-        + b"address senderAddress,"
-        + b"uint256 makerAssetAmount,"
-        + b"uint256 takerAssetAmount,"
-        + b"uint256 makerFee,"
-        + b"uint256 takerFee,"
-        + b"uint256 expirationTimeSeconds,"
-        + b"uint256 salt,"
-        + b"bytes makerAssetData,"
-        + b"bytes takerAssetData"
-        + b")"
-    )
-
     def pad_20_bytes_to_32(twenty_bytes: bytes):
         return bytes(12) + twenty_bytes
 
     def int_to_32_big_endian_bytes(i: int):
         return i.to_bytes(32, byteorder="big")
 
+    eip712_domain_struct_hash = keccak(
+        Constants.eip712_domain_struct_header
+        + pad_20_bytes_to_32(to_bytes(hexstr=exchange_address))
+    )
+
     eip712_order_struct_hash = keccak(
-        eip712_order_schema_hash
+        Constants.eip712_order_schema_hash
         + pad_20_bytes_to_32(to_bytes(hexstr=order["maker_address"]))
         + pad_20_bytes_to_32(to_bytes(hexstr=order["taker_address"]))
         + pad_20_bytes_to_32(to_bytes(hexstr=order["fee_recipient_address"]))
@@ -149,5 +159,7 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
     )
 
     return keccak(
-        eip191_header + eip712_domain_struct_hash + eip712_order_struct_hash
+        Constants.eip191_header
+        + eip712_domain_struct_hash
+        + eip712_order_struct_hash
     ).hex()

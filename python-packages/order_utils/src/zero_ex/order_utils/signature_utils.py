@@ -7,7 +7,7 @@ from web3 import Web3
 import web3.exceptions
 from web3.utils import datatypes
 
-from zero_ex.order_utils import NETWORK_TO_EXCHANGE_ADDR, EXCHANGE_ABI
+from zero_ex.order_utils import Constants
 from zero_ex.dev_utils.type_assertions import assert_is_hex_string
 
 
@@ -49,10 +49,11 @@ def is_valid_signature(
     web3_instance = Web3(provider)
     # false positive from pylint: disable=no-member
     network_id = web3_instance.net.version
-    contract_address = NETWORK_TO_EXCHANGE_ADDR[network_id]
+    contract_address = Constants.network_to_exchange_addr[network_id]
     # false positive from pylint: disable=no-member
     contract: datatypes.Contract = web3_instance.eth.contract(
-        address=to_checksum_address(contract_address), abi=EXCHANGE_ABI
+        address=to_checksum_address(contract_address),
+        abi=Constants.contract_name_to_abi["Exchange"],
     )
     try:
         return (
