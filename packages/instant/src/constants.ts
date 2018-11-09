@@ -11,6 +11,7 @@ export const GWEI_IN_WEI = new BigNumber(1000000000);
 export const ONE_SECOND_MS = 1000;
 export const ONE_MINUTE_MS = ONE_SECOND_MS * 60;
 export const ACCOUNT_UPDATE_INTERVAL_TIME_MS = ONE_SECOND_MS * 15;
+export const BUY_QUOTE_UPDATE_INTERVAL_TIME_MS = ONE_SECOND_MS * 15;
 export const DEFAULT_GAS_PRICE = GWEI_IN_WEI.mul(6);
 export const DEFAULT_ESTIMATED_TRANSACTION_TIME_MS = ONE_MINUTE_MS * 2;
 export const ETH_GAS_STATION_API_BASE_URL = 'https://ethgasstation.info';

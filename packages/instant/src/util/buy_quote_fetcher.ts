@@ -1,5 +1,6 @@
 // TODO: rename file and export object
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
+import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -7,6 +8,7 @@ import { Dispatch } from 'redux';
 import { oc } from 'ts-optchain';
 
 import { Action, actions } from '../redux/actions';
+import { State } from '../redux/reducer';
 import { AffiliateInfo, ERC20Asset } from '../types';
 import { assetUtils } from '../util/asset';
 
@@ -52,4 +54,20 @@ export const updateBuyQuoteOrFlashErrorAsync = async (
     errorFlasher.clearError(dispatch);
     // invalidate the last buy quote.
     dispatch(actions.updateLatestBuyQuote(newBuyQuote));
+};
+
+export const updateBuyQuoteOrFlashErrorAsyncForState = async (state: State, dispatch: Dispatch<Action>) => {
+    const { selectedAsset, selectedAssetAmount, affiliateInfo } = state;
+    const assetBuyer = state.providerState.assetBuyer;
+
+    if (selectedAsset && selectedAssetAmount && selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20) {
+        // TODO: maybe dont do in the case of an error showing
+        updateBuyQuoteOrFlashErrorAsync(
+            assetBuyer,
+            selectedAsset as ERC20Asset, // TODO: better way to do this?
+            selectedAssetAmount,
+            dispatch,
+            affiliateInfo,
+        );
+    }
 };

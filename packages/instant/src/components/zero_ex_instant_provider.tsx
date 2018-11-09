@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
-import { ACCOUNT_UPDATE_INTERVAL_TIME_MS } from '../constants';
+import { ACCOUNT_UPDATE_INTERVAL_TIME_MS, BUY_QUOTE_UPDATE_INTERVAL_TIME_MS } from '../constants';
 import { SelectedAssetThemeProvider } from '../containers/selected_asset_theme_provider';
 import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
@@ -15,7 +15,7 @@ import { AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
-import { generateAccountHeartbeater, Heartbeater } from '../util/hearbeats';
+import { generateAccountHeartbeater, Heartbeater, generateBuyQuoteHeartbeater } from '../util/hearbeats';
 import { providerStateFactory } from '../util/provider_state_factory';
 
 fonts.include();
@@ -40,6 +40,8 @@ export interface ZeroExInstantProviderOptionalProps {
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
     private readonly _store: Store;
     private _accountUpdateHeartbeat?: Heartbeater;
+    private _buyQuoteHeartbeat?: Heartbeater;
+
     // TODO(fragosti): Write tests for this beast once we inject a provider.
     private static _mergeDefaultStateWithProps(
         props: ZeroExInstantProviderProps,
@@ -101,6 +103,10 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         this._accountUpdateHeartbeat = generateAccountHeartbeater(this._store);
         this._accountUpdateHeartbeat.start(ACCOUNT_UPDATE_INTERVAL_TIME_MS);
 
+        // TODO assign and stop on unmount
+        this._buyQuoteHeartbeat = generateBuyQuoteHeartbeater(this._store);
+        this._buyQuoteHeartbeat.start(BUY_QUOTE_UPDATE_INTERVAL_TIME_MS);
+
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
         // tslint:disable-next-line:no-floating-promises
@@ -111,6 +117,9 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
     public componentWillUnmount(): void {
         if (this._accountUpdateHeartbeat) {
             this._accountUpdateHeartbeat.stop();
+        }
+        if (this._buyQuoteHeartbeat) {
+            this._buyQuoteHeartbeat.stop();
         }
     }
     public render(): React.ReactNode {
