@@ -113,7 +113,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         }
         return (
             <Container marginLeft="5px">
-                <Icon icon="chevron" width={12} onClick={this._handleSelectAssetClick} />
+                <Icon icon="chevron" width={12} stroke={ColorOption.white} onClick={this._handleSelectAssetClick} />
             </Container>
         );
     };

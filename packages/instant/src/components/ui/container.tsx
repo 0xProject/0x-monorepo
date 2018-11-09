@@ -34,6 +34,7 @@ export interface ContainerProps {
     cursor?: string;
     overflow?: string;
     darkenOnHover?: boolean;
+    boxShadowOnHover?: boolean;
     flexGrow?: string | number;
 }
 
@@ -42,7 +43,6 @@ export const Container =
     ContainerProps >
     `
     && {
-        all: initial;
         box-sizing: border-box;
         ${props => cssRuleIfExists(props, 'flex-grow')}
         ${props => cssRuleIfExists(props, 'position')}
@@ -79,6 +79,7 @@ export const Container =
                           props.backgroundColor ? darken(0.05, props.theme[props.backgroundColor]) : 'none'
                       }`
                     : ''};
+            ${props => (props.boxShadowOnHover ? 'box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)' : '')};
         }
     }
 `;
