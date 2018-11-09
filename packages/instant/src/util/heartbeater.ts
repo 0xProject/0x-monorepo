@@ -4,18 +4,24 @@ type HeartbeatableFunction = () => Promise<void>;
 export class Heartbeater {
     private _intervalId?: number;
     private _hasPendingRequest: boolean;
+    private _performImmediatelyOnStart: boolean;
     private _performFunction: HeartbeatableFunction;
 
-    public constructor(_performingFunctionAsync: HeartbeatableFunction) {
-        this._performFunction = _performingFunctionAsync;
+    public constructor(performingFunctionAsync: HeartbeatableFunction, performImmediatelyOnStart: boolean) {
+        this._performFunction = performingFunctionAsync;
         this._hasPendingRequest = false;
+        this._performImmediatelyOnStart = performImmediatelyOnStart;
     }
 
     public start(intervalTimeMs: number): void {
         if (!_.isUndefined(this._intervalId)) {
             throw new Error('Heartbeat is running, please stop before restarting');
         }
-        this._trackAndPerformAsync();
+
+        if (this._performImmediatelyOnStart) {
+            this._trackAndPerformAsync();
+        }
+
         this._intervalId = window.setInterval(this._trackAndPerformAsync.bind(this), intervalTimeMs);
     }
 

@@ -1,4 +1,5 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
+import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -6,6 +7,7 @@ import { Dispatch } from 'redux';
 import { oc } from 'ts-optchain';
 
 import { Action, actions } from '../redux/actions';
+import { State } from '../redux/reducer';
 import { AffiliateInfo, ERC20Asset } from '../types';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
@@ -16,12 +18,15 @@ export const buyQuoteUpdater = {
         dispatch: Dispatch<Action>,
         asset: ERC20Asset,
         assetAmount: BigNumber,
+        setPending = true,
         affiliateInfo?: AffiliateInfo,
     ): Promise<void> => {
         // get a new buy quote.
         const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetAmount, asset.metaData.decimals);
-        // mark quote as pending
-        dispatch(actions.setQuoteRequestStatePending());
+        if (setPending) {
+            // mark quote as pending
+            dispatch(actions.setQuoteRequestStatePending());
+        }
         const feePercentage = oc(affiliateInfo).feePercentage();
         let newBuyQuote: BuyQuote | undefined;
         try {

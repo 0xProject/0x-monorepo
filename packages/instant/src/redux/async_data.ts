@@ -74,7 +74,7 @@ export const asyncData = {
             return;
         }
     },
-    fetchCurrentBuyQuoteAndDispatchToStore: async (store: Store) => {
+    fetchCurrentBuyQuoteAndDispatchToStore: async (store: Store, setPending: boolean) => {
         const { providerState, selectedAsset, selectedAssetAmount, affiliateInfo } = store.getState();
         const assetBuyer = providerState.assetBuyer;
         if (
@@ -87,6 +87,7 @@ export const asyncData = {
                 store.dispatch,
                 selectedAsset as ERC20Asset,
                 selectedAssetAmount,
+                setPending,
                 affiliateInfo,
             );
         }

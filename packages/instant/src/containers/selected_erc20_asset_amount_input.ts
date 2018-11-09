@@ -11,7 +11,6 @@ import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { AffiliateInfo, ERC20Asset, OrderProcessState } from '../types';
-import { updateBuyQuoteOrFlashErrorAsync } from '../util/buy_quote_fetcher';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
 
 export interface SelectedERC20AssetAmountInputProps {
@@ -68,10 +67,9 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
     };
 };
 
-// TODO: change to set pending to true
 const debouncedUpdateBuyQuoteAsync = _.debounce(buyQuoteUpdater.updateBuyQuoteAsync.bind(buyQuoteUpdater), 200, {
     trailing: true,
-});
+}) as typeof buyQuoteUpdater.updateBuyQuoteAsync;
 
 const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
@@ -89,7 +87,7 @@ const mapDispatchToProps = (
             // even if it's debounced, give them the illusion it's loading
             dispatch(actions.setQuoteRequestStatePending());
             // tslint:disable-next-line:no-floating-promises
-            debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value, affiliateInfo);
+            debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value, true, affiliateInfo);
         }
     },
 });

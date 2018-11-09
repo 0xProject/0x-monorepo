@@ -99,13 +99,13 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             asyncData.fetchAvailableAssetDatasAndDispatchToStore(this._store);
         }
         // tslint:disable-next-line:no-floating-promises
-        // asyncData.fetchAccountInfoAndDispatchToStore(this._store);
 
-        this._accountUpdateHeartbeat = generateAccountHeartbeater(this._store);
+        this._accountUpdateHeartbeat = generateAccountHeartbeater(this._store, true);
         this._accountUpdateHeartbeat.start(ACCOUNT_UPDATE_INTERVAL_TIME_MS);
 
-        this._buyQuoteHeartbeat = generateBuyQuoteHeartbeater(this._store);
+        this._buyQuoteHeartbeat = generateBuyQuoteHeartbeater(this._store, false);
         this._buyQuoteHeartbeat.start(BUY_QUOTE_UPDATE_INTERVAL_TIME_MS);
+        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(this._store, true);
 
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
