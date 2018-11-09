@@ -2,7 +2,7 @@ import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { ActionsUnion, Asset } from '../types';
+import { ActionsUnion, AddressAndEthBalanceInWei, Asset } from '../types';
 
 export interface PlainAction<T extends string> {
     type: T;
@@ -49,7 +49,8 @@ export const actions = {
     setAccountStateLocked: () => createAction(ActionTypes.SET_ACCOUNT_STATE_LOCKED),
     setAccountStateError: () => createAction(ActionTypes.SET_ACCOUNT_STATE_ERROR),
     setAccountStateReady: (address: string) => createAction(ActionTypes.SET_ACCOUNT_STATE_READY, address),
-    updateAccountEthBalance: (balance: BigNumber) => createAction(ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE, balance),
+    updateAccountEthBalance: (addressAndBalance: AddressAndEthBalanceInWei) =>
+        createAction(ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE, addressAndBalance),
     updateEthUsdPrice: (price?: BigNumber) => createAction(ActionTypes.UPDATE_ETH_USD_PRICE, price),
     updateSelectedAssetAmount: (amount?: BigNumber) => createAction(ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT, amount),
     setBuyOrderStateNone: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_NONE),

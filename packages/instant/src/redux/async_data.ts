@@ -1,8 +1,10 @@
+import { AssetProxyId } from '@0x/types';
 import * as _ from 'lodash';
 
 import { BIG_NUMBER_ZERO } from '../constants';
-import { AccountState } from '../types';
+import { AccountState, ERC20Asset } from '../types';
 import { assetUtils } from '../util/asset';
+import { buyQuoteUpdater } from '../util/buy_quote_updater';
 import { coinbaseApi } from '../util/coinbase_api';
 import { errorFlasher } from '../util/error_flasher';
 
@@ -50,7 +52,8 @@ export const asyncData = {
         if (!_.isEmpty(availableAddresses)) {
             const activeAddress = availableAddresses[0];
             store.dispatch(actions.setAccountStateReady(activeAddress));
-            await asyncData.fetchAccountBalanceAndDispatchToStore(store);
+            // tslint:disable-next-line:no-floating-promises
+            asyncData.fetchAccountBalanceAndDispatchToStore(store);
         } else {
             store.dispatch(actions.setAccountStateLocked());
         }
@@ -63,11 +66,29 @@ export const asyncData = {
             return;
         }
         try {
-            const ethBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(account.address);
-            store.dispatch(actions.updateAccountEthBalance(ethBalanceInWei));
+            const address = account.address;
+            const ethBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(address);
+            store.dispatch(actions.updateAccountEthBalance({ address, ethBalanceInWei }));
         } catch (e) {
             // leave balance as is
             return;
+        }
+    },
+    fetchCurrentBuyQuoteAndDispatchToStore: async (store: Store) => {
+        const { providerState, selectedAsset, selectedAssetAmount, affiliateInfo } = store.getState();
+        const assetBuyer = providerState.assetBuyer;
+        if (
+            !_.isUndefined(selectedAssetAmount) &&
+            !_.isUndefined(selectedAsset) &&
+            selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
+        ) {
+            await buyQuoteUpdater.updateBuyQuoteAsync(
+                assetBuyer,
+                store.dispatch,
+                selectedAsset as ERC20Asset,
+                selectedAssetAmount,
+                affiliateInfo,
+            );
         }
     },
 };

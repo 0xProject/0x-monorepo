@@ -12,6 +12,7 @@ import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
 import { AffiliateInfo, ERC20Asset, OrderProcessState } from '../types';
 import { updateBuyQuoteOrFlashErrorAsync } from '../util/buy_quote_fetcher';
+import { buyQuoteUpdater } from '../util/buy_quote_updater';
 
 export interface SelectedERC20AssetAmountInputProps {
     fontColor?: ColorOption;
@@ -67,20 +68,10 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
     };
 };
 
-const updateBuyQuoteAsync = async (
-    assetBuyer: AssetBuyer,
-    dispatch: Dispatch<Action>,
-    asset: ERC20Asset,
-    assetAmount: BigNumber,
-    affiliateInfo?: AffiliateInfo,
-): Promise<void> => {
-    // mark quote as pending
-    dispatch(actions.setQuoteRequestStatePending());
-    // kick of buy quote
-    updateBuyQuoteOrFlashErrorAsync(assetBuyer, asset, assetAmount, dispatch, affiliateInfo);
-};
-
-const debouncedUpdateBuyQuoteAsync = _.debounce(updateBuyQuoteAsync, 200, { trailing: true });
+// TODO: change to set pending to true
+const debouncedUpdateBuyQuoteAsync = _.debounce(buyQuoteUpdater.updateBuyQuoteAsync.bind(buyQuoteUpdater), 200, {
+    trailing: true,
+});
 
 const mapDispatchToProps = (
     dispatch: Dispatch<Action>,

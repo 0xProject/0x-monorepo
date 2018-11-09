@@ -12,7 +12,6 @@ import { SecondaryButton } from './secondary_button';
 
 import { Button } from './ui/button';
 import { Flex } from './ui/flex';
-import { Text } from './ui/text';
 
 export interface BuyOrderStateButtonProps {
     accountAddress?: string;
@@ -36,10 +35,8 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
     if (props.buyOrderProcessingState === OrderProcessState.Failure) {
         return (
             <Flex justify="space-between">
-                <Button width="48%" onClick={props.onRetry}>
-                    <Text fontColor={ColorOption.white} fontWeight={600} fontSize="16px">
-                        Back
-                    </Text>
+                <Button width="48%" onClick={props.onRetry} fontColor={ColorOption.white} fontSize="16px">
+                    Back
                 </Button>
                 <SecondaryButton width="48%" onClick={props.onViewTransaction}>
                     Details

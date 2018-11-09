@@ -50,4 +50,7 @@ export const format = {
         }
         return `$${ethUnitAmount.mul(ethUsdPrice).toFixed(decimalPlaces)}`;
     },
+    ethAddress: (address: string): string => {
+        return `0x${address.slice(2, 7)}…${address.slice(-5)}`;
+    },
 };

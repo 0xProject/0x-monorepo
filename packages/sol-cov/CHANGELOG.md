@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.9 - _November 9, 2018_
+
+    * Dependencies updated
+
 ## v2.1.8 - _October 18, 2018_
 
     * Make @types/solidity-parser-antlr a 'dependency' so it's available to users of the library (#1105)

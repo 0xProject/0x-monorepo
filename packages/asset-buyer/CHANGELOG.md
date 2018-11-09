@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.0 - _November 9, 2018_
+
+    * `getAssetBuyerForProvidedOrders` factory function now takes 3 args instead of 4 (#1187)
+    * the `OrderProvider` now requires a new method `getAvailableMakerAssetDatasAsync` and the `StandardRelayerAPIOrderProvider` requires the network id at init. (#1203)
+    * No longer require that provided orders all have the same maker and taker asset data (#1197)
+    * Fix bug where `BuyQuoteInfo` objects could return `totalEthAmount` and `feeEthAmount` that were not whole numbers (#1207)
+    * Fix bug where default values for `AssetBuyer` public facing methods could get overriden by `undefined` values (#1207)
+    * Lower default expiry buffer from 5 minutes to 2 minutes (#1217)
+
 ## v2.1.0 - _October 18, 2018_
 
     * Add `gasLimit` and `gasPrice` as optional properties on `BuyQuoteExecutionOpts`
@@ -13,6 +22,7 @@ CHANGELOG
     * Add `gasLimit` and `gasPrice` as optional properties on `BuyQuoteExecutionOpts` (#1116)
     * Add `docs:json` command to package.json (#1139)
     * Add missing types to public interface (#1139)
+    * Throw `SignatureRequestDenied` and `TransactionValueTooLow` errors when executing buy (#1147)
 
 ## v2.0.0 - _October 4, 2018_
 

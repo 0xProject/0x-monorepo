@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.1 - _November 9, 2018_
+
+    * Dependencies updated
+
 ## v2.1.0 - _October 18, 2018_
 
     * Add `MetamaskSubprovider` to handle inconsistent JSON RPC behaviour (#1102)
