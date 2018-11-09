@@ -9,6 +9,7 @@ import { PaymentMethodDropdown } from './payment_method_dropdown';
 import { Circle } from './ui/circle';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
+import { Icon } from './ui/icon';
 import { Text } from './ui/text';
 
 export interface PaymentMethodProps {
@@ -56,10 +57,11 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
     };
     private readonly _renderTitleLabel = (): React.ReactNode => {
         const { account } = this.props;
-        if (account.state === AccountState.Ready) {
+        if (account.state === AccountState.Ready || account.state === AccountState.Locked) {
+            const circleColor: ColorOption = account.state === AccountState.Ready ? ColorOption.green : ColorOption.red;
             return (
                 <React.Fragment>
-                    <Circle color={ColorOption.green} diameter={8} />
+                    <Circle diameter={8} color={circleColor} />
                     <Container marginLeft="3px">
                         <Text fontColor={ColorOption.darkGrey} fontSize="12px">
                             MetaMask
@@ -74,11 +76,25 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         const { account, network } = this.props;
         switch (account.state) {
             case AccountState.Loading:
-                return 'loading...';
+                return <Container height="48px" />;
             case AccountState.Locked:
-                return <WalletPrompt onClick={this._openInstallWalletPanel}>Unlock MetaMask</WalletPrompt>;
+                return (
+                    <WalletPrompt
+                        onClick={this._openInstallWalletPanel}
+                        image={<Icon width={13} icon="lock" color={ColorOption.black} />}
+                    >
+                        Please Unlock MetaMask
+                    </WalletPrompt>
+                );
             case AccountState.None:
-                return <WalletPrompt onClick={this._openInstallWalletPanel}>Install MetaMask</WalletPrompt>;
+                return (
+                    <WalletPrompt
+                        onClick={this._openInstallWalletPanel}
+                        image={<MetaMaskLogo width={19} height={18} />}
+                    >
+                        Install MetaMask
+                    </WalletPrompt>
+                );
             case AccountState.Ready:
                 return (
                     <PaymentMethodDropdown
@@ -88,7 +104,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                     />
                 );
             default:
-                return 'payment method';
+                return null;
         }
     };
     private readonly _openInstallWalletPanel = () => {
@@ -97,10 +113,11 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
 }
 
 interface WalletPromptProps {
+    image: React.ReactNode;
     onClick?: () => void;
 }
 
-const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({ onClick, children }) => (
+const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({ onClick, image, children }) => (
     <Container
         padding="12px"
         border={`1px solid ${ColorOption.darkOrange}`}
@@ -112,9 +129,7 @@ const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({ onClick, ch
         boxShadowOnHover={!!onClick}
     >
         <Flex>
-            <Container marginRight="10px">
-                <MetaMaskLogo width={19} height={18} />
-            </Container>
+            <Container marginRight="10px">{image}</Container>
             <Text fontSize="16px" fontColor={ColorOption.darkOrange}>
                 {children}
             </Text>
