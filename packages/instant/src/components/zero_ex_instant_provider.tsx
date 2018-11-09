@@ -104,7 +104,6 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         this._accountUpdateHeartbeat = generateAccountHeartbeater(this._store);
         this._accountUpdateHeartbeat.start(ACCOUNT_UPDATE_INTERVAL_TIME_MS);
 
-        // TODO assign and stop on unmount
         this._buyQuoteHeartbeat = generateBuyQuoteHeartbeater(this._store);
         this._buyQuoteHeartbeat.start(BUY_QUOTE_UPDATE_INTERVAL_TIME_MS);
 
