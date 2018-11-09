@@ -23,7 +23,6 @@ function createAction<T extends string, P>(type: T, data?: P): PlainAction<T> | 
 export enum ActionTypes {
     SET_ACCOUNT_STATE_LOADING = 'SET_ACCOUNT_STATE_LOADING',
     SET_ACCOUNT_STATE_LOCKED = 'SET_ACCOUNT_STATE_LOCKED',
-    SET_ACCOUNT_STATE_ERROR = 'SET_ACCOUNT_STATE_ERROR',
     SET_ACCOUNT_STATE_READY = 'SET_ACCOUNT_STATE_READY',
     UPDATE_ACCOUNT_ETH_BALANCE = 'UPDATE_ACCOUNT_ETH_BALANCE',
     UPDATE_ETH_USD_PRICE = 'UPDATE_ETH_USD_PRICE',
@@ -47,7 +46,6 @@ export enum ActionTypes {
 export const actions = {
     setAccountStateLoading: () => createAction(ActionTypes.SET_ACCOUNT_STATE_LOADING),
     setAccountStateLocked: () => createAction(ActionTypes.SET_ACCOUNT_STATE_LOCKED),
-    setAccountStateError: () => createAction(ActionTypes.SET_ACCOUNT_STATE_ERROR),
     setAccountStateReady: (address: string) => createAction(ActionTypes.SET_ACCOUNT_STATE_READY, address),
     updateAccountEthBalance: (addressAndBalance: AddressAndEthBalanceInWei) =>
         createAction(ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE, addressAndBalance),

@@ -40,14 +40,19 @@ export const asyncData = {
         const { store, shouldSetToLoading } = options;
         const { providerState } = store.getState();
         const web3Wrapper = providerState.web3Wrapper;
+        const provider = providerState.provider;
         if (shouldSetToLoading && providerState.account.state !== AccountState.Loading) {
             store.dispatch(actions.setAccountStateLoading());
         }
         let availableAddresses: string[];
         try {
-            availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
+            // TODO(bmillman): Add support at the web3Wrapper level for calling `eth_requestAccounts` instead of calling enable here
+            const isPrivacyModeEnabled = !_.isUndefined((provider as any).enable);
+            availableAddresses = isPrivacyModeEnabled
+                ? await (provider as any).enable()
+                : await web3Wrapper.getAvailableAddressesAsync();
         } catch (e) {
-            store.dispatch(actions.setAccountStateError());
+            store.dispatch(actions.setAccountStateLocked());
             return;
         }
         if (!_.isEmpty(availableAddresses)) {

@@ -33,6 +33,3 @@ export const LOADING_ACCOUNT: AccountNotReady = {
 export const LOCKED_ACCOUNT: AccountNotReady = {
     state: AccountState.Locked,
 };
-export const ERROR_ACCOUNT: AccountNotReady = {
-    state: AccountState.Error,
-};
