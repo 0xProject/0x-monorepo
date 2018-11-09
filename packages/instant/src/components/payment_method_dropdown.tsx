@@ -9,16 +9,16 @@ import { format } from '../util/format';
 import { Dropdown, DropdownItemConfig } from './ui/dropdown';
 
 export interface PaymentMethodDropdownProps {
-    selectedEthAddress: string;
-    addressEthBaseAmount: BigNumber;
+    accountAddress: string;
+    accountEthBalanceInWei?: BigNumber;
     network: Network;
 }
 
 export class PaymentMethodDropdown extends React.Component<PaymentMethodDropdownProps> {
     public render(): React.ReactNode {
-        const { selectedEthAddress, addressEthBaseAmount } = this.props;
-        const value = format.ethAddress(selectedEthAddress);
-        const label = format.ethBaseAmount(addressEthBaseAmount) as string;
+        const { accountAddress, accountEthBalanceInWei } = this.props;
+        const value = format.ethAddress(accountAddress);
+        const label = format.ethBaseAmount(accountEthBalanceInWei, 4, '') as string;
         return <Dropdown value={value} label={label} items={this._getDropdownItemConfigs()} />;
     }
     private readonly _getDropdownItemConfigs = (): DropdownItemConfig[] => {
@@ -33,12 +33,12 @@ export class PaymentMethodDropdown extends React.Component<PaymentMethodDropdown
         return [viewOnEtherscan, copyAddressToClipboard];
     };
     private readonly _handleEtherscanClick = (): void => {
-        const { selectedEthAddress, network } = this.props;
-        const etherscanUrl = etherscanUtil.getEtherScanEthAddressIfExists(selectedEthAddress, network);
+        const { accountAddress, network } = this.props;
+        const etherscanUrl = etherscanUtil.getEtherScanEthAddressIfExists(accountAddress, network);
         window.open(etherscanUrl, '_blank');
     };
     private readonly _handleCopyToClipboardClick = (): void => {
-        const { selectedEthAddress } = this.props;
-        copy(selectedEthAddress);
+        const { accountAddress } = this.props;
+        copy(accountAddress);
     };
 }
