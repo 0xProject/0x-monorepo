@@ -3,7 +3,6 @@ import * as React from 'react';
 import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
-import { LatestErrorOverlay } from '../containers/latest_error_overlay';
 import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_order_progress';
 import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_buy_order_state_buttons';
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
@@ -36,7 +35,6 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                 >
                     <Container position="relative">
                         <LatestError />
-                        <LatestErrorOverlay />
                     </Container>
                     <Container
                         zIndex={zIndex.mainContainer}

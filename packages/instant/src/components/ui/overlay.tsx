@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 import { generateMediaWrapper, ScreenWidths } from '../../style/media';
-import { overlayBlack, styled } from '../../style/theme';
+import { generateOverlayBlack, styled } from '../../style/theme';
 import { zIndex } from '../../style/z_index';
 
 export interface OverlayProps {
@@ -33,7 +33,7 @@ export const Overlay =
 
 Overlay.defaultProps = {
     zIndex: zIndex.overlayDefault,
-    backgroundColor: overlayBlack,
+    backgroundColor: generateOverlayBlack(0.6),
 };
 
 Overlay.displayName = 'Overlay';
