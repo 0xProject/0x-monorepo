@@ -4,8 +4,8 @@ type HeartbeatableFunction = () => Promise<void>;
 export class Heartbeater {
     private _intervalId?: number;
     private _hasPendingRequest: boolean;
-    private _performImmediatelyOnStart: boolean;
-    private _performFunction: HeartbeatableFunction;
+    private readonly _performImmediatelyOnStart: boolean;
+    private readonly _performFunction: HeartbeatableFunction;
 
     public constructor(performingFunctionAsync: HeartbeatableFunction, performImmediatelyOnStart: boolean) {
         this._performFunction = performingFunctionAsync;
@@ -19,6 +19,7 @@ export class Heartbeater {
         }
 
         if (this._performImmediatelyOnStart) {
+            // tslint:disable-next-line:no-floating-promises
             this._trackAndPerformAsync();
         }
 

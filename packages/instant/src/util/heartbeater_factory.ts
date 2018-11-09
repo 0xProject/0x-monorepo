@@ -5,18 +5,18 @@ import { Heartbeater } from './heartbeater';
 
 export interface HeartbeatFactoryOptions {
     store: Store;
-    performImmediatelyOnStart: boolean;
+    shouldPerformImmediatelyOnStart: boolean;
 }
 export const generateAccountHeartbeater = (options: HeartbeatFactoryOptions): Heartbeater => {
-    const { store, performImmediatelyOnStart } = options;
+    const { store, shouldPerformImmediatelyOnStart } = options;
     return new Heartbeater(async () => {
-        await asyncData.fetchAccountInfoAndDispatchToStore({ store, setLoading: false });
-    }, performImmediatelyOnStart);
+        await asyncData.fetchAccountInfoAndDispatchToStore({ store, shouldSetToLoading: false });
+    }, shouldPerformImmediatelyOnStart);
 };
 
 export const generateBuyQuoteHeartbeater = (options: HeartbeatFactoryOptions): Heartbeater => {
-    const { store, performImmediatelyOnStart } = options;
+    const { store, shouldPerformImmediatelyOnStart } = options;
     return new Heartbeater(async () => {
-        await asyncData.fetchCurrentBuyQuoteAndDispatchToStore({ store, setPending: false });
-    }, performImmediatelyOnStart);
+        await asyncData.fetchCurrentBuyQuoteAndDispatchToStore({ store, shouldSetPending: false });
+    }, shouldPerformImmediatelyOnStart);
 };

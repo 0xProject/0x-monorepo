@@ -36,11 +36,11 @@ export const asyncData = {
             store.dispatch(actions.setAvailableAssets([]));
         }
     },
-    fetchAccountInfoAndDispatchToStore: async (options: { store: Store; setLoading: boolean }) => {
-        const { store, setLoading } = options;
+    fetchAccountInfoAndDispatchToStore: async (options: { store: Store; shouldSetToLoading: boolean }) => {
+        const { store, shouldSetToLoading } = options;
         const { providerState } = store.getState();
         const web3Wrapper = providerState.web3Wrapper;
-        if (setLoading && providerState.account.state !== AccountState.Loading) {
+        if (shouldSetToLoading && providerState.account.state !== AccountState.Loading) {
             store.dispatch(actions.setAccountStateLoading());
         }
         let availableAddresses: string[];
@@ -75,8 +75,8 @@ export const asyncData = {
             return;
         }
     },
-    fetchCurrentBuyQuoteAndDispatchToStore: async (options: { store: Store; setPending: boolean }) => {
-        const { store, setPending } = options;
+    fetchCurrentBuyQuoteAndDispatchToStore: async (options: { store: Store; shouldSetPending: boolean }) => {
+        const { store, shouldSetPending } = options;
         const { buyOrderState, providerState, selectedAsset, selectedAssetAmount, affiliateInfo } = store.getState();
         const assetBuyer = providerState.assetBuyer;
         if (
@@ -90,7 +90,7 @@ export const asyncData = {
                 store.dispatch,
                 selectedAsset as ERC20Asset,
                 selectedAssetAmount,
-                setPending,
+                shouldSetPending,
                 affiliateInfo,
             );
         }

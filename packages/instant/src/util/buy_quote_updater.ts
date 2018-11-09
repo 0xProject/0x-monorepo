@@ -1,5 +1,4 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
-import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -7,7 +6,6 @@ import { Dispatch } from 'redux';
 import { oc } from 'ts-optchain';
 
 import { Action, actions } from '../redux/actions';
-import { State } from '../redux/reducer';
 import { AffiliateInfo, ERC20Asset } from '../types';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
