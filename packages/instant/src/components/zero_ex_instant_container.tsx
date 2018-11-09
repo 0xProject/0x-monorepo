@@ -36,6 +36,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                 >
                     <Container position="relative">
                         <LatestError />
+                        <LatestErrorOverlay />
                     </Container>
                     <Container
                         zIndex={zIndex.mainContainer}
@@ -54,7 +55,6 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                                 <SelectedAssetBuyOrderStateButtons />
                             </Container>
                         </Flex>
-                        <LatestErrorOverlay />
                         <SlidingPanel
                             title="Select Token"
                             animationState={this.state.tokenSelectionPanelAnimationState}
