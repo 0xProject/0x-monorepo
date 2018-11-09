@@ -75,13 +75,14 @@ export const createReducer = (initialState: State) => {
                 return reduceStateWithAccount(state, account);
             }
             case ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE: {
-                const account = state.providerState.account;
-                if (account.state !== AccountState.Ready) {
+                const { address, ethBalanceInWei } = action.data;
+                const currentAccount = state.providerState.account;
+                if (currentAccount.state !== AccountState.Ready || currentAccount.address !== address) {
                     return state;
                 } else {
                     const newAccount: AccountReady = {
-                        ...account,
-                        ethBalanceInWei: action.data,
+                        ...currentAccount,
+                        ethBalanceInWei,
                     };
                     return reduceStateWithAccount(state, newAccount);
                 }
