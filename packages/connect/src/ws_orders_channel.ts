@@ -1,4 +1,4 @@
-import { OrdersChannelMessageTypes, OrdersChannelSubscriptionOpts } from '@0xproject/types';
+import { OrdersChannelMessageTypes, OrdersChannelSubscriptionOpts } from '@0x/types';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import * as WebSocket from 'websocket';

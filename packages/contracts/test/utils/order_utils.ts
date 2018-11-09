@@ -1,5 +1,5 @@
-import { OrderWithoutExchangeAddress, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 import { constants } from './constants';
 import { CancelOrder, MatchOrder } from './types';

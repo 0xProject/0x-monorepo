@@ -1,4 +1,4 @@
-import { logUtils } from '@0xproject/utils';
+import { logUtils } from '@0x/utils';
 import { OpCode, StructLog } from 'ethereum-types';
 import * as _ from 'lodash';
 

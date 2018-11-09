@@ -1,4 +1,4 @@
-import { ObjectMap } from '@0xproject/types';
+import { ObjectMap } from '@0x/types';
 import { constants } from 'ts/utils/constants';
 
 // Map of networkId -> tokenSymbol -> tokenAddress

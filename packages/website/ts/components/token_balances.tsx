@@ -4,9 +4,9 @@ import {
     Networks,
     Styles,
     utils as sharedUtils,
-} from '@0xproject/react-shared';
-import { BigNumber, errorUtils, fetchAsync, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+} from '@0x/react-shared';
+import { BigNumber, errorUtils, fetchAsync, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';

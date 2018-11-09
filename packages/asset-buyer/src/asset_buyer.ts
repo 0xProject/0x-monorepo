@@ -1,9 +1,9 @@
-import { ContractWrappers } from '@0xproject/contract-wrappers';
-import { schemas } from '@0xproject/json-schemas';
-import { SignedOrder } from '@0xproject/order-utils';
-import { ObjectMap } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
+import { schemas } from '@0x/json-schemas';
+import { SignedOrder } from '@0x/order-utils';
+import { ObjectMap } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -52,16 +52,12 @@ export class AssetBuyer {
     public static getAssetBuyerForProvidedOrders(
         provider: Provider,
         orders: SignedOrder[],
-        feeOrders: SignedOrder[] = [],
         options: Partial<AssetBuyerOpts> = {},
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
-        assert.doesConformToSchema('feeOrders', feeOrders, schemas.signedOrdersSchema);
-        assert.areValidProvidedOrders('orders', orders);
-        assert.areValidProvidedOrders('feeOrders', feeOrders);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
-        const orderProvider = new BasicOrderProvider(_.concat(orders, feeOrders));
+        const orderProvider = new BasicOrderProvider(orders);
         const assetBuyer = new AssetBuyer(provider, orderProvider, options);
         return assetBuyer;
     }
@@ -80,7 +76,8 @@ export class AssetBuyer {
     ): AssetBuyer {
         assert.isWeb3Provider('provider', provider);
         assert.isWebUri('sraApiUrl', sraApiUrl);
-        const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl);
+        const networkId = options.networkId || constants.DEFAULT_ASSET_BUYER_OPTS.networkId;
+        const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl, networkId);
         const assetBuyer = new AssetBuyer(provider, orderProvider, options);
         return assetBuyer;
     }
@@ -93,10 +90,11 @@ export class AssetBuyer {
      * @return  An instance of AssetBuyer
      */
     constructor(provider: Provider, orderProvider: OrderProvider, options: Partial<AssetBuyerOpts> = {}) {
-        const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = {
-            ...constants.DEFAULT_ASSET_BUYER_OPTS,
-            ...options,
-        };
+        const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = _.merge(
+            {},
+            constants.DEFAULT_ASSET_BUYER_OPTS,
+            options,
+        );
         assert.isWeb3Provider('provider', provider);
         assert.isValidOrderProvider('orderProvider', orderProvider);
         assert.isNumber('networkId', networkId);
@@ -125,19 +123,25 @@ export class AssetBuyer {
         assetBuyAmount: BigNumber,
         options: Partial<BuyQuoteRequestOpts> = {},
     ): Promise<BuyQuote> {
-        const { feePercentage, shouldForceOrderRefresh, slippagePercentage } = {
-            ...constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
-            ...options,
-        };
+        const { feePercentage, shouldForceOrderRefresh, slippagePercentage } = _.merge(
+            {},
+            constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
+            options,
+        );
         assert.isString('assetData', assetData);
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
         assert.isValidPercentage('feePercentage', feePercentage);
         assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
         assert.isNumber('slippagePercentage', slippagePercentage);
         const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+        const isMakerAssetZrxToken = assetData === zrxTokenAssetData;
+        // get the relevant orders for the makerAsset and fees
+        // if the requested assetData is ZRX, don't get the fee info
         const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
             this._getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
-            this._getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
+            isMakerAssetZrxToken
+                ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
+                : this._getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
             shouldForceOrderRefresh,
         ]);
         if (ordersAndFillableAmounts.orders.length === 0) {
@@ -149,6 +153,7 @@ export class AssetBuyer {
             assetBuyAmount,
             feePercentage,
             slippagePercentage,
+            isMakerAssetZrxToken,
         );
         return buyQuote;
     }
@@ -183,10 +188,11 @@ export class AssetBuyer {
         buyQuote: BuyQuote,
         options: Partial<BuyQuoteExecutionOpts> = {},
     ): Promise<string> {
-        const { ethAmount, takerAddress, feeRecipient, gasLimit, gasPrice } = {
-            ...constants.DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
-            ...options,
-        };
+        const { ethAmount, takerAddress, feeRecipient, gasLimit, gasPrice } = _.merge(
+            {},
+            constants.DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
+            options,
+        );
         assert.isValidBuyQuote('buyQuote', buyQuote);
         if (!_.isUndefined(ethAmount)) {
             assert.isBigNumber('ethAmount', ethAmount);
@@ -195,6 +201,12 @@ export class AssetBuyer {
             assert.isETHAddressHex('takerAddress', takerAddress);
         }
         assert.isETHAddressHex('feeRecipient', feeRecipient);
+        if (!_.isUndefined(gasLimit)) {
+            assert.isNumber('gasLimit', gasLimit);
+        }
+        if (!_.isUndefined(gasPrice)) {
+            assert.isBigNumber('gasPrice', gasPrice);
+        }
         const { orders, feeOrders, feePercentage, assetBuyAmount, worstCaseQuoteInfo } = buyQuote;
         // if no takerAddress is provided, try to get one from the provider
         let finalTakerAddress;
@@ -210,21 +222,41 @@ export class AssetBuyer {
                 throw new Error(AssetBuyerError.NoAddressAvailable);
             }
         }
-        // if no ethAmount is provided, default to the worst ethAmount from buyQuote
-        const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
-            orders,
-            assetBuyAmount,
-            finalTakerAddress,
-            ethAmount || worstCaseQuoteInfo.totalEthAmount,
-            feeOrders,
-            feePercentage,
-            feeRecipient,
-            {
-                gasLimit,
-                gasPrice,
-            },
-        );
-        return txHash;
+        try {
+            // if no ethAmount is provided, default to the worst ethAmount from buyQuote
+            const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+                orders,
+                assetBuyAmount,
+                finalTakerAddress,
+                ethAmount || worstCaseQuoteInfo.totalEthAmount,
+                feeOrders,
+                feePercentage,
+                feeRecipient,
+                {
+                    gasLimit,
+                    gasPrice,
+                    shouldValidate: true,
+                },
+            );
+            return txHash;
+        } catch (err) {
+            if (_.includes(err.message, ContractWrappersError.SignatureRequestDenied)) {
+                throw new Error(AssetBuyerError.SignatureRequestDenied);
+            } else if (_.includes(err.message, ForwarderWrapperError.CompleteFillFailed)) {
+                throw new Error(AssetBuyerError.TransactionValueTooLow);
+            } else {
+                throw err;
+            }
+        }
+    }
+    /**
+     * Get the asset data of all assets that are purchaseable with ether token (wETH) in the order provider passed in at init.
+     *
+     * @return  An array of asset data strings that can be purchased using wETH.
+     */
+    public async getAvailableAssetDatasAsync(): Promise<string[]> {
+        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
+        return this.orderProvider.getAvailableMakerAssetDatasAsync(etherTokenAssetData);
     }
     /**
      * Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders
@@ -283,13 +315,13 @@ export class AssetBuyer {
      * Will throw if WETH does not exist for the current network.
      */
     private _getEtherTokenAssetDataOrThrow(): string {
-        return assetDataUtils.getEtherTokenAssetDataOrThrow(this._contractWrappers);
+        return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
     }
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
      */
     private _getZrxTokenAssetDataOrThrow(): string {
-        return assetDataUtils.getZrxTokenAssetDataOrThrow(this._contractWrappers);
+        return this._contractWrappers.exchange.getZRXAssetData();
     }
 }

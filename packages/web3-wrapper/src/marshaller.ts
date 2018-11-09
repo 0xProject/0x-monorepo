@@ -1,4 +1,4 @@
-import { addressUtils } from '@0xproject/utils';
+import { addressUtils } from '@0x/utils';
 import {
     BlockParam,
     BlockParamLiteral,

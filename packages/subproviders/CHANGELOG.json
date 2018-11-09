@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {
@@ -9,8 +18,13 @@
             {
                 "note": "Add support for `eth_signTypedData` in wallets Mnemonic, Private and EthLightWallet",
                 "pr": 1102
+            },
+            {
+                "note": "Make web3-provider-engine types a 'dependency' so it's available to users of the library",
+                "pr": 1105
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "version": "2.0.7",

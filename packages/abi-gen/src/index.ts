@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { abiUtils, logUtils } from '@0xproject/utils';
+import { abiUtils, logUtils } from '@0x/utils';
 import chalk from 'chalk';
 import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from 'ethereum-types';
 import { sync as globSync } from 'glob';

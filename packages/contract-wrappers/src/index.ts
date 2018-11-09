@@ -1,3 +1,30 @@
+export { ContractAddresses } from '@0x/contract-addresses';
+
+export {
+    WETH9Events,
+    WETH9WithdrawalEventArgs,
+    WETH9ApprovalEventArgs,
+    WETH9EventArgs,
+    WETH9DepositEventArgs,
+    WETH9TransferEventArgs,
+    ERC20TokenTransferEventArgs,
+    ERC20TokenApprovalEventArgs,
+    ERC20TokenEvents,
+    ERC20TokenEventArgs,
+    ERC721TokenApprovalEventArgs,
+    ERC721TokenApprovalForAllEventArgs,
+    ERC721TokenTransferEventArgs,
+    ERC721TokenEvents,
+    ERC721TokenEventArgs,
+    ExchangeCancelUpToEventArgs,
+    ExchangeAssetProxyRegisteredEventArgs,
+    ExchangeSignatureValidatorApprovalEventArgs,
+    ExchangeFillEventArgs,
+    ExchangeCancelEventArgs,
+    ExchangeEventArgs,
+    ExchangeEvents,
+} from '@0x/abi-gen-wrappers';
+
 export { ContractWrappers } from './contract_wrappers';
 export { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
 export { ERC721TokenWrapper } from './contract_wrappers/erc721_token_wrapper';
@@ -12,6 +39,7 @@ export { TransactionEncoder } from './utils/transaction_encoder';
 
 export {
     ContractWrappersError,
+    ForwarderWrapperError,
     IndexedFilterValues,
     BlockRange,
     ContractWrappersConfig,
@@ -28,7 +56,7 @@ export {
     ValidateOrderFillableOpts,
 } from './types';
 
-export { Order, SignedOrder, AssetProxyId } from '@0xproject/types';
+export { Order, SignedOrder, AssetProxyId } from '@0x/types';
 
 export {
     BlockParamLiteral,
@@ -54,41 +82,7 @@ export {
     StateMutability,
 } from 'ethereum-types';
 
-export {
-    WETH9Events,
-    WETH9WithdrawalEventArgs,
-    WETH9ApprovalEventArgs,
-    WETH9EventArgs,
-    WETH9DepositEventArgs,
-    WETH9TransferEventArgs,
-} from './contract_wrappers/generated/weth9';
-
-export {
-    ERC20TokenTransferEventArgs,
-    ERC20TokenApprovalEventArgs,
-    ERC20TokenEvents,
-    ERC20TokenEventArgs,
-} from './contract_wrappers/generated/erc20_token';
-
-export {
-    ERC721TokenApprovalEventArgs,
-    ERC721TokenApprovalForAllEventArgs,
-    ERC721TokenTransferEventArgs,
-    ERC721TokenEvents,
-    ERC721TokenEventArgs,
-} from './contract_wrappers/generated/erc721_token';
-
-export {
-    ExchangeCancelUpToEventArgs,
-    ExchangeAssetProxyRegisteredEventArgs,
-    ExchangeSignatureValidatorApprovalEventArgs,
-    ExchangeFillEventArgs,
-    ExchangeCancelEventArgs,
-    ExchangeEventArgs,
-    ExchangeEvents,
-} from './contract_wrappers/generated/exchange';
-
-export { AbstractBalanceAndProxyAllowanceFetcher, AbstractOrderFilledCancelledFetcher } from '@0xproject/order-utils';
+export { AbstractBalanceAndProxyAllowanceFetcher, AbstractOrderFilledCancelledFetcher } from '@0x/order-utils';
 
 export { AssetBalanceAndProxyAllowanceFetcher } from './fetchers/asset_balance_and_proxy_allowance_fetcher';
 export { OrderFilledCancelledFetcher } from './fetchers/order_filled_cancelled_fetcher';

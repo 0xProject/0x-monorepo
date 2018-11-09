@@ -1,7 +1,7 @@
-import { assetDataUtils, generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils';
-import { colors } from '@0xproject/react-shared';
-import { Order as ZeroExOrder } from '@0xproject/types';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { assetDataUtils, generatePseudoRandomSalt, orderHashUtils } from '@0x/order-utils';
+import { colors } from '@0x/react-shared';
+import { Order as ZeroExOrder } from '@0x/types';
+import { BigNumber, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';

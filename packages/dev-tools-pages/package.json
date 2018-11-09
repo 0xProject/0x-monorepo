@@ -1,0 +1,58 @@
+{
+    "name": "@0x/dev-tools-pages",
+    "version": "0.0.3",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "private": true,
+    "description": "0x Dev tools pages",
+    "scripts": {
+        "build": "node --max_old_space_size=8192 ../../node_modules/.bin/webpack --mode production",
+        "build:ci": "yarn build",
+        "build:dev": "../../node_modules/.bin/webpack --mode development",
+        "clean": "shx rm -f public/bundle*",
+        "lint": "tslint --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
+        "dev": "webpack-dev-server --mode development --content-base public"
+    },
+    "license": "Apache-2.0",
+    "dependencies": {
+        "@0x/react-shared": "^1.0.18",
+        "basscss": "^8.0.3",
+        "bowser": "^1.9.3",
+        "less": "^2.7.2",
+        "lodash": "^4.17.5",
+        "polished": "^1.9.2",
+        "react": "^16.4.2",
+        "react-document-title": "^2.0.3",
+        "react-dom": "^16.4.2",
+        "react-helmet": "^5.2.0",
+        "styled-components": "^3.3.0"
+    },
+    "devDependencies": {
+        "@types/lodash": "4.14.104",
+        "@types/node": "*",
+        "@types/react": "^16.4.2",
+        "@types/react-dom": "^16.0.7",
+        "@types/react-helmet": "^5.0.6",
+        "@types/react-router-dom": "^4.0.4",
+        "@types/react-tap-event-plugin": "0.0.30",
+        "@types/styled-components": "^4.0.0",
+        "awesome-typescript-loader": "^5.2.1",
+        "copyfiles": "^2.0.0",
+        "css-loader": "0.23.x",
+        "less-loader": "^4.1.0",
+        "make-promises-safe": "^1.1.0",
+        "raw-loader": "^0.5.1",
+        "shx": "^0.2.2",
+        "source-map-loader": "^0.2.4",
+        "style-loader": "0.23.x",
+        "terser-webpack-plugin": "^1.1.0",
+        "tslint": "5.11.0",
+        "tslint-config-0xproject": "^0.0.2",
+        "typescript": "3.0.1",
+        "uglifyjs-webpack-plugin": "^2.0.1",
+        "webpack": "^4.20.2",
+        "webpack-cli": "3.1.2",
+        "webpack-dev-server": "^3.1.9"
+    }
+}

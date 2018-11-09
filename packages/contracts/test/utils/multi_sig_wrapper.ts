@@ -1,10 +1,10 @@
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { AssetProxyOwnerContract } from '../../generated_contract_wrappers/asset_proxy_owner';
-import { MultiSigWalletContract } from '../../generated_contract_wrappers/multi_sig_wallet';
+import { AssetProxyOwnerContract } from '../../generated-wrappers/asset_proxy_owner';
+import { MultiSigWalletContract } from '../../generated-wrappers/multi_sig_wallet';
 
 import { LogDecoder } from './log_decoder';
 

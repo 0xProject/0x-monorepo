@@ -1,17 +1,17 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetDataUtils } from '@0xproject/order-utils';
-import { RevertReason, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { assetDataUtils } from '@0x/order-utils';
+import { RevertReason, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
-import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
-import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
-import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
-import { WETH9Contract } from '../../generated_contract_wrappers/weth9';
-import { artifacts } from '../utils/artifacts';
+import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
+import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
+import { ExchangeContract } from '../../generated-wrappers/exchange';
+import { ForwarderContract } from '../../generated-wrappers/forwarder';
+import { WETH9Contract } from '../../generated-wrappers/weth9';
+import { artifacts } from '../../src/artifacts';
 import {
     expectContractCreationFailedAsync,
     expectTransactionFailedAsync,
@@ -45,6 +45,7 @@ describe(ContractName.Forwarder, () => {
 
     let weth: DummyERC20TokenContract;
     let zrxToken: DummyERC20TokenContract;
+    let erc20TokenA: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let forwarderContract: ForwarderContract;
     let wethContract: WETH9Contract;
@@ -77,7 +78,6 @@ describe(ContractName.Forwarder, () => {
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
 
         const numDummyErc20ToDeploy = 3;
-        let erc20TokenA;
         [erc20TokenA, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
@@ -91,7 +91,7 @@ describe(ContractName.Forwarder, () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
 
-        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.EtherToken, provider, txDefaults);
+        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults);
         weth = new DummyERC20TokenContract(wethContract.abi, wethContract.address, provider);
         erc20Wrapper.addDummyTokenContract(weth);
 
@@ -900,6 +900,269 @@ describe(ContractName.Forwarder, () => {
             expect(newBalances[forwarderContract.address][defaultMakerAssetAddress]).to.be.bignumber.equal(
                 constants.ZERO_AMOUNT,
             );
+            expect(forwarderEthBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+        it('Should buy slightly greater MakerAsset when exchange rate is rounded', async () => {
+            // The 0x Protocol contracts round the exchange rate in favor of the Maker.
+            // In this case, the taker must round up how much they're going to spend, which
+            // in turn increases the amount of MakerAsset being purchased.
+            // Example:
+            //  The taker wants to buy 5 units of the MakerAsset at a rate of 3M/2T.
+            //  For every 2 units of TakerAsset, the taker will receive 3 units of MakerAsset.
+            //  To purchase 5 units, the taker must spend 10/3 = 3.33 units of TakerAssset.
+            //  However, the Taker can only spend whole units.
+            //  Spending floor(10/3) = 3 units will yield a profit of Floor(3*3/2) = Floor(4.5) = 4 units of MakerAsset.
+            //  Spending ceil(10/3) = 4 units will yield a profit of Floor(4*3/2) = 6 units of MakerAsset.
+            //
+            //  The forwarding contract will opt for the second option, which overbuys, to ensure the taker
+            //  receives at least the amount of MakerAsset they requested.
+            //
+            // Construct test case using values from example above
+            orderWithoutFee = await orderFactory.newSignedOrderAsync({
+                makerAssetAmount: new BigNumber('30'),
+                takerAssetAmount: new BigNumber('20'),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(weth.address),
+                makerFee: new BigNumber(0),
+                takerFee: new BigNumber(0),
+            });
+            const ordersWithoutFee = [orderWithoutFee];
+            const feeOrders: SignedOrder[] = [];
+            const desiredMakerAssetFillAmount = new BigNumber('5');
+            const makerAssetFillAmount = new BigNumber('6');
+            const ethValue = new BigNumber('4');
+            // Execute test case
+            tx = await forwarderWrapper.marketBuyOrdersWithEthAsync(
+                ordersWithoutFee,
+                feeOrders,
+                desiredMakerAssetFillAmount,
+                {
+                    value: ethValue,
+                    from: takerAddress,
+                },
+            );
+            // Fetch end balances and construct expected outputs
+            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const primaryTakerAssetFillAmount = ethValue;
+            const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
+            // Validate test case
+            expect(makerAssetFillAmount).to.be.bignumber.greaterThan(desiredMakerAssetFillAmount);
+            expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
+            expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
+            );
+            expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount),
+            );
+            expect(newBalances[makerAddress][weth.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][weth.address].plus(primaryTakerAssetFillAmount),
+            );
+            expect(newBalances[forwarderContract.address][weth.address]).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(newBalances[forwarderContract.address][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                constants.ZERO_AMOUNT,
+            );
+            expect(forwarderEthBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+        it('Should buy slightly greater MakerAsset when exchange rate is rounded, and MakerAsset is ZRX', async () => {
+            // See the test case above for a detailed description of this case.
+            // The difference here is that the MakerAsset is ZRX. We expect the same result as above,
+            // but this tests a different code path.
+            //
+            // Construct test case using values from example above
+            orderWithoutFee = await orderFactory.newSignedOrderAsync({
+                makerAssetAmount: new BigNumber('30'),
+                takerAssetAmount: new BigNumber('20'),
+                makerAssetData: zrxAssetData,
+                takerAssetData: assetDataUtils.encodeERC20AssetData(weth.address),
+                makerFee: new BigNumber(0),
+                takerFee: new BigNumber(0),
+            });
+            const ordersWithoutFee = [orderWithoutFee];
+            const feeOrders: SignedOrder[] = [];
+            const desiredMakerAssetFillAmount = new BigNumber('5');
+            const makerAssetFillAmount = new BigNumber('6');
+            const ethValue = new BigNumber('4');
+            // Execute test case
+            tx = await forwarderWrapper.marketBuyOrdersWithEthAsync(
+                ordersWithoutFee,
+                feeOrders,
+                desiredMakerAssetFillAmount,
+                {
+                    value: ethValue,
+                    from: takerAddress,
+                },
+            );
+            // Fetch end balances and construct expected outputs
+            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const primaryTakerAssetFillAmount = ethValue;
+            const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
+            // Validate test case
+            expect(makerAssetFillAmount).to.be.bignumber.greaterThan(desiredMakerAssetFillAmount);
+            expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
+            expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][zrxToken.address].minus(makerAssetFillAmount),
+            );
+            expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][zrxToken.address].plus(makerAssetFillAmount),
+            );
+            expect(newBalances[makerAddress][weth.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][weth.address].plus(primaryTakerAssetFillAmount),
+            );
+            expect(newBalances[forwarderContract.address][weth.address]).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(forwarderEthBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+        it('Should buy slightly greater MakerAsset when exchange rate is rounded (Regression Test)', async () => {
+            // Order taken from a transaction on mainnet that failed due to a rounding error.
+            orderWithoutFee = await orderFactory.newSignedOrderAsync({
+                makerAssetAmount: new BigNumber('268166666666666666666'),
+                takerAssetAmount: new BigNumber('219090625878836371'),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(weth.address),
+                makerFee: new BigNumber(0),
+                takerFee: new BigNumber(0),
+            });
+            const ordersWithoutFee = [orderWithoutFee];
+            const feeOrders: SignedOrder[] = [];
+            // The taker will receive more than the desired amount of makerAsset due to rounding
+            const desiredMakerAssetFillAmount = new BigNumber('5000000000000000000');
+            const ethValue = new BigNumber('4084971271824171');
+            const makerAssetFillAmount = ethValue
+                .times(orderWithoutFee.makerAssetAmount)
+                .dividedToIntegerBy(orderWithoutFee.takerAssetAmount);
+            // Execute test case
+            tx = await forwarderWrapper.marketBuyOrdersWithEthAsync(
+                ordersWithoutFee,
+                feeOrders,
+                desiredMakerAssetFillAmount,
+                {
+                    value: ethValue,
+                    from: takerAddress,
+                },
+            );
+            // Fetch end balances and construct expected outputs
+            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const primaryTakerAssetFillAmount = ethValue;
+            const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
+            // Validate test case
+            expect(makerAssetFillAmount).to.be.bignumber.greaterThan(desiredMakerAssetFillAmount);
+            expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
+            expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
+            );
+            expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount),
+            );
+            expect(newBalances[makerAddress][weth.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][weth.address].plus(primaryTakerAssetFillAmount),
+            );
+            expect(newBalances[forwarderContract.address][weth.address]).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(newBalances[forwarderContract.address][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                constants.ZERO_AMOUNT,
+            );
+            expect(forwarderEthBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+        it('Should buy slightly greater MakerAsset when exchange rate is rounded, and MakerAsset is ZRX (Regression Test)', async () => {
+            // Order taken from a transaction on mainnet that failed due to a rounding error.
+            orderWithoutFee = await orderFactory.newSignedOrderAsync({
+                makerAssetAmount: new BigNumber('268166666666666666666'),
+                takerAssetAmount: new BigNumber('219090625878836371'),
+                makerAssetData: zrxAssetData,
+                takerAssetData: assetDataUtils.encodeERC20AssetData(weth.address),
+                makerFee: new BigNumber(0),
+                takerFee: new BigNumber(0),
+            });
+            const ordersWithoutFee = [orderWithoutFee];
+            const feeOrders: SignedOrder[] = [];
+            // The taker will receive more than the desired amount of makerAsset due to rounding
+            const desiredMakerAssetFillAmount = new BigNumber('5000000000000000000');
+            const ethValue = new BigNumber('4084971271824171');
+            const makerAssetFillAmount = ethValue
+                .times(orderWithoutFee.makerAssetAmount)
+                .dividedToIntegerBy(orderWithoutFee.takerAssetAmount);
+            // Execute test case
+            tx = await forwarderWrapper.marketBuyOrdersWithEthAsync(
+                ordersWithoutFee,
+                feeOrders,
+                desiredMakerAssetFillAmount,
+                {
+                    value: ethValue,
+                    from: takerAddress,
+                },
+            );
+            // Fetch end balances and construct expected outputs
+            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const primaryTakerAssetFillAmount = ethValue;
+            const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
+            // Validate test case
+            expect(makerAssetFillAmount).to.be.bignumber.greaterThan(desiredMakerAssetFillAmount);
+            expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
+            expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][zrxToken.address].minus(makerAssetFillAmount),
+            );
+            expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][zrxToken.address].plus(makerAssetFillAmount),
+            );
+            expect(newBalances[makerAddress][weth.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][weth.address].plus(primaryTakerAssetFillAmount),
+            );
+            expect(newBalances[forwarderContract.address][weth.address]).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(forwarderEthBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+        it('Should buy correct MakerAsset when exchange rate is NOT rounded, and MakerAsset is ZRX (Regression Test)', async () => {
+            // An extra unit of TakerAsset was sent to the exchange contract to account for rounding errors, in Forwarder v1.
+            // Specifically, the takerFillAmount was calculated using Floor(desiredMakerAmount * exchangeRate) + 1
+            // We have since changed this to be Ceil(desiredMakerAmount * exchangeRate)
+            // These calculations produce different results when `desiredMakerAmount * exchangeRate` is an integer.
+            //
+            // This test verifies that `ceil` is sufficient:
+            //  Let TakerAssetAmount = MakerAssetAmount * 2
+            //  -> exchangeRate = TakerAssetAmount / MakerAssetAmount = (2*MakerAssetAmount)/MakerAssetAmount = 2
+            //  .: desiredMakerAmount * exchangeRate is an integer.
+            //
+            // Construct test case using values from example above
+            orderWithoutFee = await orderFactory.newSignedOrderAsync({
+                makerAssetAmount: new BigNumber('30'),
+                takerAssetAmount: new BigNumber('60'),
+                makerAssetData: zrxAssetData,
+                takerAssetData: assetDataUtils.encodeERC20AssetData(weth.address),
+                makerFee: new BigNumber(0),
+                takerFee: new BigNumber(0),
+            });
+            const ordersWithoutFee = [orderWithoutFee];
+            const feeOrders: SignedOrder[] = [];
+            const makerAssetFillAmount = new BigNumber('5');
+            const ethValue = new BigNumber('10');
+            // Execute test case
+            tx = await forwarderWrapper.marketBuyOrdersWithEthAsync(ordersWithoutFee, feeOrders, makerAssetFillAmount, {
+                value: ethValue,
+                from: takerAddress,
+            });
+            // Fetch end balances and construct expected outputs
+            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const primaryTakerAssetFillAmount = ethValue;
+            const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
+            // Validate test case
+            expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
+            expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][zrxToken.address].minus(makerAssetFillAmount),
+            );
+            expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[takerAddress][zrxToken.address].plus(makerAssetFillAmount),
+            );
+            expect(newBalances[makerAddress][weth.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][weth.address].plus(primaryTakerAssetFillAmount),
+            );
+            expect(newBalances[forwarderContract.address][weth.address]).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(forwarderEthBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
         });
     });

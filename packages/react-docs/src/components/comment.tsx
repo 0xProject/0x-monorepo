@@ -1,4 +1,4 @@
-import { MarkdownCodeBlock } from '@0xproject/react-shared';
+import { colors, MarkdownCodeBlock } from '@0x/react-shared';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 
@@ -13,7 +13,7 @@ const defaultProps = {
 
 export const Comment: React.SFC<CommentProps> = (props: CommentProps) => {
     return (
-        <div className={`${props.className} comment`}>
+        <div className={`${props.className} comment`} style={{ color: colors.greyTheme }}>
             <ReactMarkdown source={props.comment} renderers={{ code: MarkdownCodeBlock }} />
         </div>
     );

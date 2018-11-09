@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
@@ -103,6 +103,9 @@ export class DocGenerateAndUploadUtils {
             switch (node.kind) {
                 case ts.SyntaxKind.ExportDeclaration: {
                     const exportClause = (node as any).exportClause;
+                    if (_.isUndefined(exportClause)) {
+                        return;
+                    }
                     const exportPath = exportClause.parent.moduleSpecifier.text;
                     _.each(exportClause.elements, element => {
                         const exportItem = element.name.escapedText;
@@ -187,7 +190,11 @@ export class DocGenerateAndUploadUtils {
         const typeDocExtraFileIncludes: string[] = this._getTypeDocFileIncludesForPackage();
 
         // In order to avoid TS errors, we need to pass TypeDoc the package's global.d.ts file
-        typeDocExtraFileIncludes.push(path.join(this._packagePath, 'src', 'globals.d.ts'));
+        // if it exists.
+        const globalTypeDefinitionsPath = path.join(this._packagePath, 'src', 'globals.d.ts');
+        if (existsSync(globalTypeDefinitionsPath)) {
+            typeDocExtraFileIncludes.push(globalTypeDefinitionsPath);
+        }
 
         utils.log(`GENERATE_UPLOAD_DOCS: Generating Typedoc JSON for ${this._packageName}...`);
         const jsonFilePath = path.join(this._packagePath, 'generated_docs', 'index.json');
@@ -324,7 +331,7 @@ export class DocGenerateAndUploadUtils {
             throw new Error(
                 `${this._packageName} package exports BUT does not need: \n${excessiveReferencesExceptIgnored.join(
                     '\n',
-                )} \nin it\'s index.ts. Remove them then try again.`,
+                )} \nin it\'s index.ts. Remove them then try again OR if we still want them exported (e.g error enum types), then add them to the IGNORED_EXCESSIVE_TYPES array.`,
             );
         }
     }
@@ -395,7 +402,7 @@ export class DocGenerateAndUploadUtils {
                 sanitizedExportPathToExportPath[sanitizedExportPath] = exportPath;
                 return sanitizedExportPath;
             }
-            const monorepoPrefix = '@0xproject/';
+            const monorepoPrefix = '@0x/';
             if (_.startsWith(exportPath, monorepoPrefix)) {
                 const sanitizedExportPath = exportPath.split(monorepoPrefix)[1];
                 sanitizedExportPathToExportPath[sanitizedExportPath] = exportPath;
@@ -471,7 +478,7 @@ export class DocGenerateAndUploadUtils {
                 });
             });
 
-            // @0xproject/types & ethereum-types are examples of packages where their index.ts exports types
+            // @0x/types & ethereum-types are examples of packages where their index.ts exports types
             // directly, meaning no internal paths will exist to follow. Other packages also have direct exports
             // in their index.ts, so we always add it to the source files passed to TypeDoc
             if (typeDocSourceIncludes.size === 0) {

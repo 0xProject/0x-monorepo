@@ -1,5 +1,24 @@
 [
     {
+        "version": "1.0.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "version": "1.0.7",
+        "changes": [
+            {
+                "note": "Make @loopback/openapi-v3-types a 'dependency' so it's available to users of the library",
+                "pr": 1105
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
         "version": "1.0.6",
         "changes": [
             {

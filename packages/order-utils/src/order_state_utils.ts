@@ -5,8 +5,8 @@ import {
     OrderStateInvalid,
     OrderStateValid,
     SignedOrder,
-} from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+} from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';

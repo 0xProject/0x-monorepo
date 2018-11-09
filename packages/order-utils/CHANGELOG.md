@@ -5,6 +5,17 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.1 - _November 9, 2018_
+
+    * Dependencies updated
+
+## v2.0.0 - _October 18, 2018_
+
+    * Added `ecSignOrderAsync` to first sign an order using `eth_signTypedData` and fallback to `eth_sign`. (#1102)
+    * Added `ecSignTypedDataOrderAsync` to sign an order exclusively using `eth_signTypedData`. (#1102)
+    * Rename `ecSignOrderHashAsync` to `ecSignHashAsync` removing `SignerType` parameter. (#1102)
+    * Use `AssetData` union type for function return values. (#1131)
+
 ## v1.0.7 - _October 4, 2018_
 
     * Dependencies updated
@@ -52,7 +63,7 @@ CHANGELOG
     * Make `sortFeeOrdersByFeeAdjustedRate` in `sortingUtils` generic (#997)
     * Update `findFeeOrdersThatCoverFeesForTargetOrders` to round the the nearest integer when calculating required fees (#997)
 
-## v1.0.1-rc.3 - _August 13, 2018_
+## v1.0.1-rc.3 - _August 14, 2018_
 
     * Update ecSignOrderHashAsync to return signature string with signature type byte. Removes messagePrefixOpts. (#914)
     * Added a synchronous `createOrder` method in `orderFactory`, updated public interfaces to support some optional parameters (#936)

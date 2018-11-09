@@ -1,11 +1,11 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { RevertReason } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { RevertReason } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
+import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import {
     MultiSigWalletWithTimeLockConfirmationEventArgs,
     MultiSigWalletWithTimeLockConfirmationTimeSetEventArgs,
@@ -13,8 +13,8 @@ import {
     MultiSigWalletWithTimeLockExecutionEventArgs,
     MultiSigWalletWithTimeLockExecutionFailureEventArgs,
     MultiSigWalletWithTimeLockSubmissionEventArgs,
-} from '../../generated_contract_wrappers/multi_sig_wallet_with_time_lock';
-import { artifacts } from '../utils/artifacts';
+} from '../../generated-wrappers/multi_sig_wallet_with_time_lock';
+import { artifacts } from '../../src/artifacts';
 import { expectTransactionFailedAsync, expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
 import { increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';

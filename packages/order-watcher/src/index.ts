@@ -7,11 +7,13 @@ export {
     OrderState,
     ExchangeContractErrs,
     OrderRelevantState,
-} from '@0xproject/types';
+    Stats,
+} from '@0x/types';
 
 export { OnOrderStateChangeCallback, OrderWatcherConfig } from './types';
 
-export { SignedOrder } from '@0xproject/types';
+export { ContractAddresses } from '@0x/contract-addresses';
+export { SignedOrder } from '@0x/types';
 export {
     JSONRPCRequestPayload,
     JSONRPCErrorCallback,

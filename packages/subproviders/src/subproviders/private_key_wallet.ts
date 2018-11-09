@@ -1,6 +1,6 @@
-import { assert } from '@0xproject/assert';
-import { EIP712TypedData } from '@0xproject/types';
-import { signTypedDataUtils } from '@0xproject/utils';
+import { assert } from '@0x/assert';
+import { EIP712TypedData } from '@0x/types';
+import { signTypedDataUtils } from '@0x/utils';
 import EthereumTx = require('ethereumjs-tx');
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';

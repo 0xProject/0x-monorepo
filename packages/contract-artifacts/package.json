@@ -1,0 +1,33 @@
+{
+    "name": "@0x/contract-artifacts",
+    "version": "1.1.0",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "0x smart contract compilation artifacts",
+    "main": "lib/src/index.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "build": "yarn tsc -b",
+        "build:ci": "yarn build",
+        "clean": "shx rm -rf lib"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-artifacts/README.md",
+    "devDependencies": {
+        "shx": "^0.2.2",
+        "typescript": "3.0.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

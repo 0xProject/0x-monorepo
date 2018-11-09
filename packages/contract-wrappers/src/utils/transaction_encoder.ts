@@ -1,10 +1,10 @@
-import { schemas } from '@0xproject/json-schemas';
-import { eip712Utils } from '@0xproject/order-utils';
-import { Order, SignedOrder } from '@0xproject/types';
-import { BigNumber, signTypedDataUtils } from '@0xproject/utils';
-import _ = require('lodash');
+import { ExchangeContract } from '@0x/abi-gen-wrappers';
 
-import { ExchangeContract } from '../contract_wrappers/generated/exchange';
+import { schemas } from '@0x/json-schemas';
+import { eip712Utils } from '@0x/order-utils';
+import { Order, SignedOrder } from '@0x/types';
+import { BigNumber, signTypedDataUtils } from '@0x/utils';
+import _ = require('lodash');
 
 import { assert } from './assert';
 

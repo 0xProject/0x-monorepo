@@ -5,15 +5,132 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>0x Instant Dev Environment</title>
+    <link rel="stylesheet" href="/external.css">
     <script type="text/javascript" src="/main.bundle.js" charset="utf-8"></script>
+    <script type="text/javascript" src="https://unpkg.com/jsuri@1.3.1/Uri.js" charset="utf-8"></script>
+    <script type="text/javascript" src="https://unpkg.com/bignumber.js@4.1.0/bignumber.js" charset="utf-8"></script>
+    <style>
+        #zeroExInstantContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        body {
+            margin: 0;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
 
 <body>
     <div id="zeroExInstantContainer"></div>
     <script>
-        zeroExInstant.render({
-
+        const removeUndefined = (obj) => {
+            for (let k in obj) if (obj[k] === undefined) delete obj[k];
+            return obj;
+        }
+        BigNumber.config({
+            EXPONENTIAL_AT: 1000,
+            DECIMAL_PLACES: 78,
         });
+        const providedOrders = [
+            // Order selling REP
+            {
+                senderAddress: '0x0000000000000000000000000000000000000000',
+                makerAddress: '0x34a745008a643eebc58920eaa29fb1165b4a288e',
+                takerAddress: '0x0000000000000000000000000000000000000000',
+                makerFee: new BigNumber('0'),
+                takerFee: new BigNumber('0'),
+                makerAssetAmount: new BigNumber('200000000000000000000'),
+                takerAssetAmount: new BigNumber('10000000000000000000'),
+                makerAssetData: '0xf47261b00000000000000000000000008cb3971b8eb709c14616bd556ff6683019e90d9c',
+                takerAssetData: '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
+                expirationTimeSeconds: new BigNumber('1601535600'),
+                feeRecipientAddress: '0x0000000000000000000000000000000000000000',
+                salt: new BigNumber('3101985707338942582579795423923841749956600670712030922928319824580764688653'),
+                signature: '0x1bd4d5686fea801fe33c68c4944356085e7e6cb553eb7073160abd815609f714e85fb47f44b7ffd0a2a1321ac40d72d55163869d0a50fdb5a402132150fe33a08403',
+                exchangeAddress: '0x35dd2932454449b14cee11a94d3674a936d5d7b2'
+            },
+            // Order selling ZRX
+            {
+                senderAddress: '0x0000000000000000000000000000000000000000',
+                makerAddress: '0x34a745008a643eebc58920eaa29fb1165b4a288e',
+                takerAddress: '0x0000000000000000000000000000000000000000',
+                makerFee: new BigNumber('0'),
+                takerFee: new BigNumber('0'),
+                makerAssetAmount: new BigNumber('300000000000000000000'),
+                takerAssetAmount: new BigNumber('31000000000000000000'),
+                makerAssetData: '0xf47261b00000000000000000000000002002d3812f58e35f0ea1ffbf80a75a38c32175fa',
+                takerAssetData: '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
+                expirationTimeSeconds: new BigNumber('2524636800'),
+                feeRecipientAddress: '0x0000000000000000000000000000000000000000',
+                salt: new BigNumber('64592004666704945574675477805199411288137454783320798602050822322450089238268'),
+                signature: '0x1c13cacddca8d7d8248e91f412377e68f8f1f9891a59a6c1b2eea9f7b33558c30c4fb86a448e08ab7def40a28fb3a3062dcb33bb3c45302447fce5c4288b7c7f5b03',
+                exchangeAddress: '0x35dd2932454449b14cee11a94d3674a936d5d7b2'
+            },
+            // Order selling GNT
+            {
+                senderAddress: '0x0000000000000000000000000000000000000000',
+                makerAddress: '0x34a745008a643eebc58920eaa29fb1165b4a288e',
+                takerAddress: '0x0000000000000000000000000000000000000000',
+                makerFee: new BigNumber('0'),
+                takerFee: new BigNumber('0'),
+                makerAssetAmount: new BigNumber('250000000000000000000'),
+                takerAssetAmount: new BigNumber('10000000000000000000'),
+                makerAssetData: '0xf47261b000000000000000000000000031fb614e223706f15d0d3c5f4b08bdf0d5c78623',
+                takerAssetData: '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
+                expirationTimeSeconds: new BigNumber('1601535600'),
+                feeRecipientAddress: '0x0000000000000000000000000000000000000000',
+                salt: new BigNumber('40204378562212615907903051460421336779451270522691667164301816101569427926606'),
+                signature: '0x1c788bf4b93769da1e8f195f52f0f59b4a298ac6da30cf6d05a87ed4be5ee974f61352ed1bc6a0844d0962b8c894c9ca08e452431255958a4e98dd93cbe1fbc73803',
+                exchangeAddress: '0x35dd2932454449b14cee11a94d3674a936d5d7b2'
+            },
+            // Order selling MKR
+            {
+                senderAddress: '0x0000000000000000000000000000000000000000',
+                makerAddress: '0x34a745008a643eebc58920eaa29fb1165b4a288e',
+                takerAddress: '0x0000000000000000000000000000000000000000',
+                makerFee: new BigNumber('0'),
+                takerFee: new BigNumber('0'),
+                makerAssetAmount: new BigNumber('200000000000000000000'),
+                takerAssetAmount: new BigNumber('5000000000000000000'),
+                makerAssetData: '0xf47261b00000000000000000000000007b6b10caa9e8e9552ba72638ea5b47c25afea1f3',
+                takerAssetData: '0xf47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c',
+                expirationTimeSeconds: new BigNumber('1601535600'),
+                feeRecipientAddress: '0x0000000000000000000000000000000000000000',
+                salt: new BigNumber('71338269924068280039932133924198049371838034090153601678083172009862985793828'),
+                signature: '0x1bb3151d57ee1e8fa697767ce83ee4ba77d1ceb8cc1e79c7d77126b3687517704c50c6b3d9cb42c7e7d4478d574b297dfbd1626c5c18a7bc9c2a792c4c07f0797c03',
+                exchangeAddress: '0x35dd2932454449b14cee11a94d3674a936d5d7b2'
+            }
+        ];
+        const queryParams = new Uri(window.location.search);
+        const renderOptionsDefaults = {
+            orderSource: 'https://api.radarrelay.com/0x/v2/',
+            onClose: () => { console.log('0x Instant Closed') }
+        }
+        const orderSourceOverride = queryParams.getQueryParamValue('orderSource');
+        const availableAssetDatasString = queryParams.getQueryParamValue('availableAssetDatas');
+        const feeRecipientOverride = queryParams.getQueryParamValue('feeRecipient');
+        const feePercentageOverride = +queryParams.getQueryParamValue('feePercentage');
+        let affiliateInfoOverride;
+        if (feeRecipientOverride !== undefined && feePercentageOverride !== undefined) {
+            affiliateInfoOverride = {
+                feeRecipient: feeRecipientOverride,
+                feePercentage: feePercentageOverride
+            };
+        }
+        const renderOptionsOverrides = {
+            orderSource: orderSourceOverride === 'provided' ? providedOrders : orderSourceOverride,
+            networkId: +queryParams.getQueryParamValue('networkId') || undefined,
+            defaultAssetBuyAmount: +queryParams.getQueryParamValue('defaultAssetBuyAmount') || undefined,
+            availableAssetDatas: availableAssetDatasString ? JSON.parse(availableAssetDatasString) : undefined,
+            defaultSelectedAssetData: queryParams.getQueryParamValue('defaultSelectedAssetData'),
+            affiliateInfo: affiliateInfoOverride,
+        }
+        const renderOptions = Object.assign({}, renderOptionsDefaults, removeUndefined(renderOptionsOverrides));
+        zeroExInstant.render(renderOptions);
     </script>
 </body>
 

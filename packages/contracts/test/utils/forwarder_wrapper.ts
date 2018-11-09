@@ -1,10 +1,10 @@
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs, TxDataPayable } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ForwarderContract } from '../../generated_contract_wrappers/forwarder';
+import { ForwarderContract } from '../../generated-wrappers/forwarder';
 
 import { constants } from './constants';
 import { formatters } from './formatters';
@@ -26,9 +26,12 @@ export class ForwarderWrapper {
         _.forEach(feeOrders, feeOrder => {
             const feeAvailable = feeOrder.makerAssetAmount.minus(feeOrder.takerFee);
             if (!remainingFeeAmount.isZero() && feeAvailable.gt(remainingFeeAmount)) {
-                wethAmount = wethAmount
-                    .plus(feeOrder.takerAssetAmount.times(remainingFeeAmount).dividedToIntegerBy(feeAvailable))
-                    .plus(1);
+                wethAmount = wethAmount.plus(
+                    feeOrder.takerAssetAmount
+                        .times(remainingFeeAmount)
+                        .dividedBy(feeAvailable)
+                        .ceil(),
+                );
                 remainingFeeAmount = new BigNumber(0);
             } else if (!remainingFeeAmount.isZero()) {
                 wethAmount = wethAmount.plus(feeOrder.takerAssetAmount);

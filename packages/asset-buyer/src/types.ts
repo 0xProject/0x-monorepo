@@ -1,5 +1,5 @@
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
@@ -9,7 +9,6 @@ import { BigNumber } from '@0xproject/utils';
 export interface OrderProviderRequest {
     makerAssetData: string;
     takerAssetData: string;
-    networkId: number;
 }
 
 /**
@@ -27,10 +26,12 @@ export interface SignedOrderWithRemainingFillableMakerAssetAmount extends Signed
     remainingFillableMakerAssetAmount?: BigNumber;
 }
 /**
- * Given an OrderProviderRequest, get an OrderProviderResponse.
+ * gerOrdersAsync: Given an OrderProviderRequest, get an OrderProviderResponse.
+ * getAvailableMakerAssetDatasAsync: Given a taker asset data string, return all availabled paired maker asset data strings.
  */
 export interface OrderProvider {
     getOrdersAsync: (orderProviderRequest: OrderProviderRequest) => Promise<OrderProviderResponse>;
+    getAvailableMakerAssetDatasAsync: (takerAssetData: string) => Promise<string[]>;
 }
 
 /**
@@ -112,6 +113,8 @@ export enum AssetBuyerError {
     NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
     InvalidOrderProviderResponse = 'INVALID_ORDER_PROVIDER_RESPONSE',
     AssetUnavailable = 'ASSET_UNAVAILABLE',
+    SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
+    TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
 }
 
 export interface OrdersAndFillableAmounts {

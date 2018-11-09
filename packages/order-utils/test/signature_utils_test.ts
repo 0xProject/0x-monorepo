@@ -1,5 +1,5 @@
-import { Order, SignatureType } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { Order, SignatureType } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { JSONRPCErrorCallback, JSONRPCRequestPayload } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';

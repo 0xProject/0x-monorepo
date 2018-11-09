@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';

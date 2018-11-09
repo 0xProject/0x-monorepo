@@ -12,7 +12,7 @@ import { utils } from './utils';
 
 const publishReleaseAsync = promisify(publishRelease);
 // tslint:disable-next-line:completed-docs
-export async function publishReleaseNotesAsync(updatedPublishPackages: Package[], isDryRun: boolean): Promise<void> {
+export async function publishReleaseNotesAsync(packagesToPublish: Package[], isDryRun: boolean): Promise<void> {
     // Git push a tag representing this publish (publish-{commit-hash}) (truncate hash)
     const result = await execAsync('git log -n 1 --pretty=format:"%H"', { cwd: constants.monorepoRootPath });
     const latestGitCommit = result.stdout;
@@ -40,12 +40,8 @@ export async function publishReleaseNotesAsync(updatedPublishPackages: Package[]
 
     let assets: string[] = [];
     let aggregateNotes = '';
-    _.each(updatedPublishPackages, pkg => {
-        const notes = getReleaseNotesForPackage(pkg.packageJson.name, pkg.packageJson.version);
-        if (_.isEmpty(notes)) {
-            return; // don't include it
-        }
-        aggregateNotes += `### ${pkg.packageJson.name}@${pkg.packageJson.version}\n${notes}\n\n`;
+    _.each(packagesToPublish, pkg => {
+        aggregateNotes += getReleaseNotesForPackage(pkg.packageJson.name);
 
         const packageAssets = _.get(pkg.packageJson, 'config.postpublish.assets');
         if (!_.isUndefined(packageAssets)) {
@@ -92,8 +88,8 @@ function adjustAssetPaths(assets: string[]): string[] {
     return finalAssets;
 }
 
-function getReleaseNotesForPackage(packageName: string, version: string): string {
-    const packageNameWithoutNamespace = packageName.replace('@0xproject/', '');
+function getReleaseNotesForPackage(packageName: string): string {
+    const packageNameWithoutNamespace = packageName.replace('@0x/', '');
     const changelogJSONPath = path.join(
         constants.monorepoRootPath,
         'packages',
@@ -115,5 +111,9 @@ function getReleaseNotesForPackage(packageName: string, version: string): string
         }
         notes += `\n`;
     });
-    return notes;
+    if (_.isEmpty(notes)) {
+        return ''; // don't include it
+    }
+    const releaseNotesSection = `### ${packageName}@${latestLog.version}\n${notes}\n\n`;
+    return releaseNotesSection;
 }

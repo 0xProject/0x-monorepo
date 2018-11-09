@@ -1,5 +1,5 @@
-import { AbstractBalanceAndProxyAllowanceFetcher } from '@0xproject/order-utils';
-import { BigNumber } from '@0xproject/utils';
+import { AbstractBalanceAndProxyAllowanceFetcher } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 
 import { AssetWrapper } from './asset_wrapper';
 

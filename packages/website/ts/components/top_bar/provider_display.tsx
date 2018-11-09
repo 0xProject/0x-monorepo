@@ -1,4 +1,4 @@
-import { Styles } from '@0xproject/react-shared';
+import { Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';

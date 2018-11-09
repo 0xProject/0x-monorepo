@@ -1,17 +1,18 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages } from 'ts/types';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/subproviders/introduction');
-const InstallationMarkdownV1 = require('md/docs/subproviders/installation');
-const LedgerNodeHidMarkdown = require('md/docs/subproviders/ledger_node_hid');
+const IntroMarkdown1 = require('md/docs/subproviders/1/introduction');
+const InstallationMarkdown1 = require('md/docs/subproviders/1/installation');
+const InstallationMarkdown2 = require('md/docs/subproviders/2/installation');
+const LedgerNodeHidMarkdown1 = require('md/docs/subproviders/1/ledger_node_hid');
 /* tslint:enable:no-var-requires */
 
 const docSections = {
@@ -22,20 +23,23 @@ const docSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.Subproviders,
-    packageName: '@0xproject/subproviders',
+    packageName: '@0x/subproviders',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Subproviders',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     markdownMenu: {
-        introduction: [docSections.introduction],
-        install: [docSections.installation],
-        ['ledger-node-hid-issue']: [docSections.ledgerNodeHid],
+        'getting-started': [docSections.introduction, docSections.installation, docSections.ledgerNodeHid],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [docSections.introduction]: IntroMarkdownV1,
-            [docSections.installation]: InstallationMarkdownV1,
-            [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown,
+            [docSections.introduction]: IntroMarkdown1,
+            [docSections.installation]: InstallationMarkdown1,
+            [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown1,
+        },
+        '2.1.0': {
+            [docSections.introduction]: IntroMarkdown1,
+            [docSections.installation]: InstallationMarkdown2,
+            [docSections.ledgerNodeHid]: LedgerNodeHidMarkdown1,
         },
     },
     markdownSections: docSections,
@@ -47,6 +51,7 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -58,6 +63,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
     docsInfo,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

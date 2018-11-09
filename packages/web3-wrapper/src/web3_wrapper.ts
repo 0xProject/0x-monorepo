@@ -1,6 +1,6 @@
-import { assert } from '@0xproject/assert';
-import { schemas } from '@0xproject/json-schemas';
-import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0xproject/utils';
+import { assert } from '@0x/assert';
+import { schemas } from '@0x/json-schemas';
+import { AbiDecoder, addressUtils, BigNumber, intervalUtils, promisify } from '@0x/utils';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -23,7 +23,13 @@ import {
 import * as _ from 'lodash';
 
 import { marshaller } from './marshaller';
-import { BlockWithoutTransactionDataRPC, BlockWithTransactionDataRPC, NodeType, Web3WrapperErrors } from './types';
+import {
+    BlockWithoutTransactionDataRPC,
+    BlockWithTransactionDataRPC,
+    NodeType,
+    TransactionRPC,
+    Web3WrapperErrors,
+} from './types';
 import { utils } from './utils';
 
 const BASE_TEN = 10;
@@ -145,7 +151,7 @@ export class Web3Wrapper {
         if (_.isUndefined((provider as any).sendAsync)) {
             // Web3@1.0 provider doesn't support synchronous http requests,
             // so it only has an async `send` method, instead of a `send` and `sendAsync` in web3@0.x.x`
-            // We re-assign the send method so that Web3@1.0 providers work with @0xproject/web3-wrapper
+            // We re-assign the send method so that Web3@1.0 providers work with @0x/web3-wrapper
             (provider as any).sendAsync = (provider as any).send;
         }
         this.abiDecoder = new AbiDecoder([]);
@@ -228,10 +234,11 @@ export class Web3Wrapper {
      */
     public async getTransactionByHashAsync(txHash: string): Promise<Transaction> {
         assert.isHexString('txHash', txHash);
-        const transaction = await this.sendRawPayloadAsync<Transaction>({
+        const transactionRpc = await this.sendRawPayloadAsync<TransactionRPC>({
             method: 'eth_getTransactionByHash',
             params: [txHash],
         });
+        const transaction = marshaller.unmarshalTransaction(transactionRpc);
         return transaction;
     }
     /**

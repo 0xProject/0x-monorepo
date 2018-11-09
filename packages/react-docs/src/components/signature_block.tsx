@@ -1,11 +1,5 @@
-import { AnchorTitle, colors, HeaderSizes, Styles } from '@0xproject/react-shared';
-import {
-    Parameter,
-    SolidityMethod,
-    TypeDefinitionByName,
-    TypescriptFunction,
-    TypescriptMethod,
-} from '@0xproject/types';
+import { AnchorTitle, colors, HeaderSizes, Styles } from '@0x/react-shared';
+import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptFunction, TypescriptMethod } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -55,7 +49,7 @@ export class SignatureBlock extends React.Component<SignatureBlockProps, Signatu
             <div
                 id={`${this.props.sectionName}-${method.name}`}
                 style={{ overflow: 'hidden', width: '100%' }}
-                className="pb4"
+                className="pb4 pt2"
                 onMouseOver={this._setAnchorVisibility.bind(this, true)}
                 onMouseOut={this._setAnchorVisibility.bind(this, false)}
             >

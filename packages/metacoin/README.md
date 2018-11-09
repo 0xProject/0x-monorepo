@@ -1,4 +1,4 @@
-## @0xproject/metacoin
+## @0x/metacoin
 
 This is an example project that demonstrates how the many Ethereum dev tools developed by 0x can be used in any Solidity/TS project.
 It supports:
@@ -35,13 +35,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/metacoin yarn build
+PKG=@0x/metacoin yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/metacoin yarn watch
+PKG=@0x/metacoin yarn watch
 ```
 
 ### Clean

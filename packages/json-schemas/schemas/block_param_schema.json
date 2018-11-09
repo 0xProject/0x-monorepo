@@ -1,0 +1,11 @@
+{
+    "id": "/blockParamSchema",
+    "oneOf": [
+        {
+            "type": "number"
+        },
+        {
+            "enum": ["latest", "earliest", "pending"]
+        }
+    ]
+}

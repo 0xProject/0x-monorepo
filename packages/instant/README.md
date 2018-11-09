@@ -1,9 +1,9 @@
-## @0xproject/instant
+## @0x/instant
 
 ## Installation
 
 ```bash
-yarn add @0xproject/instant
+yarn add @0x/instant
 ```
 
 **Import**
@@ -11,20 +11,20 @@ yarn add @0xproject/instant
 **CommonJS module**
 
 ```typescript
-import { ZeroExInstant } from '@0xproject/instant';
+import { ZeroExInstant } from '@0x/instant';
 ```
 
 or
 
 ```javascript
-var ZeroExInstant = require('@0xproject/instant').ZeroExInstant;
+var ZeroExInstant = require('@0x/instant').ZeroExInstant;
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 
@@ -45,6 +45,26 @@ The package is also available as a UMD module named `zeroExInstant`.
     </script>
 </body>
 ```
+
+## Deploying
+
+You can deploy a work-in-progress version of 0x Instant at http://0x-instant-dogfood.s3-website-us-east-1.amazonaws.com for easy sharing.
+
+To build and deploy the site run
+
+```
+yarn deploy_dogfood
+```
+
+We also have a staging bucket that is to be updated less frequently can be used to share instant externally: http://0x-instant-staging.s3-website-us-east-1.amazonaws.com/
+
+To build and deploy to this bucket, run
+
+```
+yarn deploy_staging
+```
+
+**NOTE: On deploying the site, it will say the site is available at a non-existent URL. Please ignore and use the (now updated) URL above.**
 
 ## Contributing
 
@@ -71,13 +91,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/instant yarn build
+PKG=@0x/instant yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/instant yarn watch
+PKG=@0x/instant yarn watch
 ```
 
 ### Clean

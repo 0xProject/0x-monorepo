@@ -1,17 +1,17 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
-import { Networks } from '@0xproject/react-shared';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
+import { Networks } from '@0x/react-shared';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages, SmartContractDocSections as Sections } from 'ts/types';
+import { DocPackages, ScreenWidths, SmartContractDocSections as Sections } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/smart_contracts/1.0.0/introduction');
-const IntroMarkdownV2 = require('md/docs/smart_contracts/2.0.0/introduction');
+const IntroMarkdown1 = require('md/docs/smart_contracts/1/introduction');
+const IntroMarkdown2 = require('md/docs/smart_contracts/2/introduction');
 /* tslint:enable:no-var-requires */
 
 const docsInfoConfig: DocsInfoConfig = {
@@ -25,10 +25,10 @@ const docsInfoConfig: DocsInfoConfig = {
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [Sections.Introduction]: IntroMarkdownV1,
+            [Sections.Introduction]: IntroMarkdown1,
         },
         '2.0.0': {
-            [Sections.Introduction]: IntroMarkdownV2,
+            [Sections.Introduction]: IntroMarkdown2,
         },
     },
     markdownSections: {
@@ -97,6 +97,7 @@ interface ConnectedState {
     docsVersion: string;
     availableDocVersions: string[];
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -108,6 +109,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     docsVersion: state.docsVersion,
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

@@ -1,6 +1,6 @@
-import { RevertReason } from '@0xproject/types';
-import { logUtils } from '@0xproject/utils';
-import { NodeType } from '@0xproject/web3-wrapper';
+import { RevertReason } from '@0x/types';
+import { logUtils } from '@0x/utils';
+import { NodeType } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceipt, TransactionReceiptStatus, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';

@@ -16,8 +16,8 @@ import {
     TypeParameter,
     TypescriptFunction,
     TypescriptMethod,
-} from '@0xproject/types';
-import { errorUtils } from '@0xproject/utils';
+} from '@0x/types';
+import { errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { DocsInfo } from '../docs_info';
@@ -95,7 +95,9 @@ export class TypeDocUtils {
 
         if (!_.isEmpty(this._externalExportToLink)) {
             this._docsInfo.sections[constants.EXTERNAL_EXPORTS_SECTION_NAME] = constants.EXTERNAL_EXPORTS_SECTION_NAME;
-            this._docsInfo.menu[constants.EXTERNAL_EXPORTS_SECTION_NAME] = [constants.EXTERNAL_EXPORTS_SECTION_NAME];
+            this._docsInfo.markdownMenu[constants.EXTERNAL_EXPORTS_SECTION_NAME] = [
+                constants.EXTERNAL_EXPORTS_SECTION_NAME,
+            ];
             const docSection: DocSection = {
                 comment: 'This package also re-exports some third-party libraries for your convenience.',
                 constructors: [],
@@ -119,7 +121,7 @@ export class TypeDocUtils {
                     case KindString.ObjectLiteral: {
                         sectionName = child.name;
                         this._docsInfo.sections[sectionName] = sectionName;
-                        this._docsInfo.menu[sectionName] = [sectionName];
+                        this._docsInfo.markdownMenu[sectionName] = [sectionName];
                         const entities = child.children;
                         const commentObj = child.comment;
                         const sectionComment = !_.isUndefined(commentObj) ? commentObj.shortText : '';
@@ -136,7 +138,7 @@ export class TypeDocUtils {
                     case KindString.Function: {
                         sectionName = child.name;
                         this._docsInfo.sections[sectionName] = sectionName;
-                        this._docsInfo.menu[sectionName] = [sectionName];
+                        this._docsInfo.markdownMenu[sectionName] = [sectionName];
                         const entities = [child];
                         const commentObj = child.comment;
                         const SectionComment = !_.isUndefined(commentObj) ? commentObj.shortText : '';
@@ -158,7 +160,7 @@ export class TypeDocUtils {
         });
         if (!_.isEmpty(typeEntities)) {
             this._docsInfo.sections[constants.TYPES_SECTION_NAME] = constants.TYPES_SECTION_NAME;
-            this._docsInfo.menu[constants.TYPES_SECTION_NAME] = [constants.TYPES_SECTION_NAME];
+            this._docsInfo.markdownMenu[constants.TYPES_SECTION_NAME] = [constants.TYPES_SECTION_NAME];
             const docSection = this._convertEntitiesToDocSection(typeEntities, constants.TYPES_SECTION_NAME);
             docAgnosticFormat[constants.TYPES_SECTION_NAME] = docSection;
         }

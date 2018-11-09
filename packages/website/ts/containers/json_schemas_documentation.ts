@@ -1,54 +1,66 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages } from 'ts/types';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/json_schemas/1.0.0/introduction');
-const InstallationMarkdownV1 = require('md/docs/json_schemas/1.0.0/installation');
-const UsageMarkdownV1 = require('md/docs/json_schemas/1.0.0/usage');
-const SchemasMarkdownV1 = require('md/docs/json_schemas/1.0.0/schemas');
-const SchemasMarkdownV2 = require('md/docs/json_schemas/2.0.0/schemas');
+const IntroMarkdown1 = require('md/docs/json_schemas/1/introduction');
+const IntroMarkdown3 = require('md/docs/json_schemas/3/introduction');
+const InstallationMarkdown1 = require('md/docs/json_schemas/1/installation');
+const InstallationMarkdown3 = require('md/docs/json_schemas/3/installation');
+const usageMarkdown1 = require('md/docs/json_schemas/1/usage');
+const usageMarkdown3 = require('md/docs/json_schemas/3/usage');
+const SchemasMarkdown1 = require('md/docs/json_schemas/1/schemas');
+const SchemasMarkdown2 = require('md/docs/json_schemas/2/schemas');
+const SchemasMarkdown3 = require('md/docs/json_schemas/3/schemas');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
     usage: 'usage',
-    schemaValidator: 'schemaValidator',
     schemas: 'schemas',
 };
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.JSONSchemas,
-    packageName: '@0xproject/json-schemas',
+    packageName: '@0x/json-schemas',
     type: SupportedDocJson.TypeDoc,
     displayName: 'JSON Schemas',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     markdownMenu: {
-        introduction: [markdownSections.introduction],
-        install: [markdownSections.installation],
-        usage: [markdownSections.usage],
-        schemaValidator: [markdownSections.schemaValidator],
+        'getting-started': [markdownSections.introduction, markdownSections.installation, markdownSections.usage],
         schemas: [markdownSections.schemas],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [markdownSections.introduction]: IntroMarkdownV1,
-            [markdownSections.installation]: InstallationMarkdownV1,
-            [markdownSections.schemas]: SchemasMarkdownV1,
-            [markdownSections.usage]: UsageMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+            [markdownSections.schemas]: SchemasMarkdown1,
+            [markdownSections.usage]: usageMarkdown1,
         },
         '1.0.0': {
-            [markdownSections.introduction]: IntroMarkdownV1,
-            [markdownSections.installation]: InstallationMarkdownV1,
-            [markdownSections.schemas]: SchemasMarkdownV2,
-            [markdownSections.usage]: UsageMarkdownV1,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+            [markdownSections.schemas]: SchemasMarkdown2,
+            [markdownSections.usage]: usageMarkdown1,
+        },
+        '2.0.0': {
+            [markdownSections.introduction]: IntroMarkdown3,
+            [markdownSections.installation]: InstallationMarkdown3,
+            [markdownSections.schemas]: SchemasMarkdown2,
+            [markdownSections.usage]: usageMarkdown3,
+        },
+        '2.0.1': {
+            [markdownSections.introduction]: IntroMarkdown3,
+            [markdownSections.installation]: InstallationMarkdown3,
+            [markdownSections.schemas]: SchemasMarkdown3,
+            [markdownSections.usage]: usageMarkdown3,
         },
     },
     markdownSections,
@@ -60,6 +72,7 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -71,6 +84,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
     docsInfo,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

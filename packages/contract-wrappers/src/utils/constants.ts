@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 
 export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
@@ -14,4 +14,5 @@ export const constants = {
     ZERO_AMOUNT: new BigNumber(0),
     ONE_AMOUNT: new BigNumber(1),
     ETHER_TOKEN_DECIMALS: 18,
+    USER_DENIED_SIGNATURE_PATTERN: 'User denied transaction signature',
 };

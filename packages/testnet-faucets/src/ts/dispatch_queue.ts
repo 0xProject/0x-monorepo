@@ -1,4 +1,4 @@
-import { intervalUtils, logUtils } from '@0xproject/utils';
+import { intervalUtils, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { errorReporter } from './error_reporter';

@@ -1,5 +1,27 @@
 [
     {
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note":
+                    "Improve schemas by enforcing that amounts that must be whole numbers (e.g Order asset amounts) no longer allow decimal amounts",
+                "pr": 1173
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note":
+                    "Convert all schemas to JSON files so that they can be used with `json-schema` implemenations in other programming languages.",
+                "pr": 1145
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
         "timestamp": 1538693146,
         "version": "1.0.7",
         "changes": [

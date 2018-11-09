@@ -1,6 +1,6 @@
-import { generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils';
-import { Order, SignatureType, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { generatePseudoRandomSalt, orderHashUtils } from '@0x/order-utils';
+import { Order, SignatureType, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 import { getLatestBlockTimestampAsync } from './block_timestamp';
 import { constants } from './constants';

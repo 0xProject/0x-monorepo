@@ -12,12 +12,7 @@ import { Package } from './types';
 import { utils } from './utils/utils';
 
 // Packages might not be runnable if they are command-line tools or only run in browsers.
-const UNRUNNABLE_PACKAGES = [
-    '@0xproject/abi-gen',
-    '@0xproject/sra-report',
-    '@0xproject/react-shared',
-    '@0xproject/react-docs',
-];
+const UNRUNNABLE_PACKAGES = ['@0x/abi-gen', '@0x/react-shared', '@0x/react-docs'];
 
 const mkdirpAsync = promisify(mkdirp);
 const rimrafAsync = promisify(rimraf);
@@ -104,13 +99,10 @@ async function testInstallPackageAsync(
     const packageName = installablePackage.packageJson.name;
     utils.log(`Testing ${packageName}@${lastChangelogVersion}`);
     const packageDirName = path.join(...(packageName + '-test').split('/'));
-    const testDirectory = path.join(
-        monorepoRootPath,
-        'packages',
-        'monorepo-scripts',
-        '.installation-test',
-        packageDirName,
-    );
+    // NOTE(fabio): The `testDirectory` needs to be somewhere **outside** the monorepo root directory.
+    // Otherwise, it will have access to the hoisted `node_modules` directory and the Typescript missing
+    // type errors will not be caught.
+    const testDirectory = path.join(monorepoRootPath, '..', '.installation-test', packageDirName);
     await rimrafAsync(testDirectory);
     await mkdirpAsync(testDirectory);
     await execAsync('yarn init --yes', { cwd: testDirectory });
@@ -124,7 +116,7 @@ async function testInstallPackageAsync(
     await writeFileAsync(indexFilePath, `import * as Package from '${packageName}';\nconsole.log(Package);\n`);
     const tsConfig = {
         compilerOptions: {
-            typeRoots: ['node_modules/@0xproject/typescript-typings/types', 'node_modules/@types'],
+            typeRoots: ['node_modules/@0x/typescript-typings/types', 'node_modules/@types'],
             module: 'commonjs',
             target: 'es5',
             lib: ['es2017', 'dom'],
@@ -132,6 +124,7 @@ async function testInstallPackageAsync(
             noImplicitReturns: true,
             pretty: true,
             strict: true,
+            resolveJsonModule: true,
         },
         include: ['index.ts'],
     };

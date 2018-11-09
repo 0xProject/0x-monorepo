@@ -2,7 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
-import { EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Types } from '@0xproject/types';
+import { EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Types } from '@0x/types';
 
 export const signTypedDataUtils = {
     /**
