@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.1 - _November 9, 2018_
+
+    * Fix bug in `getTransactionByHashAsync` which was causing the return value to have the wrong type (raw fields instead of unmarshalled fields). (#1177)
+
 ## v3.1.0 - _October 18, 2018_
 
     * Add `signTypedData` to perform EIP712 `eth_signTypedData`. (#1102)
