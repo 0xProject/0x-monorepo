@@ -130,7 +130,7 @@ export type SlideAnimationState = 'slidIn' | 'slidOut' | 'none';
 
 export enum StandardSlidingPanelContent {
     None = 'NONE',
-    InstallMetaMask = 'INSTALL_META_MASK',
+    InstallWallet = 'INSTALL_WALLET',
 }
 
 export interface StandardSlidingPanelSettings {

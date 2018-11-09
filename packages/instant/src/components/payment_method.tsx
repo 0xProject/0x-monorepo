@@ -93,7 +93,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         }
     };
     private readonly _openInstallWalletPanel = () => {
-        this.props.openStandardSlidingPanel(StandardSlidingPanelContent.InstallMetaMask);
+        this.props.openStandardSlidingPanel(StandardSlidingPanelContent.InstallWallet);
     };
 }
 

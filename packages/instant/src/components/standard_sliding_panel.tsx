@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { SlideAnimationState, StandardSlidingPanelContent, StandardSlidingPanelSettings } from '../types';
 
+import { InstallWalletPanelContent } from './install_wallet_panel_content';
 import { SlidingPanel } from './sliding_panel';
 
 export interface StandardSlidingPanelProps extends StandardSlidingPanelSettings {
@@ -19,8 +20,8 @@ export class StandardSlidingPanel extends React.Component<StandardSlidingPanelPr
     }
     private readonly _getNodeForContent = (content: StandardSlidingPanelContent): React.ReactNode => {
         switch (content) {
-            case StandardSlidingPanelContent.InstallMetaMask:
-                return 'Install MetaMask';
+            case StandardSlidingPanelContent.InstallWallet:
+                return <InstallWalletPanelContent />;
             default:
                 return null;
         }
