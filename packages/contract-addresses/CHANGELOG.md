@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.0 - _November 9, 2018_
+
+    * Update Forwarder addresses (#1192)
+
 ## v1.0.1 - _October 18, 2018_
 
     * Initial release (#1105)
