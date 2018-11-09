@@ -12,12 +12,8 @@ export interface OverlayContainerProps extends ContainerProps {
 }
 export const OverlayContainer: React.StatelessComponent<OverlayContainerProps> = props => {
     const { onOverlayClick, showMaxWidth, ...otherProps } = props;
-    return (
-        <React.Fragment>
-            <Container {...otherProps} />
-            {props.showOverlay && (
-                <Overlay onClick={onOverlayClick} zIndex={zIndex.containerOverlay} showMaxWidth={showMaxWidth} />
-            )}
-        </React.Fragment>
-    );
+    if (props.showOverlay) {
+        return <Overlay onClick={onOverlayClick} zIndex={zIndex.containerOverlay} showMaxWidth={showMaxWidth} />;
+    }
+    return null;
 };
