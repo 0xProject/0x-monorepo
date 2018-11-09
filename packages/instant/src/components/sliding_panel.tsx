@@ -18,7 +18,7 @@ export interface PanelProps {
 export const Panel: React.StatelessComponent<PanelProps> = ({ children, onClose }) => (
     <Container backgroundColor={ColorOption.white} width="100%" height="100%" zIndex={zIndex.panel} padding="20px">
         <Flex justify="flex-end">
-            <Icon width={12} color={ColorOption.lightGrey} icon="closeX" onClick={onClose} />
+            <Icon padding="5px" width={12} color={ColorOption.lightGrey} icon="closeX" onClick={onClose} />
         </Flex>
         <Container position="relative" top="-10px" height="100%">
             {children}
