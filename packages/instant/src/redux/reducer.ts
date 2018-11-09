@@ -19,6 +19,8 @@ import {
     OrderProcessState,
     OrderState,
     ProviderState,
+    StandardSlidingPanelContent,
+    StandardSlidingPanelSettings,
 } from '../types';
 
 import { Action, ActionTypes } from './actions';
@@ -30,6 +32,7 @@ export interface DefaultState {
     buyOrderState: OrderState;
     latestErrorDisplayStatus: DisplayStatus;
     quoteRequestState: AsyncProcessState;
+    standardSlidingPanelSettings: StandardSlidingPanelSettings;
 }
 
 // State that is required but needs to be derived from the props
@@ -56,6 +59,10 @@ export const DEFAULT_STATE: DefaultState = {
     buyOrderState: { processState: OrderProcessState.None },
     latestErrorDisplayStatus: DisplayStatus.Hidden,
     quoteRequestState: AsyncProcessState.None,
+    standardSlidingPanelSettings: {
+        animationState: 'none',
+        content: StandardSlidingPanelContent.None,
+    },
 };
 
 export const createReducer = (initialState: State) => {
@@ -212,6 +219,22 @@ export const createReducer = (initialState: State) => {
                 return {
                     ...state,
                     availableAssets: action.data,
+                };
+            case ActionTypes.OPEN_STANDARD_SLIDING_PANEL:
+                return {
+                    ...state,
+                    standardSlidingPanelSettings: {
+                        content: action.data,
+                        animationState: 'slidIn',
+                    },
+                };
+            case ActionTypes.CLOSE_STANDARD_SLIDING_PANEL:
+                return {
+                    ...state,
+                    standardSlidingPanelSettings: {
+                        content: state.standardSlidingPanelSettings.content,
+                        animationState: 'slidOut',
+                    },
                 };
             default:
                 return state;

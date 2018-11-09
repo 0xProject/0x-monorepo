@@ -2,10 +2,9 @@ import * as React from 'react';
 
 import { connect } from 'react-redux';
 
-import { SlideAnimationState } from '../components/animations/slide_animation';
 import { SlidingError } from '../components/sliding_error';
 import { State } from '../redux/reducer';
-import { Asset, DisplayStatus } from '../types';
+import { Asset, DisplayStatus, SlideAnimationState } from '../types';
 
 export interface LatestErrorComponentProps {
     asset?: Asset;

@@ -2,14 +2,14 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
+import { SlideAnimationState } from '../types';
 
 import { PositionAnimationSettings } from './animations/position_animation';
-import { SlideAnimation, SlideAnimationState } from './animations/slide_animation';
+import { SlideAnimation } from './animations/slide_animation';
 
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 import { Icon } from './ui/icon';
-import { Text } from './ui/text';
 
 export interface PanelProps {
     onClose?: () => void;

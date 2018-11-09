@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
+import { CurrentStandardSlidingPanel } from '../containers/current_standard_sliding_panel';
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
 import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_order_progress';
@@ -8,8 +9,8 @@ import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
+import { SlideAnimationState } from '../types';
 
-import { SlideAnimationState } from './animations/slide_animation';
 import { CSSReset } from './css_reset';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
@@ -59,6 +60,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         >
                             <AvailableERC20TokenSelector onTokenSelect={this._handlePanelClose} />
                         </SlidingPanel>
+                        <CurrentStandardSlidingPanel />
                     </Container>
                 </Container>
             </React.Fragment>
