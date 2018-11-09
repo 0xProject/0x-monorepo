@@ -2,17 +2,11 @@
     "extends": "../../tsconfig",
     "compilerOptions": {
         "outDir": "lib",
-        "rootDir": ".",
-        "strictFunctionTypes": false,
-        "noImplicitAny": false,
-        "typeRoots": ["node_modules/@types"],
+        "rootDir": "."
     },
     "include": [
-        "node_modules/@types",
-        "node_modules/@0xproject/typescript-typings/types",
-        "../../node_modules/@types",
-        "../../node_modules/@0xproject/typescript-typings/types",
-        "./src/**/*", 
-        "./test/**/*"
+        "./src/**/*",
+        "./test/**/*",
+        "../typescript-typings/types/solidity-parser-antlr/*"
     ]
 }
