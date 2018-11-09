@@ -105,9 +105,6 @@ class ASTInfoVisitor {
     public WhileStatement(ast: Parser.WhileStatement): void {
         this._visitStatement(ast);
     }
-    public SimpleStatement(ast: Parser.SimpleStatement): void {
-        this._visitStatement(ast);
-    }
     public ThrowStatement(ast: Parser.ThrowStatement): void {
         this._visitStatement(ast);
     }
