@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
-import { Account, AccountState, Network } from '../types';
+import { Account, AccountState, Network, StandardSlidingPanelContent } from '../types';
 
 import { MetaMaskLogo } from './meta_mask_logo';
 import { PaymentMethodDropdown } from './payment_method_dropdown';
@@ -15,6 +15,7 @@ import { Text } from './ui/text';
 export interface PaymentMethodProps {
     account: Account;
     network: Network;
+    openStandardSlidingPanel: (content: StandardSlidingPanelContent) => void;
 }
 
 export class PaymentMethod extends React.Component<PaymentMethodProps> {
@@ -75,27 +76,10 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         switch (account.state) {
             case AccountState.Loading:
                 return 'loading...';
-            case AccountState.Error:
             case AccountState.Locked:
+                return <WalletPrompt onClick={this._openInstallWalletPanel}>Unlock MetaMask</WalletPrompt>;
             case AccountState.None:
-                return (
-                    <Container
-                        padding="12px"
-                        border={`1px solid ${ColorOption.darkOrange}`}
-                        backgroundColor={ColorOption.lightOrange}
-                        width="100%"
-                        borderRadius="4px"
-                    >
-                        <Flex>
-                            <Container marginRight="10px">
-                                <MetaMaskLogo width={19} height={18} />
-                            </Container>
-                            <Text fontSize="16px" fontColor={ColorOption.darkOrange}>
-                                Connect MetaMask
-                            </Text>
-                        </Flex>
-                    </Container>
-                );
+                return <WalletPrompt onClick={this._openInstallWalletPanel}>Install MetaMask</WalletPrompt>;
             case AccountState.Ready:
                 return (
                     <PaymentMethodDropdown
@@ -108,4 +92,33 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                 return 'payment method';
         }
     };
+    private readonly _openInstallWalletPanel = () => {
+        this.props.openStandardSlidingPanel(StandardSlidingPanelContent.InstallMetaMask);
+    };
 }
+
+interface WalletPromptProps {
+    onClick?: () => void;
+}
+
+const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({ onClick, children }) => (
+    <Container
+        padding="12px"
+        border={`1px solid ${ColorOption.darkOrange}`}
+        backgroundColor={ColorOption.lightOrange}
+        width="100%"
+        borderRadius="4px"
+        onClick={onClick}
+        cursor={onClick ? 'pointer' : undefined}
+        boxShadowOnHover={!!onClick}
+    >
+        <Flex>
+            <Container marginRight="10px">
+                <MetaMaskLogo width={19} height={18} />
+            </Container>
+            <Text fontSize="16px" fontColor={ColorOption.darkOrange}>
+                {children}
+            </Text>
+        </Flex>
+    </Container>
+);
