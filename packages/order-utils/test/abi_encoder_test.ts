@@ -12,7 +12,10 @@ import { MethodAbi, DataItem } from 'ethereum-types';
 
 import { BigNumber } from '@0x/utils';
 import { assert } from '@0x/order-utils/src/assert';
-import * as AbiEncoder from './abi_encoder';
+//import * as AbiEncoder from './abi_encoder';
+
+import * as AbiEncoder from './abi/abi_encoder';
+
 import * as AbiSamples from './abi_samples';
 
 chaiSetup.configure();
