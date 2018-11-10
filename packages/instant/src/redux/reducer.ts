@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { ERROR_ACCOUNT, LOADING_ACCOUNT, LOCKED_ACCOUNT } from '../constants';
+import { LOADING_ACCOUNT, LOCKED_ACCOUNT } from '../constants';
 import { assetMetaDataMap } from '../data/asset_meta_data_map';
 import {
     Account,
@@ -65,8 +65,6 @@ export const createReducer = (initialState: State) => {
                 return reduceStateWithAccount(state, LOADING_ACCOUNT);
             case ActionTypes.SET_ACCOUNT_STATE_LOCKED:
                 return reduceStateWithAccount(state, LOCKED_ACCOUNT);
-            case ActionTypes.SET_ACCOUNT_STATE_ERROR:
-                return reduceStateWithAccount(state, ERROR_ACCOUNT);
             case ActionTypes.SET_ACCOUNT_STATE_READY: {
                 const account: AccountReady = {
                     state: AccountState.Ready,
