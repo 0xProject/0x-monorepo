@@ -91,10 +91,15 @@ export class DependentCalldataBlock extends CalldataBlock {
 
     public toBuffer(): Buffer {
         const dependencyOffset = this.dependency.getOffsetInBytes();
+        console.log("Dependency Offset - ", dependencyOffset);
         const parentOffset = this.parent.getOffsetInBytes();
+        console.log("Parent Offset - ", parentOffset);
         const parentHeaderSize = this.parent.getHeaderSizeInBytes();
-        const pointer = dependencyOffset - parentOffset + parentHeaderSize;
-        const pointerBuf = new Buffer(`0x${pointer.toString(16)}`);
+        console.log("Parent Header size - ", parentHeaderSize);
+        const pointer: number = (dependencyOffset - parentOffset) + parentHeaderSize;
+        console.log("DAT PTR = ", pointer);
+        const pointerBuf = ethUtil.toBuffer(`0x${pointer.toString(16)}`);
+        console.log("Chye - ", pointerBuf);
         const evmWordWidthInBytes = 32;
         const pointerBufPadded = ethUtil.setLengthLeft(pointerBuf, evmWordWidthInBytes);
         return pointerBufPadded;
@@ -122,7 +127,7 @@ export class MemberCalldataBlock extends CalldataBlock {
             bodySizeInBytes += member.getSizeInBytes();
         });
         this.members = members;
-        this.setBodySize(bodySizeInBytes);
+        this.setBodySize(0);
     }
 
     public setHeader(header: Buffer) {
@@ -176,7 +181,9 @@ export class Calldata {
         while ((block = blockQueue.pop()) !== undefined) {
             console.log(block.getName());
             block.setOffset(offset);
+            offset += block.getSizeInBytes();
             if (block instanceof DependentCalldataBlock) {
+                console.log(block.getDependency());
                 blockQueue.push(block.getDependency());
             } else if (block instanceof MemberCalldataBlock) {
                 _.each(block.getMembers(), (member: CalldataBlock) => {
@@ -185,8 +192,11 @@ export class Calldata {
             }
         }
 
+        console.log(this.root);
+
         // Fetch values using same technique
         const valueBufs: Buffer[] = [selectorBuffer];
+        blockQueue.push(this.root);
         while ((block = blockQueue.pop()) !== undefined) {
             valueBufs.push(block.toBuffer());
 
