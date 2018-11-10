@@ -32,7 +32,6 @@ export abstract class PayloadDataType extends DataType {
     }
 
     public generateCalldataBlock(value: any, parentBlock?: CalldataBlock): PayloadCalldataBlock {
-        //console.log();
         const encodedValue = this.encodeValue(value);
         const name = this.getDataItem().name;
         const signature = this.getSignature();
@@ -101,9 +100,6 @@ export abstract class MemberDataType extends DataType {
 
     public constructor(dataItem: DataItem, isArray: boolean = false, arrayLength?: number, arrayElementType?: string) {
         super(dataItem);
-
-        console.log('*'.repeat(40), arrayLength);
-
         this.memberMap = {};
         this.members = [];
         this.isArray = isArray;
@@ -138,7 +134,6 @@ export abstract class MemberDataType extends DataType {
     }
 
     private createMembersWithLength(dataItem: DataItem, length: number): [DataType[], MemberMap] {
-        console.log(dataItem);
         let members: DataType[] = [];
         let memberMap: MemberMap = {};
         const range = _.range(length);
@@ -169,7 +164,7 @@ export abstract class MemberDataType extends DataType {
             );
         }
 
-        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), false);
+        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), this.isStatic(), false);
 
         let members = this.members;
         if (this.isArray && this.arrayLength === undefined) {
@@ -190,7 +185,7 @@ export abstract class MemberDataType extends DataType {
     }
 
     protected generateCalldataBlockFromObject(obj: object): MemberCalldataBlock {
-        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), false);
+        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), this.isStatic(), false);
         const memberBlocks: CalldataBlock[] = [];
         let childMap = _.cloneDeep(this.memberMap);
         _.forOwn(obj, (value: any, key: string) => {
