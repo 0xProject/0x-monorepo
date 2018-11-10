@@ -76,7 +76,8 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         const { account, network } = this.props;
         switch (account.state) {
             case AccountState.Loading:
-                return <Container height="48px" />;
+                // Just take up the same amount of space as the other states.
+                return <Container height="52px" />;
             case AccountState.Locked:
                 return (
                     <WalletPrompt
@@ -119,7 +120,7 @@ interface WalletPromptProps {
 
 const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({ onClick, image, children }) => (
     <Container
-        padding="12px"
+        padding="14.5px"
         border={`1px solid ${ColorOption.darkOrange}`}
         backgroundColor={ColorOption.lightOrange}
         width="100%"
