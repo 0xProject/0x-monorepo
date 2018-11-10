@@ -81,7 +81,7 @@ export class DependentCalldataBlock extends CalldataBlock {
     private parent: CalldataBlock;
     private dependency: CalldataBlock;
 
-    constructor(name: string, signature: string, /*offsetInBytes: number,*/ relocatable: boolean, parent: CalldataBlock, dependency: CalldataBlock) {
+    constructor(name: string, signature: string, /*offsetInBytes: number,*/ relocatable: boolean, dependency: CalldataBlock, parent: CalldataBlock) {
         const headerSizeInBytes = 0;
         const bodySizeInBytes = DependentCalldataBlock.DEPENDENT_PAYLOAD_SIZE_IN_BYTES;
         super(name, signature, /*offsetInBytes,*/ headerSizeInBytes, bodySizeInBytes, relocatable);
@@ -174,6 +174,7 @@ export class Calldata {
         let block: CalldataBlock | undefined;
         let offset = 0;
         while ((block = blockQueue.pop()) !== undefined) {
+            console.log(block.getName());
             block.setOffset(offset);
             if (block instanceof DependentCalldataBlock) {
                 blockQueue.push(block.getDependency());
