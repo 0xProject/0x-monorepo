@@ -8,6 +8,8 @@ import { Calldata } from './calldata';
 
 import { BigNumber } from '@0x/utils';
 
+var _ = require('lodash');
+
 export interface DataTypeStaticInterface {
     matchGrammar: (type: string) => boolean;
     encodeValue: (value: any) => Buffer;
@@ -382,10 +384,14 @@ export class Method extends MemberDataType {
     private methodSignature: string;
     private methodSelector: string;
 
+    // TMP
+    public selector: string;
+
     constructor(abi: MethodAbi) {
         super({ type: 'method', name: abi.name });
         this.methodSignature = this.computeSignature();
-        this.methodSelector = this.computeSelector();
+        this.selector = this.methodSelector = this.computeSelector();
+
     }
 
     private computeSignature(): string {

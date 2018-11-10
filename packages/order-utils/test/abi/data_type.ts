@@ -31,7 +31,7 @@ export abstract class PayloadDataType extends DataType {
         this.hasConstantSize = hasConstantSize;
     }
 
-    public generateCalldataBlocks(value: any, parentBlock?: CalldataBlock): PayloadCalldataBlock {
+    public generateCalldataBlock(value: any, parentBlock?: CalldataBlock): PayloadCalldataBlock {
         const encodedValue = this.encodeValue(value);
         const name = this.getDataItem().name;
         const signature = this.getSignature();
@@ -105,13 +105,13 @@ export abstract class MemberDataType extends DataType {
         this.isArray = isArray;
         this.arrayLength = arrayLength;
         if (isArray && arrayLength !== undefined) {
-            [this.members, this.memberMap] = MemberDataType.createMembersWithLength(dataItem, arrayLength);
+            [this.members, this.memberMap] = this.createMembersWithLength(dataItem, arrayLength);
         } else if (!isArray) {
-            [this.members, this.memberMap] = MemberDataType.createMembersWithKeys(dataItem);
+            [this.members, this.memberMap] = this.createMembersWithKeys(dataItem);
         }
     }
 
-    private static createMembersWithKeys(dataItem: DataItem): [DataType[], MemberMap] {
+    private createMembersWithKeys(dataItem: DataItem): [DataType[], MemberMap] {
         // Sanity check
         if (dataItem.components === undefined) {
             throw new Error(`Expected components`);
@@ -132,7 +132,7 @@ export abstract class MemberDataType extends DataType {
         return [members, memberMap];
     }
 
-    private static createMembersWithLength(dataItem: DataItem, length: number): [DataType[], MemberMap] {
+    private createMembersWithLength(dataItem: DataItem, length: number): [DataType[], MemberMap] {
         let members: DataType[] = [];
         let memberMap: MemberMap = {};
         const range = _.range(length);
@@ -165,7 +165,7 @@ export abstract class MemberDataType extends DataType {
 
         let members = this.members;
         if (this.arrayLength === undefined) {
-            [members,] = MemberDataType.createMembersWithLength(this.getDataItem(), value.length);
+            [members,] = this.createMembersWithLength(this.getDataItem(), value.length);
         }
 
         const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), false);
@@ -200,7 +200,7 @@ export abstract class MemberDataType extends DataType {
     }
 
     public generateCalldataBlock(value: any[] | object, parentBlock?: CalldataBlock): MemberCalldataBlock {
-        const block = (value instanceof Array) ? this.generateCalldataBlockFromArray(value) : this.generateCalldataBlockFromObject(value, calldata);
+        const block = (value instanceof Array) ? this.generateCalldataBlockFromArray(value) : this.generateCalldataBlockFromObject(value);
         return block;
     }
 
