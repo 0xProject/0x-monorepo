@@ -400,9 +400,10 @@ export class Method extends MemberDataType {
         return selector;
     }
 
-    public encode(value: any[] | object, calldata = new Calldata()) {
+    public encode(value: any[] | object, calldata = new Calldata()): string {
         calldata.setSelector(this.methodSelector);
         super.encode(value, calldata);
+        return calldata.toHexString();
     }
 
     public getSignature(): string {
