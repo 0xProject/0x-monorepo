@@ -91,15 +91,10 @@ export class DependentCalldataBlock extends CalldataBlock {
 
     public toBuffer(): Buffer {
         const dependencyOffset = this.dependency.getOffsetInBytes();
-        console.log("Dependency Offset - ", dependencyOffset);
         const parentOffset = this.parent.getOffsetInBytes();
-        console.log("Parent Offset - ", parentOffset);
         const parentHeaderSize = this.parent.getHeaderSizeInBytes();
-        console.log("Parent Header size - ", parentHeaderSize);
         const pointer: number = dependencyOffset - (parentOffset + parentHeaderSize);
-        console.log("DAT PTR = ", pointer);
         const pointerBuf = ethUtil.toBuffer(`0x${pointer.toString(16)}`);
-        console.log("Chye - ", pointerBuf);
         const evmWordWidthInBytes = 32;
         const pointerBufPadded = ethUtil.setLengthLeft(pointerBuf, evmWordWidthInBytes);
         return pointerBufPadded;
@@ -114,11 +109,13 @@ export class MemberCalldataBlock extends CalldataBlock {
     private static DEPENDENT_PAYLOAD_SIZE_IN_BYTES = 32;
     private header: Buffer | undefined;
     private members: CalldataBlock[];
+    private contiguous: boolean;
 
-    constructor(name: string, signature: string, /*offsetInBytes: number,*/ relocatable: boolean) {
+    constructor(name: string, signature: string, /*offsetInBytes: number,*/ relocatable: boolean, contiguous: boolean) {
         super(name, signature, /*offsetInBytes,*/ 0, 0, relocatable);
         this.members = [];
         this.header = undefined;
+        this.contiguous = contiguous;
     }
 
     public setMembers(members: CalldataBlock[]) {
@@ -128,6 +125,10 @@ export class MemberCalldataBlock extends CalldataBlock {
         });
         this.members = members;
         this.setBodySize(0);
+    }
+
+    public isContiguous(): boolean {
+        return true;
     }
 
     public setHeader(header: Buffer) {
@@ -149,6 +150,9 @@ class Queue<T> {
     private store: T[] = [];
     push(val: T) {
         this.store.push(val);
+    }
+    pushFront(val: T) {
+        this.store.unshift(val);
     }
     pop(): T | undefined {
         return this.store.shift();
@@ -186,8 +190,8 @@ export class Calldata {
                 console.log(block.getDependency());
                 blockQueue.push(block.getDependency());
             } else if (block instanceof MemberCalldataBlock) {
-                _.each(block.getMembers(), (member: CalldataBlock) => {
-                    blockQueue.push(member);
+                _.eachRight(block.getMembers(), (member: CalldataBlock) => {
+                    blockQueue.pushFront(member);
                 });
             }
         }
@@ -203,8 +207,8 @@ export class Calldata {
             if (block instanceof DependentCalldataBlock) {
                 blockQueue.push(block.getDependency());
             } else if (block instanceof MemberCalldataBlock) {
-                _.each(block.getMembers(), (member: CalldataBlock) => {
-                    blockQueue.push(member);
+                _.eachRight(block.getMembers(), (member: CalldataBlock) => {
+                    blockQueue.pushFront(member);
                 });
             }
         }
