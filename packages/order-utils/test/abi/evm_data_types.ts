@@ -347,9 +347,10 @@ export class SolArray extends MemberDataType {
         }
 
         const isArray = true;
+        const arrayElementType = matches[1];
         const arrayLength = (matches[2] === '') ? undefined : parseInt(matches[2], 10);
-        super(dataItem, isArray, arrayLength);
-        this.elementType = matches[1];
+        super(dataItem, isArray, arrayLength, arrayElementType);
+        this.elementType = arrayElementType;
         this.arraySignature = this.computeSignature();
     }
 
@@ -388,7 +389,7 @@ export class Method extends MemberDataType {
     public selector: string;
 
     constructor(abi: MethodAbi) {
-        super({ type: 'method', name: abi.name });
+        super({ type: 'method', name: abi.name, components: abi.inputs });
         this.methodSignature = this.computeSignature();
         this.selector = this.methodSelector = this.computeSelector();
 

@@ -18,13 +18,15 @@ import * as AbiEncoder from './abi/abi_encoder';
 
 import * as AbiSamples from './abi_samples';
 
+AbiEncoder.DataTypeFactory.setImpl(new AbiEncoder.EvmDataTypeFactoryImpl());
+
 chaiSetup.configure();
 const expect = chai.expect;
 
 describe.only('ABI Encoder', () => {
     describe.only('ABI Tests at Method Level', () => {
 
-        it('Crazy ABI', async () => {
+        it.skip('Crazy ABI', async () => {
             const method = new AbiEncoder.Method(AbiSamples.crazyAbi);
             console.log(method.getSignature());
 
@@ -89,8 +91,9 @@ describe.only('ABI Encoder', () => {
             expect(calldata).to.be.equal(expectedCalldata);
         });
 
-        it('Crazy ABI #1', async () => {
+        it.skip('Crazy ABI #1', async () => {
             const method = new AbiEncoder.Method(AbiSamples.crazyAbi1);
+
             const args = [
                 new BigNumber(256745454),
                 new BigNumber(-256745454),
@@ -115,6 +118,7 @@ describe.only('ABI Encoder', () => {
 
         it('Types with default widths', async () => {
             const method = new AbiEncoder.Method(AbiSamples.typesWithDefaultWidthsAbi);
+            console.log(method);
             const args = [new BigNumber(1), new BigNumber(-1), '0x56', [new BigNumber(1)], [new BigNumber(-1)], ['0x56']];
             const calldata = method.encode(args);
             console.log(calldata);
@@ -325,7 +329,7 @@ describe.only('ABI Encoder', () => {
             expect(calldata).to.be.equal(expectedCalldata);
         });
 
-        it('Yessir', async () => {
+        it.only('Yessir', async () => {
             const method = new AbiEncoder.Method(AbiSamples.simpleAbi);
             const calldata = method.encode([new BigNumber(5), 'five']);
             console.log(calldata);
