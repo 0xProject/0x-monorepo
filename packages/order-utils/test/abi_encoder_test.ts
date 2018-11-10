@@ -116,7 +116,7 @@ describe.only('ABI Encoder', () => {
         });
 
 
-        it.skip('Types with default widths', async () => {
+        it('Types with default widths', async () => {
             const method = new AbiEncoder.Method(AbiSamples.typesWithDefaultWidthsAbi);
             console.log(method);
             const args = [new BigNumber(1), new BigNumber(-1), '0x56', [new BigNumber(1)], [new BigNumber(-1)], ['0x56']];
@@ -303,7 +303,7 @@ describe.only('ABI Encoder', () => {
         });
 
 
-        it('Fixed Length Array / Static Members ABI', async () => {
+        it.only('Fixed Length Array / Static Members ABI', async () => {
             const method = new AbiEncoder.Method(AbiSamples.staticArrayAbi);
             const args = [[new BigNumber(127), new BigNumber(14), new BigNumber(54)]];
             const calldata = method.encode(args);
@@ -338,6 +338,7 @@ describe.only('ABI Encoder', () => {
 
         it('Array ABI', async () => {
             const method = new AbiEncoder.Method(AbiSamples.stringAbi);
+            console.log(method);
             const calldata = method.encode([['five', 'six', 'seven']]);
             console.log(method.getSignature());
             console.log(method.selector);

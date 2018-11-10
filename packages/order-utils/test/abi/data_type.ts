@@ -167,12 +167,17 @@ export abstract class MemberDataType extends DataType {
             );
         }
 
+        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), false);
+
         let members = this.members;
         if (this.isArray && this.arrayLength === undefined) {
             [members,] = this.createMembersWithLength(this.getDataItem(), value.length);
+
+            const lenBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${value.length.toString(16)}`), 32);
+            methodBlock.setHeader(lenBuf);
         }
 
-        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), false);
+
         const memberBlocks: CalldataBlock[] = [];
         _.each(members, (member: DataType, idx: number) => {
             const block = member.generateCalldataBlock(value[idx], methodBlock);
