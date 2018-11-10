@@ -259,7 +259,7 @@ describe.only('ABI Encoder', () => {
             expect(calldata).to.be.equal(expectedCalldata);
         });
 
-        it('Fixed Lenfgth Array / Dynamic Members', async () => {
+        it.only('Fixed Lenfgth Array / Dynamic Members', async () => {
             const method = new AbiEncoder.Method(AbiSamples.staticArrayDynamicMembersAbi);
             const args = [["Brave", "New", "World"]];
             const calldata = method.encode(args);
@@ -303,7 +303,7 @@ describe.only('ABI Encoder', () => {
         });
 
 
-        it.only('Fixed Length Array / Static Members ABI', async () => {
+        it('Fixed Length Array / Static Members ABI', async () => {
             const method = new AbiEncoder.Method(AbiSamples.staticArrayAbi);
             const args = [[new BigNumber(127), new BigNumber(14), new BigNumber(54)]];
             const calldata = method.encode(args);
