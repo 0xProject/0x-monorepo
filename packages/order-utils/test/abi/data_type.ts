@@ -1,4 +1,4 @@
-import { Calldata, CalldataBlock, PayloadCalldataBlock, DependentCalldataBlock } from "./calldata";
+import { Calldata, CalldataBlock, PayloadCalldataBlock, DependentCalldataBlock, MemberCalldataBlock } from "./calldata";
 import { MethodAbi, DataItem } from 'ethereum-types';
 import { BigNumber } from '@0x/utils';
 import ethUtil = require('ethereumjs-util');
@@ -17,7 +17,7 @@ export abstract class DataType {
         return this.dataItem;
     }
 
-    protected abstract createCalldataBlock(): CalldataBlock;
+    public abstract generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlock;
     public abstract encode(value: any, calldata: Calldata): void;
     public abstract getSignature(): string;
     public abstract isStatic(): boolean;
@@ -31,19 +31,27 @@ export abstract class PayloadDataType extends DataType {
         this.hasConstantSize = hasConstantSize;
     }
 
-    protected generateCalldataBlock(payload: Buffer, calldata: Calldata): void {
+    public generateCalldataBlocks(value: any, parentBlock?: CalldataBlock): PayloadCalldataBlock {
+        const encodedValue = this.encodeValue(value);
         const name = this.getDataItem().name;
         const signature = this.getSignature();
-        const offsetInBytes = calldata.getSizeInBytes();
+        // const offsetInBytes = calldata.getSizeInBytes();
         const relocatable = false;
-        const block = new PayloadCalldataBlock(name, signature, offsetInBytes, relocatable, payload);
-        calldata.pushBlock(block);
+        const block = new PayloadCalldataBlock(name, signature, /*offsetInBytes,*/ relocatable, encodedValue);
+        return block;
+    }
+
+    public encode(value: any, calldata: Calldata): void {
+        const block = this.generateCalldataBlock(value);
+        calldata.setRoot(block);
     }
 
     public isStatic(): boolean {
         // If a payload has a constant size then it's static
         return this.hasConstantSize;
     }
+
+    public abstract encodeValue(value: any): Buffer;
 }
 
 export abstract class DependentDataType extends DataType {
@@ -56,20 +64,21 @@ export abstract class DependentDataType extends DataType {
         this.parent = parent;
     }
 
-    protected generateCalldataBlock(offsetInBytes: number, calldata: Calldata): CalldataBlock {
+    public generateCalldataBlock(value: any, parentBlock?: CalldataBlock): DependentCalldataBlock {
+        if (parentBlock === undefined) {
+            throw new Error(`DependentDataType requires a parent block to generate its block`);
+        }
+        const dependencyBlock = this.dependency.generateCalldataBlock(value);
         const name = this.getDataItem().name;
         const signature = this.getSignature();
         const relocatable = false;
-        const parentBlock = calldata.lookupBlockByName(this.parent.getDataItem().name);
-        const dependencyBlock = calldata.lookupBlockByName(this.parent.getDataItem().name);
-        const block = new DependentCalldataBlock(name, signature, offsetInBytes, relocatable, dependencyBlock, parentBlock);
-        calldata.pushBlock(block);
+        const block = new DependentCalldataBlock(name, signature, /*offsetInBytes,*/ relocatable, dependencyBlock, parentBlock);
+        return block;
     }
 
     public encode(value: any, calldata: Calldata = new Calldata()): void {
-        const offsetInBytes = calldata.reserveSpace(DependentCalldataBlock.DEPENDENT_PAYLOAD_SIZE_IN_BYTES);
-        this.dependency.encode(value, calldata);
-        this.generateCalldataBlock(offsetInBytes, calldata);
+        const block = this.generateCalldataBlock(value);
+        calldata.setRoot(block);
     }
 
     public isStatic(): boolean {
@@ -96,7 +105,7 @@ export abstract class MemberDataType extends DataType {
         this.isArray = isArray;
         this.arrayLength = arrayLength;
         if (isArray && arrayLength !== undefined) {
-            [this.members, this.memberMap] = MemberDataType.createMembersWithLength(arrayLength);
+            [this.members, this.memberMap] = MemberDataType.createMembersWithLength(dataItem, arrayLength);
         } else if (!isArray) {
             [this.members, this.memberMap] = MemberDataType.createMembersWithKeys(dataItem);
         }
@@ -129,7 +138,7 @@ export abstract class MemberDataType extends DataType {
         const range = _.range(length);
         _.each(range, (idx: number) => {
             const childDataItem = {
-                type: this.type,
+                type: dataItem.type,
                 name: `${dataItem.name}[${idx.toString(10)}]`,
             } as DataItem;
             const components = dataItem.components;
@@ -144,57 +153,60 @@ export abstract class MemberDataType extends DataType {
         return [members, memberMap];
     }
 
-    protected encodeFromArray(value: any[], calldata: Calldata) {
+    protected generateCalldataBlockFromArray(value: any[]): MemberCalldataBlock {
         // Sanity check length
-        const valueLength = new BigNumber(value.length);
-        if (this.length !== SolArray.UNDEFINED_LENGTH && valueLength.equals(this.length) === false) {
+        if (this.arrayLength !== undefined && value.length !== this.arrayLength) {
             throw new Error(
                 `Expected array of ${JSON.stringify(
-                    this.length,
-                )} elements, but got array of length ${JSON.stringify(valueLength)}`,
+                    this.arrayLength,
+                )} elements, but got array of length ${JSON.stringify(value.length)}`,
             );
         }
 
-        // Assign values to children
-        for (let idx = new BigNumber(0); idx.lessThan(this.length); idx = idx.plus(1)) {
-            const idxNumber = idx.toNumber();
-            this.members[idxNumber].assignValue(value[idxNumber]);
+        let members = this.members;
+        if (this.arrayLength === undefined) {
+            [members,] = MemberDataType.createMembersWithLength(this.getDataItem(), value.length);
         }
+
+        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), false);
+        const memberBlocks: CalldataBlock[] = [];
+        _.each(members, (member: DataType) => {
+            const block = member.generateCalldataBlock(value, methodBlock);
+            memberBlocks.push(block);
+        });
+        methodBlock.setMembers(memberBlocks);
+        return methodBlock;
     }
 
-    protected encodeFromObject(obj: object, calldata: Calldata) {
+    protected generateCalldataBlockFromObject(obj: object): MemberCalldataBlock {
+        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), false);
+        const memberBlocks: CalldataBlock[] = [];
         let childMap = _.cloneDeep(this.memberMap);
         _.forOwn(obj, (value: any, key: string) => {
             if (key in childMap === false) {
                 throw new Error(`Could not assign tuple to object: unrecognized key '${key}'`);
             }
-            this.members[this.childMap[key]].assignValue(value);
+            const block = this.members[this.memberMap[key]].generateCalldataBlock(value, methodBlock);
+            memberBlocks.push(block);
             delete childMap[key];
         });
 
         if (Object.keys(childMap).length !== 0) {
             throw new Error(`Could not assign tuple to object: missing keys ${Object.keys(childMap)}`);
         }
+
+        methodBlock.setMembers(memberBlocks);
+        return methodBlock;
     }
 
-    public encode(value: any[] | object, calldata = new Calldata()) {
-        if (value instanceof Array) {
-            this.encodeFromArray(value, calldata);
-        } else if (typeof value === 'object') {
-            this.encodeFromObject(value, encodeFromObject);
-        } else {
-            throw new Error(`Unexpected type for ${value}`);
-        }
+    public generateCalldataBlock(value: any[] | object, parentBlock?: CalldataBlock): MemberCalldataBlock {
+        const block = (value instanceof Array) ? this.generateCalldataBlockFromArray(value) : this.generateCalldataBlockFromObject(value, calldata);
+        return block;
     }
 
-    protected generateCalldataBlock(offsetInBytes: number, calldata: Calldata): CalldataBlock {
-        const name = this.getDataItem().name;
-        const signature = this.getSignature();
-        const relocatable = false;
-        const parentBlock = calldata.lookupBlockByName(this.parent.getDataItem().name);
-        const dependencyBlock = calldata.lookupBlockByName(this.parent.getDataItem().name);
-        const block = new DependentCalldataBlock(name, signature, offsetInBytes, relocatable, dependencyBlock, parentBlock);
-        calldata.pushBlock(block);
+    public encode(value: any, calldata: Calldata = new Calldata()): void {
+        const block = this.generateCalldataBlock(value);
+        calldata.setRoot(block);
     }
 
     protected computeSignatureOfMembers(): string {

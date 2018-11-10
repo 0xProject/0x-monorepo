@@ -9,13 +9,21 @@ export abstract class CalldataBlock {
     private bodySizeInBytes: number;
     private relocatable: boolean;
 
-    constructor(name: string, signature: string, offsetInBytes: number, headerSizeInBytes: number, bodySizeInBytes: number, relocatable: boolean) {
+    constructor(name: string, signature: string, /*offsetInBytes: number,*/ headerSizeInBytes: number, bodySizeInBytes: number, relocatable: boolean) {
         this.name = name;
         this.signature = signature;
-        this.offsetInBytes = offsetInBytes;
+        this.offsetInBytes = 0;
         this.headerSizeInBytes = headerSizeInBytes;
         this.bodySizeInBytes = bodySizeInBytes;
         this.relocatable = relocatable;
+    }
+
+    protected setHeaderSize(headerSizeInBytes: number) {
+        this.headerSizeInBytes = headerSizeInBytes;
+    }
+
+    protected setBodySize(bodySizeInBytes: number) {
+        this.bodySizeInBytes = bodySizeInBytes;
     }
 
     public getName(): string {
@@ -46,22 +54,25 @@ export abstract class CalldataBlock {
         return this.offsetInBytes;
     }
 
-    public abstract toHexString(): string;
+    public setOffset(offsetInBytes: number) {
+        this.offsetInBytes = offsetInBytes;
+    }
+
+    public abstract toBuffer(): Buffer;
 }
 
 export class PayloadCalldataBlock extends CalldataBlock {
     private payload: Buffer;
 
-    constructor(name: string, signature: string, offsetInBytes: number, relocatable: boolean, payload: Buffer) {
+    constructor(name: string, signature: string, /*offsetInBytes: number,*/ relocatable: boolean, payload: Buffer) {
         const headerSizeInBytes = 0;
         const bodySizeInBytes = payload.byteLength;
-        super(name, signature, offsetInBytes, headerSizeInBytes, bodySizeInBytes, relocatable);
+        super(name, signature, /*offsetInBytes,*/ headerSizeInBytes, bodySizeInBytes, relocatable);
         this.payload = payload;
     }
 
-    public toHexString(): string {
-        const payloadHex = ethUtil.bufferToHex(this.payload);
-        return payloadHex;
+    public toBuffer(): Buffer {
+        return this.payload;
     }
 }
 
@@ -70,15 +81,15 @@ export class DependentCalldataBlock extends CalldataBlock {
     private parent: CalldataBlock;
     private dependency: CalldataBlock;
 
-    constructor(name: string, signature: string, offsetInBytes: number, relocatable: boolean, parent: CalldataBlock, dependency: CalldataBlock) {
+    constructor(name: string, signature: string, /*offsetInBytes: number,*/ relocatable: boolean, parent: CalldataBlock, dependency: CalldataBlock) {
         const headerSizeInBytes = 0;
         const bodySizeInBytes = DependentCalldataBlock.DEPENDENT_PAYLOAD_SIZE_IN_BYTES;
-        super(name, signature, offsetInBytes, headerSizeInBytes, bodySizeInBytes, relocatable);
+        super(name, signature, /*offsetInBytes,*/ headerSizeInBytes, bodySizeInBytes, relocatable);
         this.parent = parent;
         this.dependency = dependency;
     }
 
-    public toHexString(): string {
+    public toBuffer(): Buffer {
         const dependencyOffset = this.dependency.getOffsetInBytes();
         const parentOffset = this.parent.getOffsetInBytes();
         const parentHeaderSize = this.parent.getHeaderSizeInBytes();
@@ -86,8 +97,11 @@ export class DependentCalldataBlock extends CalldataBlock {
         const pointerBuf = new Buffer(`0x${pointer.toString(16)}`);
         const evmWordWidthInBytes = 32;
         const pointerBufPadded = ethUtil.setLengthLeft(pointerBuf, evmWordWidthInBytes);
-        const pointerHex = ethUtil.bufferToHex(pointerBufPadded);
-        return pointerHex;
+        return pointerBufPadded;
+    }
+
+    public getDependency(): CalldataBlock {
+        return this.dependency;
     }
 }
 
@@ -96,51 +110,97 @@ export class MemberCalldataBlock extends CalldataBlock {
     private header: Buffer | undefined;
     private members: CalldataBlock[];
 
-    constructor(name: string, signature: string, offsetInBytes: number, relocatable: boolean, members: CalldataBlock[], header?: Buffer) {
-        const headerSizeInBytes = (header === undefined) ? 0 : header.byteLength;
+    constructor(name: string, signature: string, /*offsetInBytes: number,*/ relocatable: boolean) {
+        super(name, signature, /*offsetInBytes,*/ 0, 0, relocatable);
+        this.members = [];
+        this.header = undefined;
+    }
+
+    public setMembers(members: CalldataBlock[]) {
         let bodySizeInBytes = 0;
-        _.each(members, (member: Memblock) => {
+        _.each(members, (member: CalldataBlock) => {
             bodySizeInBytes += member.getSizeInBytes();
         });
-
-        super(name, signature, offsetInBytes, headerSizeInBytes, bodySizeInBytes, relocatable);
         this.members = members;
+        this.setBodySize(bodySizeInBytes);
+    }
+
+    public setHeader(header: Buffer) {
+        this.setHeaderSize(header.byteLength);
         this.header = header;
     }
 
-    public toHexString(): string {
-        let valueBuffers: Buffer[] = [];
-        if (this.header !== undefined) valueBuffers.push(this.header);
-        _.each(this.members, (member: CalldataBlock) => {
-            const memberHexString = member.toHexString();
-            const memberBuf = ethUtil.toBuffer(memberHexString);
-            valueBuffers.push(memberBuf);
-        });
-        const combinedValueBufs = Buffer.concat(valueBuffers);
-        const combinedValuesAsHex = ethUtil.bufferToHex(combinedValueBufs);
-        return combinedValuesAsHex;
+    public toBuffer(): Buffer {
+        if (this.header !== undefined) return this.header;
+        return new Buffer('');
+    }
+
+    public getMembers(): CalldataBlock[] {
+        return this.members;
+    }
+}
+
+class Queue<T> {
+    private store: T[] = [];
+    push(val: T) {
+        this.store.push(val);
+    }
+    pop(): T | undefined {
+        return this.store.shift();
     }
 }
 
 export class Calldata {
     private selector: string;
     private sizeInBytes: number;
-    private blocks: CalldataBlock[];
+    private root: CalldataBlock | undefined;
 
     constructor() {
         this.selector = '0x';
         this.sizeInBytes = 0;
-        this.blocks = [];
+        this.root = undefined;
     }
 
     public toHexString(): string {
-        let calldataString = `${this.selector}`;
-        _.each(this.blocks, (block: CalldataBlock) => {
-            const blockAsHexString = block.toHexString();
-            const blockAsHexWithoutPrefix = ethUtil.stripHexPrefix(blockAsHexString);
-            calldataString += blockAsHexWithoutPrefix;
-        });
-        return calldataString;
+        let selectorBuffer = ethUtil.toBuffer(this.selector);
+        if (this.root === undefined) {
+            throw new Error('expected root');
+        }
+
+        const blockQueue = new Queue<CalldataBlock>();
+        blockQueue.push(this.root);
+
+        // Assign locations in breadth-first manner
+        let block: CalldataBlock | undefined;
+        let offset = 0;
+        while ((block = blockQueue.pop()) !== undefined) {
+            block.setOffset(offset);
+            if (block instanceof DependentCalldataBlock) {
+                blockQueue.push(block.getDependency());
+            } else if (block instanceof MemberCalldataBlock) {
+                _.each(block.getMembers(), (member: CalldataBlock) => {
+                    blockQueue.push(member);
+                });
+            }
+        }
+
+        // Fetch values using same technique
+        const valueBufs: Buffer[] = [selectorBuffer];
+        while ((block = blockQueue.pop()) !== undefined) {
+            valueBufs.push(block.toBuffer());
+
+            if (block instanceof DependentCalldataBlock) {
+                blockQueue.push(block.getDependency());
+            } else if (block instanceof MemberCalldataBlock) {
+                _.each(block.getMembers(), (member: CalldataBlock) => {
+                    blockQueue.push(member);
+                });
+            }
+        }
+
+        const combinedBuffers = Buffer.concat(valueBufs);
+        const hexValue = ethUtil.bufferToHex(combinedBuffers);
+        return hexValue;
     }
 
     public getSelectorHex(): string {
@@ -155,8 +215,8 @@ export class Calldata {
         return "";
     }
 
-    public pushBlock(block: CalldataBlock) {
-        this.blocks.push(block);
+    public setRoot(block: CalldataBlock) {
+        this.root = block;
         this.sizeInBytes += block.getSizeInBytes();
     }
 
