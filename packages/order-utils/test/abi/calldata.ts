@@ -1,4 +1,5 @@
 import ethUtil = require('ethereumjs-util');
+import CommunicationChatBubbleOutline from 'material-ui/SvgIcon';
 var _ = require('lodash');
 
 export abstract class CalldataBlock {
@@ -157,17 +158,49 @@ class Queue<T> {
     pop(): T | undefined {
         return this.store.shift();
     }
+    merge(q: Queue<T>) {
+        this.store = this.store.concat(q.store);
+    }
+    mergeFront(q: Queue<T>) {
+        this.store = q.store.concat(this.store);
+    }
 }
 
 export class Calldata {
     private selector: string;
     private sizeInBytes: number;
-    private root: CalldataBlock | undefined;
+    private root: MemberCalldataBlock | undefined;
 
     constructor() {
         this.selector = '0x';
         this.sizeInBytes = 0;
         this.root = undefined;
+    }
+
+    private createQueue(memberBlock: MemberCalldataBlock): Queue<CalldataBlock> {
+        const blockQueue = new Queue<CalldataBlock>();
+        _.eachRight(memberBlock.getMembers(), (member: CalldataBlock) => {
+            if (member instanceof MemberCalldataBlock) {
+                blockQueue.mergeFront(this.createQueue(member));
+            } else {
+                blockQueue.pushFront(member);
+            }
+        });
+
+        // Children
+        _.each(memberBlock.getMembers(), (member: CalldataBlock) => {
+            if (member instanceof DependentCalldataBlock) {
+                const dependency = member.getDependency();
+                if (dependency instanceof MemberCalldataBlock) {
+                    blockQueue.merge(this.createQueue(dependency));
+                } else {
+                    blockQueue.push(dependency);
+                }
+            }
+        });
+
+        blockQueue.pushFront(memberBlock);
+        return blockQueue;
     }
 
     public toHexString(): string {
@@ -176,6 +209,21 @@ export class Calldata {
             throw new Error('expected root');
         }
 
+        const offsetQueue = this.createQueue(this.root);
+        let block: CalldataBlock | undefined;
+        let offset = 0;
+        while ((block = offsetQueue.pop()) !== undefined) {
+            block.setOffset(offset);
+            offset += block.getSizeInBytes();
+        }
+
+        const valueQueue = this.createQueue(this.root);
+        const valueBufs: Buffer[] = [selectorBuffer];
+        while ((block = valueQueue.pop()) !== undefined) {
+            valueBufs.push(block.toBuffer());
+        }
+
+        /*
         const blockQueue = new Queue<CalldataBlock>();
         blockQueue.push(this.root);
 
@@ -211,7 +259,7 @@ export class Calldata {
                     blockQueue.pushFront(member);
                 });
             }
-        }
+        }*/
 
         const combinedBuffers = Buffer.concat(valueBufs);
         const hexValue = ethUtil.bufferToHex(combinedBuffers);
@@ -230,7 +278,7 @@ export class Calldata {
         return "";
     }
 
-    public setRoot(block: CalldataBlock) {
+    public setRoot(block: MemberCalldataBlock) {
         this.root = block;
         this.sizeInBytes += block.getSizeInBytes();
     }
