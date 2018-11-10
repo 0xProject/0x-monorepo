@@ -315,6 +315,7 @@ export class Tuple extends MemberDataType {
     private tupleSignature: string;
 
     constructor(dataItem: DataItem) {
+        console.log(dataItem);
         super(dataItem);
         if (!Tuple.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Tuple with bad input: ${dataItem}`);

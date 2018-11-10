@@ -116,7 +116,7 @@ describe.only('ABI Encoder', () => {
         });
 
 
-        it.only('Types with default widths', async () => {
+        it('Types with default widths', async () => {
             const method = new AbiEncoder.Method(AbiSamples.typesWithDefaultWidthsAbi);
             console.log(method);
             const args = [new BigNumber(1), new BigNumber(-1), '0x56', [new BigNumber(1)], [new BigNumber(-1)], ['0x56']];
@@ -201,7 +201,7 @@ describe.only('ABI Encoder', () => {
             expect(calldata).to.be.equal(expectedCalldata);
         });
 
-        it.only('Multidimensional Arrays / Static Members', async () => {
+        it('Multidimensional Arrays / Static Members', async () => {
             const method = new AbiEncoder.Method(AbiSamples.multiDimensionalArraysStaticTypeAbi);
 
             // Eight 3-dimensional arrays of uint8[2][2][2]
