@@ -95,15 +95,17 @@ export abstract class MemberDataType extends DataType {
     private members: DataType[];
     private isArray: boolean;
     protected arrayLength: number | undefined;
+    protected arrayElementType: string | undefined;
 
 
-    public constructor(dataItem: DataItem, isArray: boolean = false, arrayLength?: number) {
+    public constructor(dataItem: DataItem, isArray: boolean = false, arrayLength?: number, arrayElementType?: string) {
         super(dataItem);
 
         this.memberMap = {};
         this.members = [];
         this.isArray = isArray;
         this.arrayLength = arrayLength;
+        this.arrayElementType = arrayElementType;
         if (isArray && arrayLength !== undefined) {
             [this.members, this.memberMap] = this.createMembersWithLength(dataItem, arrayLength);
         } else if (!isArray) {
@@ -119,10 +121,10 @@ export abstract class MemberDataType extends DataType {
 
         let members: DataType[] = [];
         let memberMap: MemberMap = {};
-        _.each(dataItem.components, (dataItem: DataItem) => {
+        _.each(dataItem.components, (memberItem: DataItem) => {
             const childDataItem = {
-                type: dataItem.type,
-                name: `${dataItem.name}.${dataItem.name}`,
+                type: memberItem.type,
+                name: `${dataItem.name}.${memberItem.name}`,
             } as DataItem;
             const child = DataTypeFactory.create(childDataItem, this);
             members.push(child);
@@ -133,12 +135,13 @@ export abstract class MemberDataType extends DataType {
     }
 
     private createMembersWithLength(dataItem: DataItem, length: number): [DataType[], MemberMap] {
+        console.log(dataItem);
         let members: DataType[] = [];
         let memberMap: MemberMap = {};
         const range = _.range(length);
         _.each(range, (idx: number) => {
             const childDataItem = {
-                type: dataItem.type,
+                type: this.arrayElementType,
                 name: `${dataItem.name}[${idx.toString(10)}]`,
             } as DataItem;
             const components = dataItem.components;
@@ -164,7 +167,7 @@ export abstract class MemberDataType extends DataType {
         }
 
         let members = this.members;
-        if (this.arrayLength === undefined) {
+        if (this.isArray && this.arrayLength === undefined) {
             [members,] = this.createMembersWithLength(this.getDataItem(), value.length);
         }
 
