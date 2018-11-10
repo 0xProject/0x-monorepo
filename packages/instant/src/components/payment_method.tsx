@@ -45,7 +45,6 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         switch (account.state) {
             case AccountState.Loading:
                 return 'loading...';
-            case AccountState.Error:
             case AccountState.Locked:
             case AccountState.None:
                 return 'connect your wallet';
