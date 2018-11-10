@@ -32,6 +32,7 @@ export abstract class PayloadDataType extends DataType {
     }
 
     public generateCalldataBlock(value: any, parentBlock?: CalldataBlock): PayloadCalldataBlock {
+        //console.log();
         const encodedValue = this.encodeValue(value);
         const name = this.getDataItem().name;
         const signature = this.getSignature();
@@ -173,8 +174,8 @@ export abstract class MemberDataType extends DataType {
 
         const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), false);
         const memberBlocks: CalldataBlock[] = [];
-        _.each(members, (member: DataType) => {
-            const block = member.generateCalldataBlock(value, methodBlock);
+        _.each(members, (member: DataType, idx: number) => {
+            const block = member.generateCalldataBlock(value[idx], methodBlock);
             memberBlocks.push(block);
         });
         methodBlock.setMembers(memberBlocks);

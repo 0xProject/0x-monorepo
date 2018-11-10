@@ -86,6 +86,7 @@ abstract class Number extends PayloadDataType {
     }
 
     public encodeValue(value: BigNumber): Buffer {
+        console.log(value);
         if (value.greaterThan(this.getMaxValue())) {
             throw `tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`;
         } else if (value.lessThan(this.getMinValue())) {
