@@ -26,7 +26,7 @@ const expect = chai.expect;
 describe.only('ABI Encoder', () => {
     describe.only('ABI Tests at Method Level', () => {
 
-        it.skip('Crazy ABI', async () => {
+        it('Crazy ABI', async () => {
             const method = new AbiEncoder.Method(AbiSamples.crazyAbi);
             console.log(method.getSignature());
 
@@ -91,7 +91,7 @@ describe.only('ABI Encoder', () => {
             expect(calldata).to.be.equal(expectedCalldata);
         });
 
-        it.skip('Crazy ABI #1', async () => {
+        it('Crazy ABI #1', async () => {
             const method = new AbiEncoder.Method(AbiSamples.crazyAbi1);
 
             const args = [
