@@ -2,7 +2,7 @@ import { AssetProxyId } from '@0x/types';
 import * as _ from 'lodash';
 
 import { BIG_NUMBER_ZERO } from '../constants';
-import { AccountState, ERC20Asset } from '../types';
+import { AccountState, ERC20Asset, OrderProcessState } from '../types';
 import { assetUtils } from '../util/asset';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
 import { coinbaseApi } from '../util/coinbase_api';
@@ -36,10 +36,11 @@ export const asyncData = {
             store.dispatch(actions.setAvailableAssets([]));
         }
     },
-    fetchAccountInfoAndDispatchToStore: async (store: Store) => {
+    fetchAccountInfoAndDispatchToStore: async (options: { store: Store; shouldSetToLoading: boolean }) => {
+        const { store, shouldSetToLoading } = options;
         const { providerState } = store.getState();
         const web3Wrapper = providerState.web3Wrapper;
-        if (providerState.account.state !== AccountState.Loading) {
+        if (shouldSetToLoading && providerState.account.state !== AccountState.Loading) {
             store.dispatch(actions.setAccountStateLoading());
         }
         let availableAddresses: string[];
@@ -74,12 +75,14 @@ export const asyncData = {
             return;
         }
     },
-    fetchCurrentBuyQuoteAndDispatchToStore: async (store: Store) => {
-        const { providerState, selectedAsset, selectedAssetAmount, affiliateInfo } = store.getState();
+    fetchCurrentBuyQuoteAndDispatchToStore: async (options: { store: Store; shouldSetPending: boolean }) => {
+        const { store, shouldSetPending } = options;
+        const { buyOrderState, providerState, selectedAsset, selectedAssetAmount, affiliateInfo } = store.getState();
         const assetBuyer = providerState.assetBuyer;
         if (
             !_.isUndefined(selectedAssetAmount) &&
             !_.isUndefined(selectedAsset) &&
+            buyOrderState.processState === OrderProcessState.None &&
             selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
         ) {
             await buyQuoteUpdater.updateBuyQuoteAsync(
@@ -87,6 +90,7 @@ export const asyncData = {
                 store.dispatch,
                 selectedAsset as ERC20Asset,
                 selectedAssetAmount,
+                shouldSetPending,
                 affiliateInfo,
             );
         }

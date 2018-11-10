@@ -69,7 +69,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
 
 const debouncedUpdateBuyQuoteAsync = _.debounce(buyQuoteUpdater.updateBuyQuoteAsync.bind(buyQuoteUpdater), 200, {
     trailing: true,
-});
+}) as typeof buyQuoteUpdater.updateBuyQuoteAsync;
 
 const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
@@ -87,7 +87,7 @@ const mapDispatchToProps = (
             // even if it's debounced, give them the illusion it's loading
             dispatch(actions.setQuoteRequestStatePending());
             // tslint:disable-next-line:no-floating-promises
-            debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value, affiliateInfo);
+            debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value, true, affiliateInfo);
         }
     },
 });

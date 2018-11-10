@@ -5,15 +5,18 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
+import { ACCOUNT_UPDATE_INTERVAL_TIME_MS, BUY_QUOTE_UPDATE_INTERVAL_TIME_MS } from '../constants';
 import { SelectedAssetThemeProvider } from '../containers/selected_asset_theme_provider';
 import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
+import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
+import { Heartbeater } from '../util/heartbeater';
+import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
 
 fonts.include();
@@ -37,6 +40,9 @@ export interface ZeroExInstantProviderOptionalProps {
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
     private readonly _store: Store;
+    private _accountUpdateHeartbeat?: Heartbeater;
+    private _buyQuoteHeartbeat?: Heartbeater;
+
     // TODO(fragosti): Write tests for this beast once we inject a provider.
     private static _mergeDefaultStateWithProps(
         props: ZeroExInstantProviderProps,
@@ -92,16 +98,37 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             // tslint:disable-next-line:no-floating-promises
             asyncData.fetchAvailableAssetDatasAndDispatchToStore(this._store);
         }
+
+        if (state.providerState.account.state !== AccountState.None) {
+            this._accountUpdateHeartbeat = generateAccountHeartbeater({
+                store: this._store,
+                shouldPerformImmediatelyOnStart: true,
+            });
+            this._accountUpdateHeartbeat.start(ACCOUNT_UPDATE_INTERVAL_TIME_MS);
+        }
+
+        this._buyQuoteHeartbeat = generateBuyQuoteHeartbeater({
+            store: this._store,
+            shouldPerformImmediatelyOnStart: false,
+        });
+        this._buyQuoteHeartbeat.start(BUY_QUOTE_UPDATE_INTERVAL_TIME_MS);
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchAccountInfoAndDispatchToStore(this._store);
-        // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(this._store);
+        asyncData.fetchCurrentBuyQuoteAndDispatchToStore({ store: this._store, shouldSetPending: true });
+
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
         // tslint:disable-next-line:no-floating-promises
         gasPriceEstimator.getGasInfoAsync();
         // tslint:disable-next-line:no-floating-promises
         this._flashErrorIfWrongNetwork();
+    }
+    public componentWillUnmount(): void {
+        if (this._accountUpdateHeartbeat) {
+            this._accountUpdateHeartbeat.stop();
+        }
+        if (this._buyQuoteHeartbeat) {
+            this._buyQuoteHeartbeat.stop();
+        }
     }
     public render(): React.ReactNode {
         return (
