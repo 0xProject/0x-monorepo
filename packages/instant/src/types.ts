@@ -102,11 +102,10 @@ export interface ProviderState {
 }
 
 export enum AccountState {
+    None = 'NONE,',
     Loading = 'LOADING',
     Ready = 'READY',
-    Locked = 'LOCKED', // TODO(bmillman): break this up into locked / privacy mode enabled
-    Error = 'ERROR',
-    None = 'NONE,',
+    Locked = 'LOCKED',
 }
 
 export interface AccountReady {
@@ -115,7 +114,7 @@ export interface AccountReady {
     ethBalanceInWei?: BigNumber;
 }
 export interface AccountNotReady {
-    state: AccountState.None | AccountState.Loading | AccountState.Locked | AccountState.Error;
+    state: AccountState.None | AccountState.Loading | AccountState.Locked;
 }
 
 export type Account = AccountReady | AccountNotReady;
