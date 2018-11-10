@@ -4,6 +4,8 @@ import { MethodAbi, DataItem } from 'ethereum-types';
 
 import ethUtil = require('ethereumjs-util');
 
+import { Calldata } from './calldata';
+
 import { BigNumber } from '@0x/utils';
 
 export interface DataTypeStaticInterface {
@@ -29,7 +31,7 @@ export class Address extends PayloadDataType {
         return type === 'address';
     }
 
-    public static encodeValue(value: boolean): Buffer {
+    public encodeValue(value: boolean): Buffer {
         const evmWordWidth = 32;
         const encodedValueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value), evmWordWidth);
         return encodedValueBuf;
@@ -54,7 +56,7 @@ export class Bool extends PayloadDataType {
         return type === 'bool';
     }
 
-    public static encodeValue(value: boolean): Buffer {
+    public encodeValue(value: boolean): Buffer {
         const evmWordWidth = 32;
         const encodedValue = value === true ? '0x1' : '0x0';
         const encodedValueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(encodedValue), evmWordWidth);
@@ -81,7 +83,7 @@ abstract class Number extends PayloadDataType {
         }
     }
 
-    public static encodeValue(value: BigNumber): Buffer {
+    public encodeValue(value: BigNumber): Buffer {
         if (value.greaterThan(this.getMaxValue())) {
             throw `tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`;
         } else if (value.lessThan(this.getMinValue())) {
@@ -204,7 +206,7 @@ export class Byte extends PayloadDataType {
         return `bytes${this.width}`;
     }
 
-    public static encodeValue(value: string | Buffer): Buffer {
+    public encodeValue(value: string | Buffer): Buffer {
         // Convert value into a buffer and do bounds checking
         const valueBuf = ethUtil.toBuffer(value);
         if (valueBuf.byteLength > this.width) {
@@ -275,7 +277,7 @@ export class SolString extends PayloadDataType {
         }
     }
 
-    public static encodeValue(value: string): Buffer {
+    public encodeValue(value: string): Buffer {
         const wordsForValue = Math.ceil(value.length / 32);
         const paddedBytesForValue = wordsForValue * 32;
         const valueBuf = ethUtil.setLengthRight(ethUtil.toBuffer(value), paddedBytesForValue);
@@ -396,6 +398,11 @@ export class Method extends MemberDataType {
         const signature = this.computeSignature();
         const selector = ethUtil.bufferToHex(ethUtil.toBuffer(ethUtil.sha3(signature).slice(0, 4)));
         return selector;
+    }
+
+    public encode(value: any[] | object, calldata = new Calldata()) {
+        calldata.setSelector(this.methodSelector);
+        super.encode(value, calldata);
     }
 
     public getSignature(): string {
