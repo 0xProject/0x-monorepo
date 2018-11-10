@@ -43,7 +43,7 @@ export abstract class PayloadDataType extends DataType {
 
     public encode(value: any, calldata: Calldata): void {
         const block = this.generateCalldataBlock(value);
-        calldata.setRoot(block);
+        // calldata.setRoot(block);
     }
 
     public isStatic(): boolean {
@@ -78,7 +78,7 @@ export abstract class DependentDataType extends DataType {
 
     public encode(value: any, calldata: Calldata = new Calldata()): void {
         const block = this.generateCalldataBlock(value);
-        calldata.setRoot(block);
+        //calldata.setRoot(block);
     }
 
     public isStatic(): boolean {
@@ -125,15 +125,20 @@ export abstract class MemberDataType extends DataType {
                 type: memberItem.type,
                 name: `${dataItem.name}.${memberItem.name}`,
             } as DataItem;
+            const components = memberItem.components;
+            if (components !== undefined) {
+                childDataItem.components = components;
+            }
             const child = DataTypeFactory.create(childDataItem, this);
+            memberMap[memberItem.name] = members.length;
             members.push(child);
-            memberMap[dataItem.name] = members.length;
         });
 
         return [members, memberMap];
     }
 
     private createMembersWithLength(dataItem: DataItem, length: number): [DataType[], MemberMap] {
+        console.log('!'.repeat(30), dataItem);
         let members: DataType[] = [];
         let memberMap: MemberMap = {};
         const range = _.range(length);
@@ -147,8 +152,8 @@ export abstract class MemberDataType extends DataType {
                 childDataItem.components = components;
             }
             const child = DataTypeFactory.create(childDataItem, this);
-            members.push(child);
             memberMap[idx.toString(10)] = members.length;
+            members.push(child);
         });
 
         return [members, memberMap];
