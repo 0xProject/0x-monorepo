@@ -96,7 +96,7 @@ export class DependentCalldataBlock extends CalldataBlock {
         console.log("Parent Offset - ", parentOffset);
         const parentHeaderSize = this.parent.getHeaderSizeInBytes();
         console.log("Parent Header size - ", parentHeaderSize);
-        const pointer: number = (dependencyOffset - parentOffset) + parentHeaderSize;
+        const pointer: number = dependencyOffset - (parentOffset + parentHeaderSize);
         console.log("DAT PTR = ", pointer);
         const pointerBuf = ethUtil.toBuffer(`0x${pointer.toString(16)}`);
         console.log("Chye - ", pointerBuf);

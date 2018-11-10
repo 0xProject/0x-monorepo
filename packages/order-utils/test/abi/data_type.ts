@@ -102,6 +102,8 @@ export abstract class MemberDataType extends DataType {
     public constructor(dataItem: DataItem, isArray: boolean = false, arrayLength?: number, arrayElementType?: string) {
         super(dataItem);
 
+        console.log('*'.repeat(40), arrayLength);
+
         this.memberMap = {};
         this.members = [];
         this.isArray = isArray;
@@ -243,7 +245,7 @@ export abstract class MemberDataType extends DataType {
         */
 
         if (this.isArray && this.arrayLength === undefined) {
-            return true;
+            return false;
         }
 
         // Search for dependent members
