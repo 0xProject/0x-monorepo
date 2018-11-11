@@ -20,12 +20,12 @@ export const DocsLogo: React.StatelessComponent<DocsLogoProps> = props => {
         <Container className="flex">
             <Container>
                 <Link to={WebsitePaths.Home}>
-                    <Image src="/images/developers/logo/0x.svg" height={30} />
+                    <Image src="/images/developers/logo/0x.svg" height={34} />
                 </Link>
             </Container>
-            <Container paddingTop="7px" paddingLeft="7px">
+            <Container paddingTop="6px" paddingLeft="7px">
                 <Link to={WebsitePaths.Docs}>
-                    <Image src="/images/developers/logo/docs.svg" height={16} />
+                    <Image src="/images/developers/logo/docs.svg" height={20} />
                 </Link>
             </Container>
         </Container>
