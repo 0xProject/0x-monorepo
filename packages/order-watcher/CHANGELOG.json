@@ -1,5 +1,15 @@
 [
     {
+        "version: "2.2.1",
+        "changes": [
+            {
+                "note": "start jsonRpcRequestId at 1, not 0",
+                "pr": 1227
+            }
+        ],
+        "timestamp": 1541977777
+    },
+    {
         "version": "2.2.0",
         "changes": [
             {
