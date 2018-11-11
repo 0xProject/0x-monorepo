@@ -1,24 +1,18 @@
-"""Exercise doctests for order_utils module."""
+"""Exercise doctests for all of our modules."""
 
 from doctest import testmod
+import pkgutil
 
-from zero_ex.dev_utils import abi_utils, type_assertions
-from zero_ex.order_utils import asset_data_utils
-
-
-def test_doctest_asset_data_utils():
-    """Invoke doctest on the asset_data_utils module."""
-    (failure_count, _) = testmod(asset_data_utils)
-    assert failure_count == 0
+import zero_ex
 
 
-def test_doctest_abi_utils():
-    """Invoke doctest on the abi_utils module."""
-    (failure_count, _) = testmod(abi_utils)
-    assert failure_count == 0
-
-
-def test_doctest_type_assertions():
-    """Invoke doctest on the type_assertions module."""
-    (failure_count, _) = testmod(type_assertions)
-    assert failure_count == 0
+def test_all_doctests():
+    """Gather zero_ex.* modules and doctest them."""
+    # prefer `black` formatting. pylint: disable=bad-continuation
+    for (importer, modname, _) in pkgutil.walk_packages(
+        path=zero_ex.__path__, prefix="zero_ex."
+    ):
+        module = importer.find_module(modname).load_module(modname)
+        print(module)
+        (failure_count, _) = testmod(module)
+        assert failure_count == 0

@@ -9,6 +9,7 @@ const ZRX_META_DATA: ERC20AssetMetaData = {
     assetProxyId: AssetProxyId.ERC20,
     symbol: 'zrx',
     decimals: 18,
+    name: '0x',
 };
 const ZRX_ASSET: Asset = {
     assetData: ZRX_ASSET_DATA,

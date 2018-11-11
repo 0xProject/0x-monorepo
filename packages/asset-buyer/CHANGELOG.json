@@ -1,5 +1,38 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "`getAssetBuyerForProvidedOrders` factory function now takes 3 args instead of 4",
+                "pr": 1187
+            },
+            {
+                "note":
+                    "the `OrderProvider` now requires a new method `getAvailableMakerAssetDatasAsync` and the `StandardRelayerAPIOrderProvider` requires the network id at init.",
+                "pr": 1203
+            },
+            {
+                "note": "No longer require that provided orders all have the same maker and taker asset data",
+                "pr": 1197
+            },
+            {
+                "note":
+                    "Fix bug where `BuyQuoteInfo` objects could return `totalEthAmount` and `feeEthAmount` that were not whole numbers",
+                "pr": 1207
+            },
+            {
+                "note":
+                    "Fix bug where default values for `AssetBuyer` public facing methods could get overriden by `undefined` values",
+                "pr": 1207
+            },
+            {
+                "note": "Lower default expiry buffer from 5 minutes to 2 minutes",
+                "pr": 1217
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {

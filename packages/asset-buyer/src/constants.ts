@@ -9,7 +9,7 @@ const MAINNET_NETWORK_ID = 1;
 const DEFAULT_ASSET_BUYER_OPTS: AssetBuyerOpts = {
     networkId: MAINNET_NETWORK_ID,
     orderRefreshIntervalMs: 10000, // 10 seconds
-    expiryBufferSeconds: 300, // 5 minutes
+    expiryBufferSeconds: 120, // 2 minutes
 };
 
 const DEFAULT_BUY_QUOTE_REQUEST_OPTS: BuyQuoteRequestOpts = {
@@ -36,6 +36,5 @@ export const constants = {
     DEFAULT_ASSET_BUYER_OPTS,
     DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
     DEFAULT_BUY_QUOTE_REQUEST_OPTS,
-    MAX_PER_PAGE: 10000,
     EMPTY_ORDERS_AND_FILLABLE_AMOUNTS,
 };

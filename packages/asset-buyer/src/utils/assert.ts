@@ -1,6 +1,5 @@
 import { assert as sharedAssert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
 import { BuyQuote, BuyQuoteInfo, OrderProvider, OrderProviderRequest } from '../types';
@@ -29,22 +28,6 @@ export const assert = {
     isValidOrderProviderRequest(variableName: string, orderFetcherRequest: OrderProviderRequest): void {
         sharedAssert.isHexString(`${variableName}.makerAssetData`, orderFetcherRequest.makerAssetData);
         sharedAssert.isHexString(`${variableName}.takerAssetData`, orderFetcherRequest.takerAssetData);
-        sharedAssert.isNumber(`${variableName}.networkId`, orderFetcherRequest.networkId);
-    },
-    areValidProvidedOrders(variableName: string, orders: SignedOrder[]): void {
-        if (orders.length === 0) {
-            return;
-        }
-        const makerAssetData = orders[0].makerAssetData;
-        const takerAssetData = orders[0].takerAssetData;
-        const filteredOrders = _.filter(
-            orders,
-            order => order.makerAssetData === makerAssetData && order.takerAssetData === takerAssetData,
-        );
-        sharedAssert.assert(
-            orders.length === filteredOrders.length,
-            `Expected all orders in ${variableName} to have the same makerAssetData and takerAssetData.`,
-        );
     },
     isValidPercentage(variableName: string, percentage: number): void {
         assert.isNumber(variableName, percentage);

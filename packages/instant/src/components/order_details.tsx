@@ -8,7 +8,10 @@ import { ColorOption } from '../style/theme';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
-import { Container, Flex, Text } from './ui';
+
+import { Container } from './ui/container';
+import { Flex } from './ui/flex';
+import { Text } from './ui/text';
 
 export interface OrderDetailsProps {
     buyQuoteInfo?: BuyQuoteInfo;
@@ -23,7 +26,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
         const ethTokenFee = buyQuoteAccessor.feeEthAmount();
         const totalEthAmount = buyQuoteAccessor.totalEthAmount();
         return (
-            <Container padding="20px" width="100%">
+            <Container padding="20px" width="100%" flexGrow={1}>
                 <Container marginBottom="10px">
                     <Text
                         letterSpacing="1px"

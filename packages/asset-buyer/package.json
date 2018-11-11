@@ -1,6 +1,6 @@
 {
     "name": "@0x/asset-buyer",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -10,7 +10,7 @@
     "scripts": {
         "build": "yarn tsc -b",
         "build:ci": "yarn build",
-        "lint": "tslint --project .",
+        "lint": "tslint --format stylish --project .",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s clean build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
@@ -36,21 +36,21 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/asset-buyer/README.md",
     "dependencies": {
-        "@0x/assert": "^1.0.14",
-        "@0x/connect": "^3.0.2",
-        "@0x/contract-wrappers": "^3.0.0",
-        "@0x/json-schemas": "^2.0.0",
-        "@0x/order-utils": "^2.0.0",
-        "@0x/subproviders": "^2.1.0",
-        "@0x/types": "^1.2.0",
-        "@0x/typescript-typings": "^3.0.3",
-        "@0x/utils": "^2.0.3",
-        "@0x/web3-wrapper": "^3.1.0",
-        "ethereum-types": "^1.1.1",
+        "@0x/assert": "^1.0.15",
+        "@0x/connect": "^3.0.3",
+        "@0x/contract-wrappers": "^3.0.1",
+        "@0x/json-schemas": "^2.0.1",
+        "@0x/order-utils": "^2.0.1",
+        "@0x/subproviders": "^2.1.1",
+        "@0x/types": "^1.2.1",
+        "@0x/typescript-typings": "^3.0.4",
+        "@0x/utils": "^2.0.4",
+        "@0x/web3-wrapper": "^3.1.1",
+        "ethereum-types": "^1.1.2",
         "lodash": "^4.17.10"
     },
     "devDependencies": {
-        "@0x/tslint-config": "^1.0.9",
+        "@0x/tslint-config": "^1.0.10",
         "@types/lodash": "^4.14.116",
         "@types/mocha": "^2.2.42",
         "@types/node": "*",

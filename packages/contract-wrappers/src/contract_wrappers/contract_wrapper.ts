@@ -28,10 +28,10 @@ export abstract class ContractWrapper {
     protected _networkId: number;
     protected _web3Wrapper: Web3Wrapper;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
-    private _blockPollingIntervalMs: number;
+    private readonly _blockPollingIntervalMs: number;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
-    private _filters: { [filterToken: string]: FilterObject };
-    private _filterCallbacks: {
+    private readonly _filters: { [filterToken: string]: FilterObject };
+    private readonly _filterCallbacks: {
         [filterToken: string]: EventCallback<ContractEventArgs>;
     };
     private _onLogAddedSubscriptionToken: string | undefined;

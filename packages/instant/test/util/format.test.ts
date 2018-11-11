@@ -1,15 +1,15 @@
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
-import { ethDecimals } from '../../src/constants';
+import { ETH_DECIMALS } from '../../src/constants';
 import { format } from '../../src/util/format';
 
 const BIG_NUMBER_ONE = new BigNumber(1);
 const BIG_NUMBER_DECIMAL = new BigNumber(0.432414);
 const BIG_NUMBER_IRRATIONAL = new BigNumber(5.3014059295032);
-const ONE_ETH_IN_BASE_UNITS = Web3Wrapper.toBaseUnitAmount(BIG_NUMBER_ONE, ethDecimals);
-const DECIMAL_ETH_IN_BASE_UNITS = Web3Wrapper.toBaseUnitAmount(BIG_NUMBER_DECIMAL, ethDecimals);
-const IRRATIONAL_ETH_IN_BASE_UNITS = Web3Wrapper.toBaseUnitAmount(BIG_NUMBER_IRRATIONAL, ethDecimals);
+const ONE_ETH_IN_BASE_UNITS = Web3Wrapper.toBaseUnitAmount(BIG_NUMBER_ONE, ETH_DECIMALS);
+const DECIMAL_ETH_IN_BASE_UNITS = Web3Wrapper.toBaseUnitAmount(BIG_NUMBER_DECIMAL, ETH_DECIMALS);
+const IRRATIONAL_ETH_IN_BASE_UNITS = Web3Wrapper.toBaseUnitAmount(BIG_NUMBER_IRRATIONAL, ETH_DECIMALS);
 const BIG_NUMBER_FAKE_ETH_USD_PRICE = new BigNumber(2.534);
 
 describe('format', () => {
@@ -20,8 +20,8 @@ describe('format', () => {
         it('converts .432414 ETH in base units to the string `.4324 ETH`', () => {
             expect(format.ethBaseAmount(DECIMAL_ETH_IN_BASE_UNITS)).toBe('0.4324 ETH');
         });
-        it('converts 5.3014059295032 ETH in base units to the string `5.3014 ETH`', () => {
-            expect(format.ethBaseAmount(IRRATIONAL_ETH_IN_BASE_UNITS)).toBe('5.3014 ETH');
+        it('converts 5.3014059295032 ETH in base units to the string `5.301 ETH`', () => {
+            expect(format.ethBaseAmount(IRRATIONAL_ETH_IN_BASE_UNITS)).toBe('5.301 ETH');
         });
         it('returns defaultText param when ethBaseAmount is not defined', () => {
             const defaultText = 'defaultText';
@@ -38,8 +38,8 @@ describe('format', () => {
         it('converts BigNumer(.432414) to the string `.4324 ETH`', () => {
             expect(format.ethUnitAmount(BIG_NUMBER_DECIMAL)).toBe('0.4324 ETH');
         });
-        it('converts BigNumber(5.3014059295032) to the string `5.3014 ETH`', () => {
-            expect(format.ethUnitAmount(BIG_NUMBER_IRRATIONAL)).toBe('5.3014 ETH');
+        it('converts BigNumber(5.3014059295032) to the string `5.301 ETH`', () => {
+            expect(format.ethUnitAmount(BIG_NUMBER_IRRATIONAL)).toBe('5.301 ETH');
         });
         it('returns defaultText param when ethUnitAmount is not defined', () => {
             const defaultText = 'defaultText';
