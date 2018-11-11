@@ -31,7 +31,7 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: cd packages/website && yarn build
+            - run: cd packages/website && yarn build:prod
     test-contracts-ganache:
         docker:
             - image: circleci/node:9

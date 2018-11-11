@@ -1,6 +1,6 @@
 [
     {
-        "version: "2.2.1",
+        "version: "2.2.2",
         "changes": [
             {
                 "note": "start jsonRpcRequestId at 1, not 0",
@@ -8,6 +8,15 @@
             }
         ],
         "timestamp": 1541977777
+    },
+    {
+        "version": "2.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
     },
     {
         "version": "2.2.0",

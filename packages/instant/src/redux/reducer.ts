@@ -1,11 +1,15 @@
-import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
+import { BuyQuote } from '@0x/asset-buyer';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
+import { LOADING_ACCOUNT, LOCKED_ACCOUNT } from '../constants';
 import { assetMetaDataMap } from '../data/asset_meta_data_map';
 import {
+    Account,
+    AccountReady,
+    AccountState,
     AffiliateInfo,
     Asset,
     AssetMetaData,
@@ -14,172 +18,216 @@ import {
     Network,
     OrderProcessState,
     OrderState,
+    ProviderState,
 } from '../types';
 
 import { Action, ActionTypes } from './actions';
 
-export interface State {
+// State that is required and we have defaults for, before props are passed in
+export interface DefaultState {
     network: Network;
-    assetBuyer?: AssetBuyer;
     assetMetaDataMap: ObjectMap<AssetMetaData>;
-    selectedAsset?: Asset;
-    availableAssets?: Asset[];
-    selectedAssetAmount?: BigNumber;
     buyOrderState: OrderState;
-    ethUsdPrice?: BigNumber;
-    latestBuyQuote?: BuyQuote;
-    quoteRequestState: AsyncProcessState;
-    latestErrorMessage?: string;
     latestErrorDisplayStatus: DisplayStatus;
-    affiliateInfo?: AffiliateInfo;
+    quoteRequestState: AsyncProcessState;
 }
 
-export const INITIAL_STATE: State = {
+// State that is required but needs to be derived from the props
+interface PropsDerivedState {
+    providerState: ProviderState;
+}
+
+// State that is optional
+interface OptionalState {
+    selectedAsset: Asset;
+    availableAssets: Asset[];
+    selectedAssetAmount: BigNumber;
+    ethUsdPrice: BigNumber;
+    latestBuyQuote: BuyQuote;
+    latestErrorMessage: string;
+    affiliateInfo: AffiliateInfo;
+}
+
+export type State = DefaultState & PropsDerivedState & Partial<OptionalState>;
+
+export const DEFAULT_STATE: DefaultState = {
     network: Network.Mainnet,
-    selectedAssetAmount: undefined,
-    availableAssets: undefined,
     assetMetaDataMap,
-    buyOrderState: { processState: OrderProcessState.NONE },
-    ethUsdPrice: undefined,
-    latestBuyQuote: undefined,
-    latestErrorMessage: undefined,
+    buyOrderState: { processState: OrderProcessState.None },
     latestErrorDisplayStatus: DisplayStatus.Hidden,
-    quoteRequestState: AsyncProcessState.NONE,
-    affiliateInfo: undefined,
+    quoteRequestState: AsyncProcessState.None,
 };
 
-export const reducer = (state: State = INITIAL_STATE, action: Action): State => {
-    switch (action.type) {
-        case ActionTypes.UPDATE_ETH_USD_PRICE:
-            return {
-                ...state,
-                ethUsdPrice: action.data,
-            };
-        case ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT:
-            return {
-                ...state,
-                selectedAssetAmount: action.data,
-            };
-        case ActionTypes.UPDATE_LATEST_BUY_QUOTE:
-            const newBuyQuoteIfExists = action.data;
-            const shouldUpdate =
-                _.isUndefined(newBuyQuoteIfExists) || doesBuyQuoteMatchState(newBuyQuoteIfExists, state);
-            if (shouldUpdate) {
+export const createReducer = (initialState: State) => {
+    const reducer = (state: State = initialState, action: Action): State => {
+        switch (action.type) {
+            case ActionTypes.SET_ACCOUNT_STATE_LOADING:
+                return reduceStateWithAccount(state, LOADING_ACCOUNT);
+            case ActionTypes.SET_ACCOUNT_STATE_LOCKED:
+                return reduceStateWithAccount(state, LOCKED_ACCOUNT);
+            case ActionTypes.SET_ACCOUNT_STATE_READY: {
+                const account: AccountReady = {
+                    state: AccountState.Ready,
+                    address: action.data,
+                };
+                return reduceStateWithAccount(state, account);
+            }
+            case ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE: {
+                const { address, ethBalanceInWei } = action.data;
+                const currentAccount = state.providerState.account;
+                if (currentAccount.state !== AccountState.Ready || currentAccount.address !== address) {
+                    return state;
+                } else {
+                    const newAccount: AccountReady = {
+                        ...currentAccount,
+                        ethBalanceInWei,
+                    };
+                    return reduceStateWithAccount(state, newAccount);
+                }
+            }
+            case ActionTypes.UPDATE_ETH_USD_PRICE:
                 return {
                     ...state,
-                    latestBuyQuote: newBuyQuoteIfExists,
-                    quoteRequestState: AsyncProcessState.SUCCESS,
+                    ethUsdPrice: action.data,
                 };
-            } else {
-                return state;
-            }
-
-        case ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING:
-            return {
-                ...state,
-                latestBuyQuote: undefined,
-                quoteRequestState: AsyncProcessState.PENDING,
-            };
-        case ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE:
-            return {
-                ...state,
-                latestBuyQuote: undefined,
-                quoteRequestState: AsyncProcessState.FAILURE,
-            };
-        case ActionTypes.SET_BUY_ORDER_STATE_NONE:
-            return {
-                ...state,
-                buyOrderState: { processState: OrderProcessState.NONE },
-            };
-        case ActionTypes.SET_BUY_ORDER_STATE_VALIDATING:
-            return {
-                ...state,
-                buyOrderState: { processState: OrderProcessState.VALIDATING },
-            };
-        case ActionTypes.SET_BUY_ORDER_STATE_PROCESSING:
-            const processingData = action.data;
-            const { startTimeUnix, expectedEndTimeUnix } = processingData;
-            return {
-                ...state,
-                buyOrderState: {
-                    processState: OrderProcessState.PROCESSING,
-                    txHash: processingData.txHash,
-                    progress: {
-                        startTimeUnix,
-                        expectedEndTimeUnix,
+            case ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT:
+                return {
+                    ...state,
+                    selectedAssetAmount: action.data,
+                };
+            case ActionTypes.UPDATE_LATEST_BUY_QUOTE:
+                const newBuyQuoteIfExists = action.data;
+                const shouldUpdate =
+                    _.isUndefined(newBuyQuoteIfExists) || doesBuyQuoteMatchState(newBuyQuoteIfExists, state);
+                if (shouldUpdate) {
+                    return {
+                        ...state,
+                        latestBuyQuote: newBuyQuoteIfExists,
+                        quoteRequestState: AsyncProcessState.Success,
+                    };
+                } else {
+                    return state;
+                }
+            case ActionTypes.SET_QUOTE_REQUEST_STATE_PENDING:
+                return {
+                    ...state,
+                    latestBuyQuote: undefined,
+                    quoteRequestState: AsyncProcessState.Pending,
+                };
+            case ActionTypes.SET_QUOTE_REQUEST_STATE_FAILURE:
+                return {
+                    ...state,
+                    latestBuyQuote: undefined,
+                    quoteRequestState: AsyncProcessState.Failure,
+                };
+            case ActionTypes.SET_BUY_ORDER_STATE_NONE:
+                return {
+                    ...state,
+                    buyOrderState: { processState: OrderProcessState.None },
+                };
+            case ActionTypes.SET_BUY_ORDER_STATE_VALIDATING:
+                return {
+                    ...state,
+                    buyOrderState: { processState: OrderProcessState.Validating },
+                };
+            case ActionTypes.SET_BUY_ORDER_STATE_PROCESSING:
+                const processingData = action.data;
+                const { startTimeUnix, expectedEndTimeUnix } = processingData;
+                return {
+                    ...state,
+                    buyOrderState: {
+                        processState: OrderProcessState.Processing,
+                        txHash: processingData.txHash,
+                        progress: {
+                            startTimeUnix,
+                            expectedEndTimeUnix,
+                        },
                     },
-                },
-            };
-        case ActionTypes.SET_BUY_ORDER_STATE_FAILURE:
-            const failureTxHash = action.data;
-            if ('txHash' in state.buyOrderState) {
-                if (state.buyOrderState.txHash === failureTxHash) {
-                    const { txHash, progress } = state.buyOrderState;
-                    return {
-                        ...state,
-                        buyOrderState: {
-                            processState: OrderProcessState.FAILURE,
-                            txHash,
-                            progress,
-                        },
-                    };
+                };
+            case ActionTypes.SET_BUY_ORDER_STATE_FAILURE:
+                const failureTxHash = action.data;
+                if ('txHash' in state.buyOrderState) {
+                    if (state.buyOrderState.txHash === failureTxHash) {
+                        const { txHash, progress } = state.buyOrderState;
+                        return {
+                            ...state,
+                            buyOrderState: {
+                                processState: OrderProcessState.Failure,
+                                txHash,
+                                progress,
+                            },
+                        };
+                    }
                 }
-            }
-            return state;
-        case ActionTypes.SET_BUY_ORDER_STATE_SUCCESS:
-            const successTxHash = action.data;
-            if ('txHash' in state.buyOrderState) {
-                if (state.buyOrderState.txHash === successTxHash) {
-                    const { txHash, progress } = state.buyOrderState;
-                    return {
-                        ...state,
-                        buyOrderState: {
-                            processState: OrderProcessState.SUCCESS,
-                            txHash,
-                            progress,
-                        },
-                    };
+                return state;
+            case ActionTypes.SET_BUY_ORDER_STATE_SUCCESS:
+                const successTxHash = action.data;
+                if ('txHash' in state.buyOrderState) {
+                    if (state.buyOrderState.txHash === successTxHash) {
+                        const { txHash, progress } = state.buyOrderState;
+                        return {
+                            ...state,
+                            buyOrderState: {
+                                processState: OrderProcessState.Success,
+                                txHash,
+                                progress,
+                            },
+                        };
+                    }
                 }
-            }
-            return state;
-        case ActionTypes.SET_ERROR_MESSAGE:
-            return {
-                ...state,
-                latestErrorMessage: action.data,
-                latestErrorDisplayStatus: DisplayStatus.Present,
-            };
-        case ActionTypes.HIDE_ERROR:
-            return {
-                ...state,
-                latestErrorDisplayStatus: DisplayStatus.Hidden,
-            };
-        case ActionTypes.CLEAR_ERROR:
-            return {
-                ...state,
-                latestErrorMessage: undefined,
-                latestErrorDisplayStatus: DisplayStatus.Hidden,
-            };
-        case ActionTypes.UPDATE_SELECTED_ASSET:
-            return {
-                ...state,
-                selectedAsset: action.data,
-            };
-        case ActionTypes.RESET_AMOUNT:
-            return {
-                ...state,
-                latestBuyQuote: undefined,
-                quoteRequestState: AsyncProcessState.NONE,
-                buyOrderState: { processState: OrderProcessState.NONE },
-                selectedAssetAmount: undefined,
-            };
-        case ActionTypes.SET_AVAILABLE_ASSETS:
-            return {
-                ...state,
-                availableAssets: action.data,
-            };
-        default:
-            return state;
-    }
+                return state;
+            case ActionTypes.SET_ERROR_MESSAGE:
+                return {
+                    ...state,
+                    latestErrorMessage: action.data,
+                    latestErrorDisplayStatus: DisplayStatus.Present,
+                };
+            case ActionTypes.HIDE_ERROR:
+                return {
+                    ...state,
+                    latestErrorDisplayStatus: DisplayStatus.Hidden,
+                };
+            case ActionTypes.CLEAR_ERROR:
+                return {
+                    ...state,
+                    latestErrorMessage: undefined,
+                    latestErrorDisplayStatus: DisplayStatus.Hidden,
+                };
+            case ActionTypes.UPDATE_SELECTED_ASSET:
+                return {
+                    ...state,
+                    selectedAsset: action.data,
+                };
+            case ActionTypes.RESET_AMOUNT:
+                return {
+                    ...state,
+                    latestBuyQuote: undefined,
+                    quoteRequestState: AsyncProcessState.None,
+                    buyOrderState: { processState: OrderProcessState.None },
+                    selectedAssetAmount: undefined,
+                };
+            case ActionTypes.SET_AVAILABLE_ASSETS:
+                return {
+                    ...state,
+                    availableAssets: action.data,
+                };
+            default:
+                return state;
+        }
+    };
+    return reducer;
+};
+
+const reduceStateWithAccount = (state: State, account: Account) => {
+    const oldProviderState = state.providerState;
+    const newProviderState: ProviderState = {
+        ...oldProviderState,
+        account,
+    };
+    return {
+        ...state,
+        providerState: newProviderState,
+    };
 };
 
 const doesBuyQuoteMatchState = (buyQuote: BuyQuote, state: State): boolean => {

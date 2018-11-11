@@ -1,38 +1,39 @@
 import * as _ from 'lodash';
-import * as React from 'react';
 
-import { ColorOption, overlayBlack, styled } from '../../style/theme';
-
-import { Container } from './container';
-import { Flex } from './flex';
-import { Icon } from './icon';
+import { generateMediaWrapper, ScreenWidths } from '../../style/media';
+import { generateOverlayBlack, styled } from '../../style/theme';
+import { zIndex } from '../../style/z_index';
 
 export interface OverlayProps {
-    className?: string;
-    onClose?: () => void;
     zIndex?: number;
+    backgroundColor?: string;
+    width?: string;
+    height?: string;
+    showMaxWidth?: ScreenWidths;
 }
 
-const PlainOverlay: React.StatelessComponent<OverlayProps> = ({ children, className, onClose }) => (
-    <Flex height="100vh" className={className}>
-        <Container position="absolute" top="0px" right="0px">
-            <Icon height={18} width={18} color={ColorOption.white} icon="closeX" onClick={onClose} padding="2em 2em" />
-        </Container>
-        <div>{children}</div>
-    </Flex>
-);
-export const Overlay = styled(PlainOverlay)`
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: ${props => props.zIndex}
-    background-color: ${overlayBlack};
+export const Overlay =
+    styled.div <
+    OverlayProps >
+    `
+    && {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: ${props => props.zIndex}
+        background-color: ${props => props.backgroundColor};
+        ${props => props.width && `width: ${props.width};`}
+        ${props => props.height && `height: ${props.height};`}
+        display: ${props => (props.showMaxWidth ? 'none' : 'block')};
+        ${props => props.showMaxWidth && generateMediaWrapper(props.showMaxWidth)`display: block;`}
+    }
 `;
 
 Overlay.defaultProps = {
-    zIndex: 100,
+    zIndex: zIndex.overlayDefault,
+    backgroundColor: generateOverlayBlack(0.6),
 };
 
 Overlay.displayName = 'Overlay';

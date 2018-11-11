@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.1 - _November 9, 2018_
+
+    * Dependencies updated
+
 ## v2.0.0 - _October 18, 2018_
 
     * Contract artifacts have been moved to the new @0xproject/contract-artifacts package. v1 migrations have been removed. `runMigrationsAsync` returns the addresses of the contracts that were deployed. (#1105)
