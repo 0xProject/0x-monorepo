@@ -1,6 +1,6 @@
 [
     {
-        "version: "2.2.2",
+        "version": "2.2.2",
         "changes": [
             {
                 "note": "start jsonRpcRequestId at 1, not 0",
