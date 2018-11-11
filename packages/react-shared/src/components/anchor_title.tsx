@@ -1,15 +1,9 @@
 import * as React from 'react';
-import { Link as ScrollLink } from 'react-scroll';
 import styled from 'styled-components';
 
+import { Link } from '../components/link';
 import { HeaderSizes, Styles } from '../types';
 import { colors } from '../utils/colors';
-import { constants } from '../utils/constants';
-
-const headerSizeToScrollOffset: { [headerSize: string]: number } = {
-    h2: -20,
-    h3: 0,
-};
 
 export interface AnchorTitleProps {
     title: string | React.ReactNode;
@@ -73,15 +67,9 @@ export class AnchorTitle extends React.Component<AnchorTitleProps, AnchorTitleSt
                     {this.props.title}
                 </div>
                 {!this.props.isDisabled && (
-                    <ScrollLink
-                        to={this.props.id}
-                        hashSpy={true}
-                        offset={headerSizeToScrollOffset[this.props.headerSize]}
-                        duration={constants.DOCS_SCROLL_DURATION_MS}
-                        containerId={constants.SCROLL_CONTAINER_ID}
-                    >
+                    <Link to={this.props.id}>
                         <AnchorIcon className="zmdi zmdi-link" shouldShowAnchor={this.props.shouldShowAnchor} />
-                    </ScrollLink>
+                    </Link>
                 )}
             </div>
         );
