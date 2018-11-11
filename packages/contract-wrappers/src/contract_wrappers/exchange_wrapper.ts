@@ -5,9 +5,7 @@ import {
     assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
     ExchangeTransferSimulator,
-    orderHashUtils,
     OrderValidationUtils,
-    signatureUtils,
 } from '@0x/order-utils';
 import { AssetProxyId, Order, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
