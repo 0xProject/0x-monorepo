@@ -70,7 +70,7 @@ export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
                     borderRadius="4px"
                     padding="0.4em 0.375em"
                     width="100%"
-                    backgroundColor={isActive ? colors.lightLinkBlue : colors.grey100}
+                    backgroundColor={isActive ? colors.lightLinkBlue : 'transparent'}
                     fontSize="14px"
                     textAlign="left"
                 >

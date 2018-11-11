@@ -160,7 +160,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                             paddingBottom="2px"
                         >
                             <Container paddingTop="30px" paddingLeft="10px" paddingBottom="8px">
-                                <DocsLogo height={36} />
+                                <DocsLogo />
                             </Container>
                         </Container>
                         <SidebarContainer onWheel={this._throttledSidebarScrolling}>

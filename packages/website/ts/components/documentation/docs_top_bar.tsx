@@ -37,35 +37,33 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
     public render(): React.ReactNode {
         return (
             <Container height={80}>
-                <Container className="lg-pt1 md-pt1 sm-pt0">
-                    <Container
-                        className="flex items-center lg-pt3 md-pt3 sm-pt1 lg-justify-end md-justify-end sm-justify-start"
-                        width="100%"
-                    >
-                        <Container className="sm-hide xs-hide">
-                            <Container className="flex items-center justify-between right" width="300px">
-                                {this._renderMenuItems(constants.DEVELOPER_TOPBAR_LINKS)}
-                            </Container>
-                        </Container>
-                        <Container className="lg-hide md-hide">
-                            <Container paddingTop="6px">
-                                <DocsLogo height={30} />
-                            </Container>
-                        </Container>
-                        <Container className="md-hide lg-hide absolute" right="18px" top="12px">
-                            <i
-                                className="zmdi zmdi-menu"
-                                style={{
-                                    color: colors.grey700,
-                                    fontSize: 30,
-                                    cursor: 'pointer',
-                                }}
-                                onClick={this._onMenuButtonClick.bind(this)}
-                            />
+                <Container
+                    className="flex items-center lg-pt3 md-pt3 sm-pt1 lg-justify-end md-justify-end sm-justify-start"
+                    width="100%"
+                >
+                    <Container className="sm-hide xs-hide">
+                        <Container className="flex items-center justify-between right" width="250px">
+                            {this._renderMenuItems(constants.DEVELOPER_TOPBAR_LINKS)}
                         </Container>
                     </Container>
+                    <Container className="lg-hide md-hide">
+                        <Container paddingTop="6px">
+                            <DocsLogo />
+                        </Container>
+                    </Container>
+                    <Container className="md-hide lg-hide absolute" right="18px" top="12px">
+                        <i
+                            className="zmdi zmdi-menu"
+                            style={{
+                                color: colors.grey700,
+                                fontSize: 30,
+                                cursor: 'pointer',
+                            }}
+                            onClick={this._onMenuButtonClick.bind(this)}
+                        />
+                    </Container>
                 </Container>
-                <Container width={'100%'} height={'1px'} backgroundColor={colors.grey300} marginTop={'15px'} />
+                <Container width={'100%'} height={'1px'} backgroundColor={colors.grey300} marginTop={'16px'} />
                 {this.props.screenWidth === ScreenWidths.Sm && this._renderDrawer()}
             </Container>
         );
