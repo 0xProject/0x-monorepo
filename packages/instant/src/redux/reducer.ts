@@ -73,11 +73,16 @@ export const createReducer = (initialState: State) => {
             case ActionTypes.SET_ACCOUNT_STATE_LOCKED:
                 return reduceStateWithAccount(state, LOCKED_ACCOUNT);
             case ActionTypes.SET_ACCOUNT_STATE_READY: {
-                const account: AccountReady = {
+                const address = action.data;
+                const newAccount: AccountReady = {
                     state: AccountState.Ready,
-                    address: action.data,
+                    address,
                 };
-                return reduceStateWithAccount(state, account);
+                const currentAccount = state.providerState.account;
+                if (currentAccount.state === AccountState.Ready && currentAccount.address === address) {
+                    newAccount.ethBalanceInWei = currentAccount.ethBalanceInWei;
+                }
+                return reduceStateWithAccount(state, newAccount);
             }
             case ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE: {
                 const { address, ethBalanceInWei } = action.data;

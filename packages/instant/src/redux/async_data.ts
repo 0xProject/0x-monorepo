@@ -72,9 +72,9 @@ export const asyncData = {
     fetchAccountBalanceAndDispatchToStore: async (providerState: ProviderState, dispatch: Dispatch) => {
         const web3Wrapper = providerState.web3Wrapper;
         const account = providerState.account;
-        if (account.state !== AccountState.Ready) {
-            return;
-        }
+        // if (account.state !== AccountState.Ready) {
+        //     return;
+        // }
         try {
             const address = account.address;
             const ethBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(address);
