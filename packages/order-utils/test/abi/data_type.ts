@@ -195,7 +195,7 @@ export abstract class MemberDataType extends DataType {
         let childMap = _.cloneDeep(this.memberMap);
         _.forOwn(obj, (value: any, key: string) => {
             if (key in childMap === false) {
-                throw new Error(`Could not assign tuple to object: unrecognized key '${key}'`);
+                throw new Error(`Could not assign tuple to object: unrecognized key '${key}' in object ${this.getDataItem().name}`);
             }
             const block = this.members[this.memberMap[key]].generateCalldataBlock(value, methodBlock);
             memberBlocks.push(block);

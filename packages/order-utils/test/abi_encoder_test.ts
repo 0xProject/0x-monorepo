@@ -387,6 +387,80 @@ describe.only('ABI Encoder', () => {
             expect(calldata).to.be.equal(expectedCalldata);
         });
 
+        it.skip('Nested Tuples', async () => {
+            // Couldn't get nested tuples to work with Remix
+            // This is dynamic because it has dynamic members
+            const method = new AbiEncoder.Method(AbiSamples.nestedTuples);
+            const firstTuple = {
+                someUint32: new BigNumber(30472),
+                nestedTuple: {
+                    someUint: new BigNumber('48384725243211555532'),
+                    someAddress: '0xe41d2489571d322189246dafa5ebde1f4699f498'
+                }
+            };
+            const secondTuple = {
+                someUint: new BigNumber(2984237422),
+                someStr: 'This string will exceed 256 bits, so it will spill into the next word of memory.',
+                nestedTuple: {
+                    someUint32: new BigNumber(23),
+                    secondNestedTuple: {
+                        someUint: new BigNumber(234324),
+                        someStr: 'Im also a short string -- oops I just got loooooooooooooooooonger!',
+                        someBytes: '0x23847287fff3472984723498ff23487324987aaa237438911873429472ba',
+                        someAddress: '0xe41d2489571d322189246dafa5ebde1f4699f498'
+                    }
+                },
+                someBytes: '0x2834y3947289423u489aaaff4783924739847489',
+                someAddress: '0xe41d2489571d322189246dafa5ebde1f4699afaf',
+            };
+            const thirdTuple = {
+                'someUint': new BigNumber(37422),
+                'someStr': 'This into the next word of memory. string will exceed 256 bits, so it will spill.',
+                'nestedTuple': {
+                    someUint32: new BigNumber(23999222),
+                    'secondNestedTuple': {
+                        'someUint': new BigNumber(324),
+                        'someStr': 'Im also a short st',
+                        'someBytes': '0x723498ff2348732498723847287fff3472984aaa237438911873429472ba',
+                        'someAddress': '0x46dafa5ebde1f4699f498e41d2489571d3221892'
+                    }
+                },
+                'someBytes': '0x947289423u489aaaff472834y383924739847489',
+                'someAddress': '0x46dafa5ebde1f46e41d2489571d322189299afaf',
+            };
+            const fourthTuple = {
+                'someUint': new BigNumber(222283488822),
+                'someStr': 'exceed 256 bits, so it will spill into the. This string will next word of memory.',
+                'nestedTuple': {
+                    someUint32: new BigNumber(2300),
+                    'secondNestedTuple': {
+                        'someUint': new BigNumber(343224),
+                        'someStr': 'The alphabet backwards is arguably easier to say if thats the way you learned the first time.',
+                        'someBytes': '0x87324987aaa23743891187323847287fff3472984723498ff234429472ba',
+                        'someAddress': '0x71d322189246dafa5ebe41d24895de1f4699f498'
+                    }
+                },
+                'someBytes': '0x2783924739847488343947289423u489aaaff490',
+                'someAddress': '0xebde1d322189246dafa1f4699afafe41d2489575',
+            };
+            const args = [
+                [firstTuple],
+                [secondTuple, thirdTuple, fourthTuple]
+            ];
+
+            console.log('*'.repeat(250), method, '*'.repeat(250));
+
+
+            const calldata = method.encode(args);
+            console.log(method.getSignature());
+            console.log(method.selector);
+            console.log(JSON.stringify(args));
+
+            console.log(calldata);
+            const expectedCalldata = '0x';
+            expect(calldata).to.be.equal(expectedCalldata);
+        });
+
         it.skip('Object ABI (Object input - Missing Key)', async () => {
             const method = new AbiEncoder.Method(AbiSamples.dynamicTupleAbi);
             const calldata = method.encode([{ someUint: new BigNumber(5) }]);
