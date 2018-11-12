@@ -221,7 +221,10 @@ contract MultiAssetProxy is
                     }
 
                     // Load AssetProxy id
-                    let assetProxyId := and(calldataload(nestedAssetDataElementContentsStart), 0xffffffff00000000000000000000000000000000000000000000000000000000)
+                    let assetProxyId := and(
+                        calldataload(nestedAssetDataElementContentsStart),
+                        0xffffffff00000000000000000000000000000000000000000000000000000000
+                    )
 
                     // To lookup a value in a mapping, we load from the storage location keccak256(k, p),
                     // where k is the key left padded to 32 bytes and p is the storage slot
