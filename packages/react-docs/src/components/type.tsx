@@ -1,4 +1,4 @@
-import { colors, constants as sharedConstants, Link, utils as sharedUtils } from '@0x/react-shared';
+import { colors, Link, utils as sharedUtils } from '@0x/react-shared';
 import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '@0x/types';
 import { errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
