@@ -1,4 +1,5 @@
 import * as addressSchema from '../schemas/address_schema.json';
+import * as assetPairsRequestOptsSchema from '../schemas/asset_pairs_request_opts_schema.json';
 import * as blockParamSchema from '../schemas/block_param_schema.json';
 import * as blockRangeSchema from '../schemas/block_range_schema.json';
 import * as callDataSchema from '../schemas/call_data_schema.json';
@@ -10,11 +11,15 @@ import * as indexFilterValuesSchema from '../schemas/index_filter_values_schema.
 import * as jsNumber from '../schemas/js_number.json';
 import * as numberSchema from '../schemas/number_schema.json';
 import * as orderCancellationRequestsSchema from '../schemas/order_cancel_schema.json';
+import * as orderConfigRequestSchema from '../schemas/order_config_request_schema.json';
 import * as orderFillOrKillRequestsSchema from '../schemas/order_fill_or_kill_requests_schema.json';
 import * as orderFillRequestsSchema from '../schemas/order_fill_requests_schema.json';
 import * as orderHashSchema from '../schemas/order_hash_schema.json';
 import * as orderSchema from '../schemas/order_schema.json';
+import * as orderBookRequestSchema from '../schemas/orderbook_request_schema.json';
+import * as ordersRequestOptsSchema from '../schemas/orders_request_opts_schema.json';
 import * as ordersSchema from '../schemas/orders_schema.json';
+import * as pagedRequestOptsSchema from '../schemas/paged_request_opts_schema.json';
 import * as paginatedCollectionSchema from '../schemas/paginated_collection_schema.json';
 import * as relayerApiAssetDataPairsResponseSchema from '../schemas/relayer_api_asset_data_pairs_response_schema.json';
 import * as relayerApiAssetDataPairsSchema from '../schemas/relayer_api_asset_data_pairs_schema.json';
@@ -30,6 +35,7 @@ import * as relayerApiOrdersChannelSubscribeSchema from '../schemas/relayer_api_
 import * as relayerApiOrdersChannelUpdateSchema from '../schemas/relayer_api_orders_channel_update_response_schema.json';
 import * as relayerApiOrdersResponseSchema from '../schemas/relayer_api_orders_response_schema.json';
 import * as relayerApiOrdersSchema from '../schemas/relayer_api_orders_schema.json';
+import * as requestOptsSchema from '../schemas/request_opts_schema.json';
 import * as signedOrderSchema from '../schemas/signed_order_schema.json';
 import * as signedOrdersSchema from '../schemas/signed_orders_schema.json';
 import * as tokenSchema from '../schemas/token_schema.json';
@@ -58,6 +64,12 @@ export const schemas = {
     blockRangeSchema,
     tokenSchema,
     jsNumber,
+    requestOptsSchema,
+    pagedRequestOptsSchema,
+    ordersRequestOptsSchema,
+    orderBookRequestSchema,
+    orderConfigRequestSchema,
+    assetPairsRequestOptsSchema,
     txDataSchema,
     paginatedCollectionSchema,
     relayerApiErrorResponseSchema,
