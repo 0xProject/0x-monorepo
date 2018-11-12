@@ -3,7 +3,7 @@ import { Styles } from '@0x/react-shared';
 import { Order } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
-import ReactTooltip = require('react-tooltip');
+import ReactTooltip from 'react-tooltip';
 
 import { Blockchain } from 'ts/blockchain';
 import { FakeTextField } from 'ts/components/ui/fake_text_field';

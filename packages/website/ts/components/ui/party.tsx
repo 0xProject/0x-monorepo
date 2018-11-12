@@ -1,7 +1,7 @@
 import { colors, EtherscanLinkSuffixes, utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import ReactTooltip = require('react-tooltip');
+import ReactTooltip from 'react-tooltip';
 import { EthereumAddress } from 'ts/components/ui/ethereum_address';
 import { Identicon } from 'ts/components/ui/identicon';
 

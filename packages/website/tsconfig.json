@@ -16,7 +16,9 @@
         "composite": false,
         "paths": {
             "*": ["node_modules/@types/*", "*"]
-        }
+        },
+        "module": "esnext",
+        "moduleResolution": "node"
     },
     "include": ["./ts/**/*"]
 }

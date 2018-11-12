@@ -533,9 +533,6 @@ export class Web3Wrapper {
             method: 'eth_call',
             params: [callDataHex, marshalledDefaultBlock],
         });
-        if (rawCallResult === '0x') {
-            throw new Error('Contract call failed (returned null)');
-        }
         return rawCallResult;
     }
     /**

@@ -1,10 +1,19 @@
 [
     {
-        "version": "2.2.2",
+        "version": "2.2.3",
         "changes": [
             {
                 "note": "Start jsonRpcRequestId at 1, not 0 as 0 breaks Parity websocket RPC",
                 "pr": 1227
+            }
+        ]
+    },
+    {
+        "timestamp": 1542028948,
+        "version": "2.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

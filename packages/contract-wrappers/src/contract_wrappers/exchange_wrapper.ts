@@ -18,6 +18,7 @@ import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_
 import { methodOptsSchema } from '../schemas/method_opts_schema';
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
+import { validateOrderFillableOptsSchema } from '../schemas/validate_order_fillable_opts_schema';
 import {
     BlockRange,
     EventCallback,
@@ -1114,6 +1115,9 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrder: SignedOrder,
         opts: ValidateOrderFillableOpts = {},
     ): Promise<void> {
+        assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
+        assert.doesConformToSchema('opts', opts, validateOrderFillableOptsSchema);
+
         const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
             this._erc20TokenWrapper,
             this._erc721TokenWrapper,
@@ -1124,7 +1128,7 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const expectedFillTakerTokenAmountIfExists = opts.expectedFillTakerTokenAmount;
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
-        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
         await orderValidationUtils.validateOrderFillableOrThrowAsync(
             exchangeTradeSimulator,
             signedOrder,
@@ -1152,7 +1156,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
 
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
-        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
         await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
             exchangeTradeSimulator,
             this._web3Wrapper.getProvider(),

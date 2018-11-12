@@ -1,7 +1,7 @@
 import { colors, Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle = require('react-document-title');
+import DocumentTitle from 'react-document-title';
 import { Footer } from 'ts/components/footer';
 import { SubscribeForm } from 'ts/components/forms/subscribe_form';
 import { TopBar } from 'ts/components/top_bar/top_bar';
