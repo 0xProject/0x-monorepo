@@ -286,7 +286,8 @@ describe('ExchangeWrapper', () => {
         it('should throw if signature is invalid', async () => {
             const signedOrderWithInvalidSignature = {
                 ...signedOrder,
-                signature: '0xdeadbeef',
+                signature:
+                    '0x1b61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403',
             };
 
             expect(
