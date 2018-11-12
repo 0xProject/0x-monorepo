@@ -3,7 +3,7 @@
         "version": "2.2.2",
         "changes": [
             {
-                "note": "start jsonRpcRequestId at 1, not 0",
+                "note": "Start jsonRpcRequestId at 1, not 0 as 0 breaks Parity websocket RPC",
                 "pr": 1227
             }
         ],
