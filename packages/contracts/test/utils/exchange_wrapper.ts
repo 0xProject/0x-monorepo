@@ -212,12 +212,16 @@ export class ExchangeWrapper {
         return tx;
     }
     public async getTakerAssetFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
-        const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
+        const filledAmount = await this._exchange.filled.callAsync(orderHashHex);
         return filledAmount;
     }
     public async isCancelledAsync(orderHashHex: string): Promise<boolean> {
         const isCancelled = await this._exchange.cancelled.callAsync(orderHashHex);
         return isCancelled;
+    }
+    public async getOrderEpochAsync(makerAddress: string, senderAddress: string): Promise<BigNumber> {
+        const orderEpoch = await this._exchange.orderEpoch.callAsync(makerAddress, senderAddress);
+        return orderEpoch;
     }
     public async getOrderInfoAsync(signedOrder: SignedOrder): Promise<OrderInfo> {
         const orderInfo = (await this._exchange.getOrderInfo.callAsync(signedOrder)) as OrderInfo;
