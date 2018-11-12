@@ -1,7 +1,7 @@
 import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { DoneCallback, SignedOrder } from '@0x/types';
+import { DoneCallback, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { BlockParamLiteral } from 'ethereum-types';
@@ -291,7 +291,7 @@ describe('ExchangeWrapper', () => {
 
             expect(
                 contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrderWithInvalidSignature),
-            ).to.eventually.to.be.rejected();
+            ).to.eventually.to.be.rejectedWith(RevertReason.InvalidOrderSignature);
         });
     });
     describe('#isValidSignature', () => {
