@@ -1326,14 +1326,6 @@
   resolved "https://registry.yarnpkg.com/@types/query-string/-/query-string-5.1.0.tgz#7f40cdea49ddafa0ea4f3db35fb6c24d3bfd4dcc"
   integrity sha512-9/sJK+T04pNq7uwReR0CLxqXj1dhxiTapZ1tIxA0trEsT6FRS0bz09YMcMb7tsVBTm4RJ0NEBYGsAjoEmqoFXg==
 
-"@types/reach__router@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@types/reach__router/-/reach__router-1.2.0.tgz#189c211870a608bec3d4162ade78ec372ad982b5"
-  integrity sha512-+mzlpU4fbeIrFECUJhx+wCV5GRQeWlP62O9JL4OQajIBH4WpcTTfFvmX0/HPFJ44l5S5HSHxMJbd5Tz2ngcXAg==
-  dependencies:
-    "@types/history" "*"
-    "@types/react" "*"
-
 "@types/react-addons-linked-state-mixin@*":
   version "0.14.19"
   resolved "https://registry.yarnpkg.com/@types/react-addons-linked-state-mixin/-/react-addons-linked-state-mixin-0.14.19.tgz#7ef00a5618a089da4a99e1f58c9aa4c1781d46d5"
