@@ -8,7 +8,8 @@
                 "pr": 1173
             },
             {
-                "note": "Add schemas from @0x/connect"
+                "note": "Add schemas from @0x/connect",
+                "pr": 1250
             }
         ]
     },
