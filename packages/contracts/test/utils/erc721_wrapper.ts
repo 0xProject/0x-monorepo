@@ -29,7 +29,7 @@ export class ERC721Wrapper {
         this._contractOwnerAddress = contractOwnerAddress;
     }
     public async deployDummyTokensAsync(): Promise<DummyERC721TokenContract[]> {
-        for (let i = 0; i < constants.NUM_DUMMY_ERC721_TO_DEPLOY; i++) {
+        for (const i of _.times(constants.NUM_DUMMY_ERC721_TO_DEPLOY)) {
             this._dummyTokenContracts.push(
                 await DummyERC721TokenContract.deployFrom0xArtifactAsync(
                     artifacts.DummyERC721Token,
@@ -61,7 +61,7 @@ export class ERC721Wrapper {
         this._initialTokenIdsByOwner = {};
         for (const dummyTokenContract of this._dummyTokenContracts) {
             for (const tokenOwnerAddress of this._tokenOwnerAddresses) {
-                for (let i = 0; i < constants.NUM_ERC721_TOKENS_TO_MINT; i++) {
+                for (const i of _.times(constants.NUM_ERC721_TOKENS_TO_MINT)) {
                     const tokenId = generatePseudoRandomSalt();
                     await this.mintAsync(dummyTokenContract.address, tokenId, tokenOwnerAddress);
                     if (_.isUndefined(this._initialTokenIdsByOwner[tokenOwnerAddress])) {
