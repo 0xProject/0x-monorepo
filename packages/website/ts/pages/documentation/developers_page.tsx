@@ -1,7 +1,7 @@
 import { colors, constants as sharedConstants, utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle = require('react-document-title');
+import DocumentTitle from 'react-document-title';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { DocsTopBar } from 'ts/components/documentation/docs_top_bar';
 import { Container } from 'ts/components/ui/container';

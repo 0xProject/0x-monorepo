@@ -6,11 +6,11 @@ import {
     SupportedDocJson,
     TypeDocUtils,
 } from '@0x/react-docs';
-import findVersions = require('find-versions');
+import findVersions from 'find-versions';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
-import semverSort = require('semver-sort');
+import semverSort from 'semver-sort';
 import { SidebarHeader } from 'ts/components/documentation/sidebar_header';
 import { NestedSidebarMenu } from 'ts/components/nested_sidebar_menu';
 import { Container } from 'ts/components/ui/container';

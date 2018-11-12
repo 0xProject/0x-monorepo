@@ -6,7 +6,7 @@ import Divider from 'material-ui/Divider';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import * as moment from 'moment';
 import * as React from 'react';
-import ReactTooltip = require('react-tooltip');
+import ReactTooltip from 'react-tooltip';
 import { Blockchain } from 'ts/blockchain';
 import { EthWethConversionButton } from 'ts/components/eth_weth_conversion_button';
 import { Dispatcher } from 'ts/redux/dispatcher';
