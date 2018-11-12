@@ -146,7 +146,7 @@ export class OrderValidationUtils {
             signedOrder.makerAddress,
         );
         if (!isValidSignature) {
-            throw new Error('INVALID_ORDER_SIGNATURE');
+            throw new Error(RevertReason.InvalidOrderSignature);
         }
 
         const isCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(signedOrder);
