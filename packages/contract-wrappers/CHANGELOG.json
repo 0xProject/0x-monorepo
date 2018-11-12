@@ -17,7 +17,8 @@
                     "Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218)",
                 "pr": 1235
             }
-        ]
+        ],
+        "timestamp": 1542028948
     },
     {
         "version": "3.0.1",
