@@ -547,6 +547,95 @@ export const crazyAbi = {
     type: 'function',
 } as MethodAbi;
 
+export const nestedTuples = {
+    constant: false,
+    inputs: [
+        {
+            name: 'firstTuple',
+            type: 'tuple[1]',
+            components: [
+                {
+                    name: 'someUint32',
+                    type: 'uint32',
+                },
+                {
+                    name: 'nestedTuple',
+                    type: 'tuple',
+                    components: [
+                        {
+                            name: 'someUint',
+                            type: 'uint256',
+                        },
+                        {
+                            name: 'someAddress',
+                            type: 'address',
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            name: 'secondTuple',
+            type: 'tuple[]',
+            components: [
+                {
+                    name: 'someUint',
+                    type: 'uint256',
+                },
+                {
+                    name: 'someStr',
+                    type: 'string',
+                },
+                {
+                    name: 'nestedTuple',
+                    type: 'tuple',
+                    components: [
+                        {
+                            name: 'someUint32',
+                            type: 'uint32',
+                        },
+                        {
+                            name: 'secondNestedTuple',
+                            type: 'tuple',
+                            components: [
+                                {
+                                    name: 'someUint',
+                                    type: 'uint256',
+                                },
+                                {
+                                    name: 'someStr',
+                                    type: 'string',
+                                },
+                                {
+                                    name: 'someBytes',
+                                    type: 'bytes',
+                                },
+                                {
+                                    name: 'someAddress',
+                                    type: 'address',
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    name: 'someBytes',
+                    type: 'bytes',
+                },
+                {
+                    name: 'someAddress',
+                    type: 'address',
+                },
+            ],
+        }
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
 export const simpleAbi2 = {
     constant: false,
     inputs: [
