@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { ProgressBar, TimedProgressBar } from '../components/timed_progress_bar';
+import { TimedProgressBar } from '../components/timed_progress_bar';
 
 import { TimeCounter } from '../components/time_counter';
 import { Container } from '../components/ui/container';

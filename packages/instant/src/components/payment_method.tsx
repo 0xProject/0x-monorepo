@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
-import { Account, AccountState, Network, StandardSlidingPanelContent } from '../types';
+import { Account, AccountState, Network } from '../types';
 
 import { MetaMaskLogo } from './meta_mask_logo';
 import { PaymentMethodDropdown } from './payment_method_dropdown';
@@ -15,7 +15,8 @@ import { Text } from './ui/text';
 export interface PaymentMethodProps {
     account: Account;
     network: Network;
-    openStandardSlidingPanel: (content: StandardSlidingPanelContent) => void;
+    onInstallWalletClick: () => void;
+    onUnlockWalletClick: () => void;
 }
 
 export class PaymentMethod extends React.Component<PaymentMethodProps> {
@@ -80,7 +81,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
             case AccountState.Locked:
                 return (
                     <WalletPrompt
-                        onClick={this._openInstallWalletPanel}
+                        onClick={this.props.onUnlockWalletClick}
                         image={<Icon width={13} icon="lock" color={ColorOption.black} />}
                     >
                         Please Unlock MetaMask
@@ -89,7 +90,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
             case AccountState.None:
                 return (
                     <WalletPrompt
-                        onClick={this._openInstallWalletPanel}
+                        onClick={this.props.onInstallWalletClick}
                         image={<MetaMaskLogo width={19} height={18} />}
                     >
                         Install MetaMask
@@ -106,9 +107,6 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
             default:
                 return null;
         }
-    };
-    private readonly _openInstallWalletPanel = () => {
-        this.props.openStandardSlidingPanel(StandardSlidingPanelContent.InstallWallet);
     };
 }
 
