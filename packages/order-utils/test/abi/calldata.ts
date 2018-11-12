@@ -223,44 +223,6 @@ export class Calldata {
             valueBufs.push(block.toBuffer());
         }
 
-        /*
-        const blockQueue = new Queue<CalldataBlock>();
-        blockQueue.push(this.root);
-
-        // Assign locations in breadth-first manner
-        let block: CalldataBlock | undefined;
-        let offset = 0;
-        while ((block = blockQueue.pop()) !== undefined) {
-            console.log(block.getName());
-            block.setOffset(offset);
-            offset += block.getSizeInBytes();
-            if (block instanceof DependentCalldataBlock) {
-                console.log(block.getDependency());
-                blockQueue.push(block.getDependency());
-            } else if (block instanceof MemberCalldataBlock) {
-                _.eachRight(block.getMembers(), (member: CalldataBlock) => {
-                    blockQueue.pushFront(member);
-                });
-            }
-        }
-
-        console.log(this.root);
-
-        // Fetch values using same technique
-        const valueBufs: Buffer[] = [selectorBuffer];
-        blockQueue.push(this.root);
-        while ((block = blockQueue.pop()) !== undefined) {
-            valueBufs.push(block.toBuffer());
-
-            if (block instanceof DependentCalldataBlock) {
-                blockQueue.push(block.getDependency());
-            } else if (block instanceof MemberCalldataBlock) {
-                _.eachRight(block.getMembers(), (member: CalldataBlock) => {
-                    blockQueue.pushFront(member);
-                });
-            }
-        }*/
-
         const combinedBuffers = Buffer.concat(valueBufs);
         const hexValue = ethUtil.bufferToHex(combinedBuffers);
         return hexValue;
