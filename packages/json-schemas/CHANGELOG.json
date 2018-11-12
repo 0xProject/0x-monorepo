@@ -1,11 +1,14 @@
 [
     {
-        "version": "2.0.1",
+        "version": "2.1.0",
         "changes": [
             {
                 "note":
                     "Improve schemas by enforcing that amounts that must be whole numbers (e.g Order asset amounts) no longer allow decimal amounts",
                 "pr": 1173
+            },
+            {
+                "note": "Add schemas from @0x/connect"
             }
         ]
     },
