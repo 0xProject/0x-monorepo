@@ -49,7 +49,7 @@ contract MultiAssetProxy is
 
                 // To lookup a value in a mapping, we load from the storage location keccak256(k, p),
                 // where k is the key left padded to 32 bytes and p is the storage slot
-                mstore(0, and(caller, 0xffffffffffffffffffffffffffffffffffffffff))
+                mstore(0, caller)
                 mstore(32, authorized_slot)
 
                 // Revert if authorized[msg.sender] == false
@@ -63,7 +63,7 @@ contract MultiAssetProxy is
                 }
 
                 // `transferFrom`.
-                // The function is marked `external`, so no abi decodeding is done for
+                // The function is marked `external`, so no abi decoding is done for
                 // us. Instead, we expect the `calldata` memory to contain the
                 // following:
                 //
@@ -107,20 +107,43 @@ contract MultiAssetProxy is
                 // |          | 132 + a     | b       | nestedAssetData Contents (offsets)  |
                 // |          | 132 + a + b |         | nestedAssetData[0, ..., len]        |
 
-                // Load offset to `amounts`
-                // We must add 4 (function selector) + 32 (assetData len) + 4 (assetProxyId) to the assetData offset
+                // In order to find the offset to `amounts`, we must add:
+                // 4 (function selector)
+                // + assetDataOffset
+                // + 32 (assetData len)
+                // + 4 (assetProxyId)
                 let amountsOffset := calldataload(add(assetDataOffset, 40))
 
-                // Load offsets to `nestedAssetData`
+                // In order to find the offset to `nestedAssetData`, we must add:
+                // 4 (function selector)
+                // + assetDataOffset
+                // + 32 (assetData len)
+                // + 4 (assetProxyId)
+                // + 32 (amounts offset)
                 let nestedAssetDataOffset := calldataload(add(assetDataOffset, 72))
 
+                // In order to find the start of the `amounts` contents, we must add: 
+                // 4 (function selector) 
+                // + assetDataOffset 
+                // + 32 (assetData len)
+                // + 4 (assetProxyId)
+                // + amountsOffset
+                // + 32 (amounts len)
+                let amountsContentsStart := add(assetDataOffset, add(amountsOffset, 72))
+
                 // Load number of elements in `amounts`
-                // We must add 4 (function selector) + 128 (4 params * 32) + 32 (assetData len) + 4 (assetProxyId) + 32 (amounts len) to the amounts offset
-                let amountsContentsStart := add(amountsOffset, 200)
                 let amountsLen := calldataload(sub(amountsContentsStart, 32))
 
+                // In order to find the start of the `nestedAssetData` contents, we must add: 
+                // 4 (function selector) 
+                // + assetDataOffset 
+                // + 32 (assetData len)
+                // + 4 (assetProxyId)
+                // + nestedAssetDataOffset
+                // + 32 (nestedAssetData len)
+                let nestedAssetDataContentsStart := add(assetDataOffset, add(nestedAssetDataOffset, 72))
+
                 // Load number of elements in `nestedAssetData`
-                let nestedAssetDataContentsStart := add(nestedAssetDataOffset, 200)
                 let nestedAssetDataLen := calldataload(sub(nestedAssetDataContentsStart, 32))
 
                 // Revert if number of elements in `amounts` differs from number of elements in `nestedAssetData`
@@ -172,9 +195,20 @@ contract MultiAssetProxy is
                     // Load offset to `nestedAssetData[i]`
                     let nestedAssetDataElementOffset := calldataload(add(nestedAssetDataContentsStart, i))
 
+                    // In order to find the start of the `nestedAssetData[i]` contents, we must add:
+                    // 4 (function selector) 
+                    // + assetDataOffset 
+                    // + 32 (assetData len)
+                    // + 4 (assetProxyId)
+                    // + nestedAssetDataOffset
+                    // + 32 (nestedAssetData len)
+                    // + nestedAssetDataElementOffset
+                    // + 32 (nestedAssetDataElement len)
+                    let nestedAssetDataElementContentsStart := add(assetDataOffset, add(nestedAssetDataOffset, add(nestedAssetDataElementOffset, 104)))
+
                     // Load length of `nestedAssetData[i]`
-                    let nestedAssetDataElementContentsStart := add(nestedAssetDataElementOffset, 264)
-                    let nestedAssetDataElementLen := calldataload(sub(nestedAssetDataElementContentsStart, 32))
+                    let nestedAssetDataElementLenStart := sub(nestedAssetDataElementContentsStart, 32)
+                    let nestedAssetDataElementLen := calldataload(nestedAssetDataElementLenStart)
 
                     // Revert if the `nestedAssetData` does not contain a 4 byte `assetProxyId`
                     if lt(nestedAssetDataElementLen, 4) {
@@ -208,7 +242,7 @@ contract MultiAssetProxy is
                     // Copy `nestedAssetData[i]` from calldata to memory
                     calldatacopy(
                         132,                                // memory slot after `amounts[i]`
-                        nestedAssetDataElementOffset,       // location of `nestedAssetData[i]` in calldata
+                        nestedAssetDataElementLenStart,     // location of `nestedAssetData[i]` in calldata
                         add(nestedAssetDataElementLen, 32)  // `nestedAssetData[i].length` plus 32 byte length
                     )
 
@@ -219,12 +253,18 @@ contract MultiAssetProxy is
                         0,                                      // don't send any ETH
                         0,                                      // pointer to start of input
                         add(164, nestedAssetDataElementLen),    // length of input  
-                        100,                                    // write output over memory that won't be reused
-                        512                                     // reserve 512 bytes for output
+                        0,                                      // write output over memory that won't be reused
+                        0                                       // reserve 512 bytes for output
                     )
 
+                    // Revert with reason given by AssetProxy if `transferFrom` call failed
                     if iszero(success) {
-                        revert(100, returndatasize())
+                        returndatacopy(
+                            0,                // copy to memory at 0
+                            0,                // copy from return data at 0
+                            returndatasize()  // copy all return data
+                        )
+                        revert(0, returndatasize())
                     }
                 }
 
