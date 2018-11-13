@@ -27,7 +27,21 @@ const expect = chai.expect;
 describe.only('ABI Encoder', () => {
     describe.only('ABI Tests at Method Level', () => {
 
-        it.only('Crazy ABI', async () => {
+        it.only('Optimizer', async () => {
+            const method = new AbiEncoder.Method(AbiSamples.stringAbi);
+            const strings = [
+                "Test String",
+                "Test String 2",
+                "Test String",
+                "Test String 2",
+            ];
+            const args = [strings];
+
+            const optimizedCalldata = method.encode(args, new Calldata(), true, true);
+            console.log(optimizedCalldata);
+        });
+
+        it('Crazy ABI', async () => {
             const method = new AbiEncoder.Method(AbiSamples.crazyAbi);
             console.log(method.getSignature());
 
