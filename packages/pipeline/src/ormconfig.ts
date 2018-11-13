@@ -7,6 +7,7 @@ import {
     ExchangeFillEvent,
     Relayer,
     SraOrder,
+    SraOrdersObservedTimeStamp,
     Transaction,
 } from './entities';
 
@@ -17,6 +18,7 @@ const entities = [
     ExchangeFillEvent,
     Relayer,
     SraOrder,
+    SraOrdersObservedTimeStamp,
     Transaction,
 ];
 
