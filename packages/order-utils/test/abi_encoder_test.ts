@@ -17,6 +17,7 @@ import { assert } from '@0x/order-utils/src/assert';
 import * as AbiEncoder from './abi/abi_encoder';
 
 import * as AbiSamples from './abi_samples';
+import { Calldata } from './abi/calldata';
 
 AbiEncoder.DataTypeFactory.setImpl(new AbiEncoder.EvmDataTypeFactoryImpl());
 
@@ -88,8 +89,12 @@ describe.only('ABI Encoder', () => {
                 someArrayOfTuplesWithDynamicTypes: someArrayOfTuplesWithDynamicTypes
             };
 
-            const calldata = method.encode(args);
+            const calldata = method.encode(args, new Calldata(), true);
             console.log(calldata);
+
+
+            throw new Error(`done`);
+
             console.log('*'.repeat(40));
             console.log(JSON.stringify(args));
             console.log(method.getSignature());
