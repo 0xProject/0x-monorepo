@@ -22,7 +22,8 @@
                     "Modified the `AbstractOrderFilledCancelledFetcher` interface slightly such that `isOrderCancelledAsync` accepts a `signedOrder` instead of an `orderHash` param",
                 "pr": 1235
             }
-        ]
+        ],
+        "timestamp": 1542028948
     },
     {
         "version": "2.0.1",

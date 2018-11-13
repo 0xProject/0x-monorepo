@@ -19,7 +19,6 @@ import { fetchAsync } from '@0x/utils';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
 
-import { schemas as clientSchemas } from './schemas/schemas';
 import { Client, HttpRequestOptions, HttpRequestType } from './types';
 import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 
@@ -61,9 +60,9 @@ export class HttpClient implements Client {
         requestOpts?: RequestOpts & AssetPairsRequestOpts & PagedRequestOpts,
     ): Promise<AssetPairsResponse> {
         if (!_.isUndefined(requestOpts)) {
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.assetPairsRequestOptsSchema);
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.assetPairsRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.pagedRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
         }
         const httpRequestOpts = {
             params: requestOpts,
@@ -81,9 +80,9 @@ export class HttpClient implements Client {
         requestOpts?: RequestOpts & OrdersRequestOpts & PagedRequestOpts,
     ): Promise<OrdersResponse> {
         if (!_.isUndefined(requestOpts)) {
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.ordersRequestOptsSchema);
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.ordersRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.pagedRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
         }
         const httpRequestOpts = {
             params: requestOpts,
@@ -99,7 +98,7 @@ export class HttpClient implements Client {
      */
     public async getOrderAsync(orderHash: string, requestOpts?: RequestOpts): Promise<APIOrder> {
         if (!_.isUndefined(requestOpts)) {
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
         }
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
         const httpRequestOpts = {
@@ -119,10 +118,10 @@ export class HttpClient implements Client {
         request: OrderbookRequest,
         requestOpts?: RequestOpts & PagedRequestOpts,
     ): Promise<OrderbookResponse> {
-        assert.doesConformToSchema('request', request, clientSchemas.orderBookRequestSchema);
+        assert.doesConformToSchema('request', request, schemas.orderBookRequestSchema);
         if (!_.isUndefined(requestOpts)) {
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.pagedRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
         }
         const httpRequestOpts = {
             params: _.defaults({}, request, requestOpts),
@@ -142,9 +141,9 @@ export class HttpClient implements Client {
         requestOpts?: RequestOpts,
     ): Promise<OrderConfigResponse> {
         if (!_.isUndefined(requestOpts)) {
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
         }
-        assert.doesConformToSchema('request', request, clientSchemas.orderConfigRequestSchema);
+        assert.doesConformToSchema('request', request, schemas.orderConfigRequestSchema);
         const httpRequestOpts = {
             params: requestOpts,
             payload: request,
@@ -160,8 +159,8 @@ export class HttpClient implements Client {
      */
     public async getFeeRecipientsAsync(requestOpts?: RequestOpts & PagedRequestOpts): Promise<FeeRecipientsResponse> {
         if (!_.isUndefined(requestOpts)) {
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.pagedRequestOptsSchema);
-            assert.doesConformToSchema('requestOpts', requestOpts, clientSchemas.requestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.pagedRequestOptsSchema);
+            assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
         }
         const httpRequestOpts = {
             params: requestOpts,
