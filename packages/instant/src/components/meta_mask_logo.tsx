@@ -72,6 +72,8 @@ export const MetaMaskLogo: React.StatelessComponent<MetaMaskLogoProps> = ({ widt
     </svg>
 );
 
+MetaMaskLogo.displayName = 'MetaMaskLogo';
+
 MetaMaskLogo.defaultProps = {
     width: 85,
     height: 80,

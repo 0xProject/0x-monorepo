@@ -13,7 +13,7 @@ export interface MoreInfoSettings {
 
 export interface StandardPanelContentProps {
     image: React.ReactNode;
-    title: string;
+    title?: string;
     description: string;
     moreInfoSettings?: MoreInfoSettings;
     action: React.ReactNode;
@@ -31,11 +31,13 @@ export const StandardPanelContent: React.StatelessComponent<StandardPanelContent
     <Container height="100%">
         <Flex direction="column" height="calc(100% - 58px)">
             <Container marginBottom={SPACING_BETWEEN_PX}>{image}</Container>
-            <Container marginBottom={SPACING_BETWEEN_PX}>
-                <Text fontSize="20px" fontWeight={700} fontColor={ColorOption.black}>
-                    {title}
-                </Text>
-            </Container>
+            {title && (
+                <Container marginBottom={SPACING_BETWEEN_PX}>
+                    <Text fontSize="20px" fontWeight={700} fontColor={ColorOption.black}>
+                        {title}
+                    </Text>
+                </Container>
+            )}
             <Container marginBottom={SPACING_BETWEEN_PX}>
                 <Text fontSize="14px" fontColor={ColorOption.grey} center={true}>
                     {description}

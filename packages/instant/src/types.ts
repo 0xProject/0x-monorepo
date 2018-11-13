@@ -137,3 +137,22 @@ export interface StandardSlidingPanelSettings {
     animationState: SlideAnimationState;
     content: StandardSlidingPanelContent;
 }
+
+export enum Browser {
+    Chrome = 'Chrome',
+    Firefox = 'Firefox',
+    Opera = 'Opera',
+    Safari = 'Safari',
+    Edge = 'Edge',
+    Other = 'Other',
+}
+
+export enum OperatingSystem {
+    Android = 'Android',
+    iOS = 'iOS',
+    Mac = 'Mac',
+    Windows = 'Windows',
+    WindowsPhone = 'WindowsPhone',
+    Linux = 'Linux',
+    Other = 'Other',
+}

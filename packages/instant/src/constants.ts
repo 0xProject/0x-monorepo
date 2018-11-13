@@ -19,8 +19,13 @@ export const ETH_GAS_STATION_API_BASE_URL = 'https://ethgasstation.info';
 export const COINBASE_API_BASE_URL = 'https://api.coinbase.com/v2';
 export const PROGRESS_STALL_AT_WIDTH = '95%';
 export const PROGRESS_FINISH_ANIMATION_TIME_MS = 200;
+export const COINBASE_WALLET_IOS_APP_STORE_URL = 'https://itunes.apple.com/us/app/coinbase-wallet/id1278383455?mt=8';
+export const COINBASE_WALLET_ANDROID_APP_STORE_URL = 'https://play.google.com/store/apps/details?id=org.toshi&hl=en';
+export const COINBASE_WALLET_SITE_URL = 'https://wallet.coinbase.com/';
+export const META_MASK_FIREFOX_STORE_URL = 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/';
 export const META_MASK_CHROME_STORE_URL =
     'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en';
+export const META_MASK_OPERA_STORE_URL = 'https://addons.opera.com/en/extensions/details/metamask/';
 export const META_MASK_SITE_URL = 'https://metamask.io/';
 export const ETHEREUM_NODE_URL_BY_NETWORK = {
     [Network.Mainnet]: 'https://mainnet.infura.io/',
