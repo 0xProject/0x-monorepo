@@ -82,10 +82,10 @@ export const asyncData = {
     },
     fetchCurrentBuyQuoteAndDispatchToStore: async (options: { store: Store; shouldSetPending: boolean }) => {
         const { store, shouldSetPending } = options;
-        const { buyOrderState, providerState, selectedAsset, selectedAssetAmount, affiliateInfo } = store.getState();
+        const { buyOrderState, providerState, selectedAsset, selectedAssetUnitAmount, affiliateInfo } = store.getState();
         const assetBuyer = providerState.assetBuyer;
         if (
-            !_.isUndefined(selectedAssetAmount) &&
+            !_.isUndefined(selectedAssetUnitAmount) &&
             !_.isUndefined(selectedAsset) &&
             buyOrderState.processState === OrderProcessState.None &&
             selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
@@ -94,7 +94,7 @@ export const asyncData = {
                 assetBuyer,
                 store.dispatch,
                 selectedAsset as ERC20Asset,
-                selectedAssetAmount,
+                selectedAssetUnitAmount,
                 shouldSetPending,
                 affiliateInfo,
             );

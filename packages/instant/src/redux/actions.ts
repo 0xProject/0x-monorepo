@@ -26,7 +26,7 @@ export enum ActionTypes {
     SET_ACCOUNT_STATE_READY = 'SET_ACCOUNT_STATE_READY',
     UPDATE_ACCOUNT_ETH_BALANCE = 'UPDATE_ACCOUNT_ETH_BALANCE',
     UPDATE_ETH_USD_PRICE = 'UPDATE_ETH_USD_PRICE',
-    UPDATE_SELECTED_ASSET_AMOUNT = 'UPDATE_SELECTED_ASSET_AMOUNT',
+    UPDATE_SELECTED_ASSET_UNIT_AMOUNT = 'UPDATE_SELECTED_ASSET_UNIT_AMOUNT',
     SET_BUY_ORDER_STATE_NONE = 'SET_BUY_ORDER_STATE_NONE',
     SET_BUY_ORDER_STATE_VALIDATING = 'SET_BUY_ORDER_STATE_VALIDATING',
     SET_BUY_ORDER_STATE_PROCESSING = 'SET_BUY_ORDER_STATE_PROCESSING',
@@ -50,7 +50,8 @@ export const actions = {
     updateAccountEthBalance: (addressAndBalance: AddressAndEthBalanceInWei) =>
         createAction(ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE, addressAndBalance),
     updateEthUsdPrice: (price?: BigNumber) => createAction(ActionTypes.UPDATE_ETH_USD_PRICE, price),
-    updateSelectedAssetAmount: (amount?: BigNumber) => createAction(ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT, amount),
+    updateSelectedAssetAmount: (amount?: BigNumber) =>
+        createAction(ActionTypes.UPDATE_SELECTED_ASSET_UNIT_AMOUNT, amount),
     setBuyOrderStateNone: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_NONE),
     setBuyOrderStateValidating: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_VALIDATING),
     setBuyOrderStateProcessing: (txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>

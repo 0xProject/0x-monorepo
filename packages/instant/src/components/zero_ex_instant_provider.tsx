@@ -73,7 +73,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
                       completeAssetMetaDataMap,
                       networkId,
                   ),
-            selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
+            selectedAssetUnitAmount: _.isUndefined(props.defaultAssetBuyAmount)
                 ? undefined
                 : new BigNumber(props.defaultAssetBuyAmount),
             availableAssets: _.isUndefined(props.availableAssetDatas)
