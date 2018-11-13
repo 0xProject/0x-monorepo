@@ -8,13 +8,8 @@ export class SraOrder {
     public exchangeAddress!: string;
     @PrimaryColumn({ name: 'order_hash_hex' })
     public orderHashHex!: string;
-
-    @Column({ name: 'source_url' })
+    @PrimaryColumn({ name: 'source_url' })
     public sourceUrl!: string;
-    @Column({ name: 'last_updated_timestamp' })
-    public lastUpdatedTimestamp!: number;
-    @Column({ name: 'first_seen_timestamp' })
-    public firstSeenTimestamp!: number;
 
     @Column({ name: 'maker_address' })
     public makerAddress!: string;
