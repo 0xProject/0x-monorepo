@@ -2,6 +2,10 @@ import { BlockWithoutTransactionData, Transaction as EthTransaction } from 'ethe
 
 import { Block, Transaction } from '../../entities';
 
+/**
+ * Parses a raw block and returns a Block entity.
+ * @param rawBlock a raw block (e.g. returned from web3-wrapper).
+ */
 export function parseBlock(rawBlock: BlockWithoutTransactionData): Block {
     if (rawBlock.hash == null) {
         throw new Error('Tried to parse raw block but hash was null');
@@ -17,6 +21,10 @@ export function parseBlock(rawBlock: BlockWithoutTransactionData): Block {
     return block;
 }
 
+/**
+ * Parses a raw transaction and returns a Transaction entity.
+ * @param rawBlock a raw transaction (e.g. returned from web3-wrapper).
+ */
 export function parseTransaction(rawTransaction: EthTransaction): Transaction {
     if (rawTransaction.blockHash == null) {
         throw new Error('Tried to parse raw transaction but blockHash was null');

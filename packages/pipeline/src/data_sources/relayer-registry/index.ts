@@ -20,7 +20,7 @@ export interface RelayerResponseNetwork {
 }
 
 export class RelayerRegistrySource {
-    private _url: string;
+    private readonly _url: string;
 
     constructor(url: string) {
         this._url = url;

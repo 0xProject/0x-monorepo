@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import { web3Factory } from '@0x/dev-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import R = require('ramda');
