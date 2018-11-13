@@ -54,12 +54,12 @@ export interface BuyQuote {
 }
 
 /**
- * ethPerAssetPrice: The price of one unit of the desired asset in ETH
+ * assetEthAmount: The amount of eth required to pay for the requested asset.
  * feeEthAmount: The amount of eth required to pay the affiliate fee.
- * totalEthAmount: the total amount of eth required to complete the buy. (Filling orders, feeOrders, and paying affiliate fee)
+ * totalEthAmount: The total amount of eth required to complete the buy (filling orders, feeOrders, and paying affiliate fee).
  */
 export interface BuyQuoteInfo {
-    ethPerAssetPrice: BigNumber;
+    assetEthAmount: BigNumber;
     feeEthAmount: BigNumber;
     totalEthAmount: BigNumber;
 }
