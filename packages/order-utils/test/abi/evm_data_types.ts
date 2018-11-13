@@ -1,4 +1,4 @@
-import { DataType, DataTypeFactory, DataTypeFactoryImpl, PayloadDataType, DependentDataType, MemberDataType } from './data_type';
+import { GenerateValueRules, DataType, DataTypeFactory, DataTypeFactoryImpl, PayloadDataType, DependentDataType, MemberDataType } from './data_type';
 
 import { MethodAbi, DataItem } from 'ethereum-types';
 
@@ -495,24 +495,15 @@ export class Method extends MemberDataType {
         return calldata.toHexString();
     }
 
-    /*
-    protected decodeValue(value: Buffer): any[] {
-        const selectorBuf = value.slice(4);
-        const selectorHex = ethUtil.bufferToHex(selectorBuf);
-        if (this.selector !== selectorHex) {
-            throw new Error(`Tried to decode calldata with mismatched selector. Expected '${this.selector}', got '${selectorHex}'`);
-        }
-        const remainingValue = value.slice(9);
-        const decodedValue = super.decodeValue(remainingValue);
-        return decodedValue;
-    }*/
-
-    public decode(calldata: string): any[] {
+    public decode(calldata: string, decodeStructsAsObjects: boolean = false): any[] | object {
         const calldata_ = new RawCalldata(calldata);
         if (this.selector !== calldata_.getSelector()) {
             throw new Error(`Tried to decode calldata with mismatched selector. Expected '${this.selector}', got '${calldata_.getSelector()}'`);
         }
-        const value = super.generateValue(calldata_);
+        let rules: GenerateValueRules = {
+            structsAsObjects: decodeStructsAsObjects
+        };
+        const value = super.generateValue(calldata_, rules);
         return value;
     }
 
