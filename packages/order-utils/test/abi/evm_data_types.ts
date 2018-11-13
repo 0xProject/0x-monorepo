@@ -146,34 +146,34 @@ abstract class Number extends PayloadDataType {
     }
 
     public decodeValue(calldata: RawCalldata): BigNumber {
-        const decodedValueBuf = calldata.popWord();
-        const decodedValueHex = ethUtil.bufferToHex(decodedValueBuf);
-        let decodedValue = new BigNumber(decodedValueHex, 16);
+        const paddedValueBuf = calldata.popWord();
+        const paddedValueHex = ethUtil.bufferToHex(paddedValueBuf);
+        let value = new BigNumber(paddedValueHex, 16);
         if (this instanceof Int) {
             // Check if we're negative
             const binBase = 2;
-            const decodedValueBin = decodedValue.toString(binBase);
-            if (decodedValueBin[0] === '1') {
+            const paddedValueBin = value.toString(binBase);
+            const valueBin = paddedValueBin.slice(paddedValueBin.length - this.width);
+            if (valueBin[0].startsWith('1')) {
                 // Negative
                 // Step 1/3: Invert binary value
-                const bitsInEvmWord = 256;
-                let invertedValueBin = '1'.repeat(bitsInEvmWord - decodedValueBin.length);
-                _.each(decodedValueBin, (bit: string) => {
+                let invertedValueBin = '';
+                _.each(valueBin, (bit: string) => {
                     invertedValueBin += bit === '1' ? '0' : '1';
                 });
                 const invertedValue = new BigNumber(invertedValueBin, binBase);
 
                 // Step 2/3: Add 1 to inverted value
                 // The result is the two's-complement represent of the input value.
-                const positiveDecodedValue = invertedValue.plus(binBase);
+                const positiveValue = invertedValue.plus(1);
 
                 // Step 3/3: Invert positive value
-                const negativeDecodedValue = positiveDecodedValue.times(-1);
-                decodedValue = negativeDecodedValue;
+                const negativeValue = positiveValue.times(-1);
+                value = negativeValue;
             }
         }
 
-        return decodedValue;
+        return value;
     }
 
     public abstract getMaxValue(): BigNumber;
