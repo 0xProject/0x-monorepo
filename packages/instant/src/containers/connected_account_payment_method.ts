@@ -6,7 +6,7 @@ import { PaymentMethod, PaymentMethodProps } from '../components/payment_method'
 import { Action, actions } from '../redux/actions';
 import { asyncData } from '../redux/async_data';
 import { State } from '../redux/reducer';
-import { Account, Network, Omit, ProviderState, StandardSlidingPanelContent } from '../types';
+import { Network, Omit, ProviderState, StandardSlidingPanelContent } from '../types';
 
 export interface ConnectedAccountPaymentMethodProps {}
 
