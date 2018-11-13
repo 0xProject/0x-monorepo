@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import 'reflect-metadata';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 

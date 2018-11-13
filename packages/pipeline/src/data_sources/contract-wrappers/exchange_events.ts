@@ -8,8 +8,8 @@ const NUM_BLOCKS_PER_QUERY = 100000; // Number of blocks to query for events at 
 const EXCHANGE_START_BLOCK = 6271590; // Block number when the Exchange contract was deployed to mainnet.
 
 export class ExchangeEventsSource {
-    private _exchangeWrapper: ExchangeWrapper;
-    private _web3Wrapper: Web3Wrapper;
+    private readonly _exchangeWrapper: ExchangeWrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     constructor(provider: Web3ProviderEngine, networkId: number) {
         this._web3Wrapper = new Web3Wrapper(provider);
         const contractWrappers = new ContractWrappers(provider, { networkId });
