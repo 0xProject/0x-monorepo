@@ -99,6 +99,12 @@
     "LIBRARIES_AND_TOOLS_DESCRIPTION":
         "A list of available tools maintained by the 0x core developers and wider community for building on top of 0x Protocol and Ethereum",
     "MORE": "more",
+    "LAUNCH_KIT": "0x launch kit",
+    "LAUNCH_KIT_PITCH": "Launch an exchange in under a minute.",
+    "GET_STARTED": "get started",
+    "GET_IN_TOUCH": "get in touch",
+    "EXPLORE_THE_DOCS": "explore the docs",
+    "LEARN_MORE": "learn more",
     "OUR_MISSION_AND_VALUES": "our mission & values",
     "GAMING_AND_COLLECTABLES": "gaming & collectables",
     "GAMING_AND_COLLECTABLES_DESCRIPTION":

@@ -352,6 +352,7 @@ export enum WebsitePaths {
     Home = '/',
     FAQ = '/faq',
     About = '/about',
+    LaunchKit = '/launch-kit',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
@@ -479,6 +480,12 @@ export enum Key {
     More = 'MORE',
     StartBuildOn0x = 'START_BUILDING_ON_0X',
     StartBuildOn0xDescription = 'START_BUILDING_ON_0X_DESCRIPTION',
+    LaunchKit = 'LAUNCH_KIT',
+    LaunchKitPitch = 'LAUNCH_KIT_PITCH',
+    ExploreTheDocs = 'EXPLORE_THE_DOCS',
+    GetInTouch = 'GET_IN_TOUCH',
+    LearnMore = 'LEARN_MORE',
+    GetStarted = 'GET_STARTED',
 }
 
 export enum SmartContractDocSections {
