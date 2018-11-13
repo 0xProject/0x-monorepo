@@ -82,7 +82,13 @@ export const asyncData = {
     },
     fetchCurrentBuyQuoteAndDispatchToStore: async (options: { store: Store; shouldSetPending: boolean }) => {
         const { store, shouldSetPending } = options;
-        const { buyOrderState, providerState, selectedAsset, selectedAssetUnitAmount, affiliateInfo } = store.getState();
+        const {
+            buyOrderState,
+            providerState,
+            selectedAsset,
+            selectedAssetUnitAmount,
+            affiliateInfo,
+        } = store.getState();
         const assetBuyer = providerState.assetBuyer;
         if (
             !_.isUndefined(selectedAssetUnitAmount) &&

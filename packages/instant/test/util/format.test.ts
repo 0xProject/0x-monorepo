@@ -55,7 +55,9 @@ describe('format', () => {
             expect(format.ethBaseUnitAmountInUsd(ONE_ETH_IN_BASE_UNITS, BIG_NUMBER_FAKE_ETH_USD_PRICE)).toBe('$2.53');
         });
         it('correctly formats .432414 ETH to usd according to some price', () => {
-            expect(format.ethBaseUnitAmountInUsd(DECIMAL_ETH_IN_BASE_UNITS, BIG_NUMBER_FAKE_ETH_USD_PRICE)).toBe('$1.10');
+            expect(format.ethBaseUnitAmountInUsd(DECIMAL_ETH_IN_BASE_UNITS, BIG_NUMBER_FAKE_ETH_USD_PRICE)).toBe(
+                '$1.10',
+            );
         });
         it('correctly formats 5.3014059295032 ETH to usd according to some price', () => {
             expect(format.ethBaseUnitAmountInUsd(IRRATIONAL_ETH_IN_BASE_UNITS, BIG_NUMBER_FAKE_ETH_USD_PRICE)).toBe(
