@@ -28,7 +28,7 @@ const PlainButton: React.StatelessComponent<ButtonProps> = ({
     type,
     className,
 }) => {
-    const computedOnClick = isDisabled ? undefined : href ? util.createHrefOnClick(href) : onClick;
+    const computedOnClick = isDisabled ? undefined : href ? util.createOpenUrlInNewWindow(href) : onClick;
     return (
         <button type={type} className={className} onClick={computedOnClick} disabled={isDisabled}>
             {children}

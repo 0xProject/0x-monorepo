@@ -25,7 +25,7 @@ export interface TextProps {
 }
 
 export const Text: React.StatelessComponent<TextProps> = ({ href, onClick, ...rest }) => {
-    const computedOnClick = href ? util.createHrefOnClick(href) : onClick;
+    const computedOnClick = href ? util.createOpenUrlInNewWindow(href) : onClick;
     return <StyledText {...rest} onClick={computedOnClick} />;
 };
 
