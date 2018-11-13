@@ -489,10 +489,10 @@ export class Method extends MemberDataType {
         return selector;
     }
 
-    public encode(value: any[] | object, calldata = new Calldata()): string {
+    public encode(value: any[] | object, calldata = new Calldata(), annotate: boolean = false): string {
         calldata.setSelector(this.methodSelector);
         super.encode(value, calldata);
-        return calldata.toHexString();
+        return calldata.toHexString(false, annotate);
     }
 
     public decode(calldata: string, decodeStructsAsObjects: boolean = false): any[] | object {

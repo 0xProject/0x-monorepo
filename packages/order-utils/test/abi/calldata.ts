@@ -9,10 +9,12 @@ export abstract class CalldataBlock {
     private headerSizeInBytes: number;
     private bodySizeInBytes: number;
     private relocatable: boolean;
+    private parentName: string;
 
-    constructor(name: string, signature: string, /*offsetInBytes: number,*/ headerSizeInBytes: number, bodySizeInBytes: number, relocatable: boolean) {
+    constructor(name: string, signature: string, parentName: string, /*offsetInBytes: number,*/ headerSizeInBytes: number, bodySizeInBytes: number, relocatable: boolean) {
         this.name = name;
         this.signature = signature;
+        this.parentName = parentName;
         this.offsetInBytes = 0;
         this.headerSizeInBytes = headerSizeInBytes;
         this.bodySizeInBytes = bodySizeInBytes;
@@ -29,6 +31,10 @@ export abstract class CalldataBlock {
 
     public getName(): string {
         return this.name;
+    }
+
+    public getParentName(): string {
+        return this.parentName;
     }
 
     public getSignature(): string {
@@ -65,10 +71,10 @@ export abstract class CalldataBlock {
 export class PayloadCalldataBlock extends CalldataBlock {
     private payload: Buffer;
 
-    constructor(name: string, signature: string, /*offsetInBytes: number,*/ relocatable: boolean, payload: Buffer) {
+    constructor(name: string, signature: string, parentName: string, /*offsetInBytes: number,*/ relocatable: boolean, payload: Buffer) {
         const headerSizeInBytes = 0;
         const bodySizeInBytes = payload.byteLength;
-        super(name, signature, /*offsetInBytes,*/ headerSizeInBytes, bodySizeInBytes, relocatable);
+        super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes, relocatable);
         this.payload = payload;
     }
 
@@ -82,10 +88,10 @@ export class DependentCalldataBlock extends CalldataBlock {
     private parent: CalldataBlock;
     private dependency: CalldataBlock;
 
-    constructor(name: string, signature: string, /*offsetInBytes: number,*/ relocatable: boolean, dependency: CalldataBlock, parent: CalldataBlock) {
+    constructor(name: string, signature: string, parentName: string, relocatable: boolean, dependency: CalldataBlock, parent: CalldataBlock) {
         const headerSizeInBytes = 0;
         const bodySizeInBytes = DependentCalldataBlock.DEPENDENT_PAYLOAD_SIZE_IN_BYTES;
-        super(name, signature, /*offsetInBytes,*/ headerSizeInBytes, bodySizeInBytes, relocatable);
+        super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes, relocatable);
         this.parent = parent;
         this.dependency = dependency;
     }
@@ -112,8 +118,8 @@ export class MemberCalldataBlock extends CalldataBlock {
     private members: CalldataBlock[];
     private contiguous: boolean;
 
-    constructor(name: string, signature: string, /*offsetInBytes: number,*/ relocatable: boolean, contiguous: boolean) {
-        super(name, signature, /*offsetInBytes,*/ 0, 0, relocatable);
+    constructor(name: string, signature: string, parentName: string, relocatable: boolean, contiguous: boolean) {
+        super(name, signature, parentName, 0, 0, relocatable);
         this.members = [];
         this.header = undefined;
         this.contiguous = contiguous;
@@ -231,8 +237,91 @@ export class Calldata {
         })
     }*/
 
-    public toHexString(optimize: boolean = false): string {
+    private generateAnnotatedHexString(): string {
+        let hexValue = `${this.selector}`;
+        if (this.root === undefined) {
+            throw new Error('expected root');
+        }
+
+        const valueQueue = this.createQueue(this.root);
+
+        let block: CalldataBlock | undefined;
+        let offset = 0;
+        const functionBlock = valueQueue.peek();
+        let functionName: string = functionBlock === undefined ? '' : functionBlock.getName();
+        while ((block = valueQueue.pop()) !== undefined) {
+            // Set f
+
+            // Process each block 1 word at a time
+            const size = block.getSizeInBytes();
+            const name = block.getName();
+            const parentName = block.getParentName();
+            console.log('*'.repeat(50), parentName, ' vs ', name);
+
+            //const ancestrialNamesOffset = name.startsWith('ptr<') ? 4 : 0;
+            //const parentOffset = name.lastIndexOf(parentName);
+            const prettyName = name.replace(`${parentName}.`, '').replace(`${functionName}.`, '');//.replace(`${parentName}[`, '[');
+            const signature = block.getSignature();
+
+            // Current offset
+            let offsetStr = '';
+
+            // If this block is empty then it's a newline
+            let value = '';
+            let nameStr = '';
+            let line = '';
+            if (size === 0) {
+                offsetStr = ' '.repeat(10);
+                value = ' '.repeat(74);
+                nameStr = `### ${prettyName.padEnd(80)}`;
+                line = `\n${offsetStr}${value}${nameStr}`;
+            } else {
+                offsetStr = `0x${offset.toString(16)}`.padEnd(10, ' ');
+                value = ethUtil.stripHexPrefix(ethUtil.bufferToHex(block.toBuffer().slice(0, 32))).padEnd(74);
+                if (block instanceof MemberCalldataBlock) {
+                    nameStr = `### ${prettyName.padEnd(80)}`;
+                    line = `\n${offsetStr}${value}${nameStr}`;
+                } else {
+                    nameStr = `    ${prettyName.padEnd(80)}`;
+                    line = `${offsetStr}${value}${nameStr}`;
+                }
+            }
+
+            for (let j = 32; j < size; j += 32) {
+                offsetStr = `0x${(offset + j).toString(16)}`.padEnd(10, ' ');
+                value = ethUtil.stripHexPrefix(ethUtil.bufferToHex(block.toBuffer().slice(j, j + 32))).padEnd(74);
+                nameStr = ' '.repeat(40);
+
+                line = `${line}\n${offsetStr}${value}${nameStr}`;
+            }
+
+            // Append to hex value
+            hexValue = `${hexValue}\n${line}`;
+            offset += size;
+        }
+
+        return hexValue;
+    }
+
+    private generateCondensedHexString(): string {
         let selectorBuffer = ethUtil.toBuffer(this.selector);
+        if (this.root === undefined) {
+            throw new Error('expected root');
+        }
+
+        const valueQueue = this.createQueue(this.root);
+        const valueBufs: Buffer[] = [selectorBuffer];
+        let block: CalldataBlock | undefined;
+        while ((block = valueQueue.pop()) !== undefined) {
+            valueBufs.push(block.toBuffer());
+        }
+
+        const combinedBuffers = Buffer.concat(valueBufs);
+        const hexValue = ethUtil.bufferToHex(combinedBuffers);
+        return hexValue;
+    }
+
+    public toHexString(optimize: boolean = false, annotate: boolean = false): string {
         if (this.root === undefined) {
             throw new Error('expected root');
         }
@@ -245,16 +334,10 @@ export class Calldata {
             offset += block.getSizeInBytes();
         }
 
-        const valueQueue = this.createQueue(this.root);
-        const valueBufs: Buffer[] = [selectorBuffer];
-        while ((block = valueQueue.pop()) !== undefined) {
-            valueBufs.push(block.toBuffer());
-        }
 
         // if (optimize) this.optimize(valueQueue.getStore());
 
-        const combinedBuffers = Buffer.concat(valueBufs);
-        const hexValue = ethUtil.bufferToHex(combinedBuffers);
+        const hexValue = annotate ? this.generateAnnotatedHexString() : this.generateCondensedHexString();
         return hexValue;
     }
 
