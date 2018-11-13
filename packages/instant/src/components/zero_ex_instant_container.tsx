@@ -1,11 +1,10 @@
 import * as React from 'react';
 
 import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
-import { ConnectedAccountPaymentMethod } from '../containers/connected_account_payment_method';
+import { ConnectedBuyOrderProgressOrPaymentMethod } from '../containers/connected_buy_order_progress_or_payment_method';
 import { CurrentStandardSlidingPanel } from '../containers/current_standard_sliding_panel';
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
-import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_order_progress';
 import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_buy_order_state_buttons';
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 import { ColorOption } from '../style/theme';
@@ -24,7 +23,7 @@ export interface ZeroExInstantContainerState {
     tokenSelectionPanelAnimationState: SlideAnimationState;
 }
 
-export class ZeroExInstantContainer extends React.Component<ZeroExInstantContainerProps, ZeroExInstantContainerState> {
+export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantContainerState> {
     public state = {
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };
@@ -51,7 +50,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                     >
                         <Flex direction="column" justify="flex-start" height="100%">
                             <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
-                            {this._renderPaymentMethodOrBuyOrderProgress()}
+                            <ConnectedBuyOrderProgressOrPaymentMethod />
                             <LatestBuyQuoteOrderDetails />
                             <Container padding="20px" width="100%">
                                 <SelectedAssetBuyOrderStateButtons />
@@ -78,17 +77,5 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
         this.setState({
             tokenSelectionPanelAnimationState: 'slidOut',
         });
-    };
-    private readonly _renderPaymentMethodOrBuyOrderProgress = (): React.ReactNode => {
-        const { orderProcessState } = this.props;
-        if (
-            orderProcessState === OrderProcessState.Processing ||
-            orderProcessState === OrderProcessState.Success ||
-            orderProcessState === OrderProcessState.Failure
-        ) {
-            return <SelectedAssetBuyOrderProgress />;
-        } else {
-            return <ConnectedAccountPaymentMethod />;
-        }
     };
 }
