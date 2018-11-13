@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.1 - _November 13, 2018_
+
+    * Dependencies updated
+
 ## v4.0.0 - _November 12, 2018_
 
     * Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync` (#1235)
