@@ -1,8 +1,8 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetDataUtils } from '@0xproject/order-utils';
-import { RevertReason } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { assetDataUtils } from '@0x/order-utils';
+import { RevertReason } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -208,7 +208,7 @@ describe('OrderMatcher', () => {
         beforeEach(async () => {
             erc20BalancesByOwner = await erc20Wrapper.getBalancesAsync();
         });
-        it('should revert if not claled by owner', async () => {
+        it('should revert if not called by owner', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(5), 18),
