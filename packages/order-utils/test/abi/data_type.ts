@@ -38,9 +38,9 @@ export abstract class PayloadDataType extends DataType {
         const encodedValue = this.encodeValue(value);
         const name = this.getDataItem().name;
         const signature = this.getSignature();
-        // const offsetInBytes = calldata.getSizeInBytes();
+        const parentName = parentBlock === undefined ? '' : parentBlock.getName();
         const relocatable = false;
-        const block = new PayloadCalldataBlock(name, signature, /*offsetInBytes,*/ relocatable, encodedValue);
+        const block = new PayloadCalldataBlock(name, signature, parentName, /*offsetInBytes,*/ relocatable, encodedValue);
         return block;
     }
 
@@ -77,11 +77,12 @@ export abstract class DependentDataType extends DataType {
         if (parentBlock === undefined) {
             throw new Error(`DependentDataType requires a parent block to generate its block`);
         }
-        const dependencyBlock = this.dependency.generateCalldataBlock(value);
+        const dependencyBlock = this.dependency.generateCalldataBlock(value, parentBlock);
         const name = this.getDataItem().name;
         const signature = this.getSignature();
+        const parentName = parentBlock === undefined ? '' : parentBlock.getName();
         const relocatable = false;
-        const block = new DependentCalldataBlock(name, signature, /*offsetInBytes,*/ relocatable, dependencyBlock, parentBlock);
+        const block = new DependentCalldataBlock(name, signature, parentName, relocatable, dependencyBlock, parentBlock);
         return block;
     }
 
@@ -179,7 +180,7 @@ export abstract class MemberDataType extends DataType {
         return [members, memberMap];
     }
 
-    protected generateCalldataBlockFromArray(value: any[]): MemberCalldataBlock {
+    protected generateCalldataBlockFromArray(value: any[], parentBlock?: CalldataBlock): MemberCalldataBlock {
         // Sanity check length
         if (this.arrayLength !== undefined && value.length !== this.arrayLength) {
             throw new Error(
@@ -189,7 +190,8 @@ export abstract class MemberDataType extends DataType {
             );
         }
 
-        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), this.isStatic(), false);
+        const parentName = parentBlock === undefined ? '' : parentBlock.getName();
+        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), parentName, this.isStatic(), false);
 
         let members = this.members;
         if (this.isArray && this.arrayLength === undefined) {
@@ -208,8 +210,9 @@ export abstract class MemberDataType extends DataType {
         return methodBlock;
     }
 
-    protected generateCalldataBlockFromObject(obj: object): MemberCalldataBlock {
-        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), this.isStatic(), false);
+    protected generateCalldataBlockFromObject(obj: object, parentBlock?: CalldataBlock): MemberCalldataBlock {
+        const parentName = parentBlock === undefined ? '' : parentBlock.getName();
+        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), parentName, this.isStatic(), false);
         const memberBlocks: CalldataBlock[] = [];
         let childMap = _.cloneDeep(this.memberMap);
         _.forOwn(obj, (value: any, key: string) => {
@@ -230,7 +233,7 @@ export abstract class MemberDataType extends DataType {
     }
 
     public generateCalldataBlock(value: any[] | object, parentBlock?: CalldataBlock): MemberCalldataBlock {
-        const block = (value instanceof Array) ? this.generateCalldataBlockFromArray(value) : this.generateCalldataBlockFromObject(value);
+        const block = (value instanceof Array) ? this.generateCalldataBlockFromArray(value, parentBlock) : this.generateCalldataBlockFromObject(value, parentBlock);
         return block;
     }
 
