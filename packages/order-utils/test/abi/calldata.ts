@@ -29,6 +29,10 @@ export abstract class CalldataBlock {
         this.bodySizeInBytes = bodySizeInBytes;
     }
 
+    protected setName(name: string) {
+        this.name = name;
+    }
+
     public getName(): string {
         return this.name;
     }
@@ -65,7 +69,14 @@ export abstract class CalldataBlock {
         this.offsetInBytes = offsetInBytes;
     }
 
+    public computeHash(): Buffer {
+        const rawData = this.getRawData();
+        const hash = ethUtil.sha3(rawData);
+        return hash;
+    }
+
     public abstract toBuffer(): Buffer;
+    public abstract getRawData(): Buffer;
 }
 
 export class PayloadCalldataBlock extends CalldataBlock {
@@ -81,12 +92,19 @@ export class PayloadCalldataBlock extends CalldataBlock {
     public toBuffer(): Buffer {
         return this.payload;
     }
+
+    public getRawData(): Buffer {
+        return this.payload;
+    }
 }
 
 export class DependentCalldataBlock extends CalldataBlock {
     public static DEPENDENT_PAYLOAD_SIZE_IN_BYTES = 32;
+    public static RAW_DATA_START = new Buffer('<');
+    public static RAW_DATA_END = new Buffer('>');
     private parent: CalldataBlock;
     private dependency: CalldataBlock;
+    private aliasFor: CalldataBlock | undefined;
 
     constructor(name: string, signature: string, parentName: string, relocatable: boolean, dependency: CalldataBlock, parent: CalldataBlock) {
         const headerSizeInBytes = 0;
@@ -94,13 +112,14 @@ export class DependentCalldataBlock extends CalldataBlock {
         super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes, relocatable);
         this.parent = parent;
         this.dependency = dependency;
+        this.aliasFor = undefined;
     }
 
     public toBuffer(): Buffer {
-        const dependencyOffset = this.dependency.getOffsetInBytes();
+        const destinationOffset = (this.aliasFor !== undefined) ? this.aliasFor.getOffsetInBytes() : this.dependency.getOffsetInBytes();
         const parentOffset = this.parent.getOffsetInBytes();
         const parentHeaderSize = this.parent.getHeaderSizeInBytes();
-        const pointer: number = dependencyOffset - (parentOffset + parentHeaderSize);
+        const pointer: number = destinationOffset - (parentOffset + parentHeaderSize);
         const pointerBuf = ethUtil.toBuffer(`0x${pointer.toString(16)}`);
         const evmWordWidthInBytes = 32;
         const pointerBufPadded = ethUtil.setLengthLeft(pointerBuf, evmWordWidthInBytes);
@@ -109,6 +128,25 @@ export class DependentCalldataBlock extends CalldataBlock {
 
     public getDependency(): CalldataBlock {
         return this.dependency;
+    }
+
+    public setAlias(block: CalldataBlock) {
+        this.aliasFor = block;
+        this.setName(`${this.getName()} (alias for ${block.getName()})`);
+    }
+
+    public getAlias(): CalldataBlock | undefined {
+        return this.aliasFor;
+    }
+
+    public getRawData(): Buffer {
+        const dependencyRawData = this.dependency.getRawData();
+        const rawDataComponents: Buffer[] = [];
+        rawDataComponents.push(DependentCalldataBlock.RAW_DATA_START);
+        rawDataComponents.push(dependencyRawData);
+        rawDataComponents.push(DependentCalldataBlock.RAW_DATA_END);
+        const rawData = Buffer.concat(rawDataComponents);
+        return rawData;
     }
 }
 
@@ -123,6 +161,20 @@ export class MemberCalldataBlock extends CalldataBlock {
         this.members = [];
         this.header = undefined;
         this.contiguous = contiguous;
+    }
+
+    public getRawData(): Buffer {
+        const rawDataComponents: Buffer[] = [];
+        if (this.header !== undefined) {
+            rawDataComponents.push(this.header);
+        }
+        _.each(this.members, (member: CalldataBlock) => {
+            const memberBuffer = member.getRawData();
+            rawDataComponents.push(memberBuffer);
+        });
+
+        const rawData = Buffer.concat(rawDataComponents);
+        return rawData;
     }
 
     public setMembers(members: CalldataBlock[]) {
@@ -201,8 +253,8 @@ export class Calldata {
 
         // Children
         _.each(memberBlock.getMembers(), (member: CalldataBlock) => {
-            if (member instanceof DependentCalldataBlock) {
-                const dependency = member.getDependency();
+            if (member instanceof DependentCalldataBlock && member.getAlias() === undefined) {
+                let dependency = member.getDependency();
                 if (dependency instanceof MemberCalldataBlock) {
                     blockQueue.merge(this.createQueue(dependency));
                 } else {
@@ -321,6 +373,41 @@ export class Calldata {
         return hexValue;
     }
 
+    public optimize() {
+        if (this.root === undefined) {
+            throw new Error('expected root');
+        }
+
+        const subtreesByHash: { [key: string]: DependentCalldataBlock[] } = {};
+
+        // 1. Create a queue of subtrees by hash
+        // Note that they are ordered the same as 
+        const subtreeQueue = this.createQueue(this.root);
+        let block: CalldataBlock | undefined;
+        while ((block = subtreeQueue.pop()) !== undefined) {
+            console.log(block.getName());
+
+            if (block instanceof DependentCalldataBlock === false) continue;
+            const blockHashBuf = block.computeHash();
+            const blockHashHex = ethUtil.bufferToHex(blockHashBuf);
+            if (blockHashHex in subtreesByHash === false) {
+                subtreesByHash[blockHashHex] = [block as DependentCalldataBlock];
+            } else {
+                subtreesByHash[blockHashHex].push(block as DependentCalldataBlock);
+            }
+        }
+
+        // Iterate through trees that have the same hash and 
+        _.each(subtreesByHash, (subtrees: DependentCalldataBlock[], hash: string) => {
+            if (subtrees.length === 1) return; // No optimization
+            // Optimize
+            const lastSubtree = subtrees[subtrees.length - 1];
+            for (let i = 0; i < subtrees.length - 1; ++i) {
+                subtrees[i].setAlias(lastSubtree);
+            }
+        });
+    }
+
     public toHexString(optimize: boolean = false, annotate: boolean = false): string {
         if (this.root === undefined) {
             throw new Error('expected root');
@@ -334,8 +421,7 @@ export class Calldata {
             offset += block.getSizeInBytes();
         }
 
-
-        // if (optimize) this.optimize(valueQueue.getStore());
+        if (optimize) this.optimize();
 
         const hexValue = annotate ? this.generateAnnotatedHexString() : this.generateCondensedHexString();
         return hexValue;
