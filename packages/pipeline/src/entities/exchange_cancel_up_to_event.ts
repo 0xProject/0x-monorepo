@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'exchange_cancel_up_to_events' })
+@Entity({ name: 'exchange_cancel_up_to_events', schema: 'raw' })
 export class ExchangeCancelUpToEvent {
     @PrimaryColumn({ name: 'contract_address' })
     public contractAddress!: string;
