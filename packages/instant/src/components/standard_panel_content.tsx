@@ -19,7 +19,7 @@ export interface StandardPanelContentProps {
     action: React.ReactNode;
 }
 
-const spacingBetweenPx = '20px';
+const SPACING_BETWEEN_PX = '20px';
 
 export const StandardPanelContent: React.StatelessComponent<StandardPanelContentProps> = ({
     image,
@@ -30,18 +30,18 @@ export const StandardPanelContent: React.StatelessComponent<StandardPanelContent
 }) => (
     <Container height="100%">
         <Flex direction="column" height="calc(100% - 58px)">
-            <Container marginBottom={spacingBetweenPx}>{image}</Container>
-            <Container marginBottom={spacingBetweenPx}>
+            <Container marginBottom={SPACING_BETWEEN_PX}>{image}</Container>
+            <Container marginBottom={SPACING_BETWEEN_PX}>
                 <Text fontSize="20px" fontWeight={700} fontColor={ColorOption.black}>
                     {title}
                 </Text>
             </Container>
-            <Container marginBottom={spacingBetweenPx}>
+            <Container marginBottom={SPACING_BETWEEN_PX}>
                 <Text fontSize="14px" fontColor={ColorOption.grey} center={true}>
                     {description}
                 </Text>
             </Container>
-            <Container marginBottom={spacingBetweenPx}>
+            <Container marginBottom={SPACING_BETWEEN_PX}>
                 {moreInfoSettings && (
                     <Text
                         center={true}
