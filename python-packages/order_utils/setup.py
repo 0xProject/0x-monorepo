@@ -160,7 +160,13 @@ setup(
         "publish": PublishCommand,
         "ganache": GanacheCommand,
     },
-    install_requires=["eth-abi", "eth_utils", "mypy_extensions", "web3"],
+    install_requires=[
+        "eth-abi",
+        "eth_utils",
+        "ethereum",
+        "mypy_extensions",
+        "web3",
+    ],
     extras_require={
         "dev": [
             "bandit",
