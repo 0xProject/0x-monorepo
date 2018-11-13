@@ -10,7 +10,8 @@
                 "note":
                     "Fix the bug when order watcher was trying to convert undefined to an object in case of CancelUpTo event"
             }
-        ]
+        ],
+        "timestamp": 1542134075
     },
     {
         "timestamp": 1542028948,

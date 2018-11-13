@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.3 - _November 13, 2018_
+
+    * Start jsonRpcRequestId at 1, not 0 as 0 breaks the web3.js websocket RPC provider (#1227)
+    * Fix the bug when order watcher was trying to convert undefined to an object in case of CancelUpTo event
+
 ## v2.2.2 - _November 12, 2018_
 
     * Dependencies updated
