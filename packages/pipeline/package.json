@@ -13,7 +13,10 @@
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --project ."
+        "lint": "tslint --project .",
+        "migrate:run": "yarn typeorm migration:run --config ./lib/src/ormconfig",
+        "migrate:revert": "yarn typeorm migration:revert --config ./lib/src/ormconfig",
+        "migrate:create": "yarn typeorm migration:create --config ./lib/src/ormconfig --dir migrations"
     },
     "config": {
         "postpublish": {

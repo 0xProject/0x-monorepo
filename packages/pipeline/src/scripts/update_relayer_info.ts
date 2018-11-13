@@ -1,9 +1,9 @@
 import 'reflect-metadata';
-import { Connection, createConnection } from 'typeorm';
+import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import { RelayerRegistrySource } from '../data_sources/relayer-registry';
 import { Relayer } from '../entities';
-import { deployConfig } from '../ormconfig';
+import * as ormConfig from '../ormconfig';
 import { parseRelayers } from '../parsers/relayer_registry';
 import { handleError } from '../utils';
 
@@ -15,7 +15,7 @@ const RELAYER_REGISTRY_URL =
 let connection: Connection;
 
 (async () => {
-    connection = await createConnection(deployConfig);
+    connection = await createConnection(ormConfig as ConnectionOptions);
     await getRelayers();
     process.exit(0);
 })().catch(handleError);

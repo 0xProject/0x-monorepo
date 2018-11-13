@@ -2,11 +2,11 @@ import { web3Factory } from '@0x/dev-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import R = require('ramda');
 import 'reflect-metadata';
-import { Connection, createConnection, Repository } from 'typeorm';
+import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
 
 import { ExchangeEventsSource } from '../data_sources/contract-wrappers/exchange_events';
 import { ExchangeFillEvent } from '../entities';
-import { deployConfig } from '../ormconfig';
+import * as ormConfig from '../ormconfig';
 import { parseExchangeEvents } from '../parsers/events';
 import { handleError } from '../utils';
 
@@ -17,7 +17,7 @@ const BATCH_SAVE_SIZE = 1000; // Number of events to save at once.
 let connection: Connection;
 
 (async () => {
-    connection = await createConnection(deployConfig);
+    connection = await createConnection(ormConfig as ConnectionOptions);
     const provider = web3Factory.getRpcProvider({
         rpcUrl: 'https://mainnet.infura.io',
     });
