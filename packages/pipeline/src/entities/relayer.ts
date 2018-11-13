@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'relayers' })
+@Entity({ name: 'relayers', schema: 'raw' })
 export class Relayer {
     @PrimaryColumn() public uuid!: string;
 
