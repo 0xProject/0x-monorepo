@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { oc } from 'ts-optchain';
 
+import { BIG_NUMBER_ZERO } from '../constants';
 import { ColorOption } from '../style/theme';
 import { format } from '../util/format';
 
@@ -15,16 +16,23 @@ import { Text } from './ui/text';
 
 export interface OrderDetailsProps {
     buyQuoteInfo?: BuyQuoteInfo;
+    selectedAssetAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
     isLoading: boolean;
 }
 export class OrderDetails extends React.Component<OrderDetailsProps> {
     public render(): React.ReactNode {
-        const { buyQuoteInfo, ethUsdPrice } = this.props;
+        const { buyQuoteInfo, ethUsdPrice, selectedAssetAmount } = this.props;
         const buyQuoteAccessor = oc(buyQuoteInfo);
-        const ethAssetPrice = buyQuoteAccessor.ethPerAssetPrice();
-        const ethTokenFee = buyQuoteAccessor.feeEthAmount();
+        const assetEthAmount = buyQuoteAccessor.assetEthAmount();
+        const feeEthAmount = buyQuoteAccessor.feeEthAmount();
         const totalEthAmount = buyQuoteAccessor.totalEthAmount();
+        const perUnitEthAmount =
+            !_.isUndefined(assetEthAmount) &&
+            !_.isUndefined(selectedAssetAmount) &&
+            !selectedAssetAmount.eq(BIG_NUMBER_ZERO)
+                ? assetEthAmount.div(selectedAssetAmount).ceil()
+                : undefined;
         return (
             <Container padding="20px" width="100%" flexGrow={1}>
                 <Container marginBottom="10px">
@@ -40,14 +48,13 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                 </Container>
                 <EthAmountRow
                     rowLabel="Token Price"
-                    ethAmount={ethAssetPrice}
+                    ethAmount={perUnitEthAmount}
                     ethUsdPrice={ethUsdPrice}
-                    isEthAmountInBaseUnits={false}
                     isLoading={this.props.isLoading}
                 />
                 <EthAmountRow
                     rowLabel="Fee"
-                    ethAmount={ethTokenFee}
+                    ethAmount={feeEthAmount}
                     ethUsdPrice={ethUsdPrice}
                     isLoading={this.props.isLoading}
                 />
