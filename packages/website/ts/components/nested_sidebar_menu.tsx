@@ -4,11 +4,13 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Button } from 'ts/components/ui/button';
 import { Text } from 'ts/components/ui/text';
+import { ScreenWidths } from 'ts/types';
 
 export interface NestedSidebarMenuProps {
     sectionNameToLinks: ObjectMap<ALink[]>;
     sidebarHeader?: React.ReactNode;
     shouldReformatMenuItemNames?: boolean;
+    screenWidth: ScreenWidths;
 }
 
 export const NestedSidebarMenu = (props: NestedSidebarMenuProps) => {
@@ -22,7 +24,7 @@ export const NestedSidebarMenu = (props: NestedSidebarMenuProps) => {
                 ...link,
                 title: menuItemTitle,
             };
-            return <MenuItem key={`menu-item-${menuItemTitle}`} link={finalLink} />;
+            return <MenuItem key={`menu-item-${menuItemTitle}`} link={finalLink} screenWidth={props.screenWidth} />;
         });
         // tslint:disable-next-line:no-unused-variable
         return (
@@ -44,6 +46,7 @@ export const NestedSidebarMenu = (props: NestedSidebarMenuProps) => {
 
 export interface MenuItemProps {
     link: ALink;
+    screenWidth: ScreenWidths;
 }
 
 export interface MenuItemState {
@@ -70,7 +73,13 @@ export class MenuItem extends React.Component<MenuItemProps, MenuItemState> {
                     borderRadius="4px"
                     padding="0.4em 0.375em"
                     width="100%"
-                    backgroundColor={isActive ? colors.lightLinkBlue : colors.grey100}
+                    backgroundColor={
+                        isActive
+                            ? colors.lightLinkBlue
+                            : this.props.screenWidth === ScreenWidths.Sm
+                                ? 'white'
+                                : colors.grey100
+                    }
                     fontSize="14px"
                     textAlign="left"
                 >
