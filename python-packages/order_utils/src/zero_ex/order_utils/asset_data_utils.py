@@ -47,7 +47,6 @@ def encode_erc20_asset_data(token_address: str) -> str:
 
 
 def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
-    # docstring considered all one line by pylint: disable=line-too-long
     """Decode an ERC20 asset data hex string.
 
     :param asset_data: String produced by prior call to encode_erc20_asset_data()
@@ -82,7 +81,6 @@ def decode_erc20_asset_data(asset_data: str) -> ERC20AssetData:
 
 
 def encode_erc721_asset_data(token_address: str, token_id: int) -> str:
-    # docstring considered all one line by pylint: disable=line-too-long
     """Encode an ERC721 asset data hex string.
 
     :param token_address: the ERC721 token's contract address.
@@ -105,7 +103,6 @@ def encode_erc721_asset_data(token_address: str, token_id: int) -> str:
 
 
 def decode_erc721_asset_data(asset_data: str) -> ERC721AssetData:
-    # docstring considered all one line by pylint: disable=line-too-long
     """Decode an ERC721 asset data hex string.
 
     >>> decode_erc721_asset_data('0x025717920000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c480000000000000000000000000000000000000000000000000000000000000001')
@@ -121,7 +118,6 @@ def decode_erc721_asset_data(asset_data: str) -> ERC721AssetData:
         )
 
     asset_proxy_id: str = asset_data[0:SELECTOR_LENGTH]
-    # prefer `black` formatting.  pylint: disable=C0330
     if asset_proxy_id != abi_utils.method_id(
         "ERC721Token", ["address", "uint256"]
     ):

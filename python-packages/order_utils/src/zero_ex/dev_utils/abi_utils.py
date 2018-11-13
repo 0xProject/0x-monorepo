@@ -84,7 +84,6 @@ def method_id(name: str, types: List[str]) -> str:
 
 
 def simple_encode(method: str, *args: Any) -> bytes:
-    # docstring considered all one line by pylint: disable=line-too-long
     r"""Encode a method ABI.
 
     >>> simple_encode("ERC20Token(address)", "0x1dc4c1cefef38a777b15aa20260a54e584b16c48")

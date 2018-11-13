@@ -10,19 +10,22 @@ just this purpose.  To start it: ``docker run -d -p 8545:8545 0xorg/ganache-cli
 fence smart topic"``.
 """
 
+from enum import auto, Enum
 import json
-from typing import Dict
+from typing import Dict, Tuple
 from pkg_resources import resource_string
 
 from mypy_extensions import TypedDict
 
-from eth_utils import is_address, keccak, to_checksum_address, to_bytes
+from eth_utils import is_address, keccak, to_bytes, to_checksum_address
 from web3 import Web3
-from web3.utils import datatypes
 import web3.exceptions
+from web3.utils import datatypes
+
+from zero_ex.dev_utils.type_assertions import assert_is_hex_string
 
 
-class Constants:  # pylint: disable=too-few-public-methods
+class _Constants:
     """Static data used by order utilities."""
 
     contract_name_to_abi = {
@@ -71,6 +74,18 @@ class Constants:  # pylint: disable=too-few-public-methods
         + b")"
     )
 
+    class SignatureType(Enum):
+        """Enumeration of known signature types."""
+
+        illegal = 0
+        invalid = auto()
+        eIP712 = auto()
+        eth_sign = auto()
+        wallet = auto()
+        validator = auto()
+        pre_signed = auto()
+        n_signature_types = auto()
+
 
 class Order(TypedDict):  # pylint: disable=too-many-instance-attributes
     """Object representation of a 0x order."""
@@ -90,14 +105,18 @@ class Order(TypedDict):  # pylint: disable=too-many-instance-attributes
 
 
 def make_empty_order() -> Order:
-    """Construct an empty order."""
+    """Construct an empty order.
+
+    Initializes all strings to "0x0000000000000000000000000000000000000000"
+    and all numbers to 0.
+    """
     return {
-        "maker_address": Constants.null_address,
-        "taker_address": Constants.null_address,
-        "sender_address": Constants.null_address,
-        "fee_recipient_address": Constants.null_address,
-        "maker_asset_data": Constants.null_address,
-        "taker_asset_data": Constants.null_address,
+        "maker_address": _Constants.null_address,
+        "taker_address": _Constants.null_address,
+        "sender_address": _Constants.null_address,
+        "fee_recipient_address": _Constants.null_address,
+        "maker_asset_data": _Constants.null_address,
+        "taker_asset_data": _Constants.null_address,
         "salt": 0,
         "maker_fee": 0,
         "taker_fee": 0,
@@ -108,8 +127,12 @@ def make_empty_order() -> Order:
 
 
 def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
-    # docstring considered all one line by pylint: disable=line-too-long
     """Calculate the hash of the given order as a hexadecimal string.
+
+    :param order: The order to be hashed.  Must conform to `the 0x order JSON schema <https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/order_schema.json>`_.
+    :param exchange_address: The address to which the 0x Exchange smart
+        contract has been deployed.
+    :rtype: A string, of ASCII hex digits, representing the order hash.
 
     >>> generate_order_hash_hex(
     ...     {
@@ -138,12 +161,12 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
         return i.to_bytes(32, byteorder="big")
 
     eip712_domain_struct_hash = keccak(
-        Constants.eip712_domain_struct_header
+        _Constants.eip712_domain_struct_header
         + pad_20_bytes_to_32(to_bytes(hexstr=exchange_address))
     )
 
     eip712_order_struct_hash = keccak(
-        Constants.eip712_order_schema_hash
+        _Constants.eip712_order_schema_hash
         + pad_20_bytes_to_32(to_bytes(hexstr=order["maker_address"]))
         + pad_20_bytes_to_32(to_bytes(hexstr=order["taker_address"]))
         + pad_20_bytes_to_32(to_bytes(hexstr=order["fee_recipient_address"]))
@@ -159,7 +182,209 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
     )
 
     return keccak(
-        Constants.eip191_header
+        _Constants.eip191_header
         + eip712_domain_struct_hash
         + eip712_order_struct_hash
     ).hex()
+
+
+def is_valid_signature(
+    provider: Web3.HTTPProvider, data: str, signature: str, signer_address: str
+) -> Tuple[bool, str]:
+    """Check the validity of the supplied signature.
+
+    Check if the supplied ``signature`` corresponds to signing ``data`` with
+    the private key corresponding to ``signer_address``.
+
+    :param provider: A Web3 provider able to access the 0x Exchange contract.
+    :param data: The hex encoded data signed by the supplied signature.
+    :param signature: The hex encoded signature.
+    :param signer_address: The hex encoded address that signed the data to
+        produce the supplied signature.
+    :rtype: Tuple consisting of a boolean and a string.  Boolean is true if
+        valid, false otherwise.  If false, the string describes the reason.
+
+    >>> is_valid_signature(
+    ...     Web3.HTTPProvider("http://127.0.0.1:8545"),
+    ...     '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0',
+    ...     '0x1B61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403',
+    ...     '0x5409ed021d9299bf6814279a6a1411a7e866a631',
+    ... )
+    (True, '')
+    """  # noqa: E501 (line too long)
+    # TODO: make this provider check more flexible.
+    # https://app.asana.com/0/684263176955174/901300863045491/f
+    if not isinstance(provider, Web3.HTTPProvider):
+        raise TypeError("provider is not a Web3.HTTPProvider")
+    assert_is_hex_string(data, "data")
+    assert_is_hex_string(signature, "signature")
+    assert_is_hex_string(signer_address, "signer_address")
+    if not is_address(signer_address):
+        raise ValueError("signer_address is not a valid address")
+
+    web3_instance = Web3(provider)
+    # false positive from pylint: disable=no-member
+    network_id = web3_instance.net.version
+    contract_address = _Constants.network_to_exchange_addr[network_id]
+    # false positive from pylint: disable=no-member
+    contract: datatypes.Contract = web3_instance.eth.contract(
+        address=to_checksum_address(contract_address),
+        abi=_Constants.contract_name_to_abi["Exchange"],
+    )
+    try:
+        return (
+            contract.call().isValidSignature(
+                data, to_checksum_address(signer_address), signature
+            ),
+            "",
+        )
+    except web3.exceptions.BadFunctionCallOutput as exception:
+        known_revert_reasons = [
+            "LENGTH_GREATER_THAN_0_REQUIRED",
+            "SIGNATURE_ILLEGAL",
+            "SIGNATURE_UNSUPPORTED",
+            "LENGTH_0_REQUIRED",
+            "LENGTH_65_REQUIRED",
+        ]
+        for known_revert_reason in known_revert_reasons:
+            if known_revert_reason in str(exception):
+                return (False, known_revert_reason)
+        return (False, f"Unknown: {exception}")
+
+
+class ECSignature(TypedDict):
+    """Object representation of an elliptic curve signature's parameters."""
+
+    v: int
+    r: str
+    s: str
+
+
+def _parse_signature_hex_as_vrs(signature_hex: str) -> ECSignature:
+    """Parse signature hex as a concatentation of EC parameters ordered V, R, S.
+
+    >>> _parse_signature_hex_as_vrs('0x1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03')
+    {'v': 27, 'r': '117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d87287113', 's': '7feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b'}
+    """  # noqa: E501 (line too long)
+    signature: ECSignature = {
+        "v": int(signature_hex[2:4], 16),
+        "r": signature_hex[4:68],
+        "s": signature_hex[68:132],
+    }
+    if signature["v"] == 0 or signature["v"] == 1:
+        signature["v"] = signature["v"] + 27
+    return signature
+
+
+def _parse_signature_hex_as_rsv(signature_hex: str) -> ECSignature:
+    """Parse signature hex as a concatentation of EC parameters ordered R, S, V.
+
+    >>> _parse_signature_hex_as_rsv('0x117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b00')
+    {'r': '117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d87287113', 's': '7feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b', 'v': 27}
+    """  # noqa: E501 (line too long)
+    signature: ECSignature = {
+        "r": signature_hex[2:66],
+        "s": signature_hex[66:130],
+        "v": int(signature_hex[130:132], 16),
+    }
+    if signature["v"] == 0 or signature["v"] == 1:
+        signature["v"] = signature["v"] + 27
+    return signature
+
+
+def _convert_ec_signature_to_vrs_hex(signature: ECSignature) -> str:
+    """Convert elliptic curve signature object to hex hash string.
+
+    >>> _convert_ec_signature_to_vrs_hex(
+    ...     {
+    ...         'r': '117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d87287113',
+    ...         's': '7feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b',
+    ...         'v': 27
+    ...     }
+    ... )
+    '0x1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b'
+    """  # noqa: E501 (line too long)
+    return (
+        "0x"
+        + signature["v"].to_bytes(1, byteorder="big").hex()
+        + signature["r"]
+        + signature["s"]
+    )
+
+
+def sign_order_hash(
+    provider: Web3.HTTPProvider, signer_address: str, order_hash_hex: str
+) -> str:
+    """Sign a message with the order hash, and return the signature.
+
+    :param provider: A Web3 provider.
+    :param signer_address: The address of the signing account.
+    :param order_hash_hex: A hex string representing the order hash, like that
+        returned from `generate_order_hash_hex()`.
+    :rtype: A string, of ASCII hex digits, representing the signature.
+
+    >>> sign_order_hash(
+    ...     Web3.HTTPProvider("http://127.0.0.1:8545"),
+    ...     Web3(Web3.HTTPProvider("http://127.0.0.1:8545")).personal.listAccounts[0],
+    ...     '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004',
+    ... )
+    '0x1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03'
+    """  # noqa: E501 (line too long)
+    # TODO: make this provider check more flexible.
+    # https://app.asana.com/0/684263176955174/901300863045491/f
+    if not isinstance(provider, Web3.HTTPProvider):
+        raise TypeError("provider is not a Web3.HTTPProvider")
+    if not is_address(signer_address):
+        raise ValueError("signer_address is not a valid address")
+    assert_is_hex_string(order_hash_hex, "order_hash_hex")
+
+    web3_instance = Web3(provider)
+    # false positive from pylint: disable=no-member
+    signature = web3_instance.eth.sign(  # type: ignore
+        signer_address, hexstr=order_hash_hex.replace("0x", "")
+    ).hex()
+
+    valid_v_param_values = [27, 28]
+
+    # HACK: There is no consensus on whether the signatureHex string should be
+    # formatted as v + r + s OR r + s + v, and different clients (even
+    # different versions of the same client) return the signature params in
+    # different orders. In order to support all client implementations, we
+    # parse the signature in both ways, and evaluate if either one is a valid
+    # signature.  r + s + v is the most prevalent format from eth_sign, so we
+    # attempt this first.
+
+    ec_signature = _parse_signature_hex_as_rsv(signature)
+    if ec_signature["v"] in valid_v_param_values:
+        signature_as_vrst_hex = (
+            _convert_ec_signature_to_vrs_hex(ec_signature)
+            + _Constants.SignatureType.eth_sign.value.to_bytes(
+                1, byteorder="big"
+            ).hex()
+        )
+
+        (valid, _) = is_valid_signature(
+            provider, order_hash_hex, signature_as_vrst_hex, signer_address
+        )
+
+        if valid is True:
+            return signature_as_vrst_hex
+
+    ec_signature = _parse_signature_hex_as_vrs(signature)
+    if ec_signature["v"] in valid_v_param_values:
+        signature_as_vrst_hex = (
+            _convert_ec_signature_to_vrs_hex(ec_signature)
+            + _Constants.SignatureType.eth_sign.value.to_bytes(
+                1, byteorder="big"
+            ).hex()
+        )
+        (valid, _) = is_valid_signature(
+            provider, order_hash_hex, signature_as_vrst_hex, signer_address
+        )
+
+        if valid is True:
+            return signature_as_vrst_hex
+
+    raise RuntimeError(
+        "Signature returned from web3 provider is in an unknown format."
+    )
