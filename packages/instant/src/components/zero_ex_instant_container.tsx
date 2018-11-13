@@ -8,12 +8,15 @@ import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
+import { setupRollbar } from '../util/error_reporter';
 
 import { SlideAnimationState } from './animations/slide_animation';
 import { CSSReset } from './css_reset';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
+
+setupRollbar();
 
 export interface ZeroExInstantContainerProps {}
 export interface ZeroExInstantContainerState {
@@ -64,6 +67,14 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                 </Container>
             </React.Fragment>
         );
+    }
+    // TODO: don't commit
+    public componentDidMount() {
+        console.log('mounted');
+        window.setTimeout(() => {
+            console.log('error happened');
+            throw new Error('TEST: demo error');
+        }, 1000);
     }
     private readonly _handleSymbolClick = (): void => {
         this.setState({
