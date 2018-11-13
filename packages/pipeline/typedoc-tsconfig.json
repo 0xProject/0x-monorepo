@@ -1,7 +1,10 @@
 {
     "extends": "../../typedoc-tsconfig",
     "compilerOptions": {
-        "outDir": "lib"
+        "outDir": "lib",
+        "rootDir": ".",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true
     },
-    "include": ["src/**/*", "test/**/*"]
+    "include": ["./src/**/*", "./test/**/*", "./migrations/**/*"]
 }
