@@ -4,7 +4,9 @@ import { BigNumber } from '@0x/utils';
 import ethUtil = require('ethereumjs-util');
 var _ = require('lodash');
 
-
+export interface GenerateValueRules {
+    structsAsObjects: boolean;
+}
 
 export abstract class DataType {
     private dataItem: DataItem;
@@ -18,7 +20,7 @@ export abstract class DataType {
     }
 
     public abstract generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlock;
-    public abstract generateValue(calldata: RawCalldata): any;
+    public abstract generateValue(calldata: RawCalldata, rules: GenerateValueRules): any;
     public abstract encode(value: any, calldata: Calldata): void;
     public abstract getSignature(): string;
     public abstract isStatic(): boolean;
@@ -47,7 +49,7 @@ export abstract class PayloadDataType extends DataType {
         // calldata.setRoot(block);
     }
 
-    public generateValue(calldata: RawCalldata): any {
+    public generateValue(calldata: RawCalldata, rules: GenerateValueRules): any {
         const value = this.decodeValue(calldata);
         return value;
     }
@@ -88,13 +90,13 @@ export abstract class DependentDataType extends DataType {
         //calldata.setRoot(block);
     }
 
-    public generateValue(calldata: RawCalldata): any {
+    public generateValue(calldata: RawCalldata, rules: GenerateValueRules): any {
         const destinationOffsetBuf = calldata.popWord();
         const currentOffset = calldata.getOffset();
         const destinationOffsetRelative = parseInt(ethUtil.bufferToHex(destinationOffsetBuf), 16);
         const destinationOffsetAbsolute = calldata.toAbsoluteOffset(destinationOffsetRelative);
         calldata.setOffset(destinationOffsetAbsolute);
-        const value = this.dependency.generateValue(calldata);
+        const value = this.dependency.generateValue(calldata, rules);
         calldata.setOffset(currentOffset);
         return value;
     }
@@ -237,7 +239,7 @@ export abstract class MemberDataType extends DataType {
         calldata.setRoot(block);
     }
 
-    public generateValue(calldata: RawCalldata): any[] {
+    public generateValue(calldata: RawCalldata, rules: GenerateValueRules): any[] | object {
         let members = this.members;
         if (this.isArray && this.arrayLength === undefined) {
             const arrayLengthBuf = calldata.popWord();
@@ -249,14 +251,23 @@ export abstract class MemberDataType extends DataType {
         }
 
         calldata.startScope();
-        const decodedValue: any[] = [];
-        _.each(members, (member: DataType, idx: number) => {
-            let memberValue = member.generateValue(calldata);
-            decodedValue.push(memberValue);
-        });
+        let value: any[] | object;
+        if (rules.structsAsObjects && !this.isArray) {
+            value = {};
+            _.each(this.memberMap, (idx: number, key: string) => {
+                const member = this.members[idx];
+                let memberValue = member.generateValue(calldata, rules);
+                (value as { [key: string]: any })[key] = memberValue;
+            });
+        } else {
+            value = [];
+            _.each(members, (member: DataType, idx: number) => {
+                let memberValue = member.generateValue(calldata, rules);
+                (value as any[]).push(memberValue);
+            });
+        }
         calldata.endScope();
-
-        return decodedValue;
+        return value;
     }
 
     protected computeSignatureOfMembers(): string {

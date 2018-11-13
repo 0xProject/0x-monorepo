@@ -26,7 +26,7 @@ const expect = chai.expect;
 describe.only('ABI Encoder', () => {
     describe.only('ABI Tests at Method Level', () => {
 
-        it('Crazy ABI', async () => {
+        it.only('Crazy ABI', async () => {
             const method = new AbiEncoder.Method(AbiSamples.crazyAbi);
             console.log(method.getSignature());
 
@@ -78,7 +78,15 @@ describe.only('ABI Encoder', () => {
             };
             const someArrayOfTuplesWithDynamicTypes = [someTupleWithDynamicTypes2, someTupleWithDynamicTypes3];
 
-            const args = [someStaticArray, someStaticArrayWithDynamicMembers, someDynamicArrayWithDynamicMembers, some2DArray, someTuple, someTupleWithDynamicTypes, someArrayOfTuplesWithDynamicTypes];
+            const args = {
+                someStaticArray: someStaticArray,
+                someStaticArrayWithDynamicMembers: someStaticArrayWithDynamicMembers,
+                someDynamicArrayWithDynamicMembers: someDynamicArrayWithDynamicMembers,
+                some2DArray: some2DArray,
+                someTuple: someTuple,
+                someTupleWithDynamicTypes: someTupleWithDynamicTypes,
+                someArrayOfTuplesWithDynamicTypes: someArrayOfTuplesWithDynamicTypes
+            };
 
             const calldata = method.encode(args);
             console.log(calldata);
@@ -91,13 +99,14 @@ describe.only('ABI Encoder', () => {
             expect(calldata).to.be.equal(expectedCalldata);
 
             // Test decoding
-            /*const expectedDecodedValueJson = JSON.stringify(args);
-            const decodedValue = method.decode(calldata);
+            const expectedDecodedValueJson = JSON.stringify(args);
+            const decodedValue = method.decode(calldata, true);
             const decodedValueJson = JSON.stringify(decodedValue);
-            expect(decodedValueJson).to.be.equal(expectedDecodedValueJson);*/
+            console.log(`DECODED`, '*'.repeat(200), '\n', decodedValueJson);
+            expect(decodedValueJson).to.be.equal(expectedDecodedValueJson);
         });
 
-        it.only('Crazy ABI #1', async () => {
+        it('Crazy ABI #1', async () => {
             const method = new AbiEncoder.Method(AbiSamples.crazyAbi1);
 
             const args = [
