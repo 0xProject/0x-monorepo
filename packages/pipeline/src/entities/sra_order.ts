@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 import { AssetType } from '../types';
 
-@Entity({ name: 'sra_orders' })
+@Entity({ name: 'sra_orders', schema: 'raw' })
 export class SraOrder {
     @PrimaryColumn({ name: 'exchange_address' })
     public exchangeAddress!: string;

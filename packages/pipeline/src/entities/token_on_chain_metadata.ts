@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'token_on_chain_metadata' })
+@Entity({ name: 'token_on_chain_metadata', schema: 'raw' })
 export class TokenOnChainMetadata {
     @PrimaryColumn({ type: 'nvarchar', nullable: false })
     public address!: string;
