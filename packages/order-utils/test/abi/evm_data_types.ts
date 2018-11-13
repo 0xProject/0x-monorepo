@@ -4,7 +4,7 @@ import { MethodAbi, DataItem } from 'ethereum-types';
 
 import ethUtil = require('ethereumjs-util');
 
-import { Calldata } from './calldata';
+import { Calldata, RawCalldata } from './calldata';
 
 import { BigNumber } from '@0x/utils';
 
@@ -13,6 +13,7 @@ var _ = require('lodash');
 export interface DataTypeStaticInterface {
     matchGrammar: (type: string) => boolean;
     encodeValue: (value: any) => Buffer;
+    //    decodeValue: (value: Buffer) => [any, Buffer];
 }
 
 export class Address extends PayloadDataType {
@@ -37,6 +38,13 @@ export class Address extends PayloadDataType {
         const evmWordWidth = 32;
         const encodedValueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value), evmWordWidth);
         return encodedValueBuf;
+    }
+
+    public decodeValue(calldata: RawCalldata): string {
+        const paddedValueBuf = calldata.popWord();
+        const valueBuf = paddedValueBuf.slice(12);
+        const value = ethUtil.bufferToHex(valueBuf);
+        return value;
     }
 }
 
@@ -63,6 +71,17 @@ export class Bool extends PayloadDataType {
         const encodedValue = value === true ? '0x1' : '0x0';
         const encodedValueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(encodedValue), evmWordWidth);
         return encodedValueBuf;
+    }
+
+    public decodeValue(calldata: RawCalldata): boolean {
+        const valueBuf = calldata.popWord();
+        const valueHex = ethUtil.bufferToHex(valueBuf);
+        const valueNumber = new BigNumber(valueHex, 16);
+        let value: boolean = (valueNumber.equals(0)) ? false : true;
+        if (!(valueNumber.equals(0) || valueNumber.equals(1))) {
+            throw new Error(`Failed to decode boolean. Expected 0x0 or 0x1, got ${valueHex}`);
+        }
+        return value;
     }
 }
 
@@ -124,6 +143,37 @@ abstract class Number extends PayloadDataType {
         }
 
         return valueBuf;
+    }
+
+    public decodeValue(calldata: RawCalldata): BigNumber {
+        const decodedValueBuf = calldata.popWord();
+        const decodedValueHex = ethUtil.bufferToHex(decodedValueBuf);
+        let decodedValue = new BigNumber(decodedValueHex, 16);
+        if (this instanceof Int) {
+            // Check if we're negative
+            const binBase = 2;
+            const decodedValueBin = decodedValue.toString(binBase);
+            if (decodedValueBin[0] === '1') {
+                // Negative
+                // Step 1/3: Invert binary value
+                const bitsInEvmWord = 256;
+                let invertedValueBin = '1'.repeat(bitsInEvmWord - decodedValueBin.length);
+                _.each(decodedValueBin, (bit: string) => {
+                    invertedValueBin += bit === '1' ? '0' : '1';
+                });
+                const invertedValue = new BigNumber(invertedValueBin, binBase);
+
+                // Step 2/3: Add 1 to inverted value
+                // The result is the two's-complement represent of the input value.
+                const positiveDecodedValue = invertedValue.plus(binBase);
+
+                // Step 3/3: Invert positive value
+                const negativeDecodedValue = positiveDecodedValue.times(-1);
+                decodedValue = negativeDecodedValue;
+            }
+        }
+
+        return decodedValue;
     }
 
     public abstract getMaxValue(): BigNumber;
@@ -228,6 +278,13 @@ export class Byte extends PayloadDataType {
         return paddedValue;
     }
 
+    public decodeValue(calldata: RawCalldata): string {
+        const paddedValueBuf = calldata.popWord();
+        const valueBuf = paddedValueBuf.slice(0, this.width);
+        const value = ethUtil.bufferToHex(valueBuf);
+        return value;
+    }
+
     public static matchGrammar(type: string): boolean {
         return this.matcher.test(type);
     }
@@ -262,6 +319,17 @@ export class Bytes extends PayloadDataType {
         return encodedValueBuf;
     }
 
+    public decodeValue(calldata: RawCalldata): string {
+        const lengthBuf = calldata.popWord();
+        const lengthHex = ethUtil.bufferToHex(lengthBuf);
+        const length = parseInt(lengthHex, 16);
+        const wordsForValue = Math.ceil(length / 32);
+        const paddedValueBuf = calldata.popWords(wordsForValue);
+        const valueBuf = paddedValueBuf.slice(0, length);
+        const decodedValue = ethUtil.bufferToHex(valueBuf);
+        return decodedValue;
+    }
+
     public getSignature(): string {
         return 'bytes';
     }
@@ -287,6 +355,18 @@ export class SolString extends PayloadDataType {
         const lengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value.length), 32);
         const encodedValueBuf = Buffer.concat([lengthBuf, valueBuf]);
         return encodedValueBuf;
+    }
+
+    public decodeValue(calldata: RawCalldata): string {
+        const lengthBuf = calldata.popWord();
+        const lengthHex = ethUtil.bufferToHex(lengthBuf);
+        const length = parseInt(lengthHex, 16);
+        const wordsForValue = Math.ceil(length / 32);
+        const paddedValueBuf = calldata.popWords(wordsForValue);
+        const valueBuf = paddedValueBuf.slice(0, length);
+        console.log('LENGTH UPINYA === ', length);
+        const value = valueBuf.toString('ascii');
+        return value;
     }
 
     public getSignature(): string {
@@ -413,6 +493,27 @@ export class Method extends MemberDataType {
         calldata.setSelector(this.methodSelector);
         super.encode(value, calldata);
         return calldata.toHexString();
+    }
+
+    /*
+    protected decodeValue(value: Buffer): any[] {
+        const selectorBuf = value.slice(4);
+        const selectorHex = ethUtil.bufferToHex(selectorBuf);
+        if (this.selector !== selectorHex) {
+            throw new Error(`Tried to decode calldata with mismatched selector. Expected '${this.selector}', got '${selectorHex}'`);
+        }
+        const remainingValue = value.slice(9);
+        const decodedValue = super.decodeValue(remainingValue);
+        return decodedValue;
+    }*/
+
+    public decode(calldata: string): any[] {
+        const calldata_ = new RawCalldata(calldata);
+        if (this.selector !== calldata_.getSelector()) {
+            throw new Error(`Tried to decode calldata with mismatched selector. Expected '${this.selector}', got '${calldata_.getSelector()}'`);
+        }
+        const value = super.generateValue(calldata_);
+        return value;
     }
 
     public getSignature(): string {
