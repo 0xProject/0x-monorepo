@@ -164,6 +164,12 @@ class Queue<T> {
     mergeFront(q: Queue<T>) {
         this.store = q.store.concat(this.store);
     }
+    getStore(): T[] {
+        return this.store;
+    }
+    peek(): T | undefined {
+        return this.store.length >= 0 ? this.store[0] : undefined;
+    }
 }
 
 export class Calldata {
@@ -203,7 +209,29 @@ export class Calldata {
         return blockQueue;
     }
 
-    public toHexString(): string {
+    /*
+
+    // Basic optimize method that prunes duplicate branches of the tree
+    // Notes:
+    //      1. Pruning is at the calldata block level, so it is independent of type
+    //      2. 
+    private optimize(blocks: CalldataBlock[]) {
+        // Build hash table of blocks
+        const blockLookupTable: { [key: string]: string } = {};
+        _.each(blocks, (block: CalldataBlock) => {
+            if (blocks instanceof DependentCalldataBlock === false) {
+
+                return;
+            }
+
+            const leavesHash = block.hashLeaves();
+            if (leavesHash in blockLookupTable) {
+
+            }
+        })
+    }*/
+
+    public toHexString(optimize: boolean = false): string {
         let selectorBuffer = ethUtil.toBuffer(this.selector);
         if (this.root === undefined) {
             throw new Error('expected root');
@@ -222,6 +250,8 @@ export class Calldata {
         while ((block = valueQueue.pop()) !== undefined) {
             valueBufs.push(block.toBuffer());
         }
+
+        // if (optimize) this.optimize(valueQueue.getStore());
 
         const combinedBuffers = Buffer.concat(valueBufs);
         const hexValue = ethUtil.bufferToHex(combinedBuffers);
@@ -258,5 +288,75 @@ export class Calldata {
             throw new Error(`Invalid selector '${this.selector}'`);
         }
         this.sizeInBytes += 8;
+    }
+}
+
+export class RawCalldata {
+    private value: Buffer;
+    private offset: number; // tracks current offset into raw calldata; used for parsing
+    private selector: string;
+    private scopes: Queue<number>;
+
+    constructor(value: string | Buffer) {
+        if (typeof value === 'string' && !value.startsWith('0x')) {
+            throw new Error(`Expected raw calldata to start with '0x'`);
+        }
+        const valueBuf = ethUtil.toBuffer(value);
+        this.selector = ethUtil.bufferToHex(valueBuf.slice(0, 4));
+        this.value = valueBuf.slice(4); // disregard selector
+        this.offset = 0;
+        this.scopes = new Queue<number>();
+        this.scopes.push(0);
+    }
+
+    public popBytes(lengthInBytes: number): Buffer {
+        const value = this.value.slice(this.offset, this.offset + lengthInBytes);
+        this.setOffset(this.offset + lengthInBytes);
+        return value;
+    }
+
+    public popWord(): Buffer {
+        const wordInBytes = 32;
+        return this.popBytes(wordInBytes);
+    }
+
+    public popWords(length: number): Buffer {
+        const wordInBytes = 32;
+        return this.popBytes(length * wordInBytes);
+    }
+
+    public readBytes(from: number, to: number): Buffer {
+        const value = this.value.slice(from, to);
+        return value;
+    }
+
+    public setOffset(offsetInBytes: number) {
+        this.offset = offsetInBytes;
+        console.log('0'.repeat(100), this.offset);
+    }
+
+    public startScope() {
+        this.scopes.pushFront(this.offset);
+    }
+
+    public endScope() {
+        this.scopes.pop();
+    }
+
+    public getOffset(): number {
+        return this.offset;
+    }
+
+    public toAbsoluteOffset(relativeOffset: number) {
+        const scopeOffset = this.scopes.peek();
+        if (scopeOffset === undefined) {
+            throw new Error(`Tried to access undefined scope.`);
+        }
+        const absoluteOffset = relativeOffset + scopeOffset;
+        return absoluteOffset;
+    }
+
+    public getSelector(): string {
+        return this.selector;
     }
 }

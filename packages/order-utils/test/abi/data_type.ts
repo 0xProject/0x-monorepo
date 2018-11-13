@@ -1,4 +1,4 @@
-import { Calldata, CalldataBlock, PayloadCalldataBlock, DependentCalldataBlock, MemberCalldataBlock } from "./calldata";
+import { RawCalldata, Calldata, CalldataBlock, PayloadCalldataBlock, DependentCalldataBlock, MemberCalldataBlock } from "./calldata";
 import { MethodAbi, DataItem } from 'ethereum-types';
 import { BigNumber } from '@0x/utils';
 import ethUtil = require('ethereumjs-util');
@@ -18,6 +18,7 @@ export abstract class DataType {
     }
 
     public abstract generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlock;
+    public abstract generateValue(calldata: RawCalldata): any;
     public abstract encode(value: any, calldata: Calldata): void;
     public abstract getSignature(): string;
     public abstract isStatic(): boolean;
@@ -46,12 +47,18 @@ export abstract class PayloadDataType extends DataType {
         // calldata.setRoot(block);
     }
 
+    public generateValue(calldata: RawCalldata): any {
+        const value = this.decodeValue(calldata);
+        return value;
+    }
+
     public isStatic(): boolean {
         // If a payload has a constant size then it's static
         return this.hasConstantSize;
     }
 
     public abstract encodeValue(value: any): Buffer;
+    public abstract decodeValue(calldata: RawCalldata): any;
 }
 
 export abstract class DependentDataType extends DataType {
@@ -79,6 +86,17 @@ export abstract class DependentDataType extends DataType {
     public encode(value: any, calldata: Calldata = new Calldata()): void {
         const block = this.generateCalldataBlock(value);
         //calldata.setRoot(block);
+    }
+
+    public generateValue(calldata: RawCalldata): any {
+        const destinationOffsetBuf = calldata.popWord();
+        const currentOffset = calldata.getOffset();
+        const destinationOffsetRelative = parseInt(ethUtil.bufferToHex(destinationOffsetBuf), 16);
+        const destinationOffsetAbsolute = calldata.toAbsoluteOffset(destinationOffsetRelative);
+        calldata.setOffset(destinationOffsetAbsolute);
+        const value = this.dependency.generateValue(calldata);
+        calldata.setOffset(currentOffset);
+        return value;
     }
 
     public isStatic(): boolean {
@@ -179,7 +197,6 @@ export abstract class MemberDataType extends DataType {
             methodBlock.setHeader(lenBuf);
         }
 
-
         const memberBlocks: CalldataBlock[] = [];
         _.each(members, (member: DataType, idx: number) => {
             const block = member.generateCalldataBlock(value[idx], methodBlock);
@@ -218,6 +235,28 @@ export abstract class MemberDataType extends DataType {
     public encode(value: any, calldata: Calldata = new Calldata()): void {
         const block = this.generateCalldataBlock(value);
         calldata.setRoot(block);
+    }
+
+    public generateValue(calldata: RawCalldata): any[] {
+        let members = this.members;
+        if (this.isArray && this.arrayLength === undefined) {
+            const arrayLengthBuf = calldata.popWord();
+            const arrayLengthHex = ethUtil.bufferToHex(arrayLengthBuf);
+            const hexBase = 16;
+            const arrayLength = new BigNumber(arrayLengthHex, hexBase);
+
+            [members,] = this.createMembersWithLength(this.getDataItem(), arrayLength.toNumber());
+        }
+
+        calldata.startScope();
+        const decodedValue: any[] = [];
+        _.each(members, (member: DataType, idx: number) => {
+            let memberValue = member.generateValue(calldata);
+            decodedValue.push(memberValue);
+        });
+        calldata.endScope();
+
+        return decodedValue;
     }
 
     protected computeSignatureOfMembers(): string {
