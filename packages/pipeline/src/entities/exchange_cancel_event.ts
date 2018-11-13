@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 import { AssetType } from '../types';
 
-@Entity({ name: 'exchange_cancel_events' })
+@Entity({ name: 'exchange_cancel_events', schema: 'raw' })
 export class ExchangeCancelEvent {
     @PrimaryColumn({ name: 'contract_address' })
     public contractAddress!: string;

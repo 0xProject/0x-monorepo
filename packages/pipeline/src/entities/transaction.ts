@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'transactions' })
+@Entity({ name: 'transactions', schema: 'raw' })
 export class Transaction {
     @PrimaryColumn({ name: 'transaction_hash' })
     public transactionHash!: string;
