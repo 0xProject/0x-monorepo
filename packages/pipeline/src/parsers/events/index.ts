@@ -18,19 +18,38 @@ export const parseExchangeEvents: (
     eventLogs: Array<LogWithDecodedArgs<ExchangeEventArgs>>,
 ) => ExchangeEventEntity[] = R.map(_convertToEntity);
 
+/**
+ * Converts a raw event log to an Entity. Automatically detects the type of
+ * event and returns the appropriate entity type. Throws for unknown event
+ * types.
+ * @param eventLog Raw event log (e.g. returned from contract-wrappers).
+ */
 export function _convertToEntity(eventLog: LogWithDecodedArgs<ExchangeEventArgs>): ExchangeEventEntity {
     switch (eventLog.event) {
         case 'Fill':
+            // tslint has a false positive here. We need to type assert in order
+            // to change the type argument to the more specific
+            // ExchangeFillEventArgs.
+            // tslint:disable-next-line:no-unnecessary-type-assertion
             return _convertToExchangeFillEvent(eventLog as LogWithDecodedArgs<ExchangeFillEventArgs>);
         case 'Cancel':
+            // tslint:disable-next-line:no-unnecessary-type-assertion
             return _convertToExchangeCancelEvent(eventLog as LogWithDecodedArgs<ExchangeCancelEventArgs>);
         case 'CancelUpTo':
+            // tslint:disable-next-line:no-unnecessary-type-assertion
             return _convertToExchangeCancelUpToEvent(eventLog as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>);
         default:
+            // Another false positive here. We are adding two strings, but
+            // tslint seems confused about the types.
+            // tslint:disable-next-line:restrict-plus-operands
             throw new Error('unexpected eventLog.event type: ' + eventLog.event);
     }
 }
 
+/**
+ * Converts a raw event log for a fill event into an ExchangeFillEvent entity.
+ * @param eventLog Raw event log (e.g. returned from contract-wrappers).
+ */
 export function _convertToExchangeFillEvent(eventLog: LogWithDecodedArgs<ExchangeFillEventArgs>): ExchangeFillEvent {
     const makerAssetData = assetDataUtils.decodeAssetDataOrThrow(eventLog.args.makerAssetData);
     const makerAssetType = makerAssetData.assetProxyId === AssetProxyId.ERC20 ? 'erc20' : 'erc721';
@@ -55,15 +74,23 @@ export function _convertToExchangeFillEvent(eventLog: LogWithDecodedArgs<Exchang
     exchangeFillEvent.makerAssetType = makerAssetType;
     exchangeFillEvent.makerAssetProxyId = makerAssetData.assetProxyId;
     exchangeFillEvent.makerTokenAddress = makerAssetData.tokenAddress;
+    // tslint has a false positive here. Type assertion is required.
+    // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeFillEvent.makerTokenId = bigNumbertoStringOrNull((makerAssetData as ERC721AssetData).tokenId);
     exchangeFillEvent.rawTakerAssetData = eventLog.args.takerAssetData;
     exchangeFillEvent.takerAssetType = takerAssetType;
     exchangeFillEvent.takerAssetProxyId = takerAssetData.assetProxyId;
     exchangeFillEvent.takerTokenAddress = takerAssetData.tokenAddress;
+    // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeFillEvent.takerTokenId = bigNumbertoStringOrNull((takerAssetData as ERC721AssetData).tokenId);
     return exchangeFillEvent;
 }
 
+/**
+ * Converts a raw event log for a cancel event into an ExchangeCancelEvent
+ * entity.
+ * @param eventLog Raw event log (e.g. returned from contract-wrappers).
+ */
 export function _convertToExchangeCancelEvent(
     eventLog: LogWithDecodedArgs<ExchangeCancelEventArgs>,
 ): ExchangeCancelEvent {
@@ -86,15 +113,22 @@ export function _convertToExchangeCancelEvent(
     exchangeCancelEvent.makerAssetType = makerAssetType;
     exchangeCancelEvent.makerAssetProxyId = makerAssetData.assetProxyId;
     exchangeCancelEvent.makerTokenAddress = makerAssetData.tokenAddress;
+    // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeCancelEvent.makerTokenId = bigNumbertoStringOrNull((makerAssetData as ERC721AssetData).tokenId);
     exchangeCancelEvent.rawTakerAssetData = eventLog.args.takerAssetData;
     exchangeCancelEvent.takerAssetType = takerAssetType;
     exchangeCancelEvent.takerAssetProxyId = takerAssetData.assetProxyId;
     exchangeCancelEvent.takerTokenAddress = takerAssetData.tokenAddress;
+    // tslint:disable-next-line:no-unnecessary-type-assertion
     exchangeCancelEvent.takerTokenId = bigNumbertoStringOrNull((takerAssetData as ERC721AssetData).tokenId);
     return exchangeCancelEvent;
 }
 
+/**
+ * Converts a raw event log for a cancelUpTo event into an
+ * ExchangeCancelUpToEvent entity.
+ * @param eventLog Raw event log (e.g. returned from contract-wrappers).
+ */
 export function _convertToExchangeCancelUpToEvent(
     eventLog: LogWithDecodedArgs<ExchangeCancelUpToEventArgs>,
 ): ExchangeCancelUpToEvent {

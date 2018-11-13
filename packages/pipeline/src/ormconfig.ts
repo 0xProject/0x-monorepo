@@ -29,4 +29,4 @@ const config: ConnectionOptions = {
     migrations: ['./lib/migrations/**/*.js'],
 };
 
-module.exports = config as ConnectionOptions;
+module.exports = config;

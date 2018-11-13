@@ -3,6 +3,10 @@ import * as R from 'ramda';
 import { RelayerResponse, RelayerResponseNetwork } from '../../data_sources/relayer-registry';
 import { Relayer } from '../../entities';
 
+/**
+ * Parses a raw relayer registry response into an array of Relayer entities.
+ * @param rawResp raw response from the relayer-registry json file.
+ */
 export function parseRelayers(rawResp: Map<string, RelayerResponse>): Relayer[] {
     const parsedAsObject = R.mapObjIndexed(parseRelayer, rawResp);
     return R.values(parsedAsObject);
