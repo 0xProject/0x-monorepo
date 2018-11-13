@@ -18,7 +18,7 @@ export const assert = {
         }
     },
     isValidBuyQuoteInfo(variableName: string, buyQuoteInfo: BuyQuoteInfo): void {
-        sharedAssert.isBigNumber(`${variableName}.ethPerAssetPrice`, buyQuoteInfo.ethPerAssetPrice);
+        sharedAssert.isBigNumber(`${variableName}.assetEthAmount`, buyQuoteInfo.assetEthAmount);
         sharedAssert.isBigNumber(`${variableName}.feeEthAmount`, buyQuoteInfo.feeEthAmount);
         sharedAssert.isBigNumber(`${variableName}.totalEthAmount`, buyQuoteInfo.totalEthAmount);
     },

@@ -18,7 +18,7 @@ export class PaymentMethodDropdown extends React.Component<PaymentMethodDropdown
     public render(): React.ReactNode {
         const { accountAddress, accountEthBalanceInWei } = this.props;
         const value = format.ethAddress(accountAddress);
-        const label = format.ethBaseAmount(accountEthBalanceInWei, 4, '') as string;
+        const label = format.ethBaseUnitAmount(accountEthBalanceInWei, 4, '') as string;
         return <Dropdown value={value} label={label} items={this._getDropdownItemConfigs()} />;
     }
     private readonly _getDropdownItemConfigs = (): DropdownItemConfig[] => {

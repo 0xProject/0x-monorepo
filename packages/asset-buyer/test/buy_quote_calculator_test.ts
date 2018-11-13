@@ -108,17 +108,17 @@ describe('buyQuoteCalculator', () => {
             // 50 eth to fill the first order + 100 eth for fees
             const expectedEthAmountForAsset = new BigNumber(50);
             const expectedEthAmountForZrxFees = new BigNumber(100);
-            const expectedFillEthAmount = expectedEthAmountForAsset.plus(expectedEthAmountForZrxFees);
-            const expectedFeeEthAmount = expectedEthAmountForAsset.mul(feePercentage);
+            const expectedFillEthAmount = expectedEthAmountForAsset;
+            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.mul(feePercentage);
+            const expectedFeeEthAmount = expectedAffiliateFeeEthAmount.plus(expectedEthAmountForZrxFees);
             const expectedTotalEthAmount = expectedFillEthAmount.plus(expectedFeeEthAmount);
-            const expectedEthPerAssetPrice = expectedFillEthAmount.div(assetBuyAmount);
+            expect(buyQuote.bestCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
-            expect(buyQuote.bestCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedEthPerAssetPrice);
             // because we have no slippage protection, minRate is equal to maxRate
+            expect(buyQuote.worstCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
             expect(buyQuote.worstCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
             expect(buyQuote.worstCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
-            expect(buyQuote.worstCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedEthPerAssetPrice);
             // test if feePercentage gets passed through
             expect(buyQuote.feePercentage).to.equal(feePercentage);
         });
@@ -146,23 +146,23 @@ describe('buyQuoteCalculator', () => {
             // 50 eth to fill the first order + 100 eth for fees
             const expectedEthAmountForAsset = new BigNumber(50);
             const expectedEthAmountForZrxFees = new BigNumber(100);
-            const expectedFillEthAmount = expectedEthAmountForAsset.plus(expectedEthAmountForZrxFees);
-            const expectedFeeEthAmount = expectedEthAmountForAsset.mul(feePercentage);
+            const expectedFillEthAmount = expectedEthAmountForAsset;
+            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.mul(feePercentage);
+            const expectedFeeEthAmount = expectedAffiliateFeeEthAmount.plus(expectedEthAmountForZrxFees);
             const expectedTotalEthAmount = expectedFillEthAmount.plus(expectedFeeEthAmount);
-            const expectedEthPerAssetPrice = expectedFillEthAmount.div(assetBuyAmount);
+            expect(buyQuote.bestCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
-            expect(buyQuote.bestCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedEthPerAssetPrice);
             // 100 eth to fill the first order + 208 eth for fees
             const expectedWorstEthAmountForAsset = new BigNumber(100);
             const expectedWorstEthAmountForZrxFees = new BigNumber(208);
-            const expectedWorstFillEthAmount = expectedWorstEthAmountForAsset.plus(expectedWorstEthAmountForZrxFees);
-            const expectedWorstFeeEthAmount = expectedWorstEthAmountForAsset.mul(feePercentage);
+            const expectedWorstFillEthAmount = expectedWorstEthAmountForAsset;
+            const expectedWorstAffiliateFeeEthAmount = expectedWorstEthAmountForAsset.mul(feePercentage);
+            const expectedWorstFeeEthAmount = expectedWorstAffiliateFeeEthAmount.plus(expectedWorstEthAmountForZrxFees);
             const expectedWorstTotalEthAmount = expectedWorstFillEthAmount.plus(expectedWorstFeeEthAmount);
-            const expectedWorstEthPerAssetPrice = expectedWorstFillEthAmount.div(assetBuyAmount);
+            expect(buyQuote.worstCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedWorstFillEthAmount);
             expect(buyQuote.worstCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedWorstFeeEthAmount);
             expect(buyQuote.worstCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedWorstTotalEthAmount);
-            expect(buyQuote.worstCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedWorstEthPerAssetPrice);
             // test if feePercentage gets passed through
             expect(buyQuote.feePercentage).to.equal(feePercentage);
         });

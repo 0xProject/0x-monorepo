@@ -59,7 +59,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
     const assetBuyer = state.providerState.assetBuyer;
     return {
         assetBuyer,
-        value: state.selectedAssetAmount,
+        value: state.selectedAssetUnitAmount,
         asset: selectedAsset,
         isDisabled,
         numberOfAssetsAvailable,
