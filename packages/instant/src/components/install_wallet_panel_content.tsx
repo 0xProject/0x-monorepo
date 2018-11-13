@@ -22,7 +22,6 @@ export const InstallWalletPanelContent: React.StatelessComponent<InstallWalletPa
             <Button
                 href={META_MASK_CHROME_STORE_URL}
                 width="100%"
-                fontSize="16px"
                 fontColor={ColorOption.white}
                 backgroundColor={ColorOption.darkOrange}
             >

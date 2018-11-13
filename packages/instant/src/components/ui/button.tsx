@@ -81,7 +81,7 @@ Button.defaultProps = {
     width: 'auto',
     isDisabled: false,
     padding: '.82em 1.2em',
-    fontSize: '15px',
+    fontSize: '16px',
 };
 
 Button.displayName = 'Button';

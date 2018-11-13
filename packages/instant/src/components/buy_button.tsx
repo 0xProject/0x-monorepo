@@ -43,7 +43,6 @@ export class BuyButton extends React.Component<BuyButtonProps> {
                 onClick={this._handleClick}
                 isDisabled={shouldDisableButton}
                 fontColor={ColorOption.white}
-                fontSize="16px"
             >
                 Buy
             </Button>
