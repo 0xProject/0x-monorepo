@@ -19,9 +19,9 @@ export class SraOrder {
     public feeRecipientAddress!: string;
     @Column({ name: 'sender_address' })
     public senderAddress!: string;
-    @Column({ name: 'maker_asset_filled_amount' })
+    @Column({ name: 'maker_asset_amount' })
     public makerAssetAmount!: string;
-    @Column({ name: 'taker_asset_filled_amount' })
+    @Column({ name: 'taker_asset_amount' })
     public takerAssetAmount!: string;
     @Column({ name: 'maker_fee' })
     public makerFee!: string;
