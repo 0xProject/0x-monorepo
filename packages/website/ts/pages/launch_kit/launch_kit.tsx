@@ -32,34 +32,6 @@ interface Benefit {
     icon: string;
     description: string;
 }
-const BENEFITS_1: Benefit[] = [
-    {
-        icon: '/images/launch_kit/shared_liquidity.svg',
-        description: 'Tap into and share liquidity with other relayers',
-    },
-    {
-        icon: '/images/launch_kit/fork.svg',
-        description: 'Fork and extend to support new modes of exchange',
-    },
-    {
-        icon: '/images/launch_kit/enable_trading.svg',
-        description: 'Enable trading for any ERC-20 or ERC-721 asset',
-    },
-];
-const BENEFITS_2: Benefit[] = [
-    {
-        icon: '/images/launch_kit/secondary_market.svg',
-        description: 'Quickly form a secondary market for your own token',
-    },
-    {
-        icon: '/images/launch_kit/in_game_marketplace.svg',
-        description: 'Seamlessly create an in-game marketplace for digital items and collectables',
-    },
-    {
-        icon: '/images/launch_kit/local_market.svg',
-        description: 'Easily build a 0x relayer for your local market',
-    },
-];
 
 export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
     private readonly _throttledScreenWidthUpdate: () => void;
@@ -100,6 +72,20 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
         );
     }
     private _renderHero(): React.ReactNode {
+        const BENEFITS_1: Benefit[] = [
+            {
+                icon: '/images/launch_kit/shared_liquidity.svg',
+                description: this.props.translate.get(Key.TapIntoAndShare, Deco.Cap),
+            },
+            {
+                icon: '/images/launch_kit/fork.svg',
+                description: this.props.translate.get(Key.ForkAndExtend, Deco.Cap),
+            },
+            {
+                icon: '/images/launch_kit/enable_trading.svg',
+                description: this.props.translate.get(Key.EnableTrading, Deco.Cap),
+            },
+        ];
         const isSmallScreen = this.state.screenWidth === ScreenWidths.Sm;
         const smallButtonPadding = '12px 30px 12px 30px';
         const largeButtonPadding = '14px 60px 14px 60px';
@@ -190,6 +176,20 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
         );
     }
     private _renderSection(): React.ReactNode {
+        const BENEFITS_2: Benefit[] = [
+            {
+                icon: '/images/launch_kit/secondary_market.svg',
+                description: this.props.translate.get(Key.QuicklyLaunch, Deco.Cap),
+            },
+            {
+                icon: '/images/launch_kit/in_game_marketplace.svg',
+                description: this.props.translate.get(Key.SeemlesslyCreate, Deco.Cap),
+            },
+            {
+                icon: '/images/launch_kit/local_market.svg',
+                description: this.props.translate.get(Key.LocalMarket, Deco.Cap),
+            },
+        ];
         return (
             <div className="clearfix pb4" style={{ backgroundColor: darkerBackgroundColor }}>
                 <Container
@@ -198,9 +198,11 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                     paddingTop="89px"
                     paddingBottom="89px"
                     maxWidth="421px"
+                    paddingLeft="10px"
+                    paddingRight="10px"
                 >
                     <Text fontSize="26px" lineHeight="37px" fontWeight="medium" fontColor={colors.white}>
-                        Perfect for developers who need simple exchange functionality
+                        {this.props.translate.get(Key.PerfectForDevelopers, Deco.CapWords)}
                     </Text>
                 </Container>
                 {this._renderBenefits(BENEFITS_2)}
