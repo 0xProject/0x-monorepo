@@ -27,7 +27,7 @@ const PlainActiveNode: React.StatelessComponent<ActiveNodeProps> = ({ className,
 
 const ActiveNode = styled(PlainActiveNode)`
     cursor: pointer;
-    border: 2px solid ${colors.beigeWhite};
+    border: 1px solid ${colors.beigeWhite};
     border-radius: 4px;
     padding: 4px 6px 4px 8px;
 `;

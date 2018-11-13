@@ -10,6 +10,7 @@ import {
     SectionsMap,
     SupportedDocJson,
 } from './types';
+import { constants } from './utils/constants';
 
 export class DocsInfo {
     public id: string;
@@ -64,7 +65,7 @@ export class DocsInfo {
         const docSections = _.keys(this.sections);
         _.each(docSections, sectionName => {
             const docSection = docAgnosticFormat[sectionName];
-            if (_.isUndefined(docSection)) {
+            if (_.isUndefined(docSection) || sectionName === constants.EXTERNAL_EXPORTS_SECTION_NAME) {
                 return; // no-op
             }
 

@@ -1,9 +1,8 @@
-import { colors, constants as sharedConstants, Link, utils as sharedUtils } from '@0x/react-shared';
+import { colors, Link, utils as sharedUtils } from '@0x/react-shared';
 import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '@0x/types';
 import { errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link as ScrollLink } from 'react-scroll';
 import * as ReactTooltip from 'react-tooltip';
 
 import { DocsInfo } from '../docs_info';
@@ -224,13 +223,7 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
                 {sharedUtils.isUserOnMobile() || props.isInPopover || isExportedClassReference ? (
                     <span style={{ color: colors.lightBlueA700, cursor: 'pointer' }}>{typeName}</span>
                 ) : (
-                    <ScrollLink
-                        to={typeDefinitionAnchorId}
-                        offset={0}
-                        hashSpy={true}
-                        duration={sharedConstants.DOCS_SCROLL_DURATION_MS}
-                        containerId={sharedConstants.SCROLL_CONTAINER_ID}
-                    >
+                    <Link to={typeDefinitionAnchorId}>
                         <span
                             data-tip={true}
                             data-for={id}
@@ -252,7 +245,7 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
                                 />
                             </ReactTooltip>
                         </span>
-                    </ScrollLink>
+                    </Link>
                 )}
             </span>
         );

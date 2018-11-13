@@ -94,7 +94,11 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         const sidebar = _.isUndefined(this.state.docAgnosticFormat) ? (
             <div />
         ) : (
-            <NestedSidebarMenu sidebarHeader={this._renderSidebarHeader()} sectionNameToLinks={sectionNameToLinks} />
+            <NestedSidebarMenu
+                sidebarHeader={this._renderSidebarHeader()}
+                sectionNameToLinks={sectionNameToLinks}
+                screenWidth={this.props.screenWidth}
+            />
         );
         return (
             <DevelopersPage
