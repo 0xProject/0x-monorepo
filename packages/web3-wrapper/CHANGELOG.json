@@ -1,5 +1,16 @@
 [
     {
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note":
+                    "Fix bug in `getTransactionByHashAsync` which was causing the return value to have the wrong type (raw fields instead of unmarshalled fields).",
+                "pr": 1177
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
         "version": "3.1.0",
         "changes": [
             {
@@ -11,7 +22,8 @@
                     "Web3Wrapper now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned.",
                 "pr": 1102
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "version": "3.0.3",

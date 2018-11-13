@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 
 const MAX_DIGITS_IN_UNSIGNED_256_INT = 78;
 

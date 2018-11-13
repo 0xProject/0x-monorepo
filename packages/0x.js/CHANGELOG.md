@@ -5,6 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.1 - _November 9, 2018_
+
+    * Dependencies updated
+
+## v2.0.0 - _October 18, 2018_
+
+    * Add support for `eth_signTypedData`. (#1102)
+    * Added `MetamaskSubprovider` to handle inconsistencies in Metamask's signing JSON RPC endpoints. (#1102)
+    * Removed `SignerType` (including `SignerType.Metamask`). Please use the `MetamaskSubprovider` to wrap `web3.currentProvider`. (#1102)
+    * Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers (#1105)
+    * Make web3-provider-engine types a 'dependency' so it's available to users of the library (#1105)
+    * Export new `AssetData` type from types (#1131)
+
 ## v1.0.8 - _October 4, 2018_
 
     * Dependencies updated
@@ -49,7 +62,7 @@ CHANGELOG
 
     * Re-organize the exported interface of 0x.js. Remove the `ZeroEx` class, and instead export the same exports as `0x.js`'s sub-packages: `@0xproject/contract-wrappers`, `@0xproject/order-utils` and `@0xproject/order-watcher` (#963)
 
-## v1.0.1-rc.3 - _August 13, 2018_
+## v1.0.1-rc.3 - _August 14, 2018_
 
     * Dependencies updated
     * Update ecSignOrderHashAsync to return the signature as a string for immediate use in contracts (#914)

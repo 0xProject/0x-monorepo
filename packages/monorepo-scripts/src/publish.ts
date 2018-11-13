@@ -18,7 +18,7 @@ import { DocGenerateAndUploadUtils } from './utils/doc_generate_and_upload_utils
 import { publishReleaseNotesAsync } from './utils/github_release_utils';
 import { utils } from './utils/utils';
 
-const NPM_NAMESPACE = '@0xproject/';
+const NPM_NAMESPACE = '@0x/';
 const TODAYS_TIMESTAMP = moment().unix();
 
 async function confirmAsync(message: string): Promise<void> {
@@ -34,8 +34,12 @@ async function confirmAsync(message: string): Promise<void> {
 (async () => {
     // Fetch public, updated Lerna packages
     const shouldIncludePrivate = true;
-    const allUpdatedPackages = await utils.getUpdatedPackagesAsync(shouldIncludePrivate);
-    const packagesWithDocs = getPackagesWithDocs(allUpdatedPackages);
+    const allPackagesToPublish = await utils.getPackagesToPublishAsync(shouldIncludePrivate);
+    if (_.isEmpty(allPackagesToPublish)) {
+        utils.log('No packages need publishing');
+        process.exit(0);
+    }
+    const packagesWithDocs = getPackagesWithDocs(allPackagesToPublish);
 
     if (!configs.IS_LOCAL_PUBLISH) {
         await confirmAsync(
@@ -45,12 +49,12 @@ async function confirmAsync(message: string): Promise<void> {
     }
 
     // Update CHANGELOGs
-    const updatedPublicPackages = _.filter(allUpdatedPackages, pkg => !pkg.packageJson.private);
+    const updatedPublicPackages = _.filter(allPackagesToPublish, pkg => !pkg.packageJson.private);
     const updatedPublicPackageNames = _.map(updatedPublicPackages, pkg => pkg.packageJson.name);
     utils.log(`Will update CHANGELOGs and publish: \n${updatedPublicPackageNames.join('\n')}\n`);
     const packageToNextVersion = await updateChangeLogsAsync(updatedPublicPackages);
 
-    const updatedPrivatePackages = _.filter(allUpdatedPackages, pkg => pkg.packageJson.private);
+    const updatedPrivatePackages = _.filter(allPackagesToPublish, pkg => pkg.packageJson.private);
     _.each(updatedPrivatePackages, pkg => {
         const currentVersion = pkg.packageJson.version;
         const packageName = pkg.packageJson.name;
@@ -96,7 +100,7 @@ function getPackagesWithDocs(allUpdatedPackages: Package[]): Package[] {
     const packagesWithDocPages = packagesWithDocPagesStringIfExist.split(' ');
     const updatedPackagesWithDocPages: Package[] = [];
     _.each(allUpdatedPackages, pkg => {
-        const nameWithoutPrefix = pkg.packageJson.name.replace('@0xproject/', '');
+        const nameWithoutPrefix = pkg.packageJson.name.replace('@0x/', '');
         if (_.includes(packagesWithDocPages, nameWithoutPrefix)) {
             updatedPackagesWithDocPages.push(pkg);
         }
@@ -110,7 +114,7 @@ async function generateAndUploadDocJsonsAsync(
     shouldUploadDocs: boolean,
 ): Promise<void> {
     for (const pkg of packagesWithDocs) {
-        const nameWithoutPrefix = pkg.packageJson.name.replace('@0xproject/', '');
+        const nameWithoutPrefix = pkg.packageJson.name.replace('@0x/', '');
         const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(nameWithoutPrefix, isStaging, shouldUploadDocs);
         await docGenerateAndUploadUtils.generateAndUploadDocsAsync();
     }
@@ -130,7 +134,7 @@ async function confirmDocPagesRenderAsync(packagesWithDocs: Package[]): Promise<
 
     _.each(packagesWithDocs, pkg => {
         const name = pkg.packageJson.name;
-        const nameWithoutPrefix = _.startsWith(name, NPM_NAMESPACE) ? name.split('@0xproject/')[1] : name;
+        const nameWithoutPrefix = _.startsWith(name, NPM_NAMESPACE) ? name.split('@0x/')[1] : name;
         const link = `${constants.stagingWebsite}/docs/${nameWithoutPrefix}`;
         // tslint:disable-next-line:no-floating-promises
         opn(link);

@@ -1,4 +1,4 @@
-import { BigNumber, NULL_BYTES } from '@0xproject/utils';
+import { BigNumber, NULL_BYTES } from '@0x/utils';
 
 import { ERC20Token, ERC721Token } from '../types';
 

@@ -1,4 +1,4 @@
-import { assert } from '@0xproject/assert';
+import { assert } from '@0x/assert';
 import {
     FallthroughResolver,
     FSResolver,
@@ -7,8 +7,8 @@ import {
     RelativeFSResolver,
     Resolver,
     URLResolver,
-} from '@0xproject/sol-resolver';
-import { fetchAsync, logUtils } from '@0xproject/utils';
+} from '@0x/sol-resolver';
+import { fetchAsync, logUtils } from '@0x/utils';
 import chalk from 'chalk';
 import { CompilerOptions, ContractArtifact, ContractVersionData, StandardOutput } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';

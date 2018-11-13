@@ -1,6 +1,6 @@
-import { EtherscanLinkSuffixes } from '@0xproject/react-shared';
+import { EtherscanLinkSuffixes } from '@0x/react-shared';
 import * as React from 'react';
-import ReactTooltip = require('react-tooltip');
+import ReactTooltip from 'react-tooltip';
 import { EtherScanIcon } from 'ts/components/ui/etherscan_icon';
 import { utils } from 'ts/utils/utils';
 

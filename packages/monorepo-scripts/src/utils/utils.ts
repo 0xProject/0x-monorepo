@@ -61,7 +61,7 @@ export const utils = {
         });
         return updatedPackages;
     },
-    async getUpdatedPackagesAsync(shouldIncludePrivate: boolean): Promise<Package[]> {
+    async getPackagesToPublishAsync(shouldIncludePrivate: boolean): Promise<Package[]> {
         const updatedPublicPackages = await utils.getLernaUpdatedPackagesAsync(shouldIncludePrivate);
         const updatedPackageNames = _.map(updatedPublicPackages, pkg => pkg.name);
 

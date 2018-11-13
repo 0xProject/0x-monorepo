@@ -1,6 +1,6 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { RevertReason } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { RevertReason } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
@@ -10,10 +10,10 @@ import {
     AssetProxyOwnerExecutionEventArgs,
     AssetProxyOwnerExecutionFailureEventArgs,
     AssetProxyOwnerSubmissionEventArgs,
-} from '../../generated_contract_wrappers/asset_proxy_owner';
-import { MixinAuthorizableContract } from '../../generated_contract_wrappers/mixin_authorizable';
-import { TestAssetProxyOwnerContract } from '../../generated_contract_wrappers/test_asset_proxy_owner';
-import { artifacts } from '../utils/artifacts';
+} from '../../generated-wrappers/asset_proxy_owner';
+import { MixinAuthorizableContract } from '../../generated-wrappers/mixin_authorizable';
+import { TestAssetProxyOwnerContract } from '../../generated-wrappers/test_asset_proxy_owner';
+import { artifacts } from '../../src/artifacts';
 import {
     expectContractCallFailedAsync,
     expectContractCreationFailedAsync,

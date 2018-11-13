@@ -1,6 +1,6 @@
-import { assert } from '@0xproject/assert';
-import { schemas } from '@0xproject/json-schemas';
-import { EIP712Object, EIP712TypedData, EIP712Types, Order, ZeroExTransaction } from '@0xproject/types';
+import { assert } from '@0x/assert';
+import { schemas } from '@0x/json-schemas';
+import { EIP712Object, EIP712TypedData, EIP712Types, Order, ZeroExTransaction } from '@0x/types';
 import * as _ from 'lodash';
 
 import { constants } from './constants';

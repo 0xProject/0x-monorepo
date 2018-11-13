@@ -1,4 +1,6 @@
-export { assetDataUtils, signatureUtils, generatePseudoRandomSalt, orderHashUtils } from '@0xproject/order-utils';
+export { ContractAddresses } from '@0x/contract-addresses';
+
+export { assetDataUtils, signatureUtils, generatePseudoRandomSalt, orderHashUtils } from '@0x/order-utils';
 
 export {
     ContractWrappers,
@@ -18,6 +20,16 @@ export {
     TransactionOpts,
     OrderStatus,
     OrderInfo,
+    EventCallback,
+    DecodedLogEvent,
+    TransactionEncoder,
+    BalanceAndAllowance,
+    OrderAndTraderInfo,
+    TraderInfo,
+    ValidateOrderFillableOpts,
+} from '@0x/contract-wrappers';
+
+export {
     WETH9Events,
     WETH9WithdrawalEventArgs,
     WETH9ApprovalEventArgs,
@@ -38,18 +50,11 @@ export {
     ExchangeSignatureValidatorApprovalEventArgs,
     ExchangeFillEventArgs,
     ExchangeCancelEventArgs,
-    ExchangeEvents,
-    EventCallback,
-    DecodedLogEvent,
     ExchangeEventArgs,
-    TransactionEncoder,
-    BalanceAndAllowance,
-    OrderAndTraderInfo,
-    TraderInfo,
-    ValidateOrderFillableOpts,
-} from '@0xproject/contract-wrappers';
+    ExchangeEvents,
+} from '@0x/abi-gen-wrappers';
 
-export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0xproject/order-watcher';
+export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0x/order-watcher';
 
 export import Web3ProviderEngine = require('web3-provider-engine');
 
@@ -59,11 +64,11 @@ export {
     JSONRPCRequestPayloadWithMethod,
     ErrorCallback,
     MetamaskSubprovider,
-} from '@0xproject/subproviders';
+} from '@0x/subproviders';
 
-export { AbiDecoder } from '@0xproject/utils';
+export { AbiDecoder } from '@0x/utils';
 
-export { BigNumber } from '@0xproject/utils';
+export { BigNumber } from '@0x/utils';
 
 export {
     ExchangeContractErrs,
@@ -74,11 +79,13 @@ export {
     OrderStateInvalid,
     OrderState,
     AssetProxyId,
+    AssetData,
     ERC20AssetData,
     ERC721AssetData,
     SignatureType,
     OrderRelevantState,
-} from '@0xproject/types';
+    Stats,
+} from '@0x/types';
 
 export {
     BlockParamLiteral,

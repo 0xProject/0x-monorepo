@@ -1,5 +1,29 @@
 [
     {
+        "version": "2.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Added getStats function and returns a Stats object",
+                "pr": 1118
+            },
+            {
+                "note":
+                    "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers. Constructor has a new optional `contractAddresses` parameter.",
+                "pr": 1105
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
         "version": "2.1.1",
         "changes": [
             {

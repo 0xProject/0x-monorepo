@@ -1,8 +1,8 @@
-import { colors } from '@0xproject/react-shared';
-import { BigNumber, logUtils } from '@0xproject/utils';
+import { colors } from '@0x/react-shared';
+import { BigNumber, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
-import ReactTooltip = require('react-tooltip');
+import ReactTooltip from 'react-tooltip';
 import { Blockchain } from 'ts/blockchain';
 import { AllowanceState, AllowanceStateView } from 'ts/components/ui/allowance_state_view';
 import { Container } from 'ts/components/ui/container';

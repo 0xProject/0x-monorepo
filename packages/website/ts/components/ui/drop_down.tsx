@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import Popover from 'material-ui/Popover';
 import * as React from 'react';
 import { MaterialUIPosition } from 'ts/types';
@@ -21,6 +22,7 @@ export interface DropDownProps {
     zDepth?: number;
     activateEvent?: DropdownMouseEvent;
     closeEvent?: DropdownMouseEvent;
+    popoverStyle?: React.CSSProperties;
 }
 
 interface DropDownState {
@@ -34,6 +36,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
         zDepth: 1,
         activateEvent: DropdownMouseEvent.Hover,
         closeEvent: DropdownMouseEvent.Hover,
+        popoverStyle: {},
     };
     private _isHovering: boolean;
     private _popoverCloseCheckIntervalId: number;
@@ -73,10 +76,15 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
                     anchorEl={this.state.anchorEl}
                     anchorOrigin={this.props.anchorOrigin}
                     targetOrigin={this.props.targetOrigin}
-                    onRequestClose={this._closePopover.bind(this)}
+                    onRequestClose={
+                        this.props.closeEvent === DropdownMouseEvent.Click
+                            ? this._closePopover.bind(this)
+                            : _.noop.bind(_)
+                    }
                     useLayerForClickAway={this.props.closeEvent === DropdownMouseEvent.Click}
                     animated={false}
                     zDepth={this.props.zDepth}
+                    style={this.props.popoverStyle}
                 >
                     <div
                         onMouseEnter={this._onHover.bind(this)}
@@ -92,7 +100,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
     private _onActiveNodeClick(event: React.FormEvent<HTMLInputElement>): void {
         if (this.props.activateEvent === DropdownMouseEvent.Click) {
             this.setState({
-                isDropDownOpen: true,
+                isDropDownOpen: !this.state.isDropDownOpen,
                 anchorEl: event.currentTarget,
             });
         }

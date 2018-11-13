@@ -1,8 +1,7 @@
-import { colors } from '@0xproject/react-shared';
+import { colors, Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle = require('react-document-title');
-import { Link } from 'react-router-dom';
+import DocumentTitle from 'react-document-title';
 import { Footer } from 'ts/components/footer';
 import { SubscribeForm } from 'ts/components/forms/subscribe_form';
 import { TopBar } from 'ts/components/top_bar/top_bar';
@@ -213,14 +212,14 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                                     className={`pt3 flex clearfix sm-mx-auto ${isSmallScreen ? 'justify-center' : ''}`}
                                 >
                                     <Container paddingRight="20px">
-                                        <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
+                                        <Link to={WebsitePaths.Docs}>
                                             <CallToAction type="light">
                                                 {this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
                                             </CallToAction>
                                         </Link>
                                     </Container>
                                     <div>
-                                        <Link to={WebsitePaths.Portal} className="text-decoration-none">
+                                        <Link to={WebsitePaths.Portal}>
                                             <CallToAction>
                                                 {this.props.translate.get(Key.TradeCallToAction, Deco.Cap)}
                                             </CallToAction>
@@ -318,11 +317,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                         }}
                     >
                         {this.props.translate.get(Key.FullListPrompt)}{' '}
-                        <Link
-                            to={WebsitePaths.Portal}
-                            className="text-decoration-none underline"
-                            style={{ color: colors.landingLinkGrey }}
-                        >
+                        <Link to={WebsitePaths.Portal} textDecoration="underline" fontColor={colors.landingLinkGrey}>
                             {this.props.translate.get(Key.FullListLink)}
                         </Link>
                     </div>
@@ -603,7 +598,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
                             {this.props.translate.get(Key.FinalCallToAction, Deco.Cap)}
                         </div>
                         <div className="sm-center sm-pt2 lg-table-cell md-table-cell">
-                            <Link to={WebsitePaths.ZeroExJs} className="text-decoration-none">
+                            <Link to={WebsitePaths.Docs}>
                                 <CallToAction fontSize="15px">
                                     {this.props.translate.get(Key.BuildCallToAction, Deco.Cap)}
                                 </CallToAction>

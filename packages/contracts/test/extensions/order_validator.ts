@@ -1,17 +1,17 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated_contract_wrappers/dummy_erc20_token';
-import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
-import { ERC20ProxyContract } from '../../generated_contract_wrappers/erc20_proxy';
-import { ERC721ProxyContract } from '../../generated_contract_wrappers/erc721_proxy';
-import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
-import { OrderValidatorContract } from '../../generated_contract_wrappers/order_validator';
-import { artifacts } from '../utils/artifacts';
+import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
+import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
+import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
+import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
+import { ExchangeContract } from '../../generated-wrappers/exchange';
+import { OrderValidatorContract } from '../../generated-wrappers/order_validator';
+import { artifacts } from '../../src/artifacts';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';

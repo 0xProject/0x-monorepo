@@ -2,14 +2,18 @@
 
 # Reference: http://www.sphinx-doc.org/en/master/config
 
+from typing import List
+import pkg_resources
+
+
 # pylint: disable=invalid-name
 # because these variables are not named in upper case, as globals should be.
 
-project = "order_utils.py"
+project = "0x-order-utils"
 # pylint: disable=redefined-builtin
 copyright = "2018, ZeroEx, Intl."
 author = "F. Eugene Aumson"
-version = ""  # The short X.Y version
+version = pkg_resources.get_distribution("0x-order-utils").version
 release = ""  # The full version, including alpha/beta/rc tags
 
 extensions = [
@@ -29,7 +33,7 @@ master_doc = "index"  # The master toctree document.
 
 language = None
 
-exclude_patterns = []  # type: ignore
+exclude_patterns: List[str] = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None

@@ -1,17 +1,19 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0xproject/react-docs';
+import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { DocPackages } from 'ts/types';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 
 /* tslint:disable:no-var-requires */
-const IntroMarkdownV1 = require('md/docs/sol-compiler/introduction');
-const InstallationMarkdownV1 = require('md/docs/sol-compiler/installation');
-const UsageMarkdown = require('md/docs/sol-compiler/usage');
+const IntroMarkdown1 = require('md/docs/sol-compiler/1/introduction');
+const InstallationMarkdown1 = require('md/docs/sol-compiler/1/installation');
+const InstallationMarkdown2 = require('md/docs/sol-compiler/2/installation');
+const UsageMarkdown1 = require('md/docs/sol-compiler/1/usage');
+const UsageMarkdown2 = require('md/docs/sol-compiler/2/usage');
 /* tslint:enable:no-var-requires */
 
 const markdownSections = {
@@ -22,20 +24,23 @@ const markdownSections = {
 
 const docsInfoConfig: DocsInfoConfig = {
     id: DocPackages.SolCompiler,
-    packageName: '@0xproject/sol-compiler',
+    packageName: '@0x/sol-compiler',
     type: SupportedDocJson.TypeDoc,
     displayName: 'Solidity Compiler',
     packageUrl: 'https://github.com/0xProject/0x-monorepo',
     markdownMenu: {
-        introduction: [markdownSections.introduction],
-        install: [markdownSections.installation],
-        usage: [markdownSections.usage],
+        'getting-started': [markdownSections.introduction, markdownSections.installation, markdownSections.usage],
     },
     sectionNameToMarkdownByVersion: {
         '0.0.1': {
-            [markdownSections.introduction]: IntroMarkdownV1,
-            [markdownSections.installation]: InstallationMarkdownV1,
-            [markdownSections.usage]: UsageMarkdown,
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown1,
+            [markdownSections.usage]: UsageMarkdown1,
+        },
+        '1.1.8': {
+            [markdownSections.introduction]: IntroMarkdown1,
+            [markdownSections.installation]: InstallationMarkdown2,
+            [markdownSections.usage]: UsageMarkdown2,
         },
     },
     markdownSections,
@@ -47,6 +52,7 @@ interface ConnectedState {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface ConnectedDispatch {
@@ -58,6 +64,7 @@ const mapStateToProps = (state: State, _ownProps: DocPageProps): ConnectedState 
     availableDocVersions: state.availableDocVersions,
     translate: state.translate,
     docsInfo,
+    screenWidth: state.screenWidth,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>): ConnectedDispatch => ({

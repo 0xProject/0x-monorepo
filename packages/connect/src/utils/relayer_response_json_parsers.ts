@@ -1,6 +1,6 @@
-import { assert } from '@0xproject/assert';
-import { schemas } from '@0xproject/json-schemas';
-import { orderParsingUtils } from '@0xproject/order-utils';
+import { assert } from '@0x/assert';
+import { schemas } from '@0x/json-schemas';
+import { orderParsingUtils } from '@0x/order-utils';
 
 import {
     APIOrder,
@@ -9,7 +9,7 @@ import {
     OrderbookResponse,
     OrderConfigResponse,
     OrdersResponse,
-} from '@0xproject/types';
+} from '@0x/types';
 
 import { typeConverters } from './type_converters';
 

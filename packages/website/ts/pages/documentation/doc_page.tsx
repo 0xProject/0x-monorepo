@@ -1,34 +1,29 @@
 import {
     DocAgnosticFormat,
+    DocReference,
     DocsInfo,
-    Documentation,
     GeneratedDocJson,
     SupportedDocJson,
     TypeDocUtils,
-} from '@0xproject/react-docs';
-import findVersions = require('find-versions');
+} from '@0x/react-docs';
+import findVersions from 'find-versions';
 import * as _ from 'lodash';
+import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
-import DocumentTitle = require('react-document-title');
-import semverSort = require('semver-sort');
-import { SidebarHeader } from 'ts/components/sidebar_header';
-import { TopBar } from 'ts/components/top_bar/top_bar';
+import semverSort from 'semver-sort';
+import { SidebarHeader } from 'ts/components/documentation/sidebar_header';
+import { NestedSidebarMenu } from 'ts/components/nested_sidebar_menu';
+import { Container } from 'ts/components/ui/container';
+import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { DocPackages } from 'ts/types';
+import { DocPackages, ScreenWidths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 const isDevelopmentOrStaging = utils.isDevelopment() || utils.isStaging();
-const DEFAULT_ICON = 'docs.png';
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
-
-const idToIcon: { [id: string]: string } = {
-    [DocPackages.ZeroExJs]: 'zeroExJs.png',
-    [DocPackages.Connect]: 'connect.png',
-    [DocPackages.SmartContracts]: 'contracts.png',
-};
 
 const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.ZeroExJs]: '0x.js',
@@ -43,6 +38,7 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.OrderUtils]: 'order-utils',
     [DocPackages.OrderWatcher]: 'order-watcher',
     [DocPackages.EthereumTypes]: 'ethereum-types',
+    [DocPackages.AssetBuyer]: 'asset-buyer',
 };
 
 export interface DocPageProps {
@@ -52,6 +48,7 @@ export interface DocPageProps {
     availableDocVersions: string[];
     docsInfo: DocsInfo;
     translate: Translate;
+    screenWidth: ScreenWidths;
 }
 
 interface DocPageState {
@@ -79,38 +76,58 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         this._isUnmounted = true;
     }
     public render(): React.ReactNode {
-        const menuSubsectionsBySection = _.isUndefined(this.state.docAgnosticFormat)
-            ? {}
-            : this.props.docsInfo.getMenuSubsectionsBySection(this.state.docAgnosticFormat);
         const sourceUrl = this._getSourceUrl();
-        const iconFileName = idToIcon[this.props.docsInfo.id] || DEFAULT_ICON;
-        const iconUrl = `/images/doc_icons/${iconFileName}`;
+        const sectionNameToLinks = _.isUndefined(this.state.docAgnosticFormat)
+            ? {}
+            : this.props.docsInfo.getSectionNameToLinks(this.state.docAgnosticFormat);
+        const mainContent = _.isUndefined(this.state.docAgnosticFormat) ? (
+            <div className="flex justify-center">{this._renderLoading()}</div>
+        ) : (
+            <DocReference
+                selectedVersion={this.props.docsVersion}
+                availableVersions={this.props.availableDocVersions}
+                docsInfo={this.props.docsInfo}
+                docAgnosticFormat={this.state.docAgnosticFormat}
+                sourceUrl={sourceUrl}
+            />
+        );
+        const sidebar = _.isUndefined(this.state.docAgnosticFormat) ? (
+            <div />
+        ) : (
+            <NestedSidebarMenu sidebarHeader={this._renderSidebarHeader()} sectionNameToLinks={sectionNameToLinks} />
+        );
         return (
-            <div>
-                <DocumentTitle title={`${this.props.docsInfo.displayName} Documentation`} />
-                <TopBar
-                    blockchainIsLoaded={false}
-                    location={this.props.location}
-                    docsVersion={this.props.docsVersion}
-                    availableDocVersions={this.props.availableDocVersions}
-                    menu={this.props.docsInfo.menu}
-                    menuSubsectionsBySection={menuSubsectionsBySection}
-                    docsInfo={this.props.docsInfo}
-                    translate={this.props.translate}
-                    onVersionSelected={this._onVersionSelected.bind(this)}
-                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} iconUrl={iconUrl} />}
-                />
-                <Documentation
-                    selectedVersion={this.props.docsVersion}
-                    availableVersions={this.props.availableDocVersions}
-                    docsInfo={this.props.docsInfo}
-                    docAgnosticFormat={this.state.docAgnosticFormat}
-                    sidebarHeader={<SidebarHeader title={this.props.docsInfo.displayName} iconUrl={iconUrl} />}
-                    sourceUrl={sourceUrl}
-                    topBarHeight={60}
-                    onVersionSelected={this._onVersionSelected.bind(this)}
-                />
-            </div>
+            <DevelopersPage
+                sidebar={sidebar}
+                mainContent={mainContent}
+                location={this.props.location}
+                screenWidth={this.props.screenWidth}
+                translate={this.props.translate}
+                dispatcher={this.props.dispatcher}
+            />
+        );
+    }
+    private _renderSidebarHeader(): React.ReactNode {
+        return (
+            <SidebarHeader
+                screenWidth={this.props.screenWidth}
+                title={this.props.docsInfo.displayName}
+                docsVersion={this.props.docsVersion}
+                availableDocVersions={this.props.availableDocVersions}
+                onVersionSelected={this._onVersionSelected.bind(this)}
+            />
+        );
+    }
+    private _renderLoading(): React.ReactNode {
+        return (
+            <Container className="pt4">
+                <Container className="center pb2">
+                    <CircularProgress size={40} thickness={5} />
+                </Container>
+                <Container className="center pt2" paddingBottom="11px">
+                    Loading documentation...
+                </Container>
+            </Container>
         );
     }
     private async _fetchJSONDocsFireAndForgetAsync(preferredVersionIfExists?: string): Promise<void> {
@@ -145,10 +162,10 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
             // documenting solidity.
             docAgnosticFormat = versionDocObj as DocAgnosticFormat;
             // HACK: need to modify docsInfo like convertToDocAgnosticFormat() would do
-            this.props.docsInfo.menu.Contracts = [];
+            this.props.docsInfo.markdownMenu.Contracts = [];
             _.each(docAgnosticFormat, (_docObj, sectionName) => {
                 this.props.docsInfo.sections[sectionName] = sectionName;
-                this.props.docsInfo.menu.Contracts.push(sectionName);
+                this.props.docsInfo.markdownMenu.Contracts.push(sectionName);
             });
         }
 
@@ -164,7 +181,7 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         let tagPrefix = pkg;
         const packagesWithNamespace = ['connect'];
         if (_.includes(packagesWithNamespace, pkg)) {
-            tagPrefix = `@0xproject/${pkg}`;
+            tagPrefix = `@0x/${pkg}`;
         }
         // HACK: The following three lines exist for backward compatibility reasons
         // Before exporting types from other packages as part of the 0x.js interface,

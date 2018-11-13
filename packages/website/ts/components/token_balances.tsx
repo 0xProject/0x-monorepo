@@ -4,9 +4,9 @@ import {
     Networks,
     Styles,
     utils as sharedUtils,
-} from '@0xproject/react-shared';
-import { BigNumber, errorUtils, fetchAsync, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+} from '@0x/react-shared';
+import { BigNumber, errorUtils, fetchAsync, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
 import Divider from 'material-ui/Divider';
@@ -16,8 +16,8 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import * as React from 'react';
-import ReactTooltip = require('react-tooltip');
-import firstBy = require('thenby');
+import ReactTooltip from 'react-tooltip';
+import firstBy from 'thenby';
 import { Blockchain } from 'ts/blockchain';
 import { AssetPicker } from 'ts/components/generate_order/asset_picker';
 import { SendButton } from 'ts/components/send_button';

@@ -1,6 +1,6 @@
 {
-    "name": "@0xproject/sol-resolver",
-    "version": "1.0.14",
+    "name": "@0x/sol-resolver",
+    "version": "1.0.16",
     "engines": {
         "node": ">=6.12"
     },
@@ -11,7 +11,7 @@
         "build": "tsc -b",
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --project ."
+        "lint": "tslint --format stylish --project ."
     },
     "repository": {
         "type": "git",
@@ -23,16 +23,15 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/resolver/README.md",
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.8",
-        "copyfiles": "^2.0.0",
+        "@0x/tslint-config": "^1.0.10",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0xproject/types": "^1.1.4",
-        "@0xproject/typescript-typings": "^3.0.2",
+        "@0x/types": "^1.2.1",
+        "@0x/typescript-typings": "^3.0.4",
         "lodash": "^4.17.5"
     },
     "publishConfig": {

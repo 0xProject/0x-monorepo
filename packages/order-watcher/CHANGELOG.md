@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.1 - _November 9, 2018_
+
+    * Dependencies updated
+
+## v2.2.0 - _October 18, 2018_
+
+    * Added getStats function and returns a Stats object (#1118)
+    * Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers. Constructor has a new optional `contractAddresses` parameter. (#1105)
+
 ## v2.1.1 - _October 4, 2018_
 
     * Dependencies updated
@@ -48,7 +57,7 @@ CHANGELOG
     * Export types: `ExchangeContractErrs`, `OrderRelevantState`, `JSONRPCRequestPayload`, `JSONRPCErrorCallback` and `JSONRPCResponsePayload` (#924)
     * Remove exporting types: `BlockParamLiteral`, `BlockParam`, `Order` (#924)
 
-## v1.0.1-rc.3 - _August 13, 2018_
+## v1.0.1-rc.3 - _August 14, 2018_
 
     * Dependencies updated
 

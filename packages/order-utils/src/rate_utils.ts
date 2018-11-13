@@ -1,6 +1,6 @@
-import { schemas } from '@0xproject/json-schemas';
-import { Order } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { schemas } from '@0x/json-schemas';
+import { Order } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 import { assert } from './assert';
 import { constants } from './constants';

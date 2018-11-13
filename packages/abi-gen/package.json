@@ -1,6 +1,6 @@
 {
-    "name": "@0xproject/abi-gen",
-    "version": "1.0.13",
+    "name": "@0x/abi-gen",
+    "version": "1.0.15",
     "engines": {
         "node": ">=6.12"
     },
@@ -8,7 +8,7 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "lint": "tslint --project .",
+        "lint": "tslint --format stylish --project .",
         "clean": "shx rm -rf lib",
         "build": "tsc -b",
         "build:ci": "yarn build",
@@ -31,10 +31,10 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen/README.md",
     "dependencies": {
-        "@0xproject/typescript-typings": "^3.0.2",
-        "@0xproject/utils": "^2.0.2",
+        "@0x/typescript-typings": "^3.0.4",
+        "@0x/utils": "^2.0.4",
         "chalk": "^2.3.0",
-        "ethereum-types": "^1.0.11",
+        "ethereum-types": "^1.1.2",
         "glob": "^7.1.2",
         "handlebars": "^4.0.11",
         "lodash": "^4.17.5",
@@ -45,7 +45,7 @@
         "yargs": "^10.0.3"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.8",
+        "@0x/tslint-config": "^1.0.10",
         "@types/glob": "5.0.35",
         "@types/handlebars": "^4.0.36",
         "@types/mkdirp": "^0.5.1",
@@ -54,7 +54,6 @@
         "@types/tmp": "^0.0.33",
         "@types/yargs": "^10.0.0",
         "chai": "^4.1.2",
-        "copyfiles": "^2.0.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
         "mocha": "^5.2.0",

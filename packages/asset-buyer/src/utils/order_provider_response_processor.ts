@@ -1,8 +1,8 @@
-import { OrderAndTraderInfo, OrderStatus, OrderValidatorWrapper } from '@0xproject/contract-wrappers';
-import { sortingUtils } from '@0xproject/order-utils';
-import { RemainingFillableCalculator } from '@0xproject/order-utils/lib/src/remaining_fillable_calculator';
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { OrderAndTraderInfo, OrderStatus, OrderValidatorWrapper } from '@0x/contract-wrappers';
+import { sortingUtils } from '@0x/order-utils';
+import { RemainingFillableCalculator } from '@0x/order-utils/lib/src/remaining_fillable_calculator';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
@@ -110,10 +110,7 @@ function getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
                 traderInfo.makerZrxBalance,
             ]);
             const remainingTakerAssetAmount = order.takerAssetAmount.minus(orderInfo.orderTakerAssetFilledAmount);
-            const remainingMakerAssetAmount = orderUtils.calculateRemainingMakerAssetAmount(
-                order,
-                remainingTakerAssetAmount,
-            );
+            const remainingMakerAssetAmount = orderUtils.getRemainingMakerAmount(order, remainingTakerAssetAmount);
             const remainingFillableCalculator = new RemainingFillableCalculator(
                 order.makerFee,
                 order.makerAssetAmount,

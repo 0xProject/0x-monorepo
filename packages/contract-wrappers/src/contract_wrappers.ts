@@ -1,10 +1,17 @@
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import {
+    ERC20Proxy,
+    ERC20Token,
+    ERC721Proxy,
+    ERC721Token,
+    Exchange,
+    Forwarder,
+    OrderValidator,
+    WETH9,
+} from '@0x/contract-artifacts';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { constants } from './utils/constants';
-
-import { artifacts } from './artifacts';
 import { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
 import { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
 import { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
@@ -14,10 +21,11 @@ import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
 import { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
 import { OrderValidatorWrapper } from './contract_wrappers/order_validator_wrapper';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
-import { contractWrappersPrivateNetworkConfigSchema } from './schemas/contract_wrappers_private_network_config_schema';
-import { contractWrappersPublicNetworkConfigSchema } from './schemas/contract_wrappers_public_network_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
+import { constants } from './utils/constants';
+import { _getDefaultContractAddresses } from './utils/contract_addresses';
+
 /**
  * The ContractWrappers class contains smart contract wrappers helpful when building on 0x protocol.
  */
@@ -61,35 +69,39 @@ export class ContractWrappers {
     private readonly _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new ContractWrappers instance.
-     * @param   provider    The Provider instance you would like the 0x.js library to use for interacting with
+     * @param   provider    The Provider instance you would like the contract-wrappers library to use for interacting with
      *                      the Ethereum network.
      * @param   config      The configuration object. Look up the type for the description.
      * @return  An instance of the ContractWrappers class.
      */
     constructor(provider: Provider, config: ContractWrappersConfig) {
         assert.isWeb3Provider('provider', provider);
-        assert.doesConformToSchema('config', config, ContractWrappersConfigSchema, [
-            contractWrappersPrivateNetworkConfigSchema,
-            contractWrappersPublicNetworkConfigSchema,
-        ]);
-        const artifactJSONs = _.values(artifacts);
-        const abiArrays = _.map(artifactJSONs, artifact => artifact.compilerOutput.abi);
+        assert.doesConformToSchema('config', config, ContractWrappersConfigSchema);
         const txDefaults = {
             gasPrice: config.gasPrice,
         };
         this._web3Wrapper = new Web3Wrapper(provider, txDefaults);
-        _.forEach(abiArrays, abi => {
-            this._web3Wrapper.abiDecoder.addABI(abi);
+        const artifactsArray = [
+            ERC20Proxy,
+            ERC20Token,
+            ERC721Proxy,
+            ERC721Token,
+            Exchange,
+            Forwarder,
+            OrderValidator,
+            WETH9,
+        ];
+        _.forEach(artifactsArray, artifact => {
+            this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi);
         });
         const blockPollingIntervalMs = _.isUndefined(config.blockPollingIntervalMs)
             ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
             : config.blockPollingIntervalMs;
-        this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, config.erc20ProxyContractAddress);
-        this.erc721Proxy = new ERC721ProxyWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            config.erc721ProxyContractAddress,
-        );
+        const contractAddresses = _.isUndefined(config.contractAddresses)
+            ? _getDefaultContractAddresses(config.networkId)
+            : config.contractAddresses;
+        this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc20Proxy);
+        this.erc721Proxy = new ERC721ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc721Proxy);
         this.erc20Token = new ERC20TokenWrapper(
             this._web3Wrapper,
             config.networkId,
@@ -113,37 +125,34 @@ export class ContractWrappers {
             config.networkId,
             this.erc20Token,
             this.erc721Token,
-            config.exchangeContractAddress,
-            config.zrxContractAddress,
+            contractAddresses.exchange,
+            contractAddresses.zrxToken,
             blockPollingIntervalMs,
         );
         this.forwarder = new ForwarderWrapper(
             this._web3Wrapper,
             config.networkId,
-            config.forwarderContractAddress,
-            config.zrxContractAddress,
+            contractAddresses.forwarder,
+            contractAddresses.zrxToken,
+            contractAddresses.etherToken,
         );
-        this.orderValidator = new OrderValidatorWrapper(this._web3Wrapper, config.networkId);
+        this.orderValidator = new OrderValidatorWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            contractAddresses.orderValidator,
+        );
     }
     /**
-     * Sets a new web3 provider for 0x.js. Updating the provider will stop all
-     * subscriptions so you will need to re-subscribe to all events relevant to your app after this call.
-     * @param   provider    The Web3Provider you would like the 0x.js library to use from now on.
-     * @param   networkId   The id of the network your provider is connected to
+     * Unsubscribes from all subscriptions for all contracts.
      */
-    public setProvider(provider: Provider, networkId: number): void {
-        this._web3Wrapper.setProvider(provider);
-        (this.exchange as any)._invalidateContractInstances();
-        (this.exchange as any)._setNetworkId(networkId);
-        (this.erc20Token as any)._invalidateContractInstances();
-        (this.erc20Token as any)._setNetworkId(networkId);
-        (this.erc20Proxy as any)._invalidateContractInstance();
-        (this.erc20Proxy as any)._setNetworkId(networkId);
-        (this.etherToken as any)._invalidateContractInstance();
-        (this.etherToken as any)._setNetworkId(networkId);
+    public unsubscribeAll(): void {
+        this.exchange.unsubscribeAll();
+        this.erc20Token.unsubscribeAll();
+        this.erc721Token.unsubscribeAll();
+        this.etherToken.unsubscribeAll();
     }
     /**
-     * Get the provider instance currently used by 0x.js
+     * Get the provider instance currently used by contract-wrappers
      * @return  Web3 provider instance
      */
     public getProvider(): Provider {

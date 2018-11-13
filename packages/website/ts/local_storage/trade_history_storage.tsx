@@ -1,5 +1,5 @@
-import { BigNumber } from '@0xproject/utils';
-import ethUtil = require('ethereumjs-util');
+import { BigNumber } from '@0x/utils';
+import ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import { localStorage } from 'ts/local_storage/local_storage';
 import { Fill } from 'ts/types';

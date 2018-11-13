@@ -1,4 +1,5 @@
-import { BigNumber } from '@0xproject/utils';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
@@ -33,7 +34,7 @@ describe('OrderStateUtils', () => {
                 async getFilledTakerAmountAsync(_orderHash: string): Promise<BigNumber> {
                     return filledAmount;
                 },
-                async isOrderCancelledAsync(_orderHash: string): Promise<boolean> {
+                async isOrderCancelledAsync(_signedOrder: SignedOrder): Promise<boolean> {
                     return cancelled;
                 },
                 getZRXAssetData(): string {

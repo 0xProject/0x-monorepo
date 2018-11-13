@@ -1,5 +1,5 @@
 {
-    "extends": ["@0xproject/tslint-config"],
+    "extends": ["@0x/tslint-config"],
     "rules": {
         "no-object-literal-type-assertion": false,
         "completed-docs": false,

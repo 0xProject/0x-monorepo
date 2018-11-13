@@ -1,11 +1,11 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { Order, RevertReason, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { Order, RevertReason, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { TestExchangeInternalsContract } from '../../generated_contract_wrappers/test_exchange_internals';
-import { artifacts } from '../utils/artifacts';
+import { TestExchangeInternalsContract } from '../../generated-wrappers/test_exchange_internals';
+import { artifacts } from '../../src/artifacts';
 import { getRevertReasonOrErrorMessageForSendTransactionAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_utils';

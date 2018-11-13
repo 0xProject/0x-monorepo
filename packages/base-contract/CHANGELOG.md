@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.3 - _November 9, 2018_
+
+    * Dependencies updated
+
+## v3.0.2 - _October 18, 2018_
+
+    * Dependencies updated
+
 ## v3.0.1 - _October 4, 2018_
 
     * Dependencies updated
@@ -38,7 +46,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v2.0.0-rc.1 - _August 13, 2018_
+## v2.0.0-rc.1 - _August 14, 2018_
 
     * Added strict encoding/decoding checks for sendTransaction and call (#915)
 

@@ -5,19 +5,19 @@ import {
     orderHashUtils,
     OrderStateUtils,
     OrderValidationUtils,
-} from '@0xproject/order-utils';
-import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0xproject/types';
-import { BigNumber, errorUtils, logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+} from '@0x/order-utils';
+import { AssetProxyId, RevertReason, SignatureType, SignedOrder } from '@0x/types';
+import { BigNumber, errorUtils, logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs, Provider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
 
-import { ExchangeContract, ExchangeFillEventArgs } from '../../generated_contract_wrappers/exchange';
-import { TestLibsContract } from '../../generated_contract_wrappers/test_libs';
+import { ExchangeContract, ExchangeFillEventArgs } from '../../generated-wrappers/exchange';
+import { TestLibsContract } from '../../generated-wrappers/test_libs';
+import { artifacts } from '../../src/artifacts';
 
-import { artifacts } from './artifacts';
 import { expectTransactionFailedAsync } from './assertions';
 import { AssetWrapper } from './asset_wrapper';
 import { chaiSetup } from './chai_setup';
@@ -392,7 +392,7 @@ export class FillOrderCombinatorialUtils {
         );
 
         // 5. If I fill it by X, what are the resulting balances/allowances/filled amounts expected?
-        const orderValidationUtils = new OrderValidationUtils(orderFilledCancelledFetcher);
+        const orderValidationUtils = new OrderValidationUtils(orderFilledCancelledFetcher, provider);
         const lazyStore = new BalanceAndProxyAllowanceLazyStore(balanceAndProxyAllowanceFetcher);
         const exchangeTransferSimulator = new ExchangeTransferSimulator(lazyStore);
 

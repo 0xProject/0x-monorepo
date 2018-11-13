@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { MetaTags } from 'ts/components/meta_tags';
 import { About } from 'ts/containers/about';
+import { DocsHome } from 'ts/containers/docs_home';
 import { FAQ } from 'ts/containers/faq';
 import { Jobs } from 'ts/containers/jobs';
 import { Landing } from 'ts/containers/landing';
@@ -67,6 +68,9 @@ const LazyOrderUtilsDocumentation = createLazyComponent('Documentation', async (
 );
 const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
+);
+const LazyAssetBuyerDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "assetBuyerDocs" */ 'ts/containers/asset_buyer_documentation'),
 );
 
 const DOCUMENT_TITLE = '0x: The Protocol for Trading Tokens';
@@ -133,7 +137,11 @@ render(
                                     path={`${WebsitePaths.EthereumTypes}/:version?`}
                                     component={LazyEthereumTypesDocumentation}
                                 />
-
+                                <Route
+                                    path={`${WebsitePaths.AssetBuyer}/:version?`}
+                                    component={LazyAssetBuyerDocumentation}
+                                />
+                                <Route path={WebsitePaths.Docs} component={DocsHome as any} />
                                 {/* Legacy endpoints */}
                                 <Route
                                     path={`${WebsiteLegacyPaths.ZeroExJs}/:version?`}

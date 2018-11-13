@@ -1,5 +1,39 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note":
+                    "Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync`",
+                "pr": 1235
+            },
+            {
+                "note":
+                    "Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive",
+                "pr": 1235
+            },
+            {
+                "note":
+                    "Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218)",
+                "pr": 1235
+            },
+            {
+                "note":
+                    "Modified the `AbstractOrderFilledCancelledFetcher` interface slightly such that `isOrderCancelledAsync` accepts a `signedOrder` instead of an `orderHash` param",
+                "pr": 1235
+            }
+        ]
+    },
+    {
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
@@ -14,8 +48,13 @@
             {
                 "note": "Rename `ecSignOrderHashAsync` to `ecSignHashAsync` removing `SignerType` parameter.",
                 "pr": 1102
+            },
+            {
+                "note": "Use `AssetData` union type for function return values.",
+                "pr": 1131
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "version": "1.0.7",

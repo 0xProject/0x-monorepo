@@ -1,7 +1,8 @@
-import { schemas as jsonSchemas } from '@0xproject/json-schemas';
+import { schemas as jsonSchemas } from '@0x/json-schemas';
 
 // Only include schemas we actually need
 const {
+    wholeNumberSchema,
     numberSchema,
     addressSchema,
     hexSchema,
@@ -21,13 +22,14 @@ const {
     relayerApiAssetDataPairsResponseSchema,
     relayerApiAssetDataTradeInfoSchema,
     relayerApiOrdersChannelSubscribeSchema,
-    relayerApiOrdersChannelSubscribePayload,
+    relayerApiOrdersChannelSubscribePayloadSchema,
     relayerApiOrdersChannelUpdateSchema,
     relayerApiOrdersResponseSchema,
     relayerApiAssetDataPairsSchema,
 } = jsonSchemas;
 
 const usedSchemas = {
+    wholeNumberSchema,
     numberSchema,
     addressSchema,
     hexSchema,
@@ -47,7 +49,7 @@ const usedSchemas = {
     relayerApiAssetDataPairsResponseSchema,
     relayerApiAssetDataTradeInfoSchema,
     relayerApiOrdersChannelSubscribeSchema,
-    relayerApiOrdersChannelSubscribePayload,
+    relayerApiOrdersChannelSubscribePayloadSchema,
     relayerApiOrdersChannelUpdateSchema,
     relayerApiOrdersResponseSchema,
     relayerApiAssetDataPairsSchema,

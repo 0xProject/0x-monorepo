@@ -1,8 +1,7 @@
-import { colors, Styles } from '@0xproject/react-shared';
+import { colors, Link, Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
-import { Link } from 'react-router-dom';
 import { Footer } from 'ts/components/footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Profile } from 'ts/pages/about/profile';
@@ -244,9 +243,10 @@ const teamRow9: ProfileInfo[] = [
     {
         name: 'Steve Klebanoff',
         title: 'Senior Engineer',
-        description: ` Full-stack engineer. Previously Staff Software Engineer at Appfolio. Computer Science & Cognitive Psychology at Northeastern University.`,
+        description: ` Full-stack engineer. Previously Staff Software Engineer at AppFolio. Computer Science & Cognitive Psychology at Northeastern University.`,
         image: 'images/team/steve.png',
         linkedIn: 'https://www.linkedin.com/in/steveklebanoff/',
+        github: 'https://github.com/steveklebanoff',
     },
 ];
 
@@ -388,7 +388,7 @@ export class About extends React.Component<AboutProps, AboutState> {
                             }}
                         >
                             We are seeking outstanding candidates to{' '}
-                            <Link to={WebsitePaths.Careers} style={{ color: 'black' }}>
+                            <Link to={WebsitePaths.Careers} textDecoration="underline" fontColor="black">
                                 join our team
                             </Link>
                             . We value passion, diversity and unique perspectives.

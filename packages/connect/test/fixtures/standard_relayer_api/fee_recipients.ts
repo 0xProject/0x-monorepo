@@ -1,4 +1,4 @@
-import { FeeRecipientsResponse } from '@0xproject/types';
+import { FeeRecipientsResponse } from '@0x/types';
 
 export const feeRecipientsResponse: FeeRecipientsResponse = {
     total: 3,

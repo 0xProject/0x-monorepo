@@ -1,0 +1,48 @@
+{
+    "name": "@0x/abi-gen-wrappers",
+    "version": "1.0.2",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Low-level 0x smart contract wrappers generated using @0x/abi-gen",
+    "main": "lib/src/index.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "build": "yarn pre_build && tsc -b",
+        "build:ci": "yarn build",
+        "lint": "tslint --format stylish --project .",
+        "pre_build": "yarn generate_contract_wrappers",
+        "clean": "shx rm -rf lib wrappers",
+        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers"
+    },
+    "config": {
+        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IValidator|IWallet|OrderValidator|WETH9|ZRXToken).json"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen-wrappers/README.md",
+    "devDependencies": {
+        "@0x/abi-gen": "^1.0.15",
+        "@0x/tslint-config": "^1.0.10",
+        "@0x/utils": "^2.0.4",
+        "@0x/web3-wrapper": "^3.1.1",
+        "ethereum-types": "^1.1.2",
+        "ethers": "~4.0.4",
+        "lodash": "^4.17.5",
+        "shx": "^0.2.2"
+    },
+    "dependencies": {
+        "@0x/base-contract": "^3.0.3"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

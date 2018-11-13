@@ -1,20 +1,18 @@
 import * as React from 'react';
-import { Provider } from 'react-redux';
 
-import { store } from '../redux/store';
-import { fonts } from '../style/fonts';
-import { theme, ThemeProvider } from '../style/theme';
+import { INJECTED_DIV_CLASS } from '../constants';
 
 import { ZeroExInstantContainer } from './zero_ex_instant_container';
+import { ZeroExInstantProvider, ZeroExInstantProviderProps } from './zero_ex_instant_provider';
 
-fonts.include();
+export type ZeroExInstantProps = ZeroExInstantProviderProps;
 
-export interface ZeroExInstantProps {}
-
-export const ZeroExInstant: React.StatelessComponent<ZeroExInstantProps> = () => (
-    <Provider store={store}>
-        <ThemeProvider theme={theme}>
-            <ZeroExInstantContainer />
-        </ThemeProvider>
-    </Provider>
-);
+export const ZeroExInstant: React.StatelessComponent<ZeroExInstantProps> = props => {
+    return (
+        <div className={INJECTED_DIV_CLASS}>
+            <ZeroExInstantProvider {...props}>
+                <ZeroExInstantContainer />
+            </ZeroExInstantProvider>
+        </div>
+    );
+};

@@ -1,5 +1,5 @@
-import { devConstants } from '@0xproject/dev-utils';
-import { ProfilerSubprovider, SolCompilerArtifactAdapter } from '@0xproject/sol-cov';
+import { devConstants } from '@0x/dev-utils';
+import { ProfilerSubprovider, SolCompilerArtifactAdapter } from '@0x/sol-cov';
 import * as _ from 'lodash';
 
 import { config } from './config';

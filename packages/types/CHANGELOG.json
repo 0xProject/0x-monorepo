@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
         "version": "1.2.0",
         "changes": [
             {
@@ -9,8 +18,13 @@
             {
                 "note": "Added `ZeroExTransaction` type for Exchange executeTransaction",
                 "pr": 1102
+            },
+            {
+                "note": "Add `AssetData` union type (`type AssetData = ERC20AssetData | ERC721AssetData`)",
+                "pr": 1131
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "timestamp": 1538693146,

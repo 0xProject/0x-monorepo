@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.4 - _November 9, 2018_
+
+    * Dependencies updated
+
+## v2.0.3 - _October 18, 2018_
+
+    * Dependencies updated
+
 ## v2.0.2 - _October 4, 2018_
 
     * Dependencies updated
@@ -41,7 +49,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v1.0.5 - _August 13, 2018_
+## v1.0.5 - _August 14, 2018_
 
     * Increased BigNumber decimal precision from 20 to 78 (#807)
     * Store different ABIs for events with same function signature and different amount of indexed arguments (#933)

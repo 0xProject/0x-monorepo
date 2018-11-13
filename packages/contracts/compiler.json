@@ -1,6 +1,6 @@
 {
-    "artifactsDir": "../migrations/artifacts/development",
-    "contractsDir": "src/",
+    "artifactsDir": "./generated-artifacts",
+    "contractsDir": "./contracts",
     "compilerSettings": {
         "optimizer": {
             "enabled": true,
@@ -50,7 +50,6 @@
         "TestExchangeInternals",
         "TestSignatureValidator",
         "TestStaticCallReceiver",
-        "TokenRegistry",
         "Validator",
         "Wallet",
         "WETH9",
