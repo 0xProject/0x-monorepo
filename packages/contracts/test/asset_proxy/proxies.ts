@@ -681,7 +681,7 @@ describe('Asset Transfer Proxies', () => {
             });
         });
     });
-    describe.only('MultiAssetProxy', () => {
+    describe('MultiAssetProxy', () => {
         it('should revert if undefined function is called', async () => {
             const undefinedSelector = '0x01020304';
             await expectTransactionFailedWithoutReasonAsync(
