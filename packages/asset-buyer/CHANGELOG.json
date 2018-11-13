@@ -1,6 +1,6 @@
 [
     {
-        "version": "2.3.0",
+        "version": "3.0.0",
         "changes": [
             {
                 "note": "update `getBuyQuoteAsync` to return eth spent on assets instead of per unit amount",
