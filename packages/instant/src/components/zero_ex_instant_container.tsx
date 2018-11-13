@@ -90,6 +90,5 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
         } else {
             return <ConnectedAccountPaymentMethod />;
         }
-        return null;
     };
 }
