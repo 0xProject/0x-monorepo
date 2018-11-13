@@ -50,7 +50,7 @@ export class DependentOrderHashesTracker {
         return uniqueOrderHashList;
     }
     public getDependentOrderHashesByMaker(makerAddress: string): string[] {
-        const dependentOrderHashes = Array.from(this._orderHashesByMakerAddress[makerAddress]);
+        const dependentOrderHashes = Array.from(this._orderHashesByMakerAddress[makerAddress] || {});
         return dependentOrderHashes;
     }
     public getDependentOrderHashesByAssetDataByMaker(makerAddress: string, assetData: string): string[] {

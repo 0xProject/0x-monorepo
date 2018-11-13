@@ -5,6 +5,10 @@
             {
                 "note": "Start jsonRpcRequestId at 1, not 0 as 0 breaks the web3.js websocket RPC provider",
                 "pr": 1227
+            },
+            {
+                "note":
+                    "Fix the bug when order watcher was trying to convert undefined to an object in case of CancelUpTo event"
             }
         ]
     },
