@@ -22,7 +22,7 @@ export class StandardSlidingPanel extends React.Component<StandardSlidingPanelPr
         switch (content) {
             case StandardSlidingPanelContent.InstallWallet:
                 return <InstallWalletPanelContent />;
-            default:
+            case StandardSlidingPanelContent.None:
                 return null;
         }
     };

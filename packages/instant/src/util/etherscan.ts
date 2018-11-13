@@ -8,9 +8,8 @@ const etherscanPrefix = (networkId: number): string | undefined => {
             return 'kovan.';
         case Network.Mainnet:
             return '';
-        default:
-            return undefined;
     }
+    return '';
 };
 
 export const etherscanUtil = {

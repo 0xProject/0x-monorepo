@@ -1,4 +1,5 @@
 import { AssetProxyId } from '@0x/types';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 
@@ -64,19 +65,13 @@ export const asyncData = {
             const activeAddress = availableAddresses[0];
             dispatch(actions.setAccountStateReady(activeAddress));
             // tslint:disable-next-line:no-floating-promises
-            asyncData.fetchAccountBalanceAndDispatchToStore(providerState, dispatch);
+            asyncData.fetchAccountBalanceAndDispatchToStore(activeAddress, providerState.web3Wrapper, dispatch);
         } else {
             dispatch(actions.setAccountStateLocked());
         }
     },
-    fetchAccountBalanceAndDispatchToStore: async (providerState: ProviderState, dispatch: Dispatch) => {
-        const web3Wrapper = providerState.web3Wrapper;
-        const account = providerState.account;
-        // if (account.state !== AccountState.Ready) {
-        //     return;
-        // }
+    fetchAccountBalanceAndDispatchToStore: async (address: string, web3Wrapper: Web3Wrapper, dispatch: Dispatch) => {
         try {
-            const address = account.address;
             const ethBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(address);
             dispatch(actions.updateAccountEthBalance({ address, ethBalanceInWei }));
         } catch (e) {

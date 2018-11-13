@@ -51,8 +51,6 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                 return 'connect your wallet';
             case AccountState.Ready:
                 return 'payment method';
-            default:
-                return 'payment method';
         }
     };
     private readonly _renderTitleLabel = (): React.ReactNode => {
@@ -104,8 +102,6 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                         network={network}
                     />
                 );
-            default:
-                return null;
         }
     };
 }
