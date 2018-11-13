@@ -310,6 +310,12 @@ describe.only('ABI Encoder', () => {
             const expectedCalldata =
                 '0xf68ade72000000000000000000000000000000000000000000000000000000000000007f000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000036';
             expect(calldata).to.be.equal(expectedCalldata);
+
+            // Test decoding
+            const expectedDecodedValueJson = JSON.stringify(args);
+            const decodedValue = method.decode(calldata);
+            const decodedValueJson = JSON.stringify(decodedValue);
+            expect(decodedValueJson).to.be.equal(expectedDecodedValueJson);
         });
 
 
@@ -327,38 +333,52 @@ describe.only('ABI Encoder', () => {
             const expectedCalldata =
                 '0x7ac2bd96af000000000000000000000000000000000000000000000000000000000000000001020304050607080911121314151617181920212223242526272829303132000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000047616161616161616161616161616161616161616161616161616161616161616161616161616161611114f3245678384756473829384756774488993384576688990020202020200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000414d79206669727374206e616d65206973204772656720616e64206d79206c617374206e616d6520697320487973656e2c207768617420646f207961206b6e6f772100000000000000000000000000000000000000000000000000000000000000';
             expect(calldata).to.be.equal(expectedCalldata);
+
+            // Test decoding
+            const expectedDecodedValueJson = JSON.stringify(args);
+            const decodedValue = method.decode(calldata);
+            const decodedValueJson = JSON.stringify(decodedValue);
+            expect(decodedValueJson).to.be.equal(expectedDecodedValueJson);
         });
 
-        it('Yessir', async () => {
-            const method = new AbiEncoder.Method(AbiSamples.simpleAbi);
-            const calldata = method.encode([new BigNumber(5), 'five']);
-            console.log(calldata);
-            expect(true).to.be.true();
-        });
-
-        it('Array ABI', async () => {
+        it.only('Array ABI', async () => {
             const method = new AbiEncoder.Method(AbiSamples.stringAbi);
             console.log(method);
-            const calldata = method.encode([['five', 'six', 'seven']]);
+            const args = [['five', 'six', 'seven']];
+            const calldata = method.encode(args);
             console.log(method.getSignature());
             console.log(method.selector);
 
+            /*
             console.log(calldata);
             const expectedCalldata =
                 '0x13e751a900000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000373697800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005736576656e000000000000000000000000000000000000000000000000000000';
-            expect(calldata).to.be.equal(expectedCalldata);
+            expect(calldata).to.be.equal(expectedCalldata);*/
+
+            // Test decoding
+            const expectedDecodedValueJson = JSON.stringify(args);
+            const decodedValue = method.decode(calldata);
+            const decodedValueJson = JSON.stringify(decodedValue);
+            expect(decodedValueJson).to.be.equal(expectedDecodedValueJson);
         });
 
         it('Static Tuple', async () => {
             // This is dynamic because it has dynamic members
             const method = new AbiEncoder.Method(AbiSamples.staticTupleAbi);
-            const calldata = method.encode([[new BigNumber(5), new BigNumber(10), new BigNumber(15), false]]);
+            const args = [[new BigNumber(5), new BigNumber(10), new BigNumber(15), false]];
+            const calldata = method.encode(args);
             console.log(method.getSignature());
             console.log(method.selector);
 
             console.log(calldata);
             const expectedCalldata = '0xa9125e150000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000f0000000000000000000000000000000000000000000000000000000000000000';
             expect(calldata).to.be.equal(expectedCalldata);
+
+            // Test decoding
+            const expectedDecodedValueJson = JSON.stringify(args);
+            const decodedValue = method.decode(calldata);
+            const decodedValueJson = JSON.stringify(decodedValue);
+            expect(decodedValueJson).to.be.equal(expectedDecodedValueJson);
         });
 
         it('Dynamic Tuple (Array input)', async () => {
