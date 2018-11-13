@@ -2,11 +2,11 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import { PaymentMethod } from '../components/payment_method';
+import { PaymentMethod, PaymentMethodProps } from '../components/payment_method';
 import { Action, actions } from '../redux/actions';
 import { asyncData } from '../redux/async_data';
 import { State } from '../redux/reducer';
-import { Account, Network, ProviderState, StandardSlidingPanelContent } from '../types';
+import { Account, Network, Omit, ProviderState, StandardSlidingPanelContent } from '../types';
 
 export interface ConnectedAccountPaymentMethodProps {}
 
@@ -20,12 +20,7 @@ interface ConnectedDispatch {
     unlockWalletAndDispatchToStore: (providerState: ProviderState) => void;
 }
 
-interface ConnectedProps {
-    onInstallWalletClick: () => void;
-    onUnlockWalletClick: () => void;
-    account: Account;
-    network: Network;
-}
+type ConnectedProps = Omit<PaymentMethodProps, keyof ConnectedAccountPaymentMethodProps>;
 
 type FinalProps = ConnectedProps & ConnectedAccountPaymentMethodProps;
 
