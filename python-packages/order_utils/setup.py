@@ -184,6 +184,7 @@ setup(
     package_data={
         "zero_ex.order_utils": ["py.typed"],
         "zero_ex.contract_artifacts": ["artifacts/*"],
+        "zero_ex.json_schemas": ["schemas/*"],
     },
     package_dir={"": "src"},
     license="Apache 2.0",
