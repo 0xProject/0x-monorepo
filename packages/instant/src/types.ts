@@ -95,6 +95,7 @@ export interface AffiliateInfo {
 }
 
 export interface ProviderState {
+    name: string;
     provider: Provider;
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;
@@ -136,4 +137,31 @@ export enum StandardSlidingPanelContent {
 export interface StandardSlidingPanelSettings {
     animationState: SlideAnimationState;
     content: StandardSlidingPanelContent;
+}
+
+export enum Browser {
+    Chrome = 'CHROME',
+    Firefox = 'FIREFOX',
+    Opera = 'OPERA',
+    Safari = 'SAFARI',
+    Edge = 'EDGE',
+    Other = 'OTHER',
+}
+
+export enum OperatingSystem {
+    Android = 'ANDROID',
+    iOS = 'IOS',
+    Mac = 'MAC',
+    Windows = 'WINDOWS',
+    WindowsPhone = 'WINDOWS_PHONE',
+    Linux = 'LINUX',
+    Other = 'OTHER',
+}
+
+export enum ProviderType {
+    Parity = 'PARITY',
+    MetaMask = 'META_MASK',
+    Mist = 'MIST',
+    CoinbaseWallet = 'COINBASE_WALLET',
+    Cipher = 'CIPHER',
 }
