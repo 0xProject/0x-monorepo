@@ -23,10 +23,12 @@ export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({ onCl
         boxShadowOnHover={!!onClick}
     >
         <Flex>
-            <Container marginRight="10px">{image}</Container>
-            <Text fontSize="16px" fontColor={ColorOption.darkOrange}>
-                {children}
-            </Text>
+            {image}
+            <Container marginLeft="10px">
+                <Text fontSize="16px" fontColor={ColorOption.darkOrange}>
+                    {children}
+                </Text>
+            </Container>
         </Flex>
     </Container>
 );

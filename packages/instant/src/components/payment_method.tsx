@@ -5,7 +5,7 @@ import { ColorOption } from '../style/theme';
 import { Account, AccountState, Network } from '../types';
 import { envUtil } from '../util/env';
 
-import { CoinbaseWalletLogo } from './coinbase_wallet_logo';
+import { CoinbaseWalletAppLogo, CoinbaseWalletLogo } from './coinbase_wallet_logo';
 import { MetaMaskLogo } from './meta_mask_logo';
 import { PaymentMethodDropdown } from './payment_method_dropdown';
 import { Circle } from './ui/circle';
@@ -77,8 +77,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
     private readonly _renderMainContent = (): React.ReactNode => {
         const { account, network } = this.props;
         const isMobile = envUtil.isMobileOperatingSystem();
-        // TODO: Use Toshi logo
-        const logo = isMobile ? undefined : <MetaMaskLogo width={19} height={18} />;
+        const logo = isMobile ? <CoinbaseWalletAppLogo width={22} /> : <MetaMaskLogo width={19} height={18} />;
         switch (account.state) {
             case AccountState.Loading:
                 // Just take up the same amount of space as the other states.
