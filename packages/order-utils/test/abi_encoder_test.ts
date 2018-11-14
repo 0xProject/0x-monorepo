@@ -27,7 +27,7 @@ const expect = chai.expect;
 describe.only('ABI Encoder', () => {
     describe.only('ABI Tests at Method Level', () => {
 
-        it('Optimizer #1', async () => {
+        it('Should reuse duplicated strings in string array', async () => {
             const method = new AbiEncoder.Method(AbiSamples.stringAbi);
             const strings = [
                 "Test String",
@@ -37,7 +37,7 @@ describe.only('ABI Encoder', () => {
             ];
             const args = [strings];
 
-            const optimizedCalldata = method.encode(args, new Calldata(), true, true);
+            const optimizedCalldata = method.encode(args, { optimize: true, annotate: true });
             console.log(optimizedCalldata);
         });
 
@@ -53,10 +53,10 @@ describe.only('ABI Encoder', () => {
             const args = [stringArray, string];
 
 
-            const TEST = method.encode(args, new Calldata(), true, true);
+            const TEST = method.encode(args, { optimize: true, annotate: true });
             console.log(TEST);
 
-            const optimizedCalldata = method.encode(args, new Calldata(), false, true);
+            const optimizedCalldata = method.encode(args, { optimize: true });
 
             console.log(`OPTIMIZED CALLDATA == '${optimizedCalldata}'`);
             const decodedArgs = method.decode(optimizedCalldata);
@@ -79,10 +79,10 @@ describe.only('ABI Encoder', () => {
             const args = [uint8Array, uintTupleArray];
 
 
-            const TEST = method.encode(args, new Calldata(), true, true);
+            const TEST = method.encode(args, { optimize: true, annotate: true });
             console.log('*'.repeat(50), ' ENCODED DATA ', TEST);
 
-            const optimizedCalldata = method.encode(args, new Calldata(), false, true);
+            const optimizedCalldata = method.encode(args, { optimize: true });
 
             console.log(`OPTIMIZED CALLDATA == '${optimizedCalldata}'`);
             const decodedArgs = method.decode(optimizedCalldata);
@@ -92,7 +92,7 @@ describe.only('ABI Encoder', () => {
             expect(decodedArgsJson).to.be.equal(argsJson);
         });
 
-        it.only('Optimizer #4 (Expect no optimization)', async () => {
+        it('Optimizer #4 (Expect no optimization)', async () => {
             const method = new AbiEncoder.Method(AbiSamples.optimizerAbi4);
             const uint8Array = [
                 new BigNumber(100),
@@ -104,10 +104,10 @@ describe.only('ABI Encoder', () => {
             const args = [uint8Array, uintTupleArray];
 
 
-            const TEST = method.encode(args, new Calldata(), true, true);
+            const TEST = method.encode(args, { optimize: true, annotate: true });
             console.log('*'.repeat(50), ' ENCODED DATA ', TEST);
 
-            const optimizedCalldata = method.encode(args, new Calldata(), false, true);
+            const optimizedCalldata = method.encode(args, { optimize: true });
 
             console.log(`OPTIMIZED CALLDATA == '${optimizedCalldata}'`);
             const decodedArgs = method.decode(optimizedCalldata);
@@ -179,11 +179,8 @@ describe.only('ABI Encoder', () => {
                 someArrayOfTuplesWithDynamicTypes: someArrayOfTuplesWithDynamicTypes
             };
 
-            const calldata = method.encode(args, new Calldata(), true);
+            const calldata = method.encode(args);
             console.log(calldata);
-
-
-            throw new Error(`done`);
 
             console.log('*'.repeat(40));
             console.log(JSON.stringify(args));
@@ -195,7 +192,7 @@ describe.only('ABI Encoder', () => {
 
             // Test decoding
             const expectedDecodedValueJson = JSON.stringify(args);
-            const decodedValue = method.decode(calldata, true);
+            const decodedValue = method.decode(calldata, { structsAsObjects: true });
             const decodedValueJson = JSON.stringify(decodedValue);
             console.log(`DECODED`, '*'.repeat(200), '\n', decodedValueJson);
             expect(decodedValueJson).to.be.equal(expectedDecodedValueJson);
