@@ -1,14 +1,14 @@
 import { RawCalldata, Calldata, CalldataBlock, PayloadCalldataBlock, DependentCalldataBlock, MemberCalldataBlock } from "./calldata";
 import { MethodAbi, DataItem } from 'ethereum-types';
+import { DecodingRules, EncodingRules } from './calldata';
 import { BigNumber } from '@0x/utils';
 import ethUtil = require('ethereumjs-util');
 var _ = require('lodash');
 
-export interface GenerateValueRules {
-    structsAsObjects: boolean;
-}
-
 export abstract class DataType {
+    private static DEFAULT_ENCODING_RULES = { optimize: false, annotate: false } as EncodingRules;
+    private static DEFAULT_DECODING_RULES = { structsAsObjects: false } as DecodingRules;
+
     private dataItem: DataItem;
 
     constructor(dataItem: DataItem) {
@@ -19,9 +19,25 @@ export abstract class DataType {
         return this.dataItem;
     }
 
+    public encode(value: any, rules?: EncodingRules, selector?: string): string {
+        const rules_ = rules ? rules : DataType.DEFAULT_ENCODING_RULES;
+        const calldata = new Calldata(rules_);
+        if (selector) calldata.setSelector(selector);
+        const block = this.generateCalldataBlock(value);
+        calldata.setRoot(block as MemberCalldataBlock); // @TODO CHANGE
+        const calldataHex = calldata.toHexString();
+        return calldataHex;
+    }
+
+    public decode(calldata: string, rules?: DecodingRules): any {
+        const rawCalldata = new RawCalldata(calldata);
+        const rules_ = rules ? rules : DataType.DEFAULT_DECODING_RULES;
+        const value = this.generateValue(rawCalldata, rules_);
+        return value;
+    }
+
     public abstract generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlock;
-    public abstract generateValue(calldata: RawCalldata, rules: GenerateValueRules): any;
-    public abstract encode(value: any, calldata: Calldata): void;
+    public abstract generateValue(calldata: RawCalldata, rules: DecodingRules): any;
     public abstract getSignature(): string;
     public abstract isStatic(): boolean;
 }
@@ -44,12 +60,7 @@ export abstract class PayloadDataType extends DataType {
         return block;
     }
 
-    public encode(value: any, calldata: Calldata): void {
-        const block = this.generateCalldataBlock(value);
-        // calldata.setRoot(block);
-    }
-
-    public generateValue(calldata: RawCalldata, rules: GenerateValueRules): any {
+    public generateValue(calldata: RawCalldata, rules: DecodingRules): any {
         const value = this.decodeValue(calldata);
         return value;
     }
@@ -86,12 +97,7 @@ export abstract class DependentDataType extends DataType {
         return block;
     }
 
-    public encode(value: any, calldata: Calldata = new Calldata()): void {
-        const block = this.generateCalldataBlock(value);
-        //calldata.setRoot(block);
-    }
-
-    public generateValue(calldata: RawCalldata, rules: GenerateValueRules): any {
+    public generateValue(calldata: RawCalldata, rules: DecodingRules): any {
         const destinationOffsetBuf = calldata.popWord();
         const currentOffset = calldata.getOffset();
         const destinationOffsetRelative = parseInt(ethUtil.bufferToHex(destinationOffsetBuf), 16);
@@ -237,12 +243,7 @@ export abstract class MemberDataType extends DataType {
         return block;
     }
 
-    public encode(value: any, calldata: Calldata = new Calldata()): void {
-        const block = this.generateCalldataBlock(value);
-        calldata.setRoot(block);
-    }
-
-    public generateValue(calldata: RawCalldata, rules: GenerateValueRules): any[] | object {
+    public generateValue(calldata: RawCalldata, rules: DecodingRules): any[] | object {
         let members = this.members;
         if (this.isArray && this.arrayLength === undefined) {
             const arrayLengthBuf = calldata.popWord();

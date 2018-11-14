@@ -1,4 +1,6 @@
-import { GenerateValueRules, DataType, DataTypeFactory, DataTypeFactoryImpl, PayloadDataType, DependentDataType, MemberDataType } from './data_type';
+import { DataType, DataTypeFactory, DataTypeFactoryImpl, PayloadDataType, DependentDataType, MemberDataType } from './data_type';
+
+import { DecodingRules, EncodingRules } from './calldata';
 
 import { MethodAbi, DataItem } from 'ethereum-types';
 
@@ -13,7 +15,7 @@ var _ = require('lodash');
 export interface DataTypeStaticInterface {
     matchGrammar: (type: string) => boolean;
     encodeValue: (value: any) => Buffer;
-    //    decodeValue: (value: Buffer) => [any, Buffer];
+    decodeValue: (rawCalldata: RawCalldata) => any;
 }
 
 export class Address extends PayloadDataType {
@@ -489,21 +491,16 @@ export class Method extends MemberDataType {
         return selector;
     }
 
-    public encode(value: any[] | object, calldata = new Calldata(), annotate: boolean = false, optimize: boolean = false): string {
-        calldata.setSelector(this.methodSelector);
-        super.encode(value, calldata);
-        return calldata.toHexString(optimize, annotate);
+    public encode(value: any, rules?: EncodingRules): string {
+        const calldata = super.encode(value, rules, this.selector);
+        return calldata;
     }
 
-    public decode(calldata: string, decodeStructsAsObjects: boolean = false): any[] | object {
-        const calldata_ = new RawCalldata(calldata);
-        if (this.selector !== calldata_.getSelector()) {
-            throw new Error(`Tried to decode calldata with mismatched selector. Expected '${this.selector}', got '${calldata_.getSelector()}'`);
+    public decode(calldata: string, rules?: DecodingRules): any[] | object {
+        if (!calldata.startsWith(this.selector)) {
+            throw new Error(`Tried to decode calldata, but it was missing the function selector. Expected '${this.selector}'.`);
         }
-        let rules: GenerateValueRules = {
-            structsAsObjects: decodeStructsAsObjects
-        };
-        const value = super.generateValue(calldata_, rules);
+        const value = super.decode(calldata, rules);
         return value;
     }
 
