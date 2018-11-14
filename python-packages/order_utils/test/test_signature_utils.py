@@ -3,7 +3,7 @@
 import pytest
 from web3 import Web3
 
-from zero_ex.order_utils.signature_utils import is_valid_signature
+from zero_ex.order_utils import is_valid_signature
 
 
 def test_is_valid_signature__provider_wrong_type():
