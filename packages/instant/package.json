@@ -28,7 +28,10 @@
     },
     "config": {
         "postpublish": {
-            "assets": ["packages/instant/public/index.js", "packages/instant/public/index.min.js"]
+            "assets": [
+                "packages/instant/public/index.js",
+                "packages/instant/public/index.min.js"
+            ]
         }
     },
     "repository": {
@@ -84,6 +87,7 @@
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
+        "rollbar-sourcemap-webpack-plugin": "^2.4.0",
         "shx": "^0.2.2",
         "ts-jest": "^23.10.3",
         "tslint": "5.11.0",

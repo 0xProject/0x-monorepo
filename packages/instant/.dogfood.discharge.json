@@ -1,12 +1,12 @@
 {
     "domain": "0x-instant-dogfood",
-    "build_command": "yarn build:umd:prod",
+    "build_command": "yarn build:umd:prod --env.dogfood",
     "upload_directory": "public",
     "index_key": "index.html",
     "error_key": "index.html",
     "trailing_slashes": true,
     "cache": 3600,
-    "aws_profile": "default",
+    "aws_profile": "0xproject",
     "aws_region": "us-east-1",
     "cdn": false,
     "dns_configured": true

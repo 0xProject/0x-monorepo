@@ -18,7 +18,6 @@ const rollbar = new Rollbar({
         client: {
             javascript: {
                 source_map_enabled: true,
-                // This is only defined in production environments.
                 code_version: process.env.GIT_SHA,
                 guess_uncaught_frames: true,
             },
@@ -39,9 +38,6 @@ const rollbar = new Rollbar({
 });
 
 export const setupRollbar = () => {
-    (window as any).zeroExTriggerError = (errorDesc: string) => {
-        throw new Error(errorDesc);
-    };
     return rollbar;
 };
 
