@@ -216,6 +216,11 @@ class Queue<T> {
     pop(): T | undefined {
         return this.store.shift();
     }
+    popBack(): T | undefined {
+        if (this.store.length === 0) return undefined;
+        const backElement = this.store.splice(-1, 1)[0];
+        return backElement;
+    }
     merge(q: Queue<T>) {
         this.store = this.store.concat(q.store);
     }
@@ -378,34 +383,34 @@ export class Calldata {
             throw new Error('expected root');
         }
 
-        const subtreesByHash: { [key: string]: DependentCalldataBlock[] } = {};
+        const blocksByHash: { [key: string]: CalldataBlock } = {};
 
         // 1. Create a queue of subtrees by hash
         // Note that they are ordered the same as 
         const subtreeQueue = this.createQueue(this.root);
         let block: CalldataBlock | undefined;
-        while ((block = subtreeQueue.pop()) !== undefined) {
+        console.log('*'.repeat(100), ' OPTIMIZING ', '*'.repeat(100));
+        while ((block = subtreeQueue.popBack()) !== undefined) {
             console.log(block.getName());
+            if (block instanceof DependentCalldataBlock) {
+                const blockHashBuf = block.getDependency().computeHash();
+                const blockHash = ethUtil.bufferToHex(blockHashBuf);
+                if (blockHash in blocksByHash) {
+                    const blockWithSameHash = blocksByHash[blockHash];
+                    if (blockWithSameHash !== block.getDependency()) {
+                        block.setAlias(blockWithSameHash);
+                    }
+                }
+                continue;
+            }
 
-            if (block instanceof DependentCalldataBlock === false) continue;
             const blockHashBuf = block.computeHash();
-            const blockHashHex = ethUtil.bufferToHex(blockHashBuf);
-            if (blockHashHex in subtreesByHash === false) {
-                subtreesByHash[blockHashHex] = [block as DependentCalldataBlock];
-            } else {
-                subtreesByHash[blockHashHex].push(block as DependentCalldataBlock);
+            const blockHash = ethUtil.bufferToHex(blockHashBuf);
+            if (blockHash in blocksByHash === false) {
+                blocksByHash[blockHash] = block;
             }
         }
-
-        // Iterate through trees that have the same hash and 
-        _.each(subtreesByHash, (subtrees: DependentCalldataBlock[], hash: string) => {
-            if (subtrees.length === 1) return; // No optimization
-            // Optimize
-            const lastSubtree = subtrees[subtrees.length - 1];
-            for (let i = 0; i < subtrees.length - 1; ++i) {
-                subtrees[i].setAlias(lastSubtree.getDependency());
-            }
-        });
+        console.log('*'.repeat(100), ' FINISHED OPTIMIZING ', '*'.repeat(100));
     }
 
     public toHexString(optimize: boolean = false, annotate: boolean = false): string {
