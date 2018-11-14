@@ -3,7 +3,6 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import { SlideAnimationState } from '../components/animations/slide_animation';
 import { SlidingError } from '../components/sliding_error';
 import { Overlay } from '../components/ui/overlay';
 import { Action } from '../redux/actions';
@@ -11,7 +10,7 @@ import { State } from '../redux/reducer';
 import { ScreenWidths } from '../style/media';
 import { generateOverlayBlack } from '../style/theme';
 import { zIndex } from '../style/z_index';
-import { Asset, DisplayStatus, Omit } from '../types';
+import { Asset, DisplayStatus, Omit, SlideAnimationState } from '../types';
 import { errorFlasher } from '../util/error_flasher';
 
 export interface LatestErrorComponentProps {

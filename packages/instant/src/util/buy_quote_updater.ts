@@ -15,12 +15,12 @@ export const buyQuoteUpdater = {
         assetBuyer: AssetBuyer,
         dispatch: Dispatch<Action>,
         asset: ERC20Asset,
-        assetAmount: BigNumber,
+        assetUnitAmount: BigNumber,
         setPending = true,
         affiliateInfo?: AffiliateInfo,
     ): Promise<void> => {
         // get a new buy quote.
-        const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetAmount, asset.metaData.decimals);
+        const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetUnitAmount, asset.metaData.decimals);
         if (setPending) {
             // mark quote as pending
             dispatch(actions.setQuoteRequestStatePending());

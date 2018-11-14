@@ -1,5 +1,24 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "update `getBuyQuoteAsync` to return eth spent on assets instead of per unit amount",
+                "pr": 1252
+            }
+        ],
+        "timestamp": 1542208198
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "2.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1542028948,
         "version": "2.2.1",
         "changes": [

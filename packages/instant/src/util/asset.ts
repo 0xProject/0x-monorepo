@@ -80,8 +80,6 @@ export const assetUtils = {
                 return metaData.symbol.toUpperCase();
             case AssetProxyId.ERC721:
                 return metaData.name;
-            default:
-                return defaultName;
         }
     },
     formattedSymbolForAsset: (asset?: ERC20Asset, defaultName: string = '???'): string => {

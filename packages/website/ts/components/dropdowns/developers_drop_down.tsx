@@ -89,7 +89,7 @@ export class DevelopersDropDown extends React.Component<DevelopersDropDownProps,
         );
     }
     private _renderDropdownMenu(): React.ReactNode {
-        const sectionPadding = '28px';
+        const sectionPadding = '26px';
         const dropdownMenu = (
             <Container>
                 <Container className="flex" padding={sectionPadding}>

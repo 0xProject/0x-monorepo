@@ -106,28 +106,28 @@ function calculateQuoteInfo(
     isMakerAssetZrxToken: boolean,
 ): BuyQuoteInfo {
     // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
-    let ethAmountToBuyAsset = constants.ZERO_AMOUNT;
-    let ethAmountToBuyZrx = constants.ZERO_AMOUNT;
+    let assetEthAmount = constants.ZERO_AMOUNT;
+    let zrxEthAmount = constants.ZERO_AMOUNT;
     if (isMakerAssetZrxToken) {
-        ethAmountToBuyAsset = findEthAmountNeededToBuyZrx(ordersAndFillableAmounts, assetBuyAmount);
+        assetEthAmount = findEthAmountNeededToBuyZrx(ordersAndFillableAmounts, assetBuyAmount);
     } else {
         // find eth and zrx amounts needed to buy
         const ethAndZrxAmountToBuyAsset = findEthAndZrxAmountNeededToBuyAsset(ordersAndFillableAmounts, assetBuyAmount);
-        ethAmountToBuyAsset = ethAndZrxAmountToBuyAsset[0];
+        assetEthAmount = ethAndZrxAmountToBuyAsset[0];
         const zrxAmountToBuyAsset = ethAndZrxAmountToBuyAsset[1];
         // find eth amount needed to buy zrx
-        ethAmountToBuyZrx = findEthAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
+        zrxEthAmount = findEthAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
     }
-    /// find the eth amount needed to buy the affiliate fee
-    const ethAmountToBuyAffiliateFee = ethAmountToBuyAsset.mul(feePercentage).ceil();
-    const totalEthAmountWithoutAffiliateFee = ethAmountToBuyAsset.plus(ethAmountToBuyZrx);
-    const ethAmountTotal = totalEthAmountWithoutAffiliateFee.plus(ethAmountToBuyAffiliateFee);
-    // divide into the assetBuyAmount in order to find rate of makerAsset / WETH
-    const ethPerAssetPrice = totalEthAmountWithoutAffiliateFee.div(assetBuyAmount);
+    // eth amount needed to buy the affiliate fee
+    const affiliateFeeEthAmount = assetEthAmount.mul(feePercentage).ceil();
+    // eth amount needed for fees is the sum of affiliate fee and zrx fee
+    const feeEthAmount = affiliateFeeEthAmount.plus(zrxEthAmount);
+    // eth amount needed in total is the sum of the amount needed for the asset and the amount needed for fees
+    const totalEthAmount = assetEthAmount.plus(feeEthAmount);
     return {
-        totalEthAmount: ethAmountTotal,
-        feeEthAmount: ethAmountToBuyAffiliateFee,
-        ethPerAssetPrice,
+        assetEthAmount,
+        feeEthAmount,
+        totalEthAmount,
     };
 }
 

@@ -27,6 +27,9 @@ export const ENVIRONMENTS_TO_DOMAINS: EnvironmentToDomain = {
     DOGFOOD: ['0x-instant-dogfood.s3-website-us-east-1.amazonaws.com'],
     DEVELOPMENT: ['localhost', '127.0.0.1', 'ngrok.io'],
 };
+export const META_MASK_CHROME_STORE_URL =
+    'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en';
+export const META_MASK_SITE_URL = 'https://metamask.io/';
 export const ETHEREUM_NODE_URL_BY_NETWORK = {
     [Network.Mainnet]: 'https://mainnet.infura.io/',
     [Network.Kovan]: 'https://kovan.infura.io/',

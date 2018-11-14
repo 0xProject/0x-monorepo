@@ -12,7 +12,6 @@ export interface BuyOrderProgressProps {
 
 export const BuyOrderProgress: React.StatelessComponent<BuyOrderProgressProps> = props => {
     const { buyOrderState } = props;
-
     if (
         buyOrderState.processState === OrderProcessState.Processing ||
         buyOrderState.processState === OrderProcessState.Success ||
@@ -30,6 +29,5 @@ export const BuyOrderProgress: React.StatelessComponent<BuyOrderProgressProps> =
             </Container>
         );
     }
-
     return null;
 };

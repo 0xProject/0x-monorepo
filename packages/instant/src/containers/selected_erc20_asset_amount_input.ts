@@ -6,11 +6,11 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import { ERC20AssetAmountInput } from '../components/erc20_asset_amount_input';
+import { ERC20AssetAmountInput, ERC20AssetAmountInputProps } from '../components/erc20_asset_amount_input';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { ColorOption } from '../style/theme';
-import { AffiliateInfo, ERC20Asset, OrderProcessState } from '../types';
+import { AffiliateInfo, ERC20Asset, Omit, OrderProcessState } from '../types';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
 
 export interface SelectedERC20AssetAmountInputProps {
@@ -37,13 +37,7 @@ interface ConnectedDispatch {
     ) => void;
 }
 
-interface ConnectedProps {
-    value?: BigNumber;
-    asset?: ERC20Asset;
-    onChange: (value?: BigNumber, asset?: ERC20Asset) => void;
-    isDisabled: boolean;
-    numberOfAssetsAvailable?: number;
-}
+type ConnectedProps = Omit<ERC20AssetAmountInputProps, keyof SelectedERC20AssetAmountInputProps>;
 
 type FinalProps = ConnectedProps & SelectedERC20AssetAmountInputProps;
 
@@ -59,7 +53,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
     const assetBuyer = state.providerState.assetBuyer;
     return {
         assetBuyer,
-        value: state.selectedAssetAmount,
+        value: state.selectedAssetUnitAmount,
         asset: selectedAsset,
         isDisabled,
         numberOfAssetsAvailable,

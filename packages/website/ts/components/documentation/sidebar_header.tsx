@@ -29,6 +29,7 @@ export const SidebarHeader: React.StatelessComponent<SidebarHeaderProps> = ({
                         fontColor={colors.lightLinkBlue}
                         fontSize={screenWidth === ScreenWidths.Sm ? '20px' : '22px'}
                         fontWeight="bold"
+                        lineHeight="26px"
                     >
                         {title}
                     </Text>
@@ -36,7 +37,7 @@ export const SidebarHeader: React.StatelessComponent<SidebarHeaderProps> = ({
                 {!_.isUndefined(docsVersion) &&
                     !_.isUndefined(availableDocVersions) &&
                     !_.isUndefined(onVersionSelected) && (
-                        <div className="right" style={{ alignSelf: 'flex-end' }}>
+                        <div className="right" style={{ alignSelf: 'flex-end', paddingBottom: 4 }}>
                             <VersionDropDown
                                 selectedVersion={docsVersion}
                                 versions={availableDocVersions}

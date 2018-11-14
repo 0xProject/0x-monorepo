@@ -73,7 +73,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
                       completeAssetMetaDataMap,
                       networkId,
                   ),
-            selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
+            selectedAssetUnitAmount: _.isUndefined(props.defaultAssetBuyAmount)
                 ? undefined
                 : new BigNumber(props.defaultAssetBuyAmount),
             availableAssets: _.isUndefined(props.availableAssetDatas)
@@ -91,12 +91,13 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
     }
     public componentDidMount(): void {
         const state = this._store.getState();
+        const dispatch = this._store.dispatch;
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchEthPriceAndDispatchToStore(this._store);
+        asyncData.fetchEthPriceAndDispatchToStore(dispatch);
         // fetch available assets if none are specified
         if (_.isUndefined(state.availableAssets)) {
             // tslint:disable-next-line:no-floating-promises
-            asyncData.fetchAvailableAssetDatasAndDispatchToStore(this._store);
+            asyncData.fetchAvailableAssetDatasAndDispatchToStore(state, dispatch);
         }
         if (state.providerState.account.state !== AccountState.None) {
             this._accountUpdateHeartbeat = generateAccountHeartbeater({
@@ -112,7 +113,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         });
         this._buyQuoteHeartbeat.start(BUY_QUOTE_UPDATE_INTERVAL_TIME_MS);
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchCurrentBuyQuoteAndDispatchToStore({ store: this._store, shouldSetPending: true });
+        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, true);
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
         // tslint:disable-next-line:no-floating-promises

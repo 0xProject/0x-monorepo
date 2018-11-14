@@ -2,35 +2,25 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
+import { SlideAnimationState } from '../types';
 
 import { PositionAnimationSettings } from './animations/position_animation';
-import { SlideAnimation, SlideAnimationState } from './animations/slide_animation';
+import { SlideAnimation } from './animations/slide_animation';
 
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 import { Icon } from './ui/icon';
-import { Text } from './ui/text';
 
 export interface PanelProps {
-    title?: string;
     onClose?: () => void;
 }
 
-export const Panel: React.StatelessComponent<PanelProps> = ({ title, children, onClose }) => (
+export const Panel: React.StatelessComponent<PanelProps> = ({ children, onClose }) => (
     <Container backgroundColor={ColorOption.white} width="100%" height="100%" zIndex={zIndex.panel} padding="20px">
-        <Flex justify="space-between">
-            {title && (
-                <Container marginTop="3px">
-                    <Text fontColor={ColorOption.darkGrey} fontSize="18px" fontWeight="600" lineHeight="22px">
-                        {title}
-                    </Text>
-                </Container>
-            )}
-            <Container position="relative" bottom="7px">
-                <Icon width={12} color={ColorOption.lightGrey} icon="closeX" onClick={onClose} />
-            </Container>
+        <Flex justify="flex-end">
+            <Icon padding="5px" width={12} color={ColorOption.lightGrey} icon="closeX" onClick={onClose} />
         </Flex>
-        <Container marginTop="10px" height="100%">
+        <Container position="relative" top="-10px" height="100%">
             {children}
         </Container>
     </Container>

@@ -10,13 +10,13 @@ export interface HeartbeatFactoryOptions {
 export const generateAccountHeartbeater = (options: HeartbeatFactoryOptions): Heartbeater => {
     const { store, shouldPerformImmediatelyOnStart } = options;
     return new Heartbeater(async () => {
-        await asyncData.fetchAccountInfoAndDispatchToStore({ store, shouldSetToLoading: false });
+        await asyncData.fetchAccountInfoAndDispatchToStore(store.getState().providerState, store.dispatch, false);
     }, shouldPerformImmediatelyOnStart);
 };
 
 export const generateBuyQuoteHeartbeater = (options: HeartbeatFactoryOptions): Heartbeater => {
     const { store, shouldPerformImmediatelyOnStart } = options;
     return new Heartbeater(async () => {
-        await asyncData.fetchCurrentBuyQuoteAndDispatchToStore({ store, shouldSetPending: false });
+        await asyncData.fetchCurrentBuyQuoteAndDispatchToStore(store.getState(), store.dispatch, false);
     }, shouldPerformImmediatelyOnStart);
 };
