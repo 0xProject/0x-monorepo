@@ -68,14 +68,6 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
             </React.Fragment>
         );
     }
-    // TODO: don't commit
-    public componentDidMount() {
-        console.log('mounted');
-        window.setTimeout(() => {
-            console.log('error happened');
-            throw new Error('TEST: demo error');
-        }, 1000);
-    }
     private readonly _handleSymbolClick = (): void => {
         this.setState({
             tokenSelectionPanelAnimationState: 'slidIn',
