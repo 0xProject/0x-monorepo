@@ -18,8 +18,7 @@ export const BuyOrderProgressOrPaymentMethod = (props: BuyOrderProgressOrPayment
         orderProcessState === OrderProcessState.Failure
     ) {
         return <SelectedAssetBuyOrderProgress />;
-    }
-    if (orderProcessState === OrderProcessState.None) {
+    } else {
         return <ConnectedAccountPaymentMethod />;
     }
     return null;
