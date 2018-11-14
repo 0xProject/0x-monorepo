@@ -27,86 +27,87 @@ export class InstallWalletPanelContent extends React.Component<InstallWalletPane
     }
     private readonly _getStandardPanelContentProps = (): StandardPanelContentProps => {
         const isMobileOS = envUtil.isMobileOperatingSystem();
-        const browser = envUtil.getBrowser();
-        const operatingSystem = envUtil.getOperatingSystem();
         if (isMobileOS) {
-            let description = 'Please install the Coinbase Wallet app.';
-            let actionText = 'Learn More';
-            let actionUrl = COINBASE_WALLET_SITE_URL;
-            switch (operatingSystem) {
-                case OperatingSystem.Android:
-                    description = 'Please install the Coinbase Wallet app from the Google Play Store.';
-                    actionText = 'Get Coinbase Wallet';
-                    actionUrl = COINBASE_WALLET_ANDROID_APP_STORE_URL;
-                    break;
-                case OperatingSystem.iOS:
-                    description = 'Please install the Coinbase Wallet app from the iOS App Store.';
-                    actionText = 'Get Coinbase Wallet';
-                    actionUrl = COINBASE_WALLET_IOS_APP_STORE_URL;
-                    break;
-                default:
-                    break;
-            }
-            return {
-                image: <CoinbaseWalletLogo width={246} />,
-                description,
-                moreInfoSettings: {
-                    href: COINBASE_WALLET_SITE_URL,
-                    text: 'What is Coinbase Wallet?',
-                },
-                action: (
-                    <Button
-                        href={actionUrl}
-                        width="100%"
-                        fontColor={ColorOption.white}
-                        backgroundColor={ColorOption.blue}
-                    >
-                        {actionText}
-                    </Button>
-                ),
-            };
+            return this._getMobilePanelContentProps();
         } else {
-            let description = 'Please install the MetaMask wallet browser extension.';
-            let actionText = 'Learn More';
-            let actionUrl = META_MASK_SITE_URL;
-            switch (browser) {
-                case Browser.Chrome:
-                    description = 'Please install the MetaMask wallet browser extension from the Chrome Store.';
-                    actionText = 'Get Chrome Extension';
-                    actionUrl = META_MASK_CHROME_STORE_URL;
-                    break;
-                case Browser.Firefox:
-                    description = 'Please install the MetaMask wallet browser extension from the Firefox Store.';
-                    actionText = 'Get Firefox Extension';
-                    actionUrl = META_MASK_FIREFOX_STORE_URL;
-                    break;
-                case Browser.Opera:
-                    description = 'Please install the MetaMask wallet browser extension from the Opera Store.';
-                    actionText = 'Get Opera Add-on';
-                    actionUrl = META_MASK_OPERA_STORE_URL;
-                    break;
-                default:
-                    break;
-            }
-            return {
-                image: <MetaMaskLogo width={85} height={80} />,
-                title: 'Install MetaMask',
-                description,
-                moreInfoSettings: {
-                    href: META_MASK_SITE_URL,
-                    text: 'What is MetaMask?',
-                },
-                action: (
-                    <Button
-                        href={actionUrl}
-                        width="100%"
-                        fontColor={ColorOption.white}
-                        backgroundColor={ColorOption.darkOrange}
-                    >
-                        {actionText}
-                    </Button>
-                ),
-            };
+            return this._getDesktopPanelContentProps();
         }
+    };
+    private readonly _getDesktopPanelContentProps = (): StandardPanelContentProps => {
+        const browser = envUtil.getBrowser();
+        let description = 'Please install the MetaMask wallet browser extension.';
+        let actionText = 'Learn More';
+        let actionUrl = META_MASK_SITE_URL;
+        switch (browser) {
+            case Browser.Chrome:
+                description = 'Please install the MetaMask wallet browser extension from the Chrome Store.';
+                actionText = 'Get Chrome Extension';
+                actionUrl = META_MASK_CHROME_STORE_URL;
+                break;
+            case Browser.Firefox:
+                description = 'Please install the MetaMask wallet browser extension from the Firefox Store.';
+                actionText = 'Get Firefox Extension';
+                actionUrl = META_MASK_FIREFOX_STORE_URL;
+                break;
+            case Browser.Opera:
+                description = 'Please install the MetaMask wallet browser extension from the Opera Store.';
+                actionText = 'Get Opera Add-on';
+                actionUrl = META_MASK_OPERA_STORE_URL;
+                break;
+            default:
+                break;
+        }
+        return {
+            image: <MetaMaskLogo width={85} height={80} />,
+            title: 'Install MetaMask',
+            description,
+            moreInfoSettings: {
+                href: META_MASK_SITE_URL,
+                text: 'What is MetaMask?',
+            },
+            action: (
+                <Button
+                    href={actionUrl}
+                    width="100%"
+                    fontColor={ColorOption.white}
+                    backgroundColor={ColorOption.darkOrange}
+                >
+                    {actionText}
+                </Button>
+            ),
+        };
+    };
+    private readonly _getMobilePanelContentProps = (): StandardPanelContentProps => {
+        const operatingSystem = envUtil.getOperatingSystem();
+        let description = 'Please install the Coinbase Wallet app.';
+        let actionText = 'Learn More';
+        let actionUrl = COINBASE_WALLET_SITE_URL;
+        switch (operatingSystem) {
+            case OperatingSystem.Android:
+                description = 'Please install the Coinbase Wallet app from the Google Play Store.';
+                actionText = 'Get Coinbase Wallet';
+                actionUrl = COINBASE_WALLET_ANDROID_APP_STORE_URL;
+                break;
+            case OperatingSystem.iOS:
+                description = 'Please install the Coinbase Wallet app from the iOS App Store.';
+                actionText = 'Get Coinbase Wallet';
+                actionUrl = COINBASE_WALLET_IOS_APP_STORE_URL;
+                break;
+            default:
+                break;
+        }
+        return {
+            image: <CoinbaseWalletLogo width={246} />,
+            description,
+            moreInfoSettings: {
+                href: COINBASE_WALLET_SITE_URL,
+                text: 'What is Coinbase Wallet?',
+            },
+            action: (
+                <Button href={actionUrl} width="100%" fontColor={ColorOption.white} backgroundColor={ColorOption.blue}>
+                    {actionText}
+                </Button>
+            ),
+        };
     };
 }
