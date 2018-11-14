@@ -1,4 +1,5 @@
 import { BigNumber } from '@0x/utils';
+import { ValueTransformer } from 'typeorm/decorator/options/ValueTransformer';
 
 /**
  * If the given BigNumber is not null, returns the string representation of that
@@ -34,3 +35,17 @@ export function handleError(e: any): void {
     }
     process.exit(1);
 }
+
+class BigNumberTransformer implements ValueTransformer {
+    // tslint:disable-next-line:prefer-function-over-method
+    public to(value: BigNumber): string {
+        return value.toString();
+    }
+
+    // tslint:disable-next-line:prefer-function-over-method
+    public from(value: string): BigNumber {
+        return new BigNumber(value);
+    }
+}
+
+export const bigNumberTransformer = new BigNumberTransformer();

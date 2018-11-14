@@ -65,10 +65,10 @@ export function _convertToExchangeFillEvent(eventLog: LogWithDecodedArgs<Exchang
     exchangeFillEvent.takerAddress = eventLog.args.takerAddress.toString();
     exchangeFillEvent.feeRecipientAddress = eventLog.args.feeRecipientAddress;
     exchangeFillEvent.senderAddress = eventLog.args.senderAddress;
-    exchangeFillEvent.makerAssetFilledAmount = eventLog.args.makerAssetFilledAmount.toString();
-    exchangeFillEvent.takerAssetFilledAmount = eventLog.args.takerAssetFilledAmount.toString();
-    exchangeFillEvent.makerFeePaid = eventLog.args.makerFeePaid.toString();
-    exchangeFillEvent.takerFeePaid = eventLog.args.takerFeePaid.toString();
+    exchangeFillEvent.makerAssetFilledAmount = eventLog.args.makerAssetFilledAmount;
+    exchangeFillEvent.takerAssetFilledAmount = eventLog.args.takerAssetFilledAmount;
+    exchangeFillEvent.makerFeePaid = eventLog.args.makerFeePaid;
+    exchangeFillEvent.takerFeePaid = eventLog.args.takerFeePaid;
     exchangeFillEvent.orderHash = eventLog.args.orderHash;
     exchangeFillEvent.rawMakerAssetData = eventLog.args.makerAssetData;
     exchangeFillEvent.makerAssetType = makerAssetType;
@@ -139,6 +139,6 @@ export function _convertToExchangeCancelUpToEvent(
     exchangeCancelUpToEvent.rawData = eventLog.data as string;
     exchangeCancelUpToEvent.makerAddress = eventLog.args.makerAddress.toString();
     exchangeCancelUpToEvent.senderAddress = eventLog.args.senderAddress.toString();
-    exchangeCancelUpToEvent.orderEpoch = eventLog.args.orderEpoch.toString();
+    exchangeCancelUpToEvent.orderEpoch = eventLog.args.orderEpoch;
     return exchangeCancelUpToEvent;
 }

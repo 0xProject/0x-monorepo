@@ -1,4 +1,7 @@
+import { BigNumber } from '@0x/utils';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
+
+import { bigNumberTransformer } from '../utils';
 
 @Entity({ name: 'exchange_cancel_up_to_events', schema: 'raw' })
 export class ExchangeCancelUpToEvent {
@@ -17,7 +20,7 @@ export class ExchangeCancelUpToEvent {
     public makerAddress!: string;
     @Column({ name: 'sender_address' })
     public senderAddress!: string;
-    @Column({ name: 'order_epoch' })
-    public orderEpoch!: string;
+    @Column({ name: 'order_epoch', type: 'numeric', transformer: bigNumberTransformer })
+    public orderEpoch!: BigNumber;
     // TODO(albrow): Include topics?
 }
