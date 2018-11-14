@@ -48,7 +48,7 @@ export class InstallWalletPanelContent extends React.Component<InstallWalletPane
                     break;
             }
             return {
-                image: <CoinbaseWalletLogo width={246} height={42} />,
+                image: <CoinbaseWalletLogo width={246} />,
                 description,
                 moreInfoSettings: {
                     href: COINBASE_WALLET_SITE_URL,

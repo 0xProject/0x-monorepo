@@ -47,6 +47,7 @@ const mergeProps = (
     network: connectedState.network,
     account: connectedState.providerState.account,
     onInstallWalletClick: connectedDispatch.onInstallWalletClick,
+    walletName: connectedState.providerState.name,
     onUnlockWalletClick: () => {
         connectedDispatch.unlockWalletAndDispatchToStore(connectedState.providerState);
     },

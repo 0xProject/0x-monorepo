@@ -95,6 +95,7 @@ export interface AffiliateInfo {
 }
 
 export interface ProviderState {
+    name: string;
     provider: Provider;
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;
@@ -155,4 +156,12 @@ export enum OperatingSystem {
     WindowsPhone = 'WindowsPhone',
     Linux = 'Linux',
     Other = 'Other',
+}
+
+export enum ProviderType {
+    Parity = 'Parity',
+    MetaMask = 'MetaMask',
+    Mist = 'Mist',
+    CoinbaseWallet = 'Coinbase Wallet',
+    Cipher = 'Cipher',
 }

@@ -3,7 +3,9 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 import { Account, AccountState, Network } from '../types';
+import { envUtil } from '../util/env';
 
+import { CoinbaseWalletLogo } from './coinbase_wallet_logo';
 import { MetaMaskLogo } from './meta_mask_logo';
 import { PaymentMethodDropdown } from './payment_method_dropdown';
 import { Circle } from './ui/circle';
@@ -11,10 +13,12 @@ import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 import { Icon } from './ui/icon';
 import { Text } from './ui/text';
+import { WalletPrompt } from './wallet_prompt';
 
 export interface PaymentMethodProps {
     account: Account;
     network: Network;
+    walletName: string;
     onInstallWalletClick: () => void;
     onUnlockWalletClick: () => void;
 }
@@ -62,7 +66,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                     <Circle diameter={8} color={circleColor} />
                     <Container marginLeft="3px">
                         <Text fontColor={ColorOption.darkGrey} fontSize="12px">
-                            MetaMask
+                            {this.props.walletName}
                         </Text>
                     </Container>
                 </React.Fragment>
@@ -72,6 +76,9 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
     };
     private readonly _renderMainContent = (): React.ReactNode => {
         const { account, network } = this.props;
+        const isMobile = envUtil.isMobileOperatingSystem();
+        // TODO: Use Toshi logo
+        const logo = isMobile ? undefined : <MetaMaskLogo width={19} height={18} />;
         switch (account.state) {
             case AccountState.Loading:
                 // Just take up the same amount of space as the other states.
@@ -82,16 +89,13 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                         onClick={this.props.onUnlockWalletClick}
                         image={<Icon width={13} icon="lock" color={ColorOption.black} />}
                     >
-                        Please Unlock MetaMask
+                        Please Unlock {this.props.walletName}
                     </WalletPrompt>
                 );
             case AccountState.None:
                 return (
-                    <WalletPrompt
-                        onClick={this.props.onInstallWalletClick}
-                        image={<MetaMaskLogo width={19} height={18} />}
-                    >
-                        Install MetaMask
+                    <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo}>
+                        {isMobile ? 'Install Coinbase Wallet' : 'Install MetaMask'}
                     </WalletPrompt>
                 );
             case AccountState.Ready:
@@ -105,28 +109,3 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         }
     };
 }
-
-interface WalletPromptProps {
-    image: React.ReactNode;
-    onClick?: () => void;
-}
-
-const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({ onClick, image, children }) => (
-    <Container
-        padding="14.5px"
-        border={`1px solid ${ColorOption.darkOrange}`}
-        backgroundColor={ColorOption.lightOrange}
-        width="100%"
-        borderRadius="4px"
-        onClick={onClick}
-        cursor={onClick ? 'pointer' : undefined}
-        boxShadowOnHover={!!onClick}
-    >
-        <Flex>
-            <Container marginRight="10px">{image}</Container>
-            <Text fontSize="16px" fontColor={ColorOption.darkOrange}>
-                {children}
-            </Text>
-        </Flex>
-    </Container>
-);
