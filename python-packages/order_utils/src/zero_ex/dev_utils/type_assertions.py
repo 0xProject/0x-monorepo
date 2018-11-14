@@ -2,6 +2,9 @@
 
 from typing import Any
 
+from eth_utils import is_address
+from web3 import Web3
+
 
 def assert_is_string(value: Any, name: str) -> None:
     """If :param value: isn't of type str, raise a TypeError.
@@ -56,3 +59,31 @@ def assert_is_hex_string(value: Any, name: str) -> None:
     """
     assert_is_string(value, name)
     int(value, 16)  # raises a ValueError if value isn't a base-16 str
+
+
+def assert_is_address(value: Any, name: str) -> None:
+    """Assert that `value` is a valid Ethereum address.
+
+    If `value` isn't a hex string, raise a TypeError.  If it isn't a valid
+    Ethereum address, raise a ValueError.
+    """
+    assert_is_hex_string(value, name)
+    if not is_address(value):
+        raise ValueError(
+            f"Expected variable '{name}' to be a valid Ethereum"
+            + " address, but it's not."
+        )
+
+
+def assert_is_provider(value: Any, name: str) -> None:
+    """Assert that `value` is a Web3 provider.
+
+    If `value` isn't a Web3 provider, raise a TypeError.
+    """
+    # TODO: make this provider check more flexible.
+    # https://app.asana.com/0/684263176955174/901300863045491/f
+    if not isinstance(value, Web3.HTTPProvider):
+        raise TypeError(
+            f"Expected variable '{name}' to be an instance of a Web3 provider,"
+            + " but it's not."
+        )

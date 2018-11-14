@@ -17,12 +17,16 @@ from pkg_resources import resource_string
 
 from mypy_extensions import TypedDict
 
-from eth_utils import is_address, keccak, to_bytes, to_checksum_address
+from eth_utils import keccak, to_bytes, to_checksum_address
 from web3 import Web3
 import web3.exceptions
 from web3.utils import datatypes
 
-from zero_ex.dev_utils.type_assertions import assert_is_hex_string
+from zero_ex.dev_utils.type_assertions import (
+    assert_is_address,
+    assert_is_hex_string,
+    assert_is_provider,
+)
 
 
 class _Constants:
@@ -212,15 +216,10 @@ def is_valid_signature(
     ... )
     (True, '')
     """  # noqa: E501 (line too long)
-    # TODO: make this provider check more flexible.
-    # https://app.asana.com/0/684263176955174/901300863045491/f
-    if not isinstance(provider, Web3.HTTPProvider):
-        raise TypeError("provider is not a Web3.HTTPProvider")
+    assert_is_provider(provider, "provider")
     assert_is_hex_string(data, "data")
     assert_is_hex_string(signature, "signature")
-    assert_is_hex_string(signer_address, "signer_address")
-    if not is_address(signer_address):
-        raise ValueError("signer_address is not a valid address")
+    assert_is_address(signer_address, "signer_address")
 
     web3_instance = Web3(provider)
     # false positive from pylint: disable=no-member
@@ -330,12 +329,8 @@ def sign_order_hash(
     ... )
     '0x1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03'
     """  # noqa: E501 (line too long)
-    # TODO: make this provider check more flexible.
-    # https://app.asana.com/0/684263176955174/901300863045491/f
-    if not isinstance(provider, Web3.HTTPProvider):
-        raise TypeError("provider is not a Web3.HTTPProvider")
-    if not is_address(signer_address):
-        raise ValueError("signer_address is not a valid address")
+    assert_is_provider(provider, "provider")
+    assert_is_address(signer_address, "signer_address")
     assert_is_hex_string(order_hash_hex, "order_hash_hex")
 
     web3_instance = Web3(provider)
