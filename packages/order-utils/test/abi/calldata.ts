@@ -2,6 +2,15 @@ import ethUtil = require('ethereumjs-util');
 import CommunicationChatBubbleOutline from 'material-ui/SvgIcon';
 var _ = require('lodash');
 
+export interface DecodingRules {
+    structsAsObjects: boolean;
+}
+
+export interface EncodingRules {
+    optimize?: boolean;
+    annotate?: boolean;
+}
+
 export abstract class CalldataBlock {
     private name: string;
     private signature: string;
@@ -237,11 +246,13 @@ class Queue<T> {
 
 export class Calldata {
     private selector: string;
+    private rules: EncodingRules;
     private sizeInBytes: number;
     private root: MemberCalldataBlock | undefined;
 
-    constructor() {
-        this.selector = '0x';
+    constructor(rules: EncodingRules) {
+        this.selector = '';
+        this.rules = rules;
         this.sizeInBytes = 0;
         this.root = undefined;
     }
@@ -271,28 +282,6 @@ export class Calldata {
         blockQueue.pushFront(memberBlock);
         return blockQueue;
     }
-
-    /*
-
-    // Basic optimize method that prunes duplicate branches of the tree
-    // Notes:
-    //      1. Pruning is at the calldata block level, so it is independent of type
-    //      2. 
-    private optimize(blocks: CalldataBlock[]) {
-        // Build hash table of blocks
-        const blockLookupTable: { [key: string]: string } = {};
-        _.each(blocks, (block: CalldataBlock) => {
-            if (blocks instanceof DependentCalldataBlock === false) {
-
-                return;
-            }
-
-            const leavesHash = block.hashLeaves();
-            if (leavesHash in blockLookupTable) {
-
-            }
-        })
-    }*/
 
     private generateAnnotatedHexString(): string {
         let hexValue = `${this.selector}`;
@@ -413,12 +402,12 @@ export class Calldata {
         console.log('*'.repeat(100), ' FINISHED OPTIMIZING ', '*'.repeat(100));
     }
 
-    public toHexString(optimize: boolean = false, annotate: boolean = false): string {
+    public toHexString(): string {
         if (this.root === undefined) {
             throw new Error('expected root');
         }
 
-        if (optimize) this.optimize();
+        if (this.rules.optimize) this.optimize();
 
         const offsetQueue = this.createQueue(this.root);
         let block: CalldataBlock | undefined;
@@ -428,7 +417,7 @@ export class Calldata {
             offset += block.getSizeInBytes();
         }
 
-        const hexValue = annotate ? this.generateAnnotatedHexString() : this.generateCondensedHexString();
+        const hexValue = this.rules.annotate ? this.generateAnnotatedHexString() : this.generateCondensedHexString();
         return hexValue;
     }
 
