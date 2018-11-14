@@ -41,7 +41,7 @@ describe.only('ABI Encoder', () => {
             console.log(optimizedCalldata);
         });
 
-        it.only('Optimizer #2', async () => {
+        it('Optimizer #2', async () => {
             const method = new AbiEncoder.Method(AbiSamples.optimizerAbi2);
             const stringArray = [
                 "Test String",
@@ -60,8 +60,61 @@ describe.only('ABI Encoder', () => {
 
             console.log(`OPTIMIZED CALLDATA == '${optimizedCalldata}'`);
             const decodedArgs = method.decode(optimizedCalldata);
+            const decodedArgsJson = JSON.stringify(decodedArgs);
+            const argsJson = JSON.stringify(args);
             console.log(JSON.stringify(decodedArgs));
-            //expect(decodedArgs).to.be.equal(args);
+            expect(decodedArgsJson).to.be.equal(argsJson);
+        });
+
+
+        it('Optimizer #3 (tuple should point to array)', async () => {
+            const method = new AbiEncoder.Method(AbiSamples.optimizerAbi3);
+            const uint8Array = [
+                new BigNumber(100),
+                new BigNumber(150),
+                new BigNumber(200),
+                new BigNumber(225),
+            ];
+            const uintTupleArray = [[uint8Array[0]], [uint8Array[1]], [uint8Array[2]], [uint8Array[3]]];
+            const args = [uint8Array, uintTupleArray];
+
+
+            const TEST = method.encode(args, new Calldata(), true, true);
+            console.log('*'.repeat(50), ' ENCODED DATA ', TEST);
+
+            const optimizedCalldata = method.encode(args, new Calldata(), false, true);
+
+            console.log(`OPTIMIZED CALLDATA == '${optimizedCalldata}'`);
+            const decodedArgs = method.decode(optimizedCalldata);
+            const decodedArgsJson = JSON.stringify(decodedArgs);
+            const argsJson = JSON.stringify(args);
+            console.log(JSON.stringify(decodedArgs));
+            expect(decodedArgsJson).to.be.equal(argsJson);
+        });
+
+        it.only('Optimizer #4 (Expect no optimization)', async () => {
+            const method = new AbiEncoder.Method(AbiSamples.optimizerAbi4);
+            const uint8Array = [
+                new BigNumber(100),
+                new BigNumber(150),
+                new BigNumber(200),
+                new BigNumber(225),
+            ];
+            const uintTupleArray = [[uint8Array[0]], [uint8Array[1]], [uint8Array[2]], [uint8Array[3]]];
+            const args = [uint8Array, uintTupleArray];
+
+
+            const TEST = method.encode(args, new Calldata(), true, true);
+            console.log('*'.repeat(50), ' ENCODED DATA ', TEST);
+
+            const optimizedCalldata = method.encode(args, new Calldata(), false, true);
+
+            console.log(`OPTIMIZED CALLDATA == '${optimizedCalldata}'`);
+            const decodedArgs = method.decode(optimizedCalldata);
+            const decodedArgsJson = JSON.stringify(decodedArgs);
+            const argsJson = JSON.stringify(args);
+            console.log(JSON.stringify(decodedArgs));
+            expect(decodedArgsJson).to.be.equal(argsJson);
         });
 
         it('Crazy ABI', async () => {
