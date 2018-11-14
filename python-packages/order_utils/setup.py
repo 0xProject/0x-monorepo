@@ -159,7 +159,7 @@ setup(
     install_requires=[
         "eth-abi",
         "eth_utils",
-        "ethereum",
+        "jsonschema",
         "mypy_extensions",
         "web3",
     ],
