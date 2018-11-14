@@ -27,7 +27,7 @@ const expect = chai.expect;
 describe.only('ABI Encoder', () => {
     describe.only('ABI Tests at Method Level', () => {
 
-        it.only('Optimizer', async () => {
+        it('Optimizer #1', async () => {
             const method = new AbiEncoder.Method(AbiSamples.stringAbi);
             const strings = [
                 "Test String",
@@ -39,6 +39,29 @@ describe.only('ABI Encoder', () => {
 
             const optimizedCalldata = method.encode(args, new Calldata(), true, true);
             console.log(optimizedCalldata);
+        });
+
+        it.only('Optimizer #2', async () => {
+            const method = new AbiEncoder.Method(AbiSamples.optimizerAbi2);
+            const stringArray = [
+                "Test String",
+                "Test String",
+                "Test String",
+                "Test String",
+            ];
+            const string = 'Test String';
+            const args = [stringArray, string];
+
+
+            const TEST = method.encode(args, new Calldata(), true, true);
+            console.log(TEST);
+
+            const optimizedCalldata = method.encode(args, new Calldata(), false, true);
+
+            console.log(`OPTIMIZED CALLDATA == '${optimizedCalldata}'`);
+            const decodedArgs = method.decode(optimizedCalldata);
+            console.log(JSON.stringify(decodedArgs));
+            //expect(decodedArgs).to.be.equal(args);
         });
 
         it('Crazy ABI', async () => {
