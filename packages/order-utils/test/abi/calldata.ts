@@ -302,7 +302,6 @@ export class Calldata {
             const size = block.getSizeInBytes();
             const name = block.getName();
             const parentName = block.getParentName();
-            console.log('*'.repeat(50), parentName, ' vs ', name);
 
             //const ancestrialNamesOffset = name.startsWith('ptr<') ? 4 : 0;
             //const parentOffset = name.lastIndexOf(parentName);
@@ -378,9 +377,7 @@ export class Calldata {
         // Note that they are ordered the same as 
         const subtreeQueue = this.createQueue(this.root);
         let block: CalldataBlock | undefined;
-        console.log('*'.repeat(100), ' OPTIMIZING ', '*'.repeat(100));
         while ((block = subtreeQueue.popBack()) !== undefined) {
-            console.log(block.getName());
             if (block instanceof DependentCalldataBlock) {
                 const blockHashBuf = block.getDependency().computeHash();
                 const blockHash = ethUtil.bufferToHex(blockHashBuf);
@@ -399,7 +396,6 @@ export class Calldata {
                 blocksByHash[blockHash] = block;
             }
         }
-        console.log('*'.repeat(100), ' FINISHED OPTIMIZING ', '*'.repeat(100));
     }
 
     public toHexString(): string {
@@ -495,7 +491,6 @@ export class RawCalldata {
 
     public setOffset(offsetInBytes: number) {
         this.offset = offsetInBytes;
-        console.log('0'.repeat(100), this.offset);
     }
 
     public startScope() {

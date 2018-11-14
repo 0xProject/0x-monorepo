@@ -107,7 +107,6 @@ abstract class Number extends PayloadDataType {
     }
 
     public encodeValue(value: BigNumber): Buffer {
-        console.log(value);
         if (value.greaterThan(this.getMaxValue())) {
             throw `tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`;
         } else if (value.lessThan(this.getMinValue())) {
@@ -366,7 +365,6 @@ export class SolString extends PayloadDataType {
         const wordsForValue = Math.ceil(length / 32);
         const paddedValueBuf = calldata.popWords(wordsForValue);
         const valueBuf = paddedValueBuf.slice(0, length);
-        console.log('LENGTH UPINYA === ', length);
         const value = valueBuf.toString('ascii');
         return value;
     }
@@ -397,7 +395,6 @@ export class Tuple extends MemberDataType {
     private tupleSignature: string;
 
     constructor(dataItem: DataItem) {
-        console.log(dataItem);
         super(dataItem);
         if (!Tuple.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Tuple with bad input: ${dataItem}`);
@@ -516,8 +513,6 @@ export class Method extends MemberDataType {
 export class EvmDataTypeFactoryImpl implements DataTypeFactoryImpl {
 
     public mapDataItemToDataType(dataItem: DataItem): DataType {
-        console.log(`Type: ${dataItem.type}`);
-
         if (SolArray.matchGrammar(dataItem.type)) return new SolArray(dataItem);
         if (Address.matchGrammar(dataItem.type)) return new Address(dataItem);
         if (Bool.matchGrammar(dataItem.type)) return new Bool(dataItem);
