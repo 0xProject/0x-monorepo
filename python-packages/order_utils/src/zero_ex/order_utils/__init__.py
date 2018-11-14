@@ -28,6 +28,7 @@ from zero_ex.dev_utils.type_assertions import (
     assert_is_hex_string,
     assert_is_provider,
 )
+from zero_ex.json_schemas import assert_valid
 
 
 class _Constants:
@@ -95,18 +96,19 @@ class _Constants:
 class Order(TypedDict):  # pylint: disable=too-many-instance-attributes
     """Object representation of a 0x order."""
 
-    maker_address: str
-    taker_address: str
-    fee_recipient_address: str
-    sender_address: str
-    maker_asset_amount: int
-    taker_asset_amount: int
-    maker_fee: int
-    taker_fee: int
-    expiration_time_seconds: int
-    salt: int
-    maker_asset_data: str
-    taker_asset_data: str
+    makerAddress: str
+    takerAddress: str
+    feeRecipientAddress: str
+    senderAddress: str
+    makerAssetAmount: str
+    takerAssetAmount: str
+    makerFee: str
+    takerFee: str
+    expirationTimeSeconds: str
+    salt: str
+    makerAssetData: str
+    takerAssetData: str
+    exchangeAddress: str
 
 
 def make_empty_order() -> Order:
@@ -116,22 +118,23 @@ def make_empty_order() -> Order:
     and all numbers to 0.
     """
     return {
-        "maker_address": _Constants.null_address,
-        "taker_address": _Constants.null_address,
-        "sender_address": _Constants.null_address,
-        "fee_recipient_address": _Constants.null_address,
-        "maker_asset_data": _Constants.null_address,
-        "taker_asset_data": _Constants.null_address,
-        "salt": 0,
-        "maker_fee": 0,
-        "taker_fee": 0,
-        "maker_asset_amount": 0,
-        "taker_asset_amount": 0,
-        "expiration_time_seconds": 0,
+        "makerAddress": _Constants.null_address,
+        "takerAddress": _Constants.null_address,
+        "senderAddress": _Constants.null_address,
+        "feeRecipientAddress": _Constants.null_address,
+        "makerAssetData": _Constants.null_address,
+        "takerAssetData": _Constants.null_address,
+        "salt": "0",
+        "makerFee": "0",
+        "takerFee": "0",
+        "makerAssetAmount": "0",
+        "takerAssetAmount": "0",
+        "expirationTimeSeconds": "0",
+        "exchangeAddress": _Constants.null_address,
     }
 
 
-def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
+def generate_order_hash_hex(order: Order) -> str:
     """Calculate the hash of the given order as a hexadecimal string.
 
     :param order: The order to be hashed.  Must conform to `the 0x order JSON schema <https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/order_schema.json>`_.
@@ -141,24 +144,25 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
 
     >>> generate_order_hash_hex(
     ...     {
-    ...         'maker_address': "0x0000000000000000000000000000000000000000",
-    ...         'taker_address': "0x0000000000000000000000000000000000000000",
-    ...         'fee_recipient_address': "0x0000000000000000000000000000000000000000",
-    ...         'sender_address': "0x0000000000000000000000000000000000000000",
-    ...         'maker_asset_amount': 1000000000000000000,
-    ...         'taker_asset_amount': 1000000000000000000,
-    ...         'maker_fee': 0,
-    ...         'taker_fee': 0,
-    ...         'expiration_time_seconds': 12345,
-    ...         'salt': 12345,
-    ...         'maker_asset_data': "0000000000000000000000000000000000000000",
-    ...         'taker_asset_data': "0000000000000000000000000000000000000000",
+    ...         'makerAddress': "0x0000000000000000000000000000000000000000",
+    ...         'takerAddress': "0x0000000000000000000000000000000000000000",
+    ...         'feeRecipientAddress': "0x0000000000000000000000000000000000000000",
+    ...         'senderAddress': "0x0000000000000000000000000000000000000000",
+    ...         'makerAssetAmount': "1000000000000000000",
+    ...         'takerAssetAmount': "1000000000000000000",
+    ...         'makerFee': "0",
+    ...         'takerFee': "0",
+    ...         'expirationTimeSeconds': "12345",
+    ...         'salt': "12345",
+    ...         'makerAssetData': "0x0000000000000000000000000000000000000000",
+    ...         'takerAssetData': "0x0000000000000000000000000000000000000000",
+    ...         'exchangeAddress': "0x0000000000000000000000000000000000000000",
     ...     },
-    ...     exchange_address="0x0000000000000000000000000000000000000000",
     ... )
     '55eaa6ec02f3224d30873577e9ddd069a288c16d6fb407210eecbc501fa76692'
     """  # noqa: E501 (line too long)
-    # TODO: use JSON schema validation to validate order. pylint: disable=fixme
+    assert_valid(order, "/orderSchema")
+
     def pad_20_bytes_to_32(twenty_bytes: bytes):
         return bytes(12) + twenty_bytes
 
@@ -167,23 +171,23 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
 
     eip712_domain_struct_hash = keccak(
         _Constants.eip712_domain_struct_header
-        + pad_20_bytes_to_32(to_bytes(hexstr=exchange_address))
+        + pad_20_bytes_to_32(to_bytes(hexstr=order["exchangeAddress"]))
     )
 
     eip712_order_struct_hash = keccak(
         _Constants.eip712_order_schema_hash
-        + pad_20_bytes_to_32(to_bytes(hexstr=order["maker_address"]))
-        + pad_20_bytes_to_32(to_bytes(hexstr=order["taker_address"]))
-        + pad_20_bytes_to_32(to_bytes(hexstr=order["fee_recipient_address"]))
-        + pad_20_bytes_to_32(to_bytes(hexstr=order["sender_address"]))
-        + int_to_32_big_endian_bytes(order["maker_asset_amount"])
-        + int_to_32_big_endian_bytes(order["taker_asset_amount"])
-        + int_to_32_big_endian_bytes(order["maker_fee"])
-        + int_to_32_big_endian_bytes(order["taker_fee"])
-        + int_to_32_big_endian_bytes(order["expiration_time_seconds"])
-        + int_to_32_big_endian_bytes(order["salt"])
-        + keccak(to_bytes(hexstr=order["maker_asset_data"]))
-        + keccak(to_bytes(hexstr=order["taker_asset_data"]))
+        + pad_20_bytes_to_32(to_bytes(hexstr=order["makerAddress"]))
+        + pad_20_bytes_to_32(to_bytes(hexstr=order["takerAddress"]))
+        + pad_20_bytes_to_32(to_bytes(hexstr=order["feeRecipientAddress"]))
+        + pad_20_bytes_to_32(to_bytes(hexstr=order["senderAddress"]))
+        + int_to_32_big_endian_bytes(int(order["makerAssetAmount"]))
+        + int_to_32_big_endian_bytes(int(order["takerAssetAmount"]))
+        + int_to_32_big_endian_bytes(int(order["makerFee"]))
+        + int_to_32_big_endian_bytes(int(order["takerFee"]))
+        + int_to_32_big_endian_bytes(int(order["expirationTimeSeconds"]))
+        + int_to_32_big_endian_bytes(int(order["salt"]))
+        + keccak(to_bytes(hexstr=order["makerAssetData"]))
+        + keccak(to_bytes(hexstr=order["takerAssetData"]))
     )
 
     return keccak(
