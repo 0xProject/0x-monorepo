@@ -8,7 +8,7 @@ import ethUtil = require('ethereumjs-util');
 
 import { Calldata, RawCalldata } from './calldata';
 
-import { BigNumber } from '@0x/utils';
+import { BigNumber } from '../configured_bignumber';
 
 var _ = require('lodash');
 

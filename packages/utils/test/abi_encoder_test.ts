@@ -1,21 +1,13 @@
 import * as chai from 'chai';
 import 'mocha';
-import ethUtil = require('ethereumjs-util');
-
-var _ = require('lodash');
 
 // import { assert } from '@0x/order-utils/src/assert';
 
 import { chaiSetup } from './utils/chai_setup';
-
-import { MethodAbi, DataItem } from 'ethereum-types';
-
-import { BigNumber } from '@0x/utils';
-import { assert } from '@0x/order-utils/src/assert';
+import { BigNumber } from '../src/';
 //import * as AbiEncoder from './abi_encoder';
 
-import * as AbiEncoder from './abi_encoder';
-
+import * as AbiEncoder from '../src/abi_encoder';
 import * as AbiSamples from './abi_samples';
 
 chaiSetup.configure();

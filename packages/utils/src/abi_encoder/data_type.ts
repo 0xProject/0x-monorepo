@@ -1,7 +1,7 @@
 import { RawCalldata, Calldata, CalldataBlock, PayloadCalldataBlock, DependentCalldataBlock, MemberCalldataBlock } from "./calldata";
 import { MethodAbi, DataItem } from 'ethereum-types';
 import { DecodingRules, EncodingRules } from './calldata';
-import { BigNumber } from '@0x/utils';
+import { BigNumber } from '../configured_bignumber';
 import ethUtil = require('ethereumjs-util');
 var _ = require('lodash');
 
