@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { ConnectedZeroExInstantContainer } from '../containers/connected_zero_ex_instant_container';
+import { ZeroExInstantContainer } from '../components/zero_ex_instant_container';
 import { ColorOption } from '../style/theme';
 
 import { Container } from './ui/container';
@@ -31,7 +31,7 @@ export const ZeroExInstantOverlay: React.StatelessComponent<ZeroExInstantOverlay
                         />
                     </Container>
                     <Container width={{ default: 'auto', sm: '100%' }} height={{ default: 'auto', sm: '100%' }}>
-                        <ConnectedZeroExInstantContainer />
+                        <ZeroExInstantContainer />
                     </Container>
                 </Flex>
             </Overlay>
