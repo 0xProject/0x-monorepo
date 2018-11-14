@@ -34,13 +34,21 @@ from zero_ex.json_schemas import assert_valid
 class _Constants:
     """Static data used by order utilities."""
 
-    contract_name_to_abi = {
-        "Exchange": json.loads(
-            resource_string(
-                "zero_ex.contract_artifacts", "artifacts/Exchange.json"
-            )
-        )["compilerOutput"]["abi"]
-    }
+    _contract_name_to_abi: Dict[str, Dict] = {}
+
+    @classmethod
+    def contract_name_to_abi(cls, contract_name: str) -> Dict:
+        """Load from disk the ABI for the given contract."""
+        try:
+            return cls._contract_name_to_abi[contract_name]
+        except KeyError:
+            cls._contract_name_to_abi[contract_name] = json.loads(
+                resource_string(
+                    "zero_ex.contract_artifacts",
+                    f"artifacts/{contract_name}.json",
+                )
+            )["compilerOutput"]["abi"]
+            return cls._contract_name_to_abi[contract_name]
 
     network_to_exchange_addr: Dict[str, str] = {
         "1": "0x4f833a24e1f95d70f028921e27040ca56e09ab0b",
@@ -233,7 +241,7 @@ def is_valid_signature(
     # false positive from pylint: disable=no-member
     contract: datatypes.Contract = web3_instance.eth.contract(
         address=to_checksum_address(contract_address),
-        abi=_Constants.contract_name_to_abi["Exchange"],
+        abi=_Constants.contract_name_to_abi("Exchange"),
     )
     try:
         return (
