@@ -1,5 +1,13 @@
 [
     {
+        "version": "1.2.0",
+        "changes": [
+            {
+                "note": "Add addresses by network to each artifact"
+            }
+        ]
+    },
+    {
         "version": "1.1.0",
         "changes": [
             {

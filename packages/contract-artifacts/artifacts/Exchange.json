@@ -1972,5 +1972,15 @@
             }
         }
     },
-    "networks": {}
+    "networks": {
+        "1": {
+            "address": "0x4f833a24e1f95d70f028921e27040ca56e09ab0b"
+        },
+        "3": {
+            "address": "0x4530c0483a1633c7a1c97d2c53721caff2caaaaf"
+        },
+        "42": {
+            "address": "0x35dd2932454449b14cee11a94d3674a936d5d7b2"
+        }
+    }
 }

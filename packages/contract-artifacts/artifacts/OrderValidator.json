@@ -568,5 +568,15 @@
             }
         }
     },
-    "networks": {}
+    "networks": {
+        "1": {
+            "address": "0x9463e518dea6810309563c81d5266c1b1d149138"
+        },
+        "3": {
+            "address": "0x90431a90516ab49af23a0530e04e8c7836e7122f"
+        },
+        "42": {
+            "address": "0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d"
+        }
+    }
 }
