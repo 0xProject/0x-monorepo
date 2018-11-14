@@ -20,6 +20,7 @@ from mypy_extensions import TypedDict
 from eth_utils import keccak, to_bytes, to_checksum_address
 from web3 import Web3
 import web3.exceptions
+from web3.providers.base import BaseProvider
 from web3.utils import datatypes
 
 from zero_ex.dev_utils.type_assertions import (
@@ -193,7 +194,7 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
 
 
 def is_valid_signature(
-    provider: Web3.HTTPProvider, data: str, signature: str, signer_address: str
+    provider: BaseProvider, data: str, signature: str, signer_address: str
 ) -> Tuple[bool, str]:
     """Check the validity of the supplied signature.
 
@@ -312,7 +313,7 @@ def _convert_ec_signature_to_vrs_hex(signature: ECSignature) -> str:
 
 
 def sign_order_hash(
-    provider: Web3.HTTPProvider, signer_address: str, order_hash_hex: str
+    provider: BaseProvider, signer_address: str, order_hash_hex: str
 ) -> str:
     """Sign a message with the order hash, and return the signature.
 
