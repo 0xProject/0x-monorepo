@@ -13,7 +13,7 @@ import { handleError } from '../utils';
 
 const EXCHANGE_START_BLOCK = 6271590; // Block number when the Exchange contract was deployed to mainnet.
 const START_BLOCK_OFFSET = 1000; // Number of blocks before the last known block to consider when updating fill events.
-const BATCH_SAVE_SIZE = 1000; // Number of events to save at once.
+const BATCH_SAVE_SIZE = 10000; // Number of events to save at once.
 
 let connection: Connection;
 

@@ -26,7 +26,7 @@ const config: ConnectionOptions = {
     type: 'postgres',
     url: process.env.ZEROEX_DATA_PIPELINE_DB_URL,
     synchronize: false,
-    logging: false,
+    logging: ['error', 'warn'],
     entities,
     migrations: ['./lib/migrations/**/*.js'],
 };
