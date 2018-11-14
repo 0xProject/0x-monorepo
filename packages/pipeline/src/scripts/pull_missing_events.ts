@@ -55,7 +55,7 @@ async function getStartBlockAsync(eventsRepository: Repository<ExchangeFillEvent
         return EXCHANGE_START_BLOCK;
     }
     const queryResult = await connection.query(
-        'SELECT block_number FROM exchange_fill_events ORDER BY block_number DESC LIMIT 1',
+        'SELECT block_number FROM raw.exchange_fill_events ORDER BY block_number DESC LIMIT 1',
     );
     const lastKnownBlock = queryResult[0].block_number;
     return lastKnownBlock - START_BLOCK_OFFSET;
