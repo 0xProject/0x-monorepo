@@ -1,6 +1,8 @@
+import { BigNumber } from '@0x/utils';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 import { AssetType } from '../types';
+import { bigNumberTransformer } from '../utils';
 
 @Entity({ name: 'exchange_fill_events', schema: 'raw' })
 export class ExchangeFillEvent {
@@ -24,14 +26,14 @@ export class ExchangeFillEvent {
     public feeRecipientAddress!: string;
     @Column({ name: 'sender_address' })
     public senderAddress!: string;
-    @Column({ name: 'maker_asset_filled_amount' })
-    public makerAssetFilledAmount!: string;
-    @Column({ name: 'taker_asset_filled_amount' })
-    public takerAssetFilledAmount!: string;
-    @Column({ name: 'maker_fee_paid' })
-    public makerFeePaid!: string;
-    @Column({ name: 'taker_fee_paid' })
-    public takerFeePaid!: string;
+    @Column({ name: 'maker_asset_filled_amount', type: 'numeric', transformer: bigNumberTransformer })
+    public makerAssetFilledAmount!: BigNumber;
+    @Column({ name: 'taker_asset_filled_amount', type: 'numeric', transformer: bigNumberTransformer })
+    public takerAssetFilledAmount!: BigNumber;
+    @Column({ name: 'maker_fee_paid', type: 'numeric', transformer: bigNumberTransformer })
+    public makerFeePaid!: BigNumber;
+    @Column({ name: 'taker_fee_paid', type: 'numeric', transformer: bigNumberTransformer })
+    public takerFeePaid!: BigNumber;
     @Column({ name: 'order_hash' })
     public orderHash!: string;
 
