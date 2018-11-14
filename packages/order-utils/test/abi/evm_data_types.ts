@@ -1,4 +1,4 @@
-import { DataType, DataTypeFactory, DataTypeFactoryImpl, PayloadDataType, DependentDataType, MemberDataType } from './data_type';
+import { DataType, DataTypeFactory, PayloadDataType, DependentDataType, MemberDataType } from './data_type';
 
 import { DecodingRules, EncodingRules } from './calldata';
 
@@ -22,7 +22,7 @@ export class Address extends PayloadDataType {
     private static SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
 
     constructor(dataItem: DataItem) {
-        super(dataItem, Address.SIZE_KNOWN_AT_COMPILE_TIME);
+        super(dataItem, EvmDataTypeFactory.getInstance(), Address.SIZE_KNOWN_AT_COMPILE_TIME);
         if (!Address.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Address with bad input: ${dataItem}`);
         }
@@ -54,7 +54,7 @@ export class Bool extends PayloadDataType {
     private static SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
 
     constructor(dataItem: DataItem) {
-        super(dataItem, Bool.SIZE_KNOWN_AT_COMPILE_TIME);
+        super(dataItem, EvmDataTypeFactory.getInstance(), Bool.SIZE_KNOWN_AT_COMPILE_TIME);
         if (!Bool.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Bool with bad input: ${dataItem}`);
         }
@@ -94,7 +94,7 @@ abstract class Number extends PayloadDataType {
     width: number = Number.DEFAULT_WIDTH;
 
     constructor(dataItem: DataItem, matcher: RegExp) {
-        super(dataItem, Number.SIZE_KNOWN_AT_COMPILE_TIME);
+        super(dataItem, EvmDataTypeFactory.getInstance(), Number.SIZE_KNOWN_AT_COMPILE_TIME);
         const matches = matcher.exec(dataItem.type);
         if (matches === null) {
             throw new Error(`Tried to instantiate Number with bad input: ${dataItem}`);
@@ -243,7 +243,7 @@ export class Byte extends PayloadDataType {
     width: number = Byte.DEFAULT_WIDTH;
 
     constructor(dataItem: DataItem) {
-        super(dataItem, Byte.SIZE_KNOWN_AT_COMPILE_TIME);
+        super(dataItem, EvmDataTypeFactory.getInstance(), Byte.SIZE_KNOWN_AT_COMPILE_TIME);
         const matches = Byte.matcher.exec(dataItem.type);
         if (!Byte.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Byte with bad input: ${dataItem}`);
@@ -297,7 +297,7 @@ export class Bytes extends PayloadDataType {
     length: BigNumber = Bytes.UNDEFINED_LENGTH;
 
     constructor(dataItem: DataItem) {
-        super(dataItem, Bytes.SIZE_KNOWN_AT_COMPILE_TIME);
+        super(dataItem, EvmDataTypeFactory.getInstance(), Bytes.SIZE_KNOWN_AT_COMPILE_TIME);
         if (!Bytes.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Bytes with bad input: ${dataItem}`);
         }
@@ -343,7 +343,7 @@ export class Bytes extends PayloadDataType {
 export class SolString extends PayloadDataType {
     private static SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
     constructor(dataItem: DataItem) {
-        super(dataItem, SolString.SIZE_KNOWN_AT_COMPILE_TIME);
+        super(dataItem, EvmDataTypeFactory.getInstance(), SolString.SIZE_KNOWN_AT_COMPILE_TIME);
         if (!SolString.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate String with bad input: ${dataItem}`);
         }
@@ -383,7 +383,7 @@ export class Pointer extends DependentDataType {
     constructor(destDataType: DataType, parentDataType: DataType) {
         const destDataItem = destDataType.getDataItem();
         const dataItem = { name: `ptr<${destDataItem.name}>`, type: `ptr<${destDataItem.type}>` } as DataItem;
-        super(dataItem, destDataType, parentDataType);
+        super(dataItem, EvmDataTypeFactory.getInstance(), destDataType, parentDataType);
     }
 
     public getSignature(): string {
@@ -395,7 +395,7 @@ export class Tuple extends MemberDataType {
     private tupleSignature: string;
 
     constructor(dataItem: DataItem) {
-        super(dataItem);
+        super(dataItem, EvmDataTypeFactory.getInstance());
         if (!Tuple.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Tuple with bad input: ${dataItem}`);
         }
@@ -430,7 +430,7 @@ export class SolArray extends MemberDataType {
         const isArray = true;
         const arrayElementType = matches[1];
         const arrayLength = (matches[2] === '') ? undefined : parseInt(matches[2], 10);
-        super(dataItem, isArray, arrayLength, arrayElementType);
+        super(dataItem, EvmDataTypeFactory.getInstance(), isArray, arrayLength, arrayElementType);
         this.elementType = arrayElementType;
         this.arraySignature = this.computeSignature();
     }
@@ -444,7 +444,7 @@ export class SolArray extends MemberDataType {
         if (components !== undefined) {
             dataItem.components = components;
         }
-        const elementDataType = DataTypeFactory.mapDataItemToDataType(dataItem);
+        const elementDataType = this.getFactory().mapDataItemToDataType(dataItem);
         const type = elementDataType.getSignature();
         if (this.arrayLength === undefined) {
             return `${type}[]`;
@@ -470,7 +470,7 @@ export class Method extends MemberDataType {
     public selector: string;
 
     constructor(abi: MethodAbi) {
-        super({ type: 'method', name: abi.name, components: abi.inputs });
+        super({ type: 'method', name: abi.name, components: abi.inputs }, EvmDataTypeFactory.getInstance());
         this.methodSignature = this.computeSignature();
         this.selector = this.methodSelector = this.computeSelector();
 
@@ -510,7 +510,17 @@ export class Method extends MemberDataType {
     }
 }
 
-export class EvmDataTypeFactoryImpl implements DataTypeFactoryImpl {
+export class EvmDataTypeFactory implements DataTypeFactory {
+    private static instance: DataTypeFactory;
+
+    private constructor() { }
+
+    public static getInstance(): DataTypeFactory {
+        if (!EvmDataTypeFactory.instance) {
+            EvmDataTypeFactory.instance = new EvmDataTypeFactory();
+        }
+        return EvmDataTypeFactory.instance;
+    }
 
     public mapDataItemToDataType(dataItem: DataItem): DataType {
         if (SolArray.matchGrammar(dataItem.type)) return new SolArray(dataItem);
