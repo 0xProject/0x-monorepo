@@ -2,6 +2,7 @@ import * as bowser from 'bowser';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { PROVIDER_TYPE_TO_NAME } from '../constants';
 import { Browser, OperatingSystem, ProviderType } from '../types';
 
 export const envUtil = {
@@ -40,28 +41,25 @@ export const envUtil = {
             return OperatingSystem.Other;
         }
     },
-    getProviderName(provider: Provider): ProviderType | string {
-        const constructorName = provider.constructor.name;
-        let parsedProviderName = constructorName;
-        // https://ethereum.stackexchange.com/questions/24266/elegant-way-to-detect-current-provider-int-web3-js
-        switch (constructorName) {
-            case 'EthereumProvider':
-                parsedProviderName = ProviderType.Mist;
-                break;
-
-            default:
-                parsedProviderName = constructorName;
-                break;
-        }
-        if ((provider as any).isParity) {
-            parsedProviderName = ProviderType.Parity;
+    getProviderType(provider: Provider): ProviderType | undefined {
+        if (provider.constructor.name === 'EthereumProvider') {
+            return ProviderType.Mist;
+        } else if ((provider as any).isParity) {
+            return ProviderType.Parity;
         } else if ((provider as any).isMetaMask) {
-            parsedProviderName = ProviderType.MetaMask;
+            return ProviderType.MetaMask;
         } else if (!_.isUndefined(_.get(window, 'SOFA'))) {
-            parsedProviderName = ProviderType.CoinbaseWallet;
+            return ProviderType.CoinbaseWallet;
         } else if (!_.isUndefined(_.get(window, '__CIPHER__'))) {
-            parsedProviderName = ProviderType.Cipher;
+            return ProviderType.Cipher;
         }
-        return parsedProviderName;
+        return;
+    },
+    getProviderName(provider: Provider): string {
+        const providerTypeIfExists = envUtil.getProviderType(provider);
+        if (_.isUndefined(providerTypeIfExists)) {
+            return provider.constructor.name;
+        }
+        return PROVIDER_TYPE_TO_NAME[providerTypeIfExists];
     },
 };

@@ -1,6 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
-import { AccountNotReady, AccountState, Network } from './types';
+import { AccountNotReady, AccountState, Network, ProviderType } from './types';
 
 export const BIG_NUMBER_ZERO = new BigNumber(0);
 export const ETH_DECIMALS = 18;
@@ -40,4 +40,11 @@ export const LOADING_ACCOUNT: AccountNotReady = {
 };
 export const LOCKED_ACCOUNT: AccountNotReady = {
     state: AccountState.Locked,
+};
+export const PROVIDER_TYPE_TO_NAME: { [key in ProviderType]: string } = {
+    [ProviderType.Cipher]: 'Cipher',
+    [ProviderType.MetaMask]: 'MetaMask',
+    [ProviderType.Mist]: 'Mist',
+    [ProviderType.CoinbaseWallet]: 'Coinbase Wallet',
+    [ProviderType.Parity]: 'Parity',
 };

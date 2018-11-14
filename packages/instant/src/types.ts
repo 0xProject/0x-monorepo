@@ -140,28 +140,28 @@ export interface StandardSlidingPanelSettings {
 }
 
 export enum Browser {
-    Chrome = 'Chrome',
-    Firefox = 'Firefox',
-    Opera = 'Opera',
-    Safari = 'Safari',
-    Edge = 'Edge',
-    Other = 'Other',
+    Chrome = 'CHROME',
+    Firefox = 'FIREFOX',
+    Opera = 'OPERA',
+    Safari = 'SAFARI',
+    Edge = 'EDGE',
+    Other = 'OTHER',
 }
 
 export enum OperatingSystem {
-    Android = 'Android',
-    iOS = 'iOS',
-    Mac = 'Mac',
-    Windows = 'Windows',
-    WindowsPhone = 'WindowsPhone',
-    Linux = 'Linux',
-    Other = 'Other',
+    Android = 'ANDROID',
+    iOS = 'IOS',
+    Mac = 'MAC',
+    Windows = 'WINDOWS',
+    WindowsPhone = 'WINDOWS_PHONE',
+    Linux = 'LINUX',
+    Other = 'OTHER',
 }
 
 export enum ProviderType {
-    Parity = 'Parity',
-    MetaMask = 'MetaMask',
-    Mist = 'Mist',
-    CoinbaseWallet = 'Coinbase Wallet',
-    Cipher = 'Cipher',
+    Parity = 'PARITY',
+    MetaMask = 'META_MASK',
+    Mist = 'MIST',
+    CoinbaseWallet = 'COINBASE_WALLET',
+    Cipher = 'CIPHER',
 }
