@@ -313,14 +313,14 @@ def _convert_ec_signature_to_vrs_hex(signature: ECSignature) -> str:
 
 
 def sign_hash(
-    provider: BaseProvider, signer_address: str, order_hash_hex: str
+    provider: BaseProvider, signer_address: str, hash_hex: str
 ) -> str:
-    """Sign a message with the order hash, and return the signature.
+    """Sign a message with the given hash, and return the signature.
 
     :param provider: A Web3 provider.
     :param signer_address: The address of the signing account.
-    :param order_hash_hex: A hex string representing the order hash, like that
-        returned from `generate_order_hash_hex()`.
+    :param hash_hex: A hex string representing the hash, like that returned
+        from `generate_order_hash_hex()`.
     :rtype: A string, of ASCII hex digits, representing the signature.
 
     >>> provider = Web3.HTTPProvider("http://127.0.0.1:8545")
@@ -333,12 +333,12 @@ def sign_hash(
     """  # noqa: E501 (line too long)
     assert_is_provider(provider, "provider")
     assert_is_address(signer_address, "signer_address")
-    assert_is_hex_string(order_hash_hex, "order_hash_hex")
+    assert_is_hex_string(hash_hex, "hash_hex")
 
     web3_instance = Web3(provider)
     # false positive from pylint: disable=no-member
     signature = web3_instance.eth.sign(  # type: ignore
-        signer_address, hexstr=order_hash_hex.replace("0x", "")
+        signer_address, hexstr=hash_hex.replace("0x", "")
     ).hex()
 
     valid_v_param_values = [27, 28]
@@ -361,7 +361,7 @@ def sign_hash(
         )
 
         (valid, _) = is_valid_signature(
-            provider, order_hash_hex, signature_as_vrst_hex, signer_address
+            provider, hash_hex, signature_as_vrst_hex, signer_address
         )
 
         if valid is True:
@@ -376,7 +376,7 @@ def sign_hash(
             ).hex()
         )
         (valid, _) = is_valid_signature(
-            provider, order_hash_hex, signature_as_vrst_hex, signer_address
+            provider, hash_hex, signature_as_vrst_hex, signer_address
         )
 
         if valid is True:
