@@ -28,10 +28,7 @@
     },
     "config": {
         "postpublish": {
-            "assets": [
-                "packages/instant/public/index.js",
-                "packages/instant/public/index.min.js"
-            ]
+            "assets": ["packages/instant/public/index.js", "packages/instant/public/index.min.js"]
         }
     },
     "repository": {
@@ -51,6 +48,7 @@
         "@0x/order-utils": "^3.0.0",
         "@0x/subproviders": "^2.1.2",
         "@0x/types": "^1.2.1",
+        "@0x/typescript-typings": "^3.0.4",
         "@0x/utils": "^2.0.4",
         "@0x/web3-wrapper": "^3.1.2",
         "copy-to-clipboard": "^3.0.8",
