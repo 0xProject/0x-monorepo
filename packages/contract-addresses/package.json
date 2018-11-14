@@ -29,7 +29,9 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "lodash": "^4.17.5"
+        "lodash": "^4.17.5",
+        "@0x/contract-artifacts": "^1.2.0",
+        "ethereum-types": "^1.1.2"
     },
     "publishConfig": {
         "access": "public"
