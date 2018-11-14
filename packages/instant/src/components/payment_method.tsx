@@ -38,7 +38,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                         >
                             {this._renderTitleText()}
                         </Text>
-                        <Flex>{this._renderTitleLabel()}</Flex>
+                        {this._renderTitleLabel()}
                     </Flex>
                 </Container>
                 {this._renderMainContent()}
@@ -62,14 +62,14 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         if (account.state === AccountState.Ready || account.state === AccountState.Locked) {
             const circleColor: ColorOption = account.state === AccountState.Ready ? ColorOption.green : ColorOption.red;
             return (
-                <React.Fragment>
+                <Flex>
                     <Circle diameter={8} color={circleColor} />
                     <Container marginLeft="3px">
                         <Text fontColor={ColorOption.darkGrey} fontSize="12px">
                             {this.props.walletName}
                         </Text>
                     </Container>
-                </React.Fragment>
+                </Flex>
             );
         }
         return null;
