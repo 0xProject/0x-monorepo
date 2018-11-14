@@ -7,9 +7,6 @@ import { ROLLBAR_ACCESS_TOKEN } from '../constants';
 
 import { environmentUtil } from './environment';
 
-// TODO: dont commit
-console.log(environmentUtil.getEnvironment());
-
 const rollbar = new Rollbar({
     accessToken: ROLLBAR_ACCESS_TOKEN,
     captureUncaught: true,
@@ -28,7 +25,6 @@ const rollbar = new Rollbar({
         },
     },
     uncaughtErrorLevel: 'error',
-    // hostWhiteList: ['TODO'],
     ignoredMessages: [
         // Errors from the third-party scripts
         'Script error',
@@ -46,7 +42,6 @@ export const setupRollbar = () => {
     (window as any).zeroExTriggerError = (errorDesc: string) => {
         throw new Error(errorDesc);
     };
-
     return rollbar;
 };
 
