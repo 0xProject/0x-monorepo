@@ -63,8 +63,10 @@ export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps>
         if (_.isUndefined(searchQuery)) {
             return true;
         }
-        const stringToSearch = `${token.metaData.name} ${token.metaData.symbol}`;
-        return _.includes(stringToSearch.toLowerCase(), searchQuery.toLowerCase());
+        const searchQueryLowerCase = searchQuery.toLowerCase();
+        const tokenName = token.metaData.name.toLowerCase();
+        const tokenSymbol = token.metaData.symbol.toLowerCase();
+        return _.startsWith(tokenSymbol, searchQueryLowerCase) || _.startsWith(tokenName, searchQueryLowerCase);
     };
 }
 
