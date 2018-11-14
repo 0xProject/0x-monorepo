@@ -25,6 +25,10 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe.only('ABI Encoder', () => {
+    describe.only('Optimizer', () => {
+
+    });
+
     describe.only('ABI Tests at Method Level', () => {
 
         it('Should reuse duplicated strings in string array', async () => {
@@ -37,33 +41,45 @@ describe.only('ABI Encoder', () => {
             ];
             const args = [strings];
 
-            const optimizedCalldata = method.encode(args, { optimize: true, annotate: true });
-            console.log(optimizedCalldata);
+            // Verify optimized calldata is expected
+            const optimizedCalldata = method.encode(args, { optimize: true });
+            const expectedOptimizedCalldata = '0x13e751a900000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000b5465737420537472696e67000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d5465737420537472696e67203200000000000000000000000000000000000000';
+            expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
+
+            // Verify args decode properly
+            const decodedArgs = method.decode(optimizedCalldata);
+            const decodedArgsJson = JSON.stringify(decodedArgs);
+            const argsJson = JSON.stringify(args);
+            expect(decodedArgsJson).to.be.equal(argsJson);
+
+            console.log('*'.repeat(100), '\n', method.encode(args, { optimize: true, annotate: true }), '\n', '*'.repeat(100));
+            console.log('*'.repeat(100), '\n', method.encode(args, { optimize: true }), '\n', '*'.repeat(100));
         });
 
-        it('Optimizer #2', async () => {
+        it.only('Should point array elements to a duplicated value from another parameter', async () => {
             const method = new AbiEncoder.Method(AbiSamples.optimizerAbi2);
             const stringArray = [
                 "Test String",
                 "Test String",
                 "Test String",
-                "Test String",
+                "Test String 2",
             ];
             const string = 'Test String';
             const args = [stringArray, string];
 
-
-            const TEST = method.encode(args, { optimize: true, annotate: true });
-            console.log(TEST);
-
+            // Verify optimized calldata is expected
             const optimizedCalldata = method.encode(args, { optimize: true });
+            const expectedOptimizedCalldata = '0xe0e0d34900000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000d5465737420537472696e67203200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b5465737420537472696e67000000000000000000000000000000000000000000';
+            expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
 
-            console.log(`OPTIMIZED CALLDATA == '${optimizedCalldata}'`);
+            // Verify args decode properly
             const decodedArgs = method.decode(optimizedCalldata);
             const decodedArgsJson = JSON.stringify(decodedArgs);
             const argsJson = JSON.stringify(args);
-            console.log(JSON.stringify(decodedArgs));
             expect(decodedArgsJson).to.be.equal(argsJson);
+
+            console.log('*'.repeat(100), '\n', method.encode(args, { optimize: true, annotate: true }), '\n', '*'.repeat(100));
+            console.log('*'.repeat(100), '\n', method.encode(args, { optimize: true }), '\n', '*'.repeat(100));
         });
 
 
