@@ -3,7 +3,7 @@
 from typing import Any
 
 from eth_utils import is_address
-from web3 import Web3
+from web3.providers.base import BaseProvider
 
 
 def assert_is_string(value: Any, name: str) -> None:
@@ -82,7 +82,7 @@ def assert_is_provider(value: Any, name: str) -> None:
     """
     # TODO: make this provider check more flexible.
     # https://app.asana.com/0/684263176955174/901300863045491/f
-    if not isinstance(value, Web3.HTTPProvider):
+    if not isinstance(value, BaseProvider):
         raise TypeError(
             f"Expected variable '{name}' to be an instance of a Web3 provider,"
             + " but it's not."
