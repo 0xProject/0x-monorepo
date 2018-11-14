@@ -44,7 +44,7 @@ interface PropsDerivedState {
 interface OptionalState {
     selectedAsset: Asset;
     availableAssets: Asset[];
-    selectedAssetAmount: BigNumber;
+    selectedAssetUnitAmount: BigNumber;
     ethUsdPrice: BigNumber;
     latestBuyQuote: BuyQuote;
     latestErrorMessage: string;
@@ -105,10 +105,10 @@ export const createReducer = (initialState: State) => {
                     ...state,
                     ethUsdPrice: action.data,
                 };
-            case ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT:
+            case ActionTypes.UPDATE_SELECTED_ASSET_UNIT_AMOUNT:
                 return {
                     ...state,
-                    selectedAssetAmount: action.data,
+                    selectedAssetUnitAmount: action.data,
                 };
             case ActionTypes.UPDATE_LATEST_BUY_QUOTE:
                 const newBuyQuoteIfExists = action.data;
@@ -219,7 +219,7 @@ export const createReducer = (initialState: State) => {
                     latestBuyQuote: undefined,
                     quoteRequestState: AsyncProcessState.None,
                     buyOrderState: { processState: OrderProcessState.None },
-                    selectedAssetAmount: undefined,
+                    selectedAssetUnitAmount: undefined,
                 };
             case ActionTypes.SET_AVAILABLE_ASSETS:
                 return {
@@ -263,9 +263,9 @@ const reduceStateWithAccount = (state: State, account: Account) => {
 
 const doesBuyQuoteMatchState = (buyQuote: BuyQuote, state: State): boolean => {
     const selectedAssetIfExists = state.selectedAsset;
-    const selectedAssetAmountIfExists = state.selectedAssetAmount;
+    const selectedAssetUnitAmountIfExists = state.selectedAssetUnitAmount;
     // if no selectedAsset or selectedAssetAmount exists on the current state, return false
-    if (_.isUndefined(selectedAssetIfExists) || _.isUndefined(selectedAssetAmountIfExists)) {
+    if (_.isUndefined(selectedAssetIfExists) || _.isUndefined(selectedAssetUnitAmountIfExists)) {
         return false;
     }
     // if buyQuote's assetData does not match that of the current selected asset, return false
@@ -277,7 +277,7 @@ const doesBuyQuoteMatchState = (buyQuote: BuyQuote, state: State): boolean => {
     const selectedAssetMetaData = selectedAssetIfExists.metaData;
     if (selectedAssetMetaData.assetProxyId === AssetProxyId.ERC20) {
         const selectedAssetAmountBaseUnits = Web3Wrapper.toBaseUnitAmount(
-            selectedAssetAmountIfExists,
+            selectedAssetUnitAmountIfExists,
             selectedAssetMetaData.decimals,
         );
         const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(buyQuote.assetBuyAmount);
