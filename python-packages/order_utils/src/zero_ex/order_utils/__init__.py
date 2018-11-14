@@ -312,7 +312,7 @@ def _convert_ec_signature_to_vrs_hex(signature: ECSignature) -> str:
     )
 
 
-def sign_order_hash(
+def sign_hash(
     provider: BaseProvider, signer_address: str, order_hash_hex: str
 ) -> str:
     """Sign a message with the order hash, and return the signature.
@@ -324,7 +324,7 @@ def sign_order_hash(
     :rtype: A string, of ASCII hex digits, representing the signature.
 
     >>> provider = Web3.HTTPProvider("http://127.0.0.1:8545")
-    >>> sign_order_hash(
+    >>> sign_hash(
     ...     provider,
     ...     Web3(provider).personal.listAccounts[0],
     ...     '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004',
