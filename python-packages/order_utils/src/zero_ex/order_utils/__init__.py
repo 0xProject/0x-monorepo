@@ -34,11 +34,16 @@ from zero_ex.json_schemas import assert_valid
 class _Constants:
     """Static data used by order utilities."""
 
-    _contract_name_to_abi: Dict[str, Dict] = {}
+    _contract_name_to_abi: Dict[str, Dict] = {}  # class data, not instance
 
     @classmethod
     def contract_name_to_abi(cls, contract_name: str) -> Dict:
-        """Load from disk the ABI for the given contract."""
+        """Return the ABI for the given contract name.
+
+        First tries to get data from the class level storage
+        `_contract_name_to_abi`.  If it's not there, loads it from disk, stores
+        it in the class data (for the next caller), and then returns it.
+        """
         try:
             return cls._contract_name_to_abi[contract_name]
         except KeyError:
