@@ -77,14 +77,14 @@ class _Constants:
     class SignatureType(Enum):
         """Enumeration of known signature types."""
 
-        illegal = 0
-        invalid = auto()
-        eIP712 = auto()
-        eth_sign = auto()
-        wallet = auto()
-        validator = auto()
-        pre_signed = auto()
-        n_signature_types = auto()
+        ILLEGAL = 0
+        INVALID = auto()
+        EIP712 = auto()
+        ETH_SIGN = auto()
+        WALLET = auto()
+        VALIDATOR = auto()
+        PRE_SIGNED = auto()
+        N_SIGNATURE_TYPES = auto()
 
 
 class Order(TypedDict):  # pylint: disable=too-many-instance-attributes
@@ -358,7 +358,7 @@ def sign_order_hash(
     if ec_signature["v"] in valid_v_param_values:
         signature_as_vrst_hex = (
             _convert_ec_signature_to_vrs_hex(ec_signature)
-            + _Constants.SignatureType.eth_sign.value.to_bytes(
+            + _Constants.SignatureType.ETH_SIGN.value.to_bytes(
                 1, byteorder="big"
             ).hex()
         )
@@ -374,7 +374,7 @@ def sign_order_hash(
     if ec_signature["v"] in valid_v_param_values:
         signature_as_vrst_hex = (
             _convert_ec_signature_to_vrs_hex(ec_signature)
-            + _Constants.SignatureType.eth_sign.value.to_bytes(
+            + _Constants.SignatureType.ETH_SIGN.value.to_bytes(
                 1, byteorder="big"
             ).hex()
         )
