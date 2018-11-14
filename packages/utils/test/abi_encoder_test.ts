@@ -2,8 +2,7 @@ import * as chai from 'chai';
 import 'mocha';
 
 import { chaiSetup } from './utils/chai_setup';
-import { BigNumber } from '../src/';
-import * as AbiEncoder from '../src/abi_encoder';
+import { BigNumber, AbiEncoder } from '../src/';
 import * as AbiSamples from './abi_samples';
 
 chaiSetup.configure();
@@ -29,7 +28,7 @@ describe.only('ABI Encoder', () => {
             // Verify optimized calldata is expected
             const optimizedCalldata = method.encode(args, { optimize: true });
             const expectedOptimizedCalldata = '0x13e751a900000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000b5465737420537472696e67000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d5465737420537472696e67203200000000000000000000000000000000000000';
-            //expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
+            expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
 
             // Verify args decode properly
             const decodedArgs = method.decode(optimizedCalldata);
