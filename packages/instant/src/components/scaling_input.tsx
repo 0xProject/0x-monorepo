@@ -156,8 +156,6 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
                     return `${width}px`;
                 }
                 return `${textLengthThreshold}ch`;
-            default:
-                return '1ch';
         }
     };
     private readonly _calculateFontSize = (phase: ScalingInputPhase): number => {

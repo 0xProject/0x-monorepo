@@ -2,6 +2,9 @@ import { darken, saturate } from 'polished';
 import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
+import { util } from '../../util/util';
+
+export type ButtonOnClickHandler = (event: React.MouseEvent<HTMLElement>) => void;
 
 export interface ButtonProps {
     backgroundColor?: ColorOption;
@@ -12,15 +15,26 @@ export interface ButtonProps {
     padding?: string;
     type?: string;
     isDisabled?: boolean;
-    onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+    href?: string;
+    onClick?: ButtonOnClickHandler;
     className?: string;
 }
 
-const PlainButton: React.StatelessComponent<ButtonProps> = ({ children, isDisabled, onClick, type, className }) => (
-    <button type={type} className={className} onClick={isDisabled ? undefined : onClick} disabled={isDisabled}>
-        {children}
-    </button>
-);
+const PlainButton: React.StatelessComponent<ButtonProps> = ({
+    children,
+    isDisabled,
+    onClick,
+    href,
+    type,
+    className,
+}) => {
+    const computedOnClick = isDisabled ? undefined : href ? util.createOpenUrlInNewWindow(href) : onClick;
+    return (
+        <button type={type} className={className} onClick={computedOnClick} disabled={isDisabled}>
+            {children}
+        </button>
+    );
+};
 
 const darkenOnHoverAmount = 0.1;
 const darkenOnActiveAmount = 0.2;
@@ -31,7 +45,7 @@ export const Button = styled(PlainButton)`
         box-sizing: border-box;
         font-size: ${props => props.fontSize};
         font-family: 'Inter UI', sans-serif;
-        font-weight: 600;
+        font-weight: 500;
         color: ${props => props.fontColor && props.theme[props.fontColor]};
         cursor: ${props => (props.isDisabled ? 'default' : 'pointer')};
         transition: background-color, opacity 0.5s ease;
@@ -64,11 +78,10 @@ export const Button = styled(PlainButton)`
 
 Button.defaultProps = {
     backgroundColor: ColorOption.primaryColor,
-    borderColor: ColorOption.primaryColor,
     width: 'auto',
     isDisabled: false,
-    padding: '.6em 1.2em',
-    fontSize: '15px',
+    padding: '.82em 1.2em',
+    fontSize: '16px',
 };
 
 Button.displayName = 'Button';

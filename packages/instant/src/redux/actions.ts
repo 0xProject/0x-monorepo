@@ -2,7 +2,7 @@ import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { ActionsUnion, AddressAndEthBalanceInWei, Asset } from '../types';
+import { ActionsUnion, AddressAndEthBalanceInWei, Asset, StandardSlidingPanelContent } from '../types';
 
 export interface PlainAction<T extends string> {
     type: T;
@@ -41,6 +41,8 @@ export enum ActionTypes {
     HIDE_ERROR = 'HIDE_ERROR',
     CLEAR_ERROR = 'CLEAR_ERROR',
     RESET_AMOUNT = 'RESET_AMOUNT',
+    OPEN_STANDARD_SLIDING_PANEL = 'OPEN_STANDARD_SLIDING_PANEL',
+    CLOSE_STANDARD_SLIDING_PANEL = 'CLOSE_STANDARD_SLIDING_PANEL',
 }
 
 export const actions = {
@@ -67,4 +69,7 @@ export const actions = {
     hideError: () => createAction(ActionTypes.HIDE_ERROR),
     clearError: () => createAction(ActionTypes.CLEAR_ERROR),
     resetAmount: () => createAction(ActionTypes.RESET_AMOUNT),
+    openStandardSlidingPanel: (content: StandardSlidingPanelContent) =>
+        createAction(ActionTypes.OPEN_STANDARD_SLIDING_PANEL, content),
+    closeStandardSlidingPanel: () => createAction(ActionTypes.CLOSE_STANDARD_SLIDING_PANEL),
 };

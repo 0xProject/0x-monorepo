@@ -3,9 +3,10 @@ import * as React from 'react';
 import { ScreenSpecification } from '../style/media';
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
+import { SlideAnimationState } from '../types';
 
 import { PositionAnimationSettings } from './animations/position_animation';
-import { SlideAnimation, SlideAnimationState } from './animations/slide_animation';
+import { SlideAnimation } from './animations/slide_animation';
 
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';

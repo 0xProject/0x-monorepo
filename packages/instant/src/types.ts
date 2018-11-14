@@ -125,3 +125,15 @@ export interface AddressAndEthBalanceInWei {
     address: string;
     ethBalanceInWei: BigNumber;
 }
+
+export type SlideAnimationState = 'slidIn' | 'slidOut' | 'none';
+
+export enum StandardSlidingPanelContent {
+    None = 'NONE',
+    InstallWallet = 'INSTALL_WALLET',
+}
+
+export interface StandardSlidingPanelSettings {
+    animationState: SlideAnimationState;
+    content: StandardSlidingPanelContent;
+}

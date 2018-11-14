@@ -19,6 +19,8 @@ import {
     OrderProcessState,
     OrderState,
     ProviderState,
+    StandardSlidingPanelContent,
+    StandardSlidingPanelSettings,
 } from '../types';
 
 import { Action, ActionTypes } from './actions';
@@ -30,6 +32,7 @@ export interface DefaultState {
     buyOrderState: OrderState;
     latestErrorDisplayStatus: DisplayStatus;
     quoteRequestState: AsyncProcessState;
+    standardSlidingPanelSettings: StandardSlidingPanelSettings;
 }
 
 // State that is required but needs to be derived from the props
@@ -56,6 +59,10 @@ export const DEFAULT_STATE: DefaultState = {
     buyOrderState: { processState: OrderProcessState.None },
     latestErrorDisplayStatus: DisplayStatus.Hidden,
     quoteRequestState: AsyncProcessState.None,
+    standardSlidingPanelSettings: {
+        animationState: 'none',
+        content: StandardSlidingPanelContent.None,
+    },
 };
 
 export const createReducer = (initialState: State) => {
@@ -66,11 +73,19 @@ export const createReducer = (initialState: State) => {
             case ActionTypes.SET_ACCOUNT_STATE_LOCKED:
                 return reduceStateWithAccount(state, LOCKED_ACCOUNT);
             case ActionTypes.SET_ACCOUNT_STATE_READY: {
-                const account: AccountReady = {
+                const address = action.data;
+                let newAccount: AccountReady = {
                     state: AccountState.Ready,
-                    address: action.data,
+                    address,
                 };
-                return reduceStateWithAccount(state, account);
+                const currentAccount = state.providerState.account;
+                if (currentAccount.state === AccountState.Ready && currentAccount.address === address) {
+                    newAccount = {
+                        ...newAccount,
+                        ethBalanceInWei: currentAccount.ethBalanceInWei,
+                    };
+                }
+                return reduceStateWithAccount(state, newAccount);
             }
             case ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE: {
                 const { address, ethBalanceInWei } = action.data;
@@ -210,6 +225,22 @@ export const createReducer = (initialState: State) => {
                 return {
                     ...state,
                     availableAssets: action.data,
+                };
+            case ActionTypes.OPEN_STANDARD_SLIDING_PANEL:
+                return {
+                    ...state,
+                    standardSlidingPanelSettings: {
+                        content: action.data,
+                        animationState: 'slidIn',
+                    },
+                };
+            case ActionTypes.CLOSE_STANDARD_SLIDING_PANEL:
+                return {
+                    ...state,
+                    standardSlidingPanelSettings: {
+                        content: state.standardSlidingPanelSettings.content,
+                        animationState: 'slidOut',
+                    },
                 };
             default:
                 return state;
