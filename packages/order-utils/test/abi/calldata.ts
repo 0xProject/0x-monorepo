@@ -403,7 +403,7 @@ export class Calldata {
             // Optimize
             const lastSubtree = subtrees[subtrees.length - 1];
             for (let i = 0; i < subtrees.length - 1; ++i) {
-                subtrees[i].setAlias(lastSubtree);
+                subtrees[i].setAlias(lastSubtree.getDependency());
             }
         });
     }
@@ -413,6 +413,8 @@ export class Calldata {
             throw new Error('expected root');
         }
 
+        if (optimize) this.optimize();
+
         const offsetQueue = this.createQueue(this.root);
         let block: CalldataBlock | undefined;
         let offset = 0;
@@ -420,8 +422,6 @@ export class Calldata {
             block.setOffset(offset);
             offset += block.getSizeInBytes();
         }
-
-        if (optimize) this.optimize();
 
         const hexValue = annotate ? this.generateAnnotatedHexString() : this.generateCondensedHexString();
         return hexValue;

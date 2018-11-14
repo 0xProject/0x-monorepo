@@ -34,6 +34,25 @@ export const stringAbi = {
     type: 'function',
 } as MethodAbi;
 
+export const optimizerAbi2 = {
+    constant: false,
+    inputs: [
+        {
+            name: 'stringArray',
+            type: 'string[]',
+        },
+        {
+            name: 'string',
+            type: 'string',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
 export const typesWithDefaultWidthsAbi = {
     constant: false,
     inputs: [
