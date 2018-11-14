@@ -19,8 +19,6 @@ import * as AbiEncoder from './abi/abi_encoder';
 import * as AbiSamples from './abi_samples';
 import { Calldata } from './abi/calldata';
 
-AbiEncoder.DataTypeFactory.setImpl(new AbiEncoder.EvmDataTypeFactoryImpl());
-
 chaiSetup.configure();
 const expect = chai.expect;
 
@@ -56,7 +54,7 @@ describe.only('ABI Encoder', () => {
             console.log('*'.repeat(100), '\n', method.encode(args, { optimize: true }), '\n', '*'.repeat(100));
         });
 
-        it.only('Should point array elements to a duplicated value from another parameter', async () => {
+        it('Should point array elements to a duplicated value from another parameter', async () => {
             const method = new AbiEncoder.Method(AbiSamples.optimizerAbi2);
             const stringArray = [
                 "Test String",
