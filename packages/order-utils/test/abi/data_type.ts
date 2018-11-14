@@ -5,18 +5,29 @@ import { BigNumber } from '@0x/utils';
 import ethUtil = require('ethereumjs-util');
 var _ = require('lodash');
 
+export interface DataTypeFactory {
+    create: (dataItem: DataItem, parentDataType: DataType) => DataType;
+    mapDataItemToDataType: (dataItem: DataItem) => DataType;
+}
+
 export abstract class DataType {
     private static DEFAULT_ENCODING_RULES = { optimize: false, annotate: false } as EncodingRules;
     private static DEFAULT_DECODING_RULES = { structsAsObjects: false } as DecodingRules;
 
     private dataItem: DataItem;
+    private factory: DataTypeFactory;
 
-    constructor(dataItem: DataItem) {
+    constructor(dataItem: DataItem, factory: DataTypeFactory) {
         this.dataItem = dataItem;
+        this.factory = factory;
     }
 
     public getDataItem(): DataItem {
         return this.dataItem;
+    }
+
+    public getFactory(): DataTypeFactory {
+        return this.factory;
     }
 
     public encode(value: any, rules?: EncodingRules, selector?: string): string {
@@ -45,8 +56,8 @@ export abstract class DataType {
 export abstract class PayloadDataType extends DataType {
     protected hasConstantSize: boolean;
 
-    public constructor(dataItem: DataItem, hasConstantSize: boolean) {
-        super(dataItem);
+    public constructor(dataItem: DataItem, factory: DataTypeFactory, hasConstantSize: boolean) {
+        super(dataItem, factory);
         this.hasConstantSize = hasConstantSize;
     }
 
@@ -78,8 +89,8 @@ export abstract class DependentDataType extends DataType {
     protected dependency: DataType;
     protected parent: DataType;
 
-    public constructor(dataItem: DataItem, dependency: DataType, parent: DataType) {
-        super(dataItem);
+    public constructor(dataItem: DataItem, factory: DataTypeFactory, dependency: DataType, parent: DataType) {
+        super(dataItem, factory);
         this.dependency = dependency;
         this.parent = parent;
     }
@@ -125,8 +136,8 @@ export abstract class MemberDataType extends DataType {
     protected arrayElementType: string | undefined;
 
 
-    public constructor(dataItem: DataItem, isArray: boolean = false, arrayLength?: number, arrayElementType?: string) {
-        super(dataItem);
+    public constructor(dataItem: DataItem, factory: DataTypeFactory, isArray: boolean = false, arrayLength?: number, arrayElementType?: string) {
+        super(dataItem, factory);
         this.memberMap = {};
         this.members = [];
         this.isArray = isArray;
@@ -156,7 +167,7 @@ export abstract class MemberDataType extends DataType {
             if (components !== undefined) {
                 childDataItem.components = components;
             }
-            const child = DataTypeFactory.create(childDataItem, this);
+            const child = this.getFactory().create(childDataItem, this);
             memberMap[memberItem.name] = members.length;
             members.push(child);
         });
@@ -177,7 +188,7 @@ export abstract class MemberDataType extends DataType {
             if (components !== undefined) {
                 childDataItem.components = components;
             }
-            const child = DataTypeFactory.create(childDataItem, this);
+            const child = this.getFactory().create(childDataItem, this);
             memberMap[idx.toString(10)] = members.length;
             members.push(child);
         });
@@ -307,48 +318,5 @@ export abstract class MemberDataType extends DataType {
         });
         const isStatic = (dependentMember === undefined); // static if we couldn't find a dependent member
         return isStatic;
-    }
-}
-
-export interface DataTypeFactoryImpl {
-    create: (dataItem: DataItem, parentDataType: DataType) => DataType;
-    mapDataItemToDataType: (dataItem: DataItem) => DataType;
-}
-
-export class DataTypeFactory {
-    private static instance: DataTypeFactory;
-    private provider: DataTypeFactoryImpl | undefined;
-
-    private constructor() { }
-
-    private static getInstance(): DataTypeFactory {
-        if (!DataTypeFactory.instance) {
-            DataTypeFactory.instance = new DataTypeFactory();
-        }
-        return DataTypeFactory.instance;
-    }
-
-    public static setImpl(provider: DataTypeFactoryImpl) {
-        const instance = DataTypeFactory.getInstance();
-        if (instance.provider !== undefined) {
-            throw new Error(`Tried to set implementation more than once`);
-        }
-        DataTypeFactory.getInstance().provider = provider;
-    }
-
-    public static create(dataItem: DataItem, parentDataType: DataType): DataType {
-        const instance = DataTypeFactory.getInstance();
-        if (instance.provider === undefined) {
-            throw new Error(`Tried to create before implementation is set`);
-        }
-        return instance.provider.create(dataItem, parentDataType);
-    }
-
-    public static mapDataItemToDataType(dataItem: DataItem): DataType {
-        const instance = DataTypeFactory.getInstance();
-        if (instance.provider === undefined) {
-            throw new Error(`Tried to create before implementation is set`);
-        }
-        return instance.provider.mapDataItemToDataType(dataItem);
     }
 }
