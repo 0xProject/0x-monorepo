@@ -10,3 +10,5 @@ export { NULL_BYTES } from './constants';
 export { errorUtils } from './error_utils';
 export { fetchAsync } from './fetch_async';
 export { signTypedDataUtils } from './sign_typed_data_utils';
+import * as AbiEncoder from './abi_encoder';
+export { AbiEncoder };
