@@ -5,7 +5,7 @@ import { ColorOption } from '../style/theme';
 import { Account, AccountState, Network } from '../types';
 import { envUtil } from '../util/env';
 
-import { CoinbaseWalletAppLogo, CoinbaseWalletLogo } from './coinbase_wallet_logo';
+import { CoinbaseWalletAppLogo } from './coinbase_wallet_logo';
 import { MetaMaskLogo } from './meta_mask_logo';
 import { PaymentMethodDropdown } from './payment_method_dropdown';
 import { Circle } from './ui/circle';
