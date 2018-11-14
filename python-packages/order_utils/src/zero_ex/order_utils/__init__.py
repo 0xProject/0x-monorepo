@@ -323,9 +323,10 @@ def sign_order_hash(
         returned from `generate_order_hash_hex()`.
     :rtype: A string, of ASCII hex digits, representing the signature.
 
+    >>> provider = Web3.HTTPProvider("http://127.0.0.1:8545")
     >>> sign_order_hash(
-    ...     Web3.HTTPProvider("http://127.0.0.1:8545"),
-    ...     Web3(Web3.HTTPProvider("http://127.0.0.1:8545")).personal.listAccounts[0],
+    ...     provider,
+    ...     Web3(provider).personal.listAccounts[0],
     ...     '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004',
     ... )
     '0x1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03'
