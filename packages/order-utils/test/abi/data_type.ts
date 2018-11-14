@@ -165,7 +165,6 @@ export abstract class MemberDataType extends DataType {
     }
 
     private createMembersWithLength(dataItem: DataItem, length: number): [DataType[], MemberMap] {
-        console.log('!'.repeat(30), dataItem);
         let members: DataType[] = [];
         let memberMap: MemberMap = {};
         const range = _.range(length);
