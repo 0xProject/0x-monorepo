@@ -5,6 +5,11 @@ import Rollbar from 'rollbar';
 
 import { ROLLBAR_ACCESS_TOKEN } from '../constants';
 
+import { environmentUtil } from './environment';
+
+// TODO: dont commit
+console.log(environmentUtil.getEnvironment());
+
 const rollbar = new Rollbar({
     accessToken: ROLLBAR_ACCESS_TOKEN,
     captureUncaught: true,
@@ -12,7 +17,7 @@ const rollbar = new Rollbar({
     itemsPerMinute: 10,
     maxItems: 500,
     payload: {
-        environment: 'DEVELOPMENT', // TODO
+        environment: environmentUtil.getEnvironment(),
         client: {
             javascript: {
                 source_map_enabled: true,

@@ -1,6 +1,7 @@
 import { BigNumber } from '@0x/utils';
 
-import { AccountNotReady, AccountState, Network } from './types';
+import { AccountNotReady, AccountState, Environment, Network } from './types';
+import { EnvironmentToDomain } from './util/environment';
 
 export const BIG_NUMBER_ZERO = new BigNumber(0);
 export const ETH_DECIMALS = 18;
@@ -20,6 +21,12 @@ export const COINBASE_API_BASE_URL = 'https://api.coinbase.com/v2';
 export const PROGRESS_STALL_AT_WIDTH = '95%';
 export const PROGRESS_FINISH_ANIMATION_TIME_MS = 200;
 export const ROLLBAR_ACCESS_TOKEN = '61aed26a8c4d49aa9d10509a31a843d4';
+export const ENVIRONMENTS_TO_DOMAINS: EnvironmentToDomain = {
+    PRODUCTION: ['unpkg.com', 'jsdelivr.com'],
+    STAGING: ['0x-instant-staging.s3-website-us-east-1.amazonaws.com'],
+    DOGFOOD: ['0x-instant-dogfood.s3-website-us-east-1.amazonaws.com'],
+    DEVELOPMENT: ['localhost', '127.0.0.1', 'ngrok.io'],
+};
 export const ETHEREUM_NODE_URL_BY_NETWORK = {
     [Network.Mainnet]: 'https://mainnet.infura.io/',
     [Network.Kovan]: 'https://kovan.infura.io/',

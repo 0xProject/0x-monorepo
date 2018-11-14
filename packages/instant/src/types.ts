@@ -12,6 +12,12 @@ export enum AsyncProcessState {
     Success = 'SUCCESS',
     Failure = 'FAILURE',
 }
+export enum Environment {
+    Production = 'PRODUCTION',
+    Staging = 'STAGING',
+    Dogfood = 'DOGFOOD',
+    Development = 'DEVELOPMENT',
+}
 
 export enum OrderProcessState {
     None = 'NONE',
