@@ -384,4 +384,5 @@ def sign_hash(
 
     raise RuntimeError(
         "Signature returned from web3 provider is in an unknown format."
+        + " Attempted to parse as RSV and as VRS."
     )
