@@ -89,7 +89,10 @@ export class DependentOrderHashesTracker {
                 (decodedMakerAssetData as ERC721AssetData).tokenId,
             );
         }
-        this._removeFromERC20DependentOrderhashes(signedOrder, this._zrxTokenAddress);
+        // If makerToken === ZRX then we already removed it and we don't need to remove it again.
+        if ((decodedMakerAssetData as ERC20AssetData).tokenAddress !== this._zrxTokenAddress) {
+            this._removeFromERC20DependentOrderhashes(signedOrder, this._zrxTokenAddress);
+        }
         this._removeFromMakerDependentOrderhashes(signedOrder);
     }
     private _getDependentOrderHashesByERC20AssetData(makerAddress: string, erc20AssetData: string): string[] {

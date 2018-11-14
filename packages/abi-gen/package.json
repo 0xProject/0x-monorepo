@@ -1,6 +1,6 @@
 {
     "name": "@0x/abi-gen",
-    "version": "1.0.15",
+    "version": "1.0.16",
     "engines": {
         "node": ">=6.12"
     },
@@ -32,7 +32,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen/README.md",
     "dependencies": {
         "@0x/typescript-typings": "^3.0.4",
-        "@0x/utils": "^2.0.4",
+        "@0x/utils": "^2.0.5",
         "chalk": "^2.3.0",
         "ethereum-types": "^1.1.2",
         "glob": "^7.1.2",

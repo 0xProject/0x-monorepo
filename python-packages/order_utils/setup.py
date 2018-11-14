@@ -24,7 +24,6 @@ class TestCommandExtension(TestCommand):
         exit(pytest.main())
 
 
-# pylint: disable=too-many-ancestors
 class LintCommand(distutils.command.build_py.build_py):
     """Custom setuptools command class for running linters."""
 
@@ -90,7 +89,6 @@ class CleanCommandExtension(clean):
         rmtree("src/0x_order_utils.egg-info", ignore_errors=True)
 
 
-# pylint: disable=too-many-ancestors
 class TestPublishCommand(distutils.command.build_py.build_py):
     """Custom command to publish to test.pypi.org."""
 
@@ -108,7 +106,6 @@ class TestPublishCommand(distutils.command.build_py.build_py):
         )
 
 
-# pylint: disable=too-many-ancestors
 class PublishCommand(distutils.command.build_py.build_py):
     """Custom command to publish to pypi.org."""
 
@@ -119,7 +116,6 @@ class PublishCommand(distutils.command.build_py.build_py):
         subprocess.check_call("twine upload dist/*".split())  # nosec
 
 
-# pylint: disable=too-many-ancestors
 class GanacheCommand(distutils.command.build_py.build_py):
     """Custom command to publish to pypi.org."""
 
@@ -163,7 +159,7 @@ setup(
     install_requires=[
         "eth-abi",
         "eth_utils",
-        "ethereum",
+        "jsonschema",
         "mypy_extensions",
         "web3",
     ],
@@ -188,6 +184,7 @@ setup(
     package_data={
         "zero_ex.order_utils": ["py.typed"],
         "zero_ex.contract_artifacts": ["artifacts/*"],
+        "zero_ex.json_schemas": ["schemas/*"],
     },
     package_dir={"": "src"},
     license="Apache 2.0",

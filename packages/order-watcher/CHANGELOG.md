@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.4 - _November 14, 2018_
+
+    * Fix the bug when order watcher was throwing an error on order removal when maker token was ZRX (#1259)
+
 ## v2.2.3 - _November 13, 2018_
 
     * Start jsonRpcRequestId at 1, not 0 as 0 breaks the web3.js websocket RPC provider (#1227)

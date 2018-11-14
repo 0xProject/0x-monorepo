@@ -32,12 +32,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
         const iconOrAmounts = this._renderIcon() || this._renderAmountsSection();
         return (
-            <Container
-                backgroundColor={ColorOption.primaryColor}
-                padding="20px"
-                width="100%"
-                borderRadius="3px 3px 0px 0px"
-            >
+            <Container backgroundColor={ColorOption.primaryColor} padding="20px" width="100%">
                 <Container marginBottom="5px">
                     <Text
                         letterSpacing="1px"

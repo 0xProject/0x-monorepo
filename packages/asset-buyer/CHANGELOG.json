@@ -6,7 +6,8 @@
                 "note": "update `getBuyQuoteAsync` to return eth spent on assets instead of per unit amount",
                 "pr": 1252
             }
-        ]
+        ],
+        "timestamp": 1542208198
     },
     {
         "timestamp": 1542134075,

@@ -1,5 +1,16 @@
 [
     {
+        "version": "2.2.4",
+        "changes": [
+            {
+                "note":
+                    "Fix the bug when order watcher was throwing an error on order removal when maker token was ZRX",
+                "pr": 1259
+            }
+        ],
+        "timestamp": 1542208198
+    },
+    {
         "version": "2.2.3",
         "changes": [
             {
