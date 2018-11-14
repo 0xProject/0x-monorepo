@@ -53,6 +53,56 @@ export const optimizerAbi2 = {
     type: 'function',
 } as MethodAbi;
 
+export const optimizerAbi3 = {
+    constant: false,
+    inputs: [
+        {
+            name: 'uint8Array',
+            type: 'uint8[]',
+        },
+        {
+            components: [
+                {
+                    name: 'uint',
+                    type: 'uint',
+                },
+            ],
+            name: 'uintTuple',
+            type: 'tuple[]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
+export const optimizerAbi4 = {
+    constant: false,
+    inputs: [
+        {
+            name: 'uint8Array',
+            type: 'uint8[4]',
+        },
+        {
+            components: [
+                {
+                    name: 'uint',
+                    type: 'uint',
+                },
+            ],
+            name: 'uintTuple',
+            type: 'tuple[]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
 export const typesWithDefaultWidthsAbi = {
     constant: false,
     inputs: [
