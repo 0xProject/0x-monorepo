@@ -84,10 +84,10 @@ export const asyncData = {
         dispatch: Dispatch,
         shouldSetPending: boolean = false,
     ) => {
-        const { buyOrderState, providerState, selectedAsset, selectedAssetAmount, affiliateInfo } = state;
+        const { buyOrderState, providerState, selectedAsset, selectedAssetUnitAmount, affiliateInfo } = state;
         const assetBuyer = providerState.assetBuyer;
         if (
-            !_.isUndefined(selectedAssetAmount) &&
+            !_.isUndefined(selectedAssetUnitAmount) &&
             !_.isUndefined(selectedAsset) &&
             buyOrderState.processState === OrderProcessState.None &&
             selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
@@ -96,7 +96,7 @@ export const asyncData = {
                 assetBuyer,
                 dispatch,
                 selectedAsset as ERC20Asset,
-                selectedAssetAmount,
+                selectedAssetUnitAmount,
                 shouldSetPending,
                 affiliateInfo,
             );

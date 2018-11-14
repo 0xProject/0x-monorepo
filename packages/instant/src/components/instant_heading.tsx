@@ -15,8 +15,8 @@ import { Spinner } from './ui/spinner';
 import { Text } from './ui/text';
 
 export interface InstantHeadingProps {
-    selectedAssetAmount?: BigNumber;
-    totalEthBaseAmount?: BigNumber;
+    selectedAssetUnitAmount?: BigNumber;
+    totalEthBaseUnitAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
     quoteRequestState: AsyncProcessState;
     buyOrderState: OrderState;
@@ -104,7 +104,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
         if (this.props.quoteRequestState === AsyncProcessState.Pending) {
             return <AmountPlaceholder isPulsating={true} color={PLACEHOLDER_COLOR} />;
         }
-        if (_.isUndefined(this.props.selectedAssetAmount)) {
+        if (_.isUndefined(this.props.selectedAssetUnitAmount)) {
             return <AmountPlaceholder isPulsating={false} color={PLACEHOLDER_COLOR} />;
         }
         return amountFunction();
@@ -113,8 +113,8 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     private readonly _renderEthAmount = (): React.ReactNode => {
         return (
             <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
-                {format.ethBaseAmount(
-                    this.props.totalEthBaseAmount,
+                {format.ethBaseUnitAmount(
+                    this.props.totalEthBaseUnitAmount,
                     4,
                     <AmountPlaceholder isPulsating={false} color={PLACEHOLDER_COLOR} />,
                 )}
@@ -125,8 +125,8 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     private readonly _renderDollarAmount = (): React.ReactNode => {
         return (
             <Text fontSize="16px" fontColor={ColorOption.white}>
-                {format.ethBaseAmountInUsd(
-                    this.props.totalEthBaseAmount,
+                {format.ethBaseUnitAmountInUsd(
+                    this.props.totalEthBaseUnitAmount,
                     this.props.ethUsdPrice,
                     2,
                     <AmountPlaceholder isPulsating={false} color={ColorOption.white} />,
