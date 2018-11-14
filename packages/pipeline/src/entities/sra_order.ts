@@ -1,6 +1,8 @@
+import { BigNumber } from '@0x/utils';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 import { AssetType } from '../types';
+import { bigNumberTransformer } from '../utils';
 
 @Entity({ name: 'sra_orders', schema: 'raw' })
 export class SraOrder {
@@ -19,18 +21,18 @@ export class SraOrder {
     public feeRecipientAddress!: string;
     @Column({ name: 'sender_address' })
     public senderAddress!: string;
-    @Column({ name: 'maker_asset_amount' })
-    public makerAssetAmount!: string;
-    @Column({ name: 'taker_asset_amount' })
-    public takerAssetAmount!: string;
-    @Column({ name: 'maker_fee' })
-    public makerFee!: string;
-    @Column({ name: 'taker_fee' })
-    public takerFee!: string;
-    @Column({ name: 'expiration_time_seconds' })
-    public expirationTimeSeconds!: string;
-    @Column({ name: 'salt' })
-    public salt!: string;
+    @Column({ name: 'maker_asset_amount', type: 'numeric', transformer: bigNumberTransformer })
+    public makerAssetAmount!: BigNumber;
+    @Column({ name: 'taker_asset_amount', type: 'numeric', transformer: bigNumberTransformer })
+    public takerAssetAmount!: BigNumber;
+    @Column({ name: 'maker_fee', type: 'numeric', transformer: bigNumberTransformer })
+    public makerFee!: BigNumber;
+    @Column({ name: 'taker_fee', type: 'numeric', transformer: bigNumberTransformer })
+    public takerFee!: BigNumber;
+    @Column({ name: 'expiration_time_seconds', type: 'numeric', transformer: bigNumberTransformer })
+    public expirationTimeSeconds!: BigNumber;
+    @Column({ name: 'salt', type: 'numeric', transformer: bigNumberTransformer })
+    public salt!: BigNumber;
     @Column({ name: 'signature' })
     public signature!: string;
 

@@ -34,12 +34,12 @@ export function _convertToEntity(apiOrder: APIOrder): SraOrder {
     sraOrder.takerAddress = apiOrder.order.takerAddress;
     sraOrder.feeRecipientAddress = apiOrder.order.feeRecipientAddress;
     sraOrder.senderAddress = apiOrder.order.senderAddress;
-    sraOrder.makerAssetAmount = apiOrder.order.makerAssetAmount.toString();
-    sraOrder.takerAssetAmount = apiOrder.order.takerAssetAmount.toString();
-    sraOrder.makerFee = apiOrder.order.makerFee.toString();
-    sraOrder.takerFee = apiOrder.order.takerFee.toString();
-    sraOrder.expirationTimeSeconds = apiOrder.order.expirationTimeSeconds.toString();
-    sraOrder.salt = apiOrder.order.salt.toString();
+    sraOrder.makerAssetAmount = apiOrder.order.makerAssetAmount;
+    sraOrder.takerAssetAmount = apiOrder.order.takerAssetAmount;
+    sraOrder.makerFee = apiOrder.order.makerFee;
+    sraOrder.takerFee = apiOrder.order.takerFee;
+    sraOrder.expirationTimeSeconds = apiOrder.order.expirationTimeSeconds;
+    sraOrder.salt = apiOrder.order.salt;
     sraOrder.signature = apiOrder.order.signature;
 
     sraOrder.rawMakerAssetData = apiOrder.order.makerAssetData;
