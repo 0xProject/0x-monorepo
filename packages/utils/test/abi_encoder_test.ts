@@ -1,12 +1,8 @@
 import * as chai from 'chai';
 import 'mocha';
 
-// import { assert } from '@0x/order-utils/src/assert';
-
 import { chaiSetup } from './utils/chai_setup';
 import { BigNumber } from '../src/';
-//import * as AbiEncoder from './abi_encoder';
-
 import * as AbiEncoder from '../src/abi_encoder';
 import * as AbiSamples from './abi_samples';
 
