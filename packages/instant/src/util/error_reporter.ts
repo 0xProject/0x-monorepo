@@ -7,6 +7,7 @@ import { ROLLBAR_ACCESS_TOKEN } from '../constants';
 
 import { environmentUtil } from './environment';
 
+console.log('code version', process.env.GIT_SHA);
 const rollbar = new Rollbar({
     accessToken: ROLLBAR_ACCESS_TOKEN,
     captureUncaught: true,
