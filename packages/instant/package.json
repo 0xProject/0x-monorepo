@@ -89,6 +89,7 @@
         "nyc": "^11.0.1",
         "rollbar-sourcemap-webpack-plugin": "^2.4.0",
         "shx": "^0.2.2",
+        "source-map-loader": "^0.2.4",
         "ts-jest": "^23.10.3",
         "tslint": "5.11.0",
         "typedoc": "0.13.0",

@@ -67,6 +67,15 @@ module.exports = (env, argv) => {
         module: {
             rules: [
                 {
+                    test: /\.js$/,
+                    loader: 'source-map-loader',
+                    exclude: [
+                        // instead of /\/node_modules\//
+                        path.join(process.cwd(), 'node_modules'),
+                        path.join(process.cwd(), '../..', 'node_modules'),
+                    ],
+                },
+                {
                     test: /\.(ts|tsx)$/,
                     loader: 'awesome-typescript-loader',
                 },
