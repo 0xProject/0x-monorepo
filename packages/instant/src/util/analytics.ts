@@ -24,15 +24,12 @@ const evaluteHeapCall = (heapFunctionCall: (heap: HeapAnalytics) => void): void 
 
 export const analytics = {
     addUserProperties: (properties: ObjectMap<string | number>): void => {
-        console.log('HEAP: adding user properties', properties);
         evaluteHeapCall(heap => heap.addUserProperties(properties));
     },
     addEventProperties: (properties: ObjectMap<string | number>): void => {
-        console.log('HEAP: adding user properties', properties);
         evaluteHeapCall(heap => heap.addEventProperties(properties));
     },
     track: (eventName: string, eventProperties?: ObjectMap<string | number>): void => {
-        console.log('HEAP: tracking', eventName, eventProperties);
         evaluteHeapCall(heap => heap.track(eventName, eventProperties));
     },
 };
