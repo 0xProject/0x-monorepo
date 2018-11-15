@@ -14,7 +14,8 @@ export class ExchangeCancelEvent {
     @Column({ name: 'raw_data' })
     public rawData!: string;
 
-    // TODO(albrow): Include transaction hash
+    @Column({ name: 'transaction_hash' })
+    public transactionHash!: string;
     @Column({ name: 'maker_address' })
     public makerAddress!: string;
     @Column({ nullable: true, type: String, name: 'taker_address' })
