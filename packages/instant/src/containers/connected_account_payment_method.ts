@@ -22,7 +22,7 @@ interface ConnectedState {
 }
 
 interface ConnectedDispatch {
-    onInstallWalletClick: () => void;
+    openInstallWalletPanel: () => void;
     unlockWalletAndDispatchToStore: (providerState: ProviderState) => void;
 }
 
@@ -39,7 +39,7 @@ const mapDispatchToProps = (
     dispatch: Dispatch<Action>,
     ownProps: ConnectedAccountPaymentMethodProps,
 ): ConnectedDispatch => ({
-    onInstallWalletClick: () => dispatch(actions.openStandardSlidingPanel(StandardSlidingPanelContent.InstallWallet)),
+    openInstallWalletPanel: () => dispatch(actions.openStandardSlidingPanel(StandardSlidingPanelContent.InstallWallet)),
     unlockWalletAndDispatchToStore: async (providerState: ProviderState) =>
         asyncData.fetchAccountInfoAndDispatchToStore(providerState, dispatch, true),
 });
@@ -52,12 +52,12 @@ const mergeProps = (
     ...ownProps,
     network: connectedState.network,
     account: connectedState.providerState.account,
-    onInstallWalletClick: connectedDispatch.onInstallWalletClick,
     walletName: connectedState.providerState.name,
-    onUnlockWalletClick: () => {
+    onUnlockWalletClick: () => connectedDispatch.unlockWalletAndDispatchToStore(connectedState.providerState),
+    onInstallWalletClick: () => {
         const isMobile = envUtil.isMobileOperatingSystem();
         if (!isMobile) {
-            connectedDispatch.unlockWalletAndDispatchToStore(connectedState.providerState);
+            connectedDispatch.openInstallWalletPanel();
             return;
         }
         const operatingSystem = envUtil.getOperatingSystem();

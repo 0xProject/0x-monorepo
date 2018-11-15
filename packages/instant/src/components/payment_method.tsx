@@ -102,7 +102,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                 );
             case AccountState.None:
                 return (
-                    <WalletPrompt onClick={this._handleInstallWalletClick} image={logo} {...colors}>
+                    <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo} {...colors}>
                         {isMobile ? 'Install Coinbase Wallet' : 'Install MetaMask'}
                     </WalletPrompt>
                 );
@@ -115,25 +115,5 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                     />
                 );
         }
-    };
-    private readonly _handleInstallWalletClick = (): void => {
-        const isMobile = envUtil.isMobileOperatingSystem();
-        if (!isMobile) {
-            this.props.onInstallWalletClick();
-            return;
-        }
-        const operatingSystem = envUtil.getOperatingSystem();
-        let url = COINBASE_WALLET_SITE_URL;
-        switch (operatingSystem) {
-            case OperatingSystem.Android:
-                url = COINBASE_WALLET_ANDROID_APP_STORE_URL;
-                break;
-            case OperatingSystem.iOS:
-                url = COINBASE_WALLET_IOS_APP_STORE_URL;
-                break;
-            default:
-                break;
-        }
-        window.open(url, '_blank');
     };
 }
