@@ -106,7 +106,8 @@ abstract class Number extends PayloadDataType {
         }
     }
 
-    public encodeValue(value: BigNumber): Buffer {
+    public encodeValue(value_: BigNumber | string | number): Buffer {
+        const value = new BigNumber(value_, 10);
         if (value.greaterThan(this.getMaxValue())) {
             throw `tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`;
         } else if (value.lessThan(this.getMinValue())) {
@@ -465,6 +466,7 @@ export class SolArray extends MemberDataType {
 export class Method extends MemberDataType {
     private methodSignature: string;
     private methodSelector: string;
+    private returnDataTypes: DataType[];
 
     // TMP
     public selector: string;
@@ -473,7 +475,11 @@ export class Method extends MemberDataType {
         super({ type: 'method', name: abi.name, components: abi.inputs }, EvmDataTypeFactory.getInstance());
         this.methodSignature = this.computeSignature();
         this.selector = this.methodSelector = this.computeSelector();
-
+        this.returnDataTypes = [];
+        const dummy = new Byte({ type: 'byte', name: 'DUMMY' }); // @TODO TMP
+        _.each(abi.outputs, (dataItem: DataItem) => {
+            this.returnDataTypes.push(this.getFactory().create(dataItem, dummy));
+        });
     }
 
     private computeSignature(): string {
@@ -499,6 +505,23 @@ export class Method extends MemberDataType {
         }
         const value = super.decode(calldata, rules);
         return value;
+    }
+
+    public decodeReturnValues(returndata: string, rules?: DecodingRules): any {
+        //console.log('O'.repeat(100), '\n', returndata, '\n', this.returnDataTypes, 'P'.repeat(100));
+
+        const returnValues: any[] = [];
+        const rules_ = rules ? rules : { structsAsObjects: false } as DecodingRules;
+        const rawReturnData = new RawCalldata(returndata, false);
+        _.each(this.returnDataTypes, (dataType: DataType) => {
+            returnValues.push(dataType.generateValue(rawReturnData, rules_));
+        });
+
+        //console.log('*'.repeat(40), '\n', JSON.stringify(returnValues), '\n', '*'.repeat(100));
+        /*if (returnValues.length === 1) {
+            return returnValues[0];
+        }*/
+        return returnValues;
     }
 
     public getSignature(): string {
@@ -538,12 +561,15 @@ export class EvmDataTypeFactory implements DataTypeFactory {
         throw new Error(`Unrecognized data type: '${dataItem.type}'`);
     }
 
-    public create(dataItem: DataItem, parentDataType: DataType): DataType {
+    public create(dataItem: DataItem, parentDataType?: DataType): DataType {
         const dataType = this.mapDataItemToDataType(dataItem);
         if (dataType.isStatic()) {
             return dataType;
         }
 
+        if (parentDataType === undefined) { // @Todo -- will this work for return values?
+            throw new Error(`Trying to create a pointer`);
+        }
         const pointer = new Pointer(dataType, parentDataType);
         return pointer;
     }

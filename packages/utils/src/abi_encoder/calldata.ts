@@ -456,13 +456,19 @@ export class RawCalldata {
     private selector: string;
     private scopes: Queue<number>;
 
-    constructor(value: string | Buffer) {
+    constructor(value: string | Buffer, hasSelectorPrefix: boolean = true) {
         if (typeof value === 'string' && !value.startsWith('0x')) {
             throw new Error(`Expected raw calldata to start with '0x'`);
         }
         const valueBuf = ethUtil.toBuffer(value);
-        this.selector = ethUtil.bufferToHex(valueBuf.slice(0, 4));
-        this.value = valueBuf.slice(4); // disregard selector
+        if (hasSelectorPrefix) {
+            this.selector = ethUtil.bufferToHex(valueBuf.slice(0, 4));
+            this.value = valueBuf.slice(4); // disregard selector
+        } else {
+            this.selector = '0x';
+            this.value = valueBuf;
+        }
+
         this.offset = 0;
         this.scopes = new Queue<number>();
         this.scopes.push(0);
