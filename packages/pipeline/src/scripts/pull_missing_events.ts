@@ -29,6 +29,7 @@ let connection: Connection;
 async function getExchangeEventsAsync(provider: Web3ProviderEngine): Promise<void> {
     console.log('Checking existing event logs...');
     const eventsRepository = connection.getRepository(ExchangeFillEvent);
+    const manager = connection.createEntityManager();
     const startBlock = await getStartBlockAsync(eventsRepository);
     console.log(`Getting event logs starting at ${startBlock}...`);
     const exchangeEvents = new ExchangeEventsSource(provider, 1);
@@ -37,13 +38,7 @@ async function getExchangeEventsAsync(provider: Web3ProviderEngine): Promise<voi
     const events = parseExchangeEvents(eventLogs);
     console.log(`Retrieved and parsed ${events.length} total events.`);
     console.log('Saving events...');
-    // Split the events into batches of size BATCH_SAVE_SIZE and save each batch
-    // in a single request. This reduces round-trip latency to the DB. We need
-    // to batch this way because saving an extremely large number of events in a
-    // single request causes problems.
-    for (const eventsBatch of R.splitEvery(BATCH_SAVE_SIZE, events)) {
-        await eventsRepository.save(eventsBatch);
-    }
+    await eventsRepository.save(events, { chunk: BATCH_SAVE_SIZE });
     const totalEvents = await eventsRepository.count();
     console.log(`Done saving events. There are now ${totalEvents} total events.`);
 }
