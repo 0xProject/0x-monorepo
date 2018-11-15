@@ -13,6 +13,7 @@ import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
 import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
 import { assetUtils } from '../util/asset';
+import { analytics } from '../util/analytics';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { Heartbeater } from '../util/heartbeater';
@@ -120,6 +121,15 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         gasPriceEstimator.getGasInfoAsync();
         // tslint:disable-next-line:no-floating-promises
         this._flashErrorIfWrongNetwork();
+
+        // Analytics
+        analytics.addEventProperties({
+            embeddedHost: window.location.host,
+            embeddedUrl: window.location.href,
+            networkId: state.network,
+            providerName: state.providerState.name,
+        });
+        analytics.track('Widget - Opened');
     }
     public componentWillUnmount(): void {
         if (this._accountUpdateHeartbeat) {

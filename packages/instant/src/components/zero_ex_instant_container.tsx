@@ -69,10 +69,6 @@ export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantCon
             </React.Fragment>
         );
     }
-    // tslint:disable-next-line:prefer-function-over-method
-    public componentDidMount(): void {
-        analytics.track('Widget - Opened');
-    }
     private readonly _handleSymbolClick = (): void => {
         this.setState({
             tokenSelectionPanelAnimationState: 'slidIn',
