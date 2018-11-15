@@ -16,8 +16,7 @@ export const buyQuoteUpdater = {
         dispatch: Dispatch<Action>,
         asset: ERC20Asset,
         assetUnitAmount: BigNumber,
-        options: { setPending: boolean; dispatchErrors: boolean },
-        affiliateInfo?: AffiliateInfo,
+        options: { setPending: boolean; dispatchErrors: boolean; affiliateInfo?: AffiliateInfo },
     ): Promise<void> => {
         // get a new buy quote.
         const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetUnitAmount, asset.metaData.decimals);
@@ -25,7 +24,7 @@ export const buyQuoteUpdater = {
             // mark quote as pending
             dispatch(actions.setQuoteRequestStatePending());
         }
-        const feePercentage = oc(affiliateInfo).feePercentage();
+        const feePercentage = oc(options.affiliateInfo).feePercentage();
         let newBuyQuote: BuyQuote | undefined;
         try {
             newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue, { feePercentage });

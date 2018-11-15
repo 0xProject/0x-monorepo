@@ -97,8 +97,7 @@ export const asyncData = {
                 dispatch,
                 selectedAsset as ERC20Asset,
                 selectedAssetUnitAmount,
-                { setPending: !options.updateSilently, dispatchErrors: !options.updateSilently },
-                affiliateInfo,
+                { setPending: !options.updateSilently, dispatchErrors: !options.updateSilently, affiliateInfo },
             );
         }
     },
