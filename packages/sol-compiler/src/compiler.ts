@@ -110,6 +110,9 @@ export class Compiler {
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
         return { solcInstance, fullSolcVersion };
     }
+    public static async getSolcAsync(solcVersion: string): Promise<solc.SolcInstance> {
+        return (await this._getSolcAsync(solcVersion)).solcInstance;
+    }
     private static _addHexPrefixToContractBytecode(compiledContract: solc.StandardContractOutput): void {
         if (!_.isUndefined(compiledContract.evm)) {
             if (!_.isUndefined(compiledContract.evm.bytecode) && !_.isUndefined(compiledContract.evm.bytecode.object)) {
