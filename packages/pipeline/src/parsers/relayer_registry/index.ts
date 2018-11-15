@@ -16,7 +16,7 @@ function parseRelayer(relayerResp: RelayerResponse, uuid: string): Relayer {
     const relayer = new Relayer();
     relayer.uuid = uuid;
     relayer.name = relayerResp.name;
-    relayer.url = relayerResp.homepage_url;
+    relayer.homepageUrl = relayerResp.homepage_url;
     relayer.appUrl = relayerResp.app_url;
     const mainnet = getMainNetwork(relayerResp);
     if (mainnet !== undefined) {
