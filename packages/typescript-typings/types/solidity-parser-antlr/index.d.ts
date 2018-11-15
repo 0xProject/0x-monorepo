@@ -173,7 +173,7 @@ declare module 'solidity-parser-antlr' {
 
     export interface SourceUnit extends BaseASTNode {
         type: NodeType.SourceUnit;
-        children: SourceMembers[];
+        children: SourceMember[];
     }
     export interface PragmaDirective extends BaseASTNode {
         type: NodeType.PragmaDirective;
@@ -254,12 +254,12 @@ declare module 'solidity-parser-antlr' {
     export interface ModifierDefinition extends BaseASTNode {
         type: NodeType.ModifierDefinition;
         name: string;
-        parameters: ParameterList;
+        parameters: ParameterList | [];
         body: Block;
     }
     export interface FunctionDefinition extends BaseASTNode {
         type: NodeType.FunctionDefinition;
-        name: string;
+        name: string | null; // Null for constructors
         parameters: ParameterList;
         returnParameters: ParameterList | null;
         body: Block | null;
@@ -336,7 +336,7 @@ declare module 'solidity-parser-antlr' {
         type: NodeType.IfStatement;
         condition: Expression;
         trueBody: Statement;
-        falseBody: Statement;
+        falseBody: Statement | null;
     }
     export interface WhileStatement extends BaseASTNode {
         type: NodeType.WhileStatement;
@@ -803,6 +803,6 @@ declare module 'solidity-parser-antlr' {
         range?: boolean;
         loc?: boolean;
     }
-    export function parse(sourceCode: string, parserOpts: ParserOpts): ASTNode;
-    export function visit(ast: ASTNode, visitor: Visitor<boolean>): void;
+    export function parse(sourceCode: string, parserOpts: ParserOpts): SourceUnit;
+    export function visit(ast: ASTNode, visitor: Visitor<boolean | void>): void;
 }
