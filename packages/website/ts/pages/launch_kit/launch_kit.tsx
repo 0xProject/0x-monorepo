@@ -9,7 +9,7 @@ import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, Key, ScreenWidths, WebsitePaths } from 'ts/types';
+import { Deco, Key, ScreenWidths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
