@@ -20,6 +20,8 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 
 ### Published Packages
 
+#### TypeScript/JavaScript
+
 | Package                                                  | Version                                                                                                                 | Description                                                                                                              |
 | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | [`0x.js`](/packages/0x.js)                               | [![npm](https://img.shields.io/npm/v/0x.js.svg)](https://www.npmjs.com/package/0x.js)                                   | A Javascript library for interacting with the 0x protocol                                                                |
@@ -37,7 +39,6 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 | [`@0x/json-schemas`](/packages/json-schemas)             | [![npm](https://img.shields.io/npm/v/@0x/json-schemas.svg)](https://www.npmjs.com/package/@0x/json-schemas)             | 0x-related json schemas                                                                                                  |
 | [`@0x/migrations`](/packages/migrations)                 | [![npm](https://img.shields.io/npm/v/@0x/migrations.svg)](https://www.npmjs.com/package/@0x/migrations)                 | 0x smart contract migrations                                                                                             |
 | [`@0x/order-utils`](/packages/order-utils)               | [![npm](https://img.shields.io/npm/v/@0x/order-utils.svg)](https://www.npmjs.com/package/@0x/order-utils)               | A set of utilities for generating, parsing, signing and validating 0x orders                                             |
-| [`0x-order-utils.py`](/python-packages/order_utils)      | [![PyPI](https://img.shields.io/pypi/v/0x-order-utils.svg)](https://pypi.org/project/0x-order-utils/)                   | A set of Python utilities for generating, parsing, signing and validating 0x orders                                      |
 | [`@0x/order-watcher`](/packages/order-watcher)           | [![npm](https://img.shields.io/npm/v/@0x/order-watcher.svg)](https://www.npmjs.com/package/@0x/order-watcher)           | An order watcher daemon that watches for order validity                                                                  |
 | [`@0x/react-docs`](/packages/react-docs)                 | [![npm](https://img.shields.io/npm/v/@0x/react-docs.svg)](https://www.npmjs.com/package/@0x/react-docs)                 | React documentation component for rendering TypeDoc & Doxity generated JSON                                              |
 | [`@0x/react-shared`](/packages/react-shared)             | [![npm](https://img.shields.io/npm/v/@0x/react-shared.svg)](https://www.npmjs.com/package/@0x/react-shared)             | 0x shared react components                                                                                               |
@@ -52,6 +53,12 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 | [`@0x/typescript-typings`](/packages/typescript-typings) | [![npm](https://img.shields.io/npm/v/@0x/typescript-typings.svg)](https://www.npmjs.com/package/@0x/typescript-typings) | Repository of types for external packages                                                                                |
 | [`@0x/utils`](/packages/utils)                           | [![npm](https://img.shields.io/npm/v/@0x/utils.svg)](https://www.npmjs.com/package/@0x/utils)                           | Shared utilities                                                                                                         |
 | [`@0x/web3-wrapper`](/packages/web3-wrapper)             | [![npm](https://img.shields.io/npm/v/@0x/web3-wrapper.svg)](https://www.npmjs.com/package/@0x/web3-wrapper)             | Web3 wrapper                                                                                                             |
+
+#### Python
+
+| Package                                             | Version                                                                                               | Description                                                                  |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [`0x-order-utils.py`](/python-packages/order_utils) | [![PyPI](https://img.shields.io/pypi/v/0x-order-utils.svg)](https://pypi.org/project/0x-order-utils/) | A set of utilities for generating, parsing, signing and validating 0x orders |
 
 ### Private Packages
 
