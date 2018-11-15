@@ -20,8 +20,13 @@ interface ModifiedWindow {
 const getWindow = (): ModifiedWindow => {
     return window as ModifiedWindow;
 };
-// Typescript-compatible version of https://docs.heapanalytics.com/docs/installation
+
 const setupZeroExInstantHeap = () => {
+    const curWindow = getWindow();
+    // Set property to specify that this is zeroEx's heap
+    curWindow.zeroExInstantLoadedHeap = true;
+
+    // Typescript-compatible version of https://docs.heapanalytics.com/docs/installation
     /* tslint:disable */
     ((window as any).heap = (window as any).heap || []),
         ((window as any).heap.load = function(e: any, t: any) {
@@ -60,9 +65,6 @@ const setupZeroExInstantHeap = () => {
     (window as any).heap.load(HEAP_ANALYTICS_DEVELOPMENT_APP_ID);
     /* tslint:enable */
 
-    const curWindow = getWindow();
-    // Set property to specify that this is zeroEx's heap
-    curWindow.zeroExInstantLoadedHeap = true;
     return curWindow.heap as HeapAnalytics;
 };
 
@@ -71,17 +73,14 @@ export const heapUtil = {
         const curWindow = getWindow();
         const hasOtherExistingHeapIntegration = curWindow.heap && !curWindow.zeroExInstantLoadedHeap;
         if (hasOtherExistingHeapIntegration) {
-            logUtils.log('Heap integration already exists');
             return null;
         }
 
         const zeroExInstantHeapIntegration = curWindow.zeroExInstantLoadedHeap && curWindow.heap;
         if (zeroExInstantHeapIntegration) {
-            logUtils.log('Using existing 0x instant heap');
             return zeroExInstantHeapIntegration;
         }
 
-        logUtils.log('Setting up heap');
         return setupZeroExInstantHeap();
     },
 };

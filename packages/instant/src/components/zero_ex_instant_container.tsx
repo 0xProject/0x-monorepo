@@ -10,6 +10,7 @@ import { SelectedAssetInstantHeading } from '../containers/selected_asset_instan
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 import { OrderProcessState, SlideAnimationState } from '../types';
+import { analytics } from '../util/analytics';
 
 import { CSSReset } from './css_reset';
 import { SlidingPanel } from './sliding_panel';
@@ -67,6 +68,10 @@ export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantCon
                 </Container>
             </React.Fragment>
         );
+    }
+    // tslint:disable-next-line:prefer-function-over-method
+    public componentDidMount(): void {
+        analytics.track('Widget - Opened');
     }
     private readonly _handleSymbolClick = (): void => {
         this.setState({
