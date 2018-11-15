@@ -79,6 +79,7 @@ class TokenSelectorRow extends React.Component<TokenSelectorRowProps> {
     public render(): React.ReactNode {
         const { token } = this.props;
         const displaySymbol = assetUtils.bestNameForAsset(token);
+        const TokenIcon = require(`../assets/icons/${token.metaData.symbol}.svg`);
         return (
             <Container
                 padding="12px 0px"
@@ -93,11 +94,15 @@ class TokenSelectorRow extends React.Component<TokenSelectorRowProps> {
                 <Container marginLeft="5px">
                     <Flex justify="flex-start">
                         <Container marginRight="10px">
-                            <Circle diameter={30} rawColor={token.metaData.primaryColor}>
-                                <Flex height="100%">
-                                    <Text fontColor={ColorOption.white} fontSize="8px">
-                                        {displaySymbol}
-                                    </Text>
+                            <Circle diameter={26} rawColor={token.metaData.primaryColor}>
+                                <Flex height="100%" width="100%">
+                                    {!_.isUndefined(TokenIcon) ? (
+                                        <TokenIcon />
+                                    ) : (
+                                        <Text fontColor={ColorOption.white} fontSize="8px">
+                                            {displaySymbol}
+                                        </Text>
+                                    )}
                                 </Flex>
                             </Circle>
                         </Container>
