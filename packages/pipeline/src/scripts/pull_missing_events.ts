@@ -38,7 +38,27 @@ async function getExchangeEventsAsync(provider: Web3ProviderEngine): Promise<voi
     const events = parseExchangeEvents(eventLogs);
     console.log(`Retrieved and parsed ${events.length} total events.`);
     console.log('Saving events...');
-    await eventsRepository.save(events, { chunk: Math.ceil(events.length / BATCH_SAVE_SIZE) });
+    // Note(albrow): This is a temporary hack because `save` is not working as
+    // documented and is causing a foreign key constraint violation. Hopefully
+    // can remove later because this "poor man's upsert" implementation operates
+    // on one event at a time and is therefore much slower.
+    // await eventsRepository.save(events, { chunk: Math.ceil(events.length / BATCH_SAVE_SIZE) });
+    for (const event of events) {
+        try {
+            await eventsRepository.save(event);
+        } catch {
+            // Assume this is a foreign key constraint error and try doing an
+            // update instead.
+            await eventsRepository.update(
+                {
+                    contractAddress: event.contractAddress,
+                    blockNumber: event.blockNumber,
+                    logIndex: event.logIndex,
+                },
+                event,
+            );
+        }
+    }
     const totalEvents = await eventsRepository.count();
     console.log(`Done saving events. There are now ${totalEvents} total events.`);
 }
