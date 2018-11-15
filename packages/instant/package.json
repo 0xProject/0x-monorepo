@@ -4,7 +4,7 @@
     "engines": {
         "node": ">=6.12"
     },
-    "private": true,
+    "private": false,
     "description": "0x Instant React Component",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -98,6 +98,6 @@
         "webpack-dev-server": "^3.1.9"
     },
     "publishConfig": {
-        "access": "private"
+        "access": "public"
     }
 }
