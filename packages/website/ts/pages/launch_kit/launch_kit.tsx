@@ -127,7 +127,7 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                                     className={`flex clearfix sm-mx-auto ${isSmallScreen ? 'justify-center' : ''}`}
                                 >
                                     <Container paddingRight="20px">
-                                        <Link to={WebsitePaths.Docs}>
+                                        <Link to={constants.URL_LAUNCH_KIT} shouldOpenInNewTab={true}>
                                             <Button
                                                 padding={isSmallScreen ? smallButtonPadding : largeButtonPadding}
                                                 borderRadius="4px"
@@ -140,7 +140,7 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                                         </Link>
                                     </Container>
                                     <div>
-                                        <Link to={WebsitePaths.Portal}>
+                                        <Link to={constants.URL_LAUNCH_KIT_BLOG_POST} shouldOpenInNewTab={true}>
                                             <Button
                                                 backgroundColor={lighterBackgroundColor}
                                                 borderColor={colors.white}
@@ -233,7 +233,7 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                         paddingTop="5px"
                     >
                         <Container paddingRight="20px">
-                            <Link to={WebsitePaths.Docs}>
+                            <Link to={constants.URL_LAUNCH_KIT} shouldOpenInNewTab={true}>
                                 <Button
                                     padding={isSmallScreen ? smallButtonPadding : largeButtonPadding}
                                     borderRadius="4px"
@@ -247,7 +247,7 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                             </Link>
                         </Container>
                         <div>
-                            <Link to={constants.URL_ZEROEX_CHAT}>
+                            <Link to={constants.URL_ZEROEX_CHAT} shouldOpenInNewTab={true}>
                                 <Button
                                     padding={isSmallScreen ? smallButtonPadding : largeButtonPadding}
                                     borderRadius="4px"

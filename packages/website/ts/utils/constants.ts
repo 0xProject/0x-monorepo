@@ -95,6 +95,8 @@ export const constants = {
     URL_TWITTER: 'https://twitter.com/0xproject',
     URL_WETH_IO: 'https://weth.io/',
     URL_ZEROEX_CHAT,
+    URL_LAUNCH_KIT: 'https://github.com/0xProject/0x-launch-kit',
+    URL_LAUNCH_KIT_BLOG_POST: 'https://blog.0xproject.com',
     URL_WEB3_DOCS: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
     URL_WEB3_DECODED_LOG_ENTRY_EVENT:
         'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L123',
