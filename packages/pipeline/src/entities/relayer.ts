@@ -5,19 +5,20 @@ export class Relayer {
     @PrimaryColumn() public uuid!: string;
 
     @Column() public name!: string;
-    @Column() public url!: string;
-    @Column({ nullable: true, type: String, name: 'sra_http_endpoint' })
+    @Column({ name: 'homepage_url', type: 'varchar' })
+    public homepageUrl!: string;
+    @Column({ name: 'sra_http_endpoint', type: 'varchar', nullable: true })
     public sraHttpEndpoint!: string | null;
-    @Column({ nullable: true, type: String, name: 'sra_ws_endpoint' })
+    @Column({ name: 'sra_ws_endpoint', type: 'varchar', nullable: true })
     public sraWsEndpoint!: string | null;
-    @Column({ nullable: true, type: String, name: 'app_url' })
+    @Column({ name: 'app_url', type: 'varchar', nullable: true })
     public appUrl!: string | null;
 
     // TODO(albrow): Add exchange contract or protocol version?
     // TODO(albrow): Add network ids for addresses?
 
-    @Column({ type: 'varchar', array: true, name: 'fee_recipient_addresses' })
+    @Column({ name: 'fee_recipient_addresses', type: 'varchar', array: true })
     public feeRecipientAddresses!: string[];
-    @Column({ type: 'varchar', array: true, name: 'taker_addresses' })
+    @Column({ name: 'taker_addresses', type: 'varchar', array: true })
     public takerAddresses!: string[];
 }
