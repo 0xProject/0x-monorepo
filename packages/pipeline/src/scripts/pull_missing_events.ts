@@ -38,7 +38,7 @@ async function getExchangeEventsAsync(provider: Web3ProviderEngine): Promise<voi
     const events = parseExchangeEvents(eventLogs);
     console.log(`Retrieved and parsed ${events.length} total events.`);
     console.log('Saving events...');
-    await eventsRepository.save(events, { chunk: BATCH_SAVE_SIZE });
+    await eventsRepository.save(events, { chunk: Math.ceil(events.length / BATCH_SAVE_SIZE) });
     const totalEvents = await eventsRepository.count();
     console.log(`Done saving events. There are now ${totalEvents} total events.`);
 }
