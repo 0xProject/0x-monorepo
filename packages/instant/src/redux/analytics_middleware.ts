@@ -1,11 +1,14 @@
 import { ObjectMap } from '@0x/types';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import { Middleware } from 'redux';
 
+import { ETH_DECIMALS } from '../constants';
+import { AccountState } from '../types';
 import { analytics } from '../util/analytics';
 
-import { AccountState } from './../types';
 import { Action, ActionTypes } from './actions';
+
 import { State } from './reducer';
 
 export const analyticsMiddleware: Middleware = store => next => middlewareAction => {
@@ -29,8 +32,11 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                 curAccount.ethBalanceInWei &&
                 !_.isEqual(curAccount, prevAccount)
             ) {
-                const ethBalanceInWei = curAccount.ethBalanceInWei.toString();
-                analytics.addUserProperties({ ethBalanceInWei });
+                const ethBalanceInUnitAmount = Web3Wrapper.toUnitAmount(
+                    curAccount.ethBalanceInWei,
+                    ETH_DECIMALS,
+                ).toString();
+                analytics.addUserProperties({ ethBalanceInUnitAmount });
             }
     }
 
