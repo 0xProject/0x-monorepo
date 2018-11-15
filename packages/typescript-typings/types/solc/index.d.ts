@@ -90,6 +90,7 @@ declare module 'solc' {
         settings: CompilerSettings;
     }
     export interface SolcInstance {
+        version(): string;
         compile(
             sources: InputSources,
             optimizerEnabled: number,
