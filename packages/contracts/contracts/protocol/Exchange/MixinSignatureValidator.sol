@@ -17,6 +17,7 @@
 */
 
 pragma solidity 0.4.24;
+pragma experimental ABIEncoderV2;
 
 import "../../utils/LibBytes/LibBytes.sol";
 import "../../utils/ReentrancyGuard/ReentrancyGuard.sol";

@@ -17,6 +17,7 @@
 */
 
 pragma solidity 0.4.24;
+pragma experimental ABIEncoderV2;
 
 import "./LibEIP712.sol";
 
@@ -45,11 +46,11 @@ contract LibOrder is
     // A valid order remains fillable until it is expired, fully filled, or cancelled.
     // An order's state is unaffected by external factors, like account balances.
     enum OrderStatus {
-        INVALID,                     // Default value
-        INVALID_MAKER_ASSET_AMOUNT,  // Order does not have a valid maker asset amount
-        INVALID_TAKER_ASSET_AMOUNT,  // Order does not have a valid taker asset amount
-        FILLABLE,                    // Order is fillable
-        EXPIRED,                     // Order has already expired
+        INVALID,                     // 0 Default value
+        INVALID_MAKER_ASSET_AMOUNT,  // 1 Order does not have a valid maker asset amount
+        INVALID_TAKER_ASSET_AMOUNT,  // 2 Order does not have a valid taker asset amount
+        FILLABLE,                    // 3 Order is fillable
+        EXPIRED,                     // 4 Order has already expired
         FULLY_FILLED,                // Order is fully filled
         CANCELLED                    // Order has been cancelled
     }
