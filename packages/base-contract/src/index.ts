@@ -15,9 +15,10 @@ import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { formatABIDataItem } from './utils';
+import { AbiEncoder } from '@0x/utils';
 
 export interface EthersInterfaceByFunctionSignature {
-    [key: string]: ethers.utils.Interface;
+    [key: string]: AbiEncoder.Method;
 }
 
 const REVERT_ERROR_SELECTOR = '08c379a0';
@@ -101,6 +102,8 @@ export class BaseContract {
     // if it overflows the corresponding Solidity type, there is a bug in the
     // encoder, or the encoder performs unsafe type coercion.
     public static strictArgumentEncodingCheck(inputAbi: DataItem[], args: any[]): void {
+        //console.log(args);
+        //console.log(inputAbi);
         const coder = new ethers.utils.AbiCoder();
         const params = abiUtils.parseEthersParams(inputAbi);
         const rawEncoded = coder.encode(inputAbi, args);
@@ -111,13 +114,13 @@ export class BaseContract {
             if (!abiUtils.isAbiDataEqual(params.names[i], params.types[i], original, decoded)) {
                 throw new Error(
                     `Cannot safely encode argument: ${params.names[i]} (${original}) of type ${
-                        params.types[i]
+                    params.types[i]
                     }. (Possible type overflow or other encoding error)`,
                 );
             }
         }
     }
-    protected _lookupEthersInterface(functionSignature: string): ethers.utils.Interface {
+    protected _lookupEthersInterface(functionSignature: string): AbiEncoder.Method {
         const ethersInterface = this._ethersInterfacesByFunctionSignature[functionSignature];
         if (_.isUndefined(ethersInterface)) {
             throw new Error(`Failed to lookup method with function signature '${functionSignature}'`);
@@ -130,7 +133,7 @@ export class BaseContract {
                 return false;
             }
             // tslint:disable-next-line:no-unnecessary-type-assertion
-            const abiFunctionSignature = abiUtils.getFunctionSignature(abiDefinition as MethodAbi);
+            const abiFunctionSignature = new AbiEncoder.Method(abiDefinition as MethodAbi).getSignature();
             if (abiFunctionSignature === functionSignature) {
                 return true;
             }
@@ -154,8 +157,9 @@ export class BaseContract {
         ) as MethodAbi[];
         this._ethersInterfacesByFunctionSignature = {};
         _.each(methodAbis, methodAbi => {
-            const functionSignature = abiUtils.getFunctionSignature(methodAbi);
-            this._ethersInterfacesByFunctionSignature[functionSignature] = new ethers.utils.Interface([methodAbi]);
+            const method = new AbiEncoder.Method(methodAbi);
+            const functionSignature = method.getSignature();
+            this._ethersInterfacesByFunctionSignature[functionSignature] = method;//ethers.utils.Interface([methodAbi]);
         });
     }
 }

@@ -270,8 +270,8 @@ export class MatchOrderTester {
         const leftExpectedStatus = expectedTransferAmounts.amountBoughtByLeftMaker.equals(maxAmountBoughtByLeftMaker)
             ? OrderStatus.FULLY_FILLED
             : OrderStatus.FILLABLE;
-        expect(leftOrderInfo.orderStatus as OrderStatus, 'Checking exchange status for left order').to.be.equal(
-            leftExpectedStatus,
+        expect(leftOrderInfo.orderStatus, 'Checking exchange status for left order').to.be.bignumber.equal(
+            new BigNumber(leftExpectedStatus),
         );
         // Assert right order status
         const maxAmountBoughtByRightMaker = signedOrderRight.takerAssetAmount.minus(initialRightOrderFilledAmount);
@@ -279,8 +279,8 @@ export class MatchOrderTester {
         const rightExpectedStatus = expectedTransferAmounts.amountBoughtByRightMaker.equals(maxAmountBoughtByRightMaker)
             ? OrderStatus.FULLY_FILLED
             : OrderStatus.FILLABLE;
-        expect(rightOrderInfo.orderStatus as OrderStatus, 'Checking exchange status for right order').to.be.equal(
-            rightExpectedStatus,
+        expect(rightOrderInfo.orderStatus, 'Checking exchange status for right order').to.be.bignumber.equal(
+            new BigNumber(rightExpectedStatus),
         );
     }
     /// @dev Asserts account balances after matching orders.

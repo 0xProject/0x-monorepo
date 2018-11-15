@@ -11,6 +11,7 @@ import * as yargs from 'yargs';
 
 import { ContextData, ContractsBackend, ParamKind } from './types';
 import { utils } from './utils';
+import { AbiEncoder } from '@0x/utils';
 
 const ABI_TYPE_CONSTRUCTOR = 'constructor';
 const ABI_TYPE_METHOD = 'function';
@@ -128,12 +129,13 @@ for (const abiFileName of abiFileNames) {
             }
         });
         // This will make templates simpler
+        const method = new AbiEncoder.Method(methodAbi);
         const methodData = {
             ...methodAbi,
             singleReturnValue: methodAbi.outputs.length === 1,
             hasReturnValue: methodAbi.outputs.length !== 0,
             tsName: sanitizedMethodAbis[methodAbiIndex].name,
-            functionSignature: abiUtils.getFunctionSignature(methodAbi),
+            functionSignature: method.getSignature(),
         };
         return methodData;
     });

@@ -12,7 +12,7 @@ public {{this.tsName}} = {
         const inputAbi = self._lookupAbi('{{this.functionSignature}}').inputs;
         [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString.bind(self));
         BaseContract.strictArgumentEncodingCheck(inputAbi, [{{> params inputs=inputs}}]);
-        const encodedData = self._lookupEthersInterface('{{this.functionSignature}}').functions.{{this.name}}.encode([{{> params inputs=inputs}}]);
+        const encodedData = self._lookupEthersInterface('{{this.functionSignature}}').encode([{{> params inputs=inputs}}]);;
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {
                 to: self.address,
@@ -35,7 +35,7 @@ public {{this.tsName}} = {
         const self = this as any as {{contractName}}Contract;
         const inputAbi = self._lookupAbi('{{this.functionSignature}}').inputs;
         [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString);
-        const encodedData = self._lookupEthersInterface('{{this.functionSignature}}').functions.{{this.name}}.encode([{{> params inputs=inputs}}]);
+        const encodedData = self._lookupEthersInterface('{{this.functionSignature}}').encode([{{> params inputs=inputs}}]);;
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {
                 to: self.address,
@@ -53,7 +53,7 @@ public {{this.tsName}} = {
         const self = this as any as {{contractName}}Contract;
         const inputAbi = self._lookupAbi('{{this.functionSignature}}').inputs;
         [{{> params inputs=inputs}}] = BaseContract._formatABIDataItemList(inputAbi, [{{> params inputs=inputs}}], BaseContract._bigNumberToString);
-        const abiEncodedTransactionData = self._lookupEthersInterface('{{this.functionSignature}}').functions.{{this.name}}.encode([{{> params inputs=inputs}}]);
+        const abiEncodedTransactionData = self._lookupEthersInterface('{{this.functionSignature}}').encode([{{> params inputs=inputs}}]);
         return abiEncodedTransactionData;
     },
     {{> callAsync}}

@@ -6,7 +6,7 @@ import ethUtil = require('ethereumjs-util');
 var _ = require('lodash');
 
 export interface DataTypeFactory {
-    create: (dataItem: DataItem, parentDataType: DataType) => DataType;
+    create: (dataItem: DataItem, parentDataType?: DataType) => DataType;
     mapDataItemToDataType: (dataItem: DataItem) => DataType;
 }
 

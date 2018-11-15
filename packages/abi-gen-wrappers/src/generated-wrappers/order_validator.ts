@@ -33,7 +33,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [order,
         takerAddress
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getOrderAndTraderInfo;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([order,
         takerAddress
         ]);
@@ -47,7 +47,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
+            console.log(resultArray);
             const outputAbi = (_.find(self.abi, {name: 'getOrderAndTraderInfo'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -73,7 +74,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [target,
         assetData
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getBalanceAndAllowance;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([target,
         assetData
         ]);
@@ -87,7 +88,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
+            console.log(resultArray);
             const outputAbi = (_.find(self.abi, {name: 'getBalanceAndAllowance'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -113,7 +115,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [orders,
         takerAddresses
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getOrdersAndTradersInfo;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([orders,
         takerAddresses
         ]);
@@ -127,7 +129,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
+            console.log(resultArray);
             const outputAbi = (_.find(self.abi, {name: 'getOrdersAndTradersInfo'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -153,7 +156,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [orders,
         takerAddresses
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getTradersInfo;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([orders,
         takerAddresses
         ]);
@@ -167,7 +170,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
+            console.log(resultArray);
             const outputAbi = (_.find(self.abi, {name: 'getTradersInfo'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -193,7 +197,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [token,
         tokenId
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getERC721TokenOwner;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([token,
         tokenId
         ]);
@@ -207,7 +211,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
+            console.log(resultArray);
             const outputAbi = (_.find(self.abi, {name: 'getERC721TokenOwner'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -233,7 +238,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [target,
         assetData
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getBalancesAndAllowances;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([target,
         assetData
         ]);
@@ -247,7 +252,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
+            console.log(resultArray);
             const outputAbi = (_.find(self.abi, {name: 'getBalancesAndAllowances'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -273,7 +279,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [order,
         takerAddress
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getTraderInfo;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([order,
         takerAddress
         ]);
@@ -287,7 +293,8 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
+            console.log(resultArray);
             const outputAbi = (_.find(self.abi, {name: 'getTraderInfo'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));

@@ -34,6 +34,40 @@ export const stringAbi = {
     type: 'function',
 } as MethodAbi;
 
+
+export const GAbi = {
+    constant: false,
+    inputs: [
+        {
+            components: [{
+                name: 'a',
+                type: 'uint256',
+            },
+            {
+                name: 'b',
+                type: 'string',
+            },
+            {
+                name: 'e',
+                type: 'bytes',
+            },
+            {
+                name: 'f',
+                type: 'address',
+            }],
+
+            name: 'f',
+            type: 'tuple',
+
+        }
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
 export const optimizerAbi2 = {
     constant: false,
     inputs: [

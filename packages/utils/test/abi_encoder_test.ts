@@ -15,6 +15,35 @@ describe.only('ABI Encoder', () => {
 
     describe.only('ABI Tests at Method Level', () => {
 
+        it.only('Should reuse duplicated strings in string array', async () => {
+            const method = new AbiEncoder.Method(AbiSamples.GAbi);
+
+            const args = [
+                {
+                    a: new BigNumber(5),
+                    e: '0x616161',
+                    b: 'aaa',
+                    f: '0xe41d2489571d322189246dafa5ebde1f4699f498'
+                }
+            ]
+
+            // Verify optimized calldata is expected
+            const optimizedCalldata = method.encode(args, { optimize: true });
+            //const expectedOptimizedCalldata = '0x13e751a900000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000b5465737420537472696e67000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d5465737420537472696e67203200000000000000000000000000000000000000';
+            //expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
+
+            // Verify args decode properly
+            const decodedArgs = method.decode(optimizedCalldata);
+            const decodedArgsJson = JSON.stringify(decodedArgs);
+            const argsJson = JSON.stringify(args);
+            //expect(decodedArgsJson).to.be.equal(argsJson);
+
+            console.log(method.getSignature());
+            console.log('*'.repeat(100), '\n', method.encode(args, { optimize: true, annotate: true }), '\n', '*'.repeat(100));
+            console.log('*'.repeat(100), '\n', method.encode(args, { optimize: true }), '\n', '*'.repeat(100));
+
+        });
+
         it('Should reuse duplicated strings in string array', async () => {
             const method = new AbiEncoder.Method(AbiSamples.stringAbi);
             const strings = [
