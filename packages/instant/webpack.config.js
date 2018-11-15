@@ -29,7 +29,7 @@ const config = {
         after: () => {
             if (config.devServer.host === '0.0.0.0') {
                 console.log(
-                    `webpack-dev-server can be accessed externally at: ${ip.address()}:${config.devServer.port}`,
+                    `webpack-dev-server can be accessed externally at: http://${ip.address()}:${config.devServer.port}`,
                 );
             }
         },
