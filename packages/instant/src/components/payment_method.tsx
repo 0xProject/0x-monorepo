@@ -1,11 +1,16 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import {
+    COINBASE_WALLET_ANDROID_APP_STORE_URL,
+    COINBASE_WALLET_IOS_APP_STORE_URL,
+    COINBASE_WALLET_SITE_URL,
+} from '../constants';
 import { ColorOption } from '../style/theme';
-import { Account, AccountState, Network } from '../types';
+import { Account, AccountState, Network, OperatingSystem } from '../types';
 import { envUtil } from '../util/env';
 
-import { CoinbaseWalletAppLogo } from './coinbase_wallet_logo';
+import { CoinbaseWalletLogo } from './coinbase_wallet_logo';
 import { MetaMaskLogo } from './meta_mask_logo';
 import { PaymentMethodDropdown } from './payment_method_dropdown';
 import { Circle } from './ui/circle';
@@ -77,7 +82,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
     private readonly _renderMainContent = (): React.ReactNode => {
         const { account, network } = this.props;
         const isMobile = envUtil.isMobileOperatingSystem();
-        const logo = isMobile ? <CoinbaseWalletAppLogo width={22} /> : <MetaMaskLogo width={19} height={18} />;
+        const logo = isMobile ? <CoinbaseWalletLogo width={22} /> : <MetaMaskLogo width={19} height={18} />;
         const primaryColor = isMobile ? ColorOption.darkBlue : ColorOption.darkOrange;
         const secondaryColor = isMobile ? ColorOption.lightBlue : ColorOption.lightOrange;
         const colors = { primaryColor, secondaryColor };
@@ -97,7 +102,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                 );
             case AccountState.None:
                 return (
-                    <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo} {...colors}>
+                    <WalletPrompt onClick={this._handleInstallWalletClick} image={logo} {...colors}>
                         {isMobile ? 'Install Coinbase Wallet' : 'Install MetaMask'}
                     </WalletPrompt>
                 );
@@ -110,5 +115,25 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                     />
                 );
         }
+    };
+    private readonly _handleInstallWalletClick = (): void => {
+        const isMobile = envUtil.isMobileOperatingSystem();
+        if (!isMobile) {
+            this.props.onInstallWalletClick();
+            return;
+        }
+        const operatingSystem = envUtil.getOperatingSystem();
+        let url = COINBASE_WALLET_SITE_URL;
+        switch (operatingSystem) {
+            case OperatingSystem.Android:
+                url = COINBASE_WALLET_ANDROID_APP_STORE_URL;
+                break;
+            case OperatingSystem.iOS:
+                url = COINBASE_WALLET_IOS_APP_STORE_URL;
+                break;
+            default:
+                break;
+        }
+        window.open(url, '_blank');
     };
 }

@@ -3,10 +3,16 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
 import { PaymentMethod, PaymentMethodProps } from '../components/payment_method';
+import {
+    COINBASE_WALLET_ANDROID_APP_STORE_URL,
+    COINBASE_WALLET_IOS_APP_STORE_URL,
+    COINBASE_WALLET_SITE_URL,
+} from '../constants';
 import { Action, actions } from '../redux/actions';
 import { asyncData } from '../redux/async_data';
 import { State } from '../redux/reducer';
-import { Network, Omit, ProviderState, StandardSlidingPanelContent } from '../types';
+import { Network, Omit, OperatingSystem, ProviderState, StandardSlidingPanelContent } from '../types';
+import { envUtil } from '../util/env';
 
 export interface ConnectedAccountPaymentMethodProps {}
 
@@ -49,7 +55,24 @@ const mergeProps = (
     onInstallWalletClick: connectedDispatch.onInstallWalletClick,
     walletName: connectedState.providerState.name,
     onUnlockWalletClick: () => {
-        connectedDispatch.unlockWalletAndDispatchToStore(connectedState.providerState);
+        const isMobile = envUtil.isMobileOperatingSystem();
+        if (!isMobile) {
+            connectedDispatch.unlockWalletAndDispatchToStore(connectedState.providerState);
+            return;
+        }
+        const operatingSystem = envUtil.getOperatingSystem();
+        let url = COINBASE_WALLET_SITE_URL;
+        switch (operatingSystem) {
+            case OperatingSystem.Android:
+                url = COINBASE_WALLET_ANDROID_APP_STORE_URL;
+                break;
+            case OperatingSystem.iOS:
+                url = COINBASE_WALLET_IOS_APP_STORE_URL;
+                break;
+            default:
+                break;
+        }
+        window.open(url, '_blank');
     },
 });
 
