@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { applyMiddleware, createStore, Store as ReduxStore } from 'redux';
-import { composeWithDevTools, devToolsEnhancer } from 'redux-devtools-extension/developmentOnly';
+import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
 
 import { analyticsMiddleware } from './analytics_middleware';
 import { createReducer, State } from './reducer';

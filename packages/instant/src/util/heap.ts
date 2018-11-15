@@ -1,5 +1,4 @@
 import { ObjectMap } from '@0x/types';
-import { logUtils } from '@0x/utils';
 
 import { HEAP_ANALYTICS_DEVELOPMENT_APP_ID } from '../constants';
 
