@@ -104,7 +104,12 @@ export class InstallWalletPanelContent extends React.Component<InstallWalletPane
                 text: 'What is Coinbase Wallet?',
             },
             action: (
-                <Button href={actionUrl} width="100%" fontColor={ColorOption.white} backgroundColor={ColorOption.blue}>
+                <Button
+                    href={actionUrl}
+                    width="100%"
+                    fontColor={ColorOption.white}
+                    backgroundColor={ColorOption.darkBlue}
+                >
                     {actionText}
                 </Button>
             ),
