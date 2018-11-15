@@ -100,7 +100,6 @@ module.exports = (_env, argv) => {
             new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
             new webpack.DefinePlugin({
                 'process.env': {
-                    NODE_ENV: JSON.stringify(process.env.NODE_ENV),
                     GIT_SHA: JSON.stringify(GIT_SHA),
                 },
             }),
