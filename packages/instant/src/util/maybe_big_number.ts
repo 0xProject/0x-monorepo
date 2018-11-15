@@ -18,7 +18,7 @@ export const maybeBigNumberUtil = {
     },
     areMaybeBigNumbersEqual: (val1: Maybe<BigNumber>, val2: Maybe<BigNumber>): boolean => {
         if (!_.isUndefined(val1) && !_.isUndefined(val2)) {
-            return val1.equals(val2);
+            return val1.isEqualTo(val2);
         }
         return _.isUndefined(val1) && _.isUndefined(val2);
     },

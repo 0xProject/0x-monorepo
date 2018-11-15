@@ -26,7 +26,7 @@
     "dependencies": {
         "@types/bn.js": "^4.11.0",
         "@types/react": "*",
-        "bignumber.js": "~4.1.0",
+        "bignumber.js": "~8.0.1",
         "ethereum-types": "^1.1.2",
         "popper.js": "1.14.3"
     },

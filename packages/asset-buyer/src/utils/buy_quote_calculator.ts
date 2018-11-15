@@ -21,7 +21,7 @@ export const buyQuoteCalculator = {
         const remainingFillableMakerAssetAmounts = ordersAndFillableAmounts.remainingFillableMakerAssetAmounts;
         const feeOrders = feeOrdersAndFillableAmounts.orders;
         const remainingFillableFeeAmounts = feeOrdersAndFillableAmounts.remainingFillableMakerAssetAmounts;
-        const slippageBufferAmount = assetBuyAmount.mul(slippagePercentage).round();
+        const slippageBufferAmount = assetBuyAmount.multipliedBy(slippagePercentage).integerValue();
         // find the orders that cover the desired assetBuyAmount (with slippage)
         const {
             resultOrders,
@@ -119,7 +119,7 @@ function calculateQuoteInfo(
         zrxEthAmount = findEthAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
     }
     // eth amount needed to buy the affiliate fee
-    const affiliateFeeEthAmount = assetEthAmount.mul(feePercentage).ceil();
+    const affiliateFeeEthAmount = assetEthAmount.multipliedBy(feePercentage).integerValue(BigNumber.ROUND_CEIL);
     // eth amount needed for fees is the sum of affiliate fee and zrx fee
     const feeEthAmount = affiliateFeeEthAmount.plus(zrxEthAmount);
     // eth amount needed in total is the sum of the amount needed for the asset and the amount needed for fees
@@ -156,9 +156,9 @@ function findEthAmountNeededToBuyZrx(
                 order,
                 makerFillAmount,
             );
-            const extraFeeAmount = remainingFillableMakerAssetAmount.greaterThanOrEqualTo(adjustedMakerFillAmount)
+            const extraFeeAmount = remainingFillableMakerAssetAmount.isGreaterThanOrEqualTo(adjustedMakerFillAmount)
                 ? constants.ZERO_AMOUNT
-                : adjustedMakerFillAmount.sub(makerFillAmount);
+                : adjustedMakerFillAmount.minus(makerFillAmount);
             return {
                 totalEthAmount: totalEthAmount.plus(takerFillAmount),
                 remainingZrxBuyAmount: BigNumber.max(

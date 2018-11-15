@@ -37,7 +37,7 @@
     },
     "dependencies": {
         "@types/node": "*",
-        "bignumber.js": "~4.1.0"
+        "bignumber.js": "~8.0.1"
     },
     "publishConfig": {
         "access": "public"

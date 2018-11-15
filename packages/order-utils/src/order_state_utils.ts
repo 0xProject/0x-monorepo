@@ -205,10 +205,10 @@ export class OrderStateUtils {
         const remainingFillableTakerAssetAmountGivenTakersStatus = orderRelevantTakerState.remainingFillableAssetAmount;
 
         // The min of these two in the actualy max fillable by either party
-        const fillableTakerAssetAmount = BigNumber.min([
+        const fillableTakerAssetAmount = BigNumber.min(
             remainingFillableTakerAssetAmountGivenMakersStatus,
             remainingFillableTakerAssetAmountGivenTakersStatus,
-        ]);
+        );
 
         return fillableTakerAssetAmount;
     }
@@ -249,8 +249,8 @@ export class OrderStateUtils {
             traderAddress,
         );
 
-        const transferrableTraderAssetAmount = BigNumber.min([traderProxyAllowance, traderBalance]);
-        const transferrableFeeAssetAmount = BigNumber.min([traderFeeProxyAllowance, traderFeeBalance]);
+        const transferrableTraderAssetAmount = BigNumber.min(traderProxyAllowance, traderBalance);
+        const transferrableFeeAssetAmount = BigNumber.min(traderFeeProxyAllowance, traderFeeBalance);
 
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const filledTakerAssetAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);

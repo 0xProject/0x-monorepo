@@ -158,7 +158,7 @@ export class FillScenarios {
                 makerFillableAmount,
             );
         } else {
-            if (!makerFillableAmount.equals(1)) {
+            if (!makerFillableAmount.isEqualTo(1)) {
                 throw new Error(`ERC721 makerFillableAmount should be equal 1. Found: ${makerFillableAmount}`);
             }
             await this._increaseERC721BalanceAndAllowanceAsync(
@@ -173,7 +173,7 @@ export class FillScenarios {
             const takerTokenAddress = decodedTakerAssetData.tokenAddress;
             await this._increaseERC20BalanceAndAllowanceAsync(takerTokenAddress, takerAddress, takerFillableAmount);
         } else {
-            if (!takerFillableAmount.equals(1)) {
+            if (!takerFillableAmount.isEqualTo(1)) {
                 throw new Error(`ERC721 takerFillableAmount should be equal 1. Found: ${takerFillableAmount}`);
             }
             await this._increaseERC721BalanceAndAllowanceAsync(

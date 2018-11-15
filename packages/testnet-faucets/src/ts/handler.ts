@@ -178,8 +178,9 @@ export class Handler {
             exchangeAddress: networkConfig.contractWrappers.exchange.address,
             feeRecipientAddress: NULL_ADDRESS,
             senderAddress: NULL_ADDRESS,
-            // tslint:disable-next-line:custom-no-magic-numbers
-            expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS).div(1000).floor(),
+            expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS)
+                .div(1000) // tslint:disable-line:custom-no-magic-numbers
+                .integerValue(BigNumber.ROUND_FLOOR),
         };
         const orderHash = orderHashUtils.getOrderHashHex(order);
         const signature = await signatureUtils.ecSignHashAsync(

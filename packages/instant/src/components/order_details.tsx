@@ -31,7 +31,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
             !_.isUndefined(assetEthBaseUnitAmount) &&
             !_.isUndefined(selectedAssetUnitAmount) &&
             !selectedAssetUnitAmount.eq(BIG_NUMBER_ZERO)
-                ? assetEthBaseUnitAmount.div(selectedAssetUnitAmount).ceil()
+                ? assetEthBaseUnitAmount.div(selectedAssetUnitAmount).integerValue(BigNumber.ROUND_CEIL)
                 : undefined;
         return (
             <Container padding="20px" width="100%" flexGrow={1}>

@@ -109,7 +109,7 @@ describe('buyQuoteCalculator', () => {
             const expectedEthAmountForAsset = new BigNumber(50);
             const expectedEthAmountForZrxFees = new BigNumber(100);
             const expectedFillEthAmount = expectedEthAmountForAsset;
-            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.mul(feePercentage);
+            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.multipliedBy(feePercentage);
             const expectedFeeEthAmount = expectedAffiliateFeeEthAmount.plus(expectedEthAmountForZrxFees);
             const expectedTotalEthAmount = expectedFillEthAmount.plus(expectedFeeEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
@@ -147,7 +147,7 @@ describe('buyQuoteCalculator', () => {
             const expectedEthAmountForAsset = new BigNumber(50);
             const expectedEthAmountForZrxFees = new BigNumber(100);
             const expectedFillEthAmount = expectedEthAmountForAsset;
-            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.mul(feePercentage);
+            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.multipliedBy(feePercentage);
             const expectedFeeEthAmount = expectedAffiliateFeeEthAmount.plus(expectedEthAmountForZrxFees);
             const expectedTotalEthAmount = expectedFillEthAmount.plus(expectedFeeEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
@@ -157,7 +157,7 @@ describe('buyQuoteCalculator', () => {
             const expectedWorstEthAmountForAsset = new BigNumber(100);
             const expectedWorstEthAmountForZrxFees = new BigNumber(208);
             const expectedWorstFillEthAmount = expectedWorstEthAmountForAsset;
-            const expectedWorstAffiliateFeeEthAmount = expectedWorstEthAmountForAsset.mul(feePercentage);
+            const expectedWorstAffiliateFeeEthAmount = expectedWorstEthAmountForAsset.multipliedBy(feePercentage);
             const expectedWorstFeeEthAmount = expectedWorstAffiliateFeeEthAmount.plus(expectedWorstEthAmountForZrxFees);
             const expectedWorstTotalEthAmount = expectedWorstFillEthAmount.plus(expectedWorstFeeEthAmount);
             expect(buyQuote.worstCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedWorstFillEthAmount);

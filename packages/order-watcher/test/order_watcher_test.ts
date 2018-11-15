@@ -317,7 +317,7 @@ describe('OrderWatcher', () => {
                     const validOrderState = orderState as OrderStateValid;
                     expect(validOrderState.orderHash).to.be.equal(orderHash);
                     const orderRelevantState = validOrderState.orderRelevantState;
-                    const remainingMakerBalance = makerBalance.sub(fillAmountInBaseUnits);
+                    const remainingMakerBalance = makerBalance.minus(fillAmountInBaseUnits);
                     const remainingFillable = fillableAmount.minus(fillAmountInBaseUnits);
                     expect(orderRelevantState.remainingFillableMakerAssetAmount).to.be.bignumber.equal(
                         remainingFillable,
@@ -434,7 +434,7 @@ describe('OrderWatcher', () => {
                     );
 
                     const remainingAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), decimals);
-                    const transferAmount = makerBalance.sub(remainingAmount);
+                    const transferAmount = makerBalance.minus(remainingAmount);
                     await orderWatcher.addOrderAsync(signedOrder);
 
                     const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {
@@ -475,7 +475,7 @@ describe('OrderWatcher', () => {
                     const remainingFeeAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(3), decimals);
 
                     const remainingTokenAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(4), decimals);
-                    const transferTokenAmount = makerFee.sub(remainingTokenAmount);
+                    const transferTokenAmount = makerFee.minus(remainingTokenAmount);
                     await orderWatcher.addOrderAsync(signedOrder);
 
                     const callback = callbackErrorReporter.reportNodeCallbackErrors(done)((orderState: OrderState) => {

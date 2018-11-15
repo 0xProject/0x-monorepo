@@ -24,7 +24,7 @@ export const format = {
         if (_.isUndefined(ethUnitAmount)) {
             return defaultText;
         }
-        const roundedAmount = ethUnitAmount.round(decimalPlaces).toDigits(decimalPlaces);
+        const roundedAmount = ethUnitAmount.decimalPlaces(decimalPlaces).precision(decimalPlaces);
         return `${roundedAmount} ETH`;
     },
     ethBaseUnitAmountInUsd: (
@@ -48,7 +48,7 @@ export const format = {
         if (_.isUndefined(ethUnitAmount) || _.isUndefined(ethUsdPrice)) {
             return defaultText;
         }
-        return `$${ethUnitAmount.mul(ethUsdPrice).toFixed(decimalPlaces)}`;
+        return `$${ethUnitAmount.multipliedBy(ethUsdPrice).toFixed(decimalPlaces)}`;
     },
     ethAddress: (address: string): string => {
         return `0x${address.slice(2, 7)}…${address.slice(-5)}`;
