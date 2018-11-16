@@ -11,8 +11,8 @@ import { scriptEnvironment } from './script_environment';
 const Rollbar = require('rollbar/dist/rollbar.noconflict.umd');
 
 const shouldReportErrors = () => {
-    const nonDev = scriptEnvironment.getEnvironment() !== Environment.Development;
-    return nonDev || process.env.FORCE_REPORT_ROLLBAR ? true : false;
+    const isNonDev = scriptEnvironment.getEnvironment() !== Environment.Development;
+    return isNonDev || process.env.FORCE_REPORT_ROLLBAR ? true : false;
 };
 
 const rollbar = new Rollbar({
