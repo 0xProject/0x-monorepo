@@ -49,7 +49,7 @@
                 "maxSize": "700kB"
             },
             {
-                "path": "packages/instant/public/main.bundle.js",
+                "path": "packages/instant/umd/instant.js",
                 "maxSize": "1000kB"
             }
         ],
