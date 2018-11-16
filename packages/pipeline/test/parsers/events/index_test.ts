@@ -5,7 +5,7 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import 'mocha';
 
 import { ExchangeFillEvent } from '../../../src/entities';
-import { _convertToEntity } from '../../../src/parsers/events';
+import { _convertToExchangeFillEvent } from '../../../src/parsers/events';
 import { chaiSetup } from '../../utils/chai_setup';
 
 chaiSetup.configure();
@@ -13,7 +13,7 @@ const expect = chai.expect;
 
 // tslint:disable:custom-no-magic-numbers
 describe('exchange_events', () => {
-    describe('_convertToEntity', () => {
+    describe('_convertToExchangeFillEvent', () => {
         it('converts LogWithDecodedArgs to ExchangeFillEvent entity', () => {
             const input: LogWithDecodedArgs<ExchangeFillEventArgs> = {
                 logIndex: 102,
@@ -71,7 +71,7 @@ describe('exchange_events', () => {
             expected.takerAssetProxyId = '0xf47261b0';
             expected.takerTokenAddress = '0xe41d2489571d322189246dafa5ebde1f4699f498';
             expected.takerTokenId = null;
-            const actual = _convertToEntity(input);
+            const actual = _convertToExchangeFillEvent(input);
             expect(actual).deep.equal(expected);
         });
     });
