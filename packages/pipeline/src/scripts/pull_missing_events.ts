@@ -64,16 +64,20 @@ async function getCancelUpToEventsAsync(eventsSource: ExchangeEventsSource): Pro
     await saveEventsAsync(startBlock === EXCHANGE_START_BLOCK, repository, events);
 }
 
+const tabelNameRegex = /^[a-zA-Z_]*$/;
+
 async function getStartBlockAsync<T extends ExchangeEvent>(repository: Repository<T>): Promise<number> {
     const fillEventCount = await repository.count();
     if (fillEventCount === 0) {
         console.log(`No existing ${repository.metadata.name}s found.`);
         return EXCHANGE_START_BLOCK;
     }
+    const tableName = repository.metadata.tableName;
+    if (!tabelNameRegex.test(tableName)) {
+        throw new Error('Unexpected special character in table name: ' + tableName);
+    }
     const queryResult = await connection.query(
-        // TODO(albrow): Would prefer to use a prepared statement here to reduce
-        // surface area for SQL injections, but it doesn't appear to be working.
-        `SELECT block_number FROM raw.${repository.metadata.tableName} ORDER BY block_number DESC LIMIT 1`,
+        `SELECT block_number FROM raw.${tableName} ORDER BY block_number DESC LIMIT 1`,
     );
     const lastKnownBlock = queryResult[0].block_number;
     return lastKnownBlock - START_BLOCK_OFFSET;
