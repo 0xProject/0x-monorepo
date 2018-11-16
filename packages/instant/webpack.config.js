@@ -6,7 +6,6 @@ const ip = require('ip');
 
 // The common js bundle (not this one) is built using tsc.
 // The umd bundle (this one) has a different entrypoint.
-
 const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
     .toString()
@@ -53,16 +52,19 @@ function getPlugins(webpackEnv) {
 }
 
 module.exports = (env, argv) => {
+    const outputPath = process.env.WEBPACK_OUTPUT_PATH || 'umd';
     const plugins = getPlugins(env || {});
-
     const config = {
-        entry: './src/index.umd.ts',
+        entry: {
+            instant: './src/index.umd.ts',
+        },
         output: {
-            filename: '[name].bundle.js',
-            path: path.resolve(__dirname, 'public'),
+            filename: '[name].js',
+            path: path.resolve(__dirname, outputPath),
             library: 'zeroExInstant',
             libraryTarget: 'umd',
         },
+        plugins,
         devtool: 'source-map',
         resolve: {
             extensions: ['.js', '.json', '.ts', '.tsx'],
@@ -75,7 +77,6 @@ module.exports = (env, argv) => {
                 },
             ],
         },
-        plugins: plugins,
         devServer: {
             contentBase: path.join(__dirname, 'public'),
             port: 5000,

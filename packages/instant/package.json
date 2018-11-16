@@ -1,10 +1,9 @@
 {
     "name": "@0x/instant",
-    "version": "0.0.7",
+    "version": "1.0.0",
     "engines": {
         "node": ">=6.12"
     },
-    "private": true,
     "description": "0x Instant React Component",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
@@ -29,8 +28,8 @@
     "config": {
         "postpublish": {
             "assets": [
-                "packages/instant/public/index.js",
-                "packages/instant/public/index.min.js"
+                "packages/instant/umd/instant.js",
+                "packages/instant/umd/instant.min.js"
             ]
         }
     },
@@ -101,6 +100,6 @@
         "webpack-dev-server": "^3.1.9"
     },
     "publishConfig": {
-        "access": "private"
+        "access": "public"
     }
 }
