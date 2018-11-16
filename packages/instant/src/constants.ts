@@ -50,4 +50,5 @@ export const PROVIDER_TYPE_TO_NAME: { [key in ProviderType]: string } = {
     [ProviderType.Mist]: 'Mist',
     [ProviderType.CoinbaseWallet]: 'Coinbase Wallet',
     [ProviderType.Parity]: 'Parity',
+    [ProviderType.Fallback]: 'Fallback',
 };
