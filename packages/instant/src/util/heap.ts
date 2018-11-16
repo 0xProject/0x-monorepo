@@ -107,7 +107,7 @@ export const heapUtil = {
                 heapFunctionCall(curHeap);
             } catch (e) {
                 // We never want analytics to crash our React component
-                // TODO: error reporter here
+                // TODO(sk): error reporter here
                 logUtils.log('Analytics error', e);
             }
         }
