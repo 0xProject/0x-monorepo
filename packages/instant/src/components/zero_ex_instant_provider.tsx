@@ -19,7 +19,6 @@ import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
-import { analyticsMiddleware } from '../redux/analytics_middleware';
 
 fonts.include();
 
