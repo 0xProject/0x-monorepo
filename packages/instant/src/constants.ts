@@ -25,7 +25,7 @@ export const ENVIRONMENTS_TO_DOMAINS: EnvironmentToDomain = {
     PRODUCTION: ['unpkg.com', 'jsdelivr.com'],
     STAGING: ['0x-instant-staging.s3-website-us-east-1.amazonaws.com'],
     DOGFOOD: ['0x-instant-dogfood.s3-website-us-east-1.amazonaws.com'],
-    DEVELOPMENT: ['localhost', '127.0.0.1', 'ngrok.io'],
+    DEVELOPMENT: ['0.0.0.0', '127.0.0.1', 'localhost', 'ngrok.io'],
 };
 export const COINBASE_WALLET_IOS_APP_STORE_URL = 'https://itunes.apple.com/us/app/coinbase-wallet/id1278383455?mt=8';
 export const COINBASE_WALLET_ANDROID_APP_STORE_URL = 'https://play.google.com/store/apps/details?id=org.toshi&hl=en';
