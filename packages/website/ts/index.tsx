@@ -9,6 +9,7 @@ import { DocsHome } from 'ts/containers/docs_home';
 import { FAQ } from 'ts/containers/faq';
 import { Jobs } from 'ts/containers/jobs';
 import { Landing } from 'ts/containers/landing';
+import { LaunchKit } from 'ts/containers/launch_kit';
 import { NotFound } from 'ts/containers/not_found';
 import { Wiki } from 'ts/containers/wiki';
 import { createLazyComponent } from 'ts/lazy_component';
@@ -87,6 +88,7 @@ render(
                             <Switch>
                                 <Route exact={true} path="/" component={Landing as any} />
                                 <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
+                                <Route path={WebsitePaths.LaunchKit} component={LaunchKit as any} />
                                 <Route path={WebsitePaths.Careers} component={Jobs as any} />
                                 <Route path={WebsitePaths.Portal} component={LazyPortal} />
                                 <Route path={WebsitePaths.FAQ} component={FAQ as any} />

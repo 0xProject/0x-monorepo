@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 
 import { LOADING_ACCOUNT, NO_ACCOUNT } from '../constants';
 import { Maybe, Network, OrderSource, ProviderState } from '../types';
+import { envUtil } from '../util/env';
 
 import { assetBuyerFactory } from './asset_buyer_factory';
 import { providerFactory } from './provider_factory';
@@ -29,6 +30,7 @@ export const providerStateFactory = {
         provider: Provider,
     ): ProviderState => {
         const providerState: ProviderState = {
+            name: envUtil.getProviderName(provider),
             provider,
             web3Wrapper: new Web3Wrapper(provider),
             assetBuyer: assetBuyerFactory.getAssetBuyer(provider, orderSource, network),
@@ -40,6 +42,7 @@ export const providerStateFactory = {
         const injectedProviderIfExists = providerFactory.getInjectedProviderIfExists();
         if (!_.isUndefined(injectedProviderIfExists)) {
             const providerState: ProviderState = {
+                name: envUtil.getProviderName(injectedProviderIfExists),
                 provider: injectedProviderIfExists,
                 web3Wrapper: new Web3Wrapper(injectedProviderIfExists),
                 assetBuyer: assetBuyerFactory.getAssetBuyer(injectedProviderIfExists, orderSource, network),
@@ -53,6 +56,7 @@ export const providerStateFactory = {
     getInitialProviderStateFallback: (orderSource: OrderSource, network: Network): ProviderState => {
         const provider = providerFactory.getFallbackNoSigningProvider(network);
         const providerState: ProviderState = {
+            name: envUtil.getProviderName(provider),
             provider,
             web3Wrapper: new Web3Wrapper(provider),
             assetBuyer: assetBuyerFactory.getAssetBuyer(provider, orderSource, network),

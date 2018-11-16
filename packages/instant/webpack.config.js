@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
 const childProcess = require('child_process');
+const ip = require('ip');
 
 // The common js bundle (not this one) is built using tsc.
 // The umd bundle (this one) has a different entrypoint.
@@ -52,7 +53,8 @@ function getPlugins(webpackEnv) {
 
 module.exports = (env, argv) => {
     const plugins = getPlugins(env || {});
-    return {
+
+    const config = {
         entry: './src/index.umd.ts',
         output: {
             filename: '[name].bundle.js',
@@ -67,24 +69,26 @@ module.exports = (env, argv) => {
         module: {
             rules: [
                 {
-                    test: /\.js$/,
-                    loader: 'source-map-loader',
-                    exclude: [
-                        // instead of /\/node_modules\//
-                        path.join(process.cwd(), 'node_modules'),
-                        path.join(process.cwd(), '../..', 'node_modules'),
-                    ],
-                },
-                {
                     test: /\.(ts|tsx)$/,
                     loader: 'awesome-typescript-loader',
                 },
             ],
         },
+        plugins: plugins,
         devServer: {
             contentBase: path.join(__dirname, 'public'),
             port: 5000,
+            host: '0.0.0.0',
+            after: () => {
+                if (config.devServer.host === '0.0.0.0') {
+                    console.log(
+                        `webpack-dev-server can be accessed externally at: http://${ip.address()}:${
+                            config.devServer.port
+                        }`,
+                    );
+                }
+            },
         },
-        plugins,
     };
+    return config;
 };

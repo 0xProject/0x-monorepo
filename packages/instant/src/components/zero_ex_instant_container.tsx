@@ -44,7 +44,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         zIndex={zIndex.mainContainer}
                         position="relative"
                         backgroundColor={ColorOption.white}
-                        borderRadius="3px"
+                        borderRadius={{ default: '3px', sm: '0px' }}
                         hasBoxShadow={true}
                         overflow="hidden"
                         height="100%"
