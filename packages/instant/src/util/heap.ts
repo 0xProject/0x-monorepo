@@ -71,7 +71,6 @@ const setupZeroExInstantHeap = () => {
             )
                 (window as any).heap[p[c]] = o(p[c]);
         });
-    // TODO: use production heap id once environment utils merged
     (window as any).heap.load(getHeapAppId());
     /* tslint:enable */
 
