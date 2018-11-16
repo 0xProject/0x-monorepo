@@ -41,7 +41,7 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         assert.isWeb3Provider('props.provider', config.provider);
     }
     assert.isString('selector', selector);
-    // Render instant and return a callback that allows you to close it.
+    // Render instant and return a callback that allows you to remove it from the DOM.
     const renderInstant = () => {
         const appendToIfExists = document.querySelector(selector);
         assert.assert(!_.isNull(appendToIfExists), `Could not find div with selector: ${selector}`);
@@ -50,21 +50,21 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         injectedDiv.setAttribute('id', INJECTED_DIV_ID);
         injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
         appendTo.appendChild(injectedDiv);
-        const close = () => appendTo.removeChild(injectedDiv);
+        const removeFromDom = () => appendTo.removeChild(injectedDiv);
         const instantOverlayProps = {
             ...config,
             // If we are using the history API, just go back to close
-            onClose: () => (config.shouldDisablePushToHistory ? close() : window.history.back()),
+            onClose: () => (config.shouldDisablePushToHistory ? removeFromDom() : window.history.back()),
         };
         ReactDOM.render(React.createElement(ZeroExInstantOverlay, instantOverlayProps), injectedDiv);
-        return close;
+        return removeFromDom;
     };
     if (config.shouldDisablePushToHistory) {
         renderInstant();
     } else {
         // Before we render, push to history saying that instant is showing for this part of the history.
         window.history.pushState({ zeroExInstantShowing: true }, '0x Instant');
-        let closeInstant = renderInstant();
+        let removeInstant = renderInstant();
 
         let prevOnPopState = util.boundNoop;
         if (window.onpopstate) {
@@ -76,10 +76,10 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
             // e.state represents the new state
             if (e.state && e.state.zeroExInstantShowing) {
                 // The user pressed fowards, so re-render instant.
-                closeInstant = renderInstant();
+                removeInstant = renderInstant();
             } else {
                 // User pressed back, so close instant.
-                closeInstant();
+                removeInstant();
                 if (!_.isUndefined(config.onClose)) {
                     config.onClose();
                 }
