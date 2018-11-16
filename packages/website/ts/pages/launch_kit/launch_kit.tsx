@@ -298,7 +298,7 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                 paddingTop="70px"
                 paddingBottom="70px"
             >
-                <Container className="mx-auto" width="890px">
+                <Container className="mx-auto" maxWidth="850px" paddingLeft="20px" paddingRight="20px">
                     <Text fontColor={grayText} fontSize="10px">
                         <b>Disclaimer:</b> The laws and regulations applicable to the use and exchange of digital assets
                         and blockchain-native tokens, including through any software developed using the licensed work
