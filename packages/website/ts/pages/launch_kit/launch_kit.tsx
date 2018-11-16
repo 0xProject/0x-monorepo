@@ -172,7 +172,7 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                             />
                         </Container>
                     </div>
-                </div>;
+                </div>
                 {this._renderBenefits(BENEFITS_1)}
             </div>
         );
