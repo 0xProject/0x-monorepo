@@ -3,12 +3,26 @@ import * as _ from 'lodash';
 import { Middleware } from 'redux';
 
 import { ETH_DECIMALS } from '../constants';
-import { AccountState } from '../types';
+import { Account, AccountState } from '../types';
 import { analytics } from '../util/analytics';
 
 import { Action, ActionTypes } from './actions';
 
 import { State } from './reducer';
+
+const shouldTriggerWalletReady = (prevAccount: Account, curAccount: Account): boolean => {
+    const justTurnedReady = curAccount.state === AccountState.Ready && prevAccount.state !== AccountState.Ready;
+    if (justTurnedReady) {
+        return true;
+    }
+
+    if (curAccount.state === AccountState.Ready && prevAccount.state === AccountState.Ready) {
+        // Account was ready, and is now ready again, but address has changed
+        return curAccount.address !== prevAccount.address;
+    }
+
+    return false;
+};
 
 export const analyticsMiddleware: Middleware = store => next => middlewareAction => {
     const prevState = store.getState() as State;
@@ -21,7 +35,7 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
 
     switch (nextAction.type) {
         case ActionTypes.SET_ACCOUNT_STATE_READY:
-            if (curAccount.state === AccountState.Ready && prevAccount.state !== AccountState.Ready) {
+            if (curAccount.state === AccountState.Ready && shouldTriggerWalletReady(prevAccount, curAccount)) {
                 const ethAddress = curAccount.address;
                 analytics.addUserProperties({ ethAddress });
                 analytics.trackWalletReady();
