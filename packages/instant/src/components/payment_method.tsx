@@ -1,13 +1,8 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import {
-    COINBASE_WALLET_ANDROID_APP_STORE_URL,
-    COINBASE_WALLET_IOS_APP_STORE_URL,
-    COINBASE_WALLET_SITE_URL,
-} from '../constants';
 import { ColorOption } from '../style/theme';
-import { Account, AccountState, Network, OperatingSystem } from '../types';
+import { Account, AccountState, Network } from '../types';
 import { envUtil } from '../util/env';
 
 import { CoinbaseWalletLogo } from './coinbase_wallet_logo';
