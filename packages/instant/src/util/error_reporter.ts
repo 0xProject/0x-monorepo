@@ -4,14 +4,20 @@ import { logUtils } from '@0x/utils';
 import Rollbar from 'rollbar';
 
 import { ROLLBAR_ACCESS_TOKEN } from '../constants';
+import { Environment } from '../types';
 
 import { scriptEnvironment } from './script_environment';
 
-console.log('code version', process.env.GIT_SHA);
+const shouldReportErrors = () => {
+    const nonDev = scriptEnvironment.getEnvironment() !== Environment.Development;
+    return nonDev || process.env.FORCE_REPORT_ROLLBAR ? true : false;
+};
+
 const rollbar = new Rollbar({
     accessToken: ROLLBAR_ACCESS_TOKEN,
     captureUncaught: true,
     captureUnhandledRejections: true,
+    enabled: shouldReportErrors(),
     itemsPerMinute: 10,
     maxItems: 500,
     payload: {
@@ -44,7 +50,6 @@ export const setupRollbar = () => {
 
 export const errorReporter = {
     report(err: Error): void {
-        // TOOD: dev check
         rollbar.error(err, (rollbarErr: Error) => {
             if (rollbarErr) {
                 logUtils.log(`Error reporting to rollbar, ignoring: ${rollbarErr}`);

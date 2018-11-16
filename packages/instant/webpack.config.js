@@ -18,6 +18,7 @@ function getPlugins(webpackEnv) {
         new webpack.DefinePlugin({
             'process.env': {
                 GIT_SHA: JSON.stringify(GIT_SHA),
+                FORCE_REPORT_ROLLBAR: JSON.stringify(process.env.FORCE_REPORT_ROLLBAR),
             },
         }),
     ];
