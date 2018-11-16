@@ -14,6 +14,7 @@ export interface ContractAddresses {
 export enum NetworkId {
     Mainnet = 1,
     Ropsten = 3,
+    Rinkeby = 4,
     Kovan = 42,
 }
 
@@ -37,6 +38,16 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0xf5fa5b5fed2727a0e44ac67f6772e97977aa358b',
         forwarder: '0x2240dab907db71e64d3e0dba4800c83b5c502d4e',
         orderValidator: '0x90431a90516ab49af23a0530e04e8c7836e7122f',
+    },
+    4: {
+        erc20Proxy: '0x3e809c563c15a295e832e37053798ddc8d6c8dab',
+        erc721Proxy: '0x8e1ff02637cb5e39f2fa36c14706aa348b065b09',
+        zrxToken: '0x2727e688b8fd40b198cd5fe6e408e00494a06f07',
+        etherToken: '0xc778417e063141139fce010982780140aa0cd5ab',
+        exchange: '0x22ebc052f43a88efa06379426120718170f2204e',
+        assetProxyOwner: '0x1da52d1d3a3acfa0a1836b737393b4e9931268fc',
+        forwarder: '0xd2dbf3250a764eaaa94fa0c84ed87c0edc8ed04e',
+        orderValidator: '0x39c3fc9f4d8430af2713306ce80c584752d9e1c7',
     },
     42: {
         erc20Proxy: '0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e',
