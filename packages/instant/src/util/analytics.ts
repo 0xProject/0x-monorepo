@@ -15,6 +15,7 @@ function trackingEventFnWithoutPayload(eventName: EventNames): () => void {
         track(eventName);
     };
 }
+// tslint:disable-next-line:no-unused-variable
 function trackingEventFnWithPayload<T extends ObjectMap<string | number>>(
     eventName: EventNames,
 ): (eventDataProperties: T) => void {
