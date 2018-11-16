@@ -27,7 +27,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 
-describe(ContractName.DutchAuction, () => {
+describe.only(ContractName.DutchAuction, () => {
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -49,11 +49,26 @@ describe(ContractName.DutchAuction, () => {
     let tenMinutesInSeconds: number;
     let currentBlockTimestamp: number;
     let auctionBeginTime: BigNumber;
+    let auctionEndTime: BigNumber;
     let auctionBeginPrice: BigNumber;
+    let auctionEndPrice: BigNumber;
     let encodedParams: BigNumber;
     let sellOrder: SignedOrder;
     let buyOrder: SignedOrder;
     let erc721MakerAssetIds: BigNumber[];
+    async function increaseTimeAsync(): Promise<void> {
+        const timestampBefore = await getLatestBlockTimestampAsync();
+        await web3Wrapper.increaseTimeAsync(5);
+        const timestampAfter = await getLatestBlockTimestampAsync();
+        // HACK send some transactions
+        if (timestampAfter === timestampBefore) {
+            await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
+            await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
+            await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
+            await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
+            await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
+        }
+    }
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -132,12 +147,19 @@ describe(ContractName.DutchAuction, () => {
         web3Wrapper.abiDecoder.addABI(exchangeInstance.abi);
         web3Wrapper.abiDecoder.addABI(zrxToken.abi);
         erc20Wrapper.addTokenOwnerAddress(dutchAuctionContract.address);
+
         tenMinutesInSeconds = 10 * 60;
         currentBlockTimestamp = await getLatestBlockTimestampAsync();
+        // Default auction begins 10 minutes ago
         auctionBeginTime = new BigNumber(currentBlockTimestamp).minus(tenMinutesInSeconds);
+        // Default auction ends 10 from now
+        auctionEndTime = new BigNumber(currentBlockTimestamp).plus(tenMinutesInSeconds);
         auctionBeginPrice = Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT);
+        auctionEndPrice = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT);
         encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
+        const zero = Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT);
 
+        // Default sell order and buy order are exact mirrors
         const sellerDefaultOrderParams = {
             salt: encodedParams, // Set the encoded params as the salt for the seller order
             exchangeAddress: exchangeInstance.address,
@@ -147,18 +169,23 @@ describe(ContractName.DutchAuction, () => {
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
             makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
-            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), DECIMALS_DEFAULT),
-            makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
-            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
+            takerAssetAmount: auctionEndPrice,
+            expirationTimeSeconds: auctionEndTime,
+            makerFee: zero,
+            takerFee: zero,
         };
+        // Default buy order is for the auction begin price
         const buyerDefaultOrderParams = {
             ...sellerDefaultOrderParams,
             makerAddress: takerAddress,
             makerAssetData: sellerDefaultOrderParams.takerAssetData,
             takerAssetData: sellerDefaultOrderParams.makerAssetData,
-            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
+            makerAssetAmount: auctionBeginPrice,
             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
         };
+
+        encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
+
         const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
         sellerOrderFactory = new OrderFactory(makerPrivateKey, sellerDefaultOrderParams);
@@ -170,11 +197,6 @@ describe(ContractName.DutchAuction, () => {
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
         erc20Balances = await erc20Wrapper.getBalancesAsync();
-        tenMinutesInSeconds = 10 * 60;
-        currentBlockTimestamp = await getLatestBlockTimestampAsync();
-        auctionBeginTime = new BigNumber(currentBlockTimestamp).minus(tenMinutesInSeconds);
-        auctionBeginPrice = Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT);
-        encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
         sellOrder = await sellerOrderFactory.newSignedOrderAsync();
         buyOrder = await buyerOrderFactory.newSignedOrderAsync();
     });
@@ -183,6 +205,7 @@ describe(ContractName.DutchAuction, () => {
     });
     describe('matchOrders', () => {
         it('should encode and decode parameters', async () => {
+            encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
             const [decodedBegin, decodedBeginPrice] = await dutchAuctionContract.decodeParameters.callAsync(
                 encodedParams,
             );
@@ -190,9 +213,6 @@ describe(ContractName.DutchAuction, () => {
             expect(decodedBeginPrice).to.be.bignumber.equal(auctionBeginPrice);
         });
         it('should be worth the begin price at the begining of the auction', async () => {
-            // TODO this is flakey
-            currentBlockTimestamp = await web3Wrapper.getBlockTimestampAsync('latest');
-            await web3Wrapper.increaseTimeAsync(1);
             auctionBeginTime = new BigNumber(currentBlockTimestamp + 2);
             encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
@@ -200,6 +220,18 @@ describe(ContractName.DutchAuction, () => {
             });
             const auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
             expect(auctionDetails.currentPrice).to.be.bignumber.equal(auctionBeginPrice);
+            expect(auctionDetails.beginPrice).to.be.bignumber.equal(auctionBeginPrice);
+        });
+        it('should be be worth the end price at the end of the auction', async () => {
+            auctionBeginTime = new BigNumber(currentBlockTimestamp - 1000);
+            auctionEndTime = new BigNumber(currentBlockTimestamp - 100);
+            encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
+            sellOrder = await sellerOrderFactory.newSignedOrderAsync({
+                salt: encodedParams,
+                expirationTimeSeconds: auctionEndTime,
+            });
+            const auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
+            expect(auctionDetails.currentPrice).to.be.bignumber.equal(auctionEndPrice);
             expect(auctionDetails.beginPrice).to.be.bignumber.equal(auctionBeginPrice);
         });
         it('should match orders and send excess to seller', async () => {
@@ -224,11 +256,11 @@ describe(ContractName.DutchAuction, () => {
         it('should have valid getAuctionDetails at a block in the future', async () => {
             let auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
             const beforePrice = auctionDetails.currentPrice;
-            // Increase block time
-            await web3Wrapper.increaseTimeAsync(60);
+            await increaseTimeAsync();
             auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
             const currentPrice = auctionDetails.currentPrice;
             expect(beforePrice).to.be.bignumber.greaterThan(currentPrice);
+
             buyOrder = await buyerOrderFactory.newSignedOrderAsync({
                 makerAssetAmount: currentPrice,
             });
@@ -248,8 +280,12 @@ describe(ContractName.DutchAuction, () => {
             );
         });
         it('should revert when auction expires', async () => {
-            // Increase block time
-            await web3Wrapper.increaseTimeAsync(tenMinutesInSeconds);
+            auctionEndTime = new BigNumber(currentBlockTimestamp - 100);
+            encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
+            sellOrder = await sellerOrderFactory.newSignedOrderAsync({
+                salt: encodedParams,
+                expirationTimeSeconds: auctionEndTime,
+            });
             return expectTransactionFailedAsync(
                 dutchAuctionContract.matchOrders.sendTransactionAsync(
                     buyOrder,
@@ -264,8 +300,7 @@ describe(ContractName.DutchAuction, () => {
             );
         });
         it('cannot be filled for less than the current price', async () => {
-            // Increase block time
-            await web3Wrapper.increaseTimeAsync(60);
+            await increaseTimeAsync();
             buyOrder = await buyerOrderFactory.newSignedOrderAsync({
                 makerAssetAmount: sellOrder.takerAssetAmount,
             });

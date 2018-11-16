@@ -86,11 +86,9 @@ contract DutchAuction {
     {
         AuctionDetails memory auctionDetails = getAuctionDetails(sellOrder);
         // Ensure the auction has not yet started
-        // solhint-disable-next-line not-rely-on-time
-        require(block.timestamp >= auctionDetails.beginTime, "AUCTION_NOT_STARTED");
+        require(auctionDetails.currentTime >= auctionDetails.beginTime, "AUCTION_NOT_STARTED");
         // Ensure the auction has not expired. This will fail later in 0x but we can save gas by failing early
-        // solhint-disable-next-line not-rely-on-time
-        require(sellOrder.expirationTimeSeconds > block.timestamp, "AUCTION_EXPIRED");
+        require(sellOrder.expirationTimeSeconds > auctionDetails.currentTime, "AUCTION_EXPIRED");
         // Ensure the auction goes from high to low
         require(auctionDetails.beginPrice > auctionDetails.endPrice, "INVALID_PRICE");
         // Validate the buyer amount is greater than the current auction price
@@ -141,20 +139,24 @@ contract DutchAuction {
         (uint256 auctionBeginTimeSeconds, uint256 auctionBeginPrice) = decodeParameters(order.salt);
         require(order.expirationTimeSeconds > auctionBeginTimeSeconds, "INVALID_BEGIN_TIME");
         uint256 auctionDurationSeconds = order.expirationTimeSeconds-auctionBeginTimeSeconds;
-        // solhint-disable-next-line not-rely-on-time
-        uint256 currentDurationSeconds = order.expirationTimeSeconds-block.timestamp;
         uint256 minPrice = order.takerAssetAmount;
-        uint256 priceDiff = auctionBeginPrice-minPrice;
-        uint256 currentPrice = minPrice + (currentDurationSeconds*priceDiff/auctionDurationSeconds);
-
+        // solhint-disable-next-line not-rely-on-time
+        uint256 timestamp = block.timestamp;
         auctionDetails.beginTime = auctionBeginTimeSeconds;
         auctionDetails.endTime = order.expirationTimeSeconds;
         auctionDetails.beginPrice = auctionBeginPrice;
         auctionDetails.endPrice = minPrice;
-        auctionDetails.currentPrice = currentPrice;
-        // solhint-disable-next-line not-rely-on-time
-        auctionDetails.currentTime = block.timestamp;
+        auctionDetails.currentTime = timestamp;
 
+        uint256 remainingDurationSeconds = order.expirationTimeSeconds-timestamp;
+        uint256 priceDelta = auctionBeginPrice-minPrice;
+        uint256 currentPrice = minPrice + (remainingDurationSeconds*priceDelta/auctionDurationSeconds);
+        // If the auction has not yet begun the current price is the auctionBeginPrice
+        currentPrice = timestamp < auctionBeginTimeSeconds ? auctionBeginPrice : currentPrice;
+        // If the auction has ended the current price is the minPrice
+        // auction end time is guaranteed by 0x Exchange to fail due to the order expiration
+        currentPrice = timestamp >= order.expirationTimeSeconds ? minPrice : currentPrice;
+        auctionDetails.currentPrice = currentPrice;
         return auctionDetails;
     }
 }
