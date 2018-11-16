@@ -27,6 +27,7 @@ interface LaunchKitState {
 const THROTTLE_TIMEOUT = 100;
 const lighterBackgroundColor = '#222222';
 const darkerBackgroundColor = '#1B1B1B';
+const grayText = '#999999';
 
 interface Benefit {
     icon: string;
@@ -63,6 +64,7 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                 {this._renderHero()}
                 {this._renderSection()}
                 {this._renderCallToAction()}
+                {this._renderDisclaimer()}
                 <Footer
                     backgroundColor={darkerBackgroundColor}
                     translate={this.props.translate}
@@ -285,6 +287,33 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                         </Container>
                     );
                 })}
+            </Container>
+        );
+    }
+    private _renderDisclaimer(): React.ReactNode {
+        return (
+            <Container
+                className="clearfix"
+                backgroundColor={darkerBackgroundColor}
+                paddingTop="70px"
+                paddingBottom="70px"
+            >
+                <Container className="mx-auto" width="890px">
+                    <Text fontColor={grayText} fontSize="10px">
+                        <b>Disclaimer:</b> The laws and regulations applicable to the use and exchange of digital assets
+                        and blockchain-native tokens, including through any software developed using the licensed work
+                        created by ZeroEx Inc. (the “Work”), vary by jurisdiction. As set forth in the Apache License,
+                        Version 2.0 applicable to the Work, developers are “solely responsible for determining the
+                        appropriateness of using or redistributing the Work,” which includes responsibility for ensuring
+                        compliance with any such applicable laws and regulations.
+                    </Text>
+                    <Container paddingTop="15px">
+                        <Text fontColor={grayText} fontSize="10px">
+                            See the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0) for the
+                            specific language governing all applicable permissions and limitations.
+                        </Text>
+                    </Container>
+                </Container>
             </Container>
         );
     }
