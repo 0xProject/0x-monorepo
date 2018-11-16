@@ -29,8 +29,8 @@
     "config": {
         "postpublish": {
             "assets": [
-                "packages/instant/public/index.js",
-                "packages/instant/public/index.min.js"
+                "packages/instant/umd/instant.js",
+                "packages/instant/umd/instant.min.js"
             ]
         }
     },
