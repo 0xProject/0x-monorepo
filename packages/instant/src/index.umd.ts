@@ -17,28 +17,31 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         assert.isHexString('defaultSelectedAssetData', config.defaultSelectedAssetData);
     }
     if (!_.isUndefined(config.additionalAssetMetaDataMap)) {
-        assert.isValidAssetMetaDataMap('props.additionalAssetMetaDataMap', config.additionalAssetMetaDataMap);
+        assert.isValidAssetMetaDataMap('additionalAssetMetaDataMap', config.additionalAssetMetaDataMap);
     }
     if (!_.isUndefined(config.defaultAssetBuyAmount)) {
-        assert.isNumber('props.defaultAssetBuyAmount', config.defaultAssetBuyAmount);
+        assert.isNumber('defaultAssetBuyAmount', config.defaultAssetBuyAmount);
     }
     if (!_.isUndefined(config.networkId)) {
-        assert.isNumber('props.networkId', config.networkId);
+        assert.isNumber('networkId', config.networkId);
     }
     if (!_.isUndefined(config.availableAssetDatas)) {
         assert.areValidAssetDatas('availableAssetDatas', config.availableAssetDatas);
     }
     if (!_.isUndefined(config.onClose)) {
-        assert.isFunction('props.onClose', config.onClose);
+        assert.isFunction('onClose', config.onClose);
     }
     if (!_.isUndefined(config.zIndex)) {
-        assert.isNumber('props.zIndex', config.zIndex);
+        assert.isNumber('zIndex', config.zIndex);
     }
     if (!_.isUndefined(config.affiliateInfo)) {
-        assert.isValidAffiliateInfo('props.affiliateInfo', config.affiliateInfo);
+        assert.isValidAffiliateInfo('affiliateInfo', config.affiliateInfo);
     }
     if (!_.isUndefined(config.provider)) {
-        assert.isWeb3Provider('props.provider', config.provider);
+        assert.isWeb3Provider('provider', config.provider);
+    }
+    if (!_.isUndefined(config.shouldDisablePushToHistory)) {
+        assert.isBoolean('shouldDisablePushToHistory', config.shouldDisablePushToHistory);
     }
     assert.isString('selector', selector);
     // Render instant and return a callback that allows you to remove it from the DOM.
