@@ -235,7 +235,7 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                         paddingTop="5px"
                     >
                         <Container paddingRight="20px">
-                            <Link to={constants.URL_LAUNCH_KIT} shouldOpenInNewTab={true}>
+                            <Link to={`${constants.URL_LAUNCH_KIT}/#table-of-contents`} shouldOpenInNewTab={true}>
                                 <Button
                                     padding={isSmallScreen ? smallButtonPadding : largeButtonPadding}
                                     borderRadius="4px"
