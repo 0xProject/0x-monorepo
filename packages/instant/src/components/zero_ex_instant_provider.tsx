@@ -128,6 +128,8 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             embeddedUrl: window.location.href,
             networkId: state.network,
             providerName: state.providerState.name,
+            gitSha: process.env.GIT_SHA,
+            npmVersion: process.env.NPM_PACKAGE_VERSION,
         });
         analytics.widgetOpened();
     }

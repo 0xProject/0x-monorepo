@@ -30,8 +30,10 @@ export interface AnalyticsUserOptions {
 export interface AnalyticsEventOptions {
     embeddedHost?: string;
     embeddedUrl?: string;
-    networkId: number;
-    providerName: string;
+    networkId?: number;
+    providerName?: string;
+    gitSha?: string;
+    npmVersion?: string;
 }
 export const analytics = {
     addUserProperties: (properties: AnalyticsUserOptions): void => {
