@@ -132,7 +132,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             gitSha: process.env.GIT_SHA,
             npmVersion: process.env.NPM_PACKAGE_VERSION,
         });
-        analytics.trackWidgetOpened();
+        analytics.trackInstantOpened();
     }
     public componentWillUnmount(): void {
         if (this._accountUpdateHeartbeat) {
