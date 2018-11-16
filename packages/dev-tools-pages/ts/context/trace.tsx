@@ -1,6 +1,6 @@
 import Icon from 'ts/icons/logos/trace.svg';
 
-export default {
+export const context = {
     title: 'sol-trace',
     name: 'trace',
     subtitle: 'Human-readable stack traces',

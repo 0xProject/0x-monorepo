@@ -1,10 +1,11 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { media, colors } from '../variables';
 
+import { colors, media } from 'ts/variables';
+
+import { Breakout } from './Breakout';
+import { Container } from './Container';
 import { Alpha, Lead } from './Typography';
-import Container from './Container';
-import Breakout from './Breakout';
 
 const Main = styled.div`
     background-color: ${colors.lightGray};
@@ -16,7 +17,7 @@ const Main = styled.div`
         padding: 2.5rem;
     `};
     ${media.medium`
-        display: block;     
+        display: block;
     `};
 `;
 
@@ -52,30 +53,23 @@ interface IntroLeadProps {
     children?: React.ReactNode;
 }
 
-function IntroLead(props: IntroLeadProps) {
-    return (
-        <StyledIntroLead as="div">
-            <Title>{props.title}</Title>
-            {props.children}
-        </StyledIntroLead>
-    );
-}
+const IntroLead: React.StatelessComponent<IntroLeadProps> = props => (
+    <StyledIntroLead as="div">
+        <Title>{props.title}</Title>
+        {props.children}
+    </StyledIntroLead>
+);
 
-function IntroAside(props: IntroProps) {
-    return (
-        <Breakout>
-            <StyledIntroAside>{props.children}</StyledIntroAside>
-        </Breakout>
-    );
-}
+const IntroAside: React.StatelessComponent<IntroProps> = props => (
+    <Breakout>
+        <StyledIntroAside>{props.children}</StyledIntroAside>
+    </Breakout>
+);
 
-function Intro(props: IntroProps) {
-    return (
-        <Container wide>
-            <Main>{props.children}</Main>
-        </Container>
-    );
-}
+const Intro: React.StatelessComponent<IntroProps> = props => (
+    <Container wide={true}>
+        <Main>{props.children}</Main>
+    </Container>
+);
 
-export default Intro;
 export { IntroLead, IntroAside, Intro };

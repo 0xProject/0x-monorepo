@@ -1,10 +1,11 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { media, colors } from '../variables';
 
-import Container from './Container';
-import InlineCode from './InlineCode';
-import Breakout from './Breakout';
+import { colors, media } from 'ts/variables';
+
+import { Breakout } from './Breakout';
+import { Container } from './Container';
+import { InlineCode } from './InlineCode';
 
 const Cards = styled.dl`
     column-count: 3;
@@ -12,7 +13,7 @@ const Cards = styled.dl`
 
     ${media.medium`
         column-count: 1;
-    `}: ;
+    `};
 `;
 
 const Card = styled.div`
@@ -46,7 +47,7 @@ const cards = [
         title: 'A Project-centric',
         body: (
             <React.Fragment>
-                Compiles an entire project instead of only individual <InlineCode alt>.sol</InlineCode> files.
+                Compiles an entire project instead of only individual <InlineCode isAlt={true}>.sol</InlineCode> files.
             </React.Fragment>
         ),
     },
@@ -70,21 +71,19 @@ const cards = [
     },
 ];
 
-function Compiler() {
-    return (
-        <Container>
-            <Breakout>
-                <Cards>
-                    {cards.map(card => (
-                        <Card key={card.title.split(' ').join('-')}>
-                            <Dt>{card.title}</Dt>
-                            <Dd>{card.body}</Dd>
-                        </Card>
-                    ))}
-                </Cards>
-            </Breakout>
-        </Container>
-    );
-}
+const Compiler: React.StatelessComponent<{}> = () => (
+    <Container>
+        <Breakout>
+            <Cards>
+                {cards.map(card => (
+                    <Card key={card.title.split(' ').join('-')}>
+                        <Dt>{card.title}</Dt>
+                        <Dd>{card.body}</Dd>
+                    </Card>
+                ))}
+            </Cards>
+        </Breakout>
+    </Container>
+);
 
-export default Compiler;
+export { Compiler };

@@ -31,5 +31,4 @@ const media = Object.keys(sizes).reduce((acc: any, label: string) => {
     return acc;
 }, {});
 
-export default media;
 export { colors, media };

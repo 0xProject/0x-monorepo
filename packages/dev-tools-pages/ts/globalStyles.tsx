@@ -1,11 +1,10 @@
-import { createGlobalStyle } from 'styled-components';
-import { media } from './variables';
-import styledNormalize from 'styled-normalize';
 import hljsStyles from 'highlight.js/styles/github-gist.css';
+import { createGlobalStyle } from 'styled-components';
+import styledNormalize from 'styled-normalize';
 
-import { withContext } from 'ts/components/withContext';
+import { media } from 'ts/variables';
 
-const BaseStyles = createGlobalStyle`
+const GlobalStyles = createGlobalStyle`
     ${styledNormalize}
     ${hljsStyles}
 
@@ -35,11 +34,11 @@ const BaseStyles = createGlobalStyle`
         font-size: 100%;
         box-sizing: border-box;
     }
-    
+
     *, *::before, *::after {
         box-sizing: inherit;
     }
-    
+
     body {
         font-family: "Maison Neue", system-ui, sans-serif;
         font-weight: 300;
@@ -55,14 +54,14 @@ const BaseStyles = createGlobalStyle`
     }
 
     a:not([class]) {
-        color: ${(props: any) => props.colors.type};
-        text-decoration: none; 
+        color: black;
+        text-decoration: none;
 
         &:hover {
-            color: ${(props: any) => props.colors.type_alt};
+            color: black;
         }
     }
-    
+
     h1, h2, h3, h4 {
         font-weight: 500;
         margin: 0;
@@ -84,4 +83,4 @@ const BaseStyles = createGlobalStyle`
     }
 `;
 
-export default withContext(BaseStyles);
+export { GlobalStyles };

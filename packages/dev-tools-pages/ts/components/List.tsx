@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { media } from '../variables';
+
+import { media } from 'ts/variables';
 
 const StyledList = styled.ul`
     list-style-type: none;
@@ -27,25 +28,23 @@ const StyledItem = styled.li`
     }
     :not(:last-child) {
         margin-bottom: 0.5625rem;
-
-        ${media.small`margin-bottom: 0.375rem`};
+        ${media.small`
+            margin-bottom: 0.375rem
+        `};
     }
 `;
 
 interface ListProps {
-    items?: Array<string>;
+    items?: [];
     children?: React.ReactNode;
 }
 
-function List(props: ListProps) {
-    return (
-        <StyledList>
-            {props.children !== undefined
-                ? props.children
-                : props.items.map((bullet, index) => <StyledItem key={index}>{bullet}</StyledItem>)}
-        </StyledList>
-    );
-}
+const List: React.StatelessComponent<ListProps> = props => (
+    <StyledList>
+        {props.children !== undefined
+            ? props.children
+            : props.items.map((bullet, index) => <StyledItem key={index}>{bullet}</StyledItem>)}
+    </StyledList>
+);
 
-export default List;
 export { List, StyledItem as ListItem };

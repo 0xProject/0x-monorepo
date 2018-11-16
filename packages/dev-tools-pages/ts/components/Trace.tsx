@@ -1,72 +1,67 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { colors, media } from '../variables';
 
-import { withContext, Props } from './withContext';
-import { Alpha, Lead, Gamma } from './Typography';
-import Container from './Container';
-import Code from './Code';
-import Breakout from './Breakout';
-
+import { ContextInterface, ThemeContext } from 'ts/context';
 import ExactLocation from 'ts/icons/exact-location.svg';
 import NoLocation from 'ts/icons/no-location.svg';
 import TimeConsuming from 'ts/icons/time-consuming.svg';
 import TimeSaving from 'ts/icons/time-saving.svg';
+import { colors, media } from 'ts/variables';
 
-interface TraceProps {
-    background?: string;
-}
+import { Breakout } from './Breakout';
+import { Code } from './Code';
+import { Container } from './Container';
+import { Alpha, Gamma, Lead } from './Typography';
 
-function Trace(props: Props) {
-    const { colors } = props;
+const Trace: React.StatelessComponent<{}> = () => (
+    <ThemeContext.Consumer>
+        {(props: ContextInterface) => (
+            <StyledSection background={props.colors.secondary}>
+                <Wrapper>
+                    <Block>
+                        <Alpha>The Issue</Alpha>
+                        <MainCopy>
+                            Every time an Ethereum transaction fails, it's extremely hard to trace down the
+                            troublemaking line of code. The only hint you'll get is a generic error.
+                        </MainCopy>
+                        <Breakout>
+                            <Code isLight={true}>Error: VM Exception while processing transaction: rever</Code>
+                        </Breakout>
 
-    return (
-        <StyledSection background={colors.secondary}>
-            <Wrapper>
-                <Block>
-                    <Alpha>The Issue</Alpha>
-                    <MainCopy>
-                        Every time an Ethereum transaction fails, it's extremely hard to trace down the troublemaking
-                        line of code. The only hint you'll get is a generic error.
-                    </MainCopy>
-                    <Breakout>
-                        <Code light>Error: VM Exception while processing transaction: rever</Code>
-                    </Breakout>
+                        <List>
+                            <Item>
+                                <Copy dark={true}>
+                                    <Gamma as="h3">No location</Gamma>
+                                    <p>
+                                        The error basically says "anything could have gone wrong here", which keeps you
+                                        completely in the dark about its exact location.
+                                    </p>
+                                </Copy>
+                                <Icon as={NoLocation} />
+                            </Item>
 
-                    <List>
-                        <Item>
-                            <Copy dark>
-                                <Gamma as="h3">No location</Gamma>
-                                <p>
-                                    The error basically says "anything could have gone wrong here", which keeps you
-                                    completely in the dark about its exact location.
-                                </p>
-                            </Copy>
-                            <Icon as={NoLocation} />
-                        </Item>
+                            <Item>
+                                <Copy dark={true}>
+                                    <Gamma as="h3">Time-consuming</Gamma>
+                                    <p>
+                                        Working with a large code-base that contains hundreds of smart contracts,
+                                        finding the failing line of code quickly becomes a daunting task.
+                                    </p>
+                                </Copy>
+                                <Icon as={TimeConsuming} />
+                            </Item>
+                        </List>
+                    </Block>
 
-                        <Item>
-                            <Copy dark>
-                                <Gamma as="h3">Time-consuming</Gamma>
-                                <p>
-                                    Working with a large code-base that contains hundreds of smart contracts, finding
-                                    the failing line of code quickly becomes a daunting task.
-                                </p>
-                            </Copy>
-                            <Icon as={TimeConsuming} />
-                        </Item>
-                    </List>
-                </Block>
-
-                <Block background={colors.secondary}>
-                    <Alpha>The Fix</Alpha>
-                    <MainCopy>
-                        Sol-trace will give you full stack traces, including contract names, line numbers and code
-                        snippets, every time you encounter an error.
-                    </MainCopy>
-                    <Breakout>
-                        <Code light language="javascript">
-                        {`contracts/src/2.0.0/protocol/Exchange/MixinSignatureValidator.sol:51:8
+                    <Block background={props.colors.secondary}>
+                        <Alpha>The Fix</Alpha>
+                        <MainCopy>
+                            Sol-trace will give you full stack traces, including contract names, line numbers and code
+                            snippets, every time you encounter an error.
+                        </MainCopy>
+                        <Breakout>
+                            <Code isLight={true} language="javascript">
+                                {`contracts/src/2.0.0/protocol/Exchange/MixinSignatureValidator.sol:51:8
     require(
         isValidSignature(
             hash,
@@ -75,42 +70,48 @@ function Trace(props: Props) {
         ),
         "INVALID_SIGNATURE"
     )`}
-                        </Code>
-                    </Breakout>
+                            </Code>
+                        </Breakout>
 
-                    <List>
-                        <Item>
-                            <Copy>
-                                <Gamma as="h3">Exact location</Gamma>
-                                <p>
-                                    It shows you the exact location of the specific code linen and where it was called
-                                    from.
-                                </p>
-                            </Copy>
-                            <Icon as={ExactLocation} />
-                        </Item>
+                        <List>
+                            <Item>
+                                <Copy>
+                                    <Gamma as="h3">Exact location</Gamma>
+                                    <p>
+                                        It shows you the exact location of the specific code linen and where it was
+                                        called from.
+                                    </p>
+                                </Copy>
+                                <Icon as={ExactLocation} />
+                            </Item>
 
-                        <Item>
-                            <Copy>
-                                <Gamma as="h3">Time-saving</Gamma>
-                                <p>
-                                    Turning "Your code failed somewhere, good luck debugging it" into "Your code failed
-                                    on line X of contract Y", it drastically improves the developer experience.
-                                </p>
-                            </Copy>
-                            <Icon as={TimeSaving} />
-                        </Item>
-                    </List>
-                </Block>
-            </Wrapper>
-        </StyledSection>
-    );
+                            <Item>
+                                <Copy>
+                                    <Gamma as="h3">Time-saving</Gamma>
+                                    <p>
+                                        Turning "Your code failed somewhere, good luck debugging it" into "Your code
+                                        failed on line X of contract Y", it drastically improves the developer
+                                        experience.
+                                    </p>
+                                </Copy>
+                                <Icon as={TimeSaving} />
+                            </Item>
+                        </List>
+                    </Block>
+                </Wrapper>
+            </StyledSection>
+        )}
+    </ThemeContext.Consumer>
+);
+
+interface TraceProps {
+    background?: string;
 }
 
 const StyledSection =
     styled.section <
-        TraceProps >
-        `
+    TraceProps >
+    `
     max-width: 90rem;
     margin: 0 auto;
     background: linear-gradient(to right, ${colors.black} 50%, ${props => props.background} 50%);
@@ -139,8 +140,8 @@ const Wrapper = styled(Container)`
 
 const Block =
     styled.div <
-        TraceProps >
-        `
+    TraceProps >
+    `
     width: 50%;
     background: ${props => (props.background ? props.background : colors.black)};
     color: ${props => (props.background ? 'inherit' : colors.white)};
@@ -199,9 +200,14 @@ const Item = styled.li`
     }
 `;
 
-const Copy = styled.div<{ dark?: boolean; }>`
+const Copy =
+    styled.div <
+    { dark: boolean } >
+    `
     margin-right: 5.875rem;
-    ${props => props.dark && `
+    ${props =>
+        props.dark &&
+        `
         p {
             color: #ccc;
         }
@@ -214,4 +220,4 @@ const Icon = styled.div`
     flex-shrink: 0;
 `;
 
-export default withContext(Trace);
+export { Trace };

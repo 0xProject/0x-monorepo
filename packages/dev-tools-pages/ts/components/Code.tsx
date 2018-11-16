@@ -1,10 +1,11 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { colors, media } from 'ts/variables';
-import BaseButton from './Button';
+import { colors } from 'ts/variables';
 
-const touch = Boolean(
+import { Button as BaseButton } from './Button';
+
+const isTouch = Boolean(
     'ontouchstart' in window ||
         (window as any).navigator.maxTouchPoints > 0 ||
         (window as any).navigator.msMaxTouchPoints > 0,
@@ -13,12 +14,12 @@ const touch = Boolean(
 interface CodeProps {
     children: React.ReactNode;
     language?: string;
-    light?: boolean;
-    diff?: boolean;
-    gutter?: Array<number>;
+    isLight?: boolean;
+    isDiff?: boolean;
+    gutter?: Array<number | undefined>;
     gutterLength?: number;
-    copy?: boolean;
-    etc?: boolean;
+    canCopy?: boolean;
+    isEtc?: boolean;
 }
 
 interface CodeState {
@@ -27,7 +28,7 @@ interface CodeState {
 }
 
 const Button = styled(BaseButton)`
-    opacity: ${touch ? '1' : '0'};
+    opacity: ${isTouch ? '1' : '0'};
     position: absolute;
     top: 1rem;
     right: 1rem;
@@ -51,12 +52,12 @@ const Base =
     font-size: .875rem;
     color: ${props => (props.language === undefined ? colors.white : 'inherit')};
     background-color: ${props =>
-        props.light ? 'rgba(255,255,255,.15)' : props.language === undefined ? colors.black : '#F1F4F5'};
+        props.isLight ? 'rgba(255,255,255,.15)' : props.language === undefined ? colors.black : '#F1F4F5'};
     white-space: ${props => (props.language === undefined ? 'nowrap' : '')};
     position: relative;
 
     ${props =>
-        props.diff
+        props.isDiff
             ? `
         background-color: #E9ECED;
         display: flex;
@@ -66,8 +67,6 @@ const Base =
         -webkit-overflow-scrolling: touch;
     `
             : ``}
-
-    
 `;
 
 const StyledCodeDiff = styled(({ gutterLength, children, ...props }: any) => <code {...props}>{children}</code>)`
@@ -112,8 +111,8 @@ const StyledCodeDiff = styled(({ gutterLength, children, ...props }: any) => <co
 
 const StyledPre = styled.pre`
     margin: 0;
-    ${(props: { diff: boolean }) =>
-        !props.diff
+    ${(props: { isDiff: boolean }) =>
+        !props.isDiff
             ? `
         padding: 1.5rem;
         overflow-x: auto;
@@ -134,37 +133,78 @@ const StyledCopyInput = styled.textarea`
 const CopyInput = StyledCopyInput as any;
 
 class Code extends React.Component<CodeProps, CodeState> {
-    code = React.createRef<HTMLTextAreaElement>();
-
-    state: CodeState = {};
+    public state: CodeState = {};
+    private readonly _code = React.createRef<HTMLTextAreaElement>();
 
     constructor(props: CodeProps) {
         super(props);
     }
 
-    async componentDidMount() {
-        const { language, children, diff, gutter, etc } = this.props;
+    public componentDidMount(): void {
+        /*
+        * _onMountAsync is only setting state, so no point in handling the promise
+        */
+        /* tslint:disable:no-floating-promises */
+        this._onMountAsync();
+        /* tslint:enable:no-floating-promises */
+    }
+
+    public render(): React.ReactNode {
+        const { language, isLight, isDiff, children, gutterLength, canCopy } = this.props;
+        const { hlCode } = this.state;
+
+        let CodeComponent = 'code';
+        let codeProps = {};
+        if (isDiff) {
+            codeProps = { gutterLength };
+            CodeComponent = StyledCodeDiff as any;
+        }
+
+        return (
+            <Container>
+                <Base language={language} isDiff={isDiff} isLight={isLight}>
+                    <StyledPre isDiff={isDiff}>
+                        <CodeComponent
+                            {...codeProps}
+                            dangerouslySetInnerHTML={hlCode ? { __html: this.state.hlCode } : null}
+                        >
+                            {hlCode === undefined ? children : null}
+                        </CodeComponent>
+                    </StyledPre>
+                    {!('clipboard' in navigator) ? (
+                        <CopyInput readOnly={true} aria-hidden="true" ref={this._code} value={children} />
+                    ) : null}
+                </Base>
+                {navigator.userAgent !== 'ReactSnap' && canCopy ? (
+                    <Button onClick={this._handleCopyAsync}>{this.state.copied ? 'Copied' : 'Copy'}</Button>
+                ) : null}
+            </Container>
+        );
+    }
+
+    private async _onMountAsync(): Promise<void> {
+        const { language, children, isDiff, gutter, isEtc } = this.props;
 
         const code = children as string;
 
         if (language !== undefined) {
-            const { default: highlight } = await System.import(/* webpackChunkName: 'highlightjs' */ 'ts/highlight');
+            const { highlight } = await System.import(/* webpackChunkName: 'highlightjs' */ 'ts/highlight');
 
             this.setState({
-                hlCode: highlight({ language, code, diff, gutter, etc }),
+                hlCode: highlight({ language, code, isDiff, gutter, isEtc }),
             });
         }
     }
 
-    handleCopy = async () => {
+    private readonly _handleCopyAsync = async () => {
         try {
             if ('clipboard' in navigator) {
                 await (navigator as any).clipboard.writeText(this.props.children);
                 this.setState({ copied: true });
             } else {
                 const lastActive = document.activeElement as HTMLElement;
-                this.code.current.focus();
-                this.code.current.select();
+                this._code.current.focus();
+                this._code.current.select();
                 document.execCommand('copy');
                 lastActive.focus();
                 this.setState({ copied: true });
@@ -173,36 +213,6 @@ class Code extends React.Component<CodeProps, CodeState> {
             this.setState({ copied: false });
         }
     };
-
-    render() {
-        const { language, light, diff, children, gutterLength, copy } = this.props;
-        const { hlCode } = this.state;
-
-        let Code = 'code';
-        let codeProps = {};
-        if (diff) {
-            codeProps = { gutterLength };
-            Code = StyledCodeDiff as any;
-        }
-
-        return (
-            <Container>
-                <Base language={language} diff={diff} light={light}>
-                    <StyledPre diff={diff}>
-                        <Code {...codeProps} dangerouslySetInnerHTML={hlCode ? { __html: this.state.hlCode } : null}>
-                            {hlCode === undefined ? children : null}
-                        </Code>
-                    </StyledPre>
-                    {!('clipboard' in navigator) ? (
-                        <CopyInput readOnly aria-hidden="true" ref={this.code} value={children} />
-                    ) : null}
-                </Base>
-                {navigator.userAgent !== 'ReactSnap' && copy ? (
-                    <Button onClick={this.handleCopy}>{this.state.copied ? 'Copied' : 'Copy'}</Button>
-                ) : null}
-            </Container>
-        );
-    }
 }
 
-export default Code;
+export { Code };

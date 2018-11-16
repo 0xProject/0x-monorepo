@@ -1,6 +1,8 @@
 declare module 'whatwg-fetch';
 declare module 'react-document-title';
-declare module 'highlighter';
+declare module 'highlight.js/lib/highlight';
+declare module 'highlight.js/lib/languages/javascript';
+declare module 'highlight.js/lib/languages/json';
 
 declare var System: any;
 

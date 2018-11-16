@@ -1,10 +1,8 @@
 import styled from 'styled-components';
-import { colors } from '../variables';
 
-import { media } from 'ts/variables';
-import { withContext, Props } from './withContext';
+import { colors, media } from 'ts/variables';
 
-interface ButtonProps extends Props {
+interface ButtonProps {
     large?: boolean;
 }
 
@@ -17,7 +15,7 @@ const Button =
   font-weight: 500;
   white-space: nowrap;
   vertical-align: middle;
-  background-color: ${props => props.colors.secondary};
+  background-color: ${props => props.theme.colors.secondary};
   color: ${colors.black};
   border: 0;
   border-radius: 5rem;
@@ -37,10 +35,10 @@ const Button =
   `}
 
   :hover, :focus {
-    background-color: ${props => props.colors.secondary_alt};
+    background-color: ${props => props.theme.colors.secondary_alt};
     outline: 0;
-  } 
-  
+  }
+
   ${media.small`
   font-size: .875rem;
   padding: .5625rem 1.25rem;
@@ -54,4 +52,4 @@ const Button =
     `}
 `;
 
-export default withContext(Button);
+export { Button };

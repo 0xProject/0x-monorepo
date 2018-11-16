@@ -1,6 +1,6 @@
 import Icon from 'ts/icons/logos/cov.svg';
 
-export default {
+export const context = {
     title: 'sol-cov',
     name: 'cov',
     subtitle: 'Solidity code coverage',

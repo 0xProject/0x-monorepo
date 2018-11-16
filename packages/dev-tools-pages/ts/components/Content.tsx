@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import Container from './Container';
+import { Container } from './Container';
 
 const StyledMain =
     styled.div <
@@ -26,12 +26,10 @@ interface MainProps {
     children: React.ReactNode;
 }
 
-function Main(props: MainProps) {
-    return (
-        <StyledMain dark={props.dark}>
-            <Container>{props.children}</Container>
-        </StyledMain>
-    );
-}
+const Content: React.StatelessComponent<MainProps> = props => (
+    <StyledMain dark={props.dark}>
+        <Container>{props.children}</Container>
+    </StyledMain>
+);
 
-export default Main;
+export { Content };

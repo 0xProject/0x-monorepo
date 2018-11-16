@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 
-import { media } from 'ts/variables';
-
 interface ContainerProps {
     wide?: boolean;
 }
@@ -15,4 +13,4 @@ const Container =
     width: ${props => (props.wide ? '100%' : 'calc(100% - 5rem)')};
 `;
 
-export default Container;
+export { Container };

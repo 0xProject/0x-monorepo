@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+
 import { media } from '../variables';
 
 const Alpha = styled.h2`

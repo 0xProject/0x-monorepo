@@ -1,6 +1,6 @@
 import Icon from 'ts/icons/logos/profiler.svg';
 
-export default {
+export const context = {
     title: 'sol-profiler',
     name: 'profiler',
     subtitle: 'Gas profiling for Solidity',

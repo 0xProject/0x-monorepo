@@ -1,30 +1,30 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { withContext, Props } from './withContext';
-import Container from './Container';
+import { ContextInterface, ThemeContext } from 'ts/context';
+import { media } from 'ts/variables';
+
+import { Container } from './Container';
 import { Small } from './Typography';
 
-import { media } from '../variables';
+const Header: React.StatelessComponent<{}> = () => (
+    <ThemeContext.Consumer>
+        {({ icon, title, colors }: ContextInterface) => (
+            <StyledHeader>
+                <Container>
+                    <LogoMark>
+                        <Logo as={icon} color={colors.main} />
+                        <Title>{title}</Title>
+                    </LogoMark>
 
-function Header(props: Props) {
-    const { icon, title, colors } = props;
-
-    return (
-        <StyledHeader>
-            <Container>
-                <LogoMark>
-                    <Logo as={icon} color={colors.main} />
-                    <Title>{title}</Title>
-                </LogoMark>
-
-                <Link as="a" href="https://0xproject.com/">
-                    Built by 0x
-                </Link>
-            </Container>
-        </StyledHeader>
-    );
-}
+                    <Link as="a" href="https://0xproject.com/">
+                        Built by 0x
+                    </Link>
+                </Container>
+            </StyledHeader>
+        )}
+    </ThemeContext.Consumer>
+);
 
 const StyledHeader = styled.header`
     padding-top: 3.75rem;
@@ -51,7 +51,7 @@ const LogoMark = styled.div`
 `;
 
 const StyledLogo = styled.div`
-    color: ${props => props.color}
+    color: ${props => props.color};
     width: 1.75rem;
     height: 100%;
 `;
@@ -76,4 +76,4 @@ const StyledLink = styled(Small)`
 const Link = StyledLink as any;
 const Logo = StyledLogo as any;
 
-export default withContext(Header);
+export { Header };

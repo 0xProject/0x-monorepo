@@ -1,6 +1,6 @@
-const hljs = require('highlight.js/lib/highlight');
-const javascript = require('highlight.js/lib/languages/javascript');
-const json = require('highlight.js/lib/languages/json');
+import * as hljs from 'highlight.js/lib/highlight';
+import * as javascript from 'highlight.js/lib/languages/javascript';
+import * as json from 'highlight.js/lib/languages/json';
 
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('json', json);
@@ -9,59 +9,61 @@ interface PatchInterface {
     [key: string]: string;
 }
 
-var PATCH_TYPES: PatchInterface = {
+const PATCH_TYPES: PatchInterface = {
     '+': 'addition',
     '-': 'deletion',
     '!': 'change',
 };
 
-function diffHighlight(language: string, code: any, gutter: any) {
+function diffHighlight(language: string, code: any, gutter: any): string {
     return code
         .split(/\r?\n/g)
         .map((line: string, index: number) => {
-            var type;
-            if (/^-{3} [^-]+ -{4}$|^\*{3} [^*]+ \*{4}$|^@@ [^@]+ @@$/.test(line)) {
+            let type;
+            let currentLine = line;
+
+            if (/^-{3} [^-]+ -{4}$|^\*{3} [^*]+ \*{4}$|^@@ [^@]+ @@$/.test(currentLine)) {
                 type = 'chunk';
-            } else if (/^Index: |^[+\-*]{3}|^[*=]{5,}$/.test(line)) {
+            } else if (/^Index: |^[+\-*]{3}|^[*=]{5,}$/.test(currentLine)) {
                 type = 'header';
             } else {
-                type = PATCH_TYPES[line[0] as string] || 'null';
-                line = line.replace(/^[+\-! ]/, '');
+                type = PATCH_TYPES[currentLine[0]] || 'null';
+                currentLine = currentLine.replace(/^[+\-! ]/, '');
             }
 
             const g = gutter[index];
 
-            return `<span data-gutter="${g !== undefined ? g + 'x' : ''}" class="line-${type}">${
-                hljs.highlight(language, line).value
+            return `<span data-gutter="${g !== undefined ? `${g}x` : ''}" class="line-${type}">${
+                hljs.highlight(language, currentLine).value
             }</span>`;
         })
         .join('\n');
 }
 
-interface highlightProps {
+interface HighlightProps {
     language: string;
     code: string;
-    diff?: boolean;
-    gutter?: boolean;
-    etc?: boolean;
+    isDiff?: boolean;
+    gutter?: [];
+    isEtc?: boolean;
 }
 
-function highlight({ language, code, diff, gutter, etc }: highlightProps) {
-    if (diff) {
+function highlight({ language, code, isDiff, gutter, isEtc }: HighlightProps): string {
+    if (isDiff) {
         return diffHighlight(language, code, gutter);
     }
 
-    let hlCode = hljs.highlight(language, code).value;
+    const hlCode = hljs.highlight(language, code).value;
 
-    if (!etc) {
+    if (!isEtc) {
         return hlCode;
     }
 
-    var hc = hlCode.split(/\r?\n/g);
+    const hc = hlCode.split(/\r?\n/g);
     hc.splice(1, 0, '    ...');
     hc.splice(hc.length - 1, 0, '    ...');
 
     return hc.join('\n');
 }
 
-export default highlight;
+export { highlight };

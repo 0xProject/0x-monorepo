@@ -11,55 +11,28 @@ interface AnimationProps {
 }
 
 interface AnimationState {
-    width?: number;
-    height?: number;
+    width?: number | undefined;
+    height?: number | undefined;
 }
 
-class Animation extends React.PureComponent<AnimationProps, AnimationState> {
-    timeout = null as any;
-    constructor(props: AnimationProps) {
-        super(props);
+class BaseAnimation extends React.PureComponent<AnimationProps, AnimationState> {
+    public state: AnimationState = {
+        height: undefined,
+        width: undefined,
+    };
+    private _timeout = null as any;
 
-        this.state = {
-            height: undefined,
-            width: undefined,
-        };
-
-        this.handleResize = this.handleResize.bind(this);
-        this.updateAnimationSize = this.updateAnimationSize.bind(this);
+    public componentDidMount(): void {
+        this._updateAnimationSize();
+        window.addEventListener('resize', this._handleResize);
     }
 
-    componentDidMount() {
-        this.updateAnimationSize();
-        window.addEventListener('resize', this.handleResize);
+    public componentWillUnmount(): void {
+        window.removeEventListener('resize', this._handleResize);
     }
 
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.handleResize);
-    }
-
-    handleResize() {
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(this.updateAnimationSize, 50);
-    }
-
-    updateAnimationSize() {
-        const windowWidth = window.innerWidth;
-        let width = undefined;
-        let height = undefined;
-        if (windowWidth <= 1000) {
-            const maxWidth = windowWidth + 250;
-            const ratio = maxWidth / this.props.width;
-
-            height = Math.round(this.props.height * ratio);
-            width = Math.round(this.props.width * ratio);
-        }
-
-        this.setState({ width, height });
-    }
-
-    render() {
-        let { animationData } = this.props;
+    public render(): React.ReactNode {
+        const { animationData } = this.props;
         const height = this.state.height || this.props.height;
         const width = this.state.width || this.props.width;
 
@@ -72,13 +45,33 @@ class Animation extends React.PureComponent<AnimationProps, AnimationState> {
                         options={{
                             loop: true,
                             autoplay: true,
-                            animationData: animationData,
+                            animationData,
                         }}
                     />
                 </InnerContainer>
             </Container>
         );
     }
+
+    private readonly _handleResize = () => {
+        clearTimeout(this._timeout);
+        this._timeout = setTimeout(this._updateAnimationSize, 50);
+    };
+
+    private readonly _updateAnimationSize = () => {
+        const windowWidth = window.innerWidth;
+        let width;
+        let height;
+        if (windowWidth <= 1000) {
+            const maxWidth = windowWidth + 250;
+            const ratio = maxWidth / this.props.width;
+
+            height = Math.round(this.props.height * ratio);
+            width = Math.round(this.props.width * ratio);
+        }
+
+        this.setState({ width, height });
+    };
 }
 
 const Container = styled.div`
@@ -102,4 +95,4 @@ const InnerContainer = styled.div`
     transform: translateX(-50%);
 `;
 
-export default Animation;
+export { BaseAnimation };

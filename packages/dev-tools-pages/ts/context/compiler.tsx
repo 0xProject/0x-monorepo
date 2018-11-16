@@ -1,6 +1,6 @@
 import Icon from 'ts/icons/logos/compiler.svg';
 
-export default {
+export const context = {
     title: 'sol-compiler',
     name: 'compiler',
     subtitle: 'Solidity compilation that just works',

@@ -1,33 +1,32 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { ContextInterface, ThemeContext } from 'ts/context';
 import { media } from 'ts/variables';
-import { withContext, Props } from './withContext';
-import Button from './Button';
+
+import { Button } from './Button';
 import { Beta } from './Typography';
 
-interface HeroProps extends Props {
+interface HeroProps extends ContextInterface {
     children: React.ReactNode;
 }
 
-function Hero(props: HeroProps) {
-    const { subtitle, tagline } = props;
-
-    return (
-        <React.Fragment>
+const Hero: React.StatelessComponent<HeroProps> = ({ children }) => (
+    <ThemeContext.Consumer>
+        {({ subtitle, tagline }: ContextInterface) => (
             <StyledHero>
                 <HeroContainer>
                     <Subtitle>{subtitle}</Subtitle>
                     <Tagline as="p">{tagline}</Tagline>
-                    <Button as="a" href="#" large>
+                    <Button as="a" href="#" large={true}>
                         Read the Docs
                     </Button>
                 </HeroContainer>
-                {navigator.userAgent !== 'ReactSnap' ? props.children : null}
+                {navigator.userAgent !== 'ReactSnap' ? children : null}
             </StyledHero>
-        </React.Fragment>
-    );
-}
+        )}
+    </ThemeContext.Consumer>
+);
 
 const StyledHero = styled.section`
     text-align: center;
@@ -65,4 +64,4 @@ const Tagline = styled(Beta)`
     `};
 `;
 
-export default withContext(Hero);
+export { Hero };

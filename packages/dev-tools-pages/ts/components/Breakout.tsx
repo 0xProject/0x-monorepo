@@ -9,4 +9,4 @@ const Breakout = styled.div`
   `};
 `;
 
-export default Breakout;
+export { Breakout };

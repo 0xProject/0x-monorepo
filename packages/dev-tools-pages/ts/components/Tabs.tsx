@@ -1,9 +1,10 @@
 import * as React from 'react';
+import { Tab, TabList, TabPanel, Tabs as ReactTabs } from 'react-tabs';
 import styled from 'styled-components';
+
 import { colors } from 'ts/variables';
-import { Tabs as ReactTabs, Tab, TabList, TabPanel } from 'react-tabs';
-import Breakout from './Breakout';
-import { withContext, Props } from './withContext';
+
+import { Breakout } from './Breakout';
 
 const StyledTabList = styled(TabList)`
     text-transform: uppercase;
@@ -31,7 +32,7 @@ const Root =
     { colors: any } >
     `
     ${StyledTab} {
-        background-color: ${props => props.colors.secondary};
+        background-color: ${props => props.theme.colors.secondary};
         &[aria-selected="true"] {
             background-color: ${colors.gray};
 
@@ -39,44 +40,40 @@ const Root =
 
         &[aria-selected="false"]:focus,
         &[aria-selected="false"]:hover {
-            background-color: ${props => props.colors.secondary_alt};
+            background-color: ${props => props.theme.colors.secondary_alt};
             cursor: pointer;
         }
     }
 `;
 
-interface TabsProps extends Props {
+interface TabsProps {
     children: React.ReactNode;
 }
 
-function Tabs(props: TabsProps) {
-    return (
-        <Breakout>
-            <Root colors={props.colors}>
-                <ReactTabs>
-                    <StyledTabList>
-                        {React.Children.map(props.children, child => {
-                            const { props } = React.cloneElement(child as React.ReactElement<any>);
-                            return <StyledTab>{props.title}</StyledTab>;
-                        })}
-                    </StyledTabList>
+const Tabs: React.StatelessComponent<TabsProps> = props => (
+    <Breakout>
+        <Root>
+            <ReactTabs>
+                <StyledTabList>
+                    {React.Children.map(props.children, child => {
+                        const { title } = React.cloneElement(child as React.ReactElement<any>).props;
+                        return <StyledTab>{title}</StyledTab>;
+                    })}
+                </StyledTabList>
 
-                    {React.Children.map(props.children, child => <TabPanel>{child}</TabPanel>)}
-                </ReactTabs>
-            </Root>
-        </Breakout>
-    );
-}
+                {React.Children.map(props.children, child => <TabPanel>{child}</TabPanel>)}
+            </ReactTabs>
+        </Root>
+    </Breakout>
+);
 
 interface TabBlockProps {
     title: string;
     children: React.ReactNode;
 }
 
-function TabBlock(props: TabBlockProps) {
-    return <React.Fragment>{props.children}</React.Fragment>;
-}
+const TabBlock: React.StatelessComponent<TabBlockProps> = props => <React.Fragment>{props.children}</React.Fragment>;
 
-const ContextTabs = withContext(Tabs);
+const ContextTabs = Tabs;
 
 export { ContextTabs as Tabs, TabBlock };
