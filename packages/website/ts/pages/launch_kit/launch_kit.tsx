@@ -302,7 +302,7 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                     <Text fontColor={grayText} fontSize="10px">
                         <b>Disclaimer:</b> The laws and regulations applicable to the use and exchange of digital assets
                         and blockchain-native tokens, including through any software developed using the licensed work
-                        created by ZeroEx Inc. (the “Work”), vary by jurisdiction. As set forth in the Apache License,
+                        created by ZeroEx Intl. (the “Work”), vary by jurisdiction. As set forth in the Apache License,
                         Version 2.0 applicable to the Work, developers are “solely responsible for determining the
                         appropriateness of using or redistributing the Work,” which includes responsibility for ensuring
                         compliance with any such applicable laws and regulations.
