@@ -67,6 +67,15 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
+                'Launch a 0x relayer in under a minute with Launch Kit. `0x-launch-kit` is an open-source, free-to-use 0x relayer template that you can use as a starting point for your own project.',
+            link: {
+                title: '0x launch kit',
+                to: 'https://github.com/0xProject/0x-launch-kit',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description:
                 'An http & websocket client for interacting with relayers that have implemented the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api)',
             link: {
                 title: '@0x/connect',
