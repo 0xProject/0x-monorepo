@@ -113,7 +113,8 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         });
         this._buyQuoteHeartbeat.start(BUY_QUOTE_UPDATE_INTERVAL_TIME_MS);
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, true);
+        // Trigger first buyquote fetch
+        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, { updateSilently: false });
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
         // tslint:disable-next-line:no-floating-promises
