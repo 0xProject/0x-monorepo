@@ -23,12 +23,21 @@ function trackingEventFnWithPayload<T extends ObjectMap<string | number>>(
     };
 }
 
+export interface AnalyticsUserOptions {
+    ethAddress?: string;
+    ethBalanceInUnitAmount?: string;
+}
+export interface AnalyticsEventOptions {
+    embeddedHost?: string;
+    embeddedUrl?: string;
+    networkId: number;
+    providerName: string;
+}
 export const analytics = {
-    // TODO(sk): make these more specific
-    addUserProperties: (properties: ObjectMap<string | number>): void => {
+    addUserProperties: (properties: AnalyticsUserOptions): void => {
         heapUtil.evaluateHeapCall(heap => heap.addUserProperties(properties));
     },
-    addEventProperties: (properties: ObjectMap<string | number>): void => {
+    addEventProperties: (properties: AnalyticsEventOptions): void => {
         heapUtil.evaluateHeapCall(heap => heap.addEventProperties(properties));
     },
     walletOpened: trackingEventFnWithoutPayload(EventNames.WALLET_OPENED),

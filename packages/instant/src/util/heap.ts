@@ -3,13 +3,15 @@ import { logUtils } from '@0x/utils';
 
 import { ANALYTICS_ENABLED, HEAP_ANALYTICS_DEVELOPMENT_APP_ID } from '../constants';
 
+import { AnalyticsEventOptions, AnalyticsUserOptions } from './analytics';
+
 export interface HeapAnalytics {
     loaded: boolean;
     identify(id: string, idType: string): void;
     track(eventName: string, eventProperties?: ObjectMap<string | number>): void;
     resetIdentity(): void;
-    addUserProperties(properties: ObjectMap<string | number>): void;
-    addEventProperties(properties: ObjectMap<string | number>): void;
+    addUserProperties(properties: AnalyticsUserOptions): void;
+    addEventProperties(properties: AnalyticsEventOptions): void;
     removeEventProperty(property: string): void;
     clearEventProperties(): void;
 }
