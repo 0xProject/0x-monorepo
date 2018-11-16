@@ -1,12 +1,14 @@
 import { logUtils } from '@0x/utils';
 
-// TODO: Typesafety still not working
-import Rollbar from 'rollbar';
-
 import { ROLLBAR_ACCESS_TOKEN } from '../constants';
 import { Environment } from '../types';
 
 import { scriptEnvironment } from './script_environment';
+
+// Import version of Rollbar designed for embedded components
+// See https://docs.rollbar.com/docs/using-rollbarjs-inside-an-embedded-component
+// tslint:disable-next-line:no-var-requires
+const Rollbar = require('rollbar/dist/rollbar.noconflict.umd');
 
 const shouldReportErrors = () => {
     const nonDev = scriptEnvironment.getEnvironment() !== Environment.Development;
