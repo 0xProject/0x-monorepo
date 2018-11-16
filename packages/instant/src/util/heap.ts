@@ -1,12 +1,13 @@
 import { ObjectMap } from '@0x/types';
 import { logUtils } from '@0x/utils';
 
-import { ANALYTICS_ENABLED, HEAP_ANALYTICS_DEVELOPMENT_APP_ID } from '../constants';
+import { ANALYTICS_ENABLED, HEAP_ANALYTICS_DEVELOPMENT_APP_ID, HEAP_ANALYTICS_PRODUCTION_APP_ID } from '../constants';
 
 import { AnalyticsEventOptions, AnalyticsUserOptions } from './analytics';
 
 export interface HeapAnalytics {
     loaded: boolean;
+    appid: string;
     identify(id: string, idType: string): void;
     track(eventName: string, eventProperties?: ObjectMap<string | number>): void;
     resetIdentity(): void;
@@ -21,6 +22,13 @@ interface ModifiedWindow {
 }
 const getWindow = (): ModifiedWindow => {
     return window as ModifiedWindow;
+};
+
+const getHeapAppId = (): string => {
+    if (process.env.NODE_ENV === 'production') {
+        return HEAP_ANALYTICS_PRODUCTION_APP_ID;
+    }
+    return HEAP_ANALYTICS_DEVELOPMENT_APP_ID;
 };
 
 const setupZeroExInstantHeap = () => {
@@ -64,7 +72,7 @@ const setupZeroExInstantHeap = () => {
                 (window as any).heap[p[c]] = o(p[c]);
         });
     // TODO: use production heap id once environment utils merged
-    (window as any).heap.load(HEAP_ANALYTICS_DEVELOPMENT_APP_ID);
+    (window as any).heap.load(getHeapAppId());
     /* tslint:enable */
 
     return curWindow.heap as HeapAnalytics;
@@ -93,6 +101,10 @@ export const heapUtil = {
         const curHeap = heapUtil.getHeap();
         if (curHeap) {
             try {
+                if (curHeap.appid !== getHeapAppId()) {
+                    // Integrator has included heap after us and reset the app id
+                    return;
+                }
                 heapFunctionCall(curHeap);
             } catch (e) {
                 // We never want analytics to crash our React component
