@@ -5,7 +5,7 @@ import { ColorOption } from '../style/theme';
 import { Account, AccountState, Network } from '../types';
 import { envUtil } from '../util/env';
 
-import { CoinbaseWalletAppLogo } from './coinbase_wallet_logo';
+import { CoinbaseWalletLogo } from './coinbase_wallet_logo';
 import { MetaMaskLogo } from './meta_mask_logo';
 import { PaymentMethodDropdown } from './payment_method_dropdown';
 import { Circle } from './ui/circle';
@@ -77,7 +77,10 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
     private readonly _renderMainContent = (): React.ReactNode => {
         const { account, network } = this.props;
         const isMobile = envUtil.isMobileOperatingSystem();
-        const logo = isMobile ? <CoinbaseWalletAppLogo width={22} /> : <MetaMaskLogo width={19} height={18} />;
+        const logo = isMobile ? <CoinbaseWalletLogo width={22} /> : <MetaMaskLogo width={19} height={18} />;
+        const primaryColor = isMobile ? ColorOption.darkBlue : ColorOption.darkOrange;
+        const secondaryColor = isMobile ? ColorOption.lightBlue : ColorOption.lightOrange;
+        const colors = { primaryColor, secondaryColor };
         switch (account.state) {
             case AccountState.Loading:
                 // Just take up the same amount of space as the other states.
@@ -87,13 +90,14 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                     <WalletPrompt
                         onClick={this.props.onUnlockWalletClick}
                         image={<Icon width={13} icon="lock" color={ColorOption.black} />}
+                        {...colors}
                     >
                         Please Unlock {this.props.walletName}
                     </WalletPrompt>
                 );
             case AccountState.None:
                 return (
-                    <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo}>
+                    <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo} {...colors}>
                         {isMobile ? 'Install Coinbase Wallet' : 'Install MetaMask'}
                     </WalletPrompt>
                 );

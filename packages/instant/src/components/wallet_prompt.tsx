@@ -9,13 +9,21 @@ import { Text } from './ui/text';
 export interface WalletPromptProps {
     image: React.ReactNode;
     onClick?: () => void;
+    primaryColor: ColorOption;
+    secondaryColor: ColorOption;
 }
 
-export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({ onClick, image, children }) => (
+export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({
+    onClick,
+    image,
+    children,
+    secondaryColor,
+    primaryColor,
+}) => (
     <Container
         padding="14.5px"
-        border={`1px solid ${ColorOption.darkOrange}`}
-        backgroundColor={ColorOption.lightOrange}
+        border={`1px solid ${primaryColor}`}
+        backgroundColor={secondaryColor}
         width="100%"
         borderRadius="4px"
         onClick={onClick}
@@ -25,10 +33,15 @@ export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({ onCl
         <Flex>
             {image}
             <Container marginLeft="10px">
-                <Text fontSize="16px" fontColor={ColorOption.darkOrange}>
+                <Text fontSize="16px" fontColor={primaryColor}>
                     {children}
                 </Text>
             </Container>
         </Flex>
     </Container>
 );
+
+WalletPrompt.defaultProps = {
+    primaryColor: ColorOption.darkOrange,
+    secondaryColor: ColorOption.lightOrange,
+};

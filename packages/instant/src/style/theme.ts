@@ -17,7 +17,8 @@ export enum ColorOption {
     darkOrange = 'darkOrange',
     green = 'green',
     red = 'red',
-    blue = 'blue',
+    darkBlue = 'darkBlue',
+    lightBlue = 'lightBlue',
 }
 
 export const theme: Theme = {
@@ -33,7 +34,8 @@ export const theme: Theme = {
     darkOrange: '#F2994C',
     green: '#3CB34F',
     red: '#D00000',
-    blue: '#135df6',
+    darkBlue: '#135df6',
+    lightBlue: '#F2F7FF',
 };
 
 export const transparentWhite = 'rgba(255,255,255,0.3)';

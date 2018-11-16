@@ -591,7 +591,7 @@ export class Blockchain {
             }
         } else {
             const injectedWeb3IfExists = (window as any).web3;
-            if (!_.isUndefined(injectedWeb3IfExists.currentProvider)) {
+            if (!_.isUndefined(injectedWeb3IfExists) && !_.isUndefined(injectedWeb3IfExists.currentProvider)) {
                 injectedProviderIfExists = injectedWeb3IfExists.currentProvider;
             } else {
                 return undefined;

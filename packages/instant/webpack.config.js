@@ -9,8 +9,8 @@ const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
     .toString()
     .trim();
-
-module.exports = {
+const ip = require('ip');
+const config = {
     entry: './src/index.umd.ts',
     output: {
         filename: '[name].bundle.js',
@@ -43,5 +43,15 @@ module.exports = {
     devServer: {
         contentBase: path.join(__dirname, 'public'),
         port: 5000,
+        host: '0.0.0.0',
+        after: () => {
+            if (config.devServer.host === '0.0.0.0') {
+                console.log(
+                    `webpack-dev-server can be accessed externally at: http://${ip.address()}:${config.devServer.port}`,
+                );
+            }
+        },
     },
 };
+
+module.exports = config;
