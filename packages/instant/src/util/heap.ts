@@ -1,6 +1,7 @@
 import { ObjectMap } from '@0x/types';
+import { logUtils } from '@0x/utils';
 
-import { HEAP_ANALYTICS_DEVELOPMENT_APP_ID } from '../constants';
+import { ANALYTICS_ENABLED, HEAP_ANALYTICS_DEVELOPMENT_APP_ID } from '../constants';
 
 export interface HeapAnalytics {
     loaded: boolean;
@@ -81,5 +82,21 @@ export const heapUtil = {
         }
 
         return setupZeroExInstantHeap();
+    },
+    evaluateHeapCall: (heapFunctionCall: (heap: HeapAnalytics) => void): void => {
+        if (!ANALYTICS_ENABLED) {
+            return;
+        }
+
+        const curHeap = heapUtil.getHeap();
+        if (curHeap) {
+            try {
+                heapFunctionCall(curHeap);
+            } catch (e) {
+                // We never want analytics to crash our React component
+                // TODO: error reporter here
+                logUtils.log('Analytics error', e);
+            }
+        }
     },
 };

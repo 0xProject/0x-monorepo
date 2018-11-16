@@ -21,10 +21,12 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
 
     switch (nextAction.type) {
         case ActionTypes.SET_ACCOUNT_STATE_READY:
-            if (curAccount.state === AccountState.Ready && !_.isEqual(curAccount, prevAccount)) {
+            if (curAccount.state === AccountState.Ready && prevAccount.state !== AccountState.Ready) {
                 const ethAddress = curAccount.address;
                 analytics.addUserProperties({ ethAddress });
-                analytics.track('Wallet - Ready');
+                analytics.walletReady({
+                    numAssetsAvailable: curState.availableAssets ? curState.availableAssets.length : 0,
+                });
             }
             break;
         case ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE:

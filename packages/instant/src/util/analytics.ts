@@ -1,35 +1,37 @@
 import { ObjectMap } from '@0x/types';
-import { logUtils } from '@0x/utils';
 
-import { ANALYTICS_ENABLED } from '../constants';
+import { heapUtil } from './heap';
 
-import { HeapAnalytics, heapUtil } from './heap';
-
-const evaluteHeapCall = (heapFunctionCall: (heap: HeapAnalytics) => void): void => {
-    if (!ANALYTICS_ENABLED) {
-        return;
-    }
-
-    const curHeap = heapUtil.getHeap();
-    if (curHeap) {
-        try {
-            heapFunctionCall(curHeap);
-        } catch (e) {
-            // We never want analytics to crash our React component
-            // TODO: error reporter here
-            logUtils.log('Analytics error', e);
-        }
-    }
+enum EventNames {
+    WALLET_OPENED = 'Wallet - Opened',
+    WALLET_READY = 'Wallet - Ready',
+    WIDGET_OPENED = 'Widget - Opened',
+}
+const track = (eventName: EventNames, eventData: ObjectMap<string | number> = {}): void => {
+    heapUtil.evaluateHeapCall(heap => heap.track(eventName, eventData));
 };
+function trackingEventFnWithoutPayload(eventName: EventNames): () => void {
+    return () => {
+        track(eventName);
+    };
+}
+function trackingEventFnWithPayload<T extends ObjectMap<string | number>>(
+    eventName: EventNames,
+): (eventDataProperties: T) => void {
+    return (eventDataProperties: T) => {
+        track(eventName, eventDataProperties);
+    };
+}
 
 export const analytics = {
+    // TODO(sk): make these more specific
     addUserProperties: (properties: ObjectMap<string | number>): void => {
-        evaluteHeapCall(heap => heap.addUserProperties(properties));
+        heapUtil.evaluateHeapCall(heap => heap.addUserProperties(properties));
     },
     addEventProperties: (properties: ObjectMap<string | number>): void => {
-        evaluteHeapCall(heap => heap.addEventProperties(properties));
+        heapUtil.evaluateHeapCall(heap => heap.addEventProperties(properties));
     },
-    track: (eventName: string, eventProperties?: ObjectMap<string | number>): void => {
-        evaluteHeapCall(heap => heap.track(eventName, eventProperties));
-    },
+    walletOpened: trackingEventFnWithoutPayload(EventNames.WALLET_OPENED),
+    walletReady: trackingEventFnWithPayload<{ numAssetsAvailable: number }>(EventNames.WALLET_READY),
+    widgetOpened: trackingEventFnWithoutPayload(EventNames.WIDGET_OPENED),
 };
