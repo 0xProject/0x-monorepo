@@ -16,11 +16,11 @@
     },
     "license": "Apache-2.0",
     "dependencies": {
-        "@0xproject/react-shared": "^1.0.15",
-        "highlight.js": "^9.13.1",
         "@0x/react-shared": "^1.0.19",
+        "@0xproject/react-shared": "^1.0.15",
         "basscss": "^8.0.3",
         "bowser": "^1.9.3",
+        "highlight.js": "^9.13.1",
         "less": "^2.7.2",
         "polished": "^1.9.2",
         "react": "^16.5.2",
@@ -28,7 +28,7 @@
         "react-loadable": "^5.5.0",
         "react-lottie": "^1.2.3",
         "react-tabs": "^2.3.0",
-        "styled-components": "^4.0.2",
+        "styled-components": "^4.1.1",
         "styled-normalize": "^8.0.1"
     },
     "devDependencies": {
@@ -42,7 +42,7 @@
         "@types/react-router-dom": "^4.0.4",
         "@types/react-tabs": "^2.3.0",
         "@types/react-tap-event-plugin": "0.0.30",
-        "@types/styled-components": "^4.0.1",
+        "@types/styled-components": "^4.1.0",
         "awesome-typescript-loader": "^5.2.1",
         "clean-webpack-plugin": "^0.1.19",
         "copy-webpack-plugin": "^4.5.4",

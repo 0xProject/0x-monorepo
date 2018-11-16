@@ -605,6 +605,11 @@
   resolved "https://registry.npmjs.org/@emotion/memoize/-/memoize-0.6.6.tgz#004b98298d04c7ca3b4f50ca2035d4f60d2eed1b"
   integrity sha512-h4t4jFjtm1YV7UirAFuSuFGyLa+NNxjdkq6DpFLANNQY5rHueFZHVY+8Cu1HYVP6DrheB0kv4m5xPjo7eKT7yQ==
 
+"@emotion/unitless@^0.7.0":
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.7.2.tgz#b180097bb44a40c3b59efea9cf28df2fe542d518"
+  integrity sha512-mK4SHgIiJiwRZyenDXlaLUdR7vm8xUvJ4VYmpWNTDtF3ykEbI1XNVcbhAZwt07xjtCvLenoJMP8Eqx1FXvoWDQ==
+
 "@ledgerhq/hw-app-eth@^4.3.0":
   version "4.7.3"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-4.7.3.tgz#d352e19658ae296532e522c53c8ec2a1a77b64e5"
@@ -1860,6 +1865,15 @@
     "@types/node" "*"
     "@types/react" "*"
 
+"@types/styled-components@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.1.0.tgz#87d193ccfd4768c3b7606404646f3564c18830d0"
+  integrity sha512-B2OuPjx5LG+JIgDid7mR9WCYQ4XqWgOe9D6oyUtnEVES4D3S4rtyD0Vgp7BzAk6YAkLM6m4MqK/9Ityl5SwwTg==
+  dependencies:
+    "@types/node" "*"
+    "@types/react" "*"
+    csstype "^2.2.0"
+
 "@types/tapable@*":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.4.tgz#b4ffc7dc97b498c969b360a41eee247f82616370"
@@ -2222,11 +2236,6 @@ aes-js@^0.2.3:
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/aes-js/-/aes-js-0.2.4.tgz#94b881ab717286d015fa219e08fb66709dda5a3d"
   integrity sha1-lLiBq3FyhtAV+iGeCPtmcJ3aWj0=
-
-aes-js@^3.1.1:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/aes-js/-/aes-js-3.1.2.tgz#db9aabde85d5caabbfc0d4f2a4446960f627146a"
-  integrity sha512-e5pEa2kBnBOgR4Y/p20pskXI74UEz7de8ZGVo58asOtvSVG5YAbJeELPZxOmt+Bnz3rX753YKhfIn4X4l1PPRQ==
 
 agent-base@4, agent-base@^4.1.0, agent-base@~4.2.0:
   version "4.2.1"
@@ -4004,7 +4013,7 @@ bs-logger@0.x:
   dependencies:
     fast-json-stable-stringify "^2.0.0"
 
-bs58@=4.0.1, bs58@^4.0.0:
+bs58@=4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/bs58/-/bs58-4.0.1.tgz#be161e76c354f6f788ae4071f63f34e8c4f0a42a"
   integrity sha1-vhYedsNU9veIrkBx9j806MTwpCo=
@@ -4030,15 +4039,6 @@ bs58check@^1.0.8:
   dependencies:
     bs58 "^3.1.0"
     create-hash "^1.1.0"
-
-bs58check@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/bs58check/-/bs58check-2.1.2.tgz#53b018291228d82a5aa08e7d796fdafda54aebfc"
-  integrity sha512-0TS1jicxdU09dwJMNZtVAfzPi6Q6QeN0pM1Fkzrjn+XYHvzMKPU3pHVpva+769iNVSfIYWf7LJ6WR+BuuMf8cA==
-  dependencies:
-    bs58 "^4.0.0"
-    create-hash "^1.1.0"
-    safe-buffer "^5.1.2"
 
 bser@^2.0.0:
   version "2.0.0"
@@ -7092,20 +7092,6 @@ ethereumjs-wallet@0.6.0:
     utf8 "^2.1.1"
     uuid "^2.0.1"
 
-ethereumjs-wallet@~0.6.0:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/ethereumjs-wallet/-/ethereumjs-wallet-0.6.2.tgz#67244b6af3e8113b53d709124b25477b64aeccda"
-  integrity sha512-DHEKPV9lYORM7dL8602dkb+AgdfzCYz2lxpdYQoD3OwG355LLDuivW9rGuLpDMCry/ORyBYV6n+QCo/71SwACg==
-  dependencies:
-    aes-js "^3.1.1"
-    bs58check "^2.1.2"
-    ethereumjs-util "^5.2.0"
-    hdkey "^1.0.0"
-    safe-buffer "^5.1.2"
-    scrypt.js "^0.2.0"
-    utf8 "^3.0.0"
-    uuid "^3.3.2"
-
 ethers@~4.0.4:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-4.0.4.tgz#d3f85e8b27f4b59537e06526439b0fb15b44dc65"
@@ -8923,15 +8909,6 @@ hdkey@^0.7.0, hdkey@^0.7.1:
   integrity sha1-yu5L6BqneSHpCbjSKN0PKayu5jI=
   dependencies:
     coinstring "^2.0.0"
-    secp256k1 "^3.0.1"
-
-hdkey@^1.0.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/hdkey/-/hdkey-1.1.0.tgz#e74e7b01d2c47f797fa65d1d839adb7a44639f29"
-  integrity sha512-E7aU8pNlWUJbXGjTz/+lKf1LkMcA3hUrC5ZleeizrmLSd++kvf8mSOe3q8CmBDA9j4hdfXO5iY6hGiTUCOV2jQ==
-  dependencies:
-    coinstring "^2.0.0"
-    safe-buffer "^5.1.1"
     secp256k1 "^3.0.1"
 
 he@1.1.1, he@1.1.x:
@@ -14852,6 +14829,11 @@ react-is@^16.4.2, react-is@^16.5.2:
   resolved "https://registry.npmjs.org/react-is/-/react-is-16.5.2.tgz#e2a7b7c3f5d48062eb769fcb123505eb928722e3"
   integrity sha512-hSl7E6l25GTjNEZATqZIuWOgSnpXb3kD0DVCujmg46K5zLxsbiKaaT6VO9slkSBDPZfYs30lwfJwbOFOnoEnKQ==
 
+react-is@^16.6.0:
+  version "16.6.3"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.6.3.tgz#d2d7462fcfcbe6ec0da56ad69047e47e56e7eac0"
+  integrity sha512-u7FDWtthB4rWibG/+mFbVd5FvdI20yde86qKGx4lVUTWmPlSWQ4QxbBIrrs+HnXGbxOUlUzTAP/VDmvCwaP2yA==
+
 react-jss@^8.1.0:
   version "8.6.1"
   resolved "https://registry.npmjs.org/react-jss/-/react-jss-8.6.1.tgz#a06e2e1d2c4d91b4d11befda865e6c07fbd75252"
@@ -17218,6 +17200,22 @@ styled-components@^4.0.2:
     stylis "^3.5.0"
     stylis-rule-sheet "^0.0.10"
 
+styled-components@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/styled-components/-/styled-components-4.1.1.tgz#943922048fae556e286bcbfdd29da4f1399446bc"
+  integrity sha512-UzT/qyoOyKpYooeLdwKrPHZ85R8KWl8i0fbyH9I3z6B2WT9uGDCV7J4kbfKsBeSWFD9EytBriEODOkybcUFD/Q==
+  dependencies:
+    "@emotion/is-prop-valid" "^0.6.8"
+    "@emotion/unitless" "^0.7.0"
+    babel-plugin-styled-components ">= 1"
+    css-to-react-native "^2.2.2"
+    memoize-one "^4.0.0"
+    prop-types "^15.5.4"
+    react-is "^16.6.0"
+    stylis "^3.5.0"
+    stylis-rule-sheet "^0.0.10"
+    supports-color "^5.5.0"
+
 styled-normalize@^8.0.1:
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/styled-normalize/-/styled-normalize-8.0.1.tgz#f1c390de61075cdcc45ae38a1c8c381c5667a0af"
@@ -18517,11 +18515,6 @@ utf8@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/utf8/-/utf8-2.1.2.tgz#1fa0d9270e9be850d9b05027f63519bf46457d96"
   integrity sha1-H6DZJw6b6FDZsFAn9jUZv0ZFfZY=
-
-utf8@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/utf8/-/utf8-3.0.0.tgz#f052eed1364d696e769ef058b183df88c87f69d1"
-  integrity sha512-E8VjFIQ/TyQgp+TZfS6l8yp/xWppSAHzidGiRrqe4bK4XP9pTRyKFgGJpO3SN7zdX4DeomTrwaseCHovfpFcqQ==
 
 util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"
