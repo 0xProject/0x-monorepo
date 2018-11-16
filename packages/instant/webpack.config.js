@@ -1,4 +1,5 @@
 const childProcess = require('child_process');
+const ip = require('ip');
 const path = require('path');
 const webpack = require('webpack');
 
@@ -9,7 +10,6 @@ const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
     .toString()
     .trim();
-const ip = require('ip');
 const config = {
     entry: './src/index.umd.ts',
     output: {
