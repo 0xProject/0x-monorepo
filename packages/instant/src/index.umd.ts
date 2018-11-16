@@ -7,34 +7,38 @@ import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
 import { assert } from './util/assert';
 import { util } from './util/util';
 
-export const render = (props: ZeroExInstantOverlayProps, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
-    assert.isValidOrderSource('orderSource', props.orderSource);
-    if (!_.isUndefined(props.defaultSelectedAssetData)) {
-        assert.isHexString('defaultSelectedAssetData', props.defaultSelectedAssetData);
+export interface ZeroExInstantConfig extends ZeroExInstantOverlayProps {
+    shouldUseHistoryApi?: boolean;
+}
+
+export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
+    assert.isValidOrderSource('orderSource', config.orderSource);
+    if (!_.isUndefined(config.defaultSelectedAssetData)) {
+        assert.isHexString('defaultSelectedAssetData', config.defaultSelectedAssetData);
     }
-    if (!_.isUndefined(props.additionalAssetMetaDataMap)) {
-        assert.isValidAssetMetaDataMap('props.additionalAssetMetaDataMap', props.additionalAssetMetaDataMap);
+    if (!_.isUndefined(config.additionalAssetMetaDataMap)) {
+        assert.isValidAssetMetaDataMap('props.additionalAssetMetaDataMap', config.additionalAssetMetaDataMap);
     }
-    if (!_.isUndefined(props.defaultAssetBuyAmount)) {
-        assert.isNumber('props.defaultAssetBuyAmount', props.defaultAssetBuyAmount);
+    if (!_.isUndefined(config.defaultAssetBuyAmount)) {
+        assert.isNumber('props.defaultAssetBuyAmount', config.defaultAssetBuyAmount);
     }
-    if (!_.isUndefined(props.networkId)) {
-        assert.isNumber('props.networkId', props.networkId);
+    if (!_.isUndefined(config.networkId)) {
+        assert.isNumber('props.networkId', config.networkId);
     }
-    if (!_.isUndefined(props.availableAssetDatas)) {
-        assert.areValidAssetDatas('availableAssetDatas', props.availableAssetDatas);
+    if (!_.isUndefined(config.availableAssetDatas)) {
+        assert.areValidAssetDatas('availableAssetDatas', config.availableAssetDatas);
     }
-    if (!_.isUndefined(props.onClose)) {
-        assert.isFunction('props.onClose', props.onClose);
+    if (!_.isUndefined(config.onClose)) {
+        assert.isFunction('props.onClose', config.onClose);
     }
-    if (!_.isUndefined(props.zIndex)) {
-        assert.isNumber('props.zIndex', props.zIndex);
+    if (!_.isUndefined(config.zIndex)) {
+        assert.isNumber('props.zIndex', config.zIndex);
     }
-    if (!_.isUndefined(props.affiliateInfo)) {
-        assert.isValidAffiliateInfo('props.affiliateInfo', props.affiliateInfo);
+    if (!_.isUndefined(config.affiliateInfo)) {
+        assert.isValidAffiliateInfo('props.affiliateInfo', config.affiliateInfo);
     }
-    if (!_.isUndefined(props.provider)) {
-        assert.isWeb3Provider('props.provider', props.provider);
+    if (!_.isUndefined(config.provider)) {
+        assert.isWeb3Provider('props.provider', config.provider);
     }
     assert.isString('selector', selector);
     // Render instant and return a callback that allows you to close it.
@@ -47,7 +51,7 @@ export const render = (props: ZeroExInstantOverlayProps, selector: string = DEFA
         injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
         appendTo.appendChild(injectedDiv);
         const instantOverlayProps = {
-            ...props,
+            ...config,
             onClose: () => window.history.back(),
         };
         ReactDOM.render(React.createElement(ZeroExInstantOverlay, instantOverlayProps), injectedDiv);
@@ -73,8 +77,8 @@ export const render = (props: ZeroExInstantOverlayProps, selector: string = DEFA
             // User pressed back, so close instant.
             closeInstant();
             delete window.onpopstate;
-            if (!_.isUndefined(props.onClose)) {
-                props.onClose();
+            if (!_.isUndefined(config.onClose)) {
+                config.onClose();
             }
         }
     };
