@@ -3,7 +3,6 @@ import { ObjectMap } from '@0x/types';
 import { heapUtil } from './heap';
 
 enum EventNames {
-    WALLET_OPENED = 'Wallet - Opened',
     WALLET_READY = 'Wallet - Ready',
     WIDGET_OPENED = 'Widget - Opened',
 }
@@ -43,7 +42,6 @@ export const analytics = {
     addEventProperties: (properties: AnalyticsEventOptions): void => {
         heapUtil.evaluateHeapCall(heap => heap.addEventProperties(properties));
     },
-    walletOpened: trackingEventFnWithoutPayload(EventNames.WALLET_OPENED),
-    walletReady: trackingEventFnWithoutPayload(EventNames.WALLET_READY),
-    widgetOpened: trackingEventFnWithoutPayload(EventNames.WIDGET_OPENED),
+    trackWalletReady: trackingEventFnWithoutPayload(EventNames.WALLET_READY),
+    trackWidgetOpened: trackingEventFnWithoutPayload(EventNames.WIDGET_OPENED),
 };
