@@ -5,7 +5,6 @@ import { heapUtil } from './heap';
 enum EventNames {
     INSTANT_OPENED = 'Instant - Opened',
     WALLET_READY = 'Wallet - Ready',
-    WIDGET_OPENED = 'Widget - Opened',
 }
 const track = (eventName: EventNames, eventData: ObjectMap<string | number> = {}): void => {
     heapUtil.evaluateHeapCall(heap => heap.track(eventName, eventData));
@@ -44,6 +43,5 @@ export const analytics = {
         heapUtil.evaluateHeapCall(heap => heap.addEventProperties(properties));
     },
     trackWalletReady: trackingEventFnWithoutPayload(EventNames.WALLET_READY),
-    trackWidgetOpened: trackingEventFnWithoutPayload(EventNames.WIDGET_OPENED),
     trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),
 };
