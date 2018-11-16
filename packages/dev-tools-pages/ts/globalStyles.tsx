@@ -2,9 +2,13 @@ import hljsStyles from 'highlight.js/styles/github-gist.css';
 import { createGlobalStyle } from 'styled-components';
 import styledNormalize from 'styled-normalize';
 
+import { ContextInterface } from 'ts/context';
 import { media } from 'ts/variables';
 
-const GlobalStyles = createGlobalStyle`
+const GlobalStyles =
+    createGlobalStyle <
+    ContextInterface >
+    `
     ${styledNormalize}
     ${hljsStyles}
 
@@ -54,11 +58,11 @@ const GlobalStyles = createGlobalStyle`
     }
 
     a:not([class]) {
-        color: black;
+        color: ${props => props.colors.type_alt};
         text-decoration: none;
 
         &:hover {
-            color: black;
+            color: ${props => props.colors.type_alt};
         }
     }
 

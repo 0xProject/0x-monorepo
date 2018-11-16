@@ -15,7 +15,7 @@ const Base: React.StatelessComponent<BaseProps> = props => (
     <ThemeContext.Provider value={props.context}>
         <ThemeProvider theme={props.context}>
             <React.Fragment>
-                <GlobalStyles />
+                <GlobalStyles colors={props.context.colors} />
                 <Header />
                 {props.children}
                 <Footer />
