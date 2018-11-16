@@ -4,7 +4,6 @@
     "engines": {
         "node": ">=6.12"
     },
-    "private": false,
     "description": "0x Instant React Component",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
