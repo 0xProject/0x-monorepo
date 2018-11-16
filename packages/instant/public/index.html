@@ -128,7 +128,7 @@
             availableAssetDatas: availableAssetDatasString ? JSON.parse(availableAssetDatasString) : undefined,
             defaultSelectedAssetData: queryParams.getQueryParamValue('defaultSelectedAssetData'),
             affiliateInfo: affiliateInfoOverride,
-
+            shouldDisablePushToHistory: !!queryParams.getQueryParamValue('shouldDisablePushToHistory'),
         }
         const renderOptions = Object.assign({}, renderOptionsDefaults, removeUndefined(renderOptionsOverrides));
         window.onpopstate = () => console.log('Integrators onpopstate called');
