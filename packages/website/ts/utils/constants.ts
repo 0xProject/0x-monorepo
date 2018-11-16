@@ -72,6 +72,7 @@ export const constants = {
     PROJECT_URL_OPEN_ANX: 'https://www.openanx.org',
     PROJECT_URL_IDT: 'https://kinalpha.com',
     URL_ANGELLIST: 'https://angel.co/0xproject/jobs',
+    URL_APACHE_LICENSE: 'http://www.apache.org/licenses/LICENSE-2.0',
     URL_BITLY_API: 'https://api-ssl.bitly.com',
     URL_BLOG: 'https://blog.0xproject.com/latest',
     URL_DISCOURSE_FORUM: 'https://forum.0xproject.com',
