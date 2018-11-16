@@ -78,11 +78,11 @@ const setupZeroExInstantHeap = () => {
 };
 
 export const heapUtil = {
-    getHeap: (): HeapAnalytics | null => {
+    getHeap: (): HeapAnalytics | undefined => {
         const curWindow = getWindow();
         const hasOtherExistingHeapIntegration = curWindow.heap && !curWindow.zeroExInstantLoadedHeap;
         if (hasOtherExistingHeapIntegration) {
-            return null;
+            return undefined;
         }
 
         const zeroExInstantHeapIntegration = curWindow.zeroExInstantLoadedHeap && curWindow.heap;
