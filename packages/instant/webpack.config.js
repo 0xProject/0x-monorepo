@@ -30,7 +30,6 @@ function getPlugins(webpackEnv) {
     }
 
     if (!rollbarPublicPath) {
-        console.log('Excluding rollbar sourcemap plugin');
         return basePlugins;
     }
 
@@ -41,7 +40,7 @@ function getPlugins(webpackEnv) {
         );
     }
 
-    console.log('Using rollbar source map plugin for', rollbarPublicPath, 'with sha', GIT_SHA);
+    console.log('Using rollbar source map plugin for', rollbarPublicPath);
     return basePlugins.concat([
         new RollbarSourceMapPlugin({
             accessToken: rollbarAccessKey,
