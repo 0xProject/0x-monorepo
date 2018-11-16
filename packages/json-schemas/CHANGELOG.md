@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.1 - _November 14, 2018_
+
+    * Dependencies updated
+
 ## v2.1.0 - _November 12, 2018_
 
     * Improve schemas by enforcing that amounts that must be whole numbers (e.g Order asset amounts) no longer allow decimal amounts (#1173)

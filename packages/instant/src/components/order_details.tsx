@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { oc } from 'ts-optchain';
 
+import { BIG_NUMBER_ZERO } from '../constants';
 import { ColorOption } from '../style/theme';
 import { format } from '../util/format';
 
@@ -15,16 +16,23 @@ import { Text } from './ui/text';
 
 export interface OrderDetailsProps {
     buyQuoteInfo?: BuyQuoteInfo;
+    selectedAssetUnitAmount?: BigNumber;
     ethUsdPrice?: BigNumber;
     isLoading: boolean;
 }
 export class OrderDetails extends React.Component<OrderDetailsProps> {
     public render(): React.ReactNode {
-        const { buyQuoteInfo, ethUsdPrice } = this.props;
+        const { buyQuoteInfo, ethUsdPrice, selectedAssetUnitAmount } = this.props;
         const buyQuoteAccessor = oc(buyQuoteInfo);
-        const ethAssetPrice = buyQuoteAccessor.ethPerAssetPrice();
-        const ethTokenFee = buyQuoteAccessor.feeEthAmount();
-        const totalEthAmount = buyQuoteAccessor.totalEthAmount();
+        const assetEthBaseUnitAmount = buyQuoteAccessor.assetEthAmount();
+        const feeEthBaseUnitAmount = buyQuoteAccessor.feeEthAmount();
+        const totalEthBaseUnitAmount = buyQuoteAccessor.totalEthAmount();
+        const pricePerTokenEth =
+            !_.isUndefined(assetEthBaseUnitAmount) &&
+            !_.isUndefined(selectedAssetUnitAmount) &&
+            !selectedAssetUnitAmount.eq(BIG_NUMBER_ZERO)
+                ? assetEthBaseUnitAmount.div(selectedAssetUnitAmount).ceil()
+                : undefined;
         return (
             <Container padding="20px" width="100%" flexGrow={1}>
                 <Container marginBottom="10px">
@@ -40,20 +48,19 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                 </Container>
                 <EthAmountRow
                     rowLabel="Token Price"
-                    ethAmount={ethAssetPrice}
+                    ethAmount={pricePerTokenEth}
                     ethUsdPrice={ethUsdPrice}
-                    isEthAmountInBaseUnits={false}
                     isLoading={this.props.isLoading}
                 />
                 <EthAmountRow
                     rowLabel="Fee"
-                    ethAmount={ethTokenFee}
+                    ethAmount={feeEthBaseUnitAmount}
                     ethUsdPrice={ethUsdPrice}
                     isLoading={this.props.isLoading}
                 />
                 <EthAmountRow
                     rowLabel="Total Cost"
-                    ethAmount={totalEthAmount}
+                    ethAmount={totalEthBaseUnitAmount}
                     ethUsdPrice={ethUsdPrice}
                     shouldEmphasize={true}
                     isLoading={this.props.isLoading}
@@ -81,7 +88,7 @@ export class EthAmountRow extends React.Component<EthAmountRowProps> {
         const { rowLabel, ethAmount, isEthAmountInBaseUnits, shouldEmphasize, isLoading } = this.props;
 
         const fontWeight = shouldEmphasize ? 700 : 400;
-        const ethFormatter = isEthAmountInBaseUnits ? format.ethBaseAmount : format.ethUnitAmount;
+        const ethFormatter = isEthAmountInBaseUnits ? format.ethBaseUnitAmount : format.ethUnitAmount;
         return (
             <Container padding="10px 0px" borderTop="1px dashed" borderColor={ColorOption.feintGrey}>
                 <Flex justify="space-between">
@@ -105,7 +112,9 @@ export class EthAmountRow extends React.Component<EthAmountRowProps> {
         );
     }
     private _renderUsdSection(): React.ReactNode {
-        const usdFormatter = this.props.isEthAmountInBaseUnits ? format.ethBaseAmountInUsd : format.ethUnitAmountInUsd;
+        const usdFormatter = this.props.isEthAmountInBaseUnits
+            ? format.ethBaseUnitAmountInUsd
+            : format.ethUnitAmountInUsd;
         const shouldHideUsdPriceSection = _.isUndefined(this.props.ethUsdPrice) || _.isUndefined(this.props.ethAmount);
         return shouldHideUsdPriceSection ? null : (
             <Container marginRight="3px" display="inline-block">

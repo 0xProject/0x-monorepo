@@ -44,19 +44,24 @@ export const orderProviderResponseProcessor = {
         let unsortedOrders = filteredOrders;
         // if an orderValidator is provided, use on chain information to calculate remaining fillable makerAsset amounts
         if (!_.isUndefined(orderValidator)) {
-            // TODO(bmillman): improvement
-            // try/catch this request and throw a more domain specific error
             const takerAddresses = _.map(filteredOrders, () => constants.NULL_ADDRESS);
-            const ordersAndTradersInfo = await orderValidator.getOrdersAndTradersInfoAsync(
-                filteredOrders,
-                takerAddresses,
-            );
-            // take orders + on chain information and find the valid orders and remaining fillable maker asset amounts
-            unsortedOrders = getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
-                filteredOrders,
-                ordersAndTradersInfo,
-                isMakerAssetZrxToken,
-            );
+            try {
+                const ordersAndTradersInfo = await orderValidator.getOrdersAndTradersInfoAsync(
+                    filteredOrders,
+                    takerAddresses,
+                );
+                // take orders + on chain information and find the valid orders and remaining fillable maker asset amounts
+                unsortedOrders = getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
+                    filteredOrders,
+                    ordersAndTradersInfo,
+                    isMakerAssetZrxToken,
+                );
+            } catch (err) {
+                // Sometimes we observe this call to orderValidator fail with response `0x`
+                // Because of differences in Parity / Geth implementations, its very hard to tell if this response is a "system error"
+                // or a revert. In this case we just swallow these errors and fallback to partial fill information from the SRA.
+                // TODO(bmillman): report these errors so we have an idea of how often we're getting these failures.
+            }
         }
         // sort orders by rate
         // TODO(bmillman): optimization

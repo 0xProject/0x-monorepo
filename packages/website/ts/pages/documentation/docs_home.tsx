@@ -346,6 +346,7 @@ export class DocsHome extends React.Component<DocsHomeProps, DocsHomeState> {
                 sidebarHeader={isSmallScreen ? this._renderSidebarHeader() : undefined}
                 sectionNameToLinks={sectionNameToLinks}
                 shouldReformatMenuItemNames={false}
+                screenWidth={this.props.screenWidth}
             />
         );
         return (

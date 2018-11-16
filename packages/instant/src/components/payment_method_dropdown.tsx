@@ -3,6 +3,7 @@ import copy from 'copy-to-clipboard';
 import * as React from 'react';
 
 import { Network } from '../types';
+import { envUtil } from '../util/env';
 import { etherscanUtil } from '../util/etherscan';
 import { format } from '../util/format';
 
@@ -18,10 +19,13 @@ export class PaymentMethodDropdown extends React.Component<PaymentMethodDropdown
     public render(): React.ReactNode {
         const { accountAddress, accountEthBalanceInWei } = this.props;
         const value = format.ethAddress(accountAddress);
-        const label = format.ethBaseAmount(accountEthBalanceInWei, 4, '') as string;
+        const label = format.ethBaseUnitAmount(accountEthBalanceInWei, 4, '') as string;
         return <Dropdown value={value} label={label} items={this._getDropdownItemConfigs()} />;
     }
     private readonly _getDropdownItemConfigs = (): DropdownItemConfig[] => {
+        if (envUtil.isMobileOperatingSystem()) {
+            return [];
+        }
         const viewOnEtherscan = {
             text: 'View on Etherscan',
             onClick: this._handleEtherscanClick,

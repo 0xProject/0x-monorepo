@@ -15,8 +15,6 @@ export const SecondaryButton: React.StatelessComponent<SecondaryButtonProps> = p
             borderColor={ColorOption.lightGrey}
             width={props.width}
             onClick={props.onClick}
-            fontColor={ColorOption.primaryColor}
-            fontSize="16px"
             {...buttonProps}
         >
             {props.children}

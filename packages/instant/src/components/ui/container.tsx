@@ -20,7 +20,7 @@ export interface ContainerProps {
     marginBottom?: string;
     marginLeft?: string;
     padding?: string;
-    borderRadius?: string;
+    borderRadius?: MediaChoice;
     border?: string;
     borderColor?: ColorOption;
     borderTop?: string;
@@ -57,7 +57,6 @@ export const Container =
         ${props => cssRuleIfExists(props, 'margin-bottom')}
         ${props => cssRuleIfExists(props, 'margin-left')}
         ${props => cssRuleIfExists(props, 'padding')}
-        ${props => cssRuleIfExists(props, 'border-radius')}
         ${props => cssRuleIfExists(props, 'border')}
         ${props => cssRuleIfExists(props, 'border-top')}
         ${props => cssRuleIfExists(props, 'border-bottom')}
@@ -70,6 +69,7 @@ export const Container =
         ${props => props.display && stylesForMedia<string>('display', props.display)}
         ${props => props.width && stylesForMedia<string>('width', props.width)}
         ${props => props.height && stylesForMedia<string>('height', props.height)}
+        ${props => props.borderRadius && stylesForMedia<string>('border-radius', props.borderRadius)}
         background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
         border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
         &:hover {
