@@ -8,7 +8,7 @@ import { assert } from './util/assert';
 import { util } from './util/util';
 
 export interface ZeroExInstantConfig extends ZeroExInstantOverlayProps {
-    shouldUseHistoryApi?: boolean;
+    shouldDisablePushToHistory?: boolean;
 }
 
 export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
@@ -50,36 +50,40 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         injectedDiv.setAttribute('id', INJECTED_DIV_ID);
         injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
         appendTo.appendChild(injectedDiv);
+        const close = () => appendTo.removeChild(injectedDiv);
         const instantOverlayProps = {
             ...config,
-            onClose: () => window.history.back(),
+            // If we are using the history API, just go back to close
+            onClose: () => (config.shouldDisablePushToHistory ? close() : window.history.back()),
         };
         ReactDOM.render(React.createElement(ZeroExInstantOverlay, instantOverlayProps), injectedDiv);
-        const close = () => appendTo.removeChild(injectedDiv);
         return close;
     };
-    // Before we render, push to history saying that instant is showing for this part of the history.
-    window.history.pushState({ zeroExInstantShowing: true }, '0x Instant');
-    let closeInstant = renderInstant();
+    if (config.shouldDisablePushToHistory) {
+        renderInstant();
+    } else {
+        // Before we render, push to history saying that instant is showing for this part of the history.
+        window.history.pushState({ zeroExInstantShowing: true }, '0x Instant');
+        let closeInstant = renderInstant();
 
-    let prevOnPopState = util.boundNoop;
-    if (window.onpopstate) {
-        prevOnPopState = window.onpopstate.bind(window);
-    }
-    window.onpopstate = (e: PopStateEvent) => {
-        // Don't override integrators handler.
-        prevOnPopState(e);
-        // e.state represents the new state
-        if (e.state && e.state.zeroExInstantShowing) {
-            // The user pressed fowards, so re-render instant.
-            closeInstant = renderInstant();
-        } else {
-            // User pressed back, so close instant.
-            closeInstant();
-            delete window.onpopstate;
-            if (!_.isUndefined(config.onClose)) {
-                config.onClose();
-            }
+        let prevOnPopState = util.boundNoop;
+        if (window.onpopstate) {
+            prevOnPopState = window.onpopstate.bind(window);
         }
-    };
+        window.onpopstate = (e: PopStateEvent) => {
+            // Don't override integrators handler.
+            prevOnPopState(e);
+            // e.state represents the new state
+            if (e.state && e.state.zeroExInstantShowing) {
+                // The user pressed fowards, so re-render instant.
+                closeInstant = renderInstant();
+            } else {
+                // User pressed back, so close instant.
+                closeInstant();
+                if (!_.isUndefined(config.onClose)) {
+                    config.onClose();
+                }
+            }
+        };
+    }
 };
