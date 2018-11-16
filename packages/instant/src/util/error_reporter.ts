@@ -5,7 +5,7 @@ import Rollbar from 'rollbar';
 
 import { ROLLBAR_ACCESS_TOKEN } from '../constants';
 
-import { environmentUtil } from './environment';
+import { scriptEnvironment } from './script_environment';
 
 console.log('code version', process.env.GIT_SHA);
 const rollbar = new Rollbar({
@@ -15,7 +15,7 @@ const rollbar = new Rollbar({
     itemsPerMinute: 10,
     maxItems: 500,
     payload: {
-        environment: environmentUtil.getEnvironment(),
+        environment: scriptEnvironment.getEnvironment(),
         client: {
             javascript: {
                 source_map_enabled: true,

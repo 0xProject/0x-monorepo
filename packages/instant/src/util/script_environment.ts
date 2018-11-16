@@ -5,7 +5,7 @@ import { Environment } from '../types';
 
 export type EnvironmentToDomain = { [key in Environment]: string[] };
 
-export const environmentUtil = {
+export const scriptEnvironment = {
     // Attempts to figure out full URL of where this JS is being served from
     getFullScriptLocation: (): string | null => {
         const currentScript = document.currentScript;
@@ -42,14 +42,14 @@ export const environmentUtil = {
         return undefined;
     },
     getEnvironment: (defaltValue = Environment.Production): Environment => {
-        const environmentFromLocation = environmentUtil.urlToEnvironment(window.location.href);
+        const environmentFromLocation = scriptEnvironment.urlToEnvironment(window.location.href);
         if (environmentFromLocation) {
             return environmentFromLocation;
         }
 
-        const scriptLocation = environmentUtil.getFullScriptLocation();
+        const scriptLocation = scriptEnvironment.getFullScriptLocation();
         if (scriptLocation) {
-            const environmentFromScriptLocation = environmentUtil.urlToEnvironment(scriptLocation);
+            const environmentFromScriptLocation = scriptEnvironment.urlToEnvironment(scriptLocation);
             if (environmentFromScriptLocation) {
                 return environmentFromScriptLocation;
             }

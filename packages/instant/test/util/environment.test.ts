@@ -1,5 +1,5 @@
 import { Environment } from '../../src/types';
-import { environmentUtil } from '../../src/util/environment';
+import { scriptEnvironment } from '../../src/util/script_environment';
 
 describe('environmentUtil', () => {
     describe('urlToEnvironment', () => {
@@ -21,7 +21,7 @@ describe('environmentUtil', () => {
         urlKeys.forEach(key => {
             const expectedEnvironment = urlsToEnvironments[key];
             it(`should map ${key} to ${expectedEnvironment}`, () => {
-                expect(environmentUtil.urlToEnvironment(key)).toBe(expectedEnvironment);
+                expect(scriptEnvironment.urlToEnvironment(key)).toBe(expectedEnvironment);
             });
         });
     });

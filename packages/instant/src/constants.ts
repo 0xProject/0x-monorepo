@@ -1,7 +1,7 @@
 import { BigNumber } from '@0x/utils';
 
 import { AccountNotReady, AccountState, Environment, Network, ProviderType } from './types';
-import { EnvironmentToDomain } from './util/environment';
+import { EnvironmentToDomain } from './util/script_environment';
 
 export const BIG_NUMBER_ZERO = new BigNumber(0);
 export const ETH_DECIMALS = 18;
