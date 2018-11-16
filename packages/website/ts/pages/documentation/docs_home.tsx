@@ -76,6 +76,14 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
+                'Reference documentation for the 0x smart contracts. Helpful for dApp developer wanting to integrate 0x at the smart contract level.',
+            link: {
+                title: '0x smart contracts',
+                to: WebsitePaths.SmartContracts,
+            },
+        },
+        {
+            description:
                 'An http & websocket client for interacting with relayers that have implemented the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api)',
             link: {
                 title: '@0x/connect',
