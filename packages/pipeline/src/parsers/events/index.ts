@@ -1,9 +1,4 @@
-import {
-    ExchangeCancelEventArgs,
-    ExchangeCancelUpToEventArgs,
-    ExchangeEventArgs,
-    ExchangeFillEventArgs,
-} from '@0x/contract-wrappers';
+import { ExchangeCancelEventArgs, ExchangeCancelUpToEventArgs, ExchangeFillEventArgs } from '@0x/contract-wrappers';
 import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId, ERC721AssetData } from '@0x/types';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -12,39 +7,32 @@ import * as R from 'ramda';
 import { ExchangeCancelEvent, ExchangeCancelUpToEvent, ExchangeFillEvent } from '../../entities';
 import { bigNumbertoStringOrNull } from '../../utils';
 
-export type ExchangeEventEntity = ExchangeFillEvent | ExchangeCancelEvent | ExchangeCancelUpToEvent;
-
-export const parseExchangeEvents: (
-    eventLogs: Array<LogWithDecodedArgs<ExchangeEventArgs>>,
-) => ExchangeEventEntity[] = R.map(_convertToEntity);
+/**
+ * Parses raw event logs for a fill event and returns an array of
+ * ExchangeFillEvent entities.
+ * @param eventLogs Raw event logs (e.g. returned from contract-wrappers).
+ */
+export const parseExchangeFillEvents: (
+    eventLogs: Array<LogWithDecodedArgs<ExchangeFillEventArgs>>,
+) => ExchangeFillEvent[] = R.map(_convertToExchangeFillEvent);
 
 /**
- * Converts a raw event log to an Entity. Automatically detects the type of
- * event and returns the appropriate entity type. Throws for unknown event
- * types.
- * @param eventLog Raw event log (e.g. returned from contract-wrappers).
+ * Parses raw event logs for a cancel event and returns an array of
+ * ExchangeCancelEvent entities.
+ * @param eventLogs Raw event logs (e.g. returned from contract-wrappers).
  */
-export function _convertToEntity(eventLog: LogWithDecodedArgs<ExchangeEventArgs>): ExchangeEventEntity {
-    switch (eventLog.event) {
-        case 'Fill':
-            // tslint has a false positive here. We need to type assert in order
-            // to change the type argument to the more specific
-            // ExchangeFillEventArgs.
-            // tslint:disable-next-line:no-unnecessary-type-assertion
-            return _convertToExchangeFillEvent(eventLog as LogWithDecodedArgs<ExchangeFillEventArgs>);
-        case 'Cancel':
-            // tslint:disable-next-line:no-unnecessary-type-assertion
-            return _convertToExchangeCancelEvent(eventLog as LogWithDecodedArgs<ExchangeCancelEventArgs>);
-        case 'CancelUpTo':
-            // tslint:disable-next-line:no-unnecessary-type-assertion
-            return _convertToExchangeCancelUpToEvent(eventLog as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>);
-        default:
-            // Another false positive here. We are adding two strings, but
-            // tslint seems confused about the types.
-            // tslint:disable-next-line:restrict-plus-operands
-            throw new Error('unexpected eventLog.event type: ' + eventLog.event);
-    }
-}
+export const parseExchangeCancelEvents: (
+    eventLogs: Array<LogWithDecodedArgs<ExchangeCancelEventArgs>>,
+) => ExchangeCancelEvent[] = R.map(_convertToExchangeCancelEvent);
+
+/**
+ * Parses raw event logs for a CancelUpTo event and returns an array of
+ * ExchangeCancelUpToEvent entities.
+ * @param eventLogs Raw event logs (e.g. returned from contract-wrappers).
+ */
+export const parseExchangeCancelUpToEvents: (
+    eventLogs: Array<LogWithDecodedArgs<ExchangeCancelUpToEventArgs>>,
+) => ExchangeCancelUpToEvent[] = R.map(_convertToExchangeCancelUpToEvent);
 
 /**
  * Converts a raw event log for a fill event into an ExchangeFillEvent entity.
