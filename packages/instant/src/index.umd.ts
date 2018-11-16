@@ -5,6 +5,7 @@ import * as ReactDOM from 'react-dom';
 import { DEFAULT_ZERO_EX_CONTAINER_SELECTOR, INJECTED_DIV_CLASS, INJECTED_DIV_ID } from './constants';
 import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
 import { assert } from './util/assert';
+import { util } from './util/util';
 
 export const render = (props: ZeroExInstantOverlayProps, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
     assert.isValidOrderSource('orderSource', props.orderSource);
@@ -36,21 +37,45 @@ export const render = (props: ZeroExInstantOverlayProps, selector: string = DEFA
         assert.isWeb3Provider('props.provider', props.provider);
     }
     assert.isString('selector', selector);
-    const appendToIfExists = document.querySelector(selector);
-    assert.assert(!_.isNull(appendToIfExists), `Could not find div with selector: ${selector}`);
-    const appendTo = appendToIfExists as Element;
-    const injectedDiv = document.createElement('div');
-    injectedDiv.setAttribute('id', INJECTED_DIV_ID);
-    injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
-    appendTo.appendChild(injectedDiv);
-    const instantOverlayProps = {
-        ...props,
-        onClose: () => {
-            appendTo.removeChild(injectedDiv);
+    // Render instant and return a callback that allows you to close it.
+    const renderInstant = () => {
+        const appendToIfExists = document.querySelector(selector);
+        assert.assert(!_.isNull(appendToIfExists), `Could not find div with selector: ${selector}`);
+        const appendTo = appendToIfExists as Element;
+        const injectedDiv = document.createElement('div');
+        injectedDiv.setAttribute('id', INJECTED_DIV_ID);
+        injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
+        appendTo.appendChild(injectedDiv);
+        const instantOverlayProps = {
+            ...props,
+            onClose: () => window.history.back(),
+        };
+        ReactDOM.render(React.createElement(ZeroExInstantOverlay, instantOverlayProps), injectedDiv);
+        const close = () => appendTo.removeChild(injectedDiv);
+        return close;
+    };
+    // Before we render, push to history saying that instant is showing for this part of the history.
+    window.history.pushState({ zeroExInstantShowing: true }, '0x Instant');
+    let closeInstant = renderInstant();
+
+    let prevOnPopState = util.boundNoop;
+    if (window.onpopstate) {
+        prevOnPopState = window.onpopstate.bind(window);
+    }
+    window.onpopstate = (e: PopStateEvent) => {
+        // Don't override integrators handler.
+        prevOnPopState(e);
+        // e.state represents the new state
+        if (e.state && e.state.zeroExInstantShowing) {
+            // The user pressed fowards, so re-render instant.
+            closeInstant = renderInstant();
+        } else {
+            // User pressed back, so close instant.
+            closeInstant();
+            delete window.onpopstate;
             if (!_.isUndefined(props.onClose)) {
                 props.onClose();
             }
-        },
+        }
     };
-    ReactDOM.render(React.createElement(ZeroExInstantOverlay, instantOverlayProps), injectedDiv);
 };
