@@ -73,11 +73,6 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
             stringValue: sanitizedValue,
         });
 
-        // TODO: don't include in production
-        if (sanitizedValue === '111') {
-            throw new Error('Test: Updated Input Trigger');
-        }
-
         // Trigger onAmountChange with a valid BigNumber, or undefined if the sanitizedValue is invalid or empty
         const bigNumberValue: Maybe<BigNumber> = _.isEmpty(sanitizedValue)
             ? undefined
