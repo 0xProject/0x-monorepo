@@ -8,7 +8,7 @@
         "packages/*"
     ],
     "scripts": {
-        "ganache": "ganache-cli -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
+        "ganache": "ganache-cli -p 8545 --gasLimit 10000000 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
         "prettier": "prettier --write '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "prettier:ci": "prettier --list-different '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "report_coverage": "lcov-result-merger './{packages/*/coverage/lcov.info,python-packages/*/.coverage}' | coveralls",
