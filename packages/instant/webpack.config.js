@@ -1,6 +1,15 @@
+const childProcess = require('child_process');
 const path = require('path');
+const webpack = require('webpack');
+
 // The common js bundle (not this one) is built using tsc.
 // The umd bundle (this one) has a different entrypoint.
+
+const GIT_SHA = childProcess
+    .execSync('git rev-parse HEAD')
+    .toString()
+    .trim();
+
 module.exports = {
     entry: './src/index.umd.ts',
     output: {
@@ -9,6 +18,15 @@ module.exports = {
         library: 'zeroExInstant',
         libraryTarget: 'umd',
     },
+    plugins: [
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+                GIT_SHA: JSON.stringify(GIT_SHA),
+                ENABLE_HEAP: process.env.ENABLE_HEAP,
+            },
+        }),
+    ],
     devtool: 'source-map',
     resolve: {
         extensions: ['.js', '.json', '.ts', '.tsx'],
