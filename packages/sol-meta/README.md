@@ -1,8 +1,83 @@
-## 0x/sol-meta
+# 0x / sol-meta
 
 Sol-meta is a Solidity to Solidity compiler to automatically generate testing
-contracts. It does a number of things: exposing internal logic, stubbing
-abstract functions, scripting abstract functions.
+contracts. It does two things: exposing internal logic and stubbing/scripting
+of abstract functions.
+
+It works by generating a new contract that inherits the one under test. The
+advantage of this approach is that it does not modify the code under test. The
+downside is that we can not directly test contract members marked `private`.
+
+## Usage
+
+### Command line interface
+
+```
+Usage: sol-meta.js <sources> [options]
+
+Options:
+  --version    Show version number                                     [boolean]
+  --help       Show help                                               [boolean]
+  --config     config file                                              [string]
+  --remapping  path remappings for import statements                     [array]
+  --includes   search paths for imported source files                    [array]
+  --output     directory to output too                                  [string]
+  --test       run all generated mock contracts through solc           [boolean]
+```
+
+### Configuration file
+
+Example:
+
+```json
+{
+    "options": {
+        "sources": ["../contracts/contracts/protocol/**/*.sol", "../contracts/contracts/utils/**/*.sol"]
+    },
+    "constructors": {
+        "LibConstants": ["\"ZRXASSETSTRING\""]
+    },
+    "scripted": {
+        "hashZeroExTransaction": [
+            {
+                "inputs": {
+                    "salt": 32123,
+                    "signerAddress": "0x0123123213"
+                },
+                "revert": "Test failed. Should never be called."
+            },
+            {
+                "inputs": {
+                    "salt": 123
+                },
+                "outputs": ["0x0123456"]
+            }
+        ]
+    },
+    "contracts": {
+        "LibEIP712": {},
+        "MixinAssetProxyDispatcher": {},
+        "MixinExchangeCore": {},
+        "MixinMatchOrders": {
+            "constructors": {
+                "LibConstants": ["\"Different string\""]
+            }
+        },
+        "MixinSignatureValidator": {},
+        "MixinTransactions": {}
+    }
+}
+```
+
+## Testing stategies
+
+The two main ways sol-meta helps with testing is by exposing internals and
+stubbing abstract functions. Exposing makes it possible to access otherwise
+unaccesible variables and functoins from a test. Stubbing implements missing
+functions for you so you can test a partial contract such as a mixin in
+isolation.
+
+The
 
 ### Exposing
 
@@ -11,9 +86,14 @@ functions with public wrappers.
 
 #### Exposed Functions
 
-All internal functions receive a public wrapper.
+All functions marked `internal` functions receive a public wrapper. The name of
+the wrapper is `functionNamePublic`. The wrapped function signature is
+identical to the original.
 
-Example:
+Private functions can not be exposed. There is currently no way to test them
+directly due to the inheritance approach.
+
+Example generated wrapper:
 
 ```solidity
     function safeAddPublic(uint256 a, uint256 b)
@@ -26,9 +106,12 @@ Example:
 
 #### Exposed Modifiers
 
-For every modifier a testing function is generated.
+For every modifier a testing function is generated that allows you to test if
+the modifier executes or not. The name of the tester function is
+`modifierNameTest` and it's arguments are the arguments of the modifier. When
+the modifier allows execution, it will simply return `true`.
 
-Example:
+Example generated tester:
 
 ```solidity
     function onlyAuthorizedTest(address user)
@@ -42,9 +125,10 @@ Example:
 
 #### Exposed Events
 
-For every event, a function is created that will trigger it.
+For every event, a function is created that will trigger it. The name of this
+function is `EventNameEmit` and the arguments are the log event arguments.
 
-Example:
+Example generated emitter:
 
 ```solidity
     function TransferEmit(address from, address to, uint256 value)
@@ -56,9 +140,14 @@ Example:
 
 #### Exposed Variables
 
-All variable are given getters and setters.
+All contract variable are given getters and setters to allow the tester to
+manipulate state variables directly. The getter is named `variableNameGet`,
+takes no arguments and returns the current value. The setter is named
+`variableNameSet` and takes an instance of the variable type as argument.
 
-Example:
+Currently no support for maps is implemented.
+
+Example generated getter and setter:
 
 ```solidity
     function totalSupplyGet()
@@ -75,13 +164,14 @@ Example:
     }
 ```
 
-Limitations:
-
-Currently no support for maps is implemented.
-
 ### Scripting Functions
 
-Example:
+Any abstract function can be scripted. For this, an entry in the configuration
+file is required listing inputs and outputs the stubbed function should have.
+In place of an output a revert reason can be given to make the stub throw. The
+list of inputs can be partial to act as a filter.
+
+Example configuration:
 
 ```json
     "scripted": {
@@ -97,11 +187,13 @@ Example:
                     "salt": 32123,
                     "signerAddress": "0x0123123213"
                 },
-                "reverts": "Test failed. Should never be called."
+                "revert": "Test failed: invalid signer"
             }
         ]
     },
 ```
+
+Example generate stub for above configuration:
 
 ```solidity
     function hashZeroExTransaction(
@@ -116,23 +208,34 @@ Example:
             return 0x0123456;
 
         if (salt == 32123 && signerAddress == 0x0123123213)
-            require(false, "Test failed. Should never be called.");
+            require(false, "Test failed: invalid signer");
 
         require(false, "Unscripted input for hashZeroExTransaction");
     }
 ```
 
-### Stubbing
-
-Given an interface contract (either a public interface or a mixin), it can
-generate a mock implementation.
-
-Note: the computation of what is abstract and what is not is imperfect. In
-particular, public variables imply getter functions.
-
 #### Stubbed Functions
 
-Example:
+For any abstract function that is not scripted, a stub is generated. Depending
+on wheter the function is `pure` and has return values, the behaviour is
+slightly different.
+
+For non-pure functions, the stub will log the call with all the arugments and
+give the next from a sequence of responses. The responses are programmed using
+as separate function. When no response is scheduled, it will revert with
+`Unprogrammed input for <function name>`.
+
+Due to usage of logs and storage, this can not be used to implement `pure`
+functions. Pure functions will always revert with the reason
+`Abstract function <function name> called`. Different behaviour can be
+achieved with a scripted function.
+
+There is currently an unsolved issue in the stubber where it will not detect a
+public variable as implementing an abstract function. This happens for example
+when `IERC20Token` requires a function `totalSupply() public returns (uint256)`
+and contract contains a state variable `public uint256 totalSupply;`.
+
+Example stub:
 
 ```solidity
     event isValidSignatureCalled(uint256 counter, bytes32 hash, address  signerAddress, bytes signature);
@@ -157,8 +260,6 @@ Example:
         // ...
     }
 ```
-
-When there is no enabled option, it will revert with the message `Unprogrammed input for isValidSignature`.
 
 #### Stubbed Actions
 
@@ -228,23 +329,6 @@ contract MixinExchangeCoreMockNonAbstractForcer {
     }
 }
 ```
-
-## Command line interface
-
-```
-Usage: sol-meta.js <sources> [options]
-
-Options:
-  --version    Show version number                                     [boolean]
-  --help       Show help                                               [boolean]
-  --config     config file                                              [string]
-  --remapping  path remappings for import statements                     [array]
-  --includes   search paths for imported source files                    [array]
-  --output     directory to output too                                  [string]
-  --test       run all generated mock contracts through solc           [boolean]
-```
-
-## Configuration file
 
 ## Contributing
 
