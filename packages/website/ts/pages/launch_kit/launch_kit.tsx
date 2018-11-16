@@ -204,7 +204,7 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                     paddingRight="10px"
                 >
                     <Text fontSize="26px" lineHeight="37px" fontWeight="medium" fontColor={colors.white}>
-                        {this.props.translate.get(Key.PerfectForDevelopers, Deco.CapWords)}
+                        {this.props.translate.get(Key.PerfectForDevelopers, Deco.Cap)}
                     </Text>
                 </Container>
                 {this._renderBenefits(BENEFITS_2)}
@@ -309,8 +309,15 @@ export class LaunchKit extends React.Component<LaunchKitProps, LaunchKitState> {
                     </Text>
                     <Container paddingTop="15px">
                         <Text fontColor={grayText} fontSize="10px">
-                            See the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0) for the
-                            specific language governing all applicable permissions and limitations.
+                            See the{' '}
+                            <Link
+                                to={constants.URL_APACHE_LICENSE}
+                                shouldOpenInNewTab={true}
+                                textDecoration="underline"
+                            >
+                                Apache License, Version 2.0
+                            </Link>{' '}
+                            for the specific language governing all applicable permissions and limitations.
                         </Text>
                     </Container>
                 </Container>
