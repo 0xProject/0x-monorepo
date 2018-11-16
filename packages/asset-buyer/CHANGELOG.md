@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.0 - _November 14, 2018_
+
+    * update `getBuyQuoteAsync` to return eth spent on assets instead of per unit amount (#1252)
+
+## v2.2.2 - _November 13, 2018_
+
+    * Dependencies updated
+
+## v2.2.1 - _November 12, 2018_
+
+    * Dependencies updated
+
 ## v2.2.0 - _November 9, 2018_
 
     * `getAssetBuyerForProvidedOrders` factory function now takes 3 args instead of 4 (#1187)

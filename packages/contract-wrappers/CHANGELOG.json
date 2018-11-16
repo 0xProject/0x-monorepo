@@ -1,5 +1,23 @@
 [
     {
+        "timestamp": 1542208198,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {
@@ -17,7 +35,8 @@
                     "Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218)",
                 "pr": 1235
             }
-        ]
+        ],
+        "timestamp": 1542028948
     },
     {
         "version": "3.0.1",

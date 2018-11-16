@@ -1,10 +1,10 @@
 import * as React from 'react';
 
 import { OptionallyScreenSpecific } from '../../style/media';
+import { SlideAnimationState } from '../../types';
 
 import { PositionAnimation, PositionAnimationSettings } from './position_animation';
 
-export type SlideAnimationState = 'slidIn' | 'slidOut' | 'none';
 export interface SlideAnimationProps {
     animationState: SlideAnimationState;
     slideInSettings: OptionallyScreenSpecific<PositionAnimationSettings>;

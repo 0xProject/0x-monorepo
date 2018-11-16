@@ -35,7 +35,7 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
     if (props.buyOrderProcessingState === OrderProcessState.Failure) {
         return (
             <Flex justify="space-between">
-                <Button width="48%" onClick={props.onRetry} fontColor={ColorOption.white} fontSize="16px">
+                <Button width="48%" onClick={props.onRetry} fontColor={ColorOption.white}>
                     Back
                 </Button>
                 <SecondaryButton width="48%" onClick={props.onViewTransaction}>

@@ -29,13 +29,19 @@ export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps>
         const { tokens, onTokenSelect } = this.props;
         return (
             <Container height="100%">
+                <Container marginBottom="10px">
+                    <Text fontColor={ColorOption.darkGrey} fontSize="18px" fontWeight="600" lineHeight="22px">
+                        Select Token
+                    </Text>
+                </Container>
                 <SearchInput
                     placeholder="Search tokens..."
                     width="100%"
                     value={this.state.searchQuery}
                     onChange={this._handleSearchInputChange}
+                    tabIndex={-1}
                 />
-                <Container overflow="scroll" height="calc(100% - 80px)" marginTop="10px">
+                <Container overflow="scroll" height="calc(100% - 90px)" marginTop="10px">
                     {_.map(tokens, token => {
                         if (!this._isTokenQueryMatch(token)) {
                             return null;
@@ -57,8 +63,10 @@ export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps>
         if (_.isUndefined(searchQuery)) {
             return true;
         }
-        const stringToSearch = `${token.metaData.name} ${token.metaData.symbol}`;
-        return _.includes(stringToSearch.toLowerCase(), searchQuery.toLowerCase());
+        const searchQueryLowerCase = searchQuery.toLowerCase();
+        const tokenName = token.metaData.name.toLowerCase();
+        const tokenSymbol = token.metaData.symbol.toLowerCase();
+        return _.startsWith(tokenSymbol, searchQueryLowerCase) || _.startsWith(tokenName, searchQueryLowerCase);
     };
 }
 

@@ -76,6 +76,7 @@ export class Wiki extends React.Component<WikiProps, WikiState> {
             <NestedSidebarMenu
                 sidebarHeader={isSmallScreen ? this._renderSidebarHeader() : undefined}
                 sectionNameToLinks={sectionNameToLinks}
+                screenWidth={this.props.screenWidth}
             />
         );
         return (

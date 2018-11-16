@@ -106,10 +106,6 @@ export const constants = {
     URL_MISSION_AND_VALUES_BLOG_POST: 'https://blog.0xproject.com/the-0x-mission-and-values-181a58706f9f',
     DEVELOPER_TOPBAR_LINKS: [
         {
-            title: Key.Home,
-            to: WebsitePaths.Home,
-        },
-        {
             title: Key.Wiki,
             to: WebsitePaths.Wiki,
         },

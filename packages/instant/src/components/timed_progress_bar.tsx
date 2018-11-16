@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { PROGRESS_FINISH_ANIMATION_TIME_MS, PROGRESS_STALL_AT_WIDTH } from '../constants';
-import { ColorOption, keyframes, styled } from '../style/theme';
+import { ColorOption, css, keyframes, styled } from '../style/theme';
 
 import { Container } from './ui/container';
 
@@ -20,15 +20,11 @@ export class TimedProgressBar extends React.Component<TimedProgressBarProps, {}>
     private readonly _barRef = React.createRef<HTMLDivElement>();
 
     public render(): React.ReactNode {
-        const timedProgressProps = this._calculateTimedProgressProps();
-        return (
-            <Container width="100%" backgroundColor={ColorOption.lightGrey} borderRadius="6px">
-                <TimedProgress {...timedProgressProps} ref={this._barRef as any} />
-            </Container>
-        );
+        const widthAnimationSettings = this._calculateWidthAnimationSettings();
+        return <ProgressBar animationSettings={widthAnimationSettings} ref={this._barRef} />;
     }
 
-    private _calculateTimedProgressProps(): TimedProgressProps {
+    private _calculateWidthAnimationSettings(): WidthAnimationSettings {
         if (this.props.hasEnded) {
             if (!this._barRef.current) {
                 throw new Error('ended but no reference');
@@ -60,21 +56,45 @@ const expandingWidthKeyframes = (fromWidth: string, toWidth: string) => {
       `;
 };
 
-interface TimedProgressProps {
+export interface WidthAnimationSettings {
     timeMs: number;
     fromWidth: string;
     toWidth: string;
 }
 
-export const TimedProgress =
+interface ProgressProps {
+    width?: string;
+    animationSettings?: WidthAnimationSettings;
+}
+
+export const Progress =
     styled.div <
-    TimedProgressProps >
+    ProgressProps >
     `
     && {
         background-color: ${props => props.theme[ColorOption.primaryColor]};
         border-radius: 6px;
         height: 6px;
-        animation: ${props => expandingWidthKeyframes(props.fromWidth, props.toWidth)}
-          ${props => props.timeMs}ms linear 1 forwards;
+        ${props => (props.width ? `width: ${props.width};` : '')}
+        ${props =>
+            props.animationSettings
+                ? css`
+                      animation: ${expandingWidthKeyframes(
+                              props.animationSettings.fromWidth,
+                              props.animationSettings.toWidth,
+                          )}
+                          ${props.animationSettings.timeMs}ms linear 1 forwards;
+                  `
+                : ''}
     }
 `;
+
+export interface ProgressBarProps extends ProgressProps {}
+
+export const ProgressBar: React.ComponentType<ProgressBarProps & React.ClassAttributes<{}>> = React.forwardRef(
+    (props, ref) => (
+        <Container width="100%" backgroundColor={ColorOption.lightGrey} borderRadius="6px">
+            <Progress {...props} ref={ref as any} />
+        </Container>
+    ),
+);

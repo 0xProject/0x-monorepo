@@ -1,5 +1,39 @@
 [
     {
+        "version": "2.2.4",
+        "changes": [
+            {
+                "note":
+                    "Fix the bug when order watcher was throwing an error on order removal when maker token was ZRX",
+                "pr": 1259
+            }
+        ],
+        "timestamp": 1542208198
+    },
+    {
+        "version": "2.2.3",
+        "changes": [
+            {
+                "note": "Start jsonRpcRequestId at 1, not 0 as 0 breaks the web3.js websocket RPC provider",
+                "pr": 1227
+            },
+            {
+                "note":
+                    "Fix the bug when order watcher was trying to convert undefined to an object in case of CancelUpTo event"
+            }
+        ],
+        "timestamp": 1542134075
+    },
+    {
+        "timestamp": 1542028948,
+        "version": "2.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "2.2.1",
         "changes": [
             {

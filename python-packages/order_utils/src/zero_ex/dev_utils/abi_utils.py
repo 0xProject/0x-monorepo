@@ -10,8 +10,8 @@ from typing import Any, List
 
 from mypy_extensions import TypedDict
 
-from eth_abi import encode_abi
 from web3 import Web3
+from eth_abi import encode_abi
 
 from .type_assertions import assert_is_string, assert_is_list
 
@@ -84,7 +84,6 @@ def method_id(name: str, types: List[str]) -> str:
 
 
 def simple_encode(method: str, *args: Any) -> bytes:
-    # docstring considered all one line by pylint: disable=line-too-long
     r"""Encode a method ABI.
 
     >>> simple_encode("ERC20Token(address)", "0x1dc4c1cefef38a777b15aa20260a54e584b16c48")
