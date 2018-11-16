@@ -41,6 +41,6 @@ export const analytics = {
         heapUtil.evaluateHeapCall(heap => heap.addEventProperties(properties));
     },
     walletOpened: trackingEventFnWithoutPayload(EventNames.WALLET_OPENED),
-    walletReady: trackingEventFnWithPayload<{ numAssetsAvailable: number }>(EventNames.WALLET_READY),
+    walletReady: trackingEventFnWithoutPayload(EventNames.WALLET_READY),
     widgetOpened: trackingEventFnWithoutPayload(EventNames.WIDGET_OPENED),
 };
