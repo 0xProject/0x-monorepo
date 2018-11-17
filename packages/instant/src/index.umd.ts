@@ -53,14 +53,19 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         injectedDiv.setAttribute('id', INJECTED_DIV_ID);
         injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
         appendTo.appendChild(injectedDiv);
-        const removeFromDom = () => appendTo.removeChild(injectedDiv);
+        const closeInstant = () => {
+            if (config.onClose) {
+                config.onClose();
+            }
+            appendTo.removeChild(injectedDiv);
+        };
         const instantOverlayProps = {
             ...config,
             // If we are using the history API, just go back to close
-            onClose: () => (config.shouldDisablePushToHistory ? removeFromDom() : window.history.back()),
+            onClose: () => (config.shouldDisablePushToHistory ? closeInstant() : window.history.back()),
         };
         ReactDOM.render(React.createElement(ZeroExInstantOverlay, instantOverlayProps), injectedDiv);
-        return removeFromDom;
+        return closeInstant;
     };
     if (config.shouldDisablePushToHistory) {
         renderInstant();
@@ -83,9 +88,6 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
             } else {
                 // User pressed back, so close instant.
                 removeInstant();
-                if (!_.isUndefined(config.onClose)) {
-                    config.onClose();
-                }
             }
         };
     }
