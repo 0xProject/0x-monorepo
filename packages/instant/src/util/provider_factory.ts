@@ -29,10 +29,6 @@ export const providerFactory = {
         providerEngine.addProvider(new RPCSubprovider(rpcUrl));
         // // Start the Provider Engine
         providerEngine.start();
-        // This feels a bit dirty, but was the only way I could think of
-        // checking to see if this engine is our fallback engine, and not
-        // another Web3Provider engine provided by some dapp browser
-        (providerEngine as any).zeroExInstantFallbackEngine = true;
         return providerEngine;
     },
 };

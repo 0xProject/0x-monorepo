@@ -52,8 +52,6 @@ export const envUtil = {
             return ProviderType.CoinbaseWallet;
         } else if (!_.isUndefined(_.get(window, '__CIPHER__'))) {
             return ProviderType.Cipher;
-        } else if ((provider as any).zeroExInstantFallbackEngine) {
-            return ProviderType.Fallback;
         }
         return;
     },
