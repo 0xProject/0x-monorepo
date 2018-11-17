@@ -5,6 +5,7 @@
         "node": ">=6.12"
     },
     "description": "0x Instant React Component",
+    "private": true,
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
@@ -29,7 +30,7 @@
         "postpublish": {
             "assets": [
                 "packages/instant/umd/instant.js",
-                "packages/instant/umd/instant.min.js"
+                "packages/instant/umd/instant.js.map"
             ]
         }
     },
@@ -97,6 +98,6 @@
         "webpack-dev-server": "^3.1.9"
     },
     "publishConfig": {
-        "access": "public"
+        "access": "private"
     }
 }
