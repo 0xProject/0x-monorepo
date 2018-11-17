@@ -5,7 +5,6 @@
         "node": ">=6.12"
     },
     "description": "0x Instant React Component",
-    "private": true,
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
@@ -98,6 +97,6 @@
         "webpack-dev-server": "^3.1.9"
     },
     "publishConfig": {
-        "access": "private"
+        "access": "public"
     }
 }
