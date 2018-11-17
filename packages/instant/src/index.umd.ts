@@ -68,7 +68,9 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         return closeInstant;
     };
     if (config.shouldDisablePushToHistory) {
-        renderInstant();
+        if (!isInstantRendered()) {
+            renderInstant();
+        }
     } else {
         // Before we render, push to history saying that instant is showing for this part of the history.
         window.history.pushState({ zeroExInstantShowing: true }, '0x Instant');
@@ -83,12 +85,18 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
             prevOnPopState(e);
             // e.state represents the new state
             if (e.state && e.state.zeroExInstantShowing) {
-                // The user pressed fowards, so re-render instant.
-                removeInstant = renderInstant();
+                // We have returned to a history state that expects instant to be rendered.
+                if (!isInstantRendered()) {
+                    removeInstant = renderInstant();
+                }
             } else {
-                // User pressed back, so close instant.
-                removeInstant();
+                // History has changed to a different state.
+                if (isInstantRendered()) {
+                    removeInstant();
+                }
             }
         };
     }
 };
+
+const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_ID);
