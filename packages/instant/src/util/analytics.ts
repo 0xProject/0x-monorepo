@@ -2,12 +2,25 @@ import { ObjectMap } from '@0x/types';
 
 import { heapUtil } from './heap';
 
+let disabled = false;
+export const disableAnalytics = () => {
+    disabled = true;
+};
+export const evaluateIfEnabled = (fnCall: () => void) => {
+    if (disabled) {
+        return;
+    }
+    fnCall();
+};
+
 enum EventNames {
     INSTANT_OPENED = 'Instant - Opened',
     WALLET_READY = 'Wallet - Ready',
 }
 const track = (eventName: EventNames, eventData: ObjectMap<string | number> = {}): void => {
-    heapUtil.evaluateHeapCall(heap => heap.track(eventName, eventData));
+    evaluateIfEnabled(() => {
+        heapUtil.evaluateHeapCall(heap => heap.track(eventName, eventData));
+    });
 };
 function trackingEventFnWithoutPayload(eventName: EventNames): () => void {
     return () => {
@@ -37,10 +50,14 @@ export interface AnalyticsEventOptions {
 }
 export const analytics = {
     addUserProperties: (properties: AnalyticsUserOptions): void => {
-        heapUtil.evaluateHeapCall(heap => heap.addUserProperties(properties));
+        evaluateIfEnabled(() => {
+            heapUtil.evaluateHeapCall(heap => heap.addUserProperties(properties));
+        });
     },
     addEventProperties: (properties: AnalyticsEventOptions): void => {
-        heapUtil.evaluateHeapCall(heap => heap.addEventProperties(properties));
+        evaluateIfEnabled(() => {
+            heapUtil.evaluateHeapCall(heap => heap.addEventProperties(properties));
+        });
     },
     trackWalletReady: trackingEventFnWithoutPayload(EventNames.WALLET_READY),
     trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),

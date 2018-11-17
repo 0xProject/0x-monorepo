@@ -12,7 +12,7 @@ import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
 import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
-import { analytics } from '../util/analytics';
+import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
@@ -37,6 +37,7 @@ export interface ZeroExInstantProviderOptionalProps {
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     networkId: Network;
     affiliateInfo: AffiliateInfo;
+    disableAnalyticsTracking: boolean;
 }
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
@@ -124,6 +125,9 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         this._flashErrorIfWrongNetwork();
 
         // Analytics
+        if (this.props.disableAnalyticsTracking) {
+            disableAnalytics();
+        }
         analytics.addEventProperties({
             embeddedHost: window.location.host,
             embeddedUrl: window.location.href,
