@@ -54,7 +54,7 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
         appendTo.appendChild(injectedDiv);
         const closeInstant = () => {
-            if (config.onClose) {
+            if (!_.isUndefined(config.onClose)) {
                 config.onClose();
             }
             appendTo.removeChild(injectedDiv);
