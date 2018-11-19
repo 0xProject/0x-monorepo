@@ -192,17 +192,13 @@ describe('Exchange core', () => {
             } as MethodAbi;
 
             const method = new AbiEncoder.Method(stringAbi);
-            const strings = [
-                "Test String",
-                "Test String 2",
-                "Test String",
-                "Test String 2",
-            ];
+            const strings = ['Test String', 'Test String 2', 'Test String', 'Test String 2'];
             const args = [strings];
 
             // Verify optimized calldata is expected
             const optimizedCalldata = method.encode(args, { optimize: true });
-            const expectedOptimizedCalldata = '0x13e751a900000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000b5465737420537472696e67000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d5465737420537472696e67203200000000000000000000000000000000000000';
+            const expectedOptimizedCalldata =
+                '0x13e751a900000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000b5465737420537472696e67000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d5465737420537472696e67203200000000000000000000000000000000000000';
             expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
 
             // Verify args decode properly
@@ -211,7 +207,13 @@ describe('Exchange core', () => {
             const argsJson = JSON.stringify(args);
             expect(decodedArgsJson).to.be.equal(argsJson);
 
-            console.log('*'.repeat(100), '\n', method.encode(args, { optimize: true, annotate: true }), '\n', '*'.repeat(100));
+            console.log(
+                '*'.repeat(100),
+                '\n',
+                method.encode(args, { optimize: true, annotate: true }),
+                '\n',
+                '*'.repeat(100),
+            );
             console.log('*'.repeat(100), '\n', method.encode(args, { optimize: true }), '\n', '*'.repeat(100));
         });
 
@@ -861,7 +863,7 @@ describe('Exchange core', () => {
             const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedTakerAssetFilledAmount = new BigNumber(0);
-            const expectedOrderStatus = new BigNumber(OrderStatus.INVALID_TAKER_ASSET_AMOUNT)
+            const expectedOrderStatus = new BigNumber(OrderStatus.INVALID_TAKER_ASSET_AMOUNT);
             expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
             expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
             expect(orderInfo.orderStatus).to.be.bignumber.equal(expectedOrderStatus);

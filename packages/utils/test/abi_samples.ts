@@ -34,32 +34,32 @@ export const stringAbi = {
     type: 'function',
 } as MethodAbi;
 
-
 export const GAbi = {
     constant: false,
     inputs: [
         {
-            components: [{
-                name: 'a',
-                type: 'uint256',
-            },
-            {
-                name: 'b',
-                type: 'string',
-            },
-            {
-                name: 'e',
-                type: 'bytes',
-            },
-            {
-                name: 'f',
-                type: 'address',
-            }],
+            components: [
+                {
+                    name: 'a',
+                    type: 'uint256',
+                },
+                {
+                    name: 'b',
+                    type: 'string',
+                },
+                {
+                    name: 'e',
+                    type: 'bytes',
+                },
+                {
+                    name: 'f',
+                    type: 'address',
+                },
+            ],
 
             name: 'f',
             type: 'tuple',
-
-        }
+        },
     ],
     name: 'simpleFunction',
     outputs: [],
@@ -128,6 +128,25 @@ export const optimizerAbi4 = {
             ],
             name: 'uintTuple',
             type: 'tuple[]',
+        },
+    ],
+    name: 'simpleFunction',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+} as MethodAbi;
+
+export const optimizerAbi5 = {
+    constant: false,
+    inputs: [
+        {
+            name: 'array1',
+            type: 'uint8[]',
+        },
+        {
+            name: 'array2',
+            type: 'uint8[]',
         },
     ],
     name: 'simpleFunction',
@@ -456,7 +475,7 @@ export const staticArrayAbi = {
         {
             name: 'someStaticArray',
             type: 'uint8[3]',
-        }
+        },
     ],
     name: 'simpleFunction',
     outputs: [],
@@ -471,7 +490,7 @@ export const staticArrayDynamicMembersAbi = {
         {
             name: 'someStaticArray',
             type: 'string[3]',
-        }
+        },
     ],
     name: 'simpleFunction',
     outputs: [],
@@ -486,7 +505,7 @@ export const dynamicArrayDynamicMembersAbi = {
         {
             name: 'someStaticArray',
             type: 'string[]',
-        }
+        },
     ],
     name: 'simpleFunction',
     outputs: [],
@@ -501,7 +520,7 @@ export const dynamicArrayStaticMembersAbi = {
         {
             name: 'someStaticArray',
             type: 'uint8[]',
-        }
+        },
     ],
     name: 'simpleFunction',
     outputs: [],
@@ -641,7 +660,7 @@ export const largeNestedAbi = {
                     type: 'address',
                 },
             ],
-        }
+        },
     ],
     name: 'simpleFunction',
     outputs: [],
@@ -730,7 +749,7 @@ export const nestedTuples = {
                     type: 'address',
                 },
             ],
-        }
+        },
     ],
     name: 'simpleFunction',
     outputs: [],

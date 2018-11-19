@@ -114,7 +114,7 @@ export class BaseContract {
             if (!abiUtils.isAbiDataEqual(params.names[i], params.types[i], original, decoded)) {
                 throw new Error(
                     `Cannot safely encode argument: ${params.names[i]} (${original}) of type ${
-                    params.types[i]
+                        params.types[i]
                     }. (Possible type overflow or other encoding error)`,
                 );
             }
@@ -159,7 +159,7 @@ export class BaseContract {
         _.each(methodAbis, methodAbi => {
             const method = new AbiEncoder.Method(methodAbi);
             const functionSignature = method.getSignature();
-            this._ethersInterfacesByFunctionSignature[functionSignature] = method;//ethers.utils.Interface([methodAbi]);
+            this._ethersInterfacesByFunctionSignature[functionSignature] = method; //ethers.utils.Interface([methodAbi]);
         });
     }
 }

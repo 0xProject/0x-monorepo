@@ -1,4 +1,11 @@
-import { RawCalldata, Calldata, CalldataBlock, PayloadCalldataBlock, DependentCalldataBlock, MemberCalldataBlock } from "./calldata";
+import {
+    RawCalldata,
+    Calldata,
+    CalldataBlock,
+    PayloadCalldataBlock,
+    DependentCalldataBlock,
+    MemberCalldataBlock,
+} from './calldata';
 import { MethodAbi, DataItem } from 'ethereum-types';
 import { DecodingRules, EncodingRules } from './calldata';
 import { BigNumber } from '../configured_bignumber';
@@ -67,7 +74,13 @@ export abstract class PayloadDataType extends DataType {
         const signature = this.getSignature();
         const parentName = parentBlock === undefined ? '' : parentBlock.getName();
         const relocatable = false;
-        const block = new PayloadCalldataBlock(name, signature, parentName, /*offsetInBytes,*/ relocatable, encodedValue);
+        const block = new PayloadCalldataBlock(
+            name,
+            signature,
+            parentName,
+            /*offsetInBytes,*/ relocatable,
+            encodedValue,
+        );
         return block;
     }
 
@@ -104,7 +117,14 @@ export abstract class DependentDataType extends DataType {
         const signature = this.getSignature();
         const parentName = parentBlock === undefined ? '' : parentBlock.getName();
         const relocatable = false;
-        const block = new DependentCalldataBlock(name, signature, parentName, relocatable, dependencyBlock, parentBlock);
+        const block = new DependentCalldataBlock(
+            name,
+            signature,
+            parentName,
+            relocatable,
+            dependencyBlock,
+            parentBlock,
+        );
         return block;
     }
 
@@ -135,8 +155,13 @@ export abstract class MemberDataType extends DataType {
     protected arrayLength: number | undefined;
     protected arrayElementType: string | undefined;
 
-
-    public constructor(dataItem: DataItem, factory: DataTypeFactory, isArray: boolean = false, arrayLength?: number, arrayElementType?: string) {
+    public constructor(
+        dataItem: DataItem,
+        factory: DataTypeFactory,
+        isArray: boolean = false,
+        arrayLength?: number,
+        arrayElementType?: string,
+    ) {
         super(dataItem, factory);
         this.memberMap = {};
         this.members = [];
@@ -207,11 +232,17 @@ export abstract class MemberDataType extends DataType {
         }
 
         const parentName = parentBlock === undefined ? '' : parentBlock.getName();
-        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), parentName, this.isStatic(), false);
+        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(
+            this.getDataItem().name,
+            this.getSignature(),
+            parentName,
+            this.isStatic(),
+            false,
+        );
 
         let members = this.members;
         if (this.isArray && this.arrayLength === undefined) {
-            [members,] = this.createMembersWithLength(this.getDataItem(), value.length);
+            [members] = this.createMembersWithLength(this.getDataItem(), value.length);
 
             const lenBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${value.length.toString(16)}`), 32);
             methodBlock.setHeader(lenBuf);
@@ -228,12 +259,20 @@ export abstract class MemberDataType extends DataType {
 
     protected generateCalldataBlockFromObject(obj: object, parentBlock?: CalldataBlock): MemberCalldataBlock {
         const parentName = parentBlock === undefined ? '' : parentBlock.getName();
-        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(this.getDataItem().name, this.getSignature(), parentName, this.isStatic(), false);
+        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(
+            this.getDataItem().name,
+            this.getSignature(),
+            parentName,
+            this.isStatic(),
+            false,
+        );
         const memberBlocks: CalldataBlock[] = [];
         let childMap = _.cloneDeep(this.memberMap);
         _.forOwn(obj, (value: any, key: string) => {
             if (key in childMap === false) {
-                throw new Error(`Could not assign tuple to object: unrecognized key '${key}' in object ${this.getDataItem().name}`);
+                throw new Error(
+                    `Could not assign tuple to object: unrecognized key '${key}' in object ${this.getDataItem().name}`,
+                );
             }
             const block = this.members[this.memberMap[key]].generateCalldataBlock(value, methodBlock);
             memberBlocks.push(block);
@@ -249,7 +288,10 @@ export abstract class MemberDataType extends DataType {
     }
 
     public generateCalldataBlock(value: any[] | object, parentBlock?: CalldataBlock): MemberCalldataBlock {
-        const block = (value instanceof Array) ? this.generateCalldataBlockFromArray(value, parentBlock) : this.generateCalldataBlockFromObject(value, parentBlock);
+        const block =
+            value instanceof Array
+                ? this.generateCalldataBlockFromArray(value, parentBlock)
+                : this.generateCalldataBlockFromObject(value, parentBlock);
         return block;
     }
 
@@ -261,7 +303,7 @@ export abstract class MemberDataType extends DataType {
             const hexBase = 16;
             const arrayLength = new BigNumber(arrayLengthHex, hexBase);
 
-            [members,] = this.createMembersWithLength(this.getDataItem(), arrayLength.toNumber());
+            [members] = this.createMembersWithLength(this.getDataItem(), arrayLength.toNumber());
         }
 
         calldata.startScope();
@@ -314,9 +356,9 @@ export abstract class MemberDataType extends DataType {
 
         // Search for dependent members
         const dependentMember = _.find(this.members, (member: DataType) => {
-            return (member instanceof DependentDataType);
+            return member instanceof DependentDataType;
         });
-        const isStatic = (dependentMember === undefined); // static if we couldn't find a dependent member
+        const isStatic = dependentMember === undefined; // static if we couldn't find a dependent member
         return isStatic;
     }
 }
