@@ -23,6 +23,7 @@ const languageToMenuTitle = {
 export interface FooterProps {
     translate: Translate;
     dispatcher: Dispatcher;
+    backgroundColor?: string;
 }
 
 interface FooterState {
@@ -30,6 +31,9 @@ interface FooterState {
 }
 
 export class Footer extends React.Component<FooterProps, FooterState> {
+    public static defaultProps = {
+        backgroundColor: colors.darkerGrey,
+    };
     constructor(props: FooterProps) {
         super(props);
         this.state = {
@@ -112,7 +116,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
             return <MenuItem key={menuTitle} value={language} primaryText={menuTitle} />;
         });
         return (
-            <div className="relative pb4 pt2" style={{ backgroundColor: colors.darkerGrey }}>
+            <div className="relative pb4 pt2" style={{ backgroundColor: this.props.backgroundColor }}>
                 <div className="mx-auto max-width-4 md-px2 lg-px0 py4 clearfix" style={{ color: colors.white }}>
                     <div className="col lg-col-4 md-col-4 col-12 left">
                         <div className="sm-mx-auto" style={{ width: 148 }}>
