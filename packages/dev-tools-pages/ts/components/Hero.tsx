@@ -7,11 +7,7 @@ import { media } from 'ts/variables';
 import { Button } from './Button';
 import { Beta } from './Typography';
 
-interface HeroProps extends ContextInterface {
-    children: React.ReactNode;
-}
-
-const Hero: React.StatelessComponent<HeroProps> = ({ children }) => (
+const Hero: React.StatelessComponent<ContextInterface> = ({ children }) => (
     <ThemeContext.Consumer>
         {({ subtitle, tagline }: ContextInterface) => (
             <StyledHero>

@@ -44,13 +44,8 @@ const StyledIntroAside = styled.div`
     `};
 `;
 
-interface IntroProps {
-    children?: React.ReactNode;
-}
-
 interface IntroLeadProps {
     title: string;
-    children?: React.ReactNode;
 }
 
 const IntroLead: React.StatelessComponent<IntroLeadProps> = props => (
@@ -60,13 +55,13 @@ const IntroLead: React.StatelessComponent<IntroLeadProps> = props => (
     </StyledIntroLead>
 );
 
-const IntroAside: React.StatelessComponent<IntroProps> = props => (
+const IntroAside: React.StatelessComponent<{}> = props => (
     <Breakout>
         <StyledIntroAside>{props.children}</StyledIntroAside>
     </Breakout>
 );
 
-const Intro: React.StatelessComponent<IntroProps> = props => (
+const Intro: React.StatelessComponent<{}> = props => (
     <Container wide={true}>
         <Main>{props.children}</Main>
     </Container>

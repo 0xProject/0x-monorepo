@@ -36,7 +36,6 @@ const StyledItem = styled.li`
 
 interface ListProps {
     items?: [];
-    children?: React.ReactNode;
 }
 
 const List: React.StatelessComponent<ListProps> = props => (

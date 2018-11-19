@@ -12,7 +12,6 @@ const isTouch = Boolean(
 );
 
 interface CodeProps {
-    children: React.ReactNode;
     language?: string;
     isLight?: boolean;
     isDiff?: boolean;

@@ -46,11 +46,7 @@ const Root =
     }
 `;
 
-interface TabsProps {
-    children: React.ReactNode;
-}
-
-const Tabs: React.StatelessComponent<TabsProps> = props => (
+const Tabs: React.StatelessComponent<{}> = props => (
     <Breakout>
         <Root>
             <ReactTabs>
@@ -69,7 +65,6 @@ const Tabs: React.StatelessComponent<TabsProps> = props => (
 
 interface TabBlockProps {
     title: string;
-    children: React.ReactNode;
 }
 
 const TabBlock: React.StatelessComponent<TabBlockProps> = props => <React.Fragment>{props.children}</React.Fragment>;

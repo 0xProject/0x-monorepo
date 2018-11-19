@@ -8,7 +8,6 @@ import { GlobalStyles } from 'ts/globalStyles';
 
 interface BaseProps {
     context: any;
-    children: React.ReactNode;
 }
 
 const Base: React.StatelessComponent<BaseProps> = props => (

@@ -23,7 +23,6 @@ const StyledMain =
 
 interface MainProps {
     dark?: boolean;
-    children: React.ReactNode;
 }
 
 const Content: React.StatelessComponent<MainProps> = props => (
