@@ -515,7 +515,8 @@ export class Method extends MemberDataType {
         if (!calldata.startsWith(this.selector)) {
             throw new Error(`Tried to decode calldata, but it was missing the function selector. Expected '${this.selector}'.`);
         }
-        const value = super.decode(calldata, rules);
+        const hasSelector = true;
+        const value = super.decode(calldata, rules, hasSelector);
         return value;
     }
 
