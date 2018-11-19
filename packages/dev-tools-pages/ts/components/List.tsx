@@ -29,7 +29,7 @@ const StyledItem = styled.li`
     :not(:last-child) {
         margin-bottom: 0.5625rem;
         ${media.small`
-            margin-bottom: 0.375rem
+            margin-bottom: 0.375rem;
         `};
     }
 `;
