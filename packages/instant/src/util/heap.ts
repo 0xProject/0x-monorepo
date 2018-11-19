@@ -1,7 +1,8 @@
 import { ObjectMap } from '@0x/types';
 import { logUtils } from '@0x/utils';
+import * as _ from 'lodash';
 
-import { ANALYTICS_ENABLED, HEAP_ANALYTICS_DEVELOPMENT_APP_ID, HEAP_ANALYTICS_PRODUCTION_APP_ID } from '../constants';
+import { HEAP_ANALYTICS_ID } from '../constants';
 
 import { AnalyticsEventOptions, AnalyticsUserOptions } from './analytics';
 
@@ -24,14 +25,11 @@ const getWindow = (): ModifiedWindow => {
     return window as ModifiedWindow;
 };
 
-const getHeapAppId = (): string => {
-    if (process.env.NODE_ENV === 'production') {
-        return HEAP_ANALYTICS_PRODUCTION_APP_ID;
-    }
-    return HEAP_ANALYTICS_DEVELOPMENT_APP_ID;
-};
-
 const setupZeroExInstantHeap = () => {
+    if (_.isUndefined(HEAP_ANALYTICS_ID)) {
+        return;
+    }
+
     const curWindow = getWindow();
     // Set property to specify that this is zeroEx's heap
     curWindow.zeroExInstantLoadedHeap = true;
@@ -71,7 +69,7 @@ const setupZeroExInstantHeap = () => {
             )
                 (window as any).heap[p[c]] = o(p[c]);
         });
-    (window as any).heap.load(getHeapAppId());
+    (window as any).heap.load(HEAP_ANALYTICS_ID);
     /* tslint:enable */
 
     return curWindow.heap as HeapAnalytics;
@@ -93,14 +91,14 @@ export const heapUtil = {
         return setupZeroExInstantHeap();
     },
     evaluateHeapCall: (heapFunctionCall: (heap: HeapAnalytics) => void): void => {
-        if (!ANALYTICS_ENABLED) {
+        if (_.isUndefined(HEAP_ANALYTICS_ID)) {
             return;
         }
 
         const curHeap = heapUtil.getHeap();
         if (curHeap) {
             try {
-                if (curHeap.appid !== getHeapAppId()) {
+                if (curHeap.appid !== HEAP_ANALYTICS_ID) {
                     // Integrator has included heap after us and reset the app id
                     return;
                 }
