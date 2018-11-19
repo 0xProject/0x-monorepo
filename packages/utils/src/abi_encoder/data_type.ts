@@ -41,8 +41,7 @@ export abstract class DataType {
     }
 
     public decode(calldata: string, rules?: DecodingRules): any {
-        const rawCalldata = new RawCalldata(calldata, false);
-        console.log(`HERE DUDE ${JSON.stringify(rawCalldata)}`);
+        const rawCalldata = new RawCalldata(calldata, false); // @TODO Sohuld not hardcode false here
         const rules_ = rules ? rules : DataType.DEFAULT_DECODING_RULES;
         const value = this.generateValue(rawCalldata, rules_);
         return value;
@@ -278,7 +277,6 @@ export abstract class MemberDataType extends DataType {
             value = [];
             _.each(members, (member: DataType, idx: number) => {
                 let memberValue = member.generateValue(calldata, rules);
-                console.log(`MEMBER VALUE: ${memberValue}`);
                 (value as any[]).push(memberValue);
             });
         }
