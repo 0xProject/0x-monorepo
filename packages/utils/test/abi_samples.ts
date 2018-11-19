@@ -510,7 +510,7 @@ export const dynamicArrayStaticMembersAbi = {
     type: 'function',
 } as MethodAbi;
 
-export const crazyAbi1 = {
+export const largeFlatAbi = {
     constant: false,
     inputs: [
         {
@@ -557,7 +557,7 @@ export const crazyAbi1 = {
     type: 'function',
 } as MethodAbi;
 
-export const crazyAbi = {
+export const largeNestedAbi = {
     constant: false,
     inputs: [
         {
