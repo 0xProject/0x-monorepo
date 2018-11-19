@@ -118,9 +118,9 @@ abstract class Number extends PayloadDataType {
     public encodeValue(value_: BigNumber | string | number): Buffer {
         const value = new BigNumber(value_, 10);
         if (value.greaterThan(this.getMaxValue())) {
-            throw `tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`;
+            throw `Tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`;
         } else if (value.lessThan(this.getMinValue())) {
-            throw `tried to assign value of ${value}, which exceeds min value of ${this.getMinValue()}`;
+            throw `Tried to assign value of ${value}, which exceeds min value of ${this.getMinValue()}`;
         }
 
         const hexBase = 16;

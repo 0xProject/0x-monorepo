@@ -932,39 +932,193 @@ describe.only('ABI Encoder', () => {
         });
     });
 
-    /*
-    describe('Integer', () => {
-        const testIntDataItem = { name: 'testInt', type: 'int' };
-        it('Positive - Base case', async () => {
-            const intDataType = new AbiEncoder.Int(testIntDataItem);
-            intDataType.assignValue(new BigNumber(1));
-            const expectedAbiEncodedInt = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            expect(intDataType.getHexValue()).to.be.equal(expectedAbiEncodedInt);
+    describe.only('Integer', () => {
+        it('Int256 - Positive Base Case', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (256)', type: 'int' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const args = new BigNumber(1);
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000001';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        it('Positive', async () => {
-            const intDataType = new AbiEncoder.Int(testIntDataItem);
-            intDataType.assignValue(new BigNumber(437829473));
-            const expectedAbiEncodedInt = '0x000000000000000000000000000000000000000000000000000000001a18bf61';
-            expect(intDataType.getHexValue()).to.be.equal(expectedAbiEncodedInt);
+        it('Int256 - Negative Base Case', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (256)', type: 'int' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const args = new BigNumber(-1);
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        it('Negative - Base case', async () => {
-            const intDataType = new AbiEncoder.Int(testIntDataItem);
-            intDataType.assignValue(new BigNumber(-1));
-            const expectedAbiEncodedInt = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-            expect(intDataType.getHexValue()).to.be.equal(expectedAbiEncodedInt);
+        it('Int256 - Positive Value', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (256)', type: 'int' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const max256BitInteger = (new BigNumber(2)).pow(255).minus(1);
+            const args = max256BitInteger;
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        it('Negative', async () => {
-            const intDataType = new AbiEncoder.Int(testIntDataItem);
-            intDataType.assignValue(new BigNumber(-437829473));
-            const expectedAbiEncodedInt = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffe5e7409f';
-            expect(intDataType.getHexValue()).to.be.equal(expectedAbiEncodedInt);
+        it('Int256 - Negative Value', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (256)', type: 'int' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const min256BitInteger = (new BigNumber(2)).pow(255).times(-1);
+            const args = min256BitInteger;
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = `0x8000000000000000000000000000000000000000000000000000000000000000`;
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        // TODO: Add bounds tests + tests for different widths
+        it('Int256 - Value too large', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (256)', type: 'int' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const max256BitInteger = (new BigNumber(2)).pow(255).minus(1);
+            const args = max256BitInteger.plus(1);
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw();
+        });
+
+        it('Int256 - Value too small', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (256)', type: 'int' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const min256BitInteger = (new BigNumber(2)).pow(255).times(-1);
+            const args = min256BitInteger.minus(1);
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw();
+        });
+
+        it('Int32 - Positive Base Case', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (32)', type: 'int32' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const args = new BigNumber(1);
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000001';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+
+        it('Int32 - Negative Base Case', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (32)', type: 'int32' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const args = new BigNumber(-1);
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+
+        it('Int32 - Positive Value', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (32)', type: 'int32' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const max32BitInteger = (new BigNumber(2)).pow(31).minus(1);
+            const args = max32BitInteger;
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x000000000000000000000000000000000000000000000000000000007fffffff';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+
+        it('Int32 - Negative Value', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (32)', type: 'int32' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const min32BitInteger = (new BigNumber(2)).pow(31).times(-1);
+            const args = min32BitInteger;
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = `0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff80000000`;
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+
+        it('Int32 - Value too large', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (32)', type: 'int32' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const max32BitInteger = (new BigNumber(2)).pow(31).minus(1);
+            const args = max32BitInteger.plus(1);
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw();
+        });
+
+        it('Int32 - Value too small', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (32)', type: 'int32' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            // Construct args to be encoded
+            const min32BitInteger = (new BigNumber(2)).pow(31).times(-1);
+            const args = min32BitInteger.minus(1);
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw();
+        });
     });
+
+    /*
 
     describe('Unsigned Integer', () => {
         const testIntDataItem = { name: 'testUInt', type: 'uint' };
