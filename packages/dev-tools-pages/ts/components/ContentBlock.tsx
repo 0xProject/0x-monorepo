@@ -69,7 +69,7 @@ const ContentBlock: React.StatelessComponent<ContentBlockProps> = props => {
     return (
         <Base>
             <Title color={props.colors}>{props.title}</Title>
-            {children ? <Content>{children}</Content> : null}
+            {children === undefined ? null : <Content>{children}</Content>}
         </Base>
     );
 };
