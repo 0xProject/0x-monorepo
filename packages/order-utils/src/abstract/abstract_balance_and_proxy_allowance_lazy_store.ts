@@ -1,4 +1,4 @@
-import { BigNumber } from '@0xproject/utils';
+import { BigNumber } from '@0x/utils';
 
 export abstract class AbstractBalanceAndProxyAllowanceLazyStore {
     public abstract async getBalanceAsync(assetData: string, userAddress: string): Promise<BigNumber>;

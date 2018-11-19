@@ -1,7 +1,8 @@
-import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
-import { EmptyWalletSubprovider, Web3ProviderEngine } from '@0xproject/subproviders';
-import { DoneCallback } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { ContractAddresses } from '@0x/contract-addresses';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
+import { EmptyWalletSubprovider, Web3ProviderEngine } from '@0x/subproviders';
+import { DoneCallback } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { Provider } from 'ethereum-types';
 import 'mocha';
@@ -10,16 +11,17 @@ import {
     BlockParamLiteral,
     BlockRange,
     ContractWrappers,
+    ContractWrappersConfig,
     ContractWrappersError,
+    DecodedLogEvent,
     ERC20TokenApprovalEventArgs,
     ERC20TokenEvents,
     ERC20TokenTransferEventArgs,
 } from '../src';
 
-import { DecodedLogEvent } from '../src/types';
-
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -29,14 +31,20 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('ERC20Wrapper', () => {
     let contractWrappers: ContractWrappers;
+    let contractAddresses: ContractAddresses;
     let userAddresses: string[];
     let tokens: string[];
     let coinbase: string;
     let addressWithoutFunds: string;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
+    let config: ContractWrappersConfig;
+
     before(async () => {
+        contractAddresses = await migrateOnceAsync();
+        config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+            contractAddresses,
+            blockPollingIntervalMs: 10,
+        };
         contractWrappers = new ContractWrappers(provider, config);
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
         tokens = tokenUtils.getDummyERC20TokenAddresses();
@@ -71,19 +79,6 @@ describe('ERC20Wrapper', () => {
             return expect(
                 contractWrappers.erc20Token.transferAsync(tokenAddress, fromAddress, toAddress, transferAmount),
             ).to.be.rejectedWith(ContractWrappersError.InsufficientBalanceForTransfer);
-        });
-        it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
-            const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
-            const fromAddress = coinbase;
-            const toAddress = coinbase;
-            return expect(
-                contractWrappers.erc20Token.transferAsync(
-                    nonExistentTokenAddress,
-                    fromAddress,
-                    toAddress,
-                    transferAmount,
-                ),
-            ).to.be.rejectedWith(ContractWrappersError.ERC20TokenContractDoesNotExist);
         });
     });
     describe('#transferFromAsync', () => {
@@ -189,19 +184,6 @@ describe('ERC20Wrapper', () => {
             const postBalance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, toAddress);
             return expect(postBalance).to.be.bignumber.equal(transferAmount);
         });
-        it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
-            const fromAddress = coinbase;
-            const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
-            return expect(
-                contractWrappers.erc20Token.transferFromAsync(
-                    nonExistentTokenAddress,
-                    fromAddress,
-                    toAddress,
-                    senderAddress,
-                    new BigNumber(42),
-                ),
-            ).to.be.rejectedWith(ContractWrappersError.ERC20TokenContractDoesNotExist);
-        });
     });
     describe('#getBalanceAsync', () => {
         describe('With provider with accounts', () => {
@@ -211,13 +193,6 @@ describe('ERC20Wrapper', () => {
                 const balance = await contractWrappers.erc20Token.getBalanceAsync(tokenAddress, ownerAddress);
                 const expectedBalance = new BigNumber('1000000000000000000000000000');
                 return expect(balance).to.be.bignumber.equal(expectedBalance);
-            });
-            it('should throw a CONTRACT_DOES_NOT_EXIST error for a non-existent token contract', async () => {
-                const nonExistentTokenAddress = '0x9dd402f14d67e001d8efbe6583e51bf9706aa065';
-                const ownerAddress = coinbase;
-                return expect(
-                    contractWrappers.erc20Token.getBalanceAsync(nonExistentTokenAddress, ownerAddress),
-                ).to.be.rejectedWith(ContractWrappersError.ERC20TokenContractDoesNotExist);
             });
             it('should return a balance of 0 for a non-existent owner address', async () => {
                 const tokenAddress = tokens[0];
@@ -294,7 +269,7 @@ describe('ERC20Wrapper', () => {
         });
         it('should reduce the gas cost for transfers including tokens with unlimited allowance support', async () => {
             const transferAmount = new BigNumber(5);
-            const zrxAddress = tokenUtils.getProtocolTokenAddress();
+            const zrxAddress = contractAddresses.zrxToken;
             const [, userWithNormalAllowance, userWithUnlimitedAllowance] = userAddresses;
             await contractWrappers.erc20Token.setAllowanceAsync(
                 zrxAddress,
@@ -525,7 +500,7 @@ describe('ERC20Wrapper', () => {
                 );
             })().catch(done);
         });
-        it('Outstanding subscriptions are cancelled when contractWrappers.setProvider called', (done: DoneCallback) => {
+        it('Outstanding subscriptions are cancelled when contractWrappers.unsubscribeAll called', (done: DoneCallback) => {
             (async () => {
                 const callbackNeverToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)(
                     (_logEvent: DecodedLogEvent<ERC20TokenApprovalEventArgs>) => {
@@ -539,7 +514,7 @@ describe('ERC20Wrapper', () => {
                     callbackNeverToBeCalled,
                 );
                 const callbackToBeCalled = callbackErrorReporter.reportNodeCallbackErrors(done)();
-                contractWrappers.setProvider(provider, constants.TESTRPC_NETWORK_ID);
+                contractWrappers.unsubscribeAll();
                 contractWrappers.erc20Token.subscribe(
                     tokenAddress,
                     ERC20TokenEvents.Transfer,
@@ -588,7 +563,7 @@ describe('ERC20Wrapper', () => {
         let txHash: string;
         before(() => {
             tokenAddress = tokens[0];
-            tokenTransferProxyAddress = contractWrappers.erc20Proxy.getContractAddress();
+            tokenTransferProxyAddress = contractWrappers.erc20Proxy.address;
         });
         it('should get logs with decoded args emitted by Approval', async () => {
             txHash = await contractWrappers.erc20Token.setUnlimitedProxyAllowanceAsync(tokenAddress, coinbase);

@@ -1,5 +1,5 @@
-import { assert } from '@0xproject/assert';
-import { addressUtils } from '@0xproject/utils';
+import { assert } from '@0x/assert';
+import { addressUtils } from '@0x/utils';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
@@ -32,7 +32,6 @@ const DEFAULT_ADDRESS_SEARCH_LIMIT = 1000;
  */
 export class LedgerSubprovider extends BaseWalletSubprovider {
     // tslint:disable-next-line:no-unused-variable
-    private readonly _nonceLock = new Lock();
     private readonly _connectionLock = new Lock();
     private readonly _networkId: number;
     private _baseDerivationPath: string;

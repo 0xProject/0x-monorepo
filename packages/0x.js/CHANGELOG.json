@@ -1,5 +1,41 @@
 [
     {
+        "timestamp": 1542208198,
+        "version": "2.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542028948,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
         "version": "2.0.0",
         "changes": [
             {
@@ -15,8 +51,22 @@
                 "note":
                     "Removed `SignerType` (including `SignerType.Metamask`). Please use the `MetamaskSubprovider` to wrap `web3.currentProvider`.",
                 "pr": 1102
+            },
+            {
+                "note":
+                    "Updated to use new modularized artifacts and the latest version of @0xproject/contract-wrappers",
+                "pr": 1105
+            },
+            {
+                "note": "Make web3-provider-engine types a 'dependency' so it's available to users of the library",
+                "pr": 1105
+            },
+            {
+                "note": "Export new `AssetData` type from types",
+                "pr": 1131
             }
-        ]
+        ],
+        "timestamp": 1539871071
     },
     {
         "version": "1.0.8",

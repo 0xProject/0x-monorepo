@@ -1,5 +1,6 @@
-import { ObjectMap, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { ALink } from '@0x/react-shared';
+import { ObjectMap, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import { Provider } from 'ethereum-types';
 import * as React from 'react';
 
@@ -351,6 +352,7 @@ export enum WebsitePaths {
     Home = '/',
     FAQ = '/faq',
     About = '/about',
+    LaunchKit = '/launch-kit',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
@@ -363,6 +365,7 @@ export enum WebsitePaths {
     Subproviders = '/docs/subproviders',
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
+    AssetBuyer = '/docs/asset-buyer',
     Careers = '/careers',
 }
 
@@ -379,6 +382,7 @@ export enum DocPackages {
     EthereumTypes = 'ETHEREUM_TYPES',
     ContractWrappers = 'CONTRACT_WRAPPERS',
     OrderWatcher = 'ORDER_WATCHER',
+    AssetBuyer = 'ASSET_BUYER',
 }
 
 export enum Key {
@@ -440,6 +444,7 @@ export enum Key {
     ZeroExJs = '0X_JS',
     ContractWrappers = 'CONTRACT_WRAPPERS',
     OrderWatcher = 'ORDER_WATCHER',
+    AssetBuyer = 'ASSET_BUYER',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',
@@ -458,6 +463,36 @@ export enum Key {
     RocketChat = 'ROCKETCHAT',
     TradeCallToAction = 'TRADE_CALL_TO_ACTION',
     OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
+    BuildARelayer = 'BUILD_A_RELAYER',
+    BuildARelayerDescription = 'BUILD_A_RELAYER_DESCRIPTION',
+    DevelopOnEthereum = 'DEVELOP_ON_ETHEREUM',
+    DevelopOnEthereumDescription = 'DEVELOP_ON_ETHEREUM_DESCRIPTION',
+    OrderBasics = 'ORDER_BASICS',
+    OrderBasicsDescription = 'ORDER_BASICS_DESCRIPTION',
+    UseNetworkedLiquidity = 'USE_NETWORKED_LIQUIDITY',
+    UseNetworkedLiquidityDescription = 'USE_NETWORKED_LIQUIDITY_DESCRIPTION',
+    ViewAllDocumentation = 'VIEW_ALL_DOCUMENTATION',
+    Sandbox = 'SANDBOX',
+    Github = 'GITHUB',
+    LiveChat = 'LIVE_CHAT',
+    LibrariesAndTools = 'LIBRARIES_AND_TOOLS',
+    LibrariesAndToolsDescription = 'LIBRARIES_AND_TOOLS_DESCRIPTION',
+    More = 'MORE',
+    StartBuildOn0x = 'START_BUILDING_ON_0X',
+    StartBuildOn0xDescription = 'START_BUILDING_ON_0X_DESCRIPTION',
+    LaunchKit = 'LAUNCH_KIT',
+    LaunchKitPitch = 'LAUNCH_KIT_PITCH',
+    ExploreTheDocs = 'EXPLORE_THE_DOCS',
+    EnableTrading = 'ENABLE_TRADING',
+    ForkAndExtend = 'FORK_AND_EXTEND',
+    LocalMarket = 'LOCAL_MARKET',
+    SeemlesslyCreate = 'SEEMLESSLY_CREATE',
+    QuicklyLaunch = 'QUICKLY_LAUNCH',
+    TapIntoAndShare = 'TAP_INTO_AND_SHARE',
+    PerfectForDevelopers = 'PERFECT_FOR_DEVELOPERS',
+    GetInTouch = 'GET_IN_TOUCH',
+    LearnMore = 'LEARN_MORE',
+    GetStarted = 'GET_STARTED',
 }
 
 export enum SmartContractDocSections {
@@ -569,6 +604,8 @@ export enum BrowserType {
     Chrome = 'Chrome',
     Firefox = 'Firefox',
     Opera = 'Opera',
+    Safari = 'Safari',
+    Edge = 'Edge',
     Other = 'Other',
 }
 
@@ -593,11 +630,20 @@ export interface InjectedProvider extends Provider {
     publicConfigStore?: InjectedProviderObservable;
 }
 
-// Minimal expected interface for an injected web3 object
-export interface InjectedWeb3 {
-    currentProvider: InjectedProvider;
-    version: {
-        getNetwork(cd: (err: Error, networkId: string) => void): void;
-    };
+export interface TutorialInfo {
+    iconUrl: string;
+    description: string;
+    link: ALink;
+}
+
+export enum Categories {
+    ZeroExProtocol = '0x Protocol',
+    Ethereum = 'Ethereum',
+    CommunityMaintained = 'Community Maintained',
+}
+
+export interface Package {
+    description: string;
+    link: ALink;
 }
 // tslint:disable:max-file-line-count

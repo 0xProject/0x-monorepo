@@ -1,4 +1,4 @@
-import { Styles } from '@0xproject/react-shared';
+import { Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -39,7 +39,7 @@ export interface DrawerMenuProps {
 }
 export const DrawerMenu = (props: DrawerMenuProps) => {
     const relayerItemEntry = {
-        to: `${WebsitePaths.Portal}`,
+        to: WebsitePaths.Portal,
         labelText: 'Relayer ecosystem',
         iconName: 'zmdi-portable-wifi',
     };

@@ -1,5 +1,5 @@
-import { orderFactory } from '@0xproject/order-utils/lib/src/order_factory';
-import { BigNumber } from '@0xproject/utils';
+import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
@@ -49,9 +49,9 @@ describe('buyQuoteCalculator', () => {
                 remainingFillableMakerAssetAmounts: [smallFeeOrder.makerAssetAmount],
             };
             const largeFeeOrder = orderFactory.createSignedOrderFromPartial({
-                makerAssetAmount: new BigNumber(110),
+                makerAssetAmount: new BigNumber(113),
                 takerAssetAmount: new BigNumber(200),
-                takerFee: new BigNumber(10),
+                takerFee: new BigNumber(11),
             });
             allFeeOrdersAndFillableAmounts = {
                 orders: [smallFeeOrder, largeFeeOrder],
@@ -70,6 +70,7 @@ describe('buyQuoteCalculator', () => {
                     new BigNumber(500),
                     0,
                     0,
+                    false,
                 ),
             ).to.throw(AssetBuyerError.InsufficientAssetLiquidity);
         });
@@ -82,6 +83,7 @@ describe('buyQuoteCalculator', () => {
                     new BigNumber(300),
                     0,
                     0,
+                    false,
                 ),
             ).to.throw(AssetBuyerError.InsufficientZrxLiquidity);
         });
@@ -97,23 +99,26 @@ describe('buyQuoteCalculator', () => {
                 assetBuyAmount,
                 feePercentage,
                 slippagePercentage,
+                false,
             );
             // test if orders are correct
             expect(buyQuote.orders).to.deep.equal([ordersAndFillableAmounts.orders[0]]);
             expect(buyQuote.feeOrders).to.deep.equal([smallFeeOrderAndFillableAmount.orders[0]]);
             // test if rates are correct
             // 50 eth to fill the first order + 100 eth for fees
-            const expectedFillEthAmount = new BigNumber(150);
-            const expectedTotalEthAmount = expectedFillEthAmount.mul(feePercentage + 1);
-            const expectedFeeEthAmount = expectedTotalEthAmount.minus(expectedFillEthAmount);
-            const expectedEthPerAssetPrice = expectedFillEthAmount.div(assetBuyAmount);
+            const expectedEthAmountForAsset = new BigNumber(50);
+            const expectedEthAmountForZrxFees = new BigNumber(100);
+            const expectedFillEthAmount = expectedEthAmountForAsset;
+            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.mul(feePercentage);
+            const expectedFeeEthAmount = expectedAffiliateFeeEthAmount.plus(expectedEthAmountForZrxFees);
+            const expectedTotalEthAmount = expectedFillEthAmount.plus(expectedFeeEthAmount);
+            expect(buyQuote.bestCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
-            expect(buyQuote.bestCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedEthPerAssetPrice);
             // because we have no slippage protection, minRate is equal to maxRate
+            expect(buyQuote.worstCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
             expect(buyQuote.worstCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
             expect(buyQuote.worstCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
-            expect(buyQuote.worstCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedEthPerAssetPrice);
             // test if feePercentage gets passed through
             expect(buyQuote.feePercentage).to.equal(feePercentage);
         });
@@ -132,27 +137,32 @@ describe('buyQuoteCalculator', () => {
                 assetBuyAmount,
                 feePercentage,
                 slippagePercentage,
+                false,
             );
             // test if orders are correct
             expect(buyQuote.orders).to.deep.equal(ordersAndFillableAmounts.orders);
             expect(buyQuote.feeOrders).to.deep.equal(allFeeOrdersAndFillableAmounts.orders);
             // test if rates are correct
             // 50 eth to fill the first order + 100 eth for fees
-            const expectedFillEthAmount = new BigNumber(150);
-            const expectedTotalEthAmount = expectedFillEthAmount.mul(feePercentage + 1);
-            const expectedFeeEthAmount = expectedTotalEthAmount.minus(expectedFillEthAmount);
-            const expectedEthPerAssetPrice = expectedFillEthAmount.div(assetBuyAmount);
+            const expectedEthAmountForAsset = new BigNumber(50);
+            const expectedEthAmountForZrxFees = new BigNumber(100);
+            const expectedFillEthAmount = expectedEthAmountForAsset;
+            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.mul(feePercentage);
+            const expectedFeeEthAmount = expectedAffiliateFeeEthAmount.plus(expectedEthAmountForZrxFees);
+            const expectedTotalEthAmount = expectedFillEthAmount.plus(expectedFeeEthAmount);
+            expect(buyQuote.bestCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
             expect(buyQuote.bestCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
-            expect(buyQuote.bestCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedEthPerAssetPrice);
-            // 100 eth to fill the first order + 200 eth for fees
-            const expectedWorstFillEthAmount = new BigNumber(300);
-            const expectedWorstTotalEthAmount = expectedWorstFillEthAmount.mul(feePercentage + 1);
-            const expectedWorstFeeEthAmount = expectedWorstTotalEthAmount.minus(expectedWorstFillEthAmount);
-            const expectedWorstEthPerAssetPrice = expectedWorstFillEthAmount.div(assetBuyAmount);
+            // 100 eth to fill the first order + 208 eth for fees
+            const expectedWorstEthAmountForAsset = new BigNumber(100);
+            const expectedWorstEthAmountForZrxFees = new BigNumber(208);
+            const expectedWorstFillEthAmount = expectedWorstEthAmountForAsset;
+            const expectedWorstAffiliateFeeEthAmount = expectedWorstEthAmountForAsset.mul(feePercentage);
+            const expectedWorstFeeEthAmount = expectedWorstAffiliateFeeEthAmount.plus(expectedWorstEthAmountForZrxFees);
+            const expectedWorstTotalEthAmount = expectedWorstFillEthAmount.plus(expectedWorstFeeEthAmount);
+            expect(buyQuote.worstCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedWorstFillEthAmount);
             expect(buyQuote.worstCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedWorstFeeEthAmount);
             expect(buyQuote.worstCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedWorstTotalEthAmount);
-            expect(buyQuote.worstCaseQuoteInfo.ethPerAssetPrice).to.bignumber.equal(expectedWorstEthPerAssetPrice);
             // test if feePercentage gets passed through
             expect(buyQuote.feePercentage).to.equal(feePercentage);
         });

@@ -1,6 +1,6 @@
 {
-    "name": "@0xproject/connect",
-    "version": "3.0.1",
+    "name": "@0x/connect",
+    "version": "3.0.6",
     "engines": {
         "node": ">=6.12"
     },
@@ -19,7 +19,7 @@
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib test_temp generated_docs",
         "copy_test_fixtures": "copyfiles -u 2 './test/fixtures/**/*.json' ./lib/test/fixtures",
-        "lint": "tslint --project .",
+        "lint": "tslint --format stylish --project .",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
         "test": "run-s copy_test_fixtures run_mocha",
         "rebuild_and_test": "run-s clean build test",
@@ -44,12 +44,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/connect/README.md",
     "dependencies": {
-        "@0xproject/assert": "^1.0.13",
-        "@0xproject/json-schemas": "^1.0.7",
-        "@0xproject/order-utils": "^1.0.7",
-        "@0xproject/types": "^1.1.4",
-        "@0xproject/typescript-typings": "^3.0.2",
-        "@0xproject/utils": "^2.0.2",
+        "@0x/assert": "^1.0.17",
+        "@0x/json-schemas": "^2.1.1",
+        "@0x/order-utils": "^3.0.2",
+        "@0x/types": "^1.2.1",
+        "@0x/typescript-typings": "^3.0.4",
+        "@0x/utils": "^2.0.5",
         "lodash": "^4.17.5",
         "query-string": "^5.0.1",
         "sinon": "^4.0.0",
@@ -57,7 +57,7 @@
         "websocket": "^1.0.25"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.8",
+        "@0x/tslint-config": "^1.0.10",
         "@types/fetch-mock": "^6.0.3",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^2.2.42",
@@ -77,7 +77,7 @@
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
-        "typedoc": "0.12.0",
+        "typedoc": "0.13.0",
         "typescript": "3.0.1"
     },
     "publishConfig": {

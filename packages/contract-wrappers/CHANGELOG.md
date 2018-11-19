@@ -5,6 +5,37 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.2 - _November 14, 2018_
+
+    * Dependencies updated
+
+## v4.0.1 - _November 13, 2018_
+
+    * Dependencies updated
+
+## v4.0.0 - _November 12, 2018_
+
+    * Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync` (#1235)
+    * Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive (#1235)
+    * Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218) (#1235)
+
+## v3.0.1 - _November 9, 2018_
+
+    * Fix bug in `ForwarderWrapper` where `feeRecipientAddress` was not correctly normalized. (#1178)
+
+## v3.0.0 - _October 18, 2018_
+
+    * Add optional validation to the forwarder wrapper methods
+    * Updated to use new modularized artifacts. (#1105)
+    * Top-level `ContractWrappers` class has a new optional `contractAddresses` parameter. (#1105)
+    * Default contract addresses are no longer stored in artifacts and are instead loaded from the `@0xproject/contract-addresses` package. (#1105)
+    * Most contract addresses are now defined at instantiation time and are available as properties (e.g., `exchangeWrapper.address`) instead of methods (e.g., `exchangeWrapper.getContractAddress()`). (#1105)
+    * Removed `setProvider` method in top-level `ContractWrapper` class and added new `unsubscribeAll` method. (#1105)
+    * Some properties and methods have been renamed. For example, some methods that previously could throw no longer can, and so their names have been updated accordingly. (#1105)
+    * Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from web3-wrapper, which we feel provides enough information. (#1105)
+    * Add `ForwarderWrapperError` to public interface (#1147)
+    * Add `ContractWrapperError.SignatureRequestDenied` to public interface (#1147)
+
 ## v2.0.2 - _October 4, 2018_
 
     * Dependencies updated
@@ -51,7 +82,7 @@ CHANGELOG
     * Remove superfluous exported types: `ContractEvent`, `Token`, `OrderFillRequest`, `ContractEventArgs`, `LogEvent`, `OnOrderStateChangeCallback`,     `ECSignature`, `OrderStateValid`, `OrderStateInvalid`, `OrderState`, `FilterObject`, `TransactionReceipt` & `TransactionReceiptWithDecodedLogs` (#924)
     * Added Transaction Encoder for use with 0x Exchange executeTransaction (#975)
 
-## v1.0.1-rc.3 - _August 13, 2018_
+## v1.0.1-rc.3 - _August 14, 2018_
 
     * Added strict encoding/decoding checks for sendTransaction and call (#915)
     * Add ForwarderWrapper (#934)

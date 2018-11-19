@@ -1,4 +1,4 @@
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Party } from 'ts/components/ui/party';

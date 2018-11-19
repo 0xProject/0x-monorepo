@@ -56,10 +56,11 @@ export const walletUtils = {
         parentDerivedKeyInfo: DerivedHDKeyInfo,
         searchLimit: number,
     ): DerivedHDKeyInfo | undefined {
+        const lowercaseAddress = address.toLowerCase();
         let matchedKey: DerivedHDKeyInfo | undefined;
         const derivedKeyIterator = new DerivedHDKeyInfoIterator(parentDerivedKeyInfo, searchLimit);
         for (const key of derivedKeyIterator) {
-            if (key.address === address) {
+            if (key.address === lowercaseAddress) {
                 matchedKey = key;
                 break;
             }

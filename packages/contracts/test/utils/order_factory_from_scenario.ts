@@ -1,8 +1,8 @@
-import { assetDataUtils, generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { Order } from '@0xproject/types';
-import { BigNumber, errorUtils } from '@0xproject/utils';
+import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
+import { Order } from '@0x/types';
+import { BigNumber, errorUtils } from '@0x/utils';
 
-import { DummyERC721TokenContract } from '../../generated_contract_wrappers/dummy_erc721_token';
+import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
 
 import { constants } from './constants';
 import {

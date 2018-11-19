@@ -1,4 +1,4 @@
-import { Styles } from '@0xproject/react-shared';
+import { Styles } from '@0x/react-shared';
 import * as React from 'react';
 
 const styles: Styles = {

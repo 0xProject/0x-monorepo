@@ -1,11 +1,11 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { RevertReason } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { RevertReason } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { MixinAuthorizableContract } from '../../generated_contract_wrappers/mixin_authorizable';
-import { artifacts } from '../utils/artifacts';
+import { MixinAuthorizableContract } from '../../generated-wrappers/mixin_authorizable';
+import { artifacts } from '../../src/artifacts';
 import { expectTransactionFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';

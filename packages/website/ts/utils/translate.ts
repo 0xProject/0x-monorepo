@@ -1,11 +1,11 @@
 import * as _ from 'lodash';
 import { Deco, Key, Language } from 'ts/types';
 
-import * as chinese from '../../translations/chinese.json';
-import * as english from '../../translations/english.json';
-import * as korean from '../../translations/korean.json';
-import * as russian from '../../translations/russian.json';
-import * as spanish from '../../translations/spanish.json';
+import chinese from '../../translations/chinese.json';
+import english from '../../translations/english.json';
+import korean from '../../translations/korean.json';
+import russian from '../../translations/russian.json';
+import spanish from '../../translations/spanish.json';
 
 const languageToTranslations = {
     [Language.English]: english,
@@ -80,7 +80,12 @@ export class Translate {
 
                 case Deco.CapWords:
                     const words = text.split(' ');
-                    const capitalizedWords = _.map(words, w => this._capitalize(w));
+                    const capitalizedWords = _.map(words, (w: string, i: number) => {
+                        if (w.length === 1) {
+                            return w;
+                        }
+                        return this._capitalize(w);
+                    });
                     text = capitalizedWords.join(' ');
                     break;
 

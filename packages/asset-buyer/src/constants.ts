@@ -1,6 +1,7 @@
-import { BigNumber } from '@0xproject/utils';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
-import { AssetBuyerOpts, BuyQuoteExecutionOpts, BuyQuoteRequestOpts } from './types';
+import { AssetBuyerOpts, BuyQuoteExecutionOpts, BuyQuoteRequestOpts, OrdersAndFillableAmounts } from './types';
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const MAINNET_NETWORK_ID = 1;
@@ -8,7 +9,7 @@ const MAINNET_NETWORK_ID = 1;
 const DEFAULT_ASSET_BUYER_OPTS: AssetBuyerOpts = {
     networkId: MAINNET_NETWORK_ID,
     orderRefreshIntervalMs: 10000, // 10 seconds
-    expiryBufferSeconds: 15,
+    expiryBufferSeconds: 120, // 2 minutes
 };
 
 const DEFAULT_BUY_QUOTE_REQUEST_OPTS: BuyQuoteRequestOpts = {
@@ -22,6 +23,11 @@ const DEFAULT_BUY_QUOTE_EXECUTION_OPTS: BuyQuoteExecutionOpts = {
     feeRecipient: NULL_ADDRESS,
 };
 
+const EMPTY_ORDERS_AND_FILLABLE_AMOUNTS: OrdersAndFillableAmounts = {
+    orders: [] as SignedOrder[],
+    remainingFillableMakerAssetAmounts: [] as BigNumber[],
+};
+
 export const constants = {
     ZERO_AMOUNT: new BigNumber(0),
     NULL_ADDRESS,
@@ -30,5 +36,5 @@ export const constants = {
     DEFAULT_ASSET_BUYER_OPTS,
     DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
     DEFAULT_BUY_QUOTE_REQUEST_OPTS,
-    MAX_PER_PAGE: 10000,
+    EMPTY_ORDERS_AND_FILLABLE_AMOUNTS,
 };

@@ -1,14 +1,20 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { DoneCallback } from '@0xproject/types';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { DoneCallback } from '@0x/types';
 import * as _ from 'lodash';
 import 'mocha';
 import * as Sinon from 'sinon';
 
-import { ContractWrappers, ERC20TokenApprovalEventArgs, ERC20TokenEvents } from '../src';
-import { DecodedLogEvent } from '../src/types';
+import {
+    ContractWrappers,
+    ContractWrappersConfig,
+    DecodedLogEvent,
+    ERC20TokenApprovalEventArgs,
+    ERC20TokenEvents,
+} from '../src';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
@@ -17,10 +23,14 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('SubscriptionTest', () => {
     let contractWrappers: ContractWrappers;
-    const config = {
-        networkId: constants.TESTRPC_NETWORK_ID,
-    };
+    let config: ContractWrappersConfig;
+
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
+        config = {
+            networkId: constants.TESTRPC_NETWORK_ID,
+            contractAddresses,
+        };
         contractWrappers = new ContractWrappers(provider, config);
     });
     beforeEach(async () => {

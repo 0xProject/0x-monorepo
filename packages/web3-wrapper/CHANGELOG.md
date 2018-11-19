@@ -5,6 +5,27 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.4 - _November 14, 2018_
+
+    * Dependencies updated
+
+## v3.1.3 - _November 13, 2018_
+
+    * Dependencies updated
+
+## v3.1.2 - _November 12, 2018_
+
+    * Dependencies updated
+
+## v3.1.1 - _November 9, 2018_
+
+    * Fix bug in `getTransactionByHashAsync` which was causing the return value to have the wrong type (raw fields instead of unmarshalled fields). (#1177)
+
+## v3.1.0 - _October 18, 2018_
+
+    * Add `signTypedData` to perform EIP712 `eth_signTypedData`. (#1102)
+    * Web3Wrapper now throws when an RPC request contains an error field in the response. Previously errors could be swallowed and undefined returned. (#1102)
+
 ## v3.0.3 - _October 4, 2018_
 
     * Dependencies updated
@@ -40,7 +61,7 @@ CHANGELOG
     * Stop exporting types: `CallTxDataBaseRPC` and `AbstractBlockRPC` (#924)
     * Export `AbiDecoder` class (#924)
 
-## v1.2.0 - _August 13, 2018_
+## v1.2.0 - _August 14, 2018_
 
     * Export marshaller to convert between RPC and user-space data formats (#938)
     * Export RPC types (#938)
@@ -80,7 +101,7 @@ CHANGELOG
 
     * Dependencies updated
 
-## v0.7.0 - _June 3, 2018_
+## v0.7.0 - _June 4, 2018_
 
     * Add `web3Wrapper.getContractCodeAsync` (#675)
     * Add `web3Wrapper.getTransactionTraceAsync` (#675)

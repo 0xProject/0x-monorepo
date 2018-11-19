@@ -8,10 +8,6 @@ export enum HeaderSizes {
     H3 = 'h3',
 }
 
-export interface MenuSubsectionsBySection {
-    [section: string]: string[];
-}
-
 export enum EtherscanLinkSuffixes {
     Address = 'address',
     Tx = 'tx',
@@ -22,4 +18,16 @@ export enum Networks {
     Kovan = 'Kovan',
     Ropsten = 'Ropsten',
     Rinkeby = 'Rinkeby',
+}
+
+export enum LinkType {
+    External = 'EXTERNAL',
+    ReactScroll = 'REACT_SCROLL',
+    ReactRoute = 'REACT_ROUTE',
+}
+
+export interface ALink {
+    title: string;
+    to: string;
+    shouldOpenInNewTab?: boolean;
 }

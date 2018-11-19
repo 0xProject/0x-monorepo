@@ -1,6 +1,6 @@
 {
-    "name": "@0xproject/tslint-config",
-    "version": "1.0.8",
+    "name": "@0x/tslint-config",
+    "version": "1.0.10",
     "engines": {
         "node": ">=6.12"
     },
@@ -10,7 +10,7 @@
         "build": "tsc -b",
         "build:ci": "yarn build",
         "clean": "shx rm -rf lib",
-        "lint": "tslint --project ."
+        "lint": "tslint --format stylish --project ."
     },
     "repository": {
         "type": "git",
@@ -34,7 +34,6 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/tslint-config/README.md",
     "devDependencies": {
         "@types/lodash": "4.14.104",
-        "copyfiles": "^2.0.0",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "typescript": "3.0.1"

@@ -1,8 +1,8 @@
-import { assert } from '@0xproject/assert';
-import { schemas } from '@0xproject/json-schemas';
+import { assert } from '@0x/assert';
+import { schemas } from '@0x/json-schemas';
 import * as _ from 'lodash';
 
-import { OrdersChannelMessage, OrdersChannelMessageTypes } from '@0xproject/types';
+import { OrdersChannelMessage, OrdersChannelMessageTypes } from '@0x/types';
 
 import { relayerResponseJsonParsers } from './relayer_response_json_parsers';
 

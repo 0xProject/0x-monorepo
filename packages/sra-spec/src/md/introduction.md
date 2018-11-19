@@ -1,7 +1,3 @@
-# Testing
-
-Use the [sra-report](https://github.com/0xProject/0x-monorepo/tree/development/packages/sra-report) command line tool to test your API for SRA compliance.
-
 # Schemas
 
 The [JSON schemas](http://json-schema.org/) for the API payloads and responses can be found in [@0xproject/json-schemas](https://github.com/0xProject/0x.js/tree/development/packages/json-schemas). Examples of each payload and response can be found in the library's [test suite](https://github.com/0xProject/0x.js/blob/development/packages/json-schemas/test/schema_test.ts#L1).

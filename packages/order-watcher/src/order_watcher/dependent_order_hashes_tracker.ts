@@ -1,7 +1,7 @@
 // tslint:disable:no-unnecessary-type-assertion
-import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
-import { AssetProxyId, ERC20AssetData, ERC721AssetData, SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { AssetProxyId, ERC20AssetData, ERC721AssetData, SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 export interface OrderHashesByMakerAddress {
@@ -50,7 +50,7 @@ export class DependentOrderHashesTracker {
         return uniqueOrderHashList;
     }
     public getDependentOrderHashesByMaker(makerAddress: string): string[] {
-        const dependentOrderHashes = Array.from(this._orderHashesByMakerAddress[makerAddress]);
+        const dependentOrderHashes = Array.from(this._orderHashesByMakerAddress[makerAddress] || {});
         return dependentOrderHashes;
     }
     public getDependentOrderHashesByAssetDataByMaker(makerAddress: string, assetData: string): string[] {
@@ -89,7 +89,10 @@ export class DependentOrderHashesTracker {
                 (decodedMakerAssetData as ERC721AssetData).tokenId,
             );
         }
-        this._removeFromERC20DependentOrderhashes(signedOrder, this._zrxTokenAddress);
+        // If makerToken === ZRX then we already removed it and we don't need to remove it again.
+        if ((decodedMakerAssetData as ERC20AssetData).tokenAddress !== this._zrxTokenAddress) {
+            this._removeFromERC20DependentOrderhashes(signedOrder, this._zrxTokenAddress);
+        }
         this._removeFromMakerDependentOrderhashes(signedOrder);
     }
     private _getDependentOrderHashesByERC20AssetData(makerAddress: string, erc20AssetData: string): string[] {

@@ -18,7 +18,6 @@ export { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 export { BalanceAndProxyAllowanceLazyStore } from './store/balance_and_proxy_allowance_lazy_store';
 export { OrderFilledCancelledLazyStore } from './store/order_filled_cancelled_lazy_store';
 
-export { constants } from './constants';
 export { eip712Utils } from './eip712_utils';
 
 export {
@@ -35,6 +34,7 @@ export {
     OrderRelevantState,
     OrderState,
     ECSignature,
+    AssetData,
     ERC20AssetData,
     ERC721AssetData,
     AssetProxyId,
@@ -48,7 +48,7 @@ export {
     EIP712Object,
     EIP712ObjectValue,
     ZeroExTransaction,
-} from '@0xproject/types';
+} from '@0x/types';
 export {
     OrderError,
     TradeSide,

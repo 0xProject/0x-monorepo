@@ -1,4 +1,4 @@
-import { logUtils } from '@0xproject/utils';
+import { logUtils } from '@0x/utils';
 import { CompilerOptions, ContractArtifact } from 'ethereum-types';
 import * as fs from 'fs';
 import * as glob from 'glob';

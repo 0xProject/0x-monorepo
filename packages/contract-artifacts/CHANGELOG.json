@@ -1,0 +1,30 @@
+[
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "pr": 1192,
+                "note": "Update Forwarder artifact"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "version": "1.0.1",
+        "changes": [
+            {
+                "pr": 1105,
+                "note": "Initial release"
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Unpublished Package"
+            }
+        ]
+    }
+]

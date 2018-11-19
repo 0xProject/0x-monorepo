@@ -1,5 +1,5 @@
-import { AssetProxyId } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { AssetProxyId } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from '../abstract/abstract_balance_and_proxy_allowance_fetcher';

@@ -1,14 +1,14 @@
-import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { RevertReason } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import { generatePseudoRandomSalt } from '@0x/order-utils';
+import { RevertReason } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import BN = require('bn.js');
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { TestLibBytesContract } from '../../generated_contract_wrappers/test_lib_bytes';
-import { artifacts } from '../utils/artifacts';
+import { TestLibBytesContract } from '../../generated-wrappers/test_lib_bytes';
+import { artifacts } from '../../src/artifacts';
 import { expectContractCallFailedAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';

@@ -1,4 +1,5 @@
-import { BigNumber } from '@0xproject/utils';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 /**
  * An abstract class to be implemented in order to use OrderStateUtils. The class that
@@ -17,6 +18,6 @@ export abstract class AbstractOrderFilledCancelledFetcher {
      * @param orderHash OrderHash of order we are interested in
      * @return Whether or not the order is cancelled
      */
-    public abstract async isOrderCancelledAsync(orderHash: string): Promise<boolean>;
+    public abstract async isOrderCancelledAsync(signedOrder: SignedOrder): Promise<boolean>;
     public abstract getZRXAssetData(): string;
 }

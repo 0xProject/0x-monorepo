@@ -1,5 +1,5 @@
-import { AnchorTitle, HeaderSizes } from '@0xproject/react-shared';
-import { Property, TypeDefinitionByName } from '@0xproject/types';
+import { AnchorTitle, HeaderSizes } from '@0x/react-shared';
+import { Property, TypeDefinitionByName } from '@0x/types';
 import * as React from 'react';
 
 import { DocsInfo } from '../docs_info';

@@ -1,9 +1,9 @@
 // tslint:disable:no-unnecessary-type-assertion
-import { ContractWrappers } from '@0xproject/contract-wrappers';
-import { tokenUtils } from '@0xproject/contract-wrappers/lib/test/utils/token_utils';
-import { BlockchainLifecycle, callbackErrorReporter } from '@0xproject/dev-utils';
-import { FillScenarios } from '@0xproject/fill-scenarios';
-import { assetDataUtils, orderHashUtils } from '@0xproject/order-utils';
+import { ContractWrappers } from '@0x/contract-wrappers';
+import { tokenUtils } from '@0x/contract-wrappers/lib/test/utils/token_utils';
+import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
+import { FillScenarios } from '@0x/fill-scenarios';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import {
     DoneCallback,
     ExchangeContractErrs,
@@ -11,9 +11,9 @@ import {
     OrderStateInvalid,
     OrderStateValid,
     SignedOrder,
-} from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+} from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
@@ -27,6 +27,7 @@ import { OrderWatcherError } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
+import { migrateOnceAsync } from './utils/migrate';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 const TIMEOUT_MS = 150;
@@ -36,13 +37,10 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('OrderWatcher', () => {
-    const networkId = constants.TESTRPC_NETWORK_ID;
-    const config = { networkId };
-    const contractWrappers = new ContractWrappers(provider, config);
+    let contractWrappers: ContractWrappers;
     let fillScenarios: FillScenarios;
     let userAddresses: string[];
     let zrxTokenAddress: string;
-    let exchangeContractAddress: string;
     let makerAssetData: string;
     let takerAssetData: string;
     let makerTokenAddress: string;
@@ -56,17 +54,23 @@ describe('OrderWatcher', () => {
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
     before(async () => {
+        const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
+        const networkId = constants.TESTRPC_NETWORK_ID;
+        const config = {
+            networkId,
+            contractAddresses,
+        };
+        contractWrappers = new ContractWrappers(provider, config);
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        zrxTokenAddress = tokenUtils.getProtocolTokenAddress();
-        exchangeContractAddress = contractWrappers.exchange.getContractAddress();
+        zrxTokenAddress = contractAddresses.zrxToken;
         fillScenarios = new FillScenarios(
             provider,
             userAddresses,
             zrxTokenAddress,
-            exchangeContractAddress,
-            contractWrappers.erc20Proxy.getContractAddress(),
-            contractWrappers.erc721Proxy.getContractAddress(),
+            contractAddresses.exchange,
+            contractAddresses.erc20Proxy,
+            contractAddresses.erc721Proxy,
         );
         [coinbase, makerAddress, takerAddress, feeRecipient] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
@@ -75,7 +79,7 @@ describe('OrderWatcher', () => {
             assetDataUtils.encodeERC20AssetData(takerTokenAddress),
         ];
         const orderWatcherConfig = {};
-        orderWatcher = new OrderWatcher(provider, networkId, orderWatcherConfig);
+        orderWatcher = new OrderWatcher(provider, networkId, contractAddresses, orderWatcherConfig);
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
@@ -138,6 +142,23 @@ describe('OrderWatcher', () => {
         it('should fail when trying to subscribe twice', async () => {
             orderWatcher.subscribe(_.noop.bind(_));
             expect(() => orderWatcher.subscribe(_.noop.bind(_))).to.throw(OrderWatcherError.SubscriptionAlreadyPresent);
+        });
+    });
+    describe('#getStats', async () => {
+        it('orderCount should increment and decrement with order additions and removals', async () => {
+            signedOrder = await fillScenarios.createFillableSignedOrderAsync(
+                makerAssetData,
+                takerAssetData,
+                makerAddress,
+                takerAddress,
+                fillableAmount,
+            );
+            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+            expect(orderWatcher.getStats().orderCount).to.be.eq(0);
+            await orderWatcher.addOrderAsync(signedOrder);
+            expect(orderWatcher.getStats().orderCount).to.be.eq(1);
+            orderWatcher.removeOrder(orderHash);
+            expect(orderWatcher.getStats().orderCount).to.be.eq(0);
         });
     });
     describe('tests with cleanup', async () => {

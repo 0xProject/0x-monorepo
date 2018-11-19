@@ -1,5 +1,52 @@
 [
     {
+        "timestamp": 1542208198,
+        "version": "2.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542028948,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note":
+                    "Contract artifacts have been moved to the new @0xproject/contract-artifacts package. v1 migrations have been removed. `runMigrationsAsync` returns the addresses of the contracts that were deployed.",
+                "pr": 1105
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
         "version": "1.0.14",
         "changes": [
             {

@@ -1,5 +1,104 @@
 [
     {
+        "timestamp": 1542208198,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note":
+                    "Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync`",
+                "pr": 1235
+            },
+            {
+                "note":
+                    "Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive",
+                "pr": 1235
+            },
+            {
+                "note":
+                    "Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218)",
+                "pr": 1235
+            }
+        ],
+        "timestamp": 1542028948
+    },
+    {
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Fix bug in `ForwarderWrapper` where `feeRecipientAddress` was not correctly normalized.",
+                "pr": 1178
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Add optional validation to the forwarder wrapper methods"
+            },
+            {
+                "note": "Updated to use new modularized artifacts.",
+                "pr": 1105
+            },
+            {
+                "note": "Top-level `ContractWrappers` class has a new optional `contractAddresses` parameter.",
+                "pr": 1105
+            },
+            {
+                "note":
+                    "Default contract addresses are no longer stored in artifacts and are instead loaded from the `@0xproject/contract-addresses` package.",
+                "pr": 1105
+            },
+            {
+                "note":
+                    "Most contract addresses are now defined at instantiation time and are available as properties (e.g., `exchangeWrapper.address`) instead of methods (e.g., `exchangeWrapper.getContractAddress()`).",
+                "pr": 1105
+            },
+            {
+                "note":
+                    "Removed `setProvider` method in top-level `ContractWrapper` class and added new `unsubscribeAll` method.",
+                "pr": 1105
+            },
+            {
+                "note":
+                    "Some properties and methods have been renamed. For example, some methods that previously could throw no longer can, and so their names have been updated accordingly.",
+                "pr": 1105
+            },
+            {
+                "note":
+                    "Removed ContractNotFound errors. Checking for this error was somewhat ineffecient. Relevant methods/functions now return the default error from web3-wrapper, which we feel provides enough information.",
+                "pr": 1105
+            },
+            {
+                "note": "Add `ForwarderWrapperError` to public interface",
+                "pr": 1147
+            },
+            {
+                "note": "Add `ContractWrapperError.SignatureRequestDenied` to public interface",
+                "pr": 1147
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
         "version": "2.0.2",
         "changes": [
             {

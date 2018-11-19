@@ -33,7 +33,7 @@ If your project is in [TypeScript](https://www.typescriptlang.org/), add the fol
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 

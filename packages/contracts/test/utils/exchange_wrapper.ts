@@ -1,9 +1,9 @@
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { ExchangeContract } from '../../generated_contract_wrappers/exchange';
+import { ExchangeContract } from '../../generated-wrappers/exchange';
 
 import { formatters } from './formatters';
 import { LogDecoder } from './log_decoder';
@@ -212,12 +212,16 @@ export class ExchangeWrapper {
         return tx;
     }
     public async getTakerAssetFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
-        const filledAmount = new BigNumber(await this._exchange.filled.callAsync(orderHashHex));
+        const filledAmount = await this._exchange.filled.callAsync(orderHashHex);
         return filledAmount;
     }
     public async isCancelledAsync(orderHashHex: string): Promise<boolean> {
         const isCancelled = await this._exchange.cancelled.callAsync(orderHashHex);
         return isCancelled;
+    }
+    public async getOrderEpochAsync(makerAddress: string, senderAddress: string): Promise<BigNumber> {
+        const orderEpoch = await this._exchange.orderEpoch.callAsync(makerAddress, senderAddress);
+        return orderEpoch;
     }
     public async getOrderInfoAsync(signedOrder: SignedOrder): Promise<OrderInfo> {
         const orderInfo = (await this._exchange.getOrderInfo.callAsync(signedOrder)) as OrderInfo;

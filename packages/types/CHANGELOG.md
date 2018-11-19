@@ -5,6 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.2.1 - _November 9, 2018_
+
+    * Dependencies updated
+
+## v1.2.0 - _October 18, 2018_
+
+    * Added `EIP712Parameter` `EIP712Types` `EIP712TypedData` for EIP712 signing (#1102)
+    * Added `ZeroExTransaction` type for Exchange executeTransaction (#1102)
+    * Add `AssetData` union type (`type AssetData = ERC20AssetData | ERC721AssetData`) (#1131)
+
 ## v1.1.4 - _October 4, 2018_
 
     * Dependencies updated
@@ -44,7 +54,7 @@ CHANGELOG
 
     * Add revert reasons for ERC721Token (#933)
 
-## v1.0.1-rc.4 - _August 13, 2018_
+## v1.0.1-rc.4 - _August 14, 2018_
 
     * Added SignerType to handle different signing prefix scenarios (#914)
 

@@ -1,4 +1,4 @@
-import { constants as sharedConstants } from '@0xproject/react-shared';
+import { constants as sharedConstants } from '@0x/react-shared';
 import * as _ from 'lodash';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';

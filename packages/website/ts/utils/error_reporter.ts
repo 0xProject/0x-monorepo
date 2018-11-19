@@ -1,4 +1,5 @@
-import { logUtils } from '@0xproject/utils';
+import { logUtils } from '@0x/utils';
+import Rollbar from 'rollbar';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
@@ -36,8 +37,8 @@ const rollbarConfig = {
         'SecurityError (DOM Exception 18)',
     ],
 };
-import Rollbar = require('../../public/js/rollbar.umd.min.js');
-const rollbar = Rollbar.init(rollbarConfig);
+
+const rollbar = new Rollbar(rollbarConfig);
 
 export const errorReporter = {
     report(err: Error): void {

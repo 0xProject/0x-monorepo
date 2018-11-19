@@ -26,6 +26,13 @@
     .sm-right {
         float: right;
     }
+    .sm-left {
+        float: left;
+    }
+    .sm-justify-end {
+        ms-flex-pack: end;
+        justify-content: flex-end;
+    }
 }
 
 @media (min-width: 52em) {
@@ -54,6 +61,13 @@
     .md-right {
         float: right;
     }
+    .md-left {
+        float: left;
+    }
+    .md-justify-end {
+        ms-flex-pack: end;
+        justify-content: flex-end;
+    }
 }
 
 @media (min-width: 64em) {
@@ -81,5 +95,12 @@
     }
     .lg-right {
         float: right;
+    }
+    .lg-left {
+        float: left;
+    }
+    .lg-justify-end {
+        ms-flex-pack: end;
+        justify-content: flex-end;
     }
 }

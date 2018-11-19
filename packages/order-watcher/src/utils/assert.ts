@@ -1,13 +1,13 @@
-import { assert as sharedAssert } from '@0xproject/assert';
+import { assert as sharedAssert } from '@0x/assert';
 // HACK: We need those two unused imports because they're actually used by sharedAssert which gets injected here
 // tslint:disable:no-unused-variable
-import { Schema } from '@0xproject/json-schemas';
-import { ECSignature } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { Schema } from '@0x/json-schemas';
+import { ECSignature } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 // tslint:enable:no-unused-variable
 import { Provider } from 'ethereum-types';
 
-import { signatureUtils } from '@0xproject/order-utils';
+import { signatureUtils } from '@0x/order-utils';
 
 export const assert = {
     ...sharedAssert,

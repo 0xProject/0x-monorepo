@@ -5,6 +5,26 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.12 - _November 14, 2018_
+
+    * Dependencies updated
+
+## v2.1.11 - _November 13, 2018_
+
+    * Dependencies updated
+
+## v2.1.10 - _November 12, 2018_
+
+    * Dependencies updated
+
+## v2.1.9 - _November 9, 2018_
+
+    * Dependencies updated
+
+## v2.1.8 - _October 18, 2018_
+
+    * Make @types/solidity-parser-antlr a 'dependency' so it's available to users of the library (#1105)
+
 ## v2.1.7 - _October 4, 2018_
 
     * Dependencies updated
@@ -37,7 +57,7 @@ CHANGELOG
 
     * Export types: `JSONRPCRequestPayload`, `Provider`, `JSONRPCErrorCallback`, `JSONRPCResponsePayload`, `JSONRPCRequestPayloadWithMethod`, `NextCallback`, `ErrorCallback`, `OnNextCompleted` and `Callback` (#924)
 
-## v2.0.0 - _August 13, 2018_
+## v2.0.0 - _August 14, 2018_
 
     * Fix a bug when eth_call coverage was not computed because of silent schema validation failures (#938)
     * Make `TruffleArtifactAdapter` read the `truffle.js` config for `solc` settings (#938)

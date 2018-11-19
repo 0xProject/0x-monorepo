@@ -1,5 +1,5 @@
-import { abiUtils, BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { abiUtils, BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
     AbiType,
@@ -17,7 +17,7 @@ import * as _ from 'lodash';
 import { formatABIDataItem } from './utils';
 
 export interface EthersInterfaceByFunctionSignature {
-    [key: string]: ethers.Interface;
+    [key: string]: ethers.utils.Interface;
 }
 
 const REVERT_ERROR_SELECTOR = '08c379a0';
@@ -101,7 +101,7 @@ export class BaseContract {
     // if it overflows the corresponding Solidity type, there is a bug in the
     // encoder, or the encoder performs unsafe type coercion.
     public static strictArgumentEncodingCheck(inputAbi: DataItem[], args: any[]): void {
-        const coder = new ethers.AbiCoder();
+        const coder = new ethers.utils.AbiCoder();
         const params = abiUtils.parseEthersParams(inputAbi);
         const rawEncoded = coder.encode(inputAbi, args);
         const rawDecoded = coder.decode(inputAbi, rawEncoded);
@@ -117,7 +117,7 @@ export class BaseContract {
             }
         }
     }
-    protected _lookupEthersInterface(functionSignature: string): ethers.Interface {
+    protected _lookupEthersInterface(functionSignature: string): ethers.utils.Interface {
         const ethersInterface = this._ethersInterfacesByFunctionSignature[functionSignature];
         if (_.isUndefined(ethersInterface)) {
             throw new Error(`Failed to lookup method with function signature '${functionSignature}'`);
@@ -129,7 +129,8 @@ export class BaseContract {
             if (abiDefinition.type !== AbiType.Function) {
                 return false;
             }
-            const abiFunctionSignature = abiUtils.getFunctionSignature(abiDefinition);
+            // tslint:disable-next-line:no-unnecessary-type-assertion
+            const abiFunctionSignature = abiUtils.getFunctionSignature(abiDefinition as MethodAbi);
             if (abiFunctionSignature === functionSignature) {
                 return true;
             }
@@ -154,7 +155,7 @@ export class BaseContract {
         this._ethersInterfacesByFunctionSignature = {};
         _.each(methodAbis, methodAbi => {
             const functionSignature = abiUtils.getFunctionSignature(methodAbi);
-            this._ethersInterfacesByFunctionSignature[functionSignature] = new ethers.Interface([methodAbi]);
+            this._ethersInterfacesByFunctionSignature[functionSignature] = new ethers.utils.Interface([methodAbi]);
         });
     }
 }

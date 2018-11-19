@@ -1,5 +1,51 @@
 [
     {
+        "timestamp": 1542208198,
+        "version": "1.0.12",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "1.0.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542028948,
+        "version": "1.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1541740904
+    },
+    {
+        "version": "1.0.8",
+        "changes": [
+            {
+                "note": "Updated to use new @0xproject/contract-artifacts and @0xproject/abi-gen-wrappers packages",
+                "pr": 1105
+            }
+        ],
+        "timestamp": 1539871071
+    },
+    {
         "version": "1.0.7",
         "changes": [
             {

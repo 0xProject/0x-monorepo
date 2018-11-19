@@ -1,6 +1,6 @@
-import { eip712Utils, generatePseudoRandomSalt } from '@0xproject/order-utils';
-import { SignatureType } from '@0xproject/types';
-import { signTypedDataUtils } from '@0xproject/utils';
+import { eip712Utils, generatePseudoRandomSalt } from '@0x/order-utils';
+import { SignatureType } from '@0x/types';
+import { signTypedDataUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { signingUtils } from './signing_utils';

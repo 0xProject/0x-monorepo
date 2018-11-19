@@ -1,5 +1,5 @@
-import { assert } from '@0xproject/assert';
-import { addressUtils } from '@0xproject/utils';
+import { assert } from '@0x/assert';
+import { addressUtils } from '@0x/utils';
 import { JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
 import * as _ from 'lodash';
 

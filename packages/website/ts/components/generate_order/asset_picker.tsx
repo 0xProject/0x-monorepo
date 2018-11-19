@@ -3,7 +3,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as moment from 'moment';
 import * as React from 'react';
-import firstBy = require('thenby');
+import firstBy from 'thenby';
 
 import { Blockchain } from 'ts/blockchain';
 import { NewTokenForm } from 'ts/components/generate_order/new_token_form';

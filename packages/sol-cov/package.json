@@ -1,6 +1,6 @@
 {
-    "name": "@0xproject/sol-cov",
-    "version": "2.1.7",
+    "name": "@0x/sol-cov",
+    "version": "2.1.12",
     "engines": {
         "node": ">=6.12"
     },
@@ -11,7 +11,7 @@
         "build": "yarn pre_build && tsc -b",
         "build:ci": "yarn build",
         "pre_build": "run-s copy_test_fixtures",
-        "lint": "tslint --project .",
+        "lint": "tslint --format stylish --project .",
         "test": "run-s compile_test run_mocha",
         "rebuild_and_test": "run-s clean build test",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
@@ -42,13 +42,14 @@
     },
     "homepage": "https://github.com/0xProject/0x.js/packages/sol-cov/README.md",
     "dependencies": {
-        "@0xproject/dev-utils": "^1.0.12",
-        "@0xproject/sol-compiler": "^1.1.7",
-        "@0xproject/subproviders": "^2.0.7",
-        "@0xproject/typescript-typings": "^3.0.2",
-        "@0xproject/utils": "^2.0.2",
-        "@0xproject/web3-wrapper": "^3.0.3",
-        "ethereum-types": "^1.0.11",
+        "@0x/dev-utils": "^1.0.17",
+        "@0x/sol-compiler": "^1.1.12",
+        "@0x/subproviders": "^2.1.4",
+        "@0x/typescript-typings": "^3.0.4",
+        "@0x/utils": "^2.0.5",
+        "@0x/web3-wrapper": "^3.1.4",
+        "@types/solidity-parser-antlr": "^0.2.0",
+        "ethereum-types": "^1.1.2",
         "ethereumjs-util": "^5.1.1",
         "glob": "^7.1.2",
         "istanbul": "^0.4.5",
@@ -60,14 +61,13 @@
         "solidity-parser-antlr": "^0.2.12"
     },
     "devDependencies": {
-        "@0xproject/tslint-config": "^1.0.8",
+        "@0x/tslint-config": "^1.0.10",
         "@types/istanbul": "^0.4.30",
         "@types/loglevel": "^1.5.3",
         "@types/mkdirp": "^0.5.1",
         "@types/mocha": "^2.2.42",
         "@types/node": "*",
         "@types/rimraf": "^2.0.2",
-        "@types/solidity-parser-antlr": "^0.2.0",
         "chai": "^4.0.1",
         "copyfiles": "^2.0.0",
         "dirty-chai": "^2.0.1",
@@ -78,7 +78,7 @@
         "shx": "^0.2.2",
         "sinon": "^4.0.0",
         "tslint": "5.11.0",
-        "typedoc": "0.12.0",
+        "typedoc": "0.13.0",
         "typescript": "3.0.1"
     },
     "publishConfig": {

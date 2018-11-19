@@ -1,4 +1,4 @@
-## @0xproject/asset-buyer
+## @0x/asset-buyer
 
 **Warning: In Beta, has not been extensively tested.**
 
@@ -9,26 +9,26 @@ In its more advanced and useful form, it integrates with the [Standard Relayer A
 ## Installation
 
 ```bash
-yarn add @0xproject/asset-buyer
+yarn add @0x/asset-buyer
 ```
 
 **Import**
 
 ```typescript
-import { AssetBuyer } from '@0xproject/asset-buyer';
+import { AssetBuyer } from '@0x/asset-buyer';
 ```
 
 or
 
 ```javascript
-var AssetBuyer = require('@0xproject/asset-buyer').AssetBuyer;
+var AssetBuyer = require('@0x/asset-buyer').AssetBuyer;
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
 
 ```json
 "compilerOptions": {
-    "typeRoots": ["node_modules/@0xproject/typescript-typings/types", "node_modules/@types"],
+    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
 }
 ```
 
@@ -57,13 +57,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0xproject/asset-buyer yarn build
+PKG=@0x/asset-buyer yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0xproject/asset-buyer yarn watch
+PKG=@0x/asset-buyer yarn watch
 ```
 
 ### Clean

@@ -9,12 +9,11 @@ import {
     RPCSubprovider,
     signatureUtils,
     SignedOrder,
-    SignerType,
     Web3ProviderEngine,
 } from '0x.js';
-import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0xproject/subproviders';
-import { logUtils } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0x/subproviders';
+import { logUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as express from 'express';
 import * as _ from 'lodash';
 
@@ -66,7 +65,10 @@ export class Handler {
             const web3Wrapper = new Web3Wrapper(providerObj);
             // tslint:disable-next-line:custom-no-magic-numbers
             const networkId = parseInt(networkIdString, 10);
-            const contractWrappers = new ContractWrappers(providerObj, { networkId });
+            const contractWrappersConfig = {
+                networkId,
+            };
+            const contractWrappers = new ContractWrappers(providerObj, contractWrappersConfig);
             const dispatchQueue = new DispatchQueue();
             this._networkConfigByNetworkId[networkId] = {
                 dispatchQueue,
@@ -173,18 +175,17 @@ export class Handler {
             makerAssetData,
             takerAssetData,
             salt: generatePseudoRandomSalt(),
-            exchangeAddress: networkConfig.contractWrappers.exchange.getContractAddress(),
+            exchangeAddress: networkConfig.contractWrappers.exchange.address,
             feeRecipientAddress: NULL_ADDRESS,
             senderAddress: NULL_ADDRESS,
             // tslint:disable-next-line:custom-no-magic-numbers
             expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS).div(1000).floor(),
         };
         const orderHash = orderHashUtils.getOrderHashHex(order);
-        const signature = await signatureUtils.ecSignOrderHashAsync(
+        const signature = await signatureUtils.ecSignHashAsync(
             networkConfig.web3Wrapper.getProvider(),
             orderHash,
             configs.DISPENSER_ADDRESS,
-            SignerType.Default,
         );
         const signedOrder: SignedOrder = {
             ...order,

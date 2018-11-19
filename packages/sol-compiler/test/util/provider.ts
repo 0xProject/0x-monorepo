@@ -1,4 +1,4 @@
-import { web3Factory } from '@0xproject/dev-utils';
+import { web3Factory } from '@0x/dev-utils';
 import { Provider } from 'ethereum-types';
 
 const providerConfigs = { shouldUseInProcessGanache: true };

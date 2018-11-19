@@ -1,11 +1,11 @@
-import { ContractWrappersError } from '@0xproject/contract-wrappers';
-import { assetDataUtils, OrderError } from '@0xproject/order-utils';
-import { constants as sharedConstants, Networks } from '@0xproject/react-shared';
-import { ExchangeContractErrs } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { ContractWrappersError } from '@0x/contract-wrappers';
+import { assetDataUtils, OrderError } from '@0x/order-utils';
+import { constants as sharedConstants, Networks } from '@0x/react-shared';
+import { ExchangeContractErrs } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as bowser from 'bowser';
-import deepEqual = require('deep-equal');
+import deepEqual from 'deep-equal';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
@@ -231,13 +231,6 @@ export const utils = {
     },
     zeroExErrToHumanReadableErrMsg(error: ContractWrappersError | ExchangeContractErrs, takerAddress: string): string {
         const ContractWrappersErrorToHumanReadableError: { [error: string]: string } = {
-            [ContractWrappersError.ExchangeContractDoesNotExist]: 'Exchange contract does not exist',
-            [ContractWrappersError.EtherTokenContractDoesNotExist]: 'EtherToken contract does not exist',
-            [ContractWrappersError.ERC20ProxyContractDoesNotExist]: 'ERC20 proxy contract des not exist',
-            [ContractWrappersError.ERC721ProxyContractDoesNotExist]: 'ERC721 proxy contract des not exist',
-            [ContractWrappersError.ERC20TokenContractDoesNotExist]: 'ERC20 token contract does not exist',
-            [ContractWrappersError.ERC721TokenContractDoesNotExist]: 'ERC721 token contract does not exist',
-            [ContractWrappersError.ZRXContractDoesNotExist]: 'ZRX contract does not exist',
             [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
             [OrderError.InvalidSignature]: 'Order signature is not valid',
             [ContractWrappersError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
@@ -420,6 +413,10 @@ export const utils = {
             return BrowserType.Firefox;
         } else if (bowser.opera) {
             return BrowserType.Opera;
+        } else if (bowser.msedge) {
+            return BrowserType.Edge;
+        } else if (bowser.safari) {
+            return BrowserType.Safari;
         } else {
             return BrowserType.Other;
         }

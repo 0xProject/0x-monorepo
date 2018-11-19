@@ -1,5 +1,5 @@
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
@@ -9,7 +9,6 @@ import { BigNumber } from '@0xproject/utils';
 export interface OrderProviderRequest {
     makerAssetData: string;
     takerAssetData: string;
-    networkId: number;
 }
 
 /**
@@ -27,10 +26,12 @@ export interface SignedOrderWithRemainingFillableMakerAssetAmount extends Signed
     remainingFillableMakerAssetAmount?: BigNumber;
 }
 /**
- * Given an OrderProviderRequest, get an OrderProviderResponse.
+ * gerOrdersAsync: Given an OrderProviderRequest, get an OrderProviderResponse.
+ * getAvailableMakerAssetDatasAsync: Given a taker asset data string, return all availabled paired maker asset data strings.
  */
 export interface OrderProvider {
     getOrdersAsync: (orderProviderRequest: OrderProviderRequest) => Promise<OrderProviderResponse>;
+    getAvailableMakerAssetDatasAsync: (takerAssetData: string) => Promise<string[]>;
 }
 
 /**
@@ -53,12 +54,12 @@ export interface BuyQuote {
 }
 
 /**
- * ethPerAssetPrice: The price of one unit of the desired asset in ETH
+ * assetEthAmount: The amount of eth required to pay for the requested asset.
  * feeEthAmount: The amount of eth required to pay the affiliate fee.
- * totalEthAmount: the total amount of eth required to complete the buy. (Filling orders, feeOrders, and paying affiliate fee)
+ * totalEthAmount: The total amount of eth required to complete the buy (filling orders, feeOrders, and paying affiliate fee).
  */
 export interface BuyQuoteInfo {
-    ethPerAssetPrice: BigNumber;
+    assetEthAmount: BigNumber;
     feeEthAmount: BigNumber;
     totalEthAmount: BigNumber;
 }
@@ -77,18 +78,22 @@ export interface BuyQuoteRequestOpts {
 /**
  * ethAmount: The desired amount of eth to spend. Defaults to buyQuote.worstCaseQuoteInfo.totalEthAmount.
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
+ * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
+ * gasPrice: Gas price in Wei to use for a transaction
  * feeRecipient: The address where affiliate fees are sent. Defaults to null address (0x000...000).
  */
 export interface BuyQuoteExecutionOpts {
     ethAmount?: BigNumber;
     takerAddress?: string;
+    gasLimit?: number;
+    gasPrice?: BigNumber;
     feeRecipient: string;
 }
 
 /**
  * networkId: The ethereum network id. Defaults to 1 (mainnet).
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
- * expiryBufferSeconds: The number of seconds to add when calculating whether an order is expired or not. Defaults to 15s.
+ * expiryBufferSeconds: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  */
 export interface AssetBuyerOpts {
     networkId: number;
@@ -108,6 +113,8 @@ export enum AssetBuyerError {
     NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
     InvalidOrderProviderResponse = 'INVALID_ORDER_PROVIDER_RESPONSE',
     AssetUnavailable = 'ASSET_UNAVAILABLE',
+    SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
+    TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
 }
 
 export interface OrdersAndFillableAmounts {

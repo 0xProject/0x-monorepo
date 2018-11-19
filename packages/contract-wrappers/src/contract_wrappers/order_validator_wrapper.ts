@@ -1,30 +1,35 @@
-import { schemas } from '@0xproject/json-schemas';
-import { SignedOrder } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
-import { Web3Wrapper } from '@0xproject/web3-wrapper';
+import { OrderValidatorContract } from '@0x/abi-gen-wrappers';
+import { OrderValidator } from '@0x/contract-artifacts';
+import { schemas } from '@0x/json-schemas';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../artifacts';
 import { BalanceAndAllowance, OrderAndTraderInfo, TraderInfo } from '../types';
 import { assert } from '../utils/assert';
+import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 
 import { ContractWrapper } from './contract_wrapper';
-import { OrderValidatorContract } from './generated/order_validator';
 
 /**
  * This class includes the functionality related to interacting with the OrderValidator contract.
  */
 export class OrderValidatorWrapper extends ContractWrapper {
-    public abi: ContractAbi = artifacts.OrderValidator.compilerOutput.abi;
+    public abi: ContractAbi = OrderValidator.compilerOutput.abi;
+    public address: string;
     private _orderValidatorContractIfExists?: OrderValidatorContract;
     /**
      * Instantiate OrderValidatorWrapper
-     * @param web3Wrapper Web3Wrapper instance to use
-     * @param networkId Desired networkId
+     * @param web3Wrapper Web3Wrapper instance to use.
+     * @param networkId Desired networkId.
+     * @param address The address of the OrderValidator contract. If undefined,
+     * will default to the known address corresponding to the networkId.
      */
-    constructor(web3Wrapper: Web3Wrapper, networkId: number) {
+    constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
         super(web3Wrapper, networkId);
+        this.address = _.isUndefined(address) ? _getDefaultContractAddresses(networkId).exchange : address;
     }
     /**
      * Get an object conforming to OrderAndTraderInfo containing on-chain information of the provided order and address
@@ -164,20 +169,13 @@ export class OrderValidatorWrapper extends ContractWrapper {
         const result = await OrderValidatorContractInstance.getERC721TokenOwner.callAsync(tokenAddress, tokenId);
         return result;
     }
-    // HACK: We don't want this method to be visible to the other units within that package but not to the end user.
-    // TS doesn't give that possibility and therefore we make it private and access it over an any cast. Because of that tslint sees it as unused.
-    // tslint:disable-next-line:no-unused-variable
-    private _invalidateContractInstance(): void {
-        delete this._orderValidatorContractIfExists;
-    }
     private async _getOrderValidatorContractAsync(): Promise<OrderValidatorContract> {
         if (!_.isUndefined(this._orderValidatorContractIfExists)) {
             return this._orderValidatorContractIfExists;
         }
-        const [abi, address] = await this._getContractAbiAndAddressFromArtifactsAsync(artifacts.OrderValidator);
         const contractInstance = new OrderValidatorContract(
-            abi,
-            address,
+            this.abi,
+            this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

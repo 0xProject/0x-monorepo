@@ -41,7 +41,7 @@ export class AbiDecoder {
             return log;
         }
         const event = this._methodIds[methodId][numIndexedArgs];
-        const ethersInterface = new ethers.Interface([event]);
+        const ethersInterface = new ethers.utils.Interface([event]);
         const decodedParams: DecodedLogArgs = {};
         let topicsIndex = 1;
 
@@ -96,14 +96,16 @@ export class AbiDecoder {
         if (_.isUndefined(abiArray)) {
             return;
         }
-        const ethersInterface = new ethers.Interface(abiArray);
+        const ethersInterface = new ethers.utils.Interface(abiArray);
         _.map(abiArray, (abi: AbiDefinition) => {
             if (abi.type === AbiType.Event) {
-                const topic = ethersInterface.events[abi.name].topic;
-                const numIndexedArgs = _.reduce(abi.inputs, (sum, input) => (input.indexed ? sum + 1 : sum), 0);
+                // tslint:disable-next-line:no-unnecessary-type-assertion
+                const eventAbi = abi as EventAbi;
+                const topic = ethersInterface.events[eventAbi.name].topic;
+                const numIndexedArgs = _.reduce(eventAbi.inputs, (sum, input) => (input.indexed ? sum + 1 : sum), 0);
                 this._methodIds[topic] = {
                     ...this._methodIds[topic],
-                    [numIndexedArgs]: abi,
+                    [numIndexedArgs]: eventAbi,
                 };
             }
         });

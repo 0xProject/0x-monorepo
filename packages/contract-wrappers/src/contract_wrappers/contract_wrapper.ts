@@ -1,9 +1,8 @@
-import { AbiDecoder, intervalUtils, logUtils } from '@0xproject/utils';
-import { marshaller, Web3Wrapper } from '@0xproject/web3-wrapper';
+import { AbiDecoder, intervalUtils, logUtils } from '@0x/utils';
+import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import {
     BlockParamLiteral,
     ContractAbi,
-    ContractArtifact,
     FilterObject,
     LogEntry,
     LogWithDecodedArgs,
@@ -24,27 +23,15 @@ import {
 import { constants } from '../utils/constants';
 import { filterUtils } from '../utils/filter_utils';
 
-const CONTRACT_NAME_TO_NOT_FOUND_ERROR: {
-    [contractName: string]: ContractWrappersError;
-} = {
-    ZRX: ContractWrappersError.ZRXContractDoesNotExist,
-    EtherToken: ContractWrappersError.EtherTokenContractDoesNotExist,
-    ERC20Token: ContractWrappersError.ERC20TokenContractDoesNotExist,
-    ERC20Proxy: ContractWrappersError.ERC20ProxyContractDoesNotExist,
-    ERC721Token: ContractWrappersError.ERC721TokenContractDoesNotExist,
-    ERC721Proxy: ContractWrappersError.ERC721ProxyContractDoesNotExist,
-    Exchange: ContractWrappersError.ExchangeContractDoesNotExist,
-};
-
 export abstract class ContractWrapper {
     public abstract abi: ContractAbi;
-    protected _web3Wrapper: Web3Wrapper;
     protected _networkId: number;
+    protected _web3Wrapper: Web3Wrapper;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
-    private _blockPollingIntervalMs: number;
+    private readonly _blockPollingIntervalMs: number;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
-    private _filters: { [filterToken: string]: FilterObject };
-    private _filterCallbacks: {
+    private readonly _filters: { [filterToken: string]: FilterObject };
+    private readonly _filterCallbacks: {
         [filterToken: string]: EventCallback<ContractEventArgs>;
     };
     private _onLogAddedSubscriptionToken: string | undefined;
@@ -124,40 +111,6 @@ export abstract class ContractWrapper {
         const logWithDecodedArgs = abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
-    protected async _getContractAbiAndAddressFromArtifactsAsync(
-        artifact: ContractArtifact,
-        addressIfExists?: string,
-    ): Promise<[ContractAbi, string]> {
-        let contractAddress: string;
-        if (_.isUndefined(addressIfExists)) {
-            if (_.isUndefined(artifact.networks[this._networkId])) {
-                throw new Error(ContractWrappersError.ContractNotDeployedOnNetwork);
-            }
-            contractAddress = artifact.networks[this._networkId].address.toLowerCase();
-        } else {
-            contractAddress = addressIfExists;
-        }
-        const doesContractExist = await this._web3Wrapper.doesContractExistAtAddressAsync(contractAddress);
-        if (!doesContractExist) {
-            throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contractName]);
-        }
-        const abiAndAddress: [ContractAbi, string] = [artifact.compilerOutput.abi, contractAddress];
-        return abiAndAddress;
-    }
-    protected _getContractAddress(artifact: ContractArtifact, addressIfExists?: string): string {
-        if (_.isUndefined(addressIfExists)) {
-            if (_.isUndefined(artifact.networks[this._networkId])) {
-                throw new Error(ContractWrappersError.ContractNotDeployedOnNetwork);
-            }
-            const contractAddress = artifact.networks[this._networkId].address;
-            if (_.isUndefined(contractAddress)) {
-                throw new Error(CONTRACT_NAME_TO_NOT_FOUND_ERROR[artifact.contractName]);
-            }
-            return contractAddress;
-        } else {
-            return addressIfExists;
-        }
-    }
     private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, rawLog: RawLogEntry): void {
         const log: LogEntry = marshaller.unmarshalLog(rawLog);
         _.forEach(this._filters, (filter: FilterObject, filterToken: string) => {
@@ -221,14 +174,6 @@ export abstract class ContractWrapper {
             params: [filterOptions],
         });
         return logs as RawLogEntry[];
-    }
-    // HACK: This should be a package-scoped method (which doesn't exist in TS)
-    // We don't want this method available in the public interface for all classes
-    // who inherit from ContractWrapper, and it is only used by the internal implementation
-    // of those higher classes.
-    // tslint:disable-next-line:no-unused-variable
-    private _setNetworkId(networkId: number): void {
-        this._networkId = networkId;
     }
     private _stopBlockAndLogStream(): void {
         if (_.isUndefined(this._blockAndLogStreamerIfExists)) {

@@ -1,5 +1,5 @@
-import { OrderWithoutExchangeAddress } from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+import { OrderWithoutExchangeAddress } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import { AbiDefinition } from 'ethereum-types';
 
 export interface ERC20BalancesByOwner {

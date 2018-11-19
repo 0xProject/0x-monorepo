@@ -1,3 +1,4 @@
+import { TextAlignProperty } from 'csstype';
 import * as React from 'react';
 
 type StringOrNum = string | number;
@@ -15,13 +16,18 @@ export interface ContainerProps {
     paddingRight?: StringOrNum;
     paddingLeft?: StringOrNum;
     backgroundColor?: string;
+    background?: string;
     borderRadius?: StringOrNum;
+    borderBottomLeftRadius?: StringOrNum;
+    borderBottomRightRadius?: StringOrNum;
+    borderBottom?: StringOrNum;
     maxWidth?: StringOrNum;
     maxHeight?: StringOrNum;
     width?: StringOrNum;
     height?: StringOrNum;
     minWidth?: StringOrNum;
     minHeight?: StringOrNum;
+    textAlign?: TextAlignProperty;
     isHidden?: boolean;
     className?: string;
     position?: 'absolute' | 'fixed' | 'relative' | 'unset';

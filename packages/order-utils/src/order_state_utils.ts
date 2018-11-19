@@ -5,8 +5,8 @@ import {
     OrderStateInvalid,
     OrderStateValid,
     SignedOrder,
-} from '@0xproject/types';
-import { BigNumber } from '@0xproject/utils';
+} from '@0x/types';
+import { BigNumber } from '@0x/utils';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from './abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
@@ -117,7 +117,7 @@ export class OrderStateUtils {
     public async getOpenOrderStateAsync(signedOrder: SignedOrder, transactionHash?: string): Promise<OrderState> {
         const orderRelevantState = await this.getOpenOrderRelevantStateAsync(signedOrder);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        const isOrderCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(orderHash);
+        const isOrderCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(signedOrder);
         const sidedOrderRelevantState = {
             isMakerSide: true,
             traderBalance: orderRelevantState.makerBalance,
@@ -256,7 +256,7 @@ export class OrderStateUtils {
         const filledTakerAssetAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
         const totalMakerAssetAmount = signedOrder.makerAssetAmount;
         const totalTakerAssetAmount = signedOrder.takerAssetAmount;
-        const isOrderCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(orderHash);
+        const isOrderCancelled = await this._orderFilledCancelledFetcher.isOrderCancelledAsync(signedOrder);
         const remainingTakerAssetAmount = isOrderCancelled
             ? new BigNumber(0)
             : totalTakerAssetAmount.minus(filledTakerAssetAmount);
