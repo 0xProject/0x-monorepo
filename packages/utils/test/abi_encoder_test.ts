@@ -11,12 +11,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe.only('ABI Encoder', () => {
-    describe.only('Optimizer', () => {
-
-    });
-
-    describe('ABI Tests at Method Level', () => {
-
+    describe('Optimizer', () => {
         it('Should reuse duplicated strings in string array', async () => {
             const method = new AbiEncoder.Method(AbiSamples.GAbi);
 
@@ -147,7 +142,9 @@ describe.only('ABI Encoder', () => {
             console.log(JSON.stringify(decodedArgs));
             expect(decodedArgsJson).to.be.equal(argsJson);
         });
+    });
 
+    describe.only('ABI Tests at Method Level', () => {
         it('Crazy ABI', async () => {
             const method = new AbiEncoder.Method(AbiSamples.crazyAbi);
             console.log(method.getSignature());
