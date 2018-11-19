@@ -15,10 +15,7 @@ const HEAP_PRODUCTION_ENV_VAR_NAME = 'INSTANT_HEAP_ANALYTICS_ID_PRODUCTION';
 const HEAP_DEVELOPMENT_ENV_VAR_NAME = 'INSTANT_HEAP_ANALYTICS_ID_DEVELOPMENT';
 const getHeapAnalyticsId = modeName => {
     if (modeName === 'production') {
-        if (process.env[HEAP_PRODUCTION_ENV_VAR_NAME]) {
-            return process.env[HEAP_PRODUCTION_ENV_VAR_NAME];
-        }
-        throw new Error(`Must have ${HEAP_PRODUCTION_ENV_VAR_NAME} set`);
+        return process.env[HEAP_PRODUCTION_ENV_VAR_NAME];
     }
 
     if (modeName === 'development') {
