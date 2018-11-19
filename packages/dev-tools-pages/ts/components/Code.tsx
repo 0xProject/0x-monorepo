@@ -144,9 +144,8 @@ class Code extends React.Component<CodeProps, CodeState> {
         /*
         * _onMountAsync is only setting state, so no point in handling the promise
         */
-        /* tslint:disable:no-floating-promises */
+        // tslint:disable-next-line:no-floating-promises
         this._onMountAsync();
-        /* tslint:enable:no-floating-promises */
     }
 
     public render(): React.ReactNode {
