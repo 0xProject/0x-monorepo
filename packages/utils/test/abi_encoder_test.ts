@@ -5,6 +5,7 @@ import { chaiSetup } from './utils/chai_setup';
 import { BigNumber, AbiEncoder } from '../src/';
 import * as AbiSamples from './abi_samples';
 import { DecodingRules } from '../src/abi_encoder';
+import ethUtil = require('ethereumjs-util');
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -1418,55 +1419,136 @@ describe.only('ABI Encoder', () => {
         });
     });
 
-    /*
-
-    
-
-    describe('Bytes (Dynamic)', () => {
-        const testBytesDataItem = { name: 'testBytes', type: 'bytes' };
-        it('Less than 32 bytes', async () => {
-            const bytesDataType = new AbiEncoder.Bytes(testBytesDataItem);
-            bytesDataType.assignValue('0x010203');
-            const expectedAbiEncodedBytes =
-                '0x00000000000000000000000000000000000000000000000000000000000000030102030000000000000000000000000000000000000000000000000000000000';
-
-            expect(bytesDataType.getHexValue()).to.be.equal(expectedAbiEncodedBytes);
+    describe.only('Dynamic Bytes Dynamic', () => {
+        it('Fits into one EVM word', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Dynamic Bytes', type: 'bytes' };
+            const dataType = new AbiEncoder.Bytes(testDataItem);
+            // Construct args to be encoded
+            // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
+            const args = '0x1a18bf61';
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x00000000000000000000000000000000000000000000000000000000000000041a18bf6100000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        it('Greater than 32 bytes', async () => {
-            const bytesDataType = new AbiEncoder.Bytes(testBytesDataItem);
-            const testValue = '0x' + '61'.repeat(40);
-            bytesDataType.assignValue(testValue);
-            const expectedAbiEncodedBytes =
-                '0x000000000000000000000000000000000000000000000000000000000000002861616161616161616161616161616161616161616161616161616161616161616161616161616161000000000000000000000000000000000000000000000000';
-            expect(bytesDataType.getHexValue()).to.be.equal(expectedAbiEncodedBytes);
+        it('Spans multiple EVM words', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Dynamic Bytes', type: 'bytes' };
+            const dataType = new AbiEncoder.Bytes(testDataItem);
+            // Construct args to be encoded
+            // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
+            const args = '0x' + '61'.repeat(40);
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x000000000000000000000000000000000000000000000000000000000000002861616161616161616161616161616161616161616161616161616161616161616161616161616161000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        // @TODO: Add test for throw on half-byte
-        // @TODO: Test with no 0x prefix
-        // @TODO: Test with Buffer as input
+        it('Input as Buffer', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Dynamic Bytes', type: 'bytes' };
+            const dataType = new AbiEncoder.Bytes(testDataItem);
+            // Construct args to be encoded
+            // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
+            const args = '0x1a18bf61';
+            const argsAsBuffer = ethUtil.toBuffer(args);
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(argsAsBuffer);
+            const expectedEncodedArgs = '0x00000000000000000000000000000000000000000000000000000000000000041a18bf6100000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+
+        it('Should throw when pass in bad hex (no 0x prefix)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes', type: 'bytes' };
+            const dataType = new AbiEncoder.Bytes(testDataItem);
+            // Construct args to be encoded
+            const args = '01';
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw("Tried to encode non-hex value. Value must inlcude '0x' prefix. Got '01'");
+        });
+
+        it('Should throw when pass in bad hex (include a half-byte)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes', type: 'bytes' };
+            const dataType = new AbiEncoder.Bytes(testDataItem);
+            // Construct args to be encoded
+            const args = '0x010';
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw('Tried to assign 0x010, which is contains a half-byte. Use full bytes only.');
+        });
     });
 
-    describe('String', () => {
-        const testStringDataItem = { name: 'testString', type: 'string' };
-        it('Less than 32 bytes', async () => {
-            const stringDataType = new AbiEncoder.SolString(testStringDataItem);
-            stringDataType.assignValue('five');
-            const expectedAbiEncodedString =
-                '0x00000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000';
-
-            console.log(stringDataType.getHexValue());
-            console.log(expectedAbiEncodedString);
-            expect(stringDataType.getHexValue()).to.be.equal(expectedAbiEncodedString);
+    describe.only('String', () => {
+        it('Fits into one EVM word', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'String', type: 'string' };
+            const dataType = new AbiEncoder.SolString(testDataItem);
+            // Construct args to be encoded
+            // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
+            const args = 'five';
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x00000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        it('Greater than 32 bytes', async () => {
-            const stringDataType = new AbiEncoder.SolString(testStringDataItem);
-            const testValue = 'a'.repeat(40);
-            stringDataType.assignValue(testValue);
-            const expectedAbiEncodedString =
-                '0x000000000000000000000000000000000000000000000000000000000000002861616161616161616161616161616161616161616161616161616161616161616161616161616161000000000000000000000000000000000000000000000000';
-            expect(stringDataType.getHexValue()).to.be.equal(expectedAbiEncodedString);
+        it('Spans multiple EVM words', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'String', type: 'string' };
+            const dataType = new AbiEncoder.SolString(testDataItem);
+            // Construct args to be encoded
+            // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
+            const args = 'a'.repeat(40);
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x000000000000000000000000000000000000000000000000000000000000002861616161616161616161616161616161616161616161616161616161616161616161616161616161000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
-    }); */
+
+        it('String that begins with 0x prefix', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'String', type: 'string' };
+            const dataType = new AbiEncoder.SolString(testDataItem);
+            // Construct args to be encoded
+            // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
+            const args = '0x' + 'a'.repeat(40);
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x000000000000000000000000000000000000000000000000000000000000002a30786161616161616161616161616161616161616161616161616161616161616161616161616161616100000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+    });
 });
