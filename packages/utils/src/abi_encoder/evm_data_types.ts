@@ -154,9 +154,8 @@ abstract class Number extends PayloadDataType {
         if (this instanceof Int) {
             // Check if we're negative
             const binBase = 2;
-            const paddedValueBin = value.toString(binBase);
-            const valueBin = paddedValueBin.slice(paddedValueBin.length - this.width);
-            if (valueBin[0].startsWith('1')) {
+            const valueBin = value.toString(2);
+            if (valueBin.length === 256 && valueBin[0].startsWith('1')) {
                 // Negative
                 // Step 1/3: Invert binary value
                 let invertedValueBin = '';
