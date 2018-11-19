@@ -8,7 +8,11 @@ interface InlineCodeProps {
     children: React.ReactNode;
 }
 
-const InlineCode = styled(({ isAlt, children, ...props }: InlineCodeProps) => <code {...props}>{children}</code>)`
+const Code: React.StatelessComponent<InlineCodeProps> = ({ isAlt, children, ...props }) => (
+    <code {...props}>{children}</code>
+);
+
+const InlineCode = styled(Code)`
     background-color: ${props => (props.isAlt ? '#E5E8E9' : colors.blueGray)};
     padding: 0.3125rem;
 `;
