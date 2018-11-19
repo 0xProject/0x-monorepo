@@ -141,7 +141,6 @@ class Code extends React.Component<CodeProps, CodeState> {
         // tslint:disable-next-line:no-floating-promises
         this._onMountAsync();
     }
-
     public render(): React.ReactNode {
         const { language, isLight, isDiff, children, gutterLength, canCopy } = this.props;
         const { hlCode } = this.state;
@@ -174,7 +173,6 @@ class Code extends React.Component<CodeProps, CodeState> {
             </Container>
         );
     }
-
     private async _onMountAsync(): Promise<void> {
         const { language, children, isDiff, gutter, isEtc } = this.props;
 
@@ -188,7 +186,6 @@ class Code extends React.Component<CodeProps, CodeState> {
             });
         }
     }
-
     private readonly _handleCopyAsync = async () => {
         try {
             if ('clipboard' in navigator) {

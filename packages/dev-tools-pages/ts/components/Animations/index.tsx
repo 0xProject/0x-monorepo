@@ -21,16 +21,13 @@ class BaseAnimation extends React.PureComponent<AnimationProps, AnimationState> 
         width: undefined,
     };
     private _timeout = undefined as number;
-
     public componentDidMount(): void {
         this._updateAnimationSize();
         window.addEventListener('resize', this._handleResize);
     }
-
     public componentWillUnmount(): void {
         window.removeEventListener('resize', this._handleResize);
     }
-
     public render(): React.ReactNode {
         const { animationData } = this.props;
         const height = this.state.height || this.props.height;
@@ -52,12 +49,10 @@ class BaseAnimation extends React.PureComponent<AnimationProps, AnimationState> 
             </Container>
         );
     }
-
     private readonly _handleResize = () => {
         clearTimeout(this._timeout);
         this._timeout = window.setTimeout(this._updateAnimationSize, 50);
     };
-
     private readonly _updateAnimationSize = () => {
         const windowWidth = window.innerWidth;
         let width;
