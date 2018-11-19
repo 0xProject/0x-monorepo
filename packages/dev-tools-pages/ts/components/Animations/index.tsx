@@ -20,7 +20,7 @@ class BaseAnimation extends React.PureComponent<AnimationProps, AnimationState> 
         height: undefined,
         width: undefined,
     };
-    private _timeout = null as any;
+    private _timeout = undefined as number;
 
     public componentDidMount(): void {
         this._updateAnimationSize();
@@ -55,7 +55,7 @@ class BaseAnimation extends React.PureComponent<AnimationProps, AnimationState> 
 
     private readonly _handleResize = () => {
         clearTimeout(this._timeout);
-        this._timeout = setTimeout(this._updateAnimationSize, 50);
+        this._timeout = window.setTimeout(this._updateAnimationSize, 50);
     };
 
     private readonly _updateAnimationSize = () => {
