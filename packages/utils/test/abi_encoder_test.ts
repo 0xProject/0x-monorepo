@@ -725,7 +725,7 @@ describe.only('ABI Encoder', () => {
     });
 
     describe.only('Array', () => {
-        it.only('sample', async () => {
+        it.only('Fixed size; Static elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'int[2]' };
             const dataType = new AbiEncoder.SolArray(testDataItem);
@@ -742,34 +742,56 @@ describe.only('ABI Encoder', () => {
             expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        /*
-        it('sample undefined size', async () => {
+        it.only('Dynamic size; Static elements', async () => {
+            // Create DataType object
             const testDataItem = { name: 'testArray', type: 'int[]' };
             const dataType = new AbiEncoder.SolArray(testDataItem);
-            console.log(JSON.stringify(dataType, null, 4));
-            console.log('*'.repeat(60));
-            dataType.assignValue([new BigNumber(5), new BigNumber(6)]);
-            console.log(JSON.stringify(dataType, null, 4));
-            const hexValue = dataType.getHexValue();
-            console.log('*'.repeat(60));
-            console.log(hexValue);
+            // Construct args to be encoded
+            const args = [new BigNumber(5), new BigNumber(6)];
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000006';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        it('sample dynamic types', async () => {
+        it.only('Fixed size; Dynamic elements', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'testArray', type: 'string[2]' };
+            const dataType = new AbiEncoder.SolArray(testDataItem);
+            // Construct args to be encoded
+            const args = ["Hello", "world"];
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000548656c6c6f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005776f726c64000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+
+        it.only('Dynamic size; Dynamic elements', async () => {
+            // Create DataType object
             const testDataItem = { name: 'testArray', type: 'string[]' };
             const dataType = new AbiEncoder.SolArray(testDataItem);
-            console.log(JSON.stringify(dataType, null, 4));
-            console.log('*'.repeat(60));
-            dataType.assignValue(['five', 'six', 'seven']);
-            console.log(JSON.stringify(dataType, null, 4));
-            const hexValue = dataType.getHexValue();
-            console.log('*'.repeat(60));
-            console.log(hexValue);
-            const calldata = new AbiEncoder.Calldata('0x01020304', 1);
-            dataType.bind(calldata, AbiEncoder.CalldataSection.PARAMS);
-            console.log('*'.repeat(60));
-            console.log(calldata.getHexValue());
-        });*/
+            // Construct args to be encoded
+            const args = ["Hello", "world"];
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000548656c6c6f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005776f726c64000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
     });
 
     /*
