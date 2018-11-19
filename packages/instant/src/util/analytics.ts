@@ -2,12 +2,12 @@ import { ObjectMap } from '@0x/types';
 
 import { heapUtil } from './heap';
 
-let disabled = false;
-export const disableAnalytics = () => {
-    disabled = true;
+let isDisabled = false;
+export const disableAnalytics = (shouldDisableAnalytics: boolean) => {
+    isDisabled = shouldDisableAnalytics;
 };
 export const evaluateIfEnabled = (fnCall: () => void) => {
-    if (disabled) {
+    if (isDisabled) {
         return;
     }
     fnCall();

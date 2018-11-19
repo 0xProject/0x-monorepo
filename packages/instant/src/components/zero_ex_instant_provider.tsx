@@ -37,7 +37,7 @@ export interface ZeroExInstantProviderOptionalProps {
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     networkId: Network;
     affiliateInfo: AffiliateInfo;
-    disableAnalyticsTracking: boolean;
+    shouldDisableAnalyticsTracking: boolean;
 }
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
@@ -125,9 +125,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         this._flashErrorIfWrongNetwork();
 
         // Analytics
-        if (this.props.disableAnalyticsTracking) {
-            disableAnalytics();
-        }
+        disableAnalytics(this.props.shouldDisableAnalyticsTracking || false);
         analytics.addEventProperties({
             embeddedHost: window.location.host,
             embeddedUrl: window.location.href,
