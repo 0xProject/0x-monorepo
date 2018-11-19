@@ -69,9 +69,12 @@ class BaseAnimation extends React.PureComponent<AnimationProps, AnimationState> 
     };
 }
 
-const Container = styled.div`
+const Container =
+    styled.div <
+    AnimationProps >
+    `
     width: 100%;
-    height: ${(props: { height: number }) => props.height}px;
+    height: ${props => props.height}px;
     position: absolute;
     top: 40%;
     left: 0;
