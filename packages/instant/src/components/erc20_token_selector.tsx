@@ -78,8 +78,8 @@ interface TokenSelectorRowProps {
 class TokenSelectorRow extends React.Component<TokenSelectorRowProps> {
     public render(): React.ReactNode {
         const { token } = this.props;
+        const circleColor = token.metaData.primaryColor || 'black';
         const displaySymbol = assetUtils.bestNameForAsset(token);
-        const TokenIcon = require(`../assets/icons/${token.metaData.symbol}.svg`);
         return (
             <Container
                 padding="12px 0px"
@@ -94,15 +94,9 @@ class TokenSelectorRow extends React.Component<TokenSelectorRowProps> {
                 <Container marginLeft="5px">
                     <Flex justify="flex-start">
                         <Container marginRight="10px">
-                            <Circle diameter={26} rawColor={token.metaData.primaryColor}>
+                            <Circle diameter={26} rawColor={circleColor}>
                                 <Flex height="100%" width="100%">
-                                    {!_.isUndefined(TokenIcon) ? (
-                                        <TokenIcon />
-                                    ) : (
-                                        <Text fontColor={ColorOption.white} fontSize="8px">
-                                            {displaySymbol}
-                                        </Text>
-                                    )}
+                                    <TokenSelectorRowIcon token={token} />
                                 </Flex>
                             </Circle>
                         </Container>
@@ -122,3 +116,25 @@ class TokenSelectorRow extends React.Component<TokenSelectorRowProps> {
         this.props.onClick(this.props.token);
     };
 }
+
+interface TokenSelectorRowIconProps {
+    token: ERC20Asset;
+}
+
+const TokenSelectorRowIcon: React.StatelessComponent<TokenSelectorRowIconProps> = props => {
+    const { token } = props;
+    const iconUrlIfExists = token.metaData.iconUrl;
+    const TokenIcon = require(`../assets/icons/${token.metaData.symbol}.svg`);
+    const displaySymbol = assetUtils.bestNameForAsset(token);
+    if (!_.isUndefined(iconUrlIfExists)) {
+        return <img src={iconUrlIfExists} />;
+    } else if (!_.isUndefined(TokenIcon)) {
+        return <TokenIcon />;
+    } else {
+        return (
+            <Text fontColor={ColorOption.white} fontSize="8px">
+                {displaySymbol}
+            </Text>
+        );
+    }
+};
