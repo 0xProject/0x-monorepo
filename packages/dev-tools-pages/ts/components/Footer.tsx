@@ -116,10 +116,7 @@ const ListItem = styled.li`
     `};
 `;
 
-const ListLink =
-    styled.a <
-    { hoverColor: string } >
-    `
+const ListLink = styled.a`
     display: flex;
     align-items: center;
     :hover {
