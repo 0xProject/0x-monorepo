@@ -84,6 +84,15 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
+                "A Python library for interacting with 0x orders. Generate an orderHash, sign an order, validate it's signature and more.",
+            link: {
+                title: '0x-order-utils.py',
+                to: 'http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description:
                 'An http & websocket client for interacting with relayers that have implemented the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api)',
             link: {
                 title: '@0x/connect',

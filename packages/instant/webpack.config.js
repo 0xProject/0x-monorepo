@@ -10,11 +10,15 @@ const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
     .toString()
     .trim();
+
+const outputPath = process.env.WEBPACK_OUTPUT_PATH || 'umd';
 const config = {
-    entry: './src/index.umd.ts',
+    entry: {
+        instant: './src/index.umd.ts',
+    },
     output: {
-        filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'public'),
+        filename: '[name].js',
+        path: path.resolve(__dirname, outputPath),
         library: 'zeroExInstant',
         libraryTarget: 'umd',
     },
