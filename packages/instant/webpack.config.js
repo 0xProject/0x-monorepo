@@ -25,7 +25,6 @@ const config = {
     plugins: [
         new webpack.DefinePlugin({
             'process.env': {
-                NODE_ENV: JSON.stringify(process.env.NODE_ENV),
                 GIT_SHA: JSON.stringify(GIT_SHA),
                 ENABLE_HEAP: JSON.stringify(process.env.ENABLE_HEAP),
                 NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
