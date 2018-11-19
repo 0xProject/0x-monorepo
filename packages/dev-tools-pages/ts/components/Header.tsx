@@ -9,11 +9,11 @@ import { Small } from './Typography';
 
 const Header: React.StatelessComponent<{}> = () => (
     <ThemeContext.Consumer>
-        {({ icon, title, colors }: ContextInterface) => (
+        {({ icon, title }: ContextInterface) => (
             <StyledHeader>
                 <Container>
                     <LogoMark>
-                        <Logo as={icon} color={colors.main} />
+                        <Logo as={icon} />
                         <Title>{title}</Title>
                     </LogoMark>
 
@@ -51,7 +51,7 @@ const LogoMark = styled.div`
 `;
 
 const StyledLogo = styled.div`
-    color: ${props => props.color};
+    color: ${props => props.theme.colors.main};
     width: 1.75rem;
     height: 100%;
 `;
