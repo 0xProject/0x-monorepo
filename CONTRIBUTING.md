@@ -16,7 +16,7 @@ Before removing the `[WIP]` tag and submitting the PR for review, make sure:
 *   It is properly formatted with Prettier (`yarn prettier`)
 *   It passes our continuous integration tests (See: [Enabling code coverage checks on your fork](#enabling-code-coverage-checks-on-your-fork) for instructions on getting the `submit-coverage` test to pass on forks)
 *   You've created/updated the corresponding [CHANGELOG](#CHANGELOGs) entries.
-*   Your changes have sufficient test coverage (e.g regression tests for bug fixes)
+*   Your changes have sufficient test coverage (e.g regression tests have been added for bug fixes)
 
 ### Branch structure
 
@@ -35,13 +35,13 @@ Branch names should be prefixed with `fix`, `feature` or `refactor`.
 
 ### CHANGELOGs
 
-At 0x we use [Semantic Versioning](http://semver.org/) for all our published packages. If a change you make is a bug fix, adds a feature or introduces a breaking change to a package, you must modify it's `CHANGELOG.json` file accordingly.
+At 0x we use [Semantic Versioning](http://semver.org/) for all our published packages. If a change you make corresponds to a semver bump, you must modify the package's `CHANGELOG.json` file accordingly.
 
 Each CHANGELOG entry that corresponds to a published package will have a `timestamp`. If no entry exists without a `timestamp`, you must first create a new one:
 
 ```
 {
-        "version": "1.0.0", <- The updated package version
+        "version": "1.0.1", <- The updated package version
         "changes": [
             {
                 "note": "", <- Describe your change
