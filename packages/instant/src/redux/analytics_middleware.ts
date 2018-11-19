@@ -11,8 +11,8 @@ import { Action, ActionTypes } from './actions';
 import { State } from './reducer';
 
 const shouldTriggerWalletReady = (prevAccount: Account, curAccount: Account): boolean => {
-    const justTurnedReady = curAccount.state === AccountState.Ready && prevAccount.state !== AccountState.Ready;
-    if (justTurnedReady) {
+    const didJustTurnReady = curAccount.state === AccountState.Ready && prevAccount.state !== AccountState.Ready;
+    if (didJustTurnReady) {
         return true;
     }
 
