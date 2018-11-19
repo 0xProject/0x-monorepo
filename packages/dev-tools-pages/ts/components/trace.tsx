@@ -8,10 +8,10 @@ import TimeConsuming from 'ts/icons/time-consuming.svg';
 import TimeSaving from 'ts/icons/time-saving.svg';
 import { colors, media } from 'ts/variables';
 
-import { Breakout } from './Breakout';
-import { Code } from './Code';
-import { Container } from './Container';
-import { Alpha, Gamma, Lead } from './Typography';
+import { Breakout } from './breakout';
+import { Code } from './code';
+import { Container } from './container';
+import { Alpha, Gamma, Lead } from './typography';
 
 const Trace: React.StatelessComponent<{}> = () => (
     <ThemeContext.Consumer>

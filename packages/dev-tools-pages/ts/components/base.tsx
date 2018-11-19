@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { ThemeProvider } from 'styled-components';
 
-import { Footer } from 'ts/components/Footer';
-import { Header } from 'ts/components/Header';
+import { Footer } from 'ts/components/footer';
+import { Header } from 'ts/components/header';
 import { ThemeContext } from 'ts/context';
 import { GlobalStyles } from 'ts/globalStyles';
 

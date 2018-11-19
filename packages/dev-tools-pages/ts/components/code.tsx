@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/variables';
 
-import { Button as BaseButton } from './Button';
+import { Button as BaseButton } from './button';
 
 const isTouch = Boolean(
     'ontouchstart' in window ||

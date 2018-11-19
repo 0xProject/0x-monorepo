@@ -4,19 +4,19 @@ import * as Loadable from 'react-loadable';
 
 import { context } from 'ts/context/profiler';
 
-import { Base } from 'ts/components/Base';
-import { Breakout } from 'ts/components/Breakout';
-import { Code } from 'ts/components/Code';
-import { Content } from 'ts/components/Content';
-import { ContentBlock } from 'ts/components/ContentBlock';
-import { Hero } from 'ts/components/Hero';
-import { InlineCode } from 'ts/components/InlineCode';
-import { Intro, IntroAside, IntroLead } from 'ts/components/Intro';
-import { List, ListItem } from 'ts/components/List';
-import { TabBlock, Tabs } from 'ts/components/Tabs';
+import { Base } from 'ts/components/base';
+import { Breakout } from 'ts/components/breakout';
+import { Code } from 'ts/components/code';
+import { Content } from 'ts/components/content';
+import { ContentBlock } from 'ts/components/content-block';
+import { Hero } from 'ts/components/hero';
+import { InlineCode } from 'ts/components/inline-code';
+import { Intro, IntroAside, IntroLead } from 'ts/components/intro';
+import { List, ListItem } from 'ts/components/list';
+import { TabBlock, Tabs } from 'ts/components/tabs';
 
 const Animation = Loadable({
-    loader: () => System.import(/* webpackChunkName: 'profiler-animation' */ 'ts/components/Animations/Profiler'),
+    loader: () => System.import(/* webpackChunkName: 'profiler-animation' */ 'ts/components/animations/profiler'),
     loading: () => <div />,
     delay: 1000,
     render(loadable: { Animation: any }): React.ReactNode {

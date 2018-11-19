@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { ContextInterface, ThemeContext } from 'ts/context';
 import { media } from 'ts/variables';
 
-import { Button } from './Button';
-import { Beta } from './Typography';
+import { Button } from './button';
+import { Beta } from './typography';
 
 const Hero: React.StatelessComponent<ContextInterface> = ({ children }) => (
     <ThemeContext.Consumer>

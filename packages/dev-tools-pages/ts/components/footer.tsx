@@ -8,8 +8,8 @@ import { context as trace } from 'ts/context/trace';
 import MainIcon from 'ts/icons/logos/0x.svg';
 import { media } from 'ts/variables';
 
-import { Container } from './Container';
-import { Alpha, Beta } from './Typography';
+import { Container } from './container';
+import { Alpha, Beta } from './typography';
 
 const tools = [trace, cov, compiler, profiler];
 

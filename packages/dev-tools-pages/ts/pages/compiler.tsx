@@ -4,18 +4,18 @@ import * as Loadable from 'react-loadable';
 
 import { context } from 'ts/context/compiler';
 
-import { Base } from 'ts/components/Base';
-import { Breakout } from 'ts/components/Breakout';
-import { Code } from 'ts/components/Code';
-import { Compiler as CompilerComponent } from 'ts/components/Compiler';
-import { Content } from 'ts/components/Content';
-import { ContentBlock } from 'ts/components/ContentBlock';
-import { Hero } from 'ts/components/Hero';
-import { InlineCode } from 'ts/components/InlineCode';
-import { Lead } from 'ts/components/Typography';
+import { Base } from 'ts/components/base';
+import { Breakout } from 'ts/components/breakout';
+import { Code } from 'ts/components/code';
+import { Compiler as CompilerComponent } from 'ts/components/compiler';
+import { Content } from 'ts/components/content';
+import { ContentBlock } from 'ts/components/content-block';
+import { Hero } from 'ts/components/hero';
+import { InlineCode } from 'ts/components/inline-code';
+import { Lead } from 'ts/components/typography';
 
 const Animation = Loadable({
-    loader: () => System.import(/* webpackChunkName: 'compiler-animation' */ 'ts/components/Animations/Compiler'),
+    loader: () => System.import(/* webpackChunkName: 'compiler-animation' */ 'ts/components/animations/compiler'),
     loading: () => <div />,
     delay: 1000,
     render(loadable: { Animation: any }): React.ReactNode {

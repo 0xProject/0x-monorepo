@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { ContextInterface, ThemeContext } from 'ts/context';
 import { media } from 'ts/variables';
 
-import { Container } from './Container';
-import { Small } from './Typography';
+import { Container } from './container';
+import { Small } from './typography';
 
 const Header: React.StatelessComponent<{}> = () => (
     <ThemeContext.Consumer>

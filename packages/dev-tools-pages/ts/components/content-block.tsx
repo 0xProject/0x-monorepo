@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { ContextInterface } from 'ts/context';
 import { media } from 'ts/variables';
 
-import { Alpha, Beta } from './Typography';
+import { Alpha, Beta } from './typography';
 
 const Base = styled.div`
     display: flex;

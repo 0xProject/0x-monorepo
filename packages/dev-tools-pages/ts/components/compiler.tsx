@@ -3,9 +3,9 @@ import styled from 'styled-components';
 
 import { colors, media } from 'ts/variables';
 
-import { Breakout } from './Breakout';
-import { Container } from './Container';
-import { InlineCode } from './InlineCode';
+import { Breakout } from './breakout';
+import { Container } from './container';
+import { InlineCode } from './inline-code';
 
 const Cards = styled.dl`
     column-count: 3;

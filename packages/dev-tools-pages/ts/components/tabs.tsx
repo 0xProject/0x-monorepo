@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/variables';
 
-import { Breakout } from './Breakout';
+import { Breakout } from './breakout';
 
 const StyledTabList = styled(TabList)`
     text-transform: uppercase;

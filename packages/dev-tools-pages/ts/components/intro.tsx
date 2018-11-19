@@ -3,9 +3,9 @@ import styled from 'styled-components';
 
 import { colors, media } from 'ts/variables';
 
-import { Breakout } from './Breakout';
-import { Container } from './Container';
-import { Alpha, Lead } from './Typography';
+import { Breakout } from './breakout';
+import { Container } from './container';
+import { Alpha, Lead } from './typography';
 
 const Main = styled.div`
     background-color: ${colors.lightGray};
