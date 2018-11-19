@@ -20,7 +20,14 @@ export abstract class CalldataBlock {
     private relocatable: boolean;
     private parentName: string;
 
-    constructor(name: string, signature: string, parentName: string, /*offsetInBytes: number,*/ headerSizeInBytes: number, bodySizeInBytes: number, relocatable: boolean) {
+    constructor(
+        name: string,
+        signature: string,
+        parentName: string,
+        /*offsetInBytes: number,*/ headerSizeInBytes: number,
+        bodySizeInBytes: number,
+        relocatable: boolean,
+    ) {
         this.name = name;
         this.signature = signature;
         this.parentName = parentName;
@@ -91,7 +98,13 @@ export abstract class CalldataBlock {
 export class PayloadCalldataBlock extends CalldataBlock {
     private payload: Buffer;
 
-    constructor(name: string, signature: string, parentName: string, /*offsetInBytes: number,*/ relocatable: boolean, payload: Buffer) {
+    constructor(
+        name: string,
+        signature: string,
+        parentName: string,
+        /*offsetInBytes: number,*/ relocatable: boolean,
+        payload: Buffer,
+    ) {
         const headerSizeInBytes = 0;
         const bodySizeInBytes = payload.byteLength;
         super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes, relocatable);
@@ -115,7 +128,14 @@ export class DependentCalldataBlock extends CalldataBlock {
     private dependency: CalldataBlock;
     private aliasFor: CalldataBlock | undefined;
 
-    constructor(name: string, signature: string, parentName: string, relocatable: boolean, dependency: CalldataBlock, parent: CalldataBlock) {
+    constructor(
+        name: string,
+        signature: string,
+        parentName: string,
+        relocatable: boolean,
+        dependency: CalldataBlock,
+        parent: CalldataBlock,
+    ) {
         const headerSizeInBytes = 0;
         const bodySizeInBytes = DependentCalldataBlock.DEPENDENT_PAYLOAD_SIZE_IN_BYTES;
         super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes, relocatable);
@@ -125,7 +145,8 @@ export class DependentCalldataBlock extends CalldataBlock {
     }
 
     public toBuffer(): Buffer {
-        const destinationOffset = (this.aliasFor !== undefined) ? this.aliasFor.getOffsetInBytes() : this.dependency.getOffsetInBytes();
+        const destinationOffset =
+            this.aliasFor !== undefined ? this.aliasFor.getOffsetInBytes() : this.dependency.getOffsetInBytes();
         const parentOffset = this.parent.getOffsetInBytes();
         const parentHeaderSize = this.parent.getHeaderSizeInBytes();
         const pointer: number = destinationOffset - (parentOffset + parentHeaderSize);
@@ -314,7 +335,7 @@ export class Calldata {
 
             //const ancestrialNamesOffset = name.startsWith('ptr<') ? 4 : 0;
             //const parentOffset = name.lastIndexOf(parentName);
-            const prettyName = name.replace(`${parentName}.`, '').replace(`${functionName}.`, '');//.replace(`${parentName}[`, '[');
+            const prettyName = name.replace(`${parentName}.`, '').replace(`${functionName}.`, ''); //.replace(`${parentName}[`, '[');
             const signature = block.getSignature();
 
             // Current offset
@@ -383,7 +404,7 @@ export class Calldata {
         const blocksByHash: { [key: string]: CalldataBlock } = {};
 
         // 1. Create a queue of subtrees by hash
-        // Note that they are ordered the same as 
+        // Note that they are ordered the same as
         const subtreeQueue = this.createQueue(this.root);
         let block: CalldataBlock | undefined;
         while ((block = subtreeQueue.popBack()) !== undefined) {
@@ -435,7 +456,7 @@ export class Calldata {
     }
 
     public toAnnotatedString(): string {
-        return "";
+        return '';
     }
 
     public setRoot(block: CalldataBlock) {

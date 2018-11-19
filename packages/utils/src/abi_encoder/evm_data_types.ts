@@ -21,7 +21,7 @@ export interface DataTypeStaticInterface {
 export class Address extends PayloadDataType {
     private static SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     public static ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X = "Address must start with '0x'";
-    public static ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES = "Address must be 20 bytes";
+    public static ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES = 'Address must be 20 bytes';
 
     constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance(), Address.SIZE_KNOWN_AT_COMPILE_TIME);
@@ -88,7 +88,7 @@ export class Bool extends PayloadDataType {
         const valueBuf = calldata.popWord();
         const valueHex = ethUtil.bufferToHex(valueBuf);
         const valueNumber = new BigNumber(valueHex, 16);
-        let value: boolean = (valueNumber.equals(0)) ? false : true;
+        let value: boolean = valueNumber.equals(0) ? false : true;
         if (!(valueNumber.equals(0) || valueNumber.equals(1))) {
             throw new Error(`Failed to decode boolean. Expected 0x0 or 0x1, got ${valueHex}`);
         }
@@ -147,10 +147,7 @@ abstract class Number extends PayloadDataType {
             const negativeValue = invertedValue.plus(1);
 
             // Convert the negated value to a hex string
-            valueBuf = ethUtil.setLengthLeft(
-                ethUtil.toBuffer(`0x${negativeValue.toString(hexBase)}`),
-                evmWordWidth,
-            );
+            valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${negativeValue.toString(hexBase)}`), evmWordWidth);
         }
 
         return valueBuf;
@@ -279,7 +276,7 @@ export class Byte extends PayloadDataType {
         if (valueBuf.byteLength > this.width) {
             throw new Error(
                 `Tried to assign ${value} (${
-                valueBuf.byteLength
+                    valueBuf.byteLength
                 } bytes), which exceeds max bytes that can be stored in a ${this.getSignature()}`,
             );
         } else if (value.length % 2 !== 0) {
@@ -392,7 +389,6 @@ export class SolString extends PayloadDataType {
 }
 
 export class Pointer extends DependentDataType {
-
     constructor(destDataType: DataType, parentDataType: DataType) {
         const destDataItem = destDataType.getDataItem();
         const dataItem = { name: `ptr<${destDataItem.name}>`, type: `ptr<${destDataItem.type}>` } as DataItem;
@@ -442,7 +438,7 @@ export class SolArray extends MemberDataType {
 
         const isArray = true;
         const arrayElementType = matches[1];
-        const arrayLength = (matches[2] === '') ? undefined : parseInt(matches[2], 10);
+        const arrayLength = matches[2] === '' ? undefined : parseInt(matches[2], 10);
         super(dataItem, EvmDataTypeFactory.getInstance(), isArray, arrayLength, arrayElementType);
         this.elementType = arrayElementType;
         this.arraySignature = this.computeSignature();
@@ -513,7 +509,9 @@ export class Method extends MemberDataType {
 
     public decode(calldata: string, rules?: DecodingRules): any[] | object {
         if (!calldata.startsWith(this.selector)) {
-            throw new Error(`Tried to decode calldata, but it was missing the function selector. Expected '${this.selector}'.`);
+            throw new Error(
+                `Tried to decode calldata, but it was missing the function selector. Expected '${this.selector}'.`,
+            );
         }
         const hasSelector = true;
         const value = super.decode(calldata, rules, hasSelector);
@@ -524,7 +522,7 @@ export class Method extends MemberDataType {
         //console.log('O'.repeat(100), '\n', returndata, '\n', this.returnDataTypes, 'P'.repeat(100));
 
         const returnValues: any[] = [];
-        const rules_ = rules ? rules : { structsAsObjects: false } as DecodingRules;
+        const rules_ = rules ? rules : ({ structsAsObjects: false } as DecodingRules);
         const rawReturnData = new RawCalldata(returndata, false);
         _.each(this.returnDataTypes, (dataType: DataType) => {
             returnValues.push(dataType.generateValue(rawReturnData, rules_));
@@ -549,7 +547,7 @@ export class Method extends MemberDataType {
 export class EvmDataTypeFactory implements DataTypeFactory {
     private static instance: DataTypeFactory;
 
-    private constructor() { }
+    private constructor() {}
 
     public static getInstance(): DataTypeFactory {
         if (!EvmDataTypeFactory.instance) {
@@ -580,7 +578,8 @@ export class EvmDataTypeFactory implements DataTypeFactory {
             return dataType;
         }
 
-        if (parentDataType === undefined) { // @Todo -- will this work for return values?
+        if (parentDataType === undefined) {
+            // @Todo -- will this work for return values?
             throw new Error(`Trying to create a pointer`);
         }
         const pointer = new Pointer(dataType, parentDataType);
