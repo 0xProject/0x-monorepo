@@ -57,7 +57,7 @@
         "bowser": "^1.9.4",
         "copy-to-clipboard": "^3.0.8",
         "ethereum-types": "^1.1.2",
-        "lodash": "^4.17.10",
+        "lodash": "^4.17.5",
         "polished": "^2.2.0",
         "react": "^16.5.2",
         "react-dom": "^16.5.2",
