@@ -41,7 +41,7 @@ export abstract class DataType {
     }
 
     public decode(calldata: string, rules?: DecodingRules): any {
-        const rawCalldata = new RawCalldata(calldata, false); // @TODO Sohuld not hardcode false here
+        const rawCalldata = new RawCalldata(calldata, true); // @TODO Sohuld not hardcode false here
         const rules_ = rules ? rules : DataType.DEFAULT_DECODING_RULES;
         const value = this.generateValue(rawCalldata, rules_);
         return value;
