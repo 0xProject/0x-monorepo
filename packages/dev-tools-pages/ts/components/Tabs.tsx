@@ -15,6 +15,7 @@ const StyledTabList = styled(TabList)`
 `;
 
 const StyledTab = styled(Tab)`
+    background-color: ${props => props.theme.colors.secondary};
     height: 2.5rem;
     padding-left: 1rem;
     padding-right: 1rem;
@@ -25,41 +26,30 @@ const StyledTab = styled(Tab)`
     &:not(:first-of-type) {
         margin-left: 0.25rem;
     }
-`;
 
-const Root =
-    styled.div <
-    { colors: any } >
-    `
-    ${StyledTab} {
-        background-color: ${props => props.theme.colors.secondary};
-        &[aria-selected="true"] {
-            background-color: ${colors.gray};
+    &[aria-selected='true'] {
+        background-color: ${colors.gray};
+    }
 
-        }
-
-        &[aria-selected="false"]:focus,
-        &[aria-selected="false"]:hover {
-            background-color: ${props => props.theme.colors.secondary_alt};
-            cursor: pointer;
-        }
+    &[aria-selected='false']:focus,
+    &[aria-selected='false']:hover {
+        background-color: ${props => props.theme.colors.secondary_alt};
+        cursor: pointer;
     }
 `;
 
 const Tabs: React.StatelessComponent<{}> = props => (
     <Breakout>
-        <Root>
-            <ReactTabs>
-                <StyledTabList>
-                    {React.Children.map(props.children, child => {
-                        const { title } = React.cloneElement(child as React.ReactElement<any>).props;
-                        return <StyledTab>{title}</StyledTab>;
-                    })}
-                </StyledTabList>
+        <ReactTabs>
+            <StyledTabList>
+                {React.Children.map(props.children, child => {
+                    const { title } = React.cloneElement(child as React.ReactElement<any>).props;
+                    return <StyledTab>{title}</StyledTab>;
+                })}
+            </StyledTabList>
 
-                {React.Children.map(props.children, child => <TabPanel>{child}</TabPanel>)}
-            </ReactTabs>
-        </Root>
+            {React.Children.map(props.children, child => <TabPanel>{child}</TabPanel>)}
+        </ReactTabs>
     </Breakout>
 );
 
