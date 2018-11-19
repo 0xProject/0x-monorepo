@@ -896,24 +896,43 @@ describe.only('ABI Encoder', () => {
         });
     });
 
-    /*
-    describe('Bool', () => {
-        const testBoolDataItem = { name: 'testBool', type: 'bool' };
+    describe.only('Bool', () => {
         it('True', async () => {
-            const boolDataType = new AbiEncoder.Bool(testBoolDataItem);
-            boolDataType.assignValue(true);
-            const expectedAbiEncodedBool = '0x0000000000000000000000000000000000000000000000000000000000000001';
-            expect(boolDataType.getHexValue()).to.be.equal(expectedAbiEncodedBool);
+            // Create DataType object
+            const testDataItem = { name: 'Boolean', type: 'bool' };
+            const dataType = new AbiEncoder.Bool(testDataItem);
+            // Construct args to be encoded
+            const args = true;
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000001';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
         it('False', async () => {
-            const boolDataType = new AbiEncoder.Bool(testBoolDataItem);
-            boolDataType.assignValue(false);
-            const expectedAbiEncodedBool = '0x0000000000000000000000000000000000000000000000000000000000000000';
-            expect(boolDataType.getHexValue()).to.be.equal(expectedAbiEncodedBool);
+            // Create DataType object
+            const testDataItem = { name: 'Boolean', type: 'bool' };
+            const dataType = new AbiEncoder.Bool(testDataItem);
+            // Construct args to be encoded
+            const args = false;
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
     });
 
+    /*
     describe('Integer', () => {
         const testIntDataItem = { name: 'testInt', type: 'int' };
         it('Positive - Base case', async () => {
@@ -1073,5 +1092,5 @@ describe.only('ABI Encoder', () => {
                 '0x000000000000000000000000000000000000000000000000000000000000002861616161616161616161616161616161616161616161616161616161616161616161616161616161000000000000000000000000000000000000000000000000';
             expect(stringDataType.getHexValue()).to.be.equal(expectedAbiEncodedString);
         });
-    });*/
+    }); */
 });
