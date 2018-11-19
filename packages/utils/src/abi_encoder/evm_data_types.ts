@@ -318,7 +318,7 @@ export class Bytes extends PayloadDataType {
 
     public encodeValue(value: string | Buffer): Buffer {
         if (typeof value === 'string' && !value.startsWith('0x')) {
-            throw new Error(`Input value must be hex (prefixed with 0x). Actual value is '${value}'`);
+            throw new Error(`Tried to encode non-hex value. Value must inlcude '0x' prefix. Got '${value}'`);
         }
         const valueBuf = ethUtil.toBuffer(value);
         if (value.length % 2 !== 0) {
@@ -365,7 +365,7 @@ export class SolString extends PayloadDataType {
     public encodeValue(value: string): Buffer {
         const wordsForValue = Math.ceil(value.length / 32);
         const paddedBytesForValue = wordsForValue * 32;
-        const valueBuf = ethUtil.setLengthRight(ethUtil.toBuffer(value), paddedBytesForValue);
+        const valueBuf = ethUtil.setLengthRight(new Buffer(value), paddedBytesForValue);
         const lengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value.length), 32);
         const encodedValueBuf = Buffer.concat([lengthBuf, valueBuf]);
         return encodedValueBuf;
