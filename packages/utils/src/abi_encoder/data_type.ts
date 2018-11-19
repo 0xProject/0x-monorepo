@@ -40,8 +40,8 @@ export abstract class DataType {
         return calldataHex;
     }
 
-    public decode(calldata: string, rules?: DecodingRules): any {
-        const rawCalldata = new RawCalldata(calldata, true); // @TODO Sohuld not hardcode false here
+    public decode(calldata: string, rules?: DecodingRules, hasSelector: boolean = false): any {
+        const rawCalldata = new RawCalldata(calldata, hasSelector);
         const rules_ = rules ? rules : DataType.DEFAULT_DECODING_RULES;
         const value = this.generateValue(rawCalldata, rules_);
         return value;
