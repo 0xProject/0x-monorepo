@@ -270,6 +270,10 @@ export class Byte extends PayloadDataType {
     }
 
     public encodeValue(value: string | Buffer): Buffer {
+        // Sanity check if string
+        if (typeof value === 'string' && value.startsWith('0x') === false) {
+            throw new Error(`Tried to encode non-hex value. Value must inlcude '0x' prefix.`);
+        }
         // Convert value into a buffer and do bounds checking
         const valueBuf = ethUtil.toBuffer(value);
         if (valueBuf.byteLength > this.width) {

@@ -1270,61 +1270,157 @@ describe.only('ABI Encoder', () => {
         });
     });
 
-    /*
-
-    describe('Static Bytes', () => {
-        it('Byte (padded)', async () => {
-            const testByteDataItem = { name: 'testStaticBytes', type: 'byte' };
-            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
-            byteDataType.assignValue('0x05');
-            const expectedAbiEncodedByte = '0x0500000000000000000000000000000000000000000000000000000000000000';
-            expect(byteDataType.getHexValue()).to.be.equal(expectedAbiEncodedByte);
+    describe.only('Static Bytes', () => {
+        it('Single Byte (byte)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Byte', type: 'byte' };
+            const dataType = new AbiEncoder.Byte(testDataItem);
+            // Construct args to be encoded
+            const args = '0x05';
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x0500000000000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        it.skip('Byte (no padding)', async () => {
-            const testByteDataItem = { name: 'testStaticBytes', type: 'byte' };
-            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
-
-            // @TODO: This does not catch the Error
-            expect(byteDataType.assignValue('0x5')).to.throw();
+        it('Single Byte (bytes1)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes1', type: 'bytes1' };
+            const dataType = new AbiEncoder.Byte(testDataItem);
+            // Construct args to be encoded
+            const args = '0x05';
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x0500000000000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        it('Bytes1', async () => {
-            const testByteDataItem = { name: 'testStaticBytes', type: 'bytes1' };
-            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
-            byteDataType.assignValue('0x05');
-            const expectedAbiEncodedByte = '0x0500000000000000000000000000000000000000000000000000000000000000';
-            expect(byteDataType.getHexValue()).to.be.equal(expectedAbiEncodedByte);
+        it('4 Bytes (bytes4)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes4', type: 'bytes4' };
+            const dataType = new AbiEncoder.Byte(testDataItem);
+            // Construct args to be encoded
+            const args = '0x00010203';
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x0001020300000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        it('Bytes32 (padded)', async () => {
-            const testByteDataItem = { name: 'testStaticBytes', type: 'bytes32' };
-            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
-            byteDataType.assignValue('0x0001020304050607080911121314151617181920212223242526272829303132');
-            const expectedAbiEncodedByte = '0x0001020304050607080911121314151617181920212223242526272829303132';
-            expect(byteDataType.getHexValue()).to.be.equal(expectedAbiEncodedByte);
+        it('4 Bytes (bytes4); Encoder must pad input', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes4', type: 'bytes4' };
+            const dataType = new AbiEncoder.Byte(testDataItem);
+            // Construct args to be encoded
+            // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
+            const args = '0x1a18';
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x1a18000000000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const paddedArgs = '0x1a180000';
+            const paddedArgsAsJson = JSON.stringify(paddedArgs);
+            expect(decodedArgsAsJson).to.be.equal(paddedArgsAsJson);
         });
 
-        it('Bytes32 (unpadded)', async () => {
-            const testByteDataItem = { name: 'testStaticBytes', type: 'bytes32' };
-            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
-            byteDataType.assignValue('0x1a18bf61');
-            const expectedAbiEncodedByte = '0x1a18bf6100000000000000000000000000000000000000000000000000000000';
-            expect(byteDataType.getHexValue()).to.be.equal(expectedAbiEncodedByte);
+        it('32 Bytes (bytes32)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes32', type: 'bytes32' };
+            const dataType = new AbiEncoder.Byte(testDataItem);
+            // Construct args to be encoded
+            const args = '0x0001020304050607080911121314151617181920212223242526272829303132';
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x0001020304050607080911121314151617181920212223242526272829303132';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
 
-        it.skip('Bytes32 - Too long', async () => {
-            const testByteDataItem = { name: 'testStaticBytes', type: 'bytes32' };
-            const byteDataType = new AbiEncoder.Byte(testByteDataItem);
+        it('32 Bytes (bytes32); Encoder must pad input', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes32', type: 'bytes32' };
+            const dataType = new AbiEncoder.Byte(testDataItem);
+            // Construct args to be encoded
+            // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
+            const args = '0x1a18bf61';
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x1a18bf6100000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const paddedArgs = '0x1a18bf6100000000000000000000000000000000000000000000000000000000';
+            const paddedArgsAsJson = JSON.stringify(paddedArgs);
+            expect(decodedArgsAsJson).to.be.equal(paddedArgsAsJson);
+        });
 
-            // @TODO: This does not catch the Error
-            expect(
-                byteDataType.assignValue('0x000102030405060708091112131415161718192021222324252627282930313233'),
-            ).to.throw(
-                `Tried to assign 0x000102030405060708091112131415161718192021222324252627282930313233 (33 bytes), which exceeds max bytes that can be stored in a bytes32`,
-            );
+        it('Should throw when pass in too many bytes (bytes4)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes4', type: 'bytes4' };
+            const dataType = new AbiEncoder.Byte(testDataItem);
+            // Construct args to be encoded
+            const args = '0x0102030405';
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw('Tried to assign 0x0102030405 (5 bytes), which exceeds max bytes that can be stored in a bytes4');
+        });
+
+        it('Should throw when pass in too many bytes (bytes32)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes32', type: 'bytes32' };
+            const dataType = new AbiEncoder.Byte(testDataItem);
+            // Construct args to be encoded
+            const args = '0x010203040506070809101112131415161718192021222324252627282930313233';
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw('Tried to assign 0x010203040506070809101112131415161718192021222324252627282930313233 (33 bytes), which exceeds max bytes that can be stored in a bytes32');
+        });
+
+        it('Should throw when pass in bad hex (no 0x prefix)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes32', type: 'bytes32' };
+            const dataType = new AbiEncoder.Byte(testDataItem);
+            // Construct args to be encoded
+            const args = '0102030405060708091011121314151617181920212223242526272829303132';
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw("Tried to encode non-hex value. Value must inlcude '0x' prefix.");
+        });
+
+        it('Should throw when pass in bad hex (include a half-byte)', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Static Bytes32', type: 'bytes32' };
+            const dataType = new AbiEncoder.Byte(testDataItem);
+            // Construct args to be encoded
+            const args = '0x010';
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw('Tried to assign 0x010, which is contains a half-byte. Use full bytes only.');
         });
     });
+
+    /*
+
+    
 
     describe('Bytes (Dynamic)', () => {
         const testBytesDataItem = { name: 'testBytes', type: 'bytes' };
