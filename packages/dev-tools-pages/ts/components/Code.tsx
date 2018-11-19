@@ -135,11 +135,6 @@ const CopyInput = StyledCopyInput as any;
 class Code extends React.Component<CodeProps, CodeState> {
     public state: CodeState = {};
     private readonly _code = React.createRef<HTMLTextAreaElement>();
-
-    constructor(props: CodeProps) {
-        super(props);
-    }
-
     public componentDidMount(): void {
         /*
         * _onMountAsync is only setting state, so no point in handling the promise
