@@ -51,6 +51,7 @@ export interface ERC20AssetMetaData {
     primaryColor?: string;
     symbol: string;
     name: string;
+    iconUrl?: string;
 }
 
 export interface ERC721AssetMetaData {
