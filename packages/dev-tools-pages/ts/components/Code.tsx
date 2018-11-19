@@ -68,7 +68,8 @@ const Base =
             : ``}
 `;
 
-const StyledCodeDiff = styled(({ gutterLength, children, ...props }: any) => <code {...props}>{children}</code>)`
+const CodeDiff: React.StatelessComponent<any> = ({ gutterLength, ...props }) => <code {...props} />;
+const StyledCodeDiff = styled(CodeDiff)`
     ::before {
         content: '';
         width: calc(0.75rem + ${props => props.gutterLength}ch);
@@ -108,9 +109,12 @@ const StyledCodeDiff = styled(({ gutterLength, children, ...props }: any) => <co
     }
 `;
 
-const StyledPre = styled.pre`
+const StyledPre =
+    styled.pre <
+    CodeProps >
+    `
     margin: 0;
-    ${(props: { isDiff: boolean }) =>
+    ${props =>
         !props.isDiff
             ? `
         padding: 1.5rem;
@@ -129,15 +133,11 @@ const StyledCopyInput = styled.textarea`
     z-index: -1;
 `;
 
-const CopyInput = StyledCopyInput as any;
-
 class Code extends React.Component<CodeProps, CodeState> {
     public state: CodeState = {};
     private readonly _code = React.createRef<HTMLTextAreaElement>();
     public componentDidMount(): void {
-        /*
-        * _onMountAsync is only setting state, so no point in handling the promise
-        */
+        // _onMountAsync is only setting state, so no point in handling the promise
         // tslint:disable-next-line:no-floating-promises
         this._onMountAsync();
     }
@@ -145,26 +145,21 @@ class Code extends React.Component<CodeProps, CodeState> {
         const { language, isLight, isDiff, children, gutterLength, canCopy } = this.props;
         const { hlCode } = this.state;
 
-        let CodeComponent = 'code';
-        let codeProps = {};
-        if (isDiff) {
-            codeProps = { gutterLength };
-            CodeComponent = StyledCodeDiff as any;
-        }
-
         return (
             <Container>
                 <Base language={language} isDiff={isDiff} isLight={isLight}>
                     <StyledPre isDiff={isDiff}>
-                        <CodeComponent
-                            {...codeProps}
-                            dangerouslySetInnerHTML={hlCode ? { __html: this.state.hlCode } : null}
-                        >
-                            {hlCode === undefined ? children : null}
-                        </CodeComponent>
+                        {hlCode === undefined ? (
+                            <code>{children}</code>
+                        ) : (
+                            <StyledCodeDiff
+                                gutterLength={gutterLength}
+                                dangerouslySetInnerHTML={hlCode ? { __html: this.state.hlCode } : null}
+                            />
+                        )}
                     </StyledPre>
                     {!('clipboard' in navigator) ? (
-                        <CopyInput readOnly={true} aria-hidden="true" ref={this._code} value={children} />
+                        <StyledCopyInput readOnly={true} aria-hidden="true" ref={this._code} value={children} />
                     ) : null}
                 </Base>
                 {navigator.userAgent !== 'ReactSnap' && canCopy ? (
