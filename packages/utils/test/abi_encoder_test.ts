@@ -725,7 +725,7 @@ describe.only('ABI Encoder', () => {
         });
     });
 
-    describe('Array', () => {
+    describe.only('Array', () => {
         it('Fixed size; Static elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'int[2]' };
@@ -793,6 +793,9 @@ describe.only('ABI Encoder', () => {
             const argsAsJson = JSON.stringify(args);
             expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
+
+        // @TODO: Add test that fails if we pass in the wrong number of elements
+        // @TODO: Add test that fails if we pass in an element of incorrecrt type
     });
 
     describe.only('Tuple', () => {
@@ -849,22 +852,51 @@ describe.only('ABI Encoder', () => {
             const argsAsJson = JSON.stringify(args);
             expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
+
+        // @TODO: Add test that fails if we pass in the wrong number of elements
+        // @TODO: Add test that fails if we pass in arguments in wrong order
     });
 
-    /*
-    describe('Address', () => {
-        const testAddressDataItem = { name: 'testAddress', type: 'address' };
+    describe.only('Address', () => {
         it('Valid Address', async () => {
-            const addressDataType = new AbiEncoder.Address(testAddressDataItem);
-            addressDataType.assignValue('0xe41d2489571d322189246dafa5ebde1f4699f498');
-            const expectedAbiEncodedAddress = '0x000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498';
+            // Create DataType object
+            const testDataItem = { name: 'Address', type: 'address' };
+            const dataType = new AbiEncoder.Address(testDataItem);
+            // Construct args to be encoded
+            const args = '0xe41d2489571d322189246dafa5ebde1f4699f498';
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs = '0x000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
 
-            console.log(addressDataType.getHexValue());
-            console.log(expectedAbiEncodedAddress);
-            expect(addressDataType.getHexValue()).to.be.equal(expectedAbiEncodedAddress);
+        it('Invalid Address - input is not valid hex', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Address', type: 'address' };
+            const dataType = new AbiEncoder.Address(testDataItem);
+            // Construct args to be encoded
+            const args = 'e4';
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw(AbiEncoder.Address.ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X);
+        });
+
+        it('Invalid Address - input is not 20 bytes', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Address', type: 'address' };
+            const dataType = new AbiEncoder.Address(testDataItem);
+            // Construct args to be encoded
+            const args = '0xe4';
+            // Encode Args and validate result
+            expect(() => { dataType.encode(args) }).to.throw(AbiEncoder.Address.ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES);
         });
     });
 
+    /*
     describe('Bool', () => {
         const testBoolDataItem = { name: 'testBool', type: 'bool' };
         it('True', async () => {

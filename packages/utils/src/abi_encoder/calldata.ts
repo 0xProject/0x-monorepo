@@ -248,7 +248,7 @@ export class Calldata {
     private selector: string;
     private rules: EncodingRules;
     private sizeInBytes: number;
-    private root: MemberCalldataBlock | undefined;
+    private root: CalldataBlock | undefined;
 
     constructor(rules: EncodingRules) {
         this.selector = '';
@@ -257,8 +257,17 @@ export class Calldata {
         this.root = undefined;
     }
 
-    private createQueue(memberBlock: MemberCalldataBlock): Queue<CalldataBlock> {
+    private createQueue(block: CalldataBlock): Queue<CalldataBlock> {
         const blockQueue = new Queue<CalldataBlock>();
+
+        // Base Case
+        if (block instanceof MemberCalldataBlock === false) {
+            blockQueue.push(block);
+            return blockQueue;
+        }
+
+        // This is a Member Block
+        const memberBlock = block as MemberCalldataBlock;
         _.eachRight(memberBlock.getMembers(), (member: CalldataBlock) => {
             if (member instanceof MemberCalldataBlock) {
                 blockQueue.mergeFront(this.createQueue(member));
@@ -429,7 +438,7 @@ export class Calldata {
         return "";
     }
 
-    public setRoot(block: MemberCalldataBlock) {
+    public setRoot(block: CalldataBlock) {
         this.root = block;
         this.sizeInBytes += block.getSizeInBytes();
     }

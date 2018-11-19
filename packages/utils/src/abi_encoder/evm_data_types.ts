@@ -20,6 +20,8 @@ export interface DataTypeStaticInterface {
 
 export class Address extends PayloadDataType {
     private static SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
+    public static ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X = "Address must start with '0x'";
+    public static ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES = "Address must be 20 bytes";
 
     constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance(), Address.SIZE_KNOWN_AT_COMPILE_TIME);
@@ -36,9 +38,16 @@ export class Address extends PayloadDataType {
         return type === 'address';
     }
 
-    public encodeValue(value: boolean): Buffer {
+    public encodeValue(value: string): Buffer {
+        if (value.startsWith('0x') === false) {
+            throw new Error(Address.ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X);
+        }
+        const valueAsBuffer = ethUtil.toBuffer(value);
+        if (valueAsBuffer.byteLength !== 20) {
+            throw new Error(Address.ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES);
+        }
         const evmWordWidth = 32;
-        const encodedValueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value), evmWordWidth);
+        const encodedValueBuf = ethUtil.setLengthLeft(valueAsBuffer, evmWordWidth);
         return encodedValueBuf;
     }
 

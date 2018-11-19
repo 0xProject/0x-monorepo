@@ -35,7 +35,7 @@ export abstract class DataType {
         const calldata = new Calldata(rules_);
         if (selector) calldata.setSelector(selector);
         const block = this.generateCalldataBlock(value);
-        calldata.setRoot(block as MemberCalldataBlock); // @TODO CHANGE
+        calldata.setRoot(block); // @TODO CHANGE
         const calldataHex = calldata.toHexString();
         return calldataHex;
     }
