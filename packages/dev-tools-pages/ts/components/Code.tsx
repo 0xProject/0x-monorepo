@@ -24,7 +24,7 @@ interface CodeProps {
 
 interface CodeState {
     hlCode?: string;
-    copied?: boolean;
+    didCopy?: boolean;
 }
 
 const Button = styled(BaseButton)`
@@ -170,7 +170,7 @@ class Code extends React.Component<CodeProps, CodeState> {
                     ) : null}
                 </Base>
                 {navigator.userAgent !== 'ReactSnap' && canCopy ? (
-                    <Button onClick={this._handleCopyAsync}>{this.state.copied ? 'Copied' : 'Copy'}</Button>
+                    <Button onClick={this._handleCopyAsync}>{this.state.didCopy ? 'Copied' : 'Copy'}</Button>
                 ) : null}
             </Container>
         );
@@ -194,17 +194,17 @@ class Code extends React.Component<CodeProps, CodeState> {
         try {
             if ('clipboard' in navigator) {
                 await (navigator as any).clipboard.writeText(this.props.children);
-                this.setState({ copied: true });
+                this.setState({ didCopy: true });
             } else {
                 const lastActive = document.activeElement as HTMLElement;
                 this._code.current.focus();
                 this._code.current.select();
                 document.execCommand('copy');
                 lastActive.focus();
-                this.setState({ copied: true });
+                this.setState({ didCopy: true });
             }
         } catch (error) {
-            this.setState({ copied: false });
+            this.setState({ didCopy: false });
         }
     };
 }
