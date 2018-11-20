@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import PoweredByLogo from '../assets/powered_by_0x.svg';
 import { ZERO_EX_SITE_URL } from '../constants';
 import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
 import { ConnectedBuyOrderProgressOrPaymentMethod } from '../containers/connected_buy_order_progress_or_payment_method';
@@ -29,7 +30,6 @@ export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantCon
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };
     public render(): React.ReactNode {
-        const PoweredByLogo = require('../assets/powered_by_0x.svg');
         return (
             <React.Fragment>
                 <CSSReset />
