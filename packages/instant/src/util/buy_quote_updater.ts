@@ -9,6 +9,7 @@ import { Action, actions } from '../redux/actions';
 import { AffiliateInfo, ERC20Asset } from '../types';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
+import { errorReporter } from '../util/error_reporter';
 
 export const buyQuoteUpdater = {
     updateBuyQuoteAsync: async (
@@ -49,8 +50,9 @@ export const buyQuoteUpdater = {
                 } else {
                     throw error;
                 }
+            } else {
+                errorReporter.report(error);
             }
-            // TODO: report to error reporter on else
 
             return;
         }

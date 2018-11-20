@@ -9,6 +9,7 @@ import { assetUtils } from '../util/asset';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
 import { coinbaseApi } from '../util/coinbase_api';
 import { errorFlasher } from '../util/error_flasher';
+import { errorReporter } from '../util/error_reporter';
 
 import { actions } from './actions';
 import { State } from './reducer';
@@ -22,6 +23,7 @@ export const asyncData = {
             const errorMessage = 'Error fetching ETH/USD price';
             errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
             dispatch(actions.updateEthUsdPrice(BIG_NUMBER_ZERO));
+            errorReporter.report(e);
         }
     },
     fetchAvailableAssetDatasAndDispatchToStore: async (state: State, dispatch: Dispatch) => {
@@ -36,6 +38,7 @@ export const asyncData = {
             errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
             // On error, just specify that none are available
             dispatch(actions.setAvailableAssets([]));
+            errorReporter.report(e);
         }
     },
     fetchAccountInfoAndDispatchToStore: async (
