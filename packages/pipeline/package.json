@@ -30,8 +30,8 @@
     "license": "Apache-2.0",
     "devDependencies": {
         "@0x/tslint-config": "^1.0.9",
-        "@types/ramda": "^0.25.38",
         "@types/axios": "^0.14.0",
+        "@types/ramda": "^0.25.38",
         "chai": "^4.1.2",
         "chai-as-promised": "^7.1.1",
         "chai-bignumber": "^2.0.2",
@@ -50,6 +50,7 @@
         "@0x/types": "^1.2.0",
         "@0x/utils": "^2.0.3",
         "@0x/web3-wrapper": "^3.1.0",
+        "async-parallel": "^1.2.3",
         "axios": "^0.18.0",
         "ethereum-types": "^1.0.6",
         "pg": "^7.5.0",
