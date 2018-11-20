@@ -1,4 +1,7 @@
+import { BasicOrderProvider, StandardRelayerAPIOrderProvider } from '@0x/asset-buyer';
 import { ObjectMap } from '@0x/types';
+
+import { State } from '../redux/reducer';
 
 import { heapUtil } from './heap';
 
@@ -47,6 +50,7 @@ export interface AnalyticsEventOptions {
     providerName?: string;
     gitSha?: string;
     npmVersion?: string;
+    orderSource?: string;
 }
 export const analytics = {
     addUserProperties: (properties: AnalyticsUserOptions): void => {
@@ -58,6 +62,25 @@ export const analytics = {
         evaluateIfEnabled(() => {
             heapUtil.evaluateHeapCall(heap => heap.addEventProperties(properties));
         });
+    },
+    generateEventProperties: (state: State, window: Window): AnalyticsEventOptions => {
+        let orderSource = 'unknown';
+        const orderProvider = state.providerState.assetBuyer.orderProvider;
+        if (orderProvider instanceof StandardRelayerAPIOrderProvider) {
+            orderSource = orderProvider.apiUrl;
+        } else if (orderProvider instanceof BasicOrderProvider) {
+            orderSource = 'provided';
+        }
+
+        return {
+            embeddedHost: window.location.host,
+            embeddedUrl: window.location.href,
+            networkId: state.network,
+            providerName: state.providerState.name,
+            gitSha: process.env.GIT_SHA,
+            npmVersion: process.env.NPM_PACKAGE_VERSION,
+            orderSource,
+        };
     },
     trackWalletReady: trackingEventFnWithoutPayload(EventNames.WALLET_READY),
     trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),
