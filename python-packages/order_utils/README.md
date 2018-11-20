@@ -2,7 +2,7 @@
 
 0x order-related utilities for those developing on top of 0x protocol.
 
-Read the [documentation](https://0x.readthedocs.io/projects/order-utils/en/latest/)
+Read the [documentation](http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/)
 
 ## Installing
 

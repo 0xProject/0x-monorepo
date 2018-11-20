@@ -23,6 +23,10 @@ const config = {
                 test: /\.(ts|tsx)$/,
                 loader: 'awesome-typescript-loader',
             },
+            {
+                test: /\.svg$/,
+                loader: 'svg-react-loader',
+            },
         ],
     },
     devServer: {
