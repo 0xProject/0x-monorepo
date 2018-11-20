@@ -1,6 +1,6 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
-import * as _ from 'lodash';
 
 import { context as compiler } from 'ts/context/compiler';
 import { context as cov } from 'ts/context/cov';
