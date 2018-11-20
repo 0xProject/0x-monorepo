@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { abiUtils, logUtils } from '@0x/utils';
+import { AbiEncoder, abiUtils, logUtils } from '@0x/utils';
 import chalk from 'chalk';
 import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from 'ethereum-types';
 import { sync as globSync } from 'glob';
@@ -11,7 +11,6 @@ import * as yargs from 'yargs';
 
 import { ContextData, ContractsBackend, ParamKind } from './types';
 import { utils } from './utils';
-import { AbiEncoder } from '@0x/utils';
 
 const ABI_TYPE_CONSTRUCTOR = 'constructor';
 const ABI_TYPE_METHOD = 'function';

@@ -28,9 +28,6 @@ import { OrderFactory } from '../utils/order_factory';
 import { ERC20BalancesByOwner, OrderStatus } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
-import { MethodAbi } from 'ethereum-types';
-import { AbiEncoder } from '@0x/utils';
-
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
@@ -174,48 +171,6 @@ describe('Exchange core', () => {
             });
         };
         describe('fillOrder reentrancy tests', () => reentrancyTest(constants.FUNCTIONS_WITH_MUTEX));
-
-        it('Should reuse duplicated strings in string array', async () => {
-            const stringAbi = {
-                constant: false,
-                inputs: [
-                    {
-                        name: 'greg',
-                        type: 'string[]',
-                    },
-                ],
-                name: 'simpleFunction',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            } as MethodAbi;
-
-            const method = new AbiEncoder.Method(stringAbi);
-            const strings = ['Test String', 'Test String 2', 'Test String', 'Test String 2'];
-            const args = [strings];
-
-            // Verify optimized calldata is expected
-            const optimizedCalldata = method.encode(args, { optimize: true });
-            const expectedOptimizedCalldata =
-                '0x13e751a900000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000b5465737420537472696e67000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d5465737420537472696e67203200000000000000000000000000000000000000';
-            expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
-
-            // Verify args decode properly
-            const decodedArgs = method.decode(optimizedCalldata);
-            const decodedArgsJson = JSON.stringify(decodedArgs);
-            const argsJson = JSON.stringify(args);
-            expect(decodedArgsJson).to.be.equal(argsJson);
-
-            console.log(
-                '*'.repeat(100),
-                '\n',
-                method.encode(args, { optimize: true, annotate: true }),
-                '\n',
-                '*'.repeat(100),
-            );
-            console.log('*'.repeat(100), '\n', method.encode(args, { optimize: true }), '\n', '*'.repeat(100));
-        });
 
         it('should throw if signature is invalid', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({

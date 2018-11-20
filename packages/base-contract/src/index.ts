@@ -1,4 +1,4 @@
-import { abiUtils, BigNumber } from '@0x/utils';
+import { AbiEncoder, abiUtils, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
@@ -15,7 +15,6 @@ import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { formatABIDataItem } from './utils';
-import { AbiEncoder } from '@0x/utils';
 
 export interface EthersInterfaceByFunctionSignature {
     [key: string]: AbiEncoder.Method;
@@ -102,8 +101,6 @@ export class BaseContract {
     // if it overflows the corresponding Solidity type, there is a bug in the
     // encoder, or the encoder performs unsafe type coercion.
     public static strictArgumentEncodingCheck(inputAbi: DataItem[], args: any[]): void {
-        //console.log(args);
-        //console.log(inputAbi);
         const coder = new ethers.utils.AbiCoder();
         const params = abiUtils.parseEthersParams(inputAbi);
         const rawEncoded = coder.encode(inputAbi, args);
@@ -114,7 +111,7 @@ export class BaseContract {
             if (!abiUtils.isAbiDataEqual(params.names[i], params.types[i], original, decoded)) {
                 throw new Error(
                     `Cannot safely encode argument: ${params.names[i]} (${original}) of type ${
-                        params.types[i]
+                    params.types[i]
                     }. (Possible type overflow or other encoding error)`,
                 );
             }
@@ -159,7 +156,7 @@ export class BaseContract {
         _.each(methodAbis, methodAbi => {
             const method = new AbiEncoder.Method(methodAbi);
             const functionSignature = method.getSignature();
-            this._ethersInterfacesByFunctionSignature[functionSignature] = method; //ethers.utils.Interface([methodAbi]);
+            this._ethersInterfacesByFunctionSignature[functionSignature] = method;
         });
     }
 }
