@@ -10,6 +10,7 @@
     "scripts": {
         "build": "tsc -b",
         "build:ci": "yarn build",
+        "watch_without_deps": "tsc -w",
         "clean": "shx rm -rf lib generated_docs",
         "lint": "tslint --format stylish --project .",
         "test": "yarn run_mocha",
