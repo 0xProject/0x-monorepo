@@ -1,6 +1,7 @@
+/* tslint:disable max-file-line-count */
 import { MethodAbi } from 'ethereum-types';
 
-export const duplicateDynamicArraysWithStaticElements = {
+export const duplicateDynamicArraysWithStaticElements: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -17,9 +18,9 @@ export const duplicateDynamicArraysWithStaticElements = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const duplicateDynamicArraysWithDynamicElements = {
+export const duplicateDynamicArraysWithDynamicElements: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -36,9 +37,9 @@ export const duplicateDynamicArraysWithDynamicElements = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const duplicateStaticArraysWithStaticElements = {
+export const duplicateStaticArraysWithStaticElements: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -55,9 +56,9 @@ export const duplicateStaticArraysWithStaticElements = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const duplicateStaticArraysWithDynamicElements = {
+export const duplicateStaticArraysWithDynamicElements: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -74,9 +75,9 @@ export const duplicateStaticArraysWithDynamicElements = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const duplicateArrayElements = {
+export const duplicateArrayElements: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -89,9 +90,9 @@ export const duplicateArrayElements = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const duplicateTupleFields = {
+export const duplicateTupleFields: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -114,9 +115,9 @@ export const duplicateTupleFields = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const duplicateStrings = {
+export const duplicateStrings: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -133,9 +134,9 @@ export const duplicateStrings = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const duplicateBytes = {
+export const duplicateBytes: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -152,9 +153,9 @@ export const duplicateBytes = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const duplicateTuples = {
+export const duplicateTuples: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -191,9 +192,9 @@ export const duplicateTuples = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const duplicateArraysNestedInTuples = {
+export const duplicateArraysNestedInTuples: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -226,9 +227,9 @@ export const duplicateArraysNestedInTuples = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const duplicateTuplesNestedInTuples = {
+export const duplicateTuplesNestedInTuples: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -273,9 +274,9 @@ export const duplicateTuplesNestedInTuples = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const duplicateTwoDimensionalArrays = {
+export const duplicateTwoDimensionalArrays: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -292,9 +293,9 @@ export const duplicateTwoDimensionalArrays = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const arrayElementsDuplicatedAsSeparateParameter = {
+export const arrayElementsDuplicatedAsSeparateParameter: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -311,9 +312,9 @@ export const arrayElementsDuplicatedAsSeparateParameter = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const arrayElementsDuplicatedAsTupleFields = {
+export const arrayElementsDuplicatedAsTupleFields: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -336,4 +337,4 @@ export const arrayElementsDuplicatedAsTupleFields = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};

@@ -1,13 +1,13 @@
 import * as chai from 'chai';
+import * as ethUtil from 'ethereumjs-util';
 import 'mocha';
 
-import { chaiSetup } from './utils/chai_setup';
-import { BigNumber, AbiEncoder } from '../src/';
+import { AbiEncoder, BigNumber } from '../src/';
+
 import * as AbiSamples from './abi_samples';
 import * as OptimizedAbis from './optimizer_abis';
 import * as ReturnValueAbis from './return_value_abis';
-import { DecodingRules } from '../src/abi_encoder';
-import ethUtil = require('ethereumjs-util');
+import { chaiSetup } from './utils/chai_setup';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -349,8 +349,8 @@ describe.only('ABI Encoder', () => {
             // Generate calldata
             const method = new AbiEncoder.Method(OptimizedAbis.arrayElementsDuplicatedAsSeparateParameter);
             const array = ['Hello', 'Hello', 'Hello', 'World'];
-            const string = 'Hello';
-            const args = [array, string];
+            const str = 'Hello';
+            const args = [array, str];
             // Validate calldata
             const optimizedCalldata = method.encode(args, { optimize: true });
             const expectedOptimizedCalldata =
@@ -392,7 +392,8 @@ describe.only('ABI Encoder', () => {
             const method = new AbiEncoder.Method(AbiSamples.arrayOfStaticTuplesWithDefinedLengthAbi);
             let value = 0;
             const arrayOfTuples = [];
-            for (let i = 0; i < 8; ++i) {
+            const arrayOfTuplesLength = 8;
+            for (let i = 0; i < arrayOfTuplesLength; ++i) {
                 arrayOfTuples.push([new BigNumber(++value), new BigNumber(++value)]);
             }
             const args = [arrayOfTuples];
@@ -412,7 +413,8 @@ describe.only('ABI Encoder', () => {
             const method = new AbiEncoder.Method(AbiSamples.arrayOfStaticTuplesWithDynamicLengthAbi);
             let value = 0;
             const arrayOfTuples = [];
-            for (let i = 0; i < 8; ++i) {
+            const arrayOfTuplesLength = 8;
+            for (let i = 0; i < arrayOfTuplesLength; ++i) {
                 arrayOfTuples.push([new BigNumber(++value), new BigNumber(++value)]);
             }
             const args = [arrayOfTuples];
@@ -432,7 +434,8 @@ describe.only('ABI Encoder', () => {
             const method = new AbiEncoder.Method(AbiSamples.arrayOfDynamicTuplesWithDefinedLengthAbi);
             let value = 0;
             const arrayOfTuples = [];
-            for (let i = 0; i < 8; ++i) {
+            const arrayOfTuplesLength = 8;
+            for (let i = 0; i < arrayOfTuplesLength; ++i) {
                 arrayOfTuples.push([new BigNumber(++value), new BigNumber(++value).toString()]);
             }
             const args = [arrayOfTuples];
@@ -452,7 +455,8 @@ describe.only('ABI Encoder', () => {
             const method = new AbiEncoder.Method(AbiSamples.arrayOfDynamicTuplesWithUndefinedLengthAbi);
             let value = 0;
             const arrayOfTuples = [];
-            for (let i = 0; i < 8; ++i) {
+            const arrayOfTuplesLength = 8;
+            for (let i = 0; i < arrayOfTuplesLength; ++i) {
                 arrayOfTuples.push([new BigNumber(++value), new BigNumber(++value).toString()]);
             }
             const args = [arrayOfTuples];
@@ -473,7 +477,8 @@ describe.only('ABI Encoder', () => {
             // Eight 3-dimensional arrays of uint8[2][2][2]
             let value = 0;
             const args = [];
-            for (let i = 0; i < 8; ++i) {
+            const argsLength = 8;
+            for (let i = 0; i < argsLength; ++i) {
                 args.push([
                     [
                         [new BigNumber(++value), new BigNumber(++value)],
@@ -503,7 +508,8 @@ describe.only('ABI Encoder', () => {
             // Eight 3-dimensional arrays of string[2][2][2]
             let value = 0;
             const args = [];
-            for (let i = 0; i < 4; ++i) {
+            const argsLength = 4;
+            for (let i = 0; i < argsLength; ++i) {
                 args.push([
                     [
                         [new BigNumber(++value).toString(), new BigNumber(++value).toString()],
@@ -741,13 +747,13 @@ describe.only('ABI Encoder', () => {
             };
             const someArrayOfTuplesWithDynamicTypes = [someTupleWithDynamicTypes2, someTupleWithDynamicTypes3];
             const args = {
-                someStaticArray: someStaticArray,
-                someStaticArrayWithDynamicMembers: someStaticArrayWithDynamicMembers,
-                someDynamicArrayWithDynamicMembers: someDynamicArrayWithDynamicMembers,
-                some2DArray: some2DArray,
-                someTuple: someTuple,
-                someTupleWithDynamicTypes: someTupleWithDynamicTypes,
-                someArrayOfTuplesWithDynamicTypes: someArrayOfTuplesWithDynamicTypes,
+                someStaticArray,
+                someStaticArrayWithDynamicMembers,
+                someDynamicArrayWithDynamicMembers,
+                some2DArray,
+                someTuple,
+                someTupleWithDynamicTypes,
+                someArrayOfTuplesWithDynamicTypes,
             };
             const calldata = method.encode(args);
             // Validate calldata
@@ -900,8 +906,6 @@ describe.only('ABI Encoder', () => {
             const args = [array1, array2];
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
-            console.log(encodedArgs);
-            console.log(dataType.encode(args, { annotate: true }));
             const expectedEncodedArgs =
                 '0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000160000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000401020304000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004050607080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040910111200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000410111213000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004141516170000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041819202100000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -963,7 +967,7 @@ describe.only('ABI Encoder', () => {
                 '0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb0000000000000000000000000000000000000000000000000000000000000001';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules = { structsAsObjects: true } as DecodingRules;
+            const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             const decodedArgsAsJson = JSON.stringify(decodedArgs);
             const argsAsJson = JSON.stringify(args);
@@ -985,7 +989,7 @@ describe.only('ABI Encoder', () => {
                 '0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20576f726c6421000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008abcdef0123456789000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules = { structsAsObjects: true } as DecodingRules;
+            const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             const decodedArgsAsJson = JSON.stringify(decodedArgs);
             const argsAsJson = JSON.stringify(args);
@@ -1007,7 +1011,7 @@ describe.only('ABI Encoder', () => {
                 '0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules = { structsAsObjects: true } as DecodingRules;
+            const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             const decodedArgsAsJson = JSON.stringify(decodedArgs);
             const argsAsJson = JSON.stringify(args);
@@ -1029,7 +1033,7 @@ describe.only('ABI Encoder', () => {
                 '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules = { structsAsObjects: true } as DecodingRules;
+            const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             const decodedArgsAsJson = JSON.stringify(decodedArgs);
             const argsAsJson = JSON.stringify(args);
@@ -1053,7 +1057,7 @@ describe.only('ABI Encoder', () => {
                 '0x0102030400000000000000000000000000000000000000000000000000000000050607080000000000000000000000000000000000000000000000000000000009101112000000000000000000000000000000000000000000000000000000001314151600000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules = { structsAsObjects: true } as DecodingRules;
+            const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             const decodedArgsAsJson = JSON.stringify(decodedArgs);
             const argsAsJson = JSON.stringify(args);
@@ -1077,7 +1081,7 @@ describe.only('ABI Encoder', () => {
                 '0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000004010203040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040506070800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000004091011120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041314151600000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules = { structsAsObjects: true } as DecodingRules;
+            const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             const decodedArgsAsJson = JSON.stringify(decodedArgs);
             const argsAsJson = JSON.stringify(args);
@@ -1109,7 +1113,7 @@ describe.only('ABI Encoder', () => {
                 '0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20576f726c6421000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008abcdef0123456789000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
-            const decodingRules = { structsAsObjects: true } as DecodingRules;
+            const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
             const decodedArgsAsJson = JSON.stringify(decodedArgs);
             const argsAsJson = JSON.stringify(args);
@@ -1224,6 +1228,13 @@ describe.only('ABI Encoder', () => {
     });
 
     describe('Integer', () => {
+        /* tslint:disable custom-no-magic-numbers */
+        const max256BitInteger = new BigNumber(2).pow(255).minus(1);
+        const min256BitInteger = new BigNumber(2).pow(255).times(-1);
+        const max32BitInteger = new BigNumber(2).pow(31).minus(1);
+        const min32BitInteger = new BigNumber(2).pow(31).times(-1);
+        /* tslint:enable custom-no-magic-numbers */
+
         it('Int256 - Positive Base Case', async () => {
             // Create DataType object
             const testDataItem = { name: 'Integer (256)', type: 'int' };
@@ -1261,7 +1272,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Integer (256)', type: 'int' };
             const dataType = new AbiEncoder.Int(testDataItem);
             // Construct args to be encoded
-            const max256BitInteger = new BigNumber(2).pow(255).minus(1);
             const args = max256BitInteger;
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
@@ -1278,7 +1288,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Integer (256)', type: 'int' };
             const dataType = new AbiEncoder.Int(testDataItem);
             // Construct args to be encoded
-            const min256BitInteger = new BigNumber(2).pow(255).times(-1);
             const args = min256BitInteger;
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
@@ -1295,7 +1304,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Integer (256)', type: 'int' };
             const dataType = new AbiEncoder.Int(testDataItem);
             // Construct args to be encoded
-            const max256BitInteger = new BigNumber(2).pow(255).minus(1);
             const args = max256BitInteger.plus(1);
             // Encode Args and validate result
             expect(() => {
@@ -1307,7 +1315,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Integer (256)', type: 'int' };
             const dataType = new AbiEncoder.Int(testDataItem);
             // Construct args to be encoded
-            const min256BitInteger = new BigNumber(2).pow(255).times(-1);
             const args = min256BitInteger.minus(1);
             // Encode Args and validate result
             expect(() => {
@@ -1351,7 +1358,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Integer (32)', type: 'int32' };
             const dataType = new AbiEncoder.Int(testDataItem);
             // Construct args to be encoded
-            const max32BitInteger = new BigNumber(2).pow(31).minus(1);
             const args = max32BitInteger;
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
@@ -1368,7 +1374,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Integer (32)', type: 'int32' };
             const dataType = new AbiEncoder.Int(testDataItem);
             // Construct args to be encoded
-            const min32BitInteger = new BigNumber(2).pow(31).times(-1);
             const args = min32BitInteger;
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
@@ -1385,7 +1390,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Integer (32)', type: 'int32' };
             const dataType = new AbiEncoder.Int(testDataItem);
             // Construct args to be encoded
-            const max32BitInteger = new BigNumber(2).pow(31).minus(1);
             const args = max32BitInteger.plus(1);
             // Encode Args and validate result
             expect(() => {
@@ -1397,7 +1401,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Integer (32)', type: 'int32' };
             const dataType = new AbiEncoder.Int(testDataItem);
             // Construct args to be encoded
-            const min32BitInteger = new BigNumber(2).pow(31).times(-1);
             const args = min32BitInteger.minus(1);
             // Encode Args and validate result
             expect(() => {
@@ -1407,6 +1410,13 @@ describe.only('ABI Encoder', () => {
     });
 
     describe('Unsigned Integer', () => {
+        /* tslint:disable custom-no-magic-numbers */
+        const max256BitUnsignedInteger = new BigNumber(2).pow(256).minus(1);
+        const min256BitUnsignedInteger = new BigNumber(0);
+        const max32BitUnsignedInteger = new BigNumber(2).pow(32).minus(1);
+        const min32BitUnsignedInteger = new BigNumber(0);
+        /* tslint:enable custom-no-magic-numbers */
+
         it('UInt256 - Positive Base Case', async () => {
             // Create DataType object
             const testDataItem = { name: 'Unsigned Integer (256)', type: 'uint' };
@@ -1428,7 +1438,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Unsigned Integer (256)', type: 'uint' };
             const dataType = new AbiEncoder.UInt(testDataItem);
             // Construct args to be encoded
-            const max256BitUnsignedInteger = new BigNumber(2).pow(256).minus(1);
             const args = max256BitUnsignedInteger;
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
@@ -1445,7 +1454,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Unsigned Integer (256)', type: 'uint' };
             const dataType = new AbiEncoder.UInt(testDataItem);
             // Construct args to be encoded
-            const min256BitUnsignedInteger = new BigNumber(0);
             const args = min256BitUnsignedInteger;
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
@@ -1462,7 +1470,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Unsigned Integer (256)', type: 'uint' };
             const dataType = new AbiEncoder.UInt(testDataItem);
             // Construct args to be encoded
-            const max256BitUnsignedInteger = new BigNumber(2).pow(256).minus(1);
             const args = max256BitUnsignedInteger.plus(1);
             // Encode Args and validate result
             expect(() => {
@@ -1474,7 +1481,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Unsigned Integer (256)', type: 'uint' };
             const dataType = new AbiEncoder.UInt(testDataItem);
             // Construct args to be encoded
-            const min256BitUnsignedInteger = new BigNumber(0);
             const args = min256BitUnsignedInteger.minus(1);
             // Encode Args and validate result
             expect(() => {
@@ -1502,7 +1508,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Unsigned Integer (32)', type: 'uint32' };
             const dataType = new AbiEncoder.UInt(testDataItem);
             // Construct args to be encoded
-            const max32BitUnsignedInteger = new BigNumber(2).pow(32).minus(1);
             const args = max32BitUnsignedInteger;
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
@@ -1519,7 +1524,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Unsigned Integer (32)', type: 'uint32' };
             const dataType = new AbiEncoder.UInt(testDataItem);
             // Construct args to be encoded
-            const min32BitUnsignedInteger = new BigNumber(0);
             const args = min32BitUnsignedInteger;
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
@@ -1536,7 +1540,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Unsigned Integer (32)', type: 'uint32' };
             const dataType = new AbiEncoder.UInt(testDataItem);
             // Construct args to be encoded
-            const max32BitUnsignedInteger = new BigNumber(2).pow(32).minus(1);
             const args = max32BitUnsignedInteger.plus(1);
             // Encode Args and validate result
             expect(() => {
@@ -1548,7 +1551,6 @@ describe.only('ABI Encoder', () => {
             const testDataItem = { name: 'Unsigned Integer (32)', type: 'uint32' };
             const dataType = new AbiEncoder.UInt(testDataItem);
             // Construct args to be encoded
-            const min32BitUnsignedInteger = new BigNumber(0);
             const args = min32BitUnsignedInteger.minus(1);
             // Encode Args and validate result
             expect(() => {
@@ -1733,7 +1735,8 @@ describe.only('ABI Encoder', () => {
             const dataType = new AbiEncoder.Bytes(testDataItem);
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
-            const args = '0x' + '61'.repeat(40);
+            const bytesLength = 40;
+            const args = '0x' + '61'.repeat(bytesLength);
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
             const expectedEncodedArgs =
@@ -1813,7 +1816,8 @@ describe.only('ABI Encoder', () => {
             const dataType = new AbiEncoder.SolString(testDataItem);
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
-            const args = 'a'.repeat(40);
+            const bytesLength = 40;
+            const args = 'a'.repeat(bytesLength);
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
             const expectedEncodedArgs =
@@ -1831,7 +1835,8 @@ describe.only('ABI Encoder', () => {
             const dataType = new AbiEncoder.SolString(testDataItem);
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
-            const args = '0x' + 'a'.repeat(40);
+            const strLength = 40;
+            const args = '0x' + 'a'.repeat(strLength);
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args);
             const expectedEncodedArgs =
