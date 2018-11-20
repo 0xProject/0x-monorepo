@@ -49,7 +49,7 @@ if (ROLLBAR_CLIENT_TOKEN && ROLLBAR_ENVIRONMENT && shouldAllowRollbar()) {
 }
 
 export const setupRollbar = (): any => {
-    return rollbar as any;
+    return rollbar;
 };
 
 export const errorReporter = {
