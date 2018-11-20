@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { ZERO_EX_SITE_URL } from '../constants';
 import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
 import { ConnectedBuyOrderProgressOrPaymentMethod } from '../containers/connected_buy_order_progress_or_payment_method';
 import { CurrentStandardSlidingPanel } from '../containers/current_standard_sliding_panel';
@@ -15,6 +16,7 @@ import { CSSReset } from './css_reset';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
+import { Text } from './ui/text';
 
 export interface ZeroExInstantContainerProps {
     orderProcessState: OrderProcessState;
@@ -28,6 +30,8 @@ export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantCon
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };
     public render(): React.ReactNode {
+        const PoweredByLogo = require('../assets/powered_by_0x.svg');
+
         return (
             <React.Fragment>
                 <CSSReset />
@@ -63,6 +67,17 @@ export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantCon
                             <AvailableERC20TokenSelector onTokenSelect={this._handlePanelClose} />
                         </SlidingPanel>
                         <CurrentStandardSlidingPanel />
+                    </Container>
+                    <Container
+                        display={{ sm: 'none', default: 'block' }}
+                        marginTop="10px"
+                        marginLeft="auto"
+                        marginRight="auto"
+                        width="140px"
+                    >
+                        <Text href={ZERO_EX_SITE_URL}>
+                            <PoweredByLogo />
+                        </Text>
                     </Container>
                 </Container>
             </React.Fragment>
