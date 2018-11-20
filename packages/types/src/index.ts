@@ -1,7 +1,7 @@
 // tslint:disable:max-file-line-count
 
 import { BigNumber } from 'bignumber.js';
-import { ContractAbi } from 'ethereum-types';
+import { ContractAbi, ContractNetworks, StandardContractOutput } from 'ethereum-types';
 
 // HACK: Rather then extending from OrderWithoutExchangeAddress
 // we don't, because our docs don't expand inherited types, and it's unnecessarily
@@ -625,4 +625,11 @@ export interface EIP712TypedData {
 
 export interface Stats {
     orderCount: number;
+}
+
+export interface SimpleContractArtifact {
+    schemaVersion: string;
+    contractName: string;
+    compilerOutput: StandardContractOutput;
+    networks: ContractNetworks;
 }
