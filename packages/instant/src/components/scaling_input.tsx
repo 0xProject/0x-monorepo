@@ -28,7 +28,7 @@ export interface ScalingInputProps {
     maxLength?: number;
     scalingSettings: ScalingSettings;
     isDisabled: boolean;
-    autofocus: boolean;
+    hasAutofocus: boolean;
 }
 
 export interface ScalingInputState {
@@ -52,7 +52,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         maxLength: 7,
         scalingSettings: defaultScalingSettings,
         isDisabled: false,
-        autofocus: false,
+        hasAutofocus: false,
     };
     public state: ScalingInputState = {
         inputWidthPxAtPhaseChange: undefined,
@@ -125,7 +125,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         }
     }
     public render(): React.ReactNode {
-        const { autofocus, isDisabled, fontColor, onChange, placeholder, value, maxLength } = this.props;
+        const { hasAutofocus, isDisabled, fontColor, onChange, placeholder, value, maxLength } = this.props;
         const phase = ScalingInput.getPhaseFromProps(this.props);
         return (
             <Input
@@ -138,7 +138,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
                 width={this._calculateWidth(phase)}
                 maxLength={maxLength}
                 disabled={isDisabled}
-                autoFocus={autofocus}
+                autoFocus={hasAutofocus}
             />
         );
     }
