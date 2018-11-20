@@ -53,6 +53,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         const { onChange, ...rest } = this.props;
         const amountBorderBottom = this.props.isDisabled ? '' : `1px solid ${transparentWhite}`;
         const onSymbolClick = this._generateSelectAssetClickHandler();
+        const isEnabled = !this.props.isDisabled;
         return (
             <React.Fragment>
                 <Container borderBottom={amountBorderBottom} display="inline-block">
@@ -74,11 +75,11 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                             fontSize={`${this.state.currentFontSizePx}px`}
                             fontColor={ColorOption.white}
                             textTransform="uppercase"
-                            onClick={onSymbolClick}
+                            onClick={isEnabled ? onSymbolClick : undefined}
                         >
                             {assetUtils.formattedSymbolForAsset(asset)}
                         </Text>
-                        {this._renderChevronIcon()}
+                        {isEnabled && this._renderChevronIcon()}
                     </Flex>
                 </Container>
             </React.Fragment>
