@@ -922,6 +922,98 @@ describe.only('ABI Encoder', () => {
             const argsAsJson = JSON.stringify(args);
             expect(decodedArgsAsJson).to.be.equal(argsAsJson);
         });
+        it('Nested Static Array', async () => {
+            // Create DataType object
+            const testDataItem = {
+                name: 'Tuple',
+                type: 'tuple',
+                components: [{ name: 'field', type: 'uint[2]' }],
+            };
+            const dataType = new AbiEncoder.Tuple(testDataItem);
+            // Construct args to be encoded
+            const args = { field: [new BigNumber(1), new BigNumber(2)] };
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs =
+                '0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodingRules = { structsAsObjects: true } as DecodingRules;
+            const decodedArgs = dataType.decode(encodedArgs, decodingRules);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+        it('Nested Dynamic Array', async () => {
+            // Create DataType object
+            const testDataItem = {
+                name: 'Tuple',
+                type: 'tuple',
+                components: [{ name: 'field', type: 'uint[]' }],
+            };
+            const dataType = new AbiEncoder.Tuple(testDataItem);
+            // Construct args to be encoded
+            const args = { field: [new BigNumber(1), new BigNumber(2)] };
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs =
+                '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodingRules = { structsAsObjects: true } as DecodingRules;
+            const decodedArgs = dataType.decode(encodedArgs, decodingRules);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+        it('Nested Static Multidimensional Array', async () => {
+            // Create DataType object
+            const testDataItem = {
+                name: 'Tuple',
+                type: 'tuple',
+                components: [{ name: 'field', type: 'bytes4[2][2]' }],
+            };
+            const dataType = new AbiEncoder.Tuple(testDataItem);
+            // Construct args to be encoded
+            const array1 = ['0x01020304', '0x05060708'];
+            const array2 = ['0x09101112', '0x13141516'];
+            const args = { field: [array1, array2] };
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs =
+                '0x0102030400000000000000000000000000000000000000000000000000000000050607080000000000000000000000000000000000000000000000000000000009101112000000000000000000000000000000000000000000000000000000001314151600000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodingRules = { structsAsObjects: true } as DecodingRules;
+            const decodedArgs = dataType.decode(encodedArgs, decodingRules);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+        it('Nested Dynamic Multidimensional Array', async () => {
+            // Create DataType object
+            const testDataItem = {
+                name: 'Tuple',
+                type: 'tuple',
+                components: [{ name: 'field', type: 'bytes[2][2]' }],
+            };
+            const dataType = new AbiEncoder.Tuple(testDataItem);
+            // Construct args to be encoded
+            const array1 = ['0x01020304', '0x05060708'];
+            const array2 = ['0x09101112', '0x13141516'];
+            const args = { field: [array1, array2] };
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs =
+                '0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000004010203040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040506070800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000004091011120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041314151600000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodingRules = { structsAsObjects: true } as DecodingRules;
+            const decodedArgs = dataType.decode(encodedArgs, decodingRules);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
         it('Static and dynamic elements mixed', async () => {
             // Create DataType object
             const testDataItem = {
