@@ -16,7 +16,6 @@ import { CSSReset } from './css_reset';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
-import { Text } from './ui/text';
 
 export interface ZeroExInstantContainerProps {
     orderProcessState: OrderProcessState;
@@ -25,12 +24,12 @@ export interface ZeroExInstantContainerState {
     tokenSelectionPanelAnimationState: SlideAnimationState;
 }
 
-const PoweredByLogo = require('../assets/powered_by_0x.svg');
 export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantContainerState> {
     public state = {
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };
     public render(): React.ReactNode {
+        const PoweredByLogo = require('../assets/powered_by_0x.svg');
         return (
             <React.Fragment>
                 <CSSReset />
