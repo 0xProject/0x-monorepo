@@ -52,6 +52,9 @@ export {
     CallDataRPC,
     BlockWithoutTransactionDataRPC,
     BlockWithTransactionDataRPC,
+    TransactionReceiptStatusRPC,
+    TransactionReceiptRPC,
+    LogEntryRPC,
     TransactionRPC,
     TxDataRPC,
 } from './types';
