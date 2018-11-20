@@ -11,21 +11,31 @@ const GIT_SHA = childProcess
     .toString()
     .trim();
 
-const HEAP_PRODUCTION_ENV_VAR_NAME = 'INSTANT_HEAP_ANALYTICS_ID_PRODUCTION';
-const HEAP_DEVELOPMENT_ENV_VAR_NAME = 'INSTANT_HEAP_ANALYTICS_ID_DEVELOPMENT';
-const getHeapAnalyticsId = modeName => {
-    if (modeName === 'production') {
-        return process.env[HEAP_PRODUCTION_ENV_VAR_NAME];
+const getEnvironmentName = (env, argv) => {
+    if (env && env.dogfood) {
+        return 'dogfood';
+    } else if (env && env.staging) {
+        return 'staging';
     }
 
-    if (modeName === 'development') {
-        return process.env[HEAP_DEVELOPMENT_ENV_VAR_NAME];
+    // argv.mode should be 'development' or 'production'
+    return argv.mode;
+};
+
+const getHeapAnalyticsId = environmentName => {
+    if (environmentName === 'production') {
+        return process.env['INSTANT_HEAP_ANALYTICS_ID_PRODUCTION'];
+    }
+
+    if (environmentName === 'development' || environmentName === 'dogfood' || environmentName === 'staging') {
+        return process.env['INSTANT_HEAP_ANALYTICS_ID_DEVELOPMENT'];
     }
 
     return undefined;
 };
 
 module.exports = (env, argv) => {
+    const environmentName = getEnvironmentName(env, argv);
     const outputPath = process.env.WEBPACK_OUTPUT_PATH || 'umd';
     const config = {
         entry: {
@@ -41,8 +51,10 @@ module.exports = (env, argv) => {
             new webpack.DefinePlugin({
                 'process.env': {
                     GIT_SHA: JSON.stringify(GIT_SHA),
-                    HEAP_ANALYTICS_ID: getHeapAnalyticsId(argv.mode),
                     NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
+                    HEAP_ANALYTICS_ID: getHeapAnalyticsId(environmentName),
+                    ROLLBAR_ENVIRONMENT: JSON.stringify(environmentName),
+                    ROLLBAR_CLIENT_TOKEN: JSON.stringify(process.env.INSTANT_ROLLBAR_CLIENT_TOKEN),
                 },
             }),
         ],
