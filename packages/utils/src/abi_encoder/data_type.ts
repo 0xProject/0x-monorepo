@@ -9,13 +9,13 @@ import * as Constants from './constants';
 import {
     Calldata,
     CalldataBlock,
-    DecodingRules,
     DependentCalldataBlock,
-    EncodingRules,
     MemberCalldataBlock,
     PayloadCalldataBlock,
     RawCalldata,
 } from './calldata';
+
+import { DecodingRules, EncodingRules } from './utils/rules';
 
 export interface DataTypeFactory {
     create: (dataItem: DataItem, parentDataType?: DataType) => DataType;

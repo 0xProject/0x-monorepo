@@ -2,9 +2,10 @@ import { DataItem, MethodAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { DecodingRules, EncodingRules, RawCalldata } from '../calldata';
+import { RawCalldata } from '../calldata';
 import * as Constants from '../constants';
 import { DataType, DataTypeFactory, MemberDataType } from '../data_type';
+import { DecodingRules, EncodingRules } from '../utils/rules';
 
 import { StaticBytes } from './static_bytes';
 import { Tuple } from './tuple';
