@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { BigNumber } from '../../configured_bignumber';
 import { CalldataBlock, MemberCalldataBlock, RawCalldata } from '../calldata';
-import * as Constants from '../constants';
+import * as Constants from '../utils/constants';
 import { DecodingRules } from '../utils/rules';
 
 import { DataType } from './data_type';

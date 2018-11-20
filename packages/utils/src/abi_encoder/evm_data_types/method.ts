@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { DataType, DataTypeFactory, MemberDataType } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
-import * as Constants from '../constants';
+import * as Constants from '../utils/constants';
 import { DecodingRules, EncodingRules } from '../utils/rules';
 
 import { StaticBytes } from './static_bytes';

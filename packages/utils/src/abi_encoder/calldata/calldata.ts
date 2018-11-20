@@ -1,7 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import * as Constants from '../constants';
+import * as Constants from '../utils/constants';
 import { Queue } from '../utils/queue';
 import { EncodingRules } from '../utils/rules';
 
