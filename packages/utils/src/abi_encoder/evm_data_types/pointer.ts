@@ -1,6 +1,6 @@
 import { DataItem } from 'ethereum-types';
 
-import { DataType, DataTypeFactory, DependentDataType } from '../data_type';
+import { DataType, DataTypeFactory, DependentDataType } from '../abstract_data_types';
 
 export class Pointer extends DependentDataType {
     constructor(destDataType: DataType, parentDataType: DataType, dataTypeFactory: DataTypeFactory) {
