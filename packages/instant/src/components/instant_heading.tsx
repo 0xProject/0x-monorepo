@@ -107,7 +107,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
 
     private readonly _renderEthAmount = (): React.ReactNode => {
         return (
-            <Text fontSize="16px" fontColor={ColorOption.white} fontWeight={500}>
+            <Text fontSize="16px" textAlign="right" width="100%" fontColor={ColorOption.white} fontWeight={500}>
                 {format.ethBaseUnitAmount(
                     this.props.totalEthBaseUnitAmount,
                     4,
@@ -119,7 +119,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
 
     private readonly _renderDollarAmount = (): React.ReactNode => {
         return (
-            <Text fontSize="16px" fontColor={ColorOption.white}>
+            <Text fontSize="16px" textAlign="right" width="100%" fontColor={ColorOption.white}>
                 {format.ethBaseUnitAmountInUsd(
                     this.props.totalEthBaseUnitAmount,
                     this.props.ethUsdPrice,
