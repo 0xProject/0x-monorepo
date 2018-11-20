@@ -103,6 +103,7 @@ module.exports = (_env, argv) => {
                     NODE_ENV: JSON.stringify(process.env.NODE_ENV || config.mode),
                 },
             }),
+            // commented out to check the bundle when needed
             //new BundleAnalyzerPlugin(),
         ]);
     }
