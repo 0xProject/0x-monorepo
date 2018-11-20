@@ -26,6 +26,7 @@ interface ConnectedState {
     isDisabled: boolean;
     numberOfAssetsAvailable?: number;
     affiliateInfo?: AffiliateInfo;
+    canSelectOtherAsset: boolean;
 }
 
 interface ConnectedDispatch {
@@ -50,6 +51,11 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
             ? (state.selectedAsset as ERC20Asset)
             : undefined;
     const numberOfAssetsAvailable = _.isUndefined(state.availableAssets) ? undefined : state.availableAssets.length;
+    const canSelectOtherAsset =
+        numberOfAssetsAvailable && numberOfAssetsAvailable > 1
+            ? isEnabled || processState === OrderProcessState.Success
+            : false;
+
     const assetBuyer = state.providerState.assetBuyer;
     return {
         assetBuyer,
@@ -58,6 +64,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
         isDisabled,
         numberOfAssetsAvailable,
         affiliateInfo: state.affiliateInfo,
+        canSelectOtherAsset,
     };
 };
 
@@ -104,6 +111,7 @@ const mergeProps = (
         },
         isDisabled: connectedState.isDisabled,
         numberOfAssetsAvailable: connectedState.numberOfAssetsAvailable,
+        canSelectOtherAsset: connectedState.canSelectOtherAsset,
     };
 };
 
