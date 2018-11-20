@@ -120,5 +120,5 @@ export class EvmDataTypeFactory implements DataTypeFactory {
         return pointer;
     }
 
-    private constructor() { }
+    private constructor() {}
 }
