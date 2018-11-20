@@ -23,7 +23,7 @@ const Footer: React.StatelessComponent<{}> = () => (
                     {_.map(tools, ({ title, subtitle, icon }) => (
                         <ListItem key={title}>
                             <ListLink href="#">
-                                <Icon as={icon} />
+                                <Icon as={icon as 'svg'} />
                                 <div>
                                     <Beta>{title}</Beta>
                                     <p>{subtitle}</p>
