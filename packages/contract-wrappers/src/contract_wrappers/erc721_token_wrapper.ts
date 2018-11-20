@@ -238,6 +238,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
                 from: normalizedOwnerAddress,
+                nonce: txOpts.nonce,
             }),
         );
         return txHash;
@@ -298,6 +299,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
                 from: tokenOwnerAddress,
+                nonce: txOpts.nonce,
             }),
         );
         return txHash;
@@ -369,6 +371,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
                 from: normalizedSenderAddress,
+                nonce: txOpts.nonce,
             }),
         );
         return txHash;

@@ -27,6 +27,7 @@ import {
     BlockWithoutTransactionDataRPC,
     BlockWithTransactionDataRPC,
     NodeType,
+    TransactionReceiptRPC,
     TransactionRPC,
     Web3WrapperErrors,
 } from './types';
@@ -212,20 +213,23 @@ export class Web3Wrapper {
         return networkId;
     }
     /**
-     * Retrieves the transaction receipt for a given transaction hash
+     * Retrieves the transaction receipt for a given transaction hash if found
      * @param txHash Transaction hash
-     * @returns The transaction receipt, including it's status (0: failed, 1: succeeded or undefined: not found)
+     * @returns The transaction receipt, including it's status (0: failed, 1: succeeded). Returns undefined if transaction not found.
      */
-    public async getTransactionReceiptAsync(txHash: string): Promise<TransactionReceipt> {
+    public async getTransactionReceiptIfExistsAsync(txHash: string): Promise<TransactionReceipt | undefined> {
         assert.isHexString('txHash', txHash);
-        const transactionReceipt = await this.sendRawPayloadAsync<TransactionReceipt>({
+        const transactionReceiptRpc = await this.sendRawPayloadAsync<TransactionReceiptRPC>({
             method: 'eth_getTransactionReceipt',
             params: [txHash],
         });
-        if (!_.isNull(transactionReceipt)) {
-            transactionReceipt.status = Web3Wrapper._normalizeTxReceiptStatus(transactionReceipt.status);
+        if (!_.isNull(transactionReceiptRpc)) {
+            transactionReceiptRpc.status = Web3Wrapper._normalizeTxReceiptStatus(transactionReceiptRpc.status);
+            const transactionReceipt = marshaller.unmarshalTransactionReceipt(transactionReceiptRpc);
+            return transactionReceipt;
+        } else {
+            return undefined;
         }
-        return transactionReceipt;
     }
     /**
      * Retrieves the transaction data for a given transaction
@@ -572,8 +576,8 @@ export class Web3Wrapper {
             assert.isNumber('timeoutMs', timeoutMs);
         }
         // Immediately check if the transaction has already been mined.
-        let transactionReceipt = await this.getTransactionReceiptAsync(txHash);
-        if (!_.isNull(transactionReceipt) && !_.isNull(transactionReceipt.blockNumber)) {
+        let transactionReceipt = await this.getTransactionReceiptIfExistsAsync(txHash);
+        if (!_.isUndefined(transactionReceipt) && !_.isNull(transactionReceipt.blockNumber)) {
             const logsWithDecodedArgs = _.map(
                 transactionReceipt.logs,
                 this.abiDecoder.tryToDecodeLogOrNoop.bind(this.abiDecoder),
@@ -600,8 +604,8 @@ export class Web3Wrapper {
                             return reject(Web3WrapperErrors.TransactionMiningTimeout);
                         }
 
-                        transactionReceipt = await this.getTransactionReceiptAsync(txHash);
-                        if (!_.isNull(transactionReceipt)) {
+                        transactionReceipt = await this.getTransactionReceiptIfExistsAsync(txHash);
+                        if (!_.isUndefined(transactionReceipt)) {
                             intervalUtils.clearAsyncExcludingInterval(intervalId);
                             const logsWithDecodedArgs = _.map(
                                 transactionReceipt.logs,

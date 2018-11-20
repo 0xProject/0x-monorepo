@@ -12,6 +12,7 @@ import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
 import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
+import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
@@ -36,6 +37,7 @@ export interface ZeroExInstantProviderOptionalProps {
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     networkId: Network;
     affiliateInfo: AffiliateInfo;
+    shouldDisableAnalyticsTracking: boolean;
 }
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
@@ -121,6 +123,18 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         gasPriceEstimator.getGasInfoAsync();
         // tslint:disable-next-line:no-floating-promises
         this._flashErrorIfWrongNetwork();
+
+        // Analytics
+        disableAnalytics(this.props.shouldDisableAnalyticsTracking || false);
+        analytics.addEventProperties({
+            embeddedHost: window.location.host,
+            embeddedUrl: window.location.href,
+            networkId: state.network,
+            providerName: state.providerState.name,
+            gitSha: process.env.GIT_SHA,
+            npmVersion: process.env.NPM_PACKAGE_VERSION,
+        });
+        analytics.trackInstantOpened();
     }
     public componentWillUnmount(): void {
         if (this._accountUpdateHeartbeat) {
