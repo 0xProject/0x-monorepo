@@ -5,6 +5,7 @@ import { chaiSetup } from './utils/chai_setup';
 import { BigNumber, AbiEncoder } from '../src/';
 import * as AbiSamples from './abi_samples';
 import * as OptimizedAbis from './optimizer_abis';
+import * as ReturnValueAbis from './return_value_abis';
 import { DecodingRules } from '../src/abi_encoder';
 import ethUtil = require('ethereumjs-util');
 
@@ -12,6 +13,74 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe.only('ABI Encoder', () => {
+    describe('Decode Return Values', () => {
+        it('No Return Value', async () => {
+            // Decode return value
+            const method = new AbiEncoder.Method(ReturnValueAbis.noReturnValues);
+            const returnValue = '0x';
+            const decodedReturnValue = method.decodeReturnValues(returnValue);
+            const expectedDecodedReturnValue: any[] = [];
+            const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
+            const expectedDecodedReturnValueJson = JSON.stringify(expectedDecodedReturnValue);
+            expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        });
+        it('Single static return value', async () => {
+            // Generate Return Value
+            const method = new AbiEncoder.Method(ReturnValueAbis.singleStaticReturnValue);
+            const returnValue = ['0x01020304'];
+            const encodedReturnValue = method.encodeReturnValues(returnValue);
+            const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
+            // Validate decoded return value
+            const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
+            const expectedDecodedReturnValueJson = JSON.stringify(returnValue);
+            expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        });
+        it('Multiple static return values', async () => {
+            // Generate Return Value
+            const method = new AbiEncoder.Method(ReturnValueAbis.multipleStaticReturnValues);
+            const returnValue = ['0x01020304', '0x05060708'];
+            const encodedReturnValue = method.encodeReturnValues(returnValue);
+            const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
+            // Validate decoded return value
+            const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
+            const expectedDecodedReturnValueJson = JSON.stringify(returnValue);
+            expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        });
+        it('Single dynamic return value', async () => {
+            // Generate Return Value
+            const method = new AbiEncoder.Method(ReturnValueAbis.singleDynamicReturnValue);
+            const returnValue = ['0x01020304'];
+            const encodedReturnValue = method.encodeReturnValues(returnValue);
+            const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
+            // Validate decoded return value
+            const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
+            const expectedDecodedReturnValueJson = JSON.stringify(returnValue);
+            expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        });
+        it('Multiple dynamic return values', async () => {
+            // Generate Return Value
+            const method = new AbiEncoder.Method(ReturnValueAbis.multipleDynamicReturnValues);
+            const returnValue = ['0x01020304', '0x05060708'];
+            const encodedReturnValue = method.encodeReturnValues(returnValue);
+            const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
+            // Validate decoded return value
+            const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
+            const expectedDecodedReturnValueJson = JSON.stringify(returnValue);
+            expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        });
+        it('Mixed static/dynamic return values', async () => {
+            // Generate Return Value
+            const method = new AbiEncoder.Method(ReturnValueAbis.mixedStaticAndDynamicReturnValues);
+            const returnValue = ['0x01020304', '0x05060708'];
+            const encodedReturnValue = method.encodeReturnValues(returnValue);
+            const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
+            // Validate decoded return value
+            const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
+            const expectedDecodedReturnValueJson = JSON.stringify(returnValue);
+            expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        });
+    });
+
     describe('Optimizer', () => {
         it('Duplicate Dynamic Arrays with Static Elements', async () => {
             // Generate calldata
