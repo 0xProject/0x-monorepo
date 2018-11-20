@@ -1,5 +1,7 @@
-import ethUtil = require('ethereumjs-util');
-const _ = require('lodash');
+
+import * as ethUtil from 'ethereumjs-util';
+import * as _ from 'lodash';
+
 import * as Constants from './constants';
 
 export interface DecodingRules {
