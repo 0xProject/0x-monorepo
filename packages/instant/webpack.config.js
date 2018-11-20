@@ -35,12 +35,14 @@ const getHeapAnalyticsId = environmentName => {
     return undefined;
 };
 
+const ROLLBAR_PUBLISH_TOKEN_ENV_NAME = 'INSTANT_ROLLBAR_PUBLISH_TOKEN';
+const ROLLBAR_CLIENT_TOKEN_ENV_NAME = 'INSTANT_ROLLBAR_CLIENT_TOKEN';
 const getRollbarPlugin = environmentName => {
     if (!environmentName) {
         return undefined;
     }
 
-    const publishToken = process.env.INSTANT_ROLLBAR_PUBLISH_TOKEN;
+    const publishToken = process.env[ROLLBAR_PUBLISH_TOKEN_ENV_NAME];
     if (!publishToken) {
         return undefined;
     }
@@ -65,6 +67,26 @@ const getRollbarPlugin = environmentName => {
     return new RollbarSourceMapPlugin(rollbarPluginOptions);
 };
 
+const validateRollbar = (environmentName, rollbarPlugin) => {
+    const requiresRollbar = environmentName === 'dogfood' || environmentName === 'staging';
+
+    if (!requiresRollbar) {
+        return;
+    }
+
+    if (!process.env[ROLLBAR_CLIENT_TOKEN_ENV_NAME]) {
+        throw new Error(`${ROLLBAR_CLIENT_TOKEN_ENV_NAME} must be set for ${environmentName}`);
+    }
+
+    if (!rollbarPlugin) {
+        if (environmentName === 'dogfood' || environmentName === 'staging') {
+            throw new Error(
+                `Please set rollbar env var ${ROLLBAR_PUBLISH_TOKEN_ENV_NAME} to a Rollbar project access token with post_server_item permissions to deploy source maps to ${environmentName}`,
+            );
+        }
+    }
+};
+
 module.exports = (env, argv) => {
     const environmentName = getEnvironmentName(env, argv);
     const outputPath = process.env.WEBPACK_OUTPUT_PATH || 'umd';
@@ -76,11 +98,12 @@ module.exports = (env, argv) => {
                 NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
                 HEAP_ANALYTICS_ID: getHeapAnalyticsId(environmentName),
                 ROLLBAR_ENVIRONMENT: JSON.stringify(environmentName),
-                ROLLBAR_CLIENT_TOKEN: JSON.stringify(process.env.INSTANT_ROLLBAR_CLIENT_TOKEN),
+                ROLLBAR_CLIENT_TOKEN: JSON.stringify(process.env[ROLLBAR_CLIENT_TOKEN_ENV_NAME]),
                 ROLLBAR_FORCE_DEVELOPMENT_REPORT: JSON.stringify(process.env.INSTANT_ROLLBAR_FORCE_DEVELOPMENT_REPORT),
             },
         }),
     ];
+
     const rollbarPlugin = getRollbarPlugin(environmentName);
     if (rollbarPlugin) {
         console.log('Using rollbar plugin');
@@ -88,6 +111,7 @@ module.exports = (env, argv) => {
     } else {
         console.log('Not using rollbar plugin');
     }
+    validateRollbar(environmentName, rollbarPlugin);
 
     const config = {
         entry: {
