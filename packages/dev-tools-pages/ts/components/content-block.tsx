@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import * as _ from 'lodash';
 
 import { ContextInterface } from 'ts/context';
 import { media } from 'ts/variables';
@@ -69,7 +70,7 @@ const ContentBlock: React.StatelessComponent<ContentBlockProps> = props => {
     return (
         <Base>
             <Title color={props.colors}>{props.title}</Title>
-            {children === undefined ? null : <Content>{children}</Content>}
+            {_.isUndefined(children) ? null : <Content>{children}</Content>}
         </Base>
     );
 };

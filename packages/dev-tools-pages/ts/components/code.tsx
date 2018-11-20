@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import * as _ from 'lodash';
 
 import { colors } from 'ts/variables';
 
@@ -49,10 +50,10 @@ const Base =
     CodeProps >
     `
     font-size: .875rem;
-    color: ${props => (props.language === undefined ? colors.white : 'inherit')};
+    color: ${props => (_.isUndefined(props.language) ? colors.white : 'inherit')};
     background-color: ${props =>
-        props.isLight ? 'rgba(255,255,255,.15)' : props.language === undefined ? colors.black : '#F1F4F5'};
-    white-space: ${props => (props.language === undefined ? 'nowrap' : '')};
+        props.isLight ? 'rgba(255,255,255,.15)' : _.isUndefined(props.language) ? colors.black : '#F1F4F5'};
+    white-space: ${props => (_.isUndefined(props.language) ? 'nowrap' : '')};
     position: relative;
 
     ${props =>
@@ -149,7 +150,7 @@ class Code extends React.Component<CodeProps, CodeState> {
             <Container>
                 <Base language={language} isDiff={isDiff} isLight={isLight}>
                     <StyledPre isDiff={isDiff}>
-                        {hlCode === undefined ? (
+                        {_.isUndefined(hlCode) ? (
                             <code>{children}</code>
                         ) : (
                             <StyledCodeDiff
