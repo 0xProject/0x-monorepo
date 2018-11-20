@@ -21,7 +21,6 @@ describe.only('ABI Encoder', () => {
             const args = [array1, array2];
             // Validata calldata
             const optimizedCalldata = method.encode(args, { optimize: true });
-            console.log(optimizedCalldata);
             const expectedOptimizedCalldata =
                 '0x7221063300000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000640000000000000000000000000000000000000000000000000000000000000096';
             expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
@@ -692,79 +691,6 @@ describe.only('ABI Encoder', () => {
             const decodedValueJson = JSON.stringify(decodedValue);
             expect(decodedValueJson).to.be.equal(expectedDecodedValueJson);
         });
-
-        // @TODO: Test Nested Tuples (Not Supported on )
-
-        it.skip('Nested Tuples', async () => {
-            // Couldn't get nested tuples to work with Remix
-            // This is dynamic because it has dynamic members
-            const method = new AbiEncoder.Method(AbiSamples.nestedTuples);
-            const firstTuple = {
-                someUint32: new BigNumber(30472),
-                nestedTuple: {
-                    someUint: new BigNumber('48384725243211555532'),
-                    someAddress: '0xe41d2489571d322189246dafa5ebde1f4699f498',
-                },
-            };
-            const secondTuple = {
-                someUint: new BigNumber(2984237422),
-                someStr: 'This string will exceed 256 bits, so it will spill into the next word of memory.',
-                nestedTuple: {
-                    someUint32: new BigNumber(23),
-                    secondNestedTuple: {
-                        someUint: new BigNumber(234324),
-                        someStr: 'Im also a short string -- oops I just got loooooooooooooooooonger!',
-                        someBytes: '0x23847287fff3472984723498ff23487324987aaa237438911873429472ba',
-                        someAddress: '0xe41d2489571d322189246dafa5ebde1f4699f498',
-                    },
-                },
-                someBytes: '0x2834y3947289423u489aaaff4783924739847489',
-                someAddress: '0xe41d2489571d322189246dafa5ebde1f4699afaf',
-            };
-            const thirdTuple = {
-                someUint: new BigNumber(37422),
-                someStr: 'This into the next word of memory. string will exceed 256 bits, so it will spill.',
-                nestedTuple: {
-                    someUint32: new BigNumber(23999222),
-                    secondNestedTuple: {
-                        someUint: new BigNumber(324),
-                        someStr: 'Im also a short st',
-                        someBytes: '0x723498ff2348732498723847287fff3472984aaa237438911873429472ba',
-                        someAddress: '0x46dafa5ebde1f4699f498e41d2489571d3221892',
-                    },
-                },
-                someBytes: '0x947289423u489aaaff472834y383924739847489',
-                someAddress: '0x46dafa5ebde1f46e41d2489571d322189299afaf',
-            };
-            const fourthTuple = {
-                someUint: new BigNumber(222283488822),
-                someStr: 'exceed 256 bits, so it will spill into the. This string will next word of memory.',
-                nestedTuple: {
-                    someUint32: new BigNumber(2300),
-                    secondNestedTuple: {
-                        someUint: new BigNumber(343224),
-                        someStr:
-                            'The alphabet backwards is arguably easier to say if thats the way you learned the first time.',
-                        someBytes: '0x87324987aaa23743891187323847287fff3472984723498ff234429472ba',
-                        someAddress: '0x71d322189246dafa5ebe41d24895de1f4699f498',
-                    },
-                },
-                someBytes: '0x2783924739847488343947289423u489aaaff490',
-                someAddress: '0xebde1d322189246dafa1f4699afafe41d2489575',
-            };
-            const args = [[firstTuple], [secondTuple, thirdTuple, fourthTuple]];
-
-            console.log('*'.repeat(250), method, '*'.repeat(250));
-
-            const calldata = method.encode(args);
-            console.log(method.getSignature());
-            console.log(method.selector);
-            console.log(JSON.stringify(args));
-
-            console.log(calldata);
-            const expectedCalldata = '0x';
-            expect(calldata).to.be.equal(expectedCalldata);
-        });
     });
 
     describe('Array', () => {
@@ -829,6 +755,86 @@ describe.only('ABI Encoder', () => {
             const encodedArgs = dataType.encode(args);
             const expectedEncodedArgs =
                 '0x000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000548656c6c6f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005776f726c64000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+        it('Dynamic Size; Multidimensional; Dynamic Elements', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'testArray', type: 'bytes[][]' };
+            const dataType = new AbiEncoder.SolArray(testDataItem);
+            // Construct args to be encoded
+            const array1 = ['0x01020304', '0x05060708', '0x09101112'];
+            const array2 = ['0x10111213', '0x14151617'];
+            const array3 = ['0x18192021'];
+            const args = [array1, array2, array3];
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs =
+                '0x0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000001a000000000000000000000000000000000000000000000000000000000000002800000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000405060708000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004091011120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000041011121300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000414151617000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000041819202100000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+        it('Dynamic Size; Multidimensional; Static Elements', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'testArray', type: 'bytes4[][]' };
+            const dataType = new AbiEncoder.SolArray(testDataItem);
+            // Construct args to be encoded
+            const array1 = ['0x01020304', '0x05060708', '0x09101112'];
+            const array2 = ['0x10111213', '0x14151617'];
+            const array3 = ['0x18192021'];
+            const args = [array1, array2, array3];
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs =
+                '0x0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000000301020304000000000000000000000000000000000000000000000000000000000506070800000000000000000000000000000000000000000000000000000000091011120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000021011121300000000000000000000000000000000000000000000000000000000141516170000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011819202100000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+        it('Static Size; Multidimensional; Static Elements', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'testArray', type: 'bytes4[3][2]' };
+            const dataType = new AbiEncoder.SolArray(testDataItem);
+            // Construct args to be encoded
+            const array1 = ['0x01020304', '0x05060708', '0x09101112'];
+            const array2 = ['0x10111213', '0x14151617', '0x18192021'];
+            const args = [array1, array2];
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            const expectedEncodedArgs =
+                '0x010203040000000000000000000000000000000000000000000000000000000005060708000000000000000000000000000000000000000000000000000000000910111200000000000000000000000000000000000000000000000000000000101112130000000000000000000000000000000000000000000000000000000014151617000000000000000000000000000000000000000000000000000000001819202100000000000000000000000000000000000000000000000000000000';
+            expect(encodedArgs).to.be.equal(expectedEncodedArgs);
+            // Decode Encoded Args and validate result
+            const decodedArgs = dataType.decode(encodedArgs);
+            const decodedArgsAsJson = JSON.stringify(decodedArgs);
+            const argsAsJson = JSON.stringify(args);
+            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+        });
+        it('Static Size; Multidimensional; Dynamic Elements', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'testArray', type: 'bytes[3][2]' };
+            const dataType = new AbiEncoder.SolArray(testDataItem);
+            // Construct args to be encoded
+            const array1 = ['0x01020304', '0x05060708', '0x09101112'];
+            const array2 = ['0x10111213', '0x14151617', '0x18192021'];
+            const args = [array1, array2];
+            // Encode Args and validate result
+            const encodedArgs = dataType.encode(args);
+            console.log(encodedArgs);
+            console.log(dataType.encode(args, { annotate: true }));
+            const expectedEncodedArgs =
+                '0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000160000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000401020304000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004050607080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040910111200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000410111213000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004141516170000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041819202100000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
