@@ -276,7 +276,7 @@ export class Byte extends PayloadDataType {
         if (valueBuf.byteLength > this.width) {
             throw new Error(
                 `Tried to assign ${value} (${
-                    valueBuf.byteLength
+                valueBuf.byteLength
                 } bytes), which exceeds max bytes that can be stored in a ${this.getSignature()}`,
             );
         } else if (value.length % 2 !== 0) {
@@ -475,6 +475,7 @@ export class Method extends MemberDataType {
     private methodSignature: string;
     private methodSelector: string;
     private returnDataTypes: DataType[];
+    private returnDataItem: DataItem;
 
     // TMP
     public selector: string;
@@ -484,6 +485,7 @@ export class Method extends MemberDataType {
         this.methodSignature = this.computeSignature();
         this.selector = this.methodSelector = this.computeSelector();
         this.returnDataTypes = [];
+        this.returnDataItem = { type: 'tuple', name: abi.name, components: abi.outputs };
         const dummy = new Byte({ type: 'byte', name: 'DUMMY' }); // @TODO TMP
         _.each(abi.outputs, (dataItem: DataItem) => {
             this.returnDataTypes.push(this.getFactory().create(dataItem, dummy));
@@ -518,20 +520,19 @@ export class Method extends MemberDataType {
         return value;
     }
 
-    public decodeReturnValues(returndata: string, rules?: DecodingRules): any {
-        //console.log('O'.repeat(100), '\n', returndata, '\n', this.returnDataTypes, 'P'.repeat(100));
+    public encodeReturnValues(value: any, rules?: EncodingRules): string {
+        const returnDataType = new Tuple(this.returnDataItem);
+        const returndata = returnDataType.encode(value, rules);
+        return returndata;
+    }
 
+    public decodeReturnValues(returndata: string, rules?: DecodingRules): any {
         const returnValues: any[] = [];
         const rules_ = rules ? rules : ({ structsAsObjects: false } as DecodingRules);
         const rawReturnData = new RawCalldata(returndata, false);
         _.each(this.returnDataTypes, (dataType: DataType) => {
             returnValues.push(dataType.generateValue(rawReturnData, rules_));
         });
-
-        //console.log('*'.repeat(40), '\n', JSON.stringify(returnValues), '\n', '*'.repeat(100));
-        /*if (returnValues.length === 1) {
-            return returnValues[0];
-        }*/
         return returnValues;
     }
 
@@ -547,7 +548,7 @@ export class Method extends MemberDataType {
 export class EvmDataTypeFactory implements DataTypeFactory {
     private static instance: DataTypeFactory;
 
-    private constructor() {}
+    private constructor() { }
 
     public static getInstance(): DataTypeFactory {
         if (!EvmDataTypeFactory.instance) {
