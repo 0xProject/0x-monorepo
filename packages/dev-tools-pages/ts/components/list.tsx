@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import * as _ from 'lodash';
 
 import { media } from 'ts/variables';
 
@@ -42,7 +43,7 @@ const List: React.StatelessComponent<ListProps> = props => (
     <StyledList>
         {props.children !== undefined
             ? props.children
-            : props.items.map((bullet, index) => <StyledItem key={index}>{bullet}</StyledItem>)}
+            : _.map(props.items, (bullet, index) => <StyledItem key={index}>{bullet}</StyledItem>)}
     </StyledList>
 );
 

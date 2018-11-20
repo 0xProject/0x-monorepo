@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import * as _ from 'lodash';
 
 import { context as compiler } from 'ts/context/compiler';
 import { context as cov } from 'ts/context/cov';
@@ -19,7 +20,7 @@ const Footer: React.StatelessComponent<{}> = () => (
             <Top>
                 <Alpha>Other tools by 0x</Alpha>
                 <List>
-                    {tools.map(({ title, subtitle, icon }) => (
+                    {_.map(tools, ({ title, subtitle, icon }) => (
                         <ListItem key={title}>
                             <ListLink href="#">
                                 <Icon as={icon} />

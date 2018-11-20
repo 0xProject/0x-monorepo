@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import * as _ from 'lodash';
 
 import { colors, media } from 'ts/variables';
 
@@ -75,7 +76,7 @@ const Compiler: React.StatelessComponent<{}> = () => (
     <Container>
         <Breakout>
             <Cards>
-                {cards.map(card => (
+                {_.map(cards, card => (
                     <Card key={card.title.split(' ').join('-')}>
                         <Dt>{card.title}</Dt>
                         <Dd>{card.body}</Dd>
