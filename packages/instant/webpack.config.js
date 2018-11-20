@@ -52,7 +52,7 @@ const getRollbarPlugin = environmentName => {
         rollbarPublicPath = 'http://0x-instant-dogfood.s3-website-us-east-1.amazonaws.com';
     } else if (environmentName === 'staging') {
         rollbarPublicPath = 'http://0x-instant-staging.s3-website-us-east-1.amazonaws.com';
-    }
+    } // TODO(sk): When we decide on JS cdn, add public path here
 
     if (!rollbarPublicPath) {
         console.log('No rollbar public path');
