@@ -22,6 +22,12 @@ export interface DataTypeFactory {
     mapDataItemToDataType: (dataItem: DataItem) => DataType;
 }
 
+export interface DataTypeStaticInterface {
+    matchType: (type: string) => boolean;
+    encodeValue: (value: any) => Buffer;
+    decodeValue: (rawCalldata: RawCalldata) => any;
+}
+
 export abstract class DataType {
     private static readonly _DEFAULT_ENCODING_RULES: EncodingRules = { optimize: false, annotate: false };
     private static readonly _DEFAULT_DECODING_RULES: DecodingRules = { structsAsObjects: false };
@@ -250,7 +256,10 @@ export abstract class MemberDataType extends DataType {
         if (this._isArray && this._arrayLength === undefined) {
             [members] = this._createMembersWithLength(this.getDataItem(), value.length);
 
-            const lenBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${value.length.toString(Constants.HEX_BASE)}`), Constants.EVM_WORD_WIDTH_IN_BYTES);
+            const lenBuf = ethUtil.setLengthLeft(
+                ethUtil.toBuffer(`0x${value.length.toString(Constants.HEX_BASE)}`),
+                Constants.EVM_WORD_WIDTH_IN_BYTES,
+            );
             methodBlock.setHeader(lenBuf);
         }
 
