@@ -1,6 +1,8 @@
 import Icon from 'ts/icons/logos/compiler.svg';
 
-export const context = {
+import { ContextInterface } from './index';
+
+export const context: ContextInterface = {
     title: 'sol-compiler',
     name: 'compiler',
     subtitle: 'Solidity compilation that just works',

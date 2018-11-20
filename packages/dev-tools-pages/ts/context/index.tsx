@@ -6,7 +6,14 @@ interface ContextInterface {
     subtitle?: string;
     tagline?: string;
     icon?: React.ReactNode;
-    colors?: any;
+    colors?: {
+        main: string;
+        secondary: string;
+        secondary_alt: string;
+        type: string;
+        type_alt: string;
+        dark: string;
+    };
 }
 
 const ThemeContext = createContext({});

@@ -1,6 +1,8 @@
 import Icon from 'ts/icons/logos/trace.svg';
 
-export const context = {
+import { ContextInterface } from './index';
+
+export const context: ContextInterface = {
     title: 'sol-trace',
     name: 'trace',
     subtitle: 'Human-readable stack traces',

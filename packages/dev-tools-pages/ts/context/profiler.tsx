@@ -1,6 +1,8 @@
 import Icon from 'ts/icons/logos/profiler.svg';
 
-export const context = {
+import { ContextInterface } from './index';
+
+export const context: ContextInterface = {
     title: 'sol-profiler',
     name: 'profiler',
     subtitle: 'Gas profiling for Solidity',

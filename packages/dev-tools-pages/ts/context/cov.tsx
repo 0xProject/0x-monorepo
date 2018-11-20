@@ -1,6 +1,8 @@
 import Icon from 'ts/icons/logos/cov.svg';
 
-export const context = {
+import { ContextInterface } from './index';
+
+export const context: ContextInterface = {
     title: 'sol-cov',
     name: 'cov',
     subtitle: 'Solidity code coverage',
