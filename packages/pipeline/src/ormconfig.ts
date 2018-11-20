@@ -8,8 +8,8 @@ import {
     Relayer,
     SraOrder,
     SraOrdersObservedTimeStamp,
+    TokenMetadata,
     Transaction,
-    TrustedToken,
 } from './entities';
 
 const entities = [
@@ -20,8 +20,8 @@ const entities = [
     Relayer,
     SraOrder,
     SraOrdersObservedTimeStamp,
+    TokenMetadata,
     Transaction,
-    TrustedToken,
 ];
 
 const config: ConnectionOptions = {
