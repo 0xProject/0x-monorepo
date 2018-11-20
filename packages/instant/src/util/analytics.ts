@@ -51,6 +51,8 @@ export interface AnalyticsEventOptions {
     gitSha?: string;
     npmVersion?: string;
     orderSource?: string;
+    affiliateAddress?: string;
+    affiliateFeePercent?: number;
 }
 export const analytics = {
     addUserProperties: (properties: AnalyticsUserOptions): void => {
@@ -72,6 +74,8 @@ export const analytics = {
             orderSource = 'provided';
         }
 
+        const affiliateAddress = state.affiliateInfo ? state.affiliateInfo.feeRecipient : 'none';
+        const affiliateFeePercent = state.affiliateInfo ? parseFloat(state.affiliateInfo.feePercentage.toFixed(4)) : 0;
         return {
             embeddedHost: window.location.host,
             embeddedUrl: window.location.href,
@@ -80,6 +84,8 @@ export const analytics = {
             gitSha: process.env.GIT_SHA,
             npmVersion: process.env.NPM_PACKAGE_VERSION,
             orderSource,
+            affiliateAddress,
+            affiliateFeePercent,
         };
     },
     trackWalletReady: trackingEventFnWithoutPayload(EventNames.WALLET_READY),
