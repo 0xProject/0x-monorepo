@@ -1,9 +1,7 @@
-import { BigNumber } from '@0x/utils';
 import * as R from 'ramda';
 
 import { MetamaskTrustedTokenMeta, ZeroExTrustedTokenMeta } from '../../data_sources/trusted_tokens';
 import { TokenMetadata } from '../../entities';
-import {} from '../../utils';
 
 /**
  * Parses Metamask's trusted tokens list.
@@ -16,17 +14,18 @@ export function parseMetamaskTrustedTokens(rawResp: Map<string, MetamaskTrustedT
 
 /**
  * Parses 0x's trusted tokens list.
- * @param rawResp raw response from the 0x trusted tokens file.
+ * @param rawResp raw response from the 0x json file.
  */
 export function parseZeroExTrustedTokens(rawResp: ZeroExTrustedTokenMeta[]): TokenMetadata[] {
     return R.map(parseZeroExTrustedToken, rawResp);
 }
 
 function parseMetamaskTrustedToken(resp: MetamaskTrustedTokenMeta, address: string): TokenMetadata {
+
     const trustedToken = new TokenMetadata();
 
     trustedToken.address = address;
-    trustedToken.decimals = new BigNumber(resp.decimals);
+    trustedToken.decimals = resp.decimals;
     trustedToken.symbol = resp.symbol;
     trustedToken.name = resp.name;
     trustedToken.authority = 'metamask';
@@ -35,10 +34,11 @@ function parseMetamaskTrustedToken(resp: MetamaskTrustedTokenMeta, address: stri
 }
 
 function parseZeroExTrustedToken(resp: ZeroExTrustedTokenMeta): TokenMetadata {
+
     const trustedToken = new TokenMetadata();
 
     trustedToken.address = resp.address;
-    trustedToken.decimals = new BigNumber(resp.decimals);
+    trustedToken.decimals = resp.decimals;
     trustedToken.symbol = resp.symbol;
     trustedToken.name = resp.name;
     trustedToken.authority = '0x';
