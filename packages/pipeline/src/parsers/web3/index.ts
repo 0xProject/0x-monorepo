@@ -2,6 +2,8 @@ import { BlockWithoutTransactionData, Transaction as EthTransaction } from 'ethe
 
 import { Block, Transaction } from '../../entities';
 
+const MILLISECONDS_PER_SECOND = 1000;
+
 /**
  * Parses a raw block and returns a Block entity.
  * @param rawBlock a raw block (e.g. returned from web3-wrapper).
@@ -17,7 +19,8 @@ export function parseBlock(rawBlock: BlockWithoutTransactionData): Block {
     const block = new Block();
     block.hash = rawBlock.hash;
     block.number = rawBlock.number;
-    block.unixTimestampSeconds = rawBlock.timestamp;
+    // Block timestamps are in seconds, but we use milliseconds everywhere else.
+    block.timestamp = rawBlock.timestamp * MILLISECONDS_PER_SECOND;
     return block;
 }
 
