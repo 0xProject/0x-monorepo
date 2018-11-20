@@ -23,7 +23,7 @@ interface ConnectedState {
     assetBuyer: AssetBuyer;
     value?: BigNumber;
     asset?: ERC20Asset;
-    isDisabled: boolean;
+    isInputDisabled: boolean;
     numberOfAssetsAvailable?: number;
     affiliateInfo?: AffiliateInfo;
     canSelectOtherAsset: boolean;
@@ -44,8 +44,8 @@ type FinalProps = ConnectedProps & SelectedERC20AssetAmountInputProps;
 
 const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputProps): ConnectedState => {
     const processState = state.buyOrderState.processState;
-    const isEnabled = processState === OrderProcessState.None || processState === OrderProcessState.Failure;
-    const isDisabled = !isEnabled;
+    const isInputEnabled = processState === OrderProcessState.None || processState === OrderProcessState.Failure;
+    const isInputDisabled = !isInputEnabled;
     const selectedAsset =
         !_.isUndefined(state.selectedAsset) && state.selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
             ? (state.selectedAsset as ERC20Asset)
@@ -53,7 +53,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
     const numberOfAssetsAvailable = _.isUndefined(state.availableAssets) ? undefined : state.availableAssets.length;
     const canSelectOtherAsset =
         numberOfAssetsAvailable && numberOfAssetsAvailable > 1
-            ? isEnabled || processState === OrderProcessState.Success
+            ? isInputEnabled || processState === OrderProcessState.Success
             : false;
 
     const assetBuyer = state.providerState.assetBuyer;
@@ -61,7 +61,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedERC20AssetAmountInputP
         assetBuyer,
         value: state.selectedAssetUnitAmount,
         asset: selectedAsset,
-        isDisabled,
+        isInputDisabled,
         numberOfAssetsAvailable,
         affiliateInfo: state.affiliateInfo,
         canSelectOtherAsset,
@@ -109,7 +109,7 @@ const mergeProps = (
         onChange: (value, asset) => {
             connectedDispatch.updateBuyQuote(connectedState.assetBuyer, value, asset, connectedState.affiliateInfo);
         },
-        isDisabled: connectedState.isDisabled,
+        isInputDisabled: connectedState.isInputDisabled,
         numberOfAssetsAvailable: connectedState.numberOfAssetsAvailable,
         canSelectOtherAsset: connectedState.canSelectOtherAsset,
     };
