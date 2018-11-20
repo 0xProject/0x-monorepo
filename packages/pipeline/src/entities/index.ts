@@ -10,6 +10,8 @@ export { Relayer } from './relayer';
 export { SraOrder } from './sra_order';
 export { Transaction } from './transaction';
 export { TokenOnChainMetadata } from './token_on_chain_metadata';
+export { TrustedToken } from './trusted_tokens';
 export { SraOrdersObservedTimeStamp, createObservedTimestampForOrder } from './sra_order_observed_timestamp';
+export { OHLCVExternal } from './ohlcv_external';
 
 export type ExchangeEvent = ExchangeFillEvent | ExchangeCancelEvent | ExchangeCancelUpToEvent;

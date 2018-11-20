@@ -64,7 +64,7 @@ async function getCancelUpToEventsAsync(eventsSource: ExchangeEventsSource): Pro
     await saveEventsAsync(startBlock === EXCHANGE_START_BLOCK, repository, events);
 }
 
-const tabelNameRegex = /^[a-zA-Z_]*$/;
+const tableNameRegex = /^[a-zA-Z_]*$/;
 
 async function getStartBlockAsync<T extends ExchangeEvent>(repository: Repository<T>): Promise<number> {
     const fillEventCount = await repository.count();
@@ -73,7 +73,7 @@ async function getStartBlockAsync<T extends ExchangeEvent>(repository: Repositor
         return EXCHANGE_START_BLOCK;
     }
     const tableName = repository.metadata.tableName;
-    if (!tabelNameRegex.test(tableName)) {
+    if (!tableNameRegex.test(tableName)) {
         throw new Error('Unexpected special character in table name: ' + tableName);
     }
     const queryResult = await connection.query(

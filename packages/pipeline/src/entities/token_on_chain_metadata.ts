@@ -14,3 +14,9 @@ export class TokenOnChainMetadata {
     @Column({ type: 'nvarchar', nullable: false })
     public name!: string;
 }
+
+@Entity({ name: 'trusted_tokens', schema: 'raw' })
+export class TrustedTokens {
+    @PrimaryColumn() public address!: string;
+    @PrimaryColumn() public authority!: string;
+}
