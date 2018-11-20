@@ -9,7 +9,7 @@ import * as Constants from './constants';
 import { DataType, DataTypeFactory, DependentDataType, MemberDataType, PayloadDataType } from './data_type';
 
 export interface DataTypeStaticInterface {
-    matchGrammar: (type: string) => boolean;
+    matchType: (type: string) => boolean;
     encodeValue: (value: any) => Buffer;
     decodeValue: (rawCalldata: RawCalldata) => any;
 }
@@ -21,13 +21,13 @@ export class Address extends PayloadDataType {
     private static readonly _ADDRESS_SIZE_IN_BYTES = 20;
     private static readonly _DECODED_ADDRESS_OFFSET_IN_BYTES = Constants.EVM_WORD_WIDTH_IN_BYTES - Address._ADDRESS_SIZE_IN_BYTES;
 
-    public static matchGrammar(type: string): boolean {
+    public static matchType(type: string): boolean {
         return type === 'address';
     }
 
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance(), Address._SIZE_KNOWN_AT_COMPILE_TIME);
-        if (!Address.matchGrammar(dataItem.type)) {
+        if (!Address.matchType(dataItem.type)) {
             throw new Error(`Tried to instantiate Address with bad input: ${dataItem}`);
         }
     }
@@ -59,13 +59,13 @@ export class Address extends PayloadDataType {
 export class Bool extends PayloadDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
 
-    public static matchGrammar(type: string): boolean {
+    public static matchType(type: string): boolean {
         return type === 'bool';
     }
 
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance(), Bool._SIZE_KNOWN_AT_COMPILE_TIME);
-        if (!Bool.matchGrammar(dataItem.type)) {
+        if (!Bool.matchType(dataItem.type)) {
             throw new Error(`Tried to instantiate Bool with bad input: ${dataItem}`);
         }
     }
@@ -184,7 +184,7 @@ export class Int extends Number {
         '^int(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
     );
 
-    public static matchGrammar(type: string): boolean {
+    public static matchType(type: string): boolean {
         return Int._matcher.test(type);
     }
 
@@ -210,7 +210,7 @@ export class UInt extends Number {
         '^uint(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
     );
 
-    public static matchGrammar(type: string): boolean {
+    public static matchType(type: string): boolean {
         return UInt._matcher.test(type);
     }
 
@@ -231,7 +231,7 @@ export class UInt extends Number {
     }
 }
 
-export class Byte extends PayloadDataType {
+export class StaticBytes extends PayloadDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _matcher = RegExp(
         '^(byte|bytes(1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32))$',
@@ -240,17 +240,17 @@ export class Byte extends PayloadDataType {
     private static readonly _DEFAULT_WIDTH = 1;
     private readonly _width: number;
 
-    public static matchGrammar(type: string): boolean {
-        return Byte._matcher.test(type);
+    public static matchType(type: string): boolean {
+        return StaticBytes._matcher.test(type);
     }
 
     public constructor(dataItem: DataItem) {
-        super(dataItem, EvmDataTypeFactory.getInstance(), Byte._SIZE_KNOWN_AT_COMPILE_TIME);
-        const matches = Byte._matcher.exec(dataItem.type);
-        if (!Byte.matchGrammar(dataItem.type)) {
+        super(dataItem, EvmDataTypeFactory.getInstance(), StaticBytes._SIZE_KNOWN_AT_COMPILE_TIME);
+        const matches = StaticBytes._matcher.exec(dataItem.type);
+        if (!StaticBytes.matchType(dataItem.type)) {
             throw new Error(`Tried to instantiate Byte with bad input: ${dataItem}`);
         }
-        this._width = (matches !== null && matches.length === 3 && matches[2] !== undefined) ? parseInt(matches[2], Constants.DEC_BASE) : Byte._DEFAULT_WIDTH;
+        this._width = (matches !== null && matches.length === 3 && matches[2] !== undefined) ? parseInt(matches[2], Constants.DEC_BASE) : StaticBytes._DEFAULT_WIDTH;
     }
 
     public getSignature(): string {
@@ -289,17 +289,17 @@ export class Byte extends PayloadDataType {
     }
 }
 
-export class Bytes extends PayloadDataType {
+export class DynamicBytes extends PayloadDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
 
-    public static matchGrammar(type: string): boolean {
+    public static matchType(type: string): boolean {
         return type === 'bytes';
     }
 
     public constructor(dataItem: DataItem) {
-        super(dataItem, EvmDataTypeFactory.getInstance(), Bytes._SIZE_KNOWN_AT_COMPILE_TIME);
-        if (!Bytes.matchGrammar(dataItem.type)) {
-            throw new Error(`Tried to instantiate Bytes with bad input: ${dataItem}`);
+        super(dataItem, EvmDataTypeFactory.getInstance(), DynamicBytes._SIZE_KNOWN_AT_COMPILE_TIME);
+        if (!DynamicBytes.matchType(dataItem.type)) {
+            throw new Error(`Tried to instantiate DynamicBytes with bad input: ${dataItem}`);
         }
     }
 
@@ -313,8 +313,8 @@ export class Bytes extends PayloadDataType {
         }
 
         const wordsForValue = Math.ceil(valueBuf.byteLength / Constants.EVM_WORD_WIDTH_IN_BYTES);
-        const paddedBytesForValue = wordsForValue * Constants.EVM_WORD_WIDTH_IN_BYTES;
-        const paddedValueBuf = ethUtil.setLengthRight(valueBuf, paddedBytesForValue);
+        const paddedDynamicBytesForValue = wordsForValue * Constants.EVM_WORD_WIDTH_IN_BYTES;
+        const paddedValueBuf = ethUtil.setLengthRight(valueBuf, paddedDynamicBytesForValue);
         const paddedLengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(valueBuf.byteLength), Constants.EVM_WORD_WIDTH_IN_BYTES);
         const encodedValueBuf = Buffer.concat([paddedLengthBuf, paddedValueBuf]);
         return encodedValueBuf;
@@ -336,24 +336,24 @@ export class Bytes extends PayloadDataType {
     }
 }
 
-export class SolString extends PayloadDataType {
+export class String extends PayloadDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
 
-    public static matchGrammar(type: string): boolean {
+    public static matchType(type: string): boolean {
         return type === 'string';
     }
 
     public constructor(dataItem: DataItem) {
-        super(dataItem, EvmDataTypeFactory.getInstance(), SolString._SIZE_KNOWN_AT_COMPILE_TIME);
-        if (!SolString.matchGrammar(dataItem.type)) {
+        super(dataItem, EvmDataTypeFactory.getInstance(), String._SIZE_KNOWN_AT_COMPILE_TIME);
+        if (!String.matchType(dataItem.type)) {
             throw new Error(`Tried to instantiate String with bad input: ${dataItem}`);
         }
     }
 
     public encodeValue(value: string): Buffer {
         const wordsForValue = Math.ceil(value.length / Constants.EVM_WORD_WIDTH_IN_BYTES);
-        const paddedBytesForValue = wordsForValue * Constants.EVM_WORD_WIDTH_IN_BYTES;
-        const valueBuf = ethUtil.setLengthRight(new Buffer(value), paddedBytesForValue);
+        const paddedDynamicBytesForValue = wordsForValue * Constants.EVM_WORD_WIDTH_IN_BYTES;
+        const valueBuf = ethUtil.setLengthRight(new Buffer(value), paddedDynamicBytesForValue);
         const lengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value.length), Constants.EVM_WORD_WIDTH_IN_BYTES);
         const encodedValueBuf = Buffer.concat([lengthBuf, valueBuf]);
         return encodedValueBuf;
@@ -390,13 +390,13 @@ export class Pointer extends DependentDataType {
 export class Tuple extends MemberDataType {
     private readonly _tupleSignature: string;
 
-    public static matchGrammar(type: string): boolean {
+    public static matchType(type: string): boolean {
         return type === 'tuple';
     }
 
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance());
-        if (!Tuple.matchGrammar(dataItem.type)) {
+        if (!Tuple.matchType(dataItem.type)) {
             throw new Error(`Tried to instantiate Tuple with bad input: ${dataItem}`);
         }
         this._tupleSignature = this._computeSignatureOfMembers();
@@ -407,18 +407,18 @@ export class Tuple extends MemberDataType {
     }
 }
 
-export class SolArray extends MemberDataType {
+export class Array extends MemberDataType {
     private static readonly _matcher = RegExp('^(.+)\\[([0-9]*)\\]$');
     private readonly _arraySignature: string;
     private readonly _elementType: string;
 
-    public static matchGrammar(type: string): boolean {
-        return SolArray._matcher.test(type);
+    public static matchType(type: string): boolean {
+        return Array._matcher.test(type);
     }
 
     public constructor(dataItem: DataItem) {
         // Sanity check
-        const matches = SolArray._matcher.exec(dataItem.type);
+        const matches = Array._matcher.exec(dataItem.type);
         if (matches === null || matches.length !== 3) {
             throw new Error(`Could not parse array: ${dataItem.type}`);
         } else if (matches[1] === undefined) {
@@ -473,7 +473,7 @@ export class Method extends MemberDataType {
         this.selector = this._methodSelector = this._computeSelector();
         this._returnDataTypes = [];
         this._returnDataItem = { type: 'tuple', name: abi.name, components: abi.outputs };
-        const dummy = new Byte({ type: 'byte', name: 'DUMMY' }); // @TODO TMP
+        const dummy = new StaticBytes({ type: 'byte', name: 'DUMMY' }); // @TODO TMP
         _.each(abi.outputs, (dataItem: DataItem) => {
             this._returnDataTypes.push(this.getFactory().create(dataItem, dummy));
         });
@@ -543,24 +543,24 @@ export class EvmDataTypeFactory implements DataTypeFactory {
     }
 
     public mapDataItemToDataType(dataItem: DataItem): DataType {
-        if (SolArray.matchGrammar(dataItem.type)) {
-            return new SolArray(dataItem);
-        } else if (Address.matchGrammar(dataItem.type)) {
+        if (Array.matchType(dataItem.type)) {
+            return new Array(dataItem);
+        } else if (Address.matchType(dataItem.type)) {
             return new Address(dataItem);
-        } else if (Bool.matchGrammar(dataItem.type)) {
+        } else if (Bool.matchType(dataItem.type)) {
             return new Bool(dataItem);
-        } else if (Int.matchGrammar(dataItem.type)) {
+        } else if (Int.matchType(dataItem.type)) {
             return new Int(dataItem);
-        } else if (UInt.matchGrammar(dataItem.type)) {
+        } else if (UInt.matchType(dataItem.type)) {
             return new UInt(dataItem);
-        } else if (Byte.matchGrammar(dataItem.type)) {
-            return new Byte(dataItem);
-        } else if (Tuple.matchGrammar(dataItem.type)) {
+        } else if (StaticBytes.matchType(dataItem.type)) {
+            return new StaticBytes(dataItem);
+        } else if (Tuple.matchType(dataItem.type)) {
             return new Tuple(dataItem);
-        } else if (Bytes.matchGrammar(dataItem.type)) {
-            return new Bytes(dataItem);
-        } else if (SolString.matchGrammar(dataItem.type)) {
-            return new SolString(dataItem);
+        } else if (DynamicBytes.matchType(dataItem.type)) {
+            return new DynamicBytes(dataItem);
+        } else if (String.matchType(dataItem.type)) {
+            return new String(dataItem);
         }
         // @TODO: Implement Fixed/UFixed types
         throw new Error(`Unrecognized data type: '${dataItem.type}'`);
