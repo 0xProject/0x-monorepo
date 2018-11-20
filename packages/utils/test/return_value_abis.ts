@@ -1,6 +1,7 @@
+/* tslint:disable max-file-line-count */
 import { MethodAbi } from 'ethereum-types';
 
-export const noReturnValues = {
+export const noReturnValues: MethodAbi = {
     constant: false,
     inputs: [],
     name: 'simpleFunction',
@@ -8,9 +9,9 @@ export const noReturnValues = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const singleStaticReturnValue = {
+export const singleStaticReturnValue: MethodAbi = {
     constant: false,
     inputs: [],
     name: 'simpleFunction',
@@ -23,9 +24,9 @@ export const singleStaticReturnValue = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const multipleStaticReturnValues = {
+export const multipleStaticReturnValues: MethodAbi = {
     constant: false,
     inputs: [],
     name: 'simpleFunction',
@@ -42,9 +43,9 @@ export const multipleStaticReturnValues = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const singleDynamicReturnValue = {
+export const singleDynamicReturnValue: MethodAbi = {
     constant: false,
     inputs: [],
     name: 'simpleFunction',
@@ -57,9 +58,9 @@ export const singleDynamicReturnValue = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const multipleDynamicReturnValues = {
+export const multipleDynamicReturnValues: MethodAbi = {
     constant: false,
     inputs: [],
     name: 'simpleFunction',
@@ -76,9 +77,9 @@ export const multipleDynamicReturnValues = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const mixedStaticAndDynamicReturnValues = {
+export const mixedStaticAndDynamicReturnValues: MethodAbi = {
     constant: false,
     inputs: [],
     name: 'simpleFunction',
@@ -95,4 +96,4 @@ export const mixedStaticAndDynamicReturnValues = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};

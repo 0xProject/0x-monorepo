@@ -1,6 +1,7 @@
+/* tslint:disable max-file-line-count */
 import { MethodAbi } from 'ethereum-types';
 
-export const simpleAbi = {
+export const simpleAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -17,9 +18,9 @@ export const simpleAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const stringAbi = {
+export const stringAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -32,9 +33,9 @@ export const stringAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const GAbi = {
+export const GAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -66,9 +67,9 @@ export const GAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const typesWithDefaultWidthsAbi = {
+export const typesWithDefaultWidthsAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -101,9 +102,9 @@ export const typesWithDefaultWidthsAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const multiDimensionalArraysStaticTypeAbi = {
+export const multiDimensionalArraysStaticTypeAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -144,9 +145,9 @@ export const multiDimensionalArraysStaticTypeAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const multiDimensionalArraysDynamicTypeAbi = {
+export const multiDimensionalArraysDynamicTypeAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -171,9 +172,9 @@ export const multiDimensionalArraysDynamicTypeAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const dynamicTupleAbi = {
+export const dynamicTupleAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -196,9 +197,9 @@ export const dynamicTupleAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const arrayOfStaticTuplesWithDefinedLengthAbi = {
+export const arrayOfStaticTuplesWithDefinedLengthAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -221,9 +222,9 @@ export const arrayOfStaticTuplesWithDefinedLengthAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const arrayOfStaticTuplesWithDynamicLengthAbi = {
+export const arrayOfStaticTuplesWithDynamicLengthAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -246,9 +247,9 @@ export const arrayOfStaticTuplesWithDynamicLengthAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const arrayOfDynamicTuplesWithDefinedLengthAbi = {
+export const arrayOfDynamicTuplesWithDefinedLengthAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -271,9 +272,9 @@ export const arrayOfDynamicTuplesWithDefinedLengthAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const arrayOfDynamicTuplesWithUndefinedLengthAbi = {
+export const arrayOfDynamicTuplesWithUndefinedLengthAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -296,9 +297,9 @@ export const arrayOfDynamicTuplesWithUndefinedLengthAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const arrayOfDynamicTuplesAbi = {
+export const arrayOfDynamicTuplesAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -321,9 +322,9 @@ export const arrayOfDynamicTuplesAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const multidimensionalArrayOfDynamicTuplesAbi = {
+export const multidimensionalArrayOfDynamicTuplesAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -346,9 +347,9 @@ export const multidimensionalArrayOfDynamicTuplesAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const staticTupleAbi = {
+export const staticTupleAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -379,9 +380,9 @@ export const staticTupleAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const staticArrayAbi = {
+export const staticArrayAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -394,9 +395,9 @@ export const staticArrayAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const staticArrayDynamicMembersAbi = {
+export const staticArrayDynamicMembersAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -409,9 +410,9 @@ export const staticArrayDynamicMembersAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const dynamicArrayDynamicMembersAbi = {
+export const dynamicArrayDynamicMembersAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -424,9 +425,9 @@ export const dynamicArrayDynamicMembersAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const dynamicArrayStaticMembersAbi = {
+export const dynamicArrayStaticMembersAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -439,9 +440,9 @@ export const dynamicArrayStaticMembersAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const largeFlatAbi = {
+export const largeFlatAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -486,9 +487,9 @@ export const largeFlatAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const largeNestedAbi = {
+export const largeNestedAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -579,9 +580,9 @@ export const largeNestedAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const nestedTuples = {
+export const nestedTuples: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -668,9 +669,9 @@ export const nestedTuples = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const simpleAbi2 = {
+export const simpleAbi2: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -695,9 +696,9 @@ export const simpleAbi2 = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
 
-export const fillOrderAbi = {
+export const fillOrderAbi: MethodAbi = {
     constant: false,
     inputs: [
         {
@@ -776,4 +777,4 @@ export const fillOrderAbi = {
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
-} as MethodAbi;
+};
