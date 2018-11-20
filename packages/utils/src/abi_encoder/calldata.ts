@@ -1,6 +1,6 @@
 import ethUtil = require('ethereumjs-util');
-import CommunicationChatBubbleOutline from 'material-ui/SvgIcon';
-var _ = require('lodash');
+const _ = require('lodash');
+import * as Constants from './constants';
 
 export interface DecodingRules {
     structsAsObjects: boolean;
@@ -12,77 +12,69 @@ export interface EncodingRules {
 }
 
 export abstract class CalldataBlock {
-    private name: string;
-    private signature: string;
-    private offsetInBytes: number;
-    private headerSizeInBytes: number;
-    private bodySizeInBytes: number;
-    private relocatable: boolean;
-    private parentName: string;
+    private readonly _signature: string;
+    private readonly _parentName: string;
+    private _name: string;
+    private _offsetInBytes: number;
+    private _headerSizeInBytes: number;
+    private _bodySizeInBytes: number;
 
     constructor(
         name: string,
         signature: string,
         parentName: string,
-        /*offsetInBytes: number,*/ headerSizeInBytes: number,
+        headerSizeInBytes: number,
         bodySizeInBytes: number,
-        relocatable: boolean,
     ) {
-        this.name = name;
-        this.signature = signature;
-        this.parentName = parentName;
-        this.offsetInBytes = 0;
-        this.headerSizeInBytes = headerSizeInBytes;
-        this.bodySizeInBytes = bodySizeInBytes;
-        this.relocatable = relocatable;
+        this._name = name;
+        this._signature = signature;
+        this._parentName = parentName;
+        this._offsetInBytes = 0;
+        this._headerSizeInBytes = headerSizeInBytes;
+        this._bodySizeInBytes = bodySizeInBytes;
     }
 
-    protected setHeaderSize(headerSizeInBytes: number) {
-        this.headerSizeInBytes = headerSizeInBytes;
+    protected _setHeaderSize(headerSizeInBytes: number): void {
+        this._headerSizeInBytes = headerSizeInBytes;
     }
 
-    protected setBodySize(bodySizeInBytes: number) {
-        this.bodySizeInBytes = bodySizeInBytes;
+    protected _setBodySize(bodySizeInBytes: number): void {
+        this._bodySizeInBytes = bodySizeInBytes;
     }
 
-    protected setName(name: string) {
-        this.name = name;
+    protected _setName(name: string): void {
+        this._name = name;
     }
 
     public getName(): string {
-        return this.name;
+        return this._name;
     }
 
     public getParentName(): string {
-        return this.parentName;
+        return this._parentName;
     }
 
     public getSignature(): string {
-        return this.signature;
+        return this._signature;
     }
-
-    public isRelocatable(): boolean {
-        return this.relocatable;
-    }
-
     public getHeaderSizeInBytes(): number {
-        return this.headerSizeInBytes;
+        return this._headerSizeInBytes;
     }
 
     public getBodySizeInBytes(): number {
-        return this.bodySizeInBytes;
+        return this._bodySizeInBytes;
     }
 
     public getSizeInBytes(): number {
-        return this.headerSizeInBytes + this.bodySizeInBytes;
+        return this.getHeaderSizeInBytes() + this.getBodySizeInBytes();
     }
 
     public getOffsetInBytes(): number {
-        return this.offsetInBytes;
+        return this._offsetInBytes;
     }
 
-    public setOffset(offsetInBytes: number) {
-        this.offsetInBytes = offsetInBytes;
+    public setOffset(offsetInBytes: number): void {
+        this._offsetInBytes = offsetInBytes;
     }
 
     public computeHash(): Buffer {
@@ -96,81 +88,80 @@ export abstract class CalldataBlock {
 }
 
 export class PayloadCalldataBlock extends CalldataBlock {
-    private payload: Buffer;
+    private readonly _payload: Buffer;
 
     constructor(
         name: string,
         signature: string,
         parentName: string,
-        /*offsetInBytes: number,*/ relocatable: boolean,
         payload: Buffer,
     ) {
         const headerSizeInBytes = 0;
         const bodySizeInBytes = payload.byteLength;
-        super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes, relocatable);
-        this.payload = payload;
+        super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes);
+        this._payload = payload;
     }
 
     public toBuffer(): Buffer {
-        return this.payload;
+        return this._payload;
     }
 
     public getRawData(): Buffer {
-        return this.payload;
+        return this._payload;
     }
 }
 
 export class DependentCalldataBlock extends CalldataBlock {
-    public static DEPENDENT_PAYLOAD_SIZE_IN_BYTES = 32;
-    public static RAW_DATA_START = new Buffer('<');
-    public static RAW_DATA_END = new Buffer('>');
-    private parent: CalldataBlock;
-    private dependency: CalldataBlock;
-    private aliasFor: CalldataBlock | undefined;
+    public static readonly RAW_DATA_START = new Buffer('<');
+    public static readonly RAW_DATA_END = new Buffer('>');
+    private static readonly _DEPENDENT_PAYLOAD_SIZE_IN_BYTES = 32;
+    private static readonly _EMPTY_HEADER_SIZE = 0;
+    private readonly _parent: CalldataBlock;
+    private readonly _dependency: CalldataBlock;
+    private _aliasFor: CalldataBlock | undefined;
 
     constructor(
         name: string,
         signature: string,
         parentName: string,
-        relocatable: boolean,
         dependency: CalldataBlock,
         parent: CalldataBlock,
     ) {
-        const headerSizeInBytes = 0;
-        const bodySizeInBytes = DependentCalldataBlock.DEPENDENT_PAYLOAD_SIZE_IN_BYTES;
-        super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes, relocatable);
-        this.parent = parent;
-        this.dependency = dependency;
-        this.aliasFor = undefined;
+        const headerSizeInBytes = DependentCalldataBlock._EMPTY_HEADER_SIZE;
+        const bodySizeInBytes = DependentCalldataBlock._DEPENDENT_PAYLOAD_SIZE_IN_BYTES;
+        super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes);
+        this._parent = parent;
+        this._dependency = dependency;
+        this._aliasFor = undefined;
     }
 
     public toBuffer(): Buffer {
         const destinationOffset =
-            this.aliasFor !== undefined ? this.aliasFor.getOffsetInBytes() : this.dependency.getOffsetInBytes();
-        const parentOffset = this.parent.getOffsetInBytes();
-        const parentHeaderSize = this.parent.getHeaderSizeInBytes();
+            this._aliasFor !== undefined ? this._aliasFor.getOffsetInBytes() : this._dependency.getOffsetInBytes();
+        const parentOffset = this._parent.getOffsetInBytes();
+        const parentHeaderSize = this._parent.getHeaderSizeInBytes();
         const pointer: number = destinationOffset - (parentOffset + parentHeaderSize);
-        const pointerBuf = ethUtil.toBuffer(`0x${pointer.toString(16)}`);
+        const pointerBuf = ethUtil.toBuffer(`0x${pointer.toString(Constants.HEX_BASE)}`);
         const evmWordWidthInBytes = 32;
         const pointerBufPadded = ethUtil.setLengthLeft(pointerBuf, evmWordWidthInBytes);
         return pointerBufPadded;
     }
 
     public getDependency(): CalldataBlock {
-        return this.dependency;
+        return this._dependency;
     }
 
-    public setAlias(block: CalldataBlock) {
-        this.aliasFor = block;
-        this.setName(`${this.getName()} (alias for ${block.getName()})`);
+    public setAlias(block: CalldataBlock): void {
+        this._aliasFor = block;
+        this._setName(`${this.getName()} (alias for ${block.getName()})`);
     }
 
     public getAlias(): CalldataBlock | undefined {
-        return this.aliasFor;
+        return this._aliasFor;
     }
 
     public getRawData(): Buffer {
-        const dependencyRawData = this.dependency.getRawData();
+        const dependencyRawData = this._dependency.getRawData();
         const rawDataComponents: Buffer[] = [];
         rawDataComponents.push(DependentCalldataBlock.RAW_DATA_START);
         rawDataComponents.push(dependencyRawData);
@@ -181,24 +172,21 @@ export class DependentCalldataBlock extends CalldataBlock {
 }
 
 export class MemberCalldataBlock extends CalldataBlock {
-    private static DEPENDENT_PAYLOAD_SIZE_IN_BYTES = 32;
-    private header: Buffer | undefined;
-    private members: CalldataBlock[];
-    private contiguous: boolean;
+    private _header: Buffer | undefined;
+    private _members: CalldataBlock[];
 
-    constructor(name: string, signature: string, parentName: string, relocatable: boolean, contiguous: boolean) {
-        super(name, signature, parentName, 0, 0, relocatable);
-        this.members = [];
-        this.header = undefined;
-        this.contiguous = contiguous;
+    constructor(name: string, signature: string, parentName: string) {
+        super(name, signature, parentName, 0, 0);
+        this._members = [];
+        this._header = undefined;
     }
 
     public getRawData(): Buffer {
         const rawDataComponents: Buffer[] = [];
-        if (this.header !== undefined) {
-            rawDataComponents.push(this.header);
+        if (this._header !== undefined) {
+            rawDataComponents.push(this._header);
         }
-        _.each(this.members, (member: CalldataBlock) => {
+        _.each(this._members, (member: CalldataBlock) => {
             const memberBuffer = member.getRawData();
             rawDataComponents.push(memberBuffer);
         });
@@ -207,91 +195,79 @@ export class MemberCalldataBlock extends CalldataBlock {
         return rawData;
     }
 
-    public setMembers(members: CalldataBlock[]) {
-        let bodySizeInBytes = 0;
-        _.each(members, (member: CalldataBlock) => {
-            bodySizeInBytes += member.getSizeInBytes();
-        });
-        this.members = members;
-        this.setBodySize(0);
+    public setMembers(members: CalldataBlock[]): void {
+        this._members = members;
     }
 
-    public isContiguous(): boolean {
-        return true;
-    }
-
-    public setHeader(header: Buffer) {
-        this.setHeaderSize(header.byteLength);
-        this.header = header;
+    public setHeader(header: Buffer): void {
+        this._setHeaderSize(header.byteLength);
+        this._header = header;
     }
 
     public toBuffer(): Buffer {
-        if (this.header !== undefined) return this.header;
+        if (this._header !== undefined) {
+            return this._header;
+        }
         return new Buffer('');
     }
 
     public getMembers(): CalldataBlock[] {
-        return this.members;
+        return this._members;
     }
 }
 
 class Queue<T> {
-    private store: T[] = [];
-    push(val: T) {
-        this.store.push(val);
+    private _store: T[] = [];
+    public push(val: T): void {
+        this._store.push(val);
     }
-    pushFront(val: T) {
-        this.store.unshift(val);
+    public pushFront(val: T): void {
+        this._store.unshift(val);
     }
-    pop(): T | undefined {
-        return this.store.shift();
+    public pop(): T | undefined {
+        return this._store.shift();
     }
-    popBack(): T | undefined {
-        if (this.store.length === 0) return undefined;
-        const backElement = this.store.splice(-1, 1)[0];
+    public popBack(): T | undefined {
+        if (this._store.length === 0) {
+            return undefined;
+        }
+        const backElement = this._store.splice(-1, 1)[0];
         return backElement;
     }
-    merge(q: Queue<T>) {
-        this.store = this.store.concat(q.store);
+    public merge(q: Queue<T>): void {
+        this._store = this._store.concat(q._store);
     }
-    mergeFront(q: Queue<T>) {
-        this.store = q.store.concat(this.store);
+    public mergeFront(q: Queue<T>): void {
+        this._store = q._store.concat(this._store);
     }
-    getStore(): T[] {
-        return this.store;
+    public getStore(): T[] {
+        return this._store;
     }
-    peek(): T | undefined {
-        return this.store.length >= 0 ? this.store[0] : undefined;
+    public peek(): T | undefined {
+        return this._store.length >= 0 ? this._store[0] : undefined;
     }
 }
 
 export class Calldata {
-    private selector: string;
-    private rules: EncodingRules;
-    private sizeInBytes: number;
-    private root: CalldataBlock | undefined;
+    private readonly _rules: EncodingRules;
+    private _selector: string;
+    private _sizeInBytes: number;
+    private _root: CalldataBlock | undefined;
 
-    constructor(rules: EncodingRules) {
-        this.selector = '';
-        this.rules = rules;
-        this.sizeInBytes = 0;
-        this.root = undefined;
-    }
-
-    private createQueue(block: CalldataBlock): Queue<CalldataBlock> {
+    private static _createQueue(block: CalldataBlock): Queue<CalldataBlock> {
         const blockQueue = new Queue<CalldataBlock>();
 
         // Base Case
-        if (block instanceof MemberCalldataBlock === false) {
+        if (!(block instanceof MemberCalldataBlock)) {
             blockQueue.push(block);
             return blockQueue;
         }
 
         // This is a Member Block
-        const memberBlock = block as MemberCalldataBlock;
+        const memberBlock = block;
         _.eachRight(memberBlock.getMembers(), (member: CalldataBlock) => {
             if (member instanceof MemberCalldataBlock) {
-                blockQueue.mergeFront(this.createQueue(member));
+                blockQueue.mergeFront(Calldata._createQueue(member));
             } else {
                 blockQueue.pushFront(member);
             }
@@ -300,9 +276,9 @@ export class Calldata {
         // Children
         _.each(memberBlock.getMembers(), (member: CalldataBlock) => {
             if (member instanceof DependentCalldataBlock && member.getAlias() === undefined) {
-                let dependency = member.getDependency();
+                const dependency = member.getDependency();
                 if (dependency instanceof MemberCalldataBlock) {
-                    blockQueue.merge(this.createQueue(dependency));
+                    blockQueue.merge(Calldata._createQueue(dependency));
                 } else {
                     blockQueue.push(dependency);
                 }
@@ -313,60 +289,139 @@ export class Calldata {
         return blockQueue;
     }
 
-    private generateAnnotatedHexString(): string {
-        let hexValue = `${this.selector}`;
-        if (this.root === undefined) {
+    public constructor(rules: EncodingRules) {
+        this._rules = rules;
+        this._selector = '';
+        this._sizeInBytes = 0;
+        this._root = undefined;
+    }
+
+    public optimize(): void {
+        if (this._root === undefined) {
             throw new Error('expected root');
         }
 
-        const valueQueue = this.createQueue(this.root);
+        const blocksByHash: { [key: string]: CalldataBlock } = {};
+
+        // 1. Create a queue of subtrees by hash
+        // Note that they are ordered the same as
+        const subtreeQueue = Calldata._createQueue(this._root);
+        let block: CalldataBlock | undefined;
+        for (block = subtreeQueue.popBack(); block !== undefined; block = subtreeQueue.popBack()) {
+            if (block instanceof DependentCalldataBlock) {
+                const dependencyBlockHashBuf = block.getDependency().computeHash();
+                const dependencyBlockHash = ethUtil.bufferToHex(dependencyBlockHashBuf);
+                if (dependencyBlockHash in blocksByHash) {
+                    const blockWithSameHash = blocksByHash[dependencyBlockHash];
+                    if (blockWithSameHash !== block.getDependency()) {
+                        block.setAlias(blockWithSameHash);
+                    }
+                }
+                continue;
+            }
+
+            const blockHashBuf = block.computeHash();
+            const blockHash = ethUtil.bufferToHex(blockHashBuf);
+            if (!(blockHash in blocksByHash)) {
+                blocksByHash[blockHash] = block;
+            }
+        }
+    }
+
+    public toHexString(): string {
+        if (this._root === undefined) {
+            throw new Error('expected root');
+        }
+
+        if (this._rules.optimize) {
+            this.optimize();
+        }
+
+        const offsetQueue = Calldata._createQueue(this._root);
+        let block: CalldataBlock | undefined;
+        let offset = 0;
+        for (block = offsetQueue.pop(); block !== undefined; block = offsetQueue.pop()) {
+            block.setOffset(offset);
+            offset += block.getSizeInBytes();
+        }
+
+        const hexValue = this._rules.annotate ? this._generateAnnotatedHexString() : this._generateCondensedHexString();
+        return hexValue;
+    }
+
+    public getSelectorHex(): string {
+        return this._selector;
+    }
+
+    public getSizeInBytes(): number {
+        return this._sizeInBytes;
+    }
+
+    public setRoot(block: CalldataBlock): void {
+        this._root = block;
+        this._sizeInBytes += block.getSizeInBytes();
+    }
+
+    public setSelector(selector: string): void {
+        this._selector = selector.startsWith('0x') ? selector : `$0x${selector}`;
+        if (this._selector.length !== Constants.HEX_SELECTOR_LENGTH_IN_CHARS) {
+            throw new Error(`Invalid selector '${this._selector}'`);
+        }
+        this._sizeInBytes += Constants.HEX_SELECTOR_LENGTH_IN_BYTES; // @TODO: Used to be += 8. Bad?
+    }
+
+    private _generateAnnotatedHexString(): string {
+        let hexValue = `${this._selector}`;
+        if (this._root === undefined) {
+            throw new Error('expected root');
+        }
+
+        const valueQueue = Calldata._createQueue(this._root);
 
         let block: CalldataBlock | undefined;
         let offset = 0;
         const functionBlock = valueQueue.peek();
-        let functionName: string = functionBlock === undefined ? '' : functionBlock.getName();
-        while ((block = valueQueue.pop()) !== undefined) {
-            // Set f
-
+        const functionName: string = functionBlock === undefined ? '' : functionBlock.getName();
+        for (block = valueQueue.pop(); block !== undefined; block = valueQueue.pop()) {
             // Process each block 1 word at a time
             const size = block.getSizeInBytes();
             const name = block.getName();
             const parentName = block.getParentName();
-
-            //const ancestrialNamesOffset = name.startsWith('ptr<') ? 4 : 0;
-            //const parentOffset = name.lastIndexOf(parentName);
-            const prettyName = name.replace(`${parentName}.`, '').replace(`${functionName}.`, ''); //.replace(`${parentName}[`, '[');
-            const signature = block.getSignature();
+            const prettyName = name.replace(`${parentName}.`, '').replace(`${functionName}.`, '');
 
             // Current offset
             let offsetStr = '';
 
             // If this block is empty then it's a newline
+            const offsetPadding = 10;
+            const valuePadding = 74;
+            const namePadding = 80;
+            const evmWordStartIndex = 0;
+            const emptySize = 0;
             let value = '';
             let nameStr = '';
             let line = '';
-            if (size === 0) {
-                offsetStr = ' '.repeat(10);
-                value = ' '.repeat(74);
-                nameStr = `### ${prettyName.padEnd(80)}`;
+            if (size === emptySize) {
+                offsetStr = ' '.repeat(offsetPadding);
+                value = ' '.repeat(valuePadding);
+                nameStr = `### ${prettyName.padEnd(namePadding)}`;
                 line = `\n${offsetStr}${value}${nameStr}`;
             } else {
-                offsetStr = `0x${offset.toString(16)}`.padEnd(10, ' ');
-                value = ethUtil.stripHexPrefix(ethUtil.bufferToHex(block.toBuffer().slice(0, 32))).padEnd(74);
+                offsetStr = `0x${offset.toString(Constants.HEX_BASE)}`.padEnd(offsetPadding);
+                value = ethUtil.stripHexPrefix(ethUtil.bufferToHex(block.toBuffer().slice(evmWordStartIndex, Constants.EVM_WORD_WIDTH_IN_BYTES))).padEnd(valuePadding);
                 if (block instanceof MemberCalldataBlock) {
-                    nameStr = `### ${prettyName.padEnd(80)}`;
+                    nameStr = `### ${prettyName.padEnd(namePadding)}`;
                     line = `\n${offsetStr}${value}${nameStr}`;
                 } else {
-                    nameStr = `    ${prettyName.padEnd(80)}`;
+                    nameStr = `    ${prettyName.padEnd(namePadding)}`;
                     line = `${offsetStr}${value}${nameStr}`;
                 }
             }
 
-            for (let j = 32; j < size; j += 32) {
-                offsetStr = `0x${(offset + j).toString(16)}`.padEnd(10, ' ');
-                value = ethUtil.stripHexPrefix(ethUtil.bufferToHex(block.toBuffer().slice(j, j + 32))).padEnd(74);
-                nameStr = ' '.repeat(40);
-
+            for (let j = Constants.EVM_WORD_WIDTH_IN_BYTES; j < size; j += Constants.EVM_WORD_WIDTH_IN_BYTES) {
+                offsetStr = `0x${(offset + j).toString(Constants.HEX_BASE)}`.padEnd(offsetPadding);
+                value = ethUtil.stripHexPrefix(ethUtil.bufferToHex(block.toBuffer().slice(j, j + Constants.EVM_WORD_WIDTH_IN_BYTES))).padEnd(valuePadding);
+                nameStr = ' '.repeat(namePadding);
                 line = `${line}\n${offsetStr}${value}${nameStr}`;
             }
 
@@ -378,16 +433,16 @@ export class Calldata {
         return hexValue;
     }
 
-    private generateCondensedHexString(): string {
-        let selectorBuffer = ethUtil.toBuffer(this.selector);
-        if (this.root === undefined) {
+    private _generateCondensedHexString(): string {
+        const selectorBuffer = ethUtil.toBuffer(this._selector);
+        if (this._root === undefined) {
             throw new Error('expected root');
         }
 
-        const valueQueue = this.createQueue(this.root);
+        const valueQueue = Calldata._createQueue(this._root);
         const valueBufs: Buffer[] = [selectorBuffer];
         let block: CalldataBlock | undefined;
-        while ((block = valueQueue.pop()) !== undefined) {
+        for (block = valueQueue.pop(); block !== undefined; block = valueQueue.pop()) {
             valueBufs.push(block.toBuffer());
         }
 
@@ -395,96 +450,14 @@ export class Calldata {
         const hexValue = ethUtil.bufferToHex(combinedBuffers);
         return hexValue;
     }
-
-    public optimize() {
-        if (this.root === undefined) {
-            throw new Error('expected root');
-        }
-
-        const blocksByHash: { [key: string]: CalldataBlock } = {};
-
-        // 1. Create a queue of subtrees by hash
-        // Note that they are ordered the same as
-        const subtreeQueue = this.createQueue(this.root);
-        let block: CalldataBlock | undefined;
-        while ((block = subtreeQueue.popBack()) !== undefined) {
-            if (block instanceof DependentCalldataBlock) {
-                const blockHashBuf = block.getDependency().computeHash();
-                const blockHash = ethUtil.bufferToHex(blockHashBuf);
-                if (blockHash in blocksByHash) {
-                    const blockWithSameHash = blocksByHash[blockHash];
-                    if (blockWithSameHash !== block.getDependency()) {
-                        block.setAlias(blockWithSameHash);
-                    }
-                }
-                continue;
-            }
-
-            const blockHashBuf = block.computeHash();
-            const blockHash = ethUtil.bufferToHex(blockHashBuf);
-            if (blockHash in blocksByHash === false) {
-                blocksByHash[blockHash] = block;
-            }
-        }
-    }
-
-    public toHexString(): string {
-        if (this.root === undefined) {
-            throw new Error('expected root');
-        }
-
-        if (this.rules.optimize) this.optimize();
-
-        const offsetQueue = this.createQueue(this.root);
-        let block: CalldataBlock | undefined;
-        let offset = 0;
-        while ((block = offsetQueue.pop()) !== undefined) {
-            block.setOffset(offset);
-            offset += block.getSizeInBytes();
-        }
-
-        const hexValue = this.rules.annotate ? this.generateAnnotatedHexString() : this.generateCondensedHexString();
-        return hexValue;
-    }
-
-    public getSelectorHex(): string {
-        return this.selector;
-    }
-
-    public getSizeInBytes(): number {
-        return this.sizeInBytes;
-    }
-
-    public toAnnotatedString(): string {
-        return '';
-    }
-
-    public setRoot(block: CalldataBlock) {
-        this.root = block;
-        this.sizeInBytes += block.getSizeInBytes();
-    }
-
-    public setSelector(selector: string) {
-        // Ensure we have a 0x prefix
-        if (selector.startsWith('0x')) {
-            this.selector = selector;
-        } else {
-            this.selector = `$0x${selector}`;
-        }
-
-        // The selector must be 10 characters: '0x' followed by 4 bytes (two hex chars per byte)
-        if (this.selector.length !== 10) {
-            throw new Error(`Invalid selector '${this.selector}'`);
-        }
-        this.sizeInBytes += 8;
-    }
 }
 
 export class RawCalldata {
-    private value: Buffer;
-    private offset: number; // tracks current offset into raw calldata; used for parsing
-    private selector: string;
-    private scopes: Queue<number>;
+    private static readonly _INITIAL_OFFSET = 0;
+    private readonly _value: Buffer;
+    private readonly _selector: string;
+    private readonly _scopes: Queue<number>;
+    private _offset: number; // tracks current offset into raw calldata; used for parsing
 
     constructor(value: string | Buffer, hasSelectorPrefix: boolean = true) {
         if (typeof value === 'string' && !value.startsWith('0x')) {
@@ -492,21 +465,21 @@ export class RawCalldata {
         }
         const valueBuf = ethUtil.toBuffer(value);
         if (hasSelectorPrefix) {
-            this.selector = ethUtil.bufferToHex(valueBuf.slice(0, 4));
-            this.value = valueBuf.slice(4); // disregard selector
+            this._selector = ethUtil.bufferToHex(valueBuf.slice(Constants.HEX_SELECTOR_BYTE_OFFSET_IN_CALLDATA, Constants.HEX_SELECTOR_LENGTH_IN_BYTES));
+            this._value = valueBuf.slice(Constants.HEX_SELECTOR_LENGTH_IN_BYTES); // disregard selector
         } else {
-            this.selector = '0x';
-            this.value = valueBuf;
+            this._selector = '0x';
+            this._value = valueBuf;
         }
 
-        this.offset = 0;
-        this.scopes = new Queue<number>();
-        this.scopes.push(0);
+        this._scopes = new Queue<number>();
+        this._scopes.push(RawCalldata._INITIAL_OFFSET);
+        this._offset = RawCalldata._INITIAL_OFFSET;
     }
 
     public popBytes(lengthInBytes: number): Buffer {
-        const value = this.value.slice(this.offset, this.offset + lengthInBytes);
-        this.setOffset(this.offset + lengthInBytes);
+        const value = this._value.slice(this._offset, this._offset + lengthInBytes);
+        this.setOffset(this._offset + lengthInBytes);
         return value;
     }
 
@@ -521,28 +494,28 @@ export class RawCalldata {
     }
 
     public readBytes(from: number, to: number): Buffer {
-        const value = this.value.slice(from, to);
+        const value = this._value.slice(from, to);
         return value;
     }
 
-    public setOffset(offsetInBytes: number) {
-        this.offset = offsetInBytes;
+    public setOffset(offsetInBytes: number): void {
+        this._offset = offsetInBytes;
     }
 
-    public startScope() {
-        this.scopes.pushFront(this.offset);
+    public startScope(): void {
+        this._scopes.pushFront(this._offset);
     }
 
-    public endScope() {
-        this.scopes.pop();
+    public endScope(): void {
+        this._scopes.pop();
     }
 
     public getOffset(): number {
-        return this.offset;
+        return this._offset;
     }
 
-    public toAbsoluteOffset(relativeOffset: number) {
-        const scopeOffset = this.scopes.peek();
+    public toAbsoluteOffset(relativeOffset: number): number {
+        const scopeOffset = this._scopes.peek();
         if (scopeOffset === undefined) {
             throw new Error(`Tried to access undefined scope.`);
         }
@@ -551,6 +524,6 @@ export class RawCalldata {
     }
 
     public getSelector(): string {
-        return this.selector;
+        return this._selector;
     }
 }
