@@ -772,7 +772,7 @@ describe.only('ABI Encoder', () => {
         it('Fixed size; Static elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'int[2]' };
-            const dataType = new AbiEncoder.SolArray(testDataItem);
+            const dataType = new AbiEncoder.Array(testDataItem);
             // Construct args to be encoded
             const args = [new BigNumber(5), new BigNumber(6)];
             // Encode Args and validate result
@@ -789,7 +789,7 @@ describe.only('ABI Encoder', () => {
         it('Dynamic size; Static elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'int[]' };
-            const dataType = new AbiEncoder.SolArray(testDataItem);
+            const dataType = new AbiEncoder.Array(testDataItem);
             // Construct args to be encoded
             const args = [new BigNumber(5), new BigNumber(6)];
             // Encode Args and validate result
@@ -806,7 +806,7 @@ describe.only('ABI Encoder', () => {
         it('Fixed size; Dynamic elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'string[2]' };
-            const dataType = new AbiEncoder.SolArray(testDataItem);
+            const dataType = new AbiEncoder.Array(testDataItem);
             // Construct args to be encoded
             const args = ['Hello', 'world'];
             // Encode Args and validate result
@@ -823,7 +823,7 @@ describe.only('ABI Encoder', () => {
         it('Dynamic size; Dynamic elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'string[]' };
-            const dataType = new AbiEncoder.SolArray(testDataItem);
+            const dataType = new AbiEncoder.Array(testDataItem);
             // Construct args to be encoded
             const args = ['Hello', 'world'];
             // Encode Args and validate result
@@ -840,7 +840,7 @@ describe.only('ABI Encoder', () => {
         it('Dynamic Size; Multidimensional; Dynamic Elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'bytes[][]' };
-            const dataType = new AbiEncoder.SolArray(testDataItem);
+            const dataType = new AbiEncoder.Array(testDataItem);
             // Construct args to be encoded
             const array1 = ['0x01020304', '0x05060708', '0x09101112'];
             const array2 = ['0x10111213', '0x14151617'];
@@ -860,7 +860,7 @@ describe.only('ABI Encoder', () => {
         it('Dynamic Size; Multidimensional; Static Elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'bytes4[][]' };
-            const dataType = new AbiEncoder.SolArray(testDataItem);
+            const dataType = new AbiEncoder.Array(testDataItem);
             // Construct args to be encoded
             const array1 = ['0x01020304', '0x05060708', '0x09101112'];
             const array2 = ['0x10111213', '0x14151617'];
@@ -880,7 +880,7 @@ describe.only('ABI Encoder', () => {
         it('Static Size; Multidimensional; Static Elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'bytes4[3][2]' };
-            const dataType = new AbiEncoder.SolArray(testDataItem);
+            const dataType = new AbiEncoder.Array(testDataItem);
             // Construct args to be encoded
             const array1 = ['0x01020304', '0x05060708', '0x09101112'];
             const array2 = ['0x10111213', '0x14151617', '0x18192021'];
@@ -899,7 +899,7 @@ describe.only('ABI Encoder', () => {
         it('Static Size; Multidimensional; Dynamic Elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'bytes[3][2]' };
-            const dataType = new AbiEncoder.SolArray(testDataItem);
+            const dataType = new AbiEncoder.Array(testDataItem);
             // Construct args to be encoded
             const array1 = ['0x01020304', '0x05060708', '0x09101112'];
             const array2 = ['0x10111213', '0x14151617', '0x18192021'];
@@ -918,7 +918,7 @@ describe.only('ABI Encoder', () => {
         it('Static size; Too Few Elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'string[3]' };
-            const dataType = new AbiEncoder.SolArray(testDataItem);
+            const dataType = new AbiEncoder.Array(testDataItem);
             // Construct args to be encoded
             const args = ['Hello', 'world'];
             // Encode Args and validate result
@@ -929,7 +929,7 @@ describe.only('ABI Encoder', () => {
         it('Static size; Too Many Elements', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'string[1]' };
-            const dataType = new AbiEncoder.SolArray(testDataItem);
+            const dataType = new AbiEncoder.Array(testDataItem);
             // Construct args to be encoded
             const args = ['Hello', 'world'];
             // Encode Args and validate result
@@ -940,7 +940,7 @@ describe.only('ABI Encoder', () => {
         it('Element Type Mismatch', async () => {
             // Create DataType object
             const testDataItem = { name: 'testArray', type: 'uint[]' };
-            const dataType = new AbiEncoder.SolArray(testDataItem);
+            const dataType = new AbiEncoder.Array(testDataItem);
             // Construct args to be encoded
             const args = [new BigNumber(1), 'Bad Argument'];
             // Encode Args and validate result
@@ -1563,7 +1563,7 @@ describe.only('ABI Encoder', () => {
         it('Single Byte (byte)', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Byte', type: 'byte' };
-            const dataType = new AbiEncoder.Byte(testDataItem);
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
             // Construct args to be encoded
             const args = '0x05';
             // Encode Args and validate result
@@ -1579,7 +1579,7 @@ describe.only('ABI Encoder', () => {
         it('Single Byte (bytes1)', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Bytes1', type: 'bytes1' };
-            const dataType = new AbiEncoder.Byte(testDataItem);
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
             // Construct args to be encoded
             const args = '0x05';
             // Encode Args and validate result
@@ -1595,7 +1595,7 @@ describe.only('ABI Encoder', () => {
         it('4 Bytes (bytes4)', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Bytes4', type: 'bytes4' };
-            const dataType = new AbiEncoder.Byte(testDataItem);
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
             // Construct args to be encoded
             const args = '0x00010203';
             // Encode Args and validate result
@@ -1611,7 +1611,7 @@ describe.only('ABI Encoder', () => {
         it('4 Bytes (bytes4); Encoder must pad input', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Bytes4', type: 'bytes4' };
-            const dataType = new AbiEncoder.Byte(testDataItem);
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const args = '0x1a18';
@@ -1629,7 +1629,7 @@ describe.only('ABI Encoder', () => {
         it('32 Bytes (bytes32)', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Bytes32', type: 'bytes32' };
-            const dataType = new AbiEncoder.Byte(testDataItem);
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
             // Construct args to be encoded
             const args = '0x0001020304050607080911121314151617181920212223242526272829303132';
             // Encode Args and validate result
@@ -1645,7 +1645,7 @@ describe.only('ABI Encoder', () => {
         it('32 Bytes (bytes32); Encoder must pad input', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Bytes32', type: 'bytes32' };
-            const dataType = new AbiEncoder.Byte(testDataItem);
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const args = '0x1a18bf61';
@@ -1663,7 +1663,7 @@ describe.only('ABI Encoder', () => {
         it('Should throw when pass in too many bytes (bytes4)', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Bytes4', type: 'bytes4' };
-            const dataType = new AbiEncoder.Byte(testDataItem);
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
             // Construct args to be encoded
             const args = '0x0102030405';
             // Encode Args and validate result
@@ -1676,7 +1676,7 @@ describe.only('ABI Encoder', () => {
         it('Should throw when pass in too many bytes (bytes32)', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Bytes32', type: 'bytes32' };
-            const dataType = new AbiEncoder.Byte(testDataItem);
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
             // Construct args to be encoded
             const args = '0x010203040506070809101112131415161718192021222324252627282930313233';
             // Encode Args and validate result
@@ -1689,7 +1689,7 @@ describe.only('ABI Encoder', () => {
         it('Should throw when pass in bad hex (no 0x prefix)', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Bytes32', type: 'bytes32' };
-            const dataType = new AbiEncoder.Byte(testDataItem);
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
             // Construct args to be encoded
             const args = '0102030405060708091011121314151617181920212223242526272829303132';
             // Encode Args and validate result
@@ -1700,7 +1700,7 @@ describe.only('ABI Encoder', () => {
         it('Should throw when pass in bad hex (include a half-byte)', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Bytes32', type: 'bytes32' };
-            const dataType = new AbiEncoder.Byte(testDataItem);
+            const dataType = new AbiEncoder.StaticBytes(testDataItem);
             // Construct args to be encoded
             const args = '0x010';
             // Encode Args and validate result
@@ -1714,7 +1714,7 @@ describe.only('ABI Encoder', () => {
         it('Fits into one EVM word', async () => {
             // Create DataType object
             const testDataItem = { name: 'Dynamic Bytes', type: 'bytes' };
-            const dataType = new AbiEncoder.Bytes(testDataItem);
+            const dataType = new AbiEncoder.DynamicBytes(testDataItem);
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const args = '0x1a18bf61';
@@ -1732,7 +1732,7 @@ describe.only('ABI Encoder', () => {
         it('Spans multiple EVM words', async () => {
             // Create DataType object
             const testDataItem = { name: 'Dynamic Bytes', type: 'bytes' };
-            const dataType = new AbiEncoder.Bytes(testDataItem);
+            const dataType = new AbiEncoder.DynamicBytes(testDataItem);
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const bytesLength = 40;
@@ -1751,7 +1751,7 @@ describe.only('ABI Encoder', () => {
         it('Input as Buffer', async () => {
             // Create DataType object
             const testDataItem = { name: 'Dynamic Bytes', type: 'bytes' };
-            const dataType = new AbiEncoder.Bytes(testDataItem);
+            const dataType = new AbiEncoder.DynamicBytes(testDataItem);
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const args = '0x1a18bf61';
@@ -1770,7 +1770,7 @@ describe.only('ABI Encoder', () => {
         it('Should throw when pass in bad hex (no 0x prefix)', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Bytes', type: 'bytes' };
-            const dataType = new AbiEncoder.Bytes(testDataItem);
+            const dataType = new AbiEncoder.DynamicBytes(testDataItem);
             // Construct args to be encoded
             const args = '01';
             // Encode Args and validate result
@@ -1781,7 +1781,7 @@ describe.only('ABI Encoder', () => {
         it('Should throw when pass in bad hex (include a half-byte)', async () => {
             // Create DataType object
             const testDataItem = { name: 'Static Bytes', type: 'bytes' };
-            const dataType = new AbiEncoder.Bytes(testDataItem);
+            const dataType = new AbiEncoder.DynamicBytes(testDataItem);
             // Construct args to be encoded
             const args = '0x010';
             // Encode Args and validate result
@@ -1795,7 +1795,7 @@ describe.only('ABI Encoder', () => {
         it('Fits into one EVM word', async () => {
             // Create DataType object
             const testDataItem = { name: 'String', type: 'string' };
-            const dataType = new AbiEncoder.SolString(testDataItem);
+            const dataType = new AbiEncoder.String(testDataItem);
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const args = 'five';
@@ -1813,7 +1813,7 @@ describe.only('ABI Encoder', () => {
         it('Spans multiple EVM words', async () => {
             // Create DataType object
             const testDataItem = { name: 'String', type: 'string' };
-            const dataType = new AbiEncoder.SolString(testDataItem);
+            const dataType = new AbiEncoder.String(testDataItem);
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const bytesLength = 40;
@@ -1832,7 +1832,7 @@ describe.only('ABI Encoder', () => {
         it('String that begins with 0x prefix', async () => {
             // Create DataType object
             const testDataItem = { name: 'String', type: 'string' };
-            const dataType = new AbiEncoder.SolString(testDataItem);
+            const dataType = new AbiEncoder.String(testDataItem);
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const strLength = 40;
