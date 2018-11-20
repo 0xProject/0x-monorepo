@@ -78,7 +78,6 @@ export abstract class PayloadDataType extends DataType {
             name,
             signature,
             parentName,
-            /*offsetInBytes,*/ relocatable,
             encodedValue,
         );
         return block;
@@ -116,12 +115,10 @@ export abstract class DependentDataType extends DataType {
         const name = this.getDataItem().name;
         const signature = this.getSignature();
         const parentName = parentBlock === undefined ? '' : parentBlock.getName();
-        const relocatable = false;
         const block = new DependentCalldataBlock(
             name,
             signature,
             parentName,
-            relocatable,
             dependencyBlock,
             parentBlock,
         );
@@ -235,9 +232,7 @@ export abstract class MemberDataType extends DataType {
         const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(
             this.getDataItem().name,
             this.getSignature(),
-            parentName,
-            this.isStatic(),
-            false,
+            parentName
         );
 
         let members = this.members;
@@ -262,9 +257,7 @@ export abstract class MemberDataType extends DataType {
         const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(
             this.getDataItem().name,
             this.getSignature(),
-            parentName,
-            this.isStatic(),
-            false,
+            parentName
         );
         const memberBlocks: CalldataBlock[] = [];
         let childMap = _.cloneDeep(this.memberMap);
