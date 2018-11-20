@@ -102,7 +102,7 @@ describe.only('ABI Encoder', () => {
         it('Duplicate Dynamic Arrays with Dynamic Elements', async () => {
             // Generate calldata
             const method = new AbiEncoder.Method(OptimizedAbis.duplicateDynamicArraysWithDynamicElements);
-            const array1 = ["Hello", "World"];
+            const array1 = ['Hello', 'World'];
             const array2 = array1;
             const args = [array1, array2];
             // Validata calldata
@@ -138,7 +138,7 @@ describe.only('ABI Encoder', () => {
         it('Duplicate Static Arrays with Dynamic Elements', async () => {
             // Generate calldata
             const method = new AbiEncoder.Method(OptimizedAbis.duplicateStaticArraysWithDynamicElements);
-            const array1 = ["Hello", "World"];
+            const array1 = ['Hello', 'World'];
             const array2 = array1;
             const args = [array1, array2];
             // Validata calldata

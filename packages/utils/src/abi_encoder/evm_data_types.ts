@@ -276,7 +276,7 @@ export class Byte extends PayloadDataType {
         if (valueBuf.byteLength > this.width) {
             throw new Error(
                 `Tried to assign ${value} (${
-                valueBuf.byteLength
+                    valueBuf.byteLength
                 } bytes), which exceeds max bytes that can be stored in a ${this.getSignature()}`,
             );
         } else if (value.length % 2 !== 0) {
@@ -548,7 +548,7 @@ export class Method extends MemberDataType {
 export class EvmDataTypeFactory implements DataTypeFactory {
     private static instance: DataTypeFactory;
 
-    private constructor() { }
+    private constructor() {}
 
     public static getInstance(): DataTypeFactory {
         if (!EvmDataTypeFactory.instance) {
