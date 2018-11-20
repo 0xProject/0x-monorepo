@@ -4,9 +4,9 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { BigNumber } from '../../configured_bignumber';
+import { DataTypeFactory, PayloadDataType } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import * as Constants from '../constants';
-import { DataTypeFactory, PayloadDataType } from '../data_type';
 
 export class Bool extends PayloadDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;

@@ -3,9 +3,9 @@ import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { DataTypeFactory, PayloadDataType } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import * as Constants from '../constants';
-import { DataTypeFactory, PayloadDataType } from '../data_type';
 
 export class Address extends PayloadDataType {
     public static ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X = "Address must start with '0x'";
@@ -13,7 +13,7 @@ export class Address extends PayloadDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _ADDRESS_SIZE_IN_BYTES = 20;
     private static readonly _DECODED_ADDRESS_OFFSET_IN_BYTES = Constants.EVM_WORD_WIDTH_IN_BYTES -
-    Address._ADDRESS_SIZE_IN_BYTES;
+        Address._ADDRESS_SIZE_IN_BYTES;
 
     public static matchType(type: string): boolean {
         return type === 'address';

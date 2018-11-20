@@ -3,9 +3,9 @@ import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { DataTypeFactory, PayloadDataType } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import * as Constants from '../constants';
-import { DataTypeFactory, PayloadDataType } from '../data_type';
 
 export class String extends PayloadDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
