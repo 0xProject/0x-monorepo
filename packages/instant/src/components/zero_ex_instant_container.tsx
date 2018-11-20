@@ -25,13 +25,12 @@ export interface ZeroExInstantContainerState {
     tokenSelectionPanelAnimationState: SlideAnimationState;
 }
 
+const PoweredByLogo = require('../assets/powered_by_0x.svg');
 export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantContainerState> {
     public state = {
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };
     public render(): React.ReactNode {
-        const PoweredByLogo = require('../assets/powered_by_0x.svg');
-
         return (
             <React.Fragment>
                 <CSSReset />
@@ -75,9 +74,9 @@ export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantCon
                         marginRight="auto"
                         width="140px"
                     >
-                        <Text href={ZERO_EX_SITE_URL}>
+                        <a href={ZERO_EX_SITE_URL} target="_blank">
                             <PoweredByLogo />
-                        </Text>
+                        </a>
                     </Container>
                 </Container>
             </React.Fragment>
