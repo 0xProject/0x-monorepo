@@ -1,5 +1,5 @@
 import * as chai from 'chai';
-import { BlockParamLiteral, JSONRPCErrorCallback, JSONRPCRequestPayload } from 'ethereum-types';
+import { BlockParamLiteral, JSONRPCErrorCallback, JSONRPCRequestPayload, TransactionReceipt } from 'ethereum-types';
 import * as Ganache from 'ganache-core';
 import * as _ from 'lodash';
 import 'mocha';
@@ -96,6 +96,18 @@ describe('EthRPCClient tests', () => {
         it('get block number', async () => {
             const blockNumber = await ethRPCClient.getBlockNumberAsync();
             expect(typeof blockNumber).to.be.equal('number');
+        });
+    });
+    describe('#getTransactionReceiptAsync/awaitTransactionSuccessAsync', () => {
+        it('get transaction receipt', async () => {
+            const payload = { from: addresses[0], to: addresses[1], value: 1 };
+            const txHash = await ethRPCClient.sendTransactionAsync(payload);
+            await ethRPCClient.awaitTransactionSuccessAsync(txHash);
+            const receiptIfExists = await ethRPCClient.getTransactionReceiptIfExistsAsync(txHash);
+            expect(receiptIfExists).to.not.be.undefined();
+            const receipt = receiptIfExists as TransactionReceipt;
+            expect(receipt.transactionIndex).to.be.a('number');
+            expect(receipt.transactionHash).to.be.equal(txHash);
         });
     });
     describe('#getBlockIfExistsAsync', () => {
