@@ -1,6 +1,7 @@
 const childProcess = require('child_process');
 const ip = require('ip');
 const path = require('path');
+const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
 const webpack = require('webpack');
 
 // The common js bundle (not this one) is built using tsc.
@@ -34,9 +35,59 @@ const getHeapAnalyticsId = environmentName => {
     return undefined;
 };
 
+const getRollbarPlugin = environmentName => {
+    if (!environmentName) {
+        return undefined;
+    }
+
+    const publishToken = process.env.INSTANT_ROLLBAR_PUBLISH_TOKEN;
+    if (!publishToken) {
+        return undefined;
+    }
+
+    let rollbarPublicPath;
+    if (environmentName === 'dogfood') {
+        rollbarPublicPath = 'http://0x-instant-dogfood.s3-website-us-east-1.amazonaws.com';
+    } else if (environmentName === 'staging') {
+        rollbarPublicPath = 'http://0x-instant-staging.s3-website-us-east-1.amazonaws.com';
+    }
+
+    if (!rollbarPublicPath) {
+        console.log('No rollbar public path');
+        return undefined;
+    }
+
+    const rollbarPluginOptions = {
+        accessToken: publishToken,
+        version: GIT_SHA,
+        publicPath: rollbarPublicPath,
+    };
+    return new RollbarSourceMapPlugin(rollbarPluginOptions);
+};
+
 module.exports = (env, argv) => {
     const environmentName = getEnvironmentName(env, argv);
     const outputPath = process.env.WEBPACK_OUTPUT_PATH || 'umd';
+
+    let plugins = [
+        new webpack.DefinePlugin({
+            'process.env': {
+                GIT_SHA: JSON.stringify(GIT_SHA),
+                NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
+                HEAP_ANALYTICS_ID: getHeapAnalyticsId(environmentName),
+                ROLLBAR_ENVIRONMENT: JSON.stringify(environmentName),
+                ROLLBAR_CLIENT_TOKEN: JSON.stringify(process.env.INSTANT_ROLLBAR_CLIENT_TOKEN),
+            },
+        }),
+    ];
+    const rollbarPlugin = getRollbarPlugin(environmentName);
+    if (rollbarPlugin) {
+        console.log('Using rollbar plugin');
+        plugins = plugins.concat(rollbarPlugin);
+    } else {
+        console.log('Not using rollbar plugin');
+    }
+
     const config = {
         entry: {
             instant: './src/index.umd.ts',
@@ -47,17 +98,7 @@ module.exports = (env, argv) => {
             library: 'zeroExInstant',
             libraryTarget: 'umd',
         },
-        plugins: [
-            new webpack.DefinePlugin({
-                'process.env': {
-                    GIT_SHA: JSON.stringify(GIT_SHA),
-                    NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
-                    HEAP_ANALYTICS_ID: getHeapAnalyticsId(environmentName),
-                    ROLLBAR_ENVIRONMENT: JSON.stringify(environmentName),
-                    ROLLBAR_CLIENT_TOKEN: JSON.stringify(process.env.INSTANT_ROLLBAR_CLIENT_TOKEN),
-                },
-            }),
-        ],
+        plugins,
         devtool: 'source-map',
         resolve: {
             extensions: ['.js', '.json', '.ts', '.tsx'],
