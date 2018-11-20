@@ -276,7 +276,7 @@ export class Byte extends PayloadDataType {
         if (valueBuf.byteLength > this.width) {
             throw new Error(
                 `Tried to assign ${value} (${
-                    valueBuf.byteLength
+                valueBuf.byteLength
                 } bytes), which exceeds max bytes that can be stored in a ${this.getSignature()}`,
             );
         } else if (value.length % 2 !== 0) {
@@ -396,7 +396,7 @@ export class Pointer extends DependentDataType {
     }
 
     public getSignature(): string {
-        return this.dependency.getSignature();
+        return this._dependency.getSignature();
     }
 }
 
@@ -408,7 +408,7 @@ export class Tuple extends MemberDataType {
         if (!Tuple.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Tuple with bad input: ${dataItem}`);
         }
-        this.tupleSignature = this.computeSignatureOfMembers();
+        this.tupleSignature = this._computeSignatureOfMembers();
     }
 
     public getSignature(): string {
@@ -455,10 +455,10 @@ export class SolArray extends MemberDataType {
         }
         const elementDataType = this.getFactory().mapDataItemToDataType(dataItem);
         const type = elementDataType.getSignature();
-        if (this.arrayLength === undefined) {
+        if (this._arrayLength === undefined) {
             return `${type}[]`;
         } else {
-            return `${type}[${this.arrayLength}]`;
+            return `${type}[${this._arrayLength}]`;
         }
     }
 
@@ -493,7 +493,7 @@ export class Method extends MemberDataType {
     }
 
     private computeSignature(): string {
-        const memberSignature = this.computeSignatureOfMembers();
+        const memberSignature = this._computeSignatureOfMembers();
         const methodSignature = `${this.getDataItem().name}${memberSignature}`;
         return methodSignature;
     }
@@ -548,7 +548,7 @@ export class Method extends MemberDataType {
 export class EvmDataTypeFactory implements DataTypeFactory {
     private static instance: DataTypeFactory;
 
-    private constructor() {}
+    private constructor() { }
 
     public static getInstance(): DataTypeFactory {
         if (!EvmDataTypeFactory.instance) {
