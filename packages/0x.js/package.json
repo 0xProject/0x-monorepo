@@ -82,7 +82,7 @@
         "@0x/types": "^1.2.1",
         "@0x/typescript-typings": "^3.0.4",
         "@0x/utils": "^2.0.5",
-        "@0x/eth-rpc-client": "^3.1.0",
+        "@0x/eth-rpc-client": "^3.1.4",
         "@types/web3-provider-engine": "^14.0.0",
         "ethereum-types": "^1.1.2",
         "ethers": "~4.0.4",

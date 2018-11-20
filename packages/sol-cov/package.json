@@ -47,7 +47,7 @@
         "@0x/subproviders": "^2.1.4",
         "@0x/typescript-typings": "^3.0.4",
         "@0x/utils": "^2.0.5",
-        "@0x/eth-rpc-client": "^3.1.0",
+        "@0x/eth-rpc-client": "^3.1.4",
         "@types/solidity-parser-antlr": "^0.2.0",
         "ethereum-types": "^1.1.2",
         "ethereumjs-util": "^5.1.1",

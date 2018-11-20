@@ -33,7 +33,7 @@
         "@0x/types": "^1.2.1",
         "@0x/typescript-typings": "^3.0.4",
         "@0x/utils": "^2.0.5",
-        "@0x/eth-rpc-client": "^3.1.0",
+        "@0x/eth-rpc-client": "^3.1.4",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@ledgerhq/hw-transport-u2f": "4.24.0",
         "@types/eth-lightwallet": "^3.0.0",

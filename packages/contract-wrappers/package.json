@@ -76,7 +76,7 @@
         "@0x/typescript-typings": "^3.0.4",
         "@0x/utils": "^2.0.5",
         "ethereum-types": "^1.1.2",
-        "@0x/eth-rpc-client": "^3.1.0",
+        "@0x/eth-rpc-client": "^3.1.4",
         "ethereumjs-blockstream": "6.0.0",
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
