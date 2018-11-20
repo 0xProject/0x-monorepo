@@ -19,8 +19,6 @@ import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
 
-fonts.include();
-
 export type ZeroExInstantProviderProps = ZeroExInstantProviderRequiredProps &
     Partial<ZeroExInstantProviderOptionalProps>;
 
@@ -86,6 +84,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
     }
     constructor(props: ZeroExInstantProviderProps) {
         super(props);
+        fonts.include();
         const initialAppState = ZeroExInstantProvider._mergeDefaultStateWithProps(this.props);
         this._store = store.create(initialAppState);
     }
