@@ -1,6 +1,6 @@
 import { DataItem } from 'ethereum-types';
 
-import { DataTypeFactory, MemberDataType } from '../data_type';
+import { DataTypeFactory, MemberDataType } from '../abstract_data_types';
 
 export class Tuple extends MemberDataType {
     private readonly _tupleSignature: string;

@@ -2,7 +2,7 @@
 import { DataItem } from 'ethereum-types';
 
 import { BigNumber } from '../../configured_bignumber';
-import { DataTypeFactory } from '../data_type';
+import { DataTypeFactory } from '../abstract_data_types';
 
 import { Number } from './number';
 

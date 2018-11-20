@@ -2,9 +2,9 @@ import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { DataTypeFactory, PayloadDataType } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import * as Constants from '../constants';
-import { DataTypeFactory, PayloadDataType } from '../data_type';
 
 export class StaticBytes extends PayloadDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
@@ -46,7 +46,7 @@ export class StaticBytes extends PayloadDataType {
         if (valueBuf.byteLength > this._width) {
             throw new Error(
                 `Tried to assign ${value} (${
-                    valueBuf.byteLength
+                valueBuf.byteLength
                 } bytes), which exceeds max bytes that can be stored in a ${this.getSignature()}`,
             );
         } else if (value.length % 2 !== 0) {

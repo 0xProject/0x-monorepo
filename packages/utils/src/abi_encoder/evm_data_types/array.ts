@@ -1,7 +1,7 @@
 import { DataItem } from 'ethereum-types';
 
+import { DataTypeFactory, MemberDataType } from '../abstract_data_types';
 import * as Constants from '../constants';
-import { DataTypeFactory, MemberDataType } from '../data_type';
 
 export class Array extends MemberDataType {
     private static readonly _matcher = RegExp('^(.+)\\[([0-9]*)\\]$');

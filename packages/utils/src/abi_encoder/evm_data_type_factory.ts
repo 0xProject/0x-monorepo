@@ -3,7 +3,7 @@
 /* tslint:disable no-construct */
 import { DataItem, MethodAbi } from 'ethereum-types';
 
-import { DataType, DataTypeFactory } from './data_type';
+import { DataType, DataTypeFactory } from './abstract_data_types';
 import * as Impl from './evm_data_types';
 
 export class Address extends Impl.Address {
