@@ -3,18 +3,18 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 @Entity({ name: 'ohlcv_external', schema: 'raw' })
 export class OHLCVExternal {
     @PrimaryColumn() public exchange!: string;
-    @PrimaryColumn() public from_symbol!: string;
-    @PrimaryColumn() public to_symbol!: string;
-    @PrimaryColumn() public start_time!: number;
-    @PrimaryColumn() public end_time!: number;
-    
+    @PrimaryColumn() public fromSymbol!: string;
+    @PrimaryColumn() public toSymbol!: string;
+    @PrimaryColumn() public startTime!: number;
+    @PrimaryColumn() public endTime!: number;
+
     @Column() public open!: number;
     @Column() public close!: number;
     @Column() public low!: number;
     @Column() public high!: number;
-    @Column() public volume_from!: number;
-    @Column() public volume_to!: number;
+    @Column() public volumeFrom!: number;
+    @Column() public volumeTo!: number;
 
     @PrimaryColumn() public source!: string;
-    @PrimaryColumn() public observed_timestamp!: number;
+    @PrimaryColumn() public observedTimestamp!: number;
 }

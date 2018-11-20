@@ -2,9 +2,9 @@ import 'reflect-metadata';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import { MetamaskTrustedTokenMeta, TrustedTokenSource, ZeroExTrustedTokenMeta } from '../data_sources/trusted_tokens';
-import { TrustedToken } from '../entities';
+import { TokenMetadata } from '../entities';
 import * as ormConfig from '../ormconfig';
-import { parseMetamaskTrustedTokens, parseZeroExTrustedTokens } from '../parsers/trusted_tokens';
+import { parseMetamaskTrustedTokens, parseZeroExTrustedTokens } from '../parsers/token_metadata';
 import { handleError } from '../utils';
 
 const METAMASK_TRUSTED_TOKENS_URL =
@@ -25,7 +25,7 @@ let connection: Connection;
 async function getMetamaskTrustedTokens(): Promise<void> {
     // tslint:disable-next-line
     console.log('Getting latest metamask trusted tokens list ...');
-    const trustedTokensRepository = connection.getRepository(TrustedToken);
+    const trustedTokensRepository = connection.getRepository(TokenMetadata);
     const trustedTokensSource = new TrustedTokenSource<Map<string, MetamaskTrustedTokenMeta>>(METAMASK_TRUSTED_TOKENS_URL);
     const resp = await trustedTokensSource.getTrustedTokenMetaAsync();
     const trustedTokens = parseMetamaskTrustedTokens(resp);
@@ -39,7 +39,7 @@ async function getMetamaskTrustedTokens(): Promise<void> {
 async function getZeroExTrustedTokens(): Promise<void> {
     // tslint:disable-next-line
     console.log('Getting latest 0x trusted tokens list ...');
-    const trustedTokensRepository = connection.getRepository(TrustedToken);
+    const trustedTokensRepository = connection.getRepository(TokenMetadata);
     const trustedTokensSource = new TrustedTokenSource<ZeroExTrustedTokenMeta[]>(ZEROEX_TRUSTED_TOKENS_URL);
     const resp = await trustedTokensSource.getTrustedTokenMetaAsync();
     const trustedTokens = parseZeroExTrustedTokens(resp);
