@@ -90,12 +90,7 @@ export abstract class CalldataBlock {
 export class PayloadCalldataBlock extends CalldataBlock {
     private readonly _payload: Buffer;
 
-    constructor(
-        name: string,
-        signature: string,
-        parentName: string,
-        payload: Buffer,
-    ) {
+    constructor(name: string, signature: string, parentName: string, payload: Buffer) {
         const headerSizeInBytes = 0;
         const bodySizeInBytes = payload.byteLength;
         super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes);
@@ -120,13 +115,7 @@ export class DependentCalldataBlock extends CalldataBlock {
     private readonly _dependency: CalldataBlock;
     private _aliasFor: CalldataBlock | undefined;
 
-    constructor(
-        name: string,
-        signature: string,
-        parentName: string,
-        dependency: CalldataBlock,
-        parent: CalldataBlock,
-    ) {
+    constructor(name: string, signature: string, parentName: string, dependency: CalldataBlock, parent: CalldataBlock) {
         const headerSizeInBytes = DependentCalldataBlock._EMPTY_HEADER_SIZE;
         const bodySizeInBytes = DependentCalldataBlock._DEPENDENT_PAYLOAD_SIZE_IN_BYTES;
         super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes);
@@ -408,7 +397,13 @@ export class Calldata {
                 line = `\n${offsetStr}${value}${nameStr}`;
             } else {
                 offsetStr = `0x${offset.toString(Constants.HEX_BASE)}`.padEnd(offsetPadding);
-                value = ethUtil.stripHexPrefix(ethUtil.bufferToHex(block.toBuffer().slice(evmWordStartIndex, Constants.EVM_WORD_WIDTH_IN_BYTES))).padEnd(valuePadding);
+                value = ethUtil
+                    .stripHexPrefix(
+                        ethUtil.bufferToHex(
+                            block.toBuffer().slice(evmWordStartIndex, Constants.EVM_WORD_WIDTH_IN_BYTES),
+                        ),
+                    )
+                    .padEnd(valuePadding);
                 if (block instanceof MemberCalldataBlock) {
                     nameStr = `### ${prettyName.padEnd(namePadding)}`;
                     line = `\n${offsetStr}${value}${nameStr}`;
@@ -420,7 +415,11 @@ export class Calldata {
 
             for (let j = Constants.EVM_WORD_WIDTH_IN_BYTES; j < size; j += Constants.EVM_WORD_WIDTH_IN_BYTES) {
                 offsetStr = `0x${(offset + j).toString(Constants.HEX_BASE)}`.padEnd(offsetPadding);
-                value = ethUtil.stripHexPrefix(ethUtil.bufferToHex(block.toBuffer().slice(j, j + Constants.EVM_WORD_WIDTH_IN_BYTES))).padEnd(valuePadding);
+                value = ethUtil
+                    .stripHexPrefix(
+                        ethUtil.bufferToHex(block.toBuffer().slice(j, j + Constants.EVM_WORD_WIDTH_IN_BYTES)),
+                    )
+                    .padEnd(valuePadding);
                 nameStr = ' '.repeat(namePadding);
                 line = `${line}\n${offsetStr}${value}${nameStr}`;
             }
@@ -465,7 +464,9 @@ export class RawCalldata {
         }
         const valueBuf = ethUtil.toBuffer(value);
         if (hasSelectorPrefix) {
-            this._selector = ethUtil.bufferToHex(valueBuf.slice(Constants.HEX_SELECTOR_BYTE_OFFSET_IN_CALLDATA, Constants.HEX_SELECTOR_LENGTH_IN_BYTES));
+            this._selector = ethUtil.bufferToHex(
+                valueBuf.slice(Constants.HEX_SELECTOR_BYTE_OFFSET_IN_CALLDATA, Constants.HEX_SELECTOR_LENGTH_IN_BYTES),
+            );
             this._value = valueBuf.slice(Constants.HEX_SELECTOR_LENGTH_IN_BYTES); // disregard selector
         } else {
             this._selector = '0x';
