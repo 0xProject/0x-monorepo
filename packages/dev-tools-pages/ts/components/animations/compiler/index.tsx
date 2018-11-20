@@ -8,4 +8,4 @@ const CompilerAnimation: React.StatelessComponent<{}> = () => (
     <BaseAnimation animationData={animationData} width={2150} height={700} />
 );
 
-export { CompilerAnimation as Animation };
+export { CompilerAnimation };

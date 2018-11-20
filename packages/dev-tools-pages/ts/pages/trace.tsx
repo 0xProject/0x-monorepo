@@ -19,8 +19,8 @@ const Animation = Loadable({
     loader: () => System.import(/* webpackChunkName: 'trace-animation' */ 'ts/components/animations/trace'),
     loading: () => <div />,
     delay: 1000,
-    render(loadable: { Animation: any }): React.ReactNode {
-        const Component = loadable.Animation;
+    render(loadable: { TraceAnimation: any }): React.ReactNode {
+        const Component = loadable.TraceAnimation;
         return <Component />;
     },
 });

@@ -19,8 +19,8 @@ const Animation = Loadable({
     loader: () => System.import(/* webpackChunkName: 'profiler-animation' */ 'ts/components/animations/profiler'),
     loading: () => <div />,
     delay: 1000,
-    render(loadable: { Animation: any }): React.ReactNode {
-        const Component = loadable.Animation;
+    render(loadable: { ProfilerAnimation: any }): React.ReactNode {
+        const Component = loadable.ProfilerAnimation;
         return <Component />;
     },
 });

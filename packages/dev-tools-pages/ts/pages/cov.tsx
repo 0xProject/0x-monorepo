@@ -19,8 +19,8 @@ const Animation = Loadable({
     loader: () => System.import(/* webpackChunkName: 'cov-animation' */ 'ts/components/animations/cov'),
     loading: () => <div />,
     delay: 1000,
-    render(loadable: { Animation: any }): React.ReactNode {
-        const Component = loadable.Animation;
+    render(loadable: { CovAnimation: any }): React.ReactNode {
+        const Component = loadable.CovAnimation;
         return <Component />;
     },
 });

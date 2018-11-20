@@ -18,8 +18,8 @@ const Animation = Loadable({
     loader: () => System.import(/* webpackChunkName: 'compiler-animation' */ 'ts/components/animations/compiler'),
     loading: () => <div />,
     delay: 1000,
-    render(loadable: { Animation: any }): React.ReactNode {
-        const Component = loadable.Animation;
+    render(loadable: { CompilerAnimation: any }): React.ReactNode {
+        const Component = loadable.CompilerAnimation;
         return <Component />;
     },
 });
