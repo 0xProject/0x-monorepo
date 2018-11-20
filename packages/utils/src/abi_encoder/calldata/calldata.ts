@@ -1,4 +1,3 @@
-
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
