@@ -142,10 +142,12 @@ export interface MethodOpts {
 /**
  * gasPrice: Gas price in Wei to use for a transaction
  * gasLimit: The amount of gas to send with a transaction (in Gwei)
+ * nonce: The nonce to use for a transaction. If not specified, it defaults to the next incremented nonce.
  */
 export interface TransactionOpts {
     gasPrice?: BigNumber;
     gasLimit?: number;
+    nonce?: number;
 }
 
 /**
