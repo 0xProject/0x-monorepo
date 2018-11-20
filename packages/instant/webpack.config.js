@@ -77,6 +77,7 @@ module.exports = (env, argv) => {
                 HEAP_ANALYTICS_ID: getHeapAnalyticsId(environmentName),
                 ROLLBAR_ENVIRONMENT: JSON.stringify(environmentName),
                 ROLLBAR_CLIENT_TOKEN: JSON.stringify(process.env.INSTANT_ROLLBAR_CLIENT_TOKEN),
+                ROLLBAR_FORCE_DEVELOPMENT_REPORT: JSON.stringify(process.env.INSTANT_ROLLBAR_FORCE_DEVELOPMENT_REPORT),
             },
         }),
     ];
@@ -112,6 +113,15 @@ module.exports = (env, argv) => {
                 {
                     test: /\.svg$/,
                     loader: 'svg-react-loader',
+                },
+                {
+                    test: /\.js$/,
+                    loader: 'source-map-loader',
+                    exclude: [
+                        // instead of /\/node_modules\//
+                        path.join(process.cwd(), 'node_modules'),
+                        path.join(process.cwd(), '../..', 'node_modules'),
+                    ],
                 },
             ],
         },
