@@ -62,6 +62,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                         maxFontSizePx={this.props.startingFontSizePx}
                         onAmountChange={this._handleChange}
                         onFontSizeChange={this._handleFontSizeChange}
+                        autofocus={true}
                     />
                 </Container>
                 <Container
