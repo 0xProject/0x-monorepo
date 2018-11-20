@@ -2,16 +2,22 @@ import {MigrationInterface, QueryRunner} from 'typeorm';
 
 export class NewMetadataAndOHLCVTables1542655823221 implements MigrationInterface {
 
+    // tslint:disable-next-line
     public async up(queryRunner: QueryRunner): Promise<any> {
 
         await queryRunner.query(`
-            CREATE TABLE raw.trusted_tokens (
+            CREATE TABLE raw.token_metadata (
                 address VARCHAR NOT NULL,
                 authority VARCHAR NOT NULL,
+                decimals INT NULL,
+                symbol VARCHAR NULL,
+                name VARCHAR NULL,
 
                 PRIMARY KEY (address, authority)
             );
         `);
+
+        await queryRunner.dropTable('raw.token_on_chain_metadata');
 
         await queryRunner.query(`
             CREATE TABLE raw.ohlcv_external (
@@ -36,9 +42,21 @@ export class NewMetadataAndOHLCVTables1542655823221 implements MigrationInterfac
         `);
     }
 
+    // tslint:disable-next-line
     public async down(queryRunner: QueryRunner): Promise<any> {
 
-        await queryRunner.dropTable('raw.trusted_tokens');
+        await queryRunner.query(`
+            CREATE TABLE raw.token_on_chain_metadata (
+                address VARCHAR NOT NULL,
+                decimals INT NULL,
+                symbol VARCHAR NULL,
+                name VARCHAR NULL,
+
+                PRIMARY KEY (address)
+            );
+        `);
+
+        await queryRunner.dropTable('raw.token_metadata');
 
         await queryRunner.dropTable('raw.ohlcv_external');
     }
