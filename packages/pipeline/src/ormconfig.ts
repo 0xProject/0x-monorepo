@@ -9,7 +9,7 @@ import {
     SraOrder,
     SraOrdersObservedTimeStamp,
     Transaction,
-    TrustedTokens,
+    TrustedToken,
 } from './entities';
 
 const entities = [
@@ -21,7 +21,7 @@ const entities = [
     SraOrder,
     SraOrdersObservedTimeStamp,
     Transaction,
-    TrustedTokens,
+    TrustedToken,
 ];
 
 const config: ConnectionOptions = {

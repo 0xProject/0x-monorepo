@@ -23,7 +23,7 @@ export class TrustedTokenSource<T> {
     }
 
     public async getTrustedTokenMetaAsync(): Promise<T> {
-        const resp = await axios.get<T>(this._url)
+        const resp = await axios.get<T>(this._url);
         return resp.data;
     }
 }

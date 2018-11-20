@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+import {MigrationInterface, QueryRunner} from 'typeorm';
 
 export class NewMetadataAndOHLCVTables1542655823221 implements MigrationInterface {
 
@@ -37,7 +37,7 @@ export class NewMetadataAndOHLCVTables1542655823221 implements MigrationInterfac
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
-        
+
         await queryRunner.dropTable('raw.trusted_tokens');
 
         await queryRunner.dropTable('raw.ohlcv_external');
