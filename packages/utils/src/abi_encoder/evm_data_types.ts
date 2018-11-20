@@ -1,16 +1,12 @@
-import { DataType, DataTypeFactory, PayloadDataType, DependentDataType, MemberDataType } from './data_type';
-
-import { DecodingRules, EncodingRules } from './calldata';
-
-import { MethodAbi, DataItem } from 'ethereum-types';
-
-import ethUtil = require('ethereumjs-util');
-
-import { Calldata, RawCalldata } from './calldata';
+import { DataItem, MethodAbi } from 'ethereum-types';
+import * as ethUtil from 'ethereumjs-util';
+import * as _ from 'lodash';
 
 import { BigNumber } from '../configured_bignumber';
 
-var _ = require('lodash');
+import { DecodingRules, EncodingRules, RawCalldata } from './calldata';
+import * as Constants from './constants';
+import { DataType, DataTypeFactory, DependentDataType, MemberDataType, PayloadDataType } from './data_type';
 
 export interface DataTypeStaticInterface {
     matchGrammar: (type: string) => boolean;
@@ -19,12 +15,18 @@ export interface DataTypeStaticInterface {
 }
 
 export class Address extends PayloadDataType {
-    private static SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     public static ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X = "Address must start with '0x'";
     public static ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES = 'Address must be 20 bytes';
+    private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
+    private static readonly _ADDRESS_SIZE_IN_BYTES = 20;
+    private static readonly _DECODED_ADDRESS_OFFSET_IN_BYTES = Constants.EVM_WORD_WIDTH_IN_BYTES - Address._ADDRESS_SIZE_IN_BYTES;
 
-    constructor(dataItem: DataItem) {
-        super(dataItem, EvmDataTypeFactory.getInstance(), Address.SIZE_KNOWN_AT_COMPILE_TIME);
+    public static matchGrammar(type: string): boolean {
+        return type === 'address';
+    }
+
+    public constructor(dataItem: DataItem) {
+        super(dataItem, EvmDataTypeFactory.getInstance(), Address._SIZE_KNOWN_AT_COMPILE_TIME);
         if (!Address.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Address with bad input: ${dataItem}`);
         }
@@ -34,36 +36,35 @@ export class Address extends PayloadDataType {
         return 'address';
     }
 
-    public static matchGrammar(type: string): boolean {
-        return type === 'address';
-    }
-
     public encodeValue(value: string): Buffer {
-        if (value.startsWith('0x') === false) {
+        if (!value.startsWith('0x')) {
             throw new Error(Address.ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X);
         }
         const valueAsBuffer = ethUtil.toBuffer(value);
-        if (valueAsBuffer.byteLength !== 20) {
+        if (valueAsBuffer.byteLength !== Address._ADDRESS_SIZE_IN_BYTES) {
             throw new Error(Address.ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES);
         }
-        const evmWordWidth = 32;
-        const encodedValueBuf = ethUtil.setLengthLeft(valueAsBuffer, evmWordWidth);
+        const encodedValueBuf = ethUtil.setLengthLeft(valueAsBuffer, Constants.EVM_WORD_WIDTH_IN_BYTES);
         return encodedValueBuf;
     }
 
     public decodeValue(calldata: RawCalldata): string {
         const paddedValueBuf = calldata.popWord();
-        const valueBuf = paddedValueBuf.slice(12);
+        const valueBuf = paddedValueBuf.slice(Address._DECODED_ADDRESS_OFFSET_IN_BYTES);
         const value = ethUtil.bufferToHex(valueBuf);
         return value;
     }
 }
 
 export class Bool extends PayloadDataType {
-    private static SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
+    private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
 
-    constructor(dataItem: DataItem) {
-        super(dataItem, EvmDataTypeFactory.getInstance(), Bool.SIZE_KNOWN_AT_COMPILE_TIME);
+    public static matchGrammar(type: string): boolean {
+        return type === 'bool';
+    }
+
+    public constructor(dataItem: DataItem) {
+        super(dataItem, EvmDataTypeFactory.getInstance(), Bool._SIZE_KNOWN_AT_COMPILE_TIME);
         if (!Bool.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Bool with bad input: ${dataItem}`);
         }
@@ -73,14 +74,9 @@ export class Bool extends PayloadDataType {
         return 'bool';
     }
 
-    public static matchGrammar(type: string): boolean {
-        return type === 'bool';
-    }
-
     public encodeValue(value: boolean): Buffer {
-        const evmWordWidth = 32;
-        const encodedValue = value === true ? '0x1' : '0x0';
-        const encodedValueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(encodedValue), evmWordWidth);
+        const encodedValue = value ? '0x1' : '0x0';
+        const encodedValueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(encodedValue), Constants.EVM_WORD_WIDTH_IN_BYTES);
         return encodedValueBuf;
     }
 
@@ -88,46 +84,44 @@ export class Bool extends PayloadDataType {
         const valueBuf = calldata.popWord();
         const valueHex = ethUtil.bufferToHex(valueBuf);
         const valueNumber = new BigNumber(valueHex, 16);
-        let value: boolean = valueNumber.equals(0) ? false : true;
         if (!(valueNumber.equals(0) || valueNumber.equals(1))) {
             throw new Error(`Failed to decode boolean. Expected 0x0 or 0x1, got ${valueHex}`);
         }
+        /* tslint:disable boolean-naming */
+        const value: boolean = valueNumber.equals(0) ? false : true;
+        /* tslint:enable boolean-naming */
         return value;
     }
 }
 
 abstract class Number extends PayloadDataType {
-    private static SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
-    static MAX_WIDTH: number = 256;
-    static DEFAULT_WIDTH: number = Number.MAX_WIDTH;
-    width: number = Number.DEFAULT_WIDTH;
+    private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
+    private static readonly _MAX_WIDTH: number = 256;
+    private static readonly _DEFAULT_WIDTH: number = Number._MAX_WIDTH;
+    protected _width: number;
 
     constructor(dataItem: DataItem, matcher: RegExp) {
-        super(dataItem, EvmDataTypeFactory.getInstance(), Number.SIZE_KNOWN_AT_COMPILE_TIME);
+        super(dataItem, EvmDataTypeFactory.getInstance(), Number._SIZE_KNOWN_AT_COMPILE_TIME);
         const matches = matcher.exec(dataItem.type);
         if (matches === null) {
             throw new Error(`Tried to instantiate Number with bad input: ${dataItem}`);
         }
-        if (matches !== null && matches.length === 2 && matches[1] !== undefined) {
-            this.width = parseInt(matches[1]);
-        } else {
-            this.width = 256;
-        }
+        this._width = (matches !== null && matches.length === 2 && matches[1] !== undefined) ?
+            parseInt(matches[1], Constants.DEC_BASE) :
+            this._width = Number._DEFAULT_WIDTH;
     }
 
     public encodeValue(value_: BigNumber | string | number): Buffer {
         const value = new BigNumber(value_, 10);
         if (value.greaterThan(this.getMaxValue())) {
-            throw `Tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`;
+            throw new Error(`Tried to assign value of ${value}, which exceeds max value of ${this.getMaxValue()}`);
         } else if (value.lessThan(this.getMinValue())) {
-            throw `Tried to assign value of ${value}, which exceeds min value of ${this.getMinValue()}`;
+            throw new Error(`Tried to assign value of ${value}, which exceeds min value of ${this.getMinValue()}`);
         }
 
-        const hexBase = 16;
-        const evmWordWidth = 32;
         let valueBuf: Buffer;
         if (value.greaterThanOrEqualTo(0)) {
-            valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${value.toString(hexBase)}`), evmWordWidth);
+            valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${value.toString(Constants.HEX_BASE)}`), Constants.EVM_WORD_WIDTH_IN_BYTES);
         } else {
             // BigNumber can't write a negative hex value, so we use twos-complement conversion to do it ourselves.
             // Step 1/3: Convert value to positive binary string
@@ -135,8 +129,7 @@ abstract class Number extends PayloadDataType {
             const valueBin = value.times(-1).toString(binBase);
 
             // Step 2/3: Invert binary value
-            const bitsInEvmWord = 256;
-            let invertedValueBin = '1'.repeat(bitsInEvmWord - valueBin.length);
+            let invertedValueBin = '1'.repeat(Constants.EVM_WORD_WIDTH_IN_BITS - valueBin.length);
             _.each(valueBin, (bit: string) => {
                 invertedValueBin += bit === '1' ? '0' : '1';
             });
@@ -147,7 +140,7 @@ abstract class Number extends PayloadDataType {
             const negativeValue = invertedValue.plus(1);
 
             // Convert the negated value to a hex string
-            valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${negativeValue.toString(hexBase)}`), evmWordWidth);
+            valueBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(`0x${negativeValue.toString(Constants.HEX_BASE)}`), Constants.EVM_WORD_WIDTH_IN_BYTES);
         }
 
         return valueBuf;
@@ -159,16 +152,15 @@ abstract class Number extends PayloadDataType {
         let value = new BigNumber(paddedValueHex, 16);
         if (this instanceof Int) {
             // Check if we're negative
-            const binBase = 2;
-            const valueBin = value.toString(2);
-            if (valueBin.length === 256 && valueBin[0].startsWith('1')) {
+            const valueBin = value.toString(Constants.BIN_BASE);
+            if (valueBin.length === Constants.EVM_WORD_WIDTH_IN_BITS && valueBin[0].startsWith('1')) {
                 // Negative
                 // Step 1/3: Invert binary value
                 let invertedValueBin = '';
                 _.each(valueBin, (bit: string) => {
                     invertedValueBin += bit === '1' ? '0' : '1';
                 });
-                const invertedValue = new BigNumber(invertedValueBin, binBase);
+                const invertedValue = new BigNumber(invertedValueBin, Constants.BIN_BASE);
 
                 // Step 2/3: Add 1 to inverted value
                 // The result is the two's-complement represent of the input value.
@@ -188,42 +180,46 @@ abstract class Number extends PayloadDataType {
 }
 
 export class Int extends Number {
-    static matcher = RegExp(
+    private static readonly _matcher = RegExp(
         '^int(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
     );
 
-    constructor(dataItem: DataItem) {
-        super(dataItem, Int.matcher);
+    public static matchGrammar(type: string): boolean {
+        return Int._matcher.test(type);
+    }
+
+    public constructor(dataItem: DataItem) {
+        super(dataItem, Int._matcher);
     }
 
     public getMaxValue(): BigNumber {
-        return new BigNumber(2).toPower(this.width - 1).sub(1);
+        return new BigNumber(2).toPower(this._width - 1).sub(1);
     }
 
     public getMinValue(): BigNumber {
-        return new BigNumber(2).toPower(this.width - 1).times(-1);
+        return new BigNumber(2).toPower(this._width - 1).times(-1);
     }
 
     public getSignature(): string {
-        return `int${this.width}`;
-    }
-
-    public static matchGrammar(type: string): boolean {
-        return this.matcher.test(type);
+        return `int${this._width}`;
     }
 }
 
 export class UInt extends Number {
-    static matcher = RegExp(
+    private static readonly _matcher = RegExp(
         '^uint(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
     );
 
-    constructor(dataItem: DataItem) {
-        super(dataItem, UInt.matcher);
+    public static matchGrammar(type: string): boolean {
+        return UInt._matcher.test(type);
+    }
+
+    public constructor(dataItem: DataItem) {
+        super(dataItem, UInt._matcher);
     }
 
     public getMaxValue(): BigNumber {
-        return new BigNumber(2).toPower(this.width).sub(1);
+        return new BigNumber(2).toPower(this._width).sub(1);
     }
 
     public getMinValue(): BigNumber {
@@ -231,49 +227,45 @@ export class UInt extends Number {
     }
 
     public getSignature(): string {
-        return `uint${this.width}`;
-    }
-
-    public static matchGrammar(type: string): boolean {
-        return this.matcher.test(type);
+        return `uint${this._width}`;
     }
 }
 
 export class Byte extends PayloadDataType {
-    private static SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
-    static matcher = RegExp(
+    private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
+    private static readonly _matcher = RegExp(
         '^(byte|bytes(1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32))$',
     );
 
-    static DEFAULT_WIDTH = 1;
-    width: number = Byte.DEFAULT_WIDTH;
+    private static readonly _DEFAULT_WIDTH = 1;
+    private readonly _width: number;
 
-    constructor(dataItem: DataItem) {
-        super(dataItem, EvmDataTypeFactory.getInstance(), Byte.SIZE_KNOWN_AT_COMPILE_TIME);
-        const matches = Byte.matcher.exec(dataItem.type);
+    public static matchGrammar(type: string): boolean {
+        return Byte._matcher.test(type);
+    }
+
+    public constructor(dataItem: DataItem) {
+        super(dataItem, EvmDataTypeFactory.getInstance(), Byte._SIZE_KNOWN_AT_COMPILE_TIME);
+        const matches = Byte._matcher.exec(dataItem.type);
         if (!Byte.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Byte with bad input: ${dataItem}`);
         }
-        if (matches !== null && matches.length === 3 && matches[2] !== undefined) {
-            this.width = parseInt(matches[2]);
-        } else {
-            this.width = Byte.DEFAULT_WIDTH;
-        }
+        this._width = (matches !== null && matches.length === 3 && matches[2] !== undefined) ? parseInt(matches[2], Constants.DEC_BASE) : Byte._DEFAULT_WIDTH;
     }
 
     public getSignature(): string {
         // Note that `byte` reduces to `bytes1`
-        return `bytes${this.width}`;
+        return `bytes${this._width}`;
     }
 
     public encodeValue(value: string | Buffer): Buffer {
         // Sanity check if string
-        if (typeof value === 'string' && value.startsWith('0x') === false) {
+        if (typeof value === 'string' && !value.startsWith('0x')) {
             throw new Error(`Tried to encode non-hex value. Value must inlcude '0x' prefix.`);
         }
         // Convert value into a buffer and do bounds checking
         const valueBuf = ethUtil.toBuffer(value);
-        if (valueBuf.byteLength > this.width) {
+        if (valueBuf.byteLength > this._width) {
             throw new Error(
                 `Tried to assign ${value} (${
                 valueBuf.byteLength
@@ -291,23 +283,21 @@ export class Byte extends PayloadDataType {
 
     public decodeValue(calldata: RawCalldata): string {
         const paddedValueBuf = calldata.popWord();
-        const valueBuf = paddedValueBuf.slice(0, this.width);
+        const valueBuf = paddedValueBuf.slice(0, this._width);
         const value = ethUtil.bufferToHex(valueBuf);
         return value;
-    }
-
-    public static matchGrammar(type: string): boolean {
-        return this.matcher.test(type);
     }
 }
 
 export class Bytes extends PayloadDataType {
-    private static SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
-    static UNDEFINED_LENGTH = new BigNumber(-1);
-    length: BigNumber = Bytes.UNDEFINED_LENGTH;
+    private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
 
-    constructor(dataItem: DataItem) {
-        super(dataItem, EvmDataTypeFactory.getInstance(), Bytes.SIZE_KNOWN_AT_COMPILE_TIME);
+    public static matchGrammar(type: string): boolean {
+        return type === 'bytes';
+    }
+
+    public constructor(dataItem: DataItem) {
+        super(dataItem, EvmDataTypeFactory.getInstance(), Bytes._SIZE_KNOWN_AT_COMPILE_TIME);
         if (!Bytes.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate Bytes with bad input: ${dataItem}`);
         }
@@ -322,10 +312,10 @@ export class Bytes extends PayloadDataType {
             throw new Error(`Tried to assign ${value}, which is contains a half-byte. Use full bytes only.`);
         }
 
-        const wordsForValue = Math.ceil(valueBuf.byteLength / 32);
-        const paddedBytesForValue = wordsForValue * 32;
+        const wordsForValue = Math.ceil(valueBuf.byteLength / Constants.EVM_WORD_WIDTH_IN_BYTES);
+        const paddedBytesForValue = wordsForValue * Constants.EVM_WORD_WIDTH_IN_BYTES;
         const paddedValueBuf = ethUtil.setLengthRight(valueBuf, paddedBytesForValue);
-        const paddedLengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(valueBuf.byteLength), 32);
+        const paddedLengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(valueBuf.byteLength), Constants.EVM_WORD_WIDTH_IN_BYTES);
         const encodedValueBuf = Buffer.concat([paddedLengthBuf, paddedValueBuf]);
         return encodedValueBuf;
     }
@@ -333,8 +323,8 @@ export class Bytes extends PayloadDataType {
     public decodeValue(calldata: RawCalldata): string {
         const lengthBuf = calldata.popWord();
         const lengthHex = ethUtil.bufferToHex(lengthBuf);
-        const length = parseInt(lengthHex, 16);
-        const wordsForValue = Math.ceil(length / 32);
+        const length = parseInt(lengthHex, Constants.HEX_BASE);
+        const wordsForValue = Math.ceil(length / Constants.EVM_WORD_WIDTH_IN_BYTES);
         const paddedValueBuf = calldata.popWords(wordsForValue);
         const valueBuf = paddedValueBuf.slice(0, length);
         const decodedValue = ethUtil.bufferToHex(valueBuf);
@@ -344,26 +334,27 @@ export class Bytes extends PayloadDataType {
     public getSignature(): string {
         return 'bytes';
     }
-
-    public static matchGrammar(type: string): boolean {
-        return type === 'bytes';
-    }
 }
 
 export class SolString extends PayloadDataType {
-    private static SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
-    constructor(dataItem: DataItem) {
-        super(dataItem, EvmDataTypeFactory.getInstance(), SolString.SIZE_KNOWN_AT_COMPILE_TIME);
+    private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
+
+    public static matchGrammar(type: string): boolean {
+        return type === 'string';
+    }
+
+    public constructor(dataItem: DataItem) {
+        super(dataItem, EvmDataTypeFactory.getInstance(), SolString._SIZE_KNOWN_AT_COMPILE_TIME);
         if (!SolString.matchGrammar(dataItem.type)) {
             throw new Error(`Tried to instantiate String with bad input: ${dataItem}`);
         }
     }
 
     public encodeValue(value: string): Buffer {
-        const wordsForValue = Math.ceil(value.length / 32);
-        const paddedBytesForValue = wordsForValue * 32;
+        const wordsForValue = Math.ceil(value.length / Constants.EVM_WORD_WIDTH_IN_BYTES);
+        const paddedBytesForValue = wordsForValue * Constants.EVM_WORD_WIDTH_IN_BYTES;
         const valueBuf = ethUtil.setLengthRight(new Buffer(value), paddedBytesForValue);
-        const lengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value.length), 32);
+        const lengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value.length), Constants.EVM_WORD_WIDTH_IN_BYTES);
         const encodedValueBuf = Buffer.concat([lengthBuf, valueBuf]);
         return encodedValueBuf;
     }
@@ -371,8 +362,8 @@ export class SolString extends PayloadDataType {
     public decodeValue(calldata: RawCalldata): string {
         const lengthBuf = calldata.popWord();
         const lengthHex = ethUtil.bufferToHex(lengthBuf);
-        const length = parseInt(lengthHex, 16);
-        const wordsForValue = Math.ceil(length / 32);
+        const length = parseInt(lengthHex, Constants.HEX_BASE);
+        const wordsForValue = Math.ceil(length / Constants.EVM_WORD_WIDTH_IN_BYTES);
         const paddedValueBuf = calldata.popWords(wordsForValue);
         const valueBuf = paddedValueBuf.slice(0, length);
         const value = valueBuf.toString('ascii');
@@ -382,16 +373,12 @@ export class SolString extends PayloadDataType {
     public getSignature(): string {
         return 'string';
     }
-
-    public static matchGrammar(type: string): boolean {
-        return type === 'string';
-    }
 }
 
 export class Pointer extends DependentDataType {
     constructor(destDataType: DataType, parentDataType: DataType) {
         const destDataItem = destDataType.getDataItem();
-        const dataItem = { name: `ptr<${destDataItem.name}>`, type: `ptr<${destDataItem.type}>` } as DataItem;
+        const dataItem: DataItem = { name: `ptr<${destDataItem.name}>`, type: `ptr<${destDataItem.type}>` };
         super(dataItem, EvmDataTypeFactory.getInstance(), destDataType, parentDataType);
     }
 
@@ -401,33 +388,37 @@ export class Pointer extends DependentDataType {
 }
 
 export class Tuple extends MemberDataType {
-    private tupleSignature: string;
-
-    constructor(dataItem: DataItem) {
-        super(dataItem, EvmDataTypeFactory.getInstance());
-        if (!Tuple.matchGrammar(dataItem.type)) {
-            throw new Error(`Tried to instantiate Tuple with bad input: ${dataItem}`);
-        }
-        this.tupleSignature = this._computeSignatureOfMembers();
-    }
-
-    public getSignature(): string {
-        return this.tupleSignature;
-    }
+    private readonly _tupleSignature: string;
 
     public static matchGrammar(type: string): boolean {
         return type === 'tuple';
     }
+
+    public constructor(dataItem: DataItem) {
+        super(dataItem, EvmDataTypeFactory.getInstance());
+        if (!Tuple.matchGrammar(dataItem.type)) {
+            throw new Error(`Tried to instantiate Tuple with bad input: ${dataItem}`);
+        }
+        this._tupleSignature = this._computeSignatureOfMembers();
+    }
+
+    public getSignature(): string {
+        return this._tupleSignature;
+    }
 }
 
 export class SolArray extends MemberDataType {
-    static matcher = RegExp('^(.+)\\[([0-9]*)\\]$');
-    private arraySignature: string;
-    private elementType: string;
+    private static readonly _matcher = RegExp('^(.+)\\[([0-9]*)\\]$');
+    private readonly _arraySignature: string;
+    private readonly _elementType: string;
 
-    constructor(dataItem: DataItem) {
+    public static matchGrammar(type: string): boolean {
+        return SolArray._matcher.test(type);
+    }
+
+    public constructor(dataItem: DataItem) {
         // Sanity check
-        const matches = SolArray.matcher.exec(dataItem.type);
+        const matches = SolArray._matcher.exec(dataItem.type);
         if (matches === null || matches.length !== 3) {
             throw new Error(`Could not parse array: ${dataItem.type}`);
         } else if (matches[1] === undefined) {
@@ -438,17 +429,21 @@ export class SolArray extends MemberDataType {
 
         const isArray = true;
         const arrayElementType = matches[1];
-        const arrayLength = matches[2] === '' ? undefined : parseInt(matches[2], 10);
+        const arrayLength = matches[2] === '' ? undefined : parseInt(matches[2], Constants.DEC_BASE);
         super(dataItem, EvmDataTypeFactory.getInstance(), isArray, arrayLength, arrayElementType);
-        this.elementType = arrayElementType;
-        this.arraySignature = this.computeSignature();
+        this._elementType = arrayElementType;
+        this._arraySignature = this._computeSignature();
     }
 
-    private computeSignature(): string {
-        let dataItem = {
-            type: this.elementType,
+    public getSignature(): string {
+        return this._arraySignature;
+    }
+
+    private _computeSignature(): string {
+        const dataItem: DataItem = {
+            type: this._elementType,
             name: 'N/A',
-        } as DataItem;
+        };
         const components = this.getDataItem().components;
         if (components !== undefined) {
             dataItem.components = components;
@@ -461,47 +456,27 @@ export class SolArray extends MemberDataType {
             return `${type}[${this._arrayLength}]`;
         }
     }
-
-    public getSignature(): string {
-        return this.arraySignature;
-    }
-
-    public static matchGrammar(type: string): boolean {
-        return this.matcher.test(type);
-    }
 }
 
 export class Method extends MemberDataType {
-    private methodSignature: string;
-    private methodSelector: string;
-    private returnDataTypes: DataType[];
-    private returnDataItem: DataItem;
-
     // TMP
     public selector: string;
 
-    constructor(abi: MethodAbi) {
+    private readonly _methodSignature: string;
+    private readonly _methodSelector: string;
+    private readonly _returnDataTypes: DataType[];
+    private readonly _returnDataItem: DataItem;
+
+    public constructor(abi: MethodAbi) {
         super({ type: 'method', name: abi.name, components: abi.inputs }, EvmDataTypeFactory.getInstance());
-        this.methodSignature = this.computeSignature();
-        this.selector = this.methodSelector = this.computeSelector();
-        this.returnDataTypes = [];
-        this.returnDataItem = { type: 'tuple', name: abi.name, components: abi.outputs };
+        this._methodSignature = this._computeSignature();
+        this.selector = this._methodSelector = this._computeSelector();
+        this._returnDataTypes = [];
+        this._returnDataItem = { type: 'tuple', name: abi.name, components: abi.outputs };
         const dummy = new Byte({ type: 'byte', name: 'DUMMY' }); // @TODO TMP
         _.each(abi.outputs, (dataItem: DataItem) => {
-            this.returnDataTypes.push(this.getFactory().create(dataItem, dummy));
+            this._returnDataTypes.push(this.getFactory().create(dataItem, dummy));
         });
-    }
-
-    private computeSignature(): string {
-        const memberSignature = this._computeSignatureOfMembers();
-        const methodSignature = `${this.getDataItem().name}${memberSignature}`;
-        return methodSignature;
-    }
-
-    private computeSelector(): string {
-        const signature = this.computeSignature();
-        const selector = ethUtil.bufferToHex(ethUtil.toBuffer(ethUtil.sha3(signature).slice(0, 4)));
-        return selector;
     }
 
     public encode(value: any, rules?: EncodingRules): string {
@@ -521,55 +496,73 @@ export class Method extends MemberDataType {
     }
 
     public encodeReturnValues(value: any, rules?: EncodingRules): string {
-        const returnDataType = new Tuple(this.returnDataItem);
+        const returnDataType = new Tuple(this._returnDataItem);
         const returndata = returnDataType.encode(value, rules);
         return returndata;
     }
 
     public decodeReturnValues(returndata: string, rules?: DecodingRules): any {
         const returnValues: any[] = [];
-        const rules_ = rules ? rules : ({ structsAsObjects: false } as DecodingRules);
+        const rules_: DecodingRules = rules ? rules : { structsAsObjects: false };
         const rawReturnData = new RawCalldata(returndata, false);
-        _.each(this.returnDataTypes, (dataType: DataType) => {
+        _.each(this._returnDataTypes, (dataType: DataType) => {
             returnValues.push(dataType.generateValue(rawReturnData, rules_));
         });
         return returnValues;
     }
 
     public getSignature(): string {
-        return this.methodSignature;
+        return this._methodSignature;
     }
 
     public getSelector(): string {
-        return this.methodSelector;
+        return this._methodSelector;
+    }
+
+    private _computeSignature(): string {
+        const memberSignature = this._computeSignatureOfMembers();
+        const methodSignature = `${this.getDataItem().name}${memberSignature}`;
+        return methodSignature;
+    }
+
+    private _computeSelector(): string {
+        const signature = this._computeSignature();
+        const selector = ethUtil.bufferToHex(ethUtil.toBuffer(ethUtil.sha3(signature).slice(Constants.HEX_SELECTOR_BYTE_OFFSET_IN_CALLDATA, Constants.HEX_SELECTOR_LENGTH_IN_BYTES)));
+        return selector;
     }
 }
 
 export class EvmDataTypeFactory implements DataTypeFactory {
-    private static instance: DataTypeFactory;
-
-    private constructor() { }
+    private static _instance: DataTypeFactory;
 
     public static getInstance(): DataTypeFactory {
-        if (!EvmDataTypeFactory.instance) {
-            EvmDataTypeFactory.instance = new EvmDataTypeFactory();
+        if (!EvmDataTypeFactory._instance) {
+            EvmDataTypeFactory._instance = new EvmDataTypeFactory();
         }
-        return EvmDataTypeFactory.instance;
+        return EvmDataTypeFactory._instance;
     }
 
     public mapDataItemToDataType(dataItem: DataItem): DataType {
-        if (SolArray.matchGrammar(dataItem.type)) return new SolArray(dataItem);
-        if (Address.matchGrammar(dataItem.type)) return new Address(dataItem);
-        if (Bool.matchGrammar(dataItem.type)) return new Bool(dataItem);
-        if (Int.matchGrammar(dataItem.type)) return new Int(dataItem);
-        if (UInt.matchGrammar(dataItem.type)) return new UInt(dataItem);
-        if (Byte.matchGrammar(dataItem.type)) return new Byte(dataItem);
-        if (Tuple.matchGrammar(dataItem.type)) return new Tuple(dataItem);
-        if (Bytes.matchGrammar(dataItem.type)) return new Bytes(dataItem);
-        if (SolString.matchGrammar(dataItem.type)) return new SolString(dataItem);
-        //if (Fixed.matchGrammar(dataItem.type)) return Fixed(dataItem);
-        //if (UFixed.matchGrammar(dataItem.type)) return UFixed(dataItem);
-
+        if (SolArray.matchGrammar(dataItem.type)) {
+            return new SolArray(dataItem);
+        } else if (Address.matchGrammar(dataItem.type)) {
+            return new Address(dataItem);
+        } else if (Bool.matchGrammar(dataItem.type)) {
+            return new Bool(dataItem);
+        } else if (Int.matchGrammar(dataItem.type)) {
+            return new Int(dataItem);
+        } else if (UInt.matchGrammar(dataItem.type)) {
+            return new UInt(dataItem);
+        } else if (Byte.matchGrammar(dataItem.type)) {
+            return new Byte(dataItem);
+        } else if (Tuple.matchGrammar(dataItem.type)) {
+            return new Tuple(dataItem);
+        } else if (Bytes.matchGrammar(dataItem.type)) {
+            return new Bytes(dataItem);
+        } else if (SolString.matchGrammar(dataItem.type)) {
+            return new SolString(dataItem);
+        }
+        // @TODO: Implement Fixed/UFixed types
         throw new Error(`Unrecognized data type: '${dataItem.type}'`);
     }
 
@@ -586,4 +579,6 @@ export class EvmDataTypeFactory implements DataTypeFactory {
         const pointer = new Pointer(dataType, parentDataType);
         return pointer;
     }
+
+    private constructor() { }
 }
