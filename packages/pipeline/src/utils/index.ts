@@ -49,3 +49,8 @@ class BigNumberTransformer implements ValueTransformer {
 }
 
 export const bigNumberTransformer = new BigNumberTransformer();
+
+export function getHourInUnixTime(): number {
+    const currentTime: number = Date.now();
+    return currentTime - (currentTime % (3600 * 1000));
+}
