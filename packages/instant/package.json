@@ -5,9 +5,8 @@
         "node": ">=6.12"
     },
     "description": "0x Instant React Component",
-    "private": true,
-    "main": "lib/src/index.js",
-    "types": "lib/src/index.d.ts",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "scripts": {
         "build": "yarn build:all",
         "build:all": "run-p build:umd:prod build:commonjs",
@@ -99,6 +98,6 @@
         "webpack-dev-server": "^3.1.9"
     },
     "publishConfig": {
-        "access": "private"
+        "access": "public"
     }
 }
