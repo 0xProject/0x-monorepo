@@ -1,5 +1,15 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note":
+                    "Export all type declarations used by the public interface, as well as the `ContractAddresses` mapping",
+                "pr": 1301
+            }
+        ]
+    },
+    {
         "timestamp": 1542208198,
         "version": "2.0.4",
         "changes": [

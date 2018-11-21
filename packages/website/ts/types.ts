@@ -366,6 +366,7 @@ export enum WebsitePaths {
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
     AssetBuyer = '/docs/asset-buyer',
+    Migrations = '/docs/migrations',
     Careers = '/careers',
 }
 
@@ -383,6 +384,7 @@ export enum DocPackages {
     ContractWrappers = 'CONTRACT_WRAPPERS',
     OrderWatcher = 'ORDER_WATCHER',
     AssetBuyer = 'ASSET_BUYER',
+    Migrations = 'MIGRATIONS',
 }
 
 export enum Key {
