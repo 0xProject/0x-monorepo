@@ -199,6 +199,6 @@ const checkRequiredEnvVariables = () => {
 };
 
 prepublishChecksAsync().catch(err => {
-    utils.log(err.message);
+    utils.log(err);
     process.exit(1);
 });
