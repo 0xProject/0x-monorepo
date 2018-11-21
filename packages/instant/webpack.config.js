@@ -89,25 +89,31 @@ module.exports = (env, argv) => {
     const environmentName = getEnvironmentName(env, argv);
     const outputPath = process.env.WEBPACK_OUTPUT_PATH || 'umd';
 
+    const envVars = {
+        GIT_SHA: JSON.stringify(GIT_SHA),
+        NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
+        HEAP_ANALYTICS_ID: getHeapAnalyticsId(environmentName),
+        INSTANT_ENVIRONMENT: JSON.stringify(environmentName),
+        ROLLBAR_CLIENT_TOKEN: JSON.stringify(process.env[ROLLBAR_CLIENT_TOKEN_ENV_NAME]),
+    };
+
+    const canRollbarBeEnabled =
+        environmentName === 'development' ? process.env.INSTANT_ROLLBAR_FORCE_DEVELOPMENT_REPORT : true;
+    if (envVars.INSTANT_ENVIRONMENT && envVars.ROLLBAR_CLIENT_TOKEN && canRollbarBeEnabled) {
+        envVars['ROLLBAR_ENABLED'] = JSON.stringify(true);
+    }
+
     let plugins = [
         new webpack.DefinePlugin({
-            'process.env': {
-                GIT_SHA: JSON.stringify(GIT_SHA),
-                NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
-                HEAP_ANALYTICS_ID: getHeapAnalyticsId(environmentName),
-                ROLLBAR_ENVIRONMENT: JSON.stringify(environmentName),
-                ROLLBAR_CLIENT_TOKEN: JSON.stringify(process.env[ROLLBAR_CLIENT_TOKEN_ENV_NAME]),
-                ROLLBAR_FORCE_DEVELOPMENT_REPORT: JSON.stringify(process.env.INSTANT_ROLLBAR_FORCE_DEVELOPMENT_REPORT),
-            },
+            'process.env': envVars,
         }),
     ];
-
     const rollbarPlugin = getRollbarPlugin(environmentName);
     if (rollbarPlugin) {
-        console.log('Using rollbar plugin');
+        console.log('Using rollbar source map plugin');
         plugins = plugins.concat(rollbarPlugin);
     } else {
-        console.log('Not using rollbar plugin');
+        console.log('Not using rollbar source map plugin');
     }
     validateRollbarPresence(environmentName, rollbarPlugin);
 

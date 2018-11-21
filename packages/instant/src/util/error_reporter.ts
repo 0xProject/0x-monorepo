@@ -1,24 +1,17 @@
 import { logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { ROLLBAR_CLIENT_TOKEN, ROLLBAR_ENVIRONMENT } from '../constants';
+import { INSTANT_ENVIRONMENT, ROLLBAR_CLIENT_TOKEN, ROLLBAR_ENABLED } from '../constants';
 
 // Import version of Rollbar designed for embedded components
 // See https://docs.rollbar.com/docs/using-rollbarjs-inside-an-embedded-component
 // tslint:disable-next-line:no-var-requires
 const Rollbar = require('rollbar/dist/rollbar.noconflict.umd');
 
-const shouldAllowRollbar = () => {
-    if (ROLLBAR_ENVIRONMENT === 'development') {
-        return process.env.ROLLBAR_FORCE_DEVELOPMENT_REPORT ? true : false;
-    }
-    return true;
-};
-
 let rollbar: any;
 // Configures rollbar and sets up error catching
 export const setupRollbar = (): any => {
-    if (_.isUndefined(rollbar) && ROLLBAR_CLIENT_TOKEN && ROLLBAR_ENVIRONMENT && shouldAllowRollbar()) {
+    if (_.isUndefined(rollbar) && ROLLBAR_CLIENT_TOKEN && INSTANT_ENVIRONMENT && ROLLBAR_ENABLED) {
         rollbar = new Rollbar({
             accessToken: ROLLBAR_CLIENT_TOKEN,
             captureUncaught: true,
@@ -27,7 +20,7 @@ export const setupRollbar = (): any => {
             itemsPerMinute: 10,
             maxItems: 500,
             payload: {
-                environment: ROLLBAR_ENVIRONMENT,
+                environment: INSTANT_ENVIRONMENT,
                 client: {
                     javascript: {
                         source_map_enabled: true,
