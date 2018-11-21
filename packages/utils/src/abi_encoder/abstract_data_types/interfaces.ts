@@ -14,3 +14,7 @@ export interface DataTypeStaticInterface {
     encodeValue: (value: any) => Buffer;
     decodeValue: (rawCalldata: RawCalldata) => any;
 }
+
+export interface MemberIndexByName {
+    [key: string]: number;
+}

@@ -9,16 +9,12 @@ import { DecodingRules } from '../utils/rules';
 
 import { DataType } from './data_type';
 import { DependentDataType } from './dependent_data_type';
-import { DataTypeFactory } from './interfaces';
-
-interface MemberMap {
-    [key: string]: number;
-}
+import { DataTypeFactory, MemberIndexByName } from './interfaces';
 
 export abstract class MemberDataType extends DataType {
     protected readonly _arrayLength: number | undefined;
     protected readonly _arrayElementType: string | undefined;
-    private readonly _memberMap: MemberMap;
+    private readonly _memberIndexByName: MemberIndexByName;
     private readonly _members: DataType[];
     private readonly _isArray: boolean;
 
@@ -30,15 +26,15 @@ export abstract class MemberDataType extends DataType {
         arrayElementType?: string,
     ) {
         super(dataItem, factory);
-        this._memberMap = {};
+        this._memberIndexByName = {};
         this._members = [];
         this._isArray = isArray;
         this._arrayLength = arrayLength;
         this._arrayElementType = arrayElementType;
         if (isArray && arrayLength !== undefined) {
-            [this._members, this._memberMap] = this._createMembersWithLength(dataItem, arrayLength);
+            [this._members, this._memberIndexByName] = this._createMembersWithLength(dataItem, arrayLength);
         } else if (!isArray) {
-            [this._members, this._memberMap] = this._createMembersWithKeys(dataItem);
+            [this._members, this._memberIndexByName] = this._createMembersWithKeys(dataItem);
         }
     }
 
@@ -65,7 +61,7 @@ export abstract class MemberDataType extends DataType {
         let value: any[] | object;
         if (rules.structsAsObjects && !this._isArray) {
             value = {};
-            _.each(this._memberMap, (idx: number, key: string) => {
+            _.each(this._memberIndexByName, (idx: number, key: string) => {
                 const member = this._members[idx];
                 const memberValue = member.generateValue(calldata, rules);
                 (value as { [key: string]: any })[key] = memberValue;
@@ -149,14 +145,14 @@ export abstract class MemberDataType extends DataType {
             parentName,
         );
         const memberBlocks: CalldataBlock[] = [];
-        const childMap = _.cloneDeep(this._memberMap);
+        const childMap = _.cloneDeep(this._memberIndexByName);
         _.forOwn(obj, (value: any, key: string) => {
             if (!(key in childMap)) {
                 throw new Error(
                     `Could not assign tuple to object: unrecognized key '${key}' in object ${this.getDataItem().name}`,
                 );
             }
-            const block = this._members[this._memberMap[key]].generateCalldataBlock(value, methodBlock);
+            const block = this._members[this._memberIndexByName[key]].generateCalldataBlock(value, methodBlock);
             memberBlocks.push(block);
             delete childMap[key];
         });
@@ -182,14 +178,14 @@ export abstract class MemberDataType extends DataType {
         return signature;
     }
 
-    private _createMembersWithKeys(dataItem: DataItem): [DataType[], MemberMap] {
+    private _createMembersWithKeys(dataItem: DataItem): [DataType[], MemberIndexByName] {
         // Sanity check
         if (dataItem.components === undefined) {
             throw new Error(`Expected components`);
         }
 
         const members: DataType[] = [];
-        const memberMap: MemberMap = {};
+        const memberIndexByName: MemberIndexByName = {};
         _.each(dataItem.components, (memberItem: DataItem) => {
             const childDataItem: DataItem = {
                 type: memberItem.type,
@@ -200,16 +196,16 @@ export abstract class MemberDataType extends DataType {
                 childDataItem.components = components;
             }
             const child = this.getFactory().create(childDataItem, this);
-            memberMap[memberItem.name] = members.length;
+            memberIndexByName[memberItem.name] = members.length;
             members.push(child);
         });
 
-        return [members, memberMap];
+        return [members, memberIndexByName];
     }
 
-    private _createMembersWithLength(dataItem: DataItem, length: number): [DataType[], MemberMap] {
+    private _createMembersWithLength(dataItem: DataItem, length: number): [DataType[], MemberIndexByName] {
         const members: DataType[] = [];
-        const memberMap: MemberMap = {};
+        const memberIndexByName: MemberIndexByName = {};
         const range = _.range(length);
         _.each(range, (idx: number) => {
             const childDataItem: DataItem = {
@@ -221,10 +217,10 @@ export abstract class MemberDataType extends DataType {
                 childDataItem.components = components;
             }
             const child = this.getFactory().create(childDataItem, this);
-            memberMap[idx.toString(Constants.DEC_BASE)] = members.length;
+            memberIndexByName[idx.toString(Constants.DEC_BASE)] = members.length;
             members.push(child);
         });
 
-        return [members, memberMap];
+        return [members, memberIndexByName];
     }
 }

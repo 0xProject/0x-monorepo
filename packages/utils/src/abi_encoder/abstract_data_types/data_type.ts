@@ -32,7 +32,7 @@ export abstract class DataType {
             calldata.setSelector(selector);
         }
         const block = this.generateCalldataBlock(value);
-        calldata.setRoot(block); // @TODO CHANGE
+        calldata.setRoot(block);
         const calldataHex = calldata.toHexString();
         return calldataHex;
     }
