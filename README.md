@@ -22,6 +22,12 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 
 Visit our [developer portal](https://0xproject.com/docs/order-utils) for a comprehensive list of core & community maintained packages. All packages maintained with this monorepo are listed below.
 
+### Python Packages
+
+| Package                                             | Version                                                                                               | Description                                                                  |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [`0x-order-utils.py`](/python-packages/order_utils) | [![PyPI](https://img.shields.io/pypi/v/0x-order-utils.svg)](https://pypi.org/project/0x-order-utils/) | A set of utilities for generating, parsing, signing and validating 0x orders |
+
 ### Typescript/Javascript Packages
 
 #### 0x-specific packages
@@ -75,12 +81,6 @@ Visit our [developer portal](https://0xproject.com/docs/order-utils) for a compr
 | [`@0x/contracts`](/packages/contracts)             | 0x protocol solidity smart contracts & tests                     |
 | [`@0x/testnet-faucets`](/packages/testnet-faucets) | A faucet micro-service that dispenses test ERC20 tokens or Ether |
 | [`@0x/website`](/packages/website)                 | 0x website                                                       |
-
-### Python Packages
-
-| Package                                             | Version                                                                                               | Description                                                                  |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [`0x-order-utils.py`](/python-packages/order_utils) | [![PyPI](https://img.shields.io/pypi/v/0x-order-utils.svg)](https://pypi.org/project/0x-order-utils/) | A set of utilities for generating, parsing, signing and validating 0x orders |
 
 ## Usage
 
