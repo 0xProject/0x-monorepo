@@ -126,7 +126,15 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
 
         // Analytics
         disableAnalytics(this.props.shouldDisableAnalyticsTracking || false);
-        analytics.addEventProperties(analytics.generateEventProperties(state, window));
+        analytics.addEventProperties(
+            analytics.generateEventProperties(
+                state.network,
+                this.props.orderSource,
+                state.providerState,
+                window,
+                this.props.affiliateInfo,
+            ),
+        );
         analytics.trackInstantOpened();
     }
     public componentWillUnmount(): void {

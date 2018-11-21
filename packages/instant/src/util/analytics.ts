@@ -1,7 +1,6 @@
-import { BasicOrderProvider, StandardRelayerAPIOrderProvider } from '@0x/asset-buyer';
 import { ObjectMap } from '@0x/types';
 
-import { State } from '../redux/reducer';
+import { AffiliateInfo, Network, OrderSource, ProviderState } from '../types';
 
 import { heapUtil } from './heap';
 
@@ -65,25 +64,24 @@ export const analytics = {
             heapUtil.evaluateHeapCall(heap => heap.addEventProperties(properties));
         });
     },
-    generateEventProperties: (state: State, window: Window): AnalyticsEventOptions => {
-        let orderSource = 'unknown';
-        const orderProvider = state.providerState.assetBuyer.orderProvider;
-        if (orderProvider instanceof StandardRelayerAPIOrderProvider) {
-            orderSource = orderProvider.apiUrl;
-        } else if (orderProvider instanceof BasicOrderProvider) {
-            orderSource = 'provided';
-        }
-
-        const affiliateAddress = state.affiliateInfo ? state.affiliateInfo.feeRecipient : 'none';
-        const affiliateFeePercent = state.affiliateInfo ? parseFloat(state.affiliateInfo.feePercentage.toFixed(4)) : 0;
+    generateEventProperties: (
+        network: Network,
+        orderSource: OrderSource,
+        providerState: ProviderState,
+        window: Window,
+        affiliateInfo?: AffiliateInfo,
+    ): AnalyticsEventOptions => {
+        const affiliateAddress = affiliateInfo ? affiliateInfo.feeRecipient : 'none';
+        const affiliateFeePercent = affiliateInfo ? parseFloat(affiliateInfo.feePercentage.toFixed(4)) : 0;
+        const orderSourceName = typeof orderSource === 'string' ? orderSource : 'provided';
         return {
             embeddedHost: window.location.host,
             embeddedUrl: window.location.href,
-            networkId: state.network,
-            providerName: state.providerState.name,
+            networkId: network,
+            providerName: providerState.name,
             gitSha: process.env.GIT_SHA,
             npmVersion: process.env.NPM_PACKAGE_VERSION,
-            orderSource,
+            orderSource: orderSourceName,
             affiliateAddress,
             affiliateFeePercent,
         };
