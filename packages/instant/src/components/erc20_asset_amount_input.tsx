@@ -22,7 +22,8 @@ export interface ERC20AssetAmountInputProps {
     onSelectAssetClick?: (asset?: ERC20Asset) => void;
     startingFontSizePx: number;
     fontColor?: ColorOption;
-    isDisabled: boolean;
+    isInputDisabled: boolean;
+    canSelectOtherAsset: boolean;
     numberOfAssetsAvailable?: number;
 }
 
@@ -50,14 +51,15 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         );
     }
     private readonly _renderContentForAsset = (asset: ERC20Asset): React.ReactNode => {
-        const { onChange, ...rest } = this.props;
-        const amountBorderBottom = this.props.isDisabled ? '' : `1px solid ${transparentWhite}`;
+        const { onChange, isInputDisabled, ...rest } = this.props;
+        const amountBorderBottom = isInputDisabled ? '' : `1px solid ${transparentWhite}`;
         const onSymbolClick = this._generateSelectAssetClickHandler();
         return (
             <React.Fragment>
                 <Container borderBottom={amountBorderBottom} display="inline-block">
                     <ScalingAmountInput
                         {...rest}
+                        isDisabled={isInputDisabled}
                         textLengthThreshold={this._textLengthThresholdForAsset(asset)}
                         maxFontSizePx={this.props.startingFontSizePx}
                         onAmountChange={this._handleChange}
@@ -74,11 +76,11 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                             fontSize={`${this.state.currentFontSizePx}px`}
                             fontColor={ColorOption.white}
                             textTransform="uppercase"
-                            onClick={onSymbolClick}
+                            onClick={this.props.canSelectOtherAsset ? onSymbolClick : undefined}
                         >
                             {assetUtils.formattedSymbolForAsset(asset)}
                         </Text>
-                        {this._renderChevronIcon()}
+                        {this.props.canSelectOtherAsset && this._renderChevronIcon()}
                     </Flex>
                 </Container>
             </React.Fragment>
