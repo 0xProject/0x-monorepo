@@ -10,7 +10,8 @@
                 "note": "Return `undefined` instead of `null` if transaction receipt not found",
                 "pr": 1291
             }
-        ]
+        ],
+        "timestamp": 1542821676
     },
     {
         "timestamp": 1542208198,

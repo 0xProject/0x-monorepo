@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _November 21, 2018_
+
+    * Add a `nonce` field for `TxOpts` so that it's now possible to re-broadcast stuck transactions with a higher gas amount (#1292)
+
 ## v4.0.2 - _November 14, 2018_
 
     * Dependencies updated
