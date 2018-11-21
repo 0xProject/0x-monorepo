@@ -43,6 +43,9 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
     if (!_.isUndefined(config.shouldDisablePushToHistory)) {
         assert.isBoolean('shouldDisablePushToHistory', config.shouldDisablePushToHistory);
     }
+    if (!_.isUndefined(props.shouldDisableAnalyticsTracking)) {
+        assert.isBoolean('props.shouldDisableAnalyticsTracking', props.shouldDisableAnalyticsTracking);
+    }
     assert.isString('selector', selector);
     // Render instant and return a callback that allows you to remove it from the DOM.
     const renderInstant = () => {
