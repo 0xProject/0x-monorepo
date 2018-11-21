@@ -111,7 +111,7 @@ export class BaseContract {
             if (!abiUtils.isAbiDataEqual(params.names[i], params.types[i], original, decoded)) {
                 throw new Error(
                     `Cannot safely encode argument: ${params.names[i]} (${original}) of type ${
-                    params.types[i]
+                        params.types[i]
                     }. (Possible type overflow or other encoding error)`,
                 );
             }
