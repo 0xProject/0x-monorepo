@@ -20,11 +20,11 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 
 # Packages
 
-### Visit our [developer portal](https://0xproject.com/docs/order-utils) for a comprehensive list of core & community maintained packages. All packages maintained with this monorepo are listed below.
+Visit our [developer portal](https://0xproject.com/docs/order-utils) for a comprehensive list of core & community maintained packages. All packages maintained with this monorepo are listed below.
 
-## Typescript/Javascript Packages
+### Typescript/Javascript Packages
 
-### 0x-specific packages
+#### 0x-specific packages
 
 | Package                                                  | Version                                                                                                                 | Description                                                                                       |
 | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
@@ -41,7 +41,7 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 | [`@0x/connect`](/packages/connect)                       | [![npm](https://img.shields.io/npm/v/@0x/connect.svg)](https://www.npmjs.com/package/@0x/connect)                       | An HTTP/WS client for interacting with the Standard Relayer API                                   |
 | [`@0x/asset-buyer`](/packages/asset-buyer)               | [![npm](https://img.shields.io/npm/v/@0x/asset-buyer.svg)](https://www.npmjs.com/package/@0x/asset-buyer)               | Convenience package for discovering and buying assets with Ether                                  |
 
-### Ethereum tooling
+#### Ethereum tooling
 
 | Package                                      | Version                                                                                                     | Description                                                                                                                                                                             |
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -52,7 +52,7 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 | [`@0x/subproviders`](/packages/subproviders) | [![npm](https://img.shields.io/npm/v/@0x/subproviders.svg)](https://www.npmjs.com/package/@0x/subproviders) | Web3 provider middlewares (e.g. LedgerSubprovider)                                                                                                                                      |
 | [`@0x/sol-doc`](/packages/sol-doc)           | [![npm](https://img.shields.io/npm/v/@0x/sol-doc.svg)](https://www.npmjs.com/package/@0x/sol-doc)           | Solidity documentation generator                                                                                                                                                        |
 
-### Utilities
+#### Utilities
 
 | Package                                                  | Version                                                                                                                 | Description                                                                  |
 | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -68,7 +68,7 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 | [`@0x/dev-utils`](/packages/dev-utils)                   | [![npm](https://img.shields.io/npm/v/@0x/dev-utils.svg)](https://www.npmjs.com/package/@0x/dev-utils)                   | Dev utils to be shared across 0x packages                                    |
 | [`@0x/fill-scenarios`](/packages/fill-scenarios)         | [![npm](https://img.shields.io/npm/v/@0x/fill-scenarios.svg)](https://www.npmjs.com/package/@0x/fill-scenarios)         | 0x order fill scenario generator                                             |
 
-### Private Packages
+#### Private Packages
 
 | Package                                            | Description                                                      |
 | -------------------------------------------------- | ---------------------------------------------------------------- |
@@ -76,7 +76,7 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 | [`@0x/testnet-faucets`](/packages/testnet-faucets) | A faucet micro-service that dispenses test ERC20 tokens or Ether |
 | [`@0x/website`](/packages/website)                 | 0x website                                                       |
 
-## Python Packages
+### Python Packages
 
 | Package                                             | Version                                                                                               | Description                                                                  |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
