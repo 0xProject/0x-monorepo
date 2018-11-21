@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.1 - _November 21, 2018_
+
+    * Dependencies updated (#1276)
+
 ## v3.0.0 - _November 14, 2018_
 
     * update `getBuyQuoteAsync` to return eth spent on assets instead of per unit amount (#1252)
