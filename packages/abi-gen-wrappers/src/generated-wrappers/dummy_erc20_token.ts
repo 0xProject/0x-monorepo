@@ -58,8 +58,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'name'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -84,7 +83,7 @@ export class DummyERC20TokenContract extends BaseContract {
     ]);
             const encodedData = self._lookupEthersInterface('approve(address,uint256)').encode([_spender,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -115,7 +114,7 @@ export class DummyERC20TokenContract extends BaseContract {
     ], BaseContract._bigNumberToString);
             const encodedData = self._lookupEthersInterface('approve(address,uint256)').encode([_spender,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -175,8 +174,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'approve'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -206,8 +204,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'totalSupply'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -237,7 +234,7 @@ export class DummyERC20TokenContract extends BaseContract {
             const encodedData = self._lookupEthersInterface('transferFrom(address,address,uint256)').encode([_from,
     _to,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -273,7 +270,7 @@ export class DummyERC20TokenContract extends BaseContract {
             const encodedData = self._lookupEthersInterface('transferFrom(address,address,uint256)').encode([_from,
     _to,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -342,8 +339,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'transferFrom'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -373,8 +369,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'decimals'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -409,8 +404,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'balanceOf'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -440,8 +434,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'owner'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -471,8 +464,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'symbol'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -492,7 +484,7 @@ export class DummyERC20TokenContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [_value
     ]);
             const encodedData = self._lookupEthersInterface('mint(uint256)').encode([_value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -518,7 +510,7 @@ export class DummyERC20TokenContract extends BaseContract {
     ] = BaseContract._formatABIDataItemList(inputAbi, [_value
     ], BaseContract._bigNumberToString);
             const encodedData = self._lookupEthersInterface('mint(uint256)').encode([_value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -569,8 +561,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'mint'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -595,7 +586,7 @@ export class DummyERC20TokenContract extends BaseContract {
     ]);
             const encodedData = self._lookupEthersInterface('transfer(address,uint256)').encode([_to,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -626,7 +617,7 @@ export class DummyERC20TokenContract extends BaseContract {
     ], BaseContract._bigNumberToString);
             const encodedData = self._lookupEthersInterface('transfer(address,uint256)').encode([_to,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -686,8 +677,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'transfer'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -727,8 +717,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'allowance'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -753,7 +742,7 @@ export class DummyERC20TokenContract extends BaseContract {
     ]);
             const encodedData = self._lookupEthersInterface('setBalance(address,uint256)').encode([_target,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -784,7 +773,7 @@ export class DummyERC20TokenContract extends BaseContract {
     ], BaseContract._bigNumberToString);
             const encodedData = self._lookupEthersInterface('setBalance(address,uint256)').encode([_target,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -844,8 +833,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'setBalance'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -865,7 +853,7 @@ export class DummyERC20TokenContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [newOwner
     ]);
             const encodedData = self._lookupEthersInterface('transferOwnership(address)').encode([newOwner
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -891,7 +879,7 @@ export class DummyERC20TokenContract extends BaseContract {
     ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
     ], BaseContract._bigNumberToString);
             const encodedData = self._lookupEthersInterface('transferOwnership(address)').encode([newOwner
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -942,8 +930,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'transferOwnership'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -973,8 +960,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'MAX_MINT_AMOUNT'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));

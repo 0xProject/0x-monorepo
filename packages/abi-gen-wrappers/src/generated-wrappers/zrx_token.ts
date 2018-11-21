@@ -58,8 +58,7 @@ export class ZRXTokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'name'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -84,7 +83,7 @@ export class ZRXTokenContract extends BaseContract {
     ]);
             const encodedData = self._lookupEthersInterface('approve(address,uint256)').encode([_spender,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -115,7 +114,7 @@ export class ZRXTokenContract extends BaseContract {
     ], BaseContract._bigNumberToString);
             const encodedData = self._lookupEthersInterface('approve(address,uint256)').encode([_spender,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -175,8 +174,7 @@ export class ZRXTokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'approve'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -206,8 +204,7 @@ export class ZRXTokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'totalSupply'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -237,7 +234,7 @@ export class ZRXTokenContract extends BaseContract {
             const encodedData = self._lookupEthersInterface('transferFrom(address,address,uint256)').encode([_from,
     _to,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -273,7 +270,7 @@ export class ZRXTokenContract extends BaseContract {
             const encodedData = self._lookupEthersInterface('transferFrom(address,address,uint256)').encode([_from,
     _to,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -342,8 +339,7 @@ export class ZRXTokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'transferFrom'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -373,8 +369,7 @@ export class ZRXTokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'decimals'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -409,8 +404,7 @@ export class ZRXTokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'balanceOf'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -440,8 +434,7 @@ export class ZRXTokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'symbol'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -466,7 +459,7 @@ export class ZRXTokenContract extends BaseContract {
     ]);
             const encodedData = self._lookupEthersInterface('transfer(address,uint256)').encode([_to,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -497,7 +490,7 @@ export class ZRXTokenContract extends BaseContract {
     ], BaseContract._bigNumberToString);
             const encodedData = self._lookupEthersInterface('transfer(address,uint256)').encode([_to,
     _value
-    ]);;
+    ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -557,8 +550,7 @@ export class ZRXTokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'transfer'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -598,8 +590,7 @@ export class ZRXTokenContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decodeReturnValues(rawCallResult);
-            console.log(resultArray);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'allowance'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
