@@ -68,6 +68,10 @@
         "webpack-dev-server": "^3.1.9"
     },
     "reactSnap": {
-        "source": "public"
+        "source": "public",
+        "puppeteerArgs": [
+            "--no-sandbox",
+            "--disable-setuid-sandbox"
+          ]
     }
 }
