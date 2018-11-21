@@ -81,30 +81,32 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         if (!isInstantRendered()) {
             renderInstant(config, selector);
         }
-    } else {
-        // Before we render, push to history saying that instant is showing for this part of the history.
-        window.history.pushState({ zeroExInstantShowing: true }, '0x Instant');
-        let removeInstant = renderInstant(config, selector);
-
-        let prevOnPopState = util.boundNoop;
-        if (window.onpopstate) {
-            prevOnPopState = window.onpopstate.bind(window);
-        }
-        window.onpopstate = (e: PopStateEvent) => {
-            // Don't override integrators handler.
-            // prevOnPopState(e);
-            const newState = e.state;
-            if (newState && newState.zeroExInstantShowing) {
-                // We have returned to a history state that expects instant to be rendered.
-                if (!isInstantRendered()) {
-                    removeInstant = renderInstant(config, selector);
-                }
-            } else {
-                // History has changed to a different state.
-                if (isInstantRendered()) {
-                    removeInstant();
-                }
-            }
-        };
+        return;
     }
+    // Before we render, push to history saying that instant is showing for this part of the history.
+    window.history.pushState({ zeroExInstantShowing: true }, '0x Instant');
+    let removeInstant = renderInstant(config, selector);
+    // If the integrator defined a popstate handler, save it to __zeroExInstantIntegratorsPopStateHandler
+    // unless we have already done so on a previous render.
+    const anyWindow = window as any;
+    if (window.onpopstate && !anyWindow.__zeroExInstantIntegratorsPopStateHandler) {
+        anyWindow.__zeroExInstantIntegratorsPopStateHandler = window.onpopstate.bind(window);
+    }
+    const integratorsOnPopStateHandler = anyWindow.__zeroExInstantIntegratorsPopStateHandler || util.boundNoop;
+    const onPopStateHandler = (e: PopStateEvent) => {
+        integratorsOnPopStateHandler(e);
+        const newState = e.state;
+        if (newState && newState.zeroExInstantShowing) {
+            // We have returned to a history state that expects instant to be rendered.
+            if (!isInstantRendered()) {
+                removeInstant = renderInstant(config, selector);
+            }
+        } else {
+            // History has changed to a different state.
+            if (isInstantRendered()) {
+                removeInstant();
+            }
+        }
+    };
+    window.onpopstate = onPopStateHandler;
 };
