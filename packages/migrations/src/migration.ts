@@ -11,10 +11,9 @@ import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
 
 /**
  * Creates and deploys all the contracts that are required for the latest
- * version of the 0x protocol. Custom migrations can be defined here. This will
- * be called with the CLI 'migrate:v2' command.
- * @param provider  Web3 provider instance.
- * @param txDefaults Default transaction values to use when deploying contracts.
+ * version of the 0x protocol.
+ * @param provider  Web3 provider instance. Your provider instance should connect to the testnet you want to deploy to.
+ * @param txDefaults Default transaction values to use when deploying contracts (e.g., specify the desired contract creator with the `from` parameter).
  * @returns The addresses of the contracts that were deployed.
  */
 export async function runMigrationsAsync(provider: Provider, txDefaults: Partial<TxData>): Promise<ContractAddresses> {
