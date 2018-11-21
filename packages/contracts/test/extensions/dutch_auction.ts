@@ -1,9 +1,11 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
+import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
+import ethAbi = require('ethereumjs-abi');
+import * as ethUtil from 'ethereumjs-util';
 
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
@@ -26,6 +28,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
+const ZERO = Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT);
 
 describe.only(ContractName.DutchAuction, () => {
     let makerAddress: string;
@@ -34,13 +37,11 @@ describe.only(ContractName.DutchAuction, () => {
     let feeRecipientAddress: string;
     let defaultMakerAssetAddress: string;
 
-    let weth: DummyERC20TokenContract;
     let zrxToken: DummyERC20TokenContract;
     let erc20TokenA: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let dutchAuctionContract: DutchAuctionContract;
     let wethContract: WETH9Contract;
-    let exchangeWrapper: ExchangeWrapper;
 
     let sellerOrderFactory: OrderFactory;
     let buyerOrderFactory: OrderFactory;
@@ -48,11 +49,10 @@ describe.only(ContractName.DutchAuction, () => {
     let erc20Balances: ERC20BalancesByOwner;
     let tenMinutesInSeconds: number;
     let currentBlockTimestamp: number;
-    let auctionBeginTime: BigNumber;
-    let auctionEndTime: BigNumber;
-    let auctionBeginPrice: BigNumber;
-    let auctionEndPrice: BigNumber;
-    let encodedParams: BigNumber;
+    let auctionBeginTimeSeconds: BigNumber;
+    let auctionEndTimeSeconds: BigNumber;
+    let auctionBeginAmount: BigNumber;
+    let auctionEndAmount: BigNumber;
     let sellOrder: SignedOrder;
     let buyOrder: SignedOrder;
     let erc721MakerAssetIds: BigNumber[];
@@ -60,7 +60,7 @@ describe.only(ContractName.DutchAuction, () => {
         const timestampBefore = await getLatestBlockTimestampAsync();
         await web3Wrapper.increaseTimeAsync(5);
         const timestampAfter = await getLatestBlockTimestampAsync();
-        // HACK send some transactions
+        // HACK send some transactions when a time increase isn't supported
         if (timestampAfter === timestampBefore) {
             await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
             await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
@@ -68,6 +68,20 @@ describe.only(ContractName.DutchAuction, () => {
             await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
             await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
         }
+    }
+
+    function extendMakerAssetData(makerAssetData: string, beginTimeSeconds: BigNumber, beginAmount: BigNumber): string {
+        return ethUtil.bufferToHex(
+            Buffer.concat([
+                ethUtil.toBuffer(makerAssetData),
+                ethUtil.toBuffer(
+                    (ethAbi as any).rawEncode(
+                        ['uint256', 'uint256'],
+                        [beginTimeSeconds.toString(), beginAmount.toString()],
+                    ),
+                ),
+            ]),
+        );
     }
 
     before(async () => {
@@ -93,8 +107,7 @@ describe.only(ContractName.DutchAuction, () => {
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
 
         wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults);
-        weth = new DummyERC20TokenContract(wethContract.abi, wethContract.address, provider);
-        erc20Wrapper.addDummyTokenContract(weth);
+        erc20Wrapper.addDummyTokenContract(wethContract as any);
 
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
@@ -103,9 +116,8 @@ describe.only(ContractName.DutchAuction, () => {
             txDefaults,
             zrxAssetData,
         );
-        exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
+        const exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
-
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
@@ -151,28 +163,30 @@ describe.only(ContractName.DutchAuction, () => {
         tenMinutesInSeconds = 10 * 60;
         currentBlockTimestamp = await getLatestBlockTimestampAsync();
         // Default auction begins 10 minutes ago
-        auctionBeginTime = new BigNumber(currentBlockTimestamp).minus(tenMinutesInSeconds);
+        auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp).minus(tenMinutesInSeconds);
         // Default auction ends 10 from now
-        auctionEndTime = new BigNumber(currentBlockTimestamp).plus(tenMinutesInSeconds);
-        auctionBeginPrice = Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT);
-        auctionEndPrice = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT);
-        encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
-        const zero = Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT);
+        auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp).plus(tenMinutesInSeconds);
+        auctionBeginAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT);
+        auctionEndAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT);
 
         // Default sell order and buy order are exact mirrors
         const sellerDefaultOrderParams = {
-            salt: encodedParams, // Set the encoded params as the salt for the seller order
+            salt: generatePseudoRandomSalt(),
             exchangeAddress: exchangeInstance.address,
             makerAddress,
             feeRecipientAddress,
             senderAddress: dutchAuctionContract.address,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+            makerAssetData: extendMakerAssetData(
+                assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                auctionBeginTimeSeconds,
+                auctionBeginAmount,
+            ),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
             makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
-            takerAssetAmount: auctionEndPrice,
-            expirationTimeSeconds: auctionEndTime,
-            makerFee: zero,
-            takerFee: zero,
+            takerAssetAmount: auctionEndAmount,
+            expirationTimeSeconds: auctionEndTimeSeconds,
+            makerFee: ZERO,
+            takerFee: ZERO,
         };
         // Default buy order is for the auction begin price
         const buyerDefaultOrderParams = {
@@ -180,12 +194,9 @@ describe.only(ContractName.DutchAuction, () => {
             makerAddress: takerAddress,
             makerAssetData: sellerDefaultOrderParams.takerAssetData,
             takerAssetData: sellerDefaultOrderParams.makerAssetData,
-            makerAssetAmount: auctionBeginPrice,
-            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
+            makerAssetAmount: auctionBeginAmount,
+            takerAssetAmount: sellerDefaultOrderParams.makerAssetAmount,
         };
-
-        encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
-
         const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
         sellerOrderFactory = new OrderFactory(makerPrivateKey, sellerDefaultOrderParams);
@@ -204,35 +215,33 @@ describe.only(ContractName.DutchAuction, () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('matchOrders', () => {
-        it('should encode and decode parameters', async () => {
-            encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
-            const [decodedBegin, decodedBeginPrice] = await dutchAuctionContract.decodeParameters.callAsync(
-                encodedParams,
-            );
-            expect(decodedBegin).to.be.bignumber.equal(auctionBeginTime);
-            expect(decodedBeginPrice).to.be.bignumber.equal(auctionBeginPrice);
-        });
         it('should be worth the begin price at the begining of the auction', async () => {
-            auctionBeginTime = new BigNumber(currentBlockTimestamp + 2);
-            encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
+            auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp + 2);
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
-                salt: encodedParams,
+                makerAssetData: extendMakerAssetData(
+                    assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                    auctionBeginTimeSeconds,
+                    auctionBeginAmount,
+                ),
             });
             const auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
-            expect(auctionDetails.currentPrice).to.be.bignumber.equal(auctionBeginPrice);
-            expect(auctionDetails.beginPrice).to.be.bignumber.equal(auctionBeginPrice);
+            expect(auctionDetails.currentAmount).to.be.bignumber.equal(auctionBeginAmount);
+            expect(auctionDetails.beginAmount).to.be.bignumber.equal(auctionBeginAmount);
         });
         it('should be be worth the end price at the end of the auction', async () => {
-            auctionBeginTime = new BigNumber(currentBlockTimestamp - 1000);
-            auctionEndTime = new BigNumber(currentBlockTimestamp - 100);
-            encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
+            auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp - 1000);
+            auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp - 100);
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
-                salt: encodedParams,
-                expirationTimeSeconds: auctionEndTime,
+                makerAssetData: extendMakerAssetData(
+                    assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                    auctionBeginTimeSeconds,
+                    auctionBeginAmount,
+                ),
+                expirationTimeSeconds: auctionEndTimeSeconds,
             });
             const auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
-            expect(auctionDetails.currentPrice).to.be.bignumber.equal(auctionEndPrice);
-            expect(auctionDetails.beginPrice).to.be.bignumber.equal(auctionBeginPrice);
+            expect(auctionDetails.currentAmount).to.be.bignumber.equal(auctionEndAmount);
+            expect(auctionDetails.beginAmount).to.be.bignumber.equal(auctionBeginAmount);
         });
         it('should match orders and send excess to seller', async () => {
             const txHash = await dutchAuctionContract.matchOrders.sendTransactionAsync(
@@ -246,23 +255,23 @@ describe.only(ContractName.DutchAuction, () => {
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const newBalances = await erc20Wrapper.getBalancesAsync();
-            expect(newBalances[dutchAuctionContract.address][weth.address]).to.be.bignumber.equal(
+            expect(newBalances[dutchAuctionContract.address][wethContract.address]).to.be.bignumber.equal(
                 constants.ZERO_AMOUNT,
             );
-            expect(newBalances[makerAddress][weth.address]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][weth.address].plus(buyOrder.makerAssetAmount),
+            expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][wethContract.address].plus(buyOrder.makerAssetAmount),
             );
         });
         it('should have valid getAuctionDetails at a block in the future', async () => {
             let auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
-            const beforePrice = auctionDetails.currentPrice;
+            const beforeAmount = auctionDetails.currentAmount;
             await increaseTimeAsync();
             auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
-            const currentPrice = auctionDetails.currentPrice;
-            expect(beforePrice).to.be.bignumber.greaterThan(currentPrice);
+            const currentAmount = auctionDetails.currentAmount;
+            expect(beforeAmount).to.be.bignumber.greaterThan(currentAmount);
 
             buyOrder = await buyerOrderFactory.newSignedOrderAsync({
-                makerAssetAmount: currentPrice,
+                makerAssetAmount: currentAmount,
             });
             const txHash = await dutchAuctionContract.matchOrders.sendTransactionAsync(
                 buyOrder,
@@ -275,16 +284,14 @@ describe.only(ContractName.DutchAuction, () => {
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const newBalances = await erc20Wrapper.getBalancesAsync();
-            expect(newBalances[makerAddress][weth.address]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][weth.address].plus(currentPrice),
+            expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][wethContract.address].plus(currentAmount),
             );
         });
         it('should revert when auction expires', async () => {
-            auctionEndTime = new BigNumber(currentBlockTimestamp - 100);
-            encodedParams = await dutchAuctionContract.encodeParameters.callAsync(auctionBeginTime, auctionBeginPrice);
+            auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp - 100);
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
-                salt: encodedParams,
-                expirationTimeSeconds: auctionEndTime,
+                expirationTimeSeconds: auctionEndTimeSeconds,
             });
             return expectTransactionFailedAsync(
                 dutchAuctionContract.matchOrders.sendTransactionAsync(
@@ -314,7 +321,43 @@ describe.only(ContractName.DutchAuction, () => {
                         from: takerAddress,
                     },
                 ),
-                'INVALID_PRICE' as any,
+                'INVALID_AMOUNT' as any,
+            );
+        });
+        it('cannot match an expired auction', async () => {
+            auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp - 1000);
+            auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp - 100);
+            sellOrder = await sellerOrderFactory.newSignedOrderAsync({
+                expirationTimeSeconds: auctionEndTimeSeconds,
+            });
+            return expectTransactionFailedAsync(
+                dutchAuctionContract.matchOrders.sendTransactionAsync(
+                    buyOrder,
+                    sellOrder,
+                    buyOrder.signature,
+                    sellOrder.signature,
+                    {
+                        from: takerAddress,
+                    },
+                ),
+                'AUCTION_EXPIRED' as any,
+            );
+        });
+        it('auction begin amount must be higher than final amount ', async () => {
+            sellOrder = await sellerOrderFactory.newSignedOrderAsync({
+                takerAssetAmount: auctionBeginAmount.plus(1),
+            });
+            return expectTransactionFailedAsync(
+                dutchAuctionContract.matchOrders.sendTransactionAsync(
+                    buyOrder,
+                    sellOrder,
+                    buyOrder.signature,
+                    sellOrder.signature,
+                    {
+                        from: takerAddress,
+                    },
+                ),
+                'INVALID_AMOUNT' as any,
             );
         });
         describe('ERC721', () => {
@@ -322,11 +365,15 @@ describe.only(ContractName.DutchAuction, () => {
                 const makerAssetId = erc721MakerAssetIds[0];
                 sellOrder = await sellerOrderFactory.newSignedOrderAsync({
                     makerAssetAmount: new BigNumber(1),
-                    makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                    makerAssetData: extendMakerAssetData(
+                        assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                        auctionBeginTimeSeconds,
+                        auctionBeginAmount,
+                    ),
                 });
                 buyOrder = await buyerOrderFactory.newSignedOrderAsync({
                     takerAssetAmount: new BigNumber(1),
-                    takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                    takerAssetData: sellOrder.makerAssetData,
                 });
                 const txHash = await dutchAuctionContract.matchOrders.sendTransactionAsync(
                     buyOrder,
@@ -339,8 +386,8 @@ describe.only(ContractName.DutchAuction, () => {
                 );
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash);
                 const newBalances = await erc20Wrapper.getBalancesAsync();
-                expect(newBalances[makerAddress][weth.address]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][weth.address].plus(buyOrder.makerAssetAmount),
+                expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.equal(
+                    erc20Balances[makerAddress][wethContract.address].plus(buyOrder.makerAssetAmount),
                 );
                 const newOwner = await erc721Token.ownerOf.callAsync(makerAssetId);
                 expect(newOwner).to.be.bignumber.equal(takerAddress);
