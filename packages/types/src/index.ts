@@ -641,7 +641,7 @@ export interface SimpleStandardContractOutput {
 }
 
 export interface SimpleEvmOutput {
-        bytecode: SimpleEvmBytecodeOutput;
+    bytecode: SimpleEvmBytecodeOutput;
 }
 
 export interface SimpleEvmBytecodeOutput {
