@@ -71,6 +71,7 @@ export class EtherTokenWrapper extends ContractWrapper {
                 value: amountInWei,
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
+                nonce: txOpts.nonce,
             }),
         );
         return txHash;
@@ -112,6 +113,7 @@ export class EtherTokenWrapper extends ContractWrapper {
                 from: normalizedWithdrawerAddress,
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
+                nonce: txOpts.nonce,
             }),
         );
         return txHash;

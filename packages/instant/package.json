@@ -1,13 +1,12 @@
 {
     "name": "@0x/instant",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "engines": {
         "node": ">=6.12"
     },
     "description": "0x Instant React Component",
-    "private": true,
-    "main": "lib/src/index.js",
-    "types": "lib/src/index.d.ts",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "scripts": {
         "build": "yarn build:all",
         "build:all": "run-p build:umd:prod build:commonjs",
@@ -45,19 +44,19 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/instant/README.md",
     "dependencies": {
-        "@0x/assert": "^1.0.17",
-        "@0x/asset-buyer": "^3.0.0",
-        "@0x/json-schemas": "^2.1.1",
-        "@0x/order-utils": "^3.0.2",
-        "@0x/subproviders": "^2.1.4",
-        "@0x/types": "^1.2.1",
+        "@0x/assert": "^1.0.18",
+        "@0x/asset-buyer": "^3.0.1",
+        "@0x/json-schemas": "^2.1.2",
+        "@0x/order-utils": "^3.0.3",
+        "@0x/subproviders": "^2.1.5",
+        "@0x/types": "^1.3.0",
         "@0x/typescript-typings": "^3.0.4",
-        "@0x/utils": "^2.0.5",
-        "@0x/web3-wrapper": "^3.1.4",
+        "@0x/utils": "^2.0.6",
+        "@0x/web3-wrapper": "^3.1.5",
         "bowser": "^1.9.4",
         "copy-to-clipboard": "^3.0.8",
         "ethereum-types": "^1.1.2",
-        "lodash": "^4.17.10",
+        "lodash": "^4.17.5",
         "polished": "^2.2.0",
         "react": "^16.5.2",
         "react-dom": "^16.5.2",
@@ -89,6 +88,7 @@
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
+        "svg-react-loader": "^0.4.6",
         "ts-jest": "^23.10.3",
         "tslint": "5.11.0",
         "typedoc": "0.13.0",
@@ -98,6 +98,6 @@
         "webpack-dev-server": "^3.1.9"
     },
     "publishConfig": {
-        "access": "private"
+        "access": "public"
     }
 }

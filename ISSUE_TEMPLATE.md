@@ -46,10 +46,14 @@
 
 <!--- Include as many relevant details about the environment you experienced the bug in -->
 
-|             Package | Version |
-| ------------------: | :------ |
-|             `0x.js` | 0.25.0  |
-| `Exchange Contract` | v1      |
+| Package | Version |
+| ------: | :------ |
+
+
+<!-- For example:
+|             `0x.js` | 2.0.4   |
+| `Exchange Contract` | v2      |
+-->
 
 | Network |
 | ------- |

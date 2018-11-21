@@ -124,6 +124,7 @@ export class ForwarderWrapper extends ContractWrapper {
                     from: normalizedTakerAddress,
                     gas: orderTransactionOpts.gasLimit,
                     gasPrice: orderTransactionOpts.gasPrice,
+                    nonce: orderTransactionOpts.nonce,
                 },
             );
         }
@@ -140,6 +141,7 @@ export class ForwarderWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -213,6 +215,7 @@ export class ForwarderWrapper extends ContractWrapper {
                     from: normalizedTakerAddress,
                     gas: orderTransactionOpts.gasLimit,
                     gasPrice: orderTransactionOpts.gasPrice,
+                    nonce: orderTransactionOpts.nonce,
                 },
             );
         }
@@ -230,6 +233,7 @@ export class ForwarderWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;

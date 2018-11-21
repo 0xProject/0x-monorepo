@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.5 - _November 21, 2018_
+
+    * Add unmarshalling of transaction receipts (#1291)
+    * Return `undefined` instead of `null` if transaction receipt not found (#1291)
+
 ## v3.1.4 - _November 14, 2018_
 
     * Dependencies updated

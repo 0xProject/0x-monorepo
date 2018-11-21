@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import PoweredByLogo from '../assets/powered_by_0x.svg';
+import { ZERO_EX_SITE_URL } from '../constants';
 import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
 import { ConnectedBuyOrderProgressOrPaymentMethod } from '../containers/connected_buy_order_progress_or_payment_method';
 import { CurrentStandardSlidingPanel } from '../containers/current_standard_sliding_panel';
@@ -63,6 +65,17 @@ export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantCon
                             <AvailableERC20TokenSelector onTokenSelect={this._handlePanelClose} />
                         </SlidingPanel>
                         <CurrentStandardSlidingPanel />
+                    </Container>
+                    <Container
+                        display={{ sm: 'none', default: 'block' }}
+                        marginTop="10px"
+                        marginLeft="auto"
+                        marginRight="auto"
+                        width="140px"
+                    >
+                        <a href={ZERO_EX_SITE_URL} target="_blank">
+                            <PoweredByLogo />
+                        </a>
                     </Container>
                 </Container>
             </React.Fragment>

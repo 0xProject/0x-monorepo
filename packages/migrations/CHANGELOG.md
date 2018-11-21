@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0 - _November 21, 2018_
+
+    * Export all type declarations used by the public interface, as well as the `ContractAddresses` mapping (#1301)
+
 ## v2.0.4 - _November 14, 2018_
 
     * Dependencies updated
