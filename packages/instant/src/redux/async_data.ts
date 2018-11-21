@@ -78,6 +78,7 @@ export const asyncData = {
             const ethBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(address);
             dispatch(actions.updateAccountEthBalance({ address, ethBalanceInWei }));
         } catch (e) {
+            errorReporter.report(e);
             // leave balance as is
             return;
         }
