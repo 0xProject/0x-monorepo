@@ -20,6 +20,8 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 
 ### Published Packages
 
+#### TypeScript/JavaScript
+
 | Package                                                  | Version                                                                                                                 | Description                                                                                                              |
 | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | [`0x.js`](/packages/0x.js)                               | [![npm](https://img.shields.io/npm/v/0x.js.svg)](https://www.npmjs.com/package/0x.js)                                   | A Javascript library for interacting with the 0x protocol                                                                |
@@ -51,6 +53,12 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 | [`@0x/typescript-typings`](/packages/typescript-typings) | [![npm](https://img.shields.io/npm/v/@0x/typescript-typings.svg)](https://www.npmjs.com/package/@0x/typescript-typings) | Repository of types for external packages                                                                                |
 | [`@0x/utils`](/packages/utils)                           | [![npm](https://img.shields.io/npm/v/@0x/utils.svg)](https://www.npmjs.com/package/@0x/utils)                           | Shared utilities                                                                                                         |
 | [`@0x/web3-wrapper`](/packages/web3-wrapper)             | [![npm](https://img.shields.io/npm/v/@0x/web3-wrapper.svg)](https://www.npmjs.com/package/@0x/web3-wrapper)             | Web3 wrapper                                                                                                             |
+
+#### Python
+
+| Package                                             | Version                                                                                               | Description                                                                  |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [`0x-order-utils.py`](/python-packages/order_utils) | [![PyPI](https://img.shields.io/pypi/v/0x-order-utils.svg)](https://pypi.org/project/0x-order-utils/) | A set of utilities for generating, parsing, signing and validating 0x orders |
 
 ### Private Packages
 

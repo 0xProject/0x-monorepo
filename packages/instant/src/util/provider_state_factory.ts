@@ -56,7 +56,7 @@ export const providerStateFactory = {
     getInitialProviderStateFallback: (orderSource: OrderSource, network: Network): ProviderState => {
         const provider = providerFactory.getFallbackNoSigningProvider(network);
         const providerState: ProviderState = {
-            name: envUtil.getProviderName(provider),
+            name: 'Fallback',
             provider,
             web3Wrapper: new Web3Wrapper(provider),
             assetBuyer: assetBuyerFactory.getAssetBuyer(provider, orderSource, network),

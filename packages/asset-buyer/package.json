@@ -47,7 +47,7 @@
         "@0x/utils": "^2.0.5",
         "@0x/web3-wrapper": "^3.1.4",
         "ethereum-types": "^1.1.2",
-        "lodash": "^4.17.10"
+        "lodash": "^4.17.5"
     },
     "devDependencies": {
         "@0x/tslint-config": "^1.0.10",

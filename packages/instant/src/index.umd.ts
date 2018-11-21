@@ -35,6 +35,9 @@ export const render = (props: ZeroExInstantOverlayProps, selector: string = DEFA
     if (!_.isUndefined(props.provider)) {
         assert.isWeb3Provider('props.provider', props.provider);
     }
+    if (!_.isUndefined(props.shouldDisableAnalyticsTracking)) {
+        assert.isBoolean('props.shouldDisableAnalyticsTracking', props.shouldDisableAnalyticsTracking);
+    }
     assert.isString('selector', selector);
     const appendToIfExists = document.querySelector(selector);
     assert.assert(!_.isNull(appendToIfExists), `Could not find div with selector: ${selector}`);
