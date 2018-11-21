@@ -65,6 +65,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                         onAmountChange={this._handleChange}
                         onFontSizeChange={this._handleFontSizeChange}
                         hasAutofocus={true}
+                        /* We send in a key of asset data to force a rerender of this component when the user selects a new asset.  We do this so the autofocus attribute will bring focus onto this input */
                         key={asset.assetData}
                     />
                 </Container>
