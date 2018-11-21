@@ -37,7 +37,7 @@ const getHeapAnalyticsId = environmentName => {
 
 const ROLLBAR_PUBLISH_TOKEN_ENV_NAME = 'INSTANT_ROLLBAR_PUBLISH_TOKEN';
 const ROLLBAR_CLIENT_TOKEN_ENV_NAME = 'INSTANT_ROLLBAR_CLIENT_TOKEN';
-const getRollbarPlugin = environmentName => {
+const getRollbarSourceMapPlugin = environmentName => {
     if (!environmentName) {
         return undefined;
     }
@@ -101,14 +101,14 @@ module.exports = (env, argv) => {
             'process.env': envVars,
         }),
     ];
-    const rollbarPlugin = getRollbarPlugin(environmentName);
-    if (rollbarPlugin) {
+    const rollbarSourceMapPlugin = getRollbarSourceMapPlugin(environmentName);
+    if (rollbarSourceMapPlugin) {
         console.log('Using rollbar source map plugin');
-        plugins = plugins.concat(rollbarPlugin);
+        plugins = plugins.concat(rollbarSourceMapPlugin);
     } else {
         console.log('Not using rollbar source map plugin');
     }
-    validateRollbarPresence(environmentName, envVars['ROLLBAR_ENABLED'], rollbarPlugin);
+    validateRollbarPresence(environmentName, envVars['ROLLBAR_ENABLED'], rollbarSourceMapPlugin);
 
     const config = {
         entry: {
