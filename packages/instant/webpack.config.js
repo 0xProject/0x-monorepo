@@ -66,21 +66,14 @@ const getRollbarPlugin = environmentName => {
     };
     return new RollbarSourceMapPlugin(rollbarPluginOptions);
 };
-
-const validateRollbarPresence = (environmentName, rollbarPlugin) => {
+const validateRollbarPresence = (environmentName, rollbarEnabled, rollbarSourceMapPlugin) => {
     const requiresRollbar = environmentName === 'dogfood' || environmentName === 'staging';
-
     if (!requiresRollbar) {
         return;
     }
-
-    if (!process.env[ROLLBAR_CLIENT_TOKEN_ENV_NAME]) {
-        throw new Error(`${ROLLBAR_CLIENT_TOKEN_ENV_NAME} must be set for ${environmentName}`);
-    }
-
-    if (!rollbarPlugin) {
+    if (!rollbarEnabled || !rollbarSourceMapPlugin) {
         throw new Error(
-            `Please set rollbar env var ${ROLLBAR_PUBLISH_TOKEN_ENV_NAME} to a Rollbar project access token with post_server_item permissions to deploy source maps to ${environmentName}`,
+            `Rollbar env vars must be set to build for ${environmentName}. Please set ${ROLLBAR_CLIENT_TOKEN_ENV_NAME} to a rollbar access token with post_client_item permissions, and ${ROLLBAR_PUBLISH_TOKEN_ENV_NAME} to a rollbar access token with post_server_item permissions.`,
         );
     }
 };
@@ -115,7 +108,7 @@ module.exports = (env, argv) => {
     } else {
         console.log('Not using rollbar source map plugin');
     }
-    validateRollbarPresence(environmentName, rollbarPlugin);
+    validateRollbarPresence(environmentName, envVars['ROLLBAR_ENABLED'], rollbarPlugin);
 
     const config = {
         entry: {
