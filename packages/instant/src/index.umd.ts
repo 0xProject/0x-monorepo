@@ -7,6 +7,7 @@ import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
 import { assert } from './util/assert';
 import { util } from './util/util';
 
+const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_ID);
 export interface ZeroExInstantConfig extends ZeroExInstantOverlayProps {
     shouldDisablePushToHistory?: boolean;
 }
@@ -43,8 +44,8 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
     if (!_.isUndefined(config.shouldDisablePushToHistory)) {
         assert.isBoolean('shouldDisablePushToHistory', config.shouldDisablePushToHistory);
     }
-    if (!_.isUndefined(props.shouldDisableAnalyticsTracking)) {
-        assert.isBoolean('props.shouldDisableAnalyticsTracking', props.shouldDisableAnalyticsTracking);
+    if (!_.isUndefined(config.shouldDisableAnalyticsTracking)) {
+        assert.isBoolean('shouldDisableAnalyticsTracking', config.shouldDisableAnalyticsTracking);
     }
     assert.isString('selector', selector);
     // Render instant and return a callback that allows you to remove it from the DOM.
@@ -101,5 +102,3 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         };
     }
 };
-
-const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_ID);
