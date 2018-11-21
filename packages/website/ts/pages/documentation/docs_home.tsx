@@ -109,6 +109,14 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
+                "A package to deploy the 0x protocol's system of smart contracts to the testnet of your choice",
+            link: {
+                title: '@0x/migrations',
+                to: WebsitePaths.Migrations,
+            },
+        },
+        {
+            description:
                 'A collection of 0x-related JSON-schemas (incl. SRA request/response schemas, 0x order message format schema, etc...)',
             link: {
                 title: '@0x/json-schemas',
@@ -129,6 +137,23 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             link: {
                 title: '@0x/order-watcher',
                 to: WebsitePaths.OrderWatcher,
+            },
+        },
+        {
+            description:
+                'A tiny utility library for getting known deployed contract addresses for a particular network.',
+            link: {
+                title: '@0x/contract-addresses',
+                to: 'https://www.npmjs.com/package/@0x/contract-addresses',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: 'Smart contract compilation artifacts for the latest version of the 0x protocol.',
+            link: {
+                title: '@0x/contract-artifacts',
+                to: 'https://www.npmjs.com/package/@0x/contract-artifacts',
+                shouldOpenInNewTab: true,
             },
         },
         {
