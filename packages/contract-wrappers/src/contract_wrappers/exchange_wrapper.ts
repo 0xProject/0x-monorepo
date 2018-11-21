@@ -1162,7 +1162,7 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const expectedFillTakerTokenAmountIfExists = opts.expectedFillTakerTokenAmount;
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
-        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._ethRPCClient.getProvider());
         await orderValidationUtils.validateOrderFillableOrThrowAsync(
             exchangeTradeSimulator,
             signedOrder,
@@ -1190,7 +1190,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
 
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
-        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._ethRPCClient.getProvider());
         await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
             exchangeTradeSimulator,
             this._ethRPCClient.getProvider(),

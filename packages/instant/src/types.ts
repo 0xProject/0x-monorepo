@@ -1,6 +1,6 @@
 import { AssetBuyer, BigNumber } from '@0x/asset-buyer';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { AssetProxyId, ObjectMap, SignedOrder } from '@0x/types';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 
 // Reusable
@@ -99,7 +99,7 @@ export interface ProviderState {
     name: string;
     provider: Provider;
     assetBuyer: AssetBuyer;
-    web3Wrapper: Web3Wrapper;
+    ethRPCClient: EthRPCClient;
     account: Account;
 }
 

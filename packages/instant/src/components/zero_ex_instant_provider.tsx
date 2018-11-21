@@ -155,8 +155,8 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         const msToShowError = 30000; // 30 seconds
         const state = this._store.getState();
         const network = state.network;
-        const web3Wrapper = state.providerState.web3Wrapper;
-        const networkOfProvider = await web3Wrapper.getNetworkIdAsync();
+        const ethRPCClient = state.providerState.ethRPCClient;
+        const networkOfProvider = await ethRPCClient.getNetworkIdAsync();
         if (network !== networkOfProvider) {
             const errorMessage = `Wrong network detected. Try switching to ${Network[network]}.`;
             errorFlasher.flashNewErrorMessage(this._store.dispatch, errorMessage, msToShowError);

@@ -1,4 +1,4 @@
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -32,7 +32,7 @@ export const providerStateFactory = {
         const providerState: ProviderState = {
             name: envUtil.getProviderName(provider),
             provider,
-            web3Wrapper: new Web3Wrapper(provider),
+            ethRPCClient: new EthRPCClient(provider),
             assetBuyer: assetBuyerFactory.getAssetBuyer(provider, orderSource, network),
             account: LOADING_ACCOUNT,
         };
@@ -44,7 +44,7 @@ export const providerStateFactory = {
             const providerState: ProviderState = {
                 name: envUtil.getProviderName(injectedProviderIfExists),
                 provider: injectedProviderIfExists,
-                web3Wrapper: new Web3Wrapper(injectedProviderIfExists),
+                ethRPCClient: new EthRPCClient(injectedProviderIfExists),
                 assetBuyer: assetBuyerFactory.getAssetBuyer(injectedProviderIfExists, orderSource, network),
                 account: LOADING_ACCOUNT,
             };
@@ -58,7 +58,7 @@ export const providerStateFactory = {
         const providerState: ProviderState = {
             name: 'Fallback',
             provider,
-            web3Wrapper: new Web3Wrapper(provider),
+            ethRPCClient: new EthRPCClient(provider),
             assetBuyer: assetBuyerFactory.getAssetBuyer(provider, orderSource, network),
             account: NO_ACCOUNT,
         };

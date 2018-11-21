@@ -1,6 +1,6 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -19,7 +19,7 @@ interface ConnectedState {
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
     assetBuyer: AssetBuyer;
-    web3Wrapper: Web3Wrapper;
+    ethRPCClient: EthRPCClient;
     affiliateInfo?: AffiliateInfo;
     onViewTransaction: () => void;
 }
@@ -36,7 +36,7 @@ interface ConnectedDispatch {
 export interface SelectedAssetBuyOrderStateButtons {}
 const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButtons): ConnectedState => {
     const assetBuyer = state.providerState.assetBuyer;
-    const web3Wrapper = state.providerState.web3Wrapper;
+    const ethRPCClient = state.providerState.ethRPCClient;
     const account = state.providerState.account;
     const accountAddress = account.state === AccountState.Ready ? account.address : undefined;
     const accountEthBalanceInWei = account.state === AccountState.Ready ? account.ethBalanceInWei : undefined;
@@ -45,7 +45,7 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
         accountEthBalanceInWei,
         buyOrderProcessingState: state.buyOrderState.processState,
         assetBuyer,
-        web3Wrapper,
+        ethRPCClient,
         buyQuote: state.latestBuyQuote,
         affiliateInfo: state.affiliateInfo,
         onViewTransaction: () => {

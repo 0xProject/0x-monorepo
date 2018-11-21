@@ -1,6 +1,6 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
@@ -19,7 +19,7 @@ export interface BuyOrderStateButtonProps {
     buyQuote?: BuyQuote;
     buyOrderProcessingState: OrderProcessState;
     assetBuyer: AssetBuyer;
-    web3Wrapper: Web3Wrapper;
+    ethRPCClient: EthRPCClient;
     affiliateInfo?: AffiliateInfo;
     onViewTransaction: () => void;
     onValidationPending: (buyQuote: BuyQuote) => void;
@@ -58,7 +58,7 @@ export const BuyOrderStateButtons: React.StatelessComponent<BuyOrderStateButtonP
             accountEthBalanceInWei={props.accountEthBalanceInWei}
             buyQuote={props.buyQuote}
             assetBuyer={props.assetBuyer}
-            web3Wrapper={props.web3Wrapper}
+            ethRPCClient={props.ethRPCClient}
             affiliateInfo={props.affiliateInfo}
             onValidationPending={props.onValidationPending}
             onValidationFail={props.onValidationFail}

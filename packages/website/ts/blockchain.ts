@@ -607,8 +607,8 @@ export class Blockchain {
         let networkIdIfExists: number;
         if (!_.isUndefined(injectedProviderIfExists)) {
             try {
-                const injectedWeb3Wrapper = new EthRPCClient(injectedProviderIfExists);
-                networkIdIfExists = await injectedWeb3Wrapper.getNetworkIdAsync();
+                const injectedEthRPCClient = new EthRPCClient(injectedProviderIfExists);
+                networkIdIfExists = await injectedEthRPCClient.getNetworkIdAsync();
             } catch (err) {
                 // Ignore error and proceed with networkId undefined
             }

@@ -18,7 +18,7 @@ export interface BuyButtonProps {
     accountEthBalanceInWei?: BigNumber;
     buyQuote?: BuyQuote;
     assetBuyer: AssetBuyer;
-    web3Wrapper: Web3Wrapper;
+    ethRPCClient: EthRPCClient;
     affiliateInfo?: AffiliateInfo;
     onValidationPending: (buyQuote: BuyQuote) => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
@@ -50,7 +50,14 @@ export class BuyButton extends React.Component<BuyButtonProps> {
     }
     private readonly _handleClick = async () => {
         // The button is disabled when there is no buy quote anyway.
-        const { buyQuote, assetBuyer, affiliateInfo, accountAddress, accountEthBalanceInWei, web3Wrapper } = this.props;
+        const {
+            buyQuote,
+            assetBuyer,
+            affiliateInfo,
+            accountAddress,
+            accountEthBalanceInWei,
+            ethRPCClient,
+        } = this.props;
         if (_.isUndefined(buyQuote) || _.isUndefined(accountAddress)) {
             return;
         }
@@ -58,7 +65,6 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         const ethNeededForBuy = buyQuote.worstCaseQuoteInfo.totalEthAmount;
         // if we don't have a balance for the user, let the transaction through, it will be handled by the wallet
         const hasSufficientEth = _.isUndefined(accountEthBalanceInWei) || accountEthBalanceInWei.gte(ethNeededForBuy);
-        const ethRPCClient = new EthRPCClient(assetBuyer.provider);
         if (!hasSufficientEth) {
             this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);
             return;

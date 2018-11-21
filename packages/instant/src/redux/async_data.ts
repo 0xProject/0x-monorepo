@@ -1,5 +1,5 @@
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import { AssetProxyId } from '@0x/types';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 
@@ -44,19 +44,19 @@ export const asyncData = {
         shouldAttemptUnlock: boolean = false,
         shouldSetToLoading: boolean = false,
     ) => {
-        const web3Wrapper = providerState.web3Wrapper;
+        const ethRPCClient = providerState.ethRPCClient;
         const provider = providerState.provider;
         if (shouldSetToLoading && providerState.account.state !== AccountState.Loading) {
             dispatch(actions.setAccountStateLoading());
         }
         let availableAddresses: string[];
         try {
-            // TODO(bmillman): Add support at the web3Wrapper level for calling `eth_requestAccounts` instead of calling enable here
+            // TODO(bmillman): Add support at the ethRPCClient level for calling `eth_requestAccounts` instead of calling enable here
             const isPrivacyModeEnabled = !_.isUndefined((provider as any).enable);
             availableAddresses =
                 isPrivacyModeEnabled && shouldAttemptUnlock
                     ? await (provider as any).enable()
-                    : await web3Wrapper.getAvailableAddressesAsync();
+                    : await ethRPCClient.getAvailableAddressesAsync();
         } catch (e) {
             dispatch(actions.setAccountStateLocked());
             return;
@@ -65,14 +65,14 @@ export const asyncData = {
             const activeAddress = availableAddresses[0];
             dispatch(actions.setAccountStateReady(activeAddress));
             // tslint:disable-next-line:no-floating-promises
-            asyncData.fetchAccountBalanceAndDispatchToStore(activeAddress, providerState.web3Wrapper, dispatch);
+            asyncData.fetchAccountBalanceAndDispatchToStore(activeAddress, providerState.ethRPCClient, dispatch);
         } else {
             dispatch(actions.setAccountStateLocked());
         }
     },
-    fetchAccountBalanceAndDispatchToStore: async (address: string, web3Wrapper: Web3Wrapper, dispatch: Dispatch) => {
+    fetchAccountBalanceAndDispatchToStore: async (address: string, ethRPCClient: EthRPCClient, dispatch: Dispatch) => {
         try {
-            const ethBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(address);
+            const ethBalanceInWei = await ethRPCClient.getBalanceInWeiAsync(address);
             dispatch(actions.updateAccountEthBalance({ address, ethBalanceInWei }));
         } catch (e) {
             // leave balance as is

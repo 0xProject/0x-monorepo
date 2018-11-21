@@ -1,6 +1,6 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { EthRPCClient } from '@0x/eth-rpc-client';
 import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 import { oc } from 'ts-optchain';
@@ -19,7 +19,7 @@ export const buyQuoteUpdater = {
         options: { setPending: boolean; dispatchErrors: boolean; affiliateInfo?: AffiliateInfo },
     ): Promise<void> => {
         // get a new buy quote.
-        const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetUnitAmount, asset.metaData.decimals);
+        const baseUnitValue = EthRPCClient.toBaseUnitAmount(assetUnitAmount, asset.metaData.decimals);
         if (options.setPending) {
             // mark quote as pending
             dispatch(actions.setQuoteRequestStatePending());
