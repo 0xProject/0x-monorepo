@@ -26,7 +26,7 @@ export class RawCalldata {
         }
 
         this._scopes = new Queue<number>();
-        this._scopes.push(RawCalldata._INITIAL_OFFSET);
+        this._scopes.pushBack(RawCalldata._INITIAL_OFFSET);
         this._offset = RawCalldata._INITIAL_OFFSET;
     }
 
@@ -60,7 +60,7 @@ export class RawCalldata {
     }
 
     public endScope(): void {
-        this._scopes.pop();
+        this._scopes.popFront();
     }
 
     public getOffset(): number {
@@ -68,7 +68,7 @@ export class RawCalldata {
     }
 
     public toAbsoluteOffset(relativeOffset: number): number {
-        const scopeOffset = this._scopes.peek();
+        const scopeOffset = this._scopes.peekFront();
         if (scopeOffset === undefined) {
             throw new Error(`Tried to access undefined scope.`);
         }

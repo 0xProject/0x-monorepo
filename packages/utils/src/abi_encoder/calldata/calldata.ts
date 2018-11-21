@@ -19,7 +19,7 @@ export class Calldata {
 
         // Base Case
         if (!(block instanceof CalldataBlocks.MemberCalldataBlock)) {
-            blockQueue.push(block);
+            blockQueue.pushBack(block);
             return blockQueue;
         }
 
@@ -38,9 +38,9 @@ export class Calldata {
             if (member instanceof CalldataBlocks.DependentCalldataBlock && member.getAlias() === undefined) {
                 const dependency = member.getDependency();
                 if (dependency instanceof CalldataBlocks.MemberCalldataBlock) {
-                    blockQueue.merge(Calldata._createQueue(dependency));
+                    blockQueue.mergeBack(Calldata._createQueue(dependency));
                 } else {
-                    blockQueue.push(dependency);
+                    blockQueue.pushBack(dependency);
                 }
             }
         });
@@ -100,7 +100,7 @@ export class Calldata {
         const offsetQueue = Calldata._createQueue(this._root);
         let block: CalldataBlock | undefined;
         let offset = 0;
-        for (block = offsetQueue.pop(); block !== undefined; block = offsetQueue.pop()) {
+        for (block = offsetQueue.popFront(); block !== undefined; block = offsetQueue.popFront()) {
             block.setOffset(offset);
             offset += block.getSizeInBytes();
         }
@@ -140,9 +140,9 @@ export class Calldata {
 
         let block: CalldataBlock | undefined;
         let offset = 0;
-        const functionBlock = valueQueue.peek();
+        const functionBlock = valueQueue.peekFront();
         const functionName: string = functionBlock === undefined ? '' : functionBlock.getName();
-        for (block = valueQueue.pop(); block !== undefined; block = valueQueue.pop()) {
+        for (block = valueQueue.popFront(); block !== undefined; block = valueQueue.popFront()) {
             // Process each block 1 word at a time
             const size = block.getSizeInBytes();
             const name = block.getName();
@@ -212,7 +212,7 @@ export class Calldata {
         const valueQueue = Calldata._createQueue(this._root);
         const valueBufs: Buffer[] = [selectorBuffer];
         let block: CalldataBlock | undefined;
-        for (block = valueQueue.pop(); block !== undefined; block = valueQueue.pop()) {
+        for (block = valueQueue.popFront(); block !== undefined; block = valueQueue.popFront()) {
             valueBufs.push(block.toBuffer());
         }
 
