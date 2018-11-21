@@ -175,7 +175,8 @@ describe.only(ContractName.DutchAuction, () => {
             exchangeAddress: exchangeInstance.address,
             makerAddress,
             feeRecipientAddress,
-            senderAddress: dutchAuctionContract.address,
+            // taker address or sender address should be set to the ducth auction contract
+            takerAddress: dutchAuctionContract.address,
             makerAssetData: extendMakerAssetData(
                 assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
                 auctionBeginTimeSeconds,
@@ -286,6 +287,50 @@ describe.only(ContractName.DutchAuction, () => {
             const newBalances = await erc20Wrapper.getBalancesAsync();
             expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.equal(
                 erc20Balances[makerAddress][wethContract.address].plus(currentAmount),
+            );
+        });
+        it('maker fees on sellOrder are paid to the fee receipient', async () => {
+            sellOrder = await sellerOrderFactory.newSignedOrderAsync({
+                makerFee: new BigNumber(1),
+            });
+            const txHash = await dutchAuctionContract.matchOrders.sendTransactionAsync(
+                buyOrder,
+                sellOrder,
+                buyOrder.signature,
+                sellOrder.signature,
+                {
+                    from: takerAddress,
+                },
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][wethContract.address].plus(buyOrder.makerAssetAmount),
+            );
+            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[feeRecipientAddress][zrxToken.address].plus(sellOrder.makerFee),
+            );
+        });
+        it('maker fees on buyOrder are paid to the fee receipient', async () => {
+            buyOrder = await buyerOrderFactory.newSignedOrderAsync({
+                makerFee: new BigNumber(1),
+            });
+            const txHash = await dutchAuctionContract.matchOrders.sendTransactionAsync(
+                buyOrder,
+                sellOrder,
+                buyOrder.signature,
+                sellOrder.signature,
+                {
+                    from: takerAddress,
+                },
+            );
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.equal(
+                erc20Balances[makerAddress][wethContract.address].plus(buyOrder.makerAssetAmount),
+            );
+            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[feeRecipientAddress][zrxToken.address].plus(buyOrder.makerFee),
             );
         });
         it('should revert when auction expires', async () => {
