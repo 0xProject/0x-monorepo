@@ -64,7 +64,7 @@
             window.history.pushState({ page: 1 }, '0x Instant');
             window.history.pushState({ page: 2 }, '0x Instant');
             window.history.pushState({ page: 3 }, '0x Instant');
-            window.onpopstate = () => console.log('Integrators onpopstate called');
+            window.onpopstate = () => console.log("Integrator's onpopstate called");
 
             const removeUndefined = obj => {
                 for (let k in obj) if (obj[k] === undefined) delete obj[k];

@@ -8,11 +8,8 @@ import { assert } from './util/assert';
 import { util } from './util/util';
 
 const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_ID);
-export interface ZeroExInstantConfig extends ZeroExInstantOverlayProps {
-    shouldDisablePushToHistory?: boolean;
-}
 
-export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
+const validateInstantRenderConfig = (config: ZeroExInstantConfig, selector: string) => {
     assert.isValidOrderSource('orderSource', config.orderSource);
     if (!_.isUndefined(config.defaultSelectedAssetData)) {
         assert.isHexString('defaultSelectedAssetData', config.defaultSelectedAssetData);
@@ -48,37 +45,46 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         assert.isBoolean('shouldDisableAnalyticsTracking', config.shouldDisableAnalyticsTracking);
     }
     assert.isString('selector', selector);
-    // Render instant and return a callback that allows you to remove it from the DOM.
-    const renderInstant = () => {
-        const appendToIfExists = document.querySelector(selector);
-        assert.assert(!_.isNull(appendToIfExists), `Could not find div with selector: ${selector}`);
-        const appendTo = appendToIfExists as Element;
-        const injectedDiv = document.createElement('div');
-        injectedDiv.setAttribute('id', INJECTED_DIV_ID);
-        injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
-        appendTo.appendChild(injectedDiv);
-        const closeInstant = () => {
-            if (!_.isUndefined(config.onClose)) {
-                config.onClose();
-            }
-            appendTo.removeChild(injectedDiv);
-        };
-        const instantOverlayProps = {
-            ...config,
-            // If we are using the history API, just go back to close
-            onClose: () => (config.shouldDisablePushToHistory ? closeInstant() : window.history.back()),
-        };
-        ReactDOM.render(React.createElement(ZeroExInstantOverlay, instantOverlayProps), injectedDiv);
-        return closeInstant;
+};
+
+// Render instant and return a callback that allows you to remove it from the DOM.
+const renderInstant = (config: ZeroExInstantConfig, selector: string) => {
+    const appendToIfExists = document.querySelector(selector);
+    assert.assert(!_.isNull(appendToIfExists), `Could not find div with selector: ${selector}`);
+    const appendTo = appendToIfExists as Element;
+    const injectedDiv = document.createElement('div');
+    injectedDiv.setAttribute('id', INJECTED_DIV_ID);
+    injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
+    appendTo.appendChild(injectedDiv);
+    const closeInstant = () => {
+        if (!_.isUndefined(config.onClose)) {
+            config.onClose();
+        }
+        appendTo.removeChild(injectedDiv);
     };
+    const instantOverlayProps = {
+        ...config,
+        // If we are using the history API, just go back to close
+        onClose: () => (config.shouldDisablePushToHistory ? closeInstant() : window.history.back()),
+    };
+    ReactDOM.render(React.createElement(ZeroExInstantOverlay, instantOverlayProps), injectedDiv);
+    return closeInstant;
+};
+
+export interface ZeroExInstantConfig extends ZeroExInstantOverlayProps {
+    shouldDisablePushToHistory?: boolean;
+}
+
+export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_ZERO_EX_CONTAINER_SELECTOR) => {
+    validateInstantRenderConfig(config, selector);
     if (config.shouldDisablePushToHistory) {
         if (!isInstantRendered()) {
-            renderInstant();
+            renderInstant(config, selector);
         }
     } else {
         // Before we render, push to history saying that instant is showing for this part of the history.
         window.history.pushState({ zeroExInstantShowing: true }, '0x Instant');
-        let removeInstant = renderInstant();
+        let removeInstant = renderInstant(config, selector);
 
         let prevOnPopState = util.boundNoop;
         if (window.onpopstate) {
@@ -86,12 +92,12 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
         }
         window.onpopstate = (e: PopStateEvent) => {
             // Don't override integrators handler.
-            prevOnPopState(e);
-            // e.state represents the new state
-            if (e.state && e.state.zeroExInstantShowing) {
+            // prevOnPopState(e);
+            const newState = e.state;
+            if (newState && newState.zeroExInstantShowing) {
                 // We have returned to a history state that expects instant to be rendered.
                 if (!isInstantRendered()) {
-                    removeInstant = renderInstant();
+                    removeInstant = renderInstant(config, selector);
                 }
             } else {
                 // History has changed to a different state.
