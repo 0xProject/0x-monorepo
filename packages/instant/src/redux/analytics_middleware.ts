@@ -27,10 +27,10 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                     prevAccount.state === AccountState.Ready && prevAccount.address !== curAccount.address;
                 const ethAddress = curAccount.address;
                 if (didJustTurnReady) {
-                    analytics.trackAccountReady({ address: ethAddress });
+                    analytics.trackAccountReady(ethAddress);
                     analytics.addUserProperties({ lastKnownEthAddress: ethAddress });
                 } else if (didJustUpdateAddress) {
-                    analytics.trackAccountAddressChanged({ address: ethAddress });
+                    analytics.trackAccountAddressChanged(ethAddress);
                     analytics.addUserProperties({ lastKnownEthAddress: ethAddress });
                 }
             }

@@ -48,12 +48,6 @@ export interface AnalyticsEventOptions {
     gitSha?: string;
     npmVersion?: string;
 }
-export interface AccountReadyEventProperties {
-    address: string;
-}
-export interface AccountAddressChangedEventProperties {
-    address: string;
-}
 
 export const analytics = {
     addUserProperties: (properties: AnalyticsUserOptions): void => {
@@ -68,10 +62,9 @@ export const analytics = {
     },
     trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),
     trackAccountLocked: trackingEventFnWithoutPayload(EventNames.ACCOUNT_LOCKED),
-    trackAccountReady: (eventProperties: AccountReadyEventProperties) =>
-        trackingEventFnWithPayload(EventNames.ACCOUNT_READY)({ ...eventProperties }),
+    trackAccountReady: (address: string) => trackingEventFnWithPayload(EventNames.ACCOUNT_READY)({ address }),
     trackAccountUnlockRequested: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_REQUESTED),
     trackAccountUnlockDenied: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_DENIED),
-    trackAccountAddressChanged: (eventProperties: AccountAddressChangedEventProperties) =>
-        trackingEventFnWithPayload(EventNames.ACCOUNT_ADDRESS_CHANGED)({ ...eventProperties }),
+    trackAccountAddressChanged: (address: string) =>
+        trackingEventFnWithPayload(EventNames.ACCOUNT_ADDRESS_CHANGED)({ address }),
 };
