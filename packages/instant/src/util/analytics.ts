@@ -18,6 +18,13 @@ enum EventNames {
     ACCOUNT_UNLOCK_REQUESTED = 'Account - Unlock Requested',
     ACCOUNT_UNLOCK_DENIED = 'Account - Unlock Denied',
     ACCOUNT_ADDRESS_CHANGED = 'Account - Address Changed',
+    BUY_NOT_ENOUGH_ETH = 'Buy - Not Enough Eth',
+    BUY_STARTED = 'Buy - Started',
+    BUY_SIGNATURE_DENIED = 'Buy - Signature Denied',
+    BUY_SIMULATION_FAILED = 'Buy - Simulation Failed',
+    BUY_TX_SUBMITTED = 'Buy - Tx Submitted',
+    BUY_TX_SUCCEEDED = 'Buy - Tx Succeeded',
+    BUY_TX_FAILED = 'Buy - Tx Failed',
 }
 const track = (eventName: EventNames, eventProperties: EventProperties = {}): void => {
     evaluateIfEnabled(() => {
@@ -67,4 +74,11 @@ export const analytics = {
     trackAccountUnlockDenied: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_DENIED),
     trackAccountAddressChanged: (address: string) =>
         trackingEventFnWithPayload(EventNames.ACCOUNT_ADDRESS_CHANGED)({ address }),
+    trackBuyNotEnoughEth: trackingEventFnWithoutPayload(EventNames.BUY_NOT_ENOUGH_ETH),
+    trackBuyStarted: trackingEventFnWithoutPayload(EventNames.BUY_STARTED),
+    trackBuySignatureDenied: trackingEventFnWithoutPayload(EventNames.BUY_SIGNATURE_DENIED),
+    trackBuySimulationFailed: trackingEventFnWithoutPayload(EventNames.BUY_SIMULATION_FAILED),
+    trackBuyTxSubmitted: trackingEventFnWithoutPayload(EventNames.BUY_TX_SUBMITTED),
+    trackBuyTxSucceeded: trackingEventFnWithoutPayload(EventNames.BUY_TX_SUCCEEDED),
+    trackBuyTxFailed: trackingEventFnWithoutPayload(EventNames.BUY_TX_FAILED),
 };
