@@ -13,7 +13,13 @@
         "clean": "shx rm -rf lib",
         "lint": "tslint --format stylish --project .",
         "migrate:v2": "run-s build script:migrate:v2",
-        "script:migrate:v2": "node ./lib/migrate.js --contracts-version 2.0.0"
+        "script:migrate:v2": "node ./lib/migrate.js --contracts-version 2.0.0",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+    },
+    "config": {
+        "postpublish": {
+            "assets": []
+        }
     },
     "license": "Apache-2.0",
     "devDependencies": {
@@ -25,6 +31,7 @@
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
+        "typedoc": "0.13.0",
         "typescript": "3.0.1",
         "yargs": "^10.0.3"
     },
