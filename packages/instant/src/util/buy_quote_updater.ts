@@ -30,30 +30,17 @@ export const buyQuoteUpdater = {
         try {
             newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue, { feePercentage });
         } catch (error) {
-            if (options.dispatchErrors) {
-                dispatch(actions.setQuoteRequestStateFailure());
-                let errorMessage;
-                if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
-                    const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
-                    errorMessage = `Not enough ${assetName} available`;
-                } else if (error.message === AssetBuyerError.InsufficientZrxLiquidity) {
-                    errorMessage = 'Not enough ZRX available';
-                } else if (
-                    error.message === AssetBuyerError.StandardRelayerApiError ||
-                    error.message.startsWith(AssetBuyerError.AssetUnavailable)
-                ) {
-                    const assetName = assetUtils.bestNameForAsset(asset, 'This asset');
-                    errorMessage = `${assetName} is currently unavailable`;
-                }
-                if (!_.isUndefined(errorMessage)) {
-                    errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
-                } else {
-                    throw error;
-                }
-            } else {
+            const errorMessage = assetUtils.assetBuyerErrorMessage(asset, error);
+
+            if (_.isUndefined(errorMessage)) {
+                // This is an unknown error, report it to rollbar
                 errorReporter.report(error);
             }
 
+            if (options.dispatchErrors) {
+                dispatch(actions.setQuoteRequestStateFailure());
+                errorFlasher.flashNewErrorMessage(dispatch, errorMessage || 'Error fetching price, please try again');
+            }
             return;
         }
         // We have a successful new buy quote
