@@ -65,6 +65,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                         onAmountChange={this._handleChange}
                         onFontSizeChange={this._handleFontSizeChange}
                         hasAutofocus={true}
+                        key={asset.assetData}
                     />
                 </Container>
                 <Container
