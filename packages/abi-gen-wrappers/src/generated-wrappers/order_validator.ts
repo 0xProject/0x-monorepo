@@ -24,7 +24,7 @@ export class OrderValidatorContract extends BaseContract {
         ): Promise<[{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}, {makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}]
         > {
             const self = this as any as OrderValidatorContract;
-            const functionSignature = 'getOrderAndTraderInfo({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},address)';
+            const functionSignature = 'getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)';
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [order,
         takerAddress
@@ -34,7 +34,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [order,
         takerAddress
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getOrderAndTraderInfo;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([order,
         takerAddress
         ]);
@@ -48,7 +48,7 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'getOrderAndTraderInfo'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -74,7 +74,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [target,
         assetData
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getBalanceAndAllowance;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([target,
         assetData
         ]);
@@ -88,7 +88,7 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'getBalanceAndAllowance'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -104,7 +104,7 @@ export class OrderValidatorContract extends BaseContract {
         ): Promise<[Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>, Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>]
         > {
             const self = this as any as OrderValidatorContract;
-            const functionSignature = 'getOrdersAndTradersInfo(tuple[],address[])';
+            const functionSignature = 'getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])';
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [orders,
         takerAddresses
@@ -114,7 +114,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [orders,
         takerAddresses
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getOrdersAndTradersInfo;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([orders,
         takerAddresses
         ]);
@@ -128,7 +128,7 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'getOrdersAndTradersInfo'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -144,7 +144,7 @@ export class OrderValidatorContract extends BaseContract {
         ): Promise<Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>
         > {
             const self = this as any as OrderValidatorContract;
-            const functionSignature = 'getTradersInfo(tuple[],address[])';
+            const functionSignature = 'getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])';
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [orders,
         takerAddresses
@@ -154,7 +154,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [orders,
         takerAddresses
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getTradersInfo;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([orders,
         takerAddresses
         ]);
@@ -168,7 +168,7 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'getTradersInfo'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -194,7 +194,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [token,
         tokenId
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getERC721TokenOwner;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([token,
         tokenId
         ]);
@@ -208,7 +208,7 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'getERC721TokenOwner'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -234,7 +234,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [target,
         assetData
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getBalancesAndAllowances;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([target,
         assetData
         ]);
@@ -248,7 +248,7 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'getBalancesAndAllowances'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -264,7 +264,7 @@ export class OrderValidatorContract extends BaseContract {
         ): Promise<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}
         > {
             const self = this as any as OrderValidatorContract;
-            const functionSignature = 'getTraderInfo({address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes},address)';
+            const functionSignature = 'getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)';
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [order,
         takerAddress
@@ -274,7 +274,7 @@ export class OrderValidatorContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [order,
         takerAddress
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.getTraderInfo;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([order,
         takerAddress
         ]);
@@ -288,7 +288,7 @@ export class OrderValidatorContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'getTraderInfo'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));

@@ -27,7 +27,7 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxDataPayable> = {},
         ): Promise<string> {
             const self = this as any as ForwarderContract;
-            const inputAbi = self._lookupAbi('marketBuyOrdersWithEth(tuple[],uint256,bytes[],tuple[],bytes[],uint256,address)').inputs;
+            const inputAbi = self._lookupAbi('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').inputs;
             [orders,
     makerAssetFillAmount,
     signatures,
@@ -51,7 +51,7 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     ]);
-            const encodedData = self._lookupEthersInterface('marketBuyOrdersWithEth(tuple[],uint256,bytes[],tuple[],bytes[],uint256,address)').functions.marketBuyOrdersWithEth.encode([orders,
+            const encodedData = self._lookupEthersInterface('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').encode([orders,
     makerAssetFillAmount,
     signatures,
     feeOrders,
@@ -91,7 +91,7 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ForwarderContract;
-            const inputAbi = self._lookupAbi('marketBuyOrdersWithEth(tuple[],uint256,bytes[],tuple[],bytes[],uint256,address)').inputs;
+            const inputAbi = self._lookupAbi('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').inputs;
             [orders,
     makerAssetFillAmount,
     signatures,
@@ -107,7 +107,7 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('marketBuyOrdersWithEth(tuple[],uint256,bytes[],tuple[],bytes[],uint256,address)').functions.marketBuyOrdersWithEth.encode([orders,
+            const encodedData = self._lookupEthersInterface('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').encode([orders,
     makerAssetFillAmount,
     signatures,
     feeOrders,
@@ -136,7 +136,7 @@ export class ForwarderContract extends BaseContract {
             feeRecipient: string,
         ): string {
             const self = this as any as ForwarderContract;
-            const inputAbi = self._lookupAbi('marketBuyOrdersWithEth(tuple[],uint256,bytes[],tuple[],bytes[],uint256,address)').inputs;
+            const inputAbi = self._lookupAbi('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').inputs;
             [orders,
     makerAssetFillAmount,
     signatures,
@@ -152,7 +152,7 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('marketBuyOrdersWithEth(tuple[],uint256,bytes[],tuple[],bytes[],uint256,address)').functions.marketBuyOrdersWithEth.encode([orders,
+            const abiEncodedTransactionData = self._lookupEthersInterface('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').encode([orders,
     makerAssetFillAmount,
     signatures,
     feeOrders,
@@ -175,7 +175,7 @@ export class ForwarderContract extends BaseContract {
         ): Promise<[{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}, {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}]
         > {
             const self = this as any as ForwarderContract;
-            const functionSignature = 'marketBuyOrdersWithEth(tuple[],uint256,bytes[],tuple[],bytes[],uint256,address)';
+            const functionSignature = 'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)';
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [orders,
         makerAssetFillAmount,
@@ -200,7 +200,7 @@ export class ForwarderContract extends BaseContract {
         feePercentage,
         feeRecipient
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.marketBuyOrdersWithEth;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([orders,
         makerAssetFillAmount,
         signatures,
@@ -219,7 +219,7 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'marketBuyOrdersWithEth'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -242,7 +242,7 @@ export class ForwarderContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [assetData,
     amount
     ]);
-            const encodedData = self._lookupEthersInterface('withdrawAsset(bytes,uint256)').functions.withdrawAsset.encode([assetData,
+            const encodedData = self._lookupEthersInterface('withdrawAsset(bytes,uint256)').encode([assetData,
     amount
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -273,7 +273,7 @@ export class ForwarderContract extends BaseContract {
     ] = BaseContract._formatABIDataItemList(inputAbi, [assetData,
     amount
     ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('withdrawAsset(bytes,uint256)').functions.withdrawAsset.encode([assetData,
+            const encodedData = self._lookupEthersInterface('withdrawAsset(bytes,uint256)').encode([assetData,
     amount
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -298,7 +298,7 @@ export class ForwarderContract extends BaseContract {
     ] = BaseContract._formatABIDataItemList(inputAbi, [assetData,
     amount
     ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('withdrawAsset(bytes,uint256)').functions.withdrawAsset.encode([assetData,
+            const abiEncodedTransactionData = self._lookupEthersInterface('withdrawAsset(bytes,uint256)').encode([assetData,
     amount
     ]);
             return abiEncodedTransactionData;
@@ -321,7 +321,7 @@ export class ForwarderContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [assetData,
         amount
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.withdrawAsset;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([assetData,
         amount
         ]);
@@ -335,7 +335,7 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'withdrawAsset'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -353,7 +353,7 @@ export class ForwarderContract extends BaseContract {
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [] = BaseContract._formatABIDataItemList(inputAbi, [], BaseContract._bigNumberToString.bind(self));
             BaseContract.strictArgumentEncodingCheck(inputAbi, []);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.owner;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -365,7 +365,7 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'owner'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -383,7 +383,7 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxDataPayable> = {},
         ): Promise<string> {
             const self = this as any as ForwarderContract;
-            const inputAbi = self._lookupAbi('marketSellOrdersWithEth(tuple[],bytes[],tuple[],bytes[],uint256,address)').inputs;
+            const inputAbi = self._lookupAbi('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').inputs;
             [orders,
     signatures,
     feeOrders,
@@ -404,7 +404,7 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     ]);
-            const encodedData = self._lookupEthersInterface('marketSellOrdersWithEth(tuple[],bytes[],tuple[],bytes[],uint256,address)').functions.marketSellOrdersWithEth.encode([orders,
+            const encodedData = self._lookupEthersInterface('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').encode([orders,
     signatures,
     feeOrders,
     feeSignatures,
@@ -441,7 +441,7 @@ export class ForwarderContract extends BaseContract {
             txData: Partial<TxData> = {},
         ): Promise<number> {
             const self = this as any as ForwarderContract;
-            const inputAbi = self._lookupAbi('marketSellOrdersWithEth(tuple[],bytes[],tuple[],bytes[],uint256,address)').inputs;
+            const inputAbi = self._lookupAbi('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').inputs;
             [orders,
     signatures,
     feeOrders,
@@ -455,7 +455,7 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('marketSellOrdersWithEth(tuple[],bytes[],tuple[],bytes[],uint256,address)').functions.marketSellOrdersWithEth.encode([orders,
+            const encodedData = self._lookupEthersInterface('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').encode([orders,
     signatures,
     feeOrders,
     feeSignatures,
@@ -482,7 +482,7 @@ export class ForwarderContract extends BaseContract {
             feeRecipient: string,
         ): string {
             const self = this as any as ForwarderContract;
-            const inputAbi = self._lookupAbi('marketSellOrdersWithEth(tuple[],bytes[],tuple[],bytes[],uint256,address)').inputs;
+            const inputAbi = self._lookupAbi('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').inputs;
             [orders,
     signatures,
     feeOrders,
@@ -496,7 +496,7 @@ export class ForwarderContract extends BaseContract {
     feePercentage,
     feeRecipient
     ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('marketSellOrdersWithEth(tuple[],bytes[],tuple[],bytes[],uint256,address)').functions.marketSellOrdersWithEth.encode([orders,
+            const abiEncodedTransactionData = self._lookupEthersInterface('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)').encode([orders,
     signatures,
     feeOrders,
     feeSignatures,
@@ -517,7 +517,7 @@ export class ForwarderContract extends BaseContract {
         ): Promise<[{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}, {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}]
         > {
             const self = this as any as ForwarderContract;
-            const functionSignature = 'marketSellOrdersWithEth(tuple[],bytes[],tuple[],bytes[],uint256,address)';
+            const functionSignature = 'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)';
             const inputAbi = self._lookupAbi(functionSignature).inputs;
             [orders,
         signatures,
@@ -539,7 +539,7 @@ export class ForwarderContract extends BaseContract {
         feePercentage,
         feeRecipient
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.marketSellOrdersWithEth;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([orders,
         signatures,
         feeOrders,
@@ -557,7 +557,7 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'marketSellOrdersWithEth'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
@@ -576,7 +576,7 @@ export class ForwarderContract extends BaseContract {
     ], BaseContract._bigNumberToString.bind(self));
             BaseContract.strictArgumentEncodingCheck(inputAbi, [newOwner
     ]);
-            const encodedData = self._lookupEthersInterface('transferOwnership(address)').functions.transferOwnership.encode([newOwner
+            const encodedData = self._lookupEthersInterface('transferOwnership(address)').encode([newOwner
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -602,7 +602,7 @@ export class ForwarderContract extends BaseContract {
             [newOwner
     ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
     ], BaseContract._bigNumberToString);
-            const encodedData = self._lookupEthersInterface('transferOwnership(address)').functions.transferOwnership.encode([newOwner
+            const encodedData = self._lookupEthersInterface('transferOwnership(address)').encode([newOwner
     ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -623,7 +623,7 @@ export class ForwarderContract extends BaseContract {
             [newOwner
     ] = BaseContract._formatABIDataItemList(inputAbi, [newOwner
     ], BaseContract._bigNumberToString);
-            const abiEncodedTransactionData = self._lookupEthersInterface('transferOwnership(address)').functions.transferOwnership.encode([newOwner
+            const abiEncodedTransactionData = self._lookupEthersInterface('transferOwnership(address)').encode([newOwner
     ]);
             return abiEncodedTransactionData;
         },
@@ -641,7 +641,7 @@ export class ForwarderContract extends BaseContract {
         ], BaseContract._bigNumberToString.bind(self));
             BaseContract.strictArgumentEncodingCheck(inputAbi, [newOwner
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.transferOwnership;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([newOwner
         ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -654,7 +654,7 @@ export class ForwarderContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'transferOwnership'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));

@@ -1279,11 +1279,11 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.FILLABLE;
+                    const expectedOrderStatus = new BigNumber(OrderStatus.FILLABLE);
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                    expect(orderInfo.orderStatus).to.be.bignumber.equal(expectedOrderStatus);
                 });
             });
             it('should get the correct information for multiple partially filled orders', async () => {
@@ -1294,11 +1294,11 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.FILLABLE;
+                    const expectedOrderStatus = new BigNumber(OrderStatus.FILLABLE);
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                    expect(orderInfo.orderStatus).to.be.bignumber.equal(expectedOrderStatus);
                 });
             });
             it('should get the correct information for multiple fully filled orders', async () => {
@@ -1308,11 +1308,11 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount;
-                    const expectedOrderStatus = OrderStatus.FULLY_FILLED;
+                    const expectedOrderStatus = new BigNumber(OrderStatus.FULLY_FILLED);
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                    expect(orderInfo.orderStatus).to.be.bignumber.equal(expectedOrderStatus);
                 });
             });
             it('should get the correct information for multiple cancelled and unfilled orders', async () => {
@@ -1322,11 +1322,11 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.CANCELLED;
+                    const expectedOrderStatus = new BigNumber(OrderStatus.CANCELLED);
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                    expect(orderInfo.orderStatus).to.be.bignumber.equal(expectedOrderStatus);
                 });
             });
             it('should get the correct information for multiple cancelled and partially filled orders', async () => {
@@ -1338,11 +1338,11 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.CANCELLED;
+                    const expectedOrderStatus = new BigNumber(OrderStatus.CANCELLED);
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                    expect(orderInfo.orderStatus).to.be.bignumber.equal(expectedOrderStatus);
                 });
             });
             it('should get the correct information for multiple expired and unfilled orders', async () => {
@@ -1354,11 +1354,11 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.EXPIRED;
+                    const expectedOrderStatus = new BigNumber(OrderStatus.EXPIRED);
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                    expect(orderInfo.orderStatus).to.be.bignumber.equal(expectedOrderStatus);
                 });
             });
             it('should get the correct information for multiple expired and partially filled orders', async () => {
@@ -1372,11 +1372,11 @@ describe('Exchange wrappers', () => {
                 _.forEach(signedOrders, (signedOrder, index) => {
                     const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
                     const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.EXPIRED;
+                    const expectedOrderStatus = new BigNumber(OrderStatus.EXPIRED);
                     const orderInfo = ordersInfo[index];
                     expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
                     expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+                    expect(orderInfo.orderStatus).to.be.bignumber.equal(expectedOrderStatus);
                 });
             });
             it('should get the correct information for a mix of unfilled, partially filled, fully filled, cancelled, and expired orders', async () => {
@@ -1399,53 +1399,53 @@ describe('Exchange wrappers', () => {
 
                 const expectedUnfilledOrderHash = orderHashUtils.getOrderHashHex(unfilledOrder);
                 const expectedUnfilledTakerAssetFilledAmount = new BigNumber(0);
-                const expectedUnfilledOrderStatus = OrderStatus.FILLABLE;
+                const expectedUnfilledOrderStatus = new BigNumber(OrderStatus.FILLABLE);
                 const unfilledOrderInfo = ordersInfo[0];
                 expect(unfilledOrderInfo.orderHash).to.be.equal(expectedUnfilledOrderHash);
                 expect(unfilledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
                     expectedUnfilledTakerAssetFilledAmount,
                 );
-                expect(unfilledOrderInfo.orderStatus).to.be.equal(expectedUnfilledOrderStatus);
+                expect(unfilledOrderInfo.orderStatus).to.be.bignumber.equal(expectedUnfilledOrderStatus);
 
                 const expectedPartialOrderHash = orderHashUtils.getOrderHashHex(partiallyFilledOrder);
                 const expectedPartialTakerAssetFilledAmount = partiallyFilledOrder.takerAssetAmount.div(2);
-                const expectedPartialOrderStatus = OrderStatus.FILLABLE;
+                const expectedPartialOrderStatus = new BigNumber(OrderStatus.FILLABLE);
                 const partialOrderInfo = ordersInfo[1];
                 expect(partialOrderInfo.orderHash).to.be.equal(expectedPartialOrderHash);
                 expect(partialOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
                     expectedPartialTakerAssetFilledAmount,
                 );
-                expect(partialOrderInfo.orderStatus).to.be.equal(expectedPartialOrderStatus);
+                expect(partialOrderInfo.orderStatus).to.be.bignumber.equal(expectedPartialOrderStatus);
 
                 const expectedFilledOrderHash = orderHashUtils.getOrderHashHex(fullyFilledOrder);
                 const expectedFilledTakerAssetFilledAmount = fullyFilledOrder.takerAssetAmount;
-                const expectedFilledOrderStatus = OrderStatus.FULLY_FILLED;
+                const expectedFilledOrderStatus = new BigNumber(OrderStatus.FULLY_FILLED);
                 const filledOrderInfo = ordersInfo[2];
                 expect(filledOrderInfo.orderHash).to.be.equal(expectedFilledOrderHash);
                 expect(filledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
                     expectedFilledTakerAssetFilledAmount,
                 );
-                expect(filledOrderInfo.orderStatus).to.be.equal(expectedFilledOrderStatus);
+                expect(filledOrderInfo.orderStatus).to.be.bignumber.equal(expectedFilledOrderStatus);
 
                 const expectedCancelledOrderHash = orderHashUtils.getOrderHashHex(cancelledOrder);
                 const expectedCancelledTakerAssetFilledAmount = new BigNumber(0);
-                const expectedCancelledOrderStatus = OrderStatus.CANCELLED;
+                const expectedCancelledOrderStatus = new BigNumber(OrderStatus.CANCELLED);
                 const cancelledOrderInfo = ordersInfo[3];
                 expect(cancelledOrderInfo.orderHash).to.be.equal(expectedCancelledOrderHash);
                 expect(cancelledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
                     expectedCancelledTakerAssetFilledAmount,
                 );
-                expect(cancelledOrderInfo.orderStatus).to.be.equal(expectedCancelledOrderStatus);
+                expect(cancelledOrderInfo.orderStatus).to.be.bignumber.equal(expectedCancelledOrderStatus);
 
                 const expectedExpiredOrderHash = orderHashUtils.getOrderHashHex(expiredOrder);
                 const expectedExpiredTakerAssetFilledAmount = new BigNumber(0);
-                const expectedExpiredOrderStatus = OrderStatus.EXPIRED;
+                const expectedExpiredOrderStatus = new BigNumber(OrderStatus.EXPIRED);
                 const expiredOrderInfo = ordersInfo[4];
                 expect(expiredOrderInfo.orderHash).to.be.equal(expectedExpiredOrderHash);
                 expect(expiredOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
                     expectedExpiredTakerAssetFilledAmount,
                 );
-                expect(expiredOrderInfo.orderStatus).to.be.equal(expectedExpiredOrderStatus);
+                expect(expiredOrderInfo.orderStatus).to.be.bignumber.equal(expectedExpiredOrderStatus);
             });
         });
     });

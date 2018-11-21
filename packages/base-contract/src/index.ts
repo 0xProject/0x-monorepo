@@ -1,4 +1,4 @@
-import { abiUtils, BigNumber } from '@0x/utils';
+import { AbiEncoder, abiUtils, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
@@ -17,7 +17,7 @@ import * as _ from 'lodash';
 import { formatABIDataItem } from './utils';
 
 export interface EthersInterfaceByFunctionSignature {
-    [key: string]: ethers.utils.Interface;
+    [key: string]: AbiEncoder.Method;
 }
 
 const REVERT_ERROR_SELECTOR = '08c379a0';
@@ -117,7 +117,7 @@ export class BaseContract {
             }
         }
     }
-    protected _lookupEthersInterface(functionSignature: string): ethers.utils.Interface {
+    protected _lookupEthersInterface(functionSignature: string): AbiEncoder.Method {
         const ethersInterface = this._ethersInterfacesByFunctionSignature[functionSignature];
         if (_.isUndefined(ethersInterface)) {
             throw new Error(`Failed to lookup method with function signature '${functionSignature}'`);
@@ -130,7 +130,7 @@ export class BaseContract {
                 return false;
             }
             // tslint:disable-next-line:no-unnecessary-type-assertion
-            const abiFunctionSignature = abiUtils.getFunctionSignature(abiDefinition as MethodAbi);
+            const abiFunctionSignature = new AbiEncoder.Method(abiDefinition as MethodAbi).getSignature();
             if (abiFunctionSignature === functionSignature) {
                 return true;
             }
@@ -154,8 +154,9 @@ export class BaseContract {
         ) as MethodAbi[];
         this._ethersInterfacesByFunctionSignature = {};
         _.each(methodAbis, methodAbi => {
-            const functionSignature = abiUtils.getFunctionSignature(methodAbi);
-            this._ethersInterfacesByFunctionSignature[functionSignature] = new ethers.utils.Interface([methodAbi]);
+            const method = new AbiEncoder.Method(methodAbi);
+            const functionSignature = method.getSignature();
+            this._ethersInterfacesByFunctionSignature[functionSignature] = method;
         });
     }
 }

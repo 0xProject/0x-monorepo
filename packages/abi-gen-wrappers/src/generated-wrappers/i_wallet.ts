@@ -34,7 +34,7 @@ export class IWalletContract extends BaseContract {
             BaseContract.strictArgumentEncodingCheck(inputAbi, [hash,
         signature
         ]);
-            const ethersFunction = self._lookupEthersInterface(functionSignature).functions.isValidSignature;
+            const ethersFunction = self._lookupEthersInterface(functionSignature);
             const encodedData = ethersFunction.encode([hash,
         signature
         ]);
@@ -48,7 +48,7 @@ export class IWalletContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            let resultArray = ethersFunction.decode(rawCallResult);
+            let resultArray = ethersFunction.decodeReturnValues(rawCallResult, {structsAsObjects:true});
             const outputAbi = (_.find(self.abi, {name: 'isValidSignature'}) as MethodAbi).outputs;
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._lowercaseAddress.bind(this));
             resultArray = BaseContract._formatABIDataItemList(outputAbi, resultArray, BaseContract._bnToBigNumber.bind(this));
