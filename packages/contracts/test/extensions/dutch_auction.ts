@@ -30,7 +30,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 const ZERO = Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT);
 
-describe.only(ContractName.DutchAuction, () => {
+describe(ContractName.DutchAuction, () => {
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;

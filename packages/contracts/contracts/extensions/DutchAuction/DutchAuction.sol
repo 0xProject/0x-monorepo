@@ -32,11 +32,11 @@ contract DutchAuction {
     IExchange internal EXCHANGE;
 
     struct AuctionDetails {
-        uint256 beginTimeSeconds;    // Auction begin time in seconds
-        uint256 endTimeSeconds;      // Auction end time in seconds
-        uint256 beginAmount;         // Auction begin amount
-        uint256 endAmount;           // Auction end amount
-        uint256 currentAmount;       // Current auction amount at block.timestamp
+        uint256 beginTimeSeconds;    // Auction begin time in seconds: sellOrder.makerAssetData
+        uint256 endTimeSeconds;      // Auction end time in seconds: sellOrder.expiryTimeSeconds
+        uint256 beginAmount;         // Auction begin amount: sellOrder.makerAssetData
+        uint256 endAmount;           // Auction end amount: sellOrder.takerAssetAmount
+        uint256 currentAmount;       // Calculated amount given block.timestamp
         uint256 currentTimeSeconds;  // block.timestamp
     }
 
@@ -46,14 +46,25 @@ contract DutchAuction {
         EXCHANGE = IExchange(_exchange);
     }
 
-    /// @dev Performs a match of the two orders at the amount given: the current block time, the auction
-    ///      start time and the auction begin amount.
-    ///      The Sellers order is a signed order at the lowest amount at the end of the auction. Excess from the match
-    ///      is transferred to the seller.
-    /// @param buyOrder The Buyer's order
-    /// @param sellOrder The Seller's order
-    /// @param buySignature Proof that order was created by the left maker.
-    /// @param sellSignature Proof that order was created by the right maker.
+    /// @dev Matches the buy and sell orders at an amount given the following: the current block time, the auction
+    ///      start time and the auction begin amount. The sell order is a an order at the lowest amount
+    ///      at the end of the auction. Excess from the match is transferred to the seller.
+    ///      Over time the price moves from beginAmount to endAmount given the current block.timestamp.
+    ///      sellOrder.expiryTimeSeconds is the end time of the auction.
+    ///      sellOrder.takerAssetAmount is the end amount of the auction (lowest possible amount).
+    ///      sellOrder.makerAssetData is the ABI encoded Asset Proxy data with the following data appended
+    ///      buyOrder.makerAssetData is the buyers bid on the auction, must meet the amount for the current block timestamp
+    ///      (uint256 beginTimeSeconds, uint256 beginAmount).
+    ///      This function reverts in the following scenarios:
+    ///         * Auction has not started (auctionDetails.currentTimeSeconds < auctionDetails.beginTimeSeconds)
+    ///         * Auction has expired (auctionDetails.endTimeSeconds < auctionDetails.currentTimeSeconds)
+    ///         * Amount is invalid: Buy order amount is too low (buyOrder.makerAssetAmount < auctionDetails.currentAmount)
+    ///         * Amount is invalid: Invalid begin amount (auctionDetails.beginAmount > auctionDetails.endAmount)
+    ///         * Any failure in the 0x Match Orders
+    /// @param buyOrder The Buyer's order. This order is for the current expected price of the auction.
+    /// @param sellOrder The Seller's order. This order is for the lowest amount (at the end of the auction).
+    /// @param buySignature Proof that order was created by the buyer.
+    /// @param sellSignature Proof that order was created by the seller.
     /// @return matchedFillResults amounts filled and fees paid by maker and taker of matched orders.
     function matchOrders(
         LibOrder.Order memory buyOrder,
