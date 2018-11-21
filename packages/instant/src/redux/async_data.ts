@@ -5,6 +5,7 @@ import { Dispatch } from 'redux';
 
 import { BIG_NUMBER_ZERO } from '../constants';
 import { AccountState, ERC20Asset, OrderProcessState, ProviderState } from '../types';
+import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
 import { coinbaseApi } from '../util/coinbase_api';
@@ -58,6 +59,7 @@ export const asyncData = {
                     ? await (provider as any).enable()
                     : await web3Wrapper.getAvailableAddressesAsync();
         } catch (e) {
+            analytics.trackAccountUnlockDenied();
             dispatch(actions.setAccountStateLocked());
             return;
         }

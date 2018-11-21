@@ -10,20 +10,6 @@ import { Action, ActionTypes } from './actions';
 
 import { State } from './reducer';
 
-const shouldTriggerWalletReady = (prevAccount: Account, curAccount: Account): boolean => {
-    const didJustTurnReady = curAccount.state === AccountState.Ready && prevAccount.state !== AccountState.Ready;
-    if (didJustTurnReady) {
-        return true;
-    }
-
-    if (curAccount.state === AccountState.Ready && prevAccount.state === AccountState.Ready) {
-        // Account was ready, and is now ready again, but address has changed
-        return curAccount.address !== prevAccount.address;
-    }
-
-    return false;
-};
-
 export const analyticsMiddleware: Middleware = store => next => middlewareAction => {
     const prevState = store.getState() as State;
     const prevAccount = prevState.providerState.account;
@@ -35,10 +21,26 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
 
     switch (nextAction.type) {
         case ActionTypes.SET_ACCOUNT_STATE_READY:
-            if (curAccount.state === AccountState.Ready && shouldTriggerWalletReady(prevAccount, curAccount)) {
+            if (prevAccount.state !== AccountState.Ready && curAccount.state === AccountState.Ready) {
+                // if we are moving from account not ready to account ready, update the current address and track `Account - Ready`
                 const ethAddress = curAccount.address;
                 analytics.addUserProperties({ ethAddress });
-                analytics.trackWalletReady();
+                analytics.trackAccountReady(ethAddress);
+            } else if (prevAccount.state === AccountState.Ready && curAccount.state === AccountState.Ready) {
+                if (prevAccount.address !== curAccount.address) {
+                    // if our account state was already ready and our address has changed, update the current address and track `Account - Address Changed`
+                    const ethAddress = curAccount.address;
+                    analytics.addUserProperties({ ethAddress });
+                    analytics.trackAccountAddressChanged(ethAddress);
+                }
+            }
+            break;
+        case ActionTypes.SET_ACCOUNT_STATE_LOCKED:
+            if (prevAccount.state !== AccountState.Locked && curAccount.state === AccountState.Locked) {
+                // if we are moving from account not locked to account locked, update the current address to undefined and track `Account - Locked`
+                const ethAddress = undefined;
+                analytics.addUserProperties({ ethAddress });
+                analytics.trackAccountLocked();
             }
             break;
         case ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE:
