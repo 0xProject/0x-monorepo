@@ -158,8 +158,8 @@ let _cachedContractAddresses: ContractAddresses;
  * Exactly like runMigrationsAsync but will only run the migrations the first
  * time it is called. Any subsequent calls will return the cached contract
  * addresses.
- * @param provider  Web3 provider instance.
- * @param txDefaults Default transaction values to use when deploying contracts.
+ * @param provider  Web3 provider instance. Your provider instance should connect to the testnet you want to deploy to.
+ * @param txDefaults Default transaction values to use when deploying contracts (e.g., specify the desired contract creator with the `from` parameter).
  * @returns The addresses of the contracts that were deployed.
  */
 export async function runMigrationsOnceAsync(
