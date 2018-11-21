@@ -11,10 +11,10 @@ const pages = require('./pages');
 
 const config = {
     entry: {
-        compiler: './ts/pages/Compiler.tsx',
-        cov: './ts/pages/Cov.tsx',
-        profiler: './ts/pages/Profiler.tsx',
-        trace: './ts/pages/Trace.tsx',
+        compiler: './ts/pages/compiler.tsx',
+        cov: './ts/pages/cov.tsx',
+        profiler: './ts/pages/profiler.tsx',
+        trace: './ts/pages/trace.tsx',
     },
     output: {
         path: path.join(__dirname, '/public'),
