@@ -1,7 +1,7 @@
 export class Queue<T> {
     private _store: T[] = [];
 
-    public push(val: T): void {
+    public pushBack(val: T): void {
         this._store.push(val);
     }
 
@@ -9,7 +9,7 @@ export class Queue<T> {
         this._store.unshift(val);
     }
 
-    public pop(): T | undefined {
+    public popFront(): T | undefined {
         return this._store.shift();
     }
 
@@ -21,7 +21,7 @@ export class Queue<T> {
         return backElement;
     }
 
-    public merge(q: Queue<T>): void {
+    public mergeBack(q: Queue<T>): void {
         this._store = this._store.concat(q._store);
     }
 
@@ -33,7 +33,7 @@ export class Queue<T> {
         return this._store;
     }
 
-    public peek(): T | undefined {
+    public peekFront(): T | undefined {
         return this._store.length >= 0 ? this._store[0] : undefined;
     }
 }
