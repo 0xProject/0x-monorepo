@@ -78,7 +78,7 @@ export const analytics = {
     trackBuyStarted: trackingEventFnWithoutPayload(EventNames.BUY_STARTED),
     trackBuySignatureDenied: trackingEventFnWithoutPayload(EventNames.BUY_SIGNATURE_DENIED),
     trackBuySimulationFailed: trackingEventFnWithoutPayload(EventNames.BUY_SIMULATION_FAILED),
-    trackBuyTxSubmitted: trackingEventFnWithoutPayload(EventNames.BUY_TX_SUBMITTED),
-    trackBuyTxSucceeded: trackingEventFnWithoutPayload(EventNames.BUY_TX_SUCCEEDED),
-    trackBuyTxFailed: trackingEventFnWithoutPayload(EventNames.BUY_TX_FAILED),
+    trackBuyTxSubmitted: (txHash: string) => trackingEventFnWithPayload(EventNames.BUY_TX_SUBMITTED)({ txHash }),
+    trackBuyTxSucceeded: (txHash: string) => trackingEventFnWithPayload(EventNames.BUY_TX_SUCCEEDED)({ txHash }),
+    trackBuyTxFailed: (txHash: string) => trackingEventFnWithPayload(EventNames.BUY_TX_FAILED)({ txHash }),
 };

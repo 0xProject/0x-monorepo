@@ -74,7 +74,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
                 takerAddress: accountAddress,
                 gasPrice: gasInfo.gasPriceInWei,
             });
-            analytics.trackBuyTxSubmitted();
+            analytics.trackBuyTxSubmitted(txHash);
         } catch (e) {
             if (e instanceof Error) {
                 if (e.message === AssetBuyerError.SignatureRequestDenied) {
@@ -95,14 +95,14 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         try {
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
-            analytics.trackBuyTxFailed();
+            analytics.trackBuyTxFailed(txHash);
             if (e instanceof Error && e.message.startsWith(WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX)) {
                 this.props.onBuyFailure(buyQuote, txHash);
                 return;
             }
             throw e;
         }
-        analytics.trackBuyTxSucceeded();
+        analytics.trackBuyTxSucceeded(txHash);
         this.props.onBuySuccess(buyQuote, txHash);
     };
 }
