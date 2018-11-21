@@ -21,17 +21,17 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
 
     switch (nextAction.type) {
         case ActionTypes.SET_ACCOUNT_STATE_READY:
-            if (prevAccount.state !== AccountState.Ready && curAccount.state === AccountState.Ready) {
-                // if we are moving from account not ready to account ready, update the current address and track `Account - Ready`
+            if (curAccount.state === AccountState.Ready) {
+                const didJustTurnReady = prevAccount.state !== AccountState.Ready;
+                const didJustUpdateAddress =
+                    prevAccount.state === AccountState.Ready && prevAccount.address !== curAccount.address;
                 const ethAddress = curAccount.address;
-                analytics.addUserProperties({ ethAddress });
-                analytics.trackAccountReady(ethAddress);
-            } else if (prevAccount.state === AccountState.Ready && curAccount.state === AccountState.Ready) {
-                if (prevAccount.address !== curAccount.address) {
-                    // if our account state was already ready and our address has changed, update the current address and track `Account - Address Changed`
-                    const ethAddress = curAccount.address;
+                if (didJustTurnReady) {
+                    analytics.trackAccountReady(ethAddress);
                     analytics.addUserProperties({ ethAddress });
+                } else if (didJustUpdateAddress) {
                     analytics.trackAccountAddressChanged(ethAddress);
+                    analytics.addUserProperties({ ethAddress });
                 }
             }
             break;
