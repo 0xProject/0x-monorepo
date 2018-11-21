@@ -19,7 +19,7 @@ export abstract class PayloadDataType extends DataType {
         const encodedValue = this.encodeValue(value);
         const name = this.getDataItem().name;
         const signature = this.getSignature();
-        const parentName = parentBlock === undefined ? '' : parentBlock.getName();
+        const parentName = parentBlock ? parentBlock.getName() : '';
         const block = new PayloadCalldataBlock(name, signature, parentName, encodedValue);
         return block;
     }

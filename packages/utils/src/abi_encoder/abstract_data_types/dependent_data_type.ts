@@ -28,16 +28,17 @@ export abstract class DependentDataType extends DataType {
         const dependencyBlock = this._dependency.generateCalldataBlock(value, parentBlock);
         const name = this.getDataItem().name;
         const signature = this.getSignature();
-        const parentName = parentBlock === undefined ? '' : parentBlock.getName();
+        const parentName = parentBlock ? parentBlock.getName() : '';
         const block = new DependentCalldataBlock(name, signature, parentName, dependencyBlock, parentBlock);
         return block;
     }
 
     public generateValue(calldata: RawCalldata, rules: DecodingRules): any {
         const destinationOffsetBuf = calldata.popWord();
-        const currentOffset = calldata.getOffset();
-        const destinationOffsetRelative = parseInt(ethUtil.bufferToHex(destinationOffsetBuf), Constants.HEX_BASE);
+        const destinationOffsetHex = ethUtil.bufferToHex(destinationOffsetBuf);
+        const destinationOffsetRelative = parseInt(destinationOffsetHex, Constants.HEX_BASE);
         const destinationOffsetAbsolute = calldata.toAbsoluteOffset(destinationOffsetRelative);
+        const currentOffset = calldata.getOffset();
         calldata.setOffset(destinationOffsetAbsolute);
         const value = this._dependency.generateValue(calldata, rules);
         calldata.setOffset(currentOffset);
