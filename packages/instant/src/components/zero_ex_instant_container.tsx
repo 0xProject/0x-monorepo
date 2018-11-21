@@ -12,14 +12,11 @@ import { SelectedAssetInstantHeading } from '../containers/selected_asset_instan
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
 import { OrderProcessState, SlideAnimationState } from '../types';
-import { setupRollbar } from '../util/error_reporter';
 
 import { CSSReset } from './css_reset';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
-
-setupRollbar();
 
 export interface ZeroExInstantContainerProps {
     orderProcessState: OrderProcessState;

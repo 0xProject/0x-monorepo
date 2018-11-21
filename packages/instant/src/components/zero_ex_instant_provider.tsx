@@ -15,11 +15,13 @@ import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource } from
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
+import { setupRollbar } from '../util/error_reporter';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
 
+setupRollbar();
 fonts.include();
 
 export type ZeroExInstantProviderProps = ZeroExInstantProviderRequiredProps &
