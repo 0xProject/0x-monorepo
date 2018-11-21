@@ -27,19 +27,17 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                     prevAccount.state === AccountState.Ready && prevAccount.address !== curAccount.address;
                 const ethAddress = curAccount.address;
                 if (didJustTurnReady) {
-                    analytics.trackAccountReady(ethAddress);
-                    analytics.addUserProperties({ ethAddress });
+                    analytics.trackAccountReady({ address: ethAddress });
+                    analytics.addUserProperties({ lastKnownEthAddress: ethAddress });
                 } else if (didJustUpdateAddress) {
-                    analytics.trackAccountAddressChanged(ethAddress);
-                    analytics.addUserProperties({ ethAddress });
+                    analytics.trackAccountAddressChanged({ address: ethAddress });
+                    analytics.addUserProperties({ lastKnownEthAddress: ethAddress });
                 }
             }
             break;
         case ActionTypes.SET_ACCOUNT_STATE_LOCKED:
             if (prevAccount.state !== AccountState.Locked && curAccount.state === AccountState.Locked) {
-                // if we are moving from account not locked to account locked, update the current address to undefined and track `Account - Locked`
-                const ethAddress = undefined;
-                analytics.addUserProperties({ ethAddress });
+                // if we are moving from account not locked to account locked, track `Account - Locked`
                 analytics.trackAccountLocked();
             }
             break;
