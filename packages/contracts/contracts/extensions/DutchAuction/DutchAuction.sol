@@ -94,11 +94,20 @@ contract DutchAuction {
         // Return any spread to the seller
         uint256 leftMakerAssetSpreadAmount = matchedFillResults.leftMakerAssetSpreadAmount;
         if (leftMakerAssetSpreadAmount > 0) {
-            // Assume auction is for ERC20
+            // Calculate the excess from the buy order. This can occur if the buyer sends in a higher
+            // amount than the calculated current amount
+            uint256 buyerExcessAmount = buyOrder.makerAssetAmount-auctionDetails.currentAmount;
+            uint256 sellerExcessAmount = leftMakerAssetSpreadAmount-buyerExcessAmount;
             bytes memory assetData = sellOrder.takerAssetData;
             address token = assetData.readAddress(16);
-            address makerAddress = sellOrder.makerAddress;
-            IERC20Token(token).transfer(makerAddress, leftMakerAssetSpreadAmount);
+            if (sellerExcessAmount > 0) {
+                address makerAddress = sellOrder.makerAddress;
+                IERC20Token(token).transfer(makerAddress, sellerExcessAmount);
+            }
+            if (buyerExcessAmount > 0) {
+                address takerAddress = buyOrder.makerAddress;
+                IERC20Token(token).transfer(takerAddress, buyerExcessAmount);
+            }
         }
         return matchedFillResults;
     }
@@ -116,7 +125,7 @@ contract DutchAuction {
         // We assume auctionBeginTimeSeconds and auctionBeginAmount are appended to the makerAssetData
         uint256 auctionBeginTimeSeconds = order.makerAssetData.readUint256(makerAssetDataLength-64);
         uint256 auctionBeginAmount = order.makerAssetData.readUint256(makerAssetDataLength-32);
-        // require(order.expirationTimeSeconds > auctionBeginTimeSeconds, "INVALID_BEGIN_TIME");
+        require(order.expirationTimeSeconds > auctionBeginTimeSeconds, "INVALID_BEGIN_TIME");
         uint256 auctionDurationSeconds = order.expirationTimeSeconds-auctionBeginTimeSeconds;
         uint256 minAmount = order.takerAssetAmount;
         // solhint-disable-next-line not-rely-on-time
