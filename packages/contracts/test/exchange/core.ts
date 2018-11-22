@@ -17,7 +17,7 @@ import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated-wrapp
 import { ReentrantERC20TokenContract } from '../../generated-wrappers/reentrant_erc20_token';
 import { TestStaticCallReceiverContract } from '../../generated-wrappers/test_static_call_receiver';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync, expectTransactionFailedWithParamsAsync } from '../utils/assertions';
 import { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
@@ -184,10 +184,10 @@ describe('Exchange core', () => {
             const invalidSigBuff = Buffer.concat([v, invalidR, invalidS, signatureType]);
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
             signedOrder.signature = invalidSigHex;
-            return expectTransactionFailedAsync(
-                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReason.InvalidOrderSignature,
-            );
+            return expectTransactionFailedWithParamsAsync(exchangeWrapper.fillOrderAsync(signedOrder, takerAddress), {
+                reason: RevertReason.InvalidOrderSignature,
+                params: { orderHash: orderHashUtils.getOrderHashHex(signedOrder) },
+            });
         });
 
         it('should throw if no value is filled', async () => {

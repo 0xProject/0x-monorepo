@@ -13,7 +13,7 @@ import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { ReentrantERC20TokenContract } from '../../generated-wrappers/reentrant_erc20_token';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync, expectTransactionFailedWithParamsAsync } from '../utils/assertions';
 import { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
@@ -833,14 +833,22 @@ describe('Exchange wrappers', () => {
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
+                const secondSignedOrderPrim = {
+                    ...signedOrders[1],
+                    takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+                };
+                const orderHash = orderHashUtils.getOrderHashHex(secondSignedOrderPrim);
 
-                return expectTransactionFailedAsync(
+                return expectTransactionFailedWithParamsAsync(
                     exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                         takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
                     // We simply use the takerAssetData from the first order for all orders.
                     // If they are not the same, the contract throws when validating the order signature
-                    RevertReason.InvalidOrderSignature,
+                    {
+                        reason: RevertReason.InvalidOrderSignature,
+                        params: { orderHash },
+                    },
                 );
             });
         });
@@ -1094,12 +1102,20 @@ describe('Exchange wrappers', () => {
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
+                const secondSignedOrderPrim = {
+                    ...signedOrders[1],
+                    makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                };
+                const orderHash = orderHashUtils.getOrderHashHex(secondSignedOrderPrim);
 
-                return expectTransactionFailedAsync(
+                return expectTransactionFailedWithParamsAsync(
                     exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                         makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
                     }),
-                    RevertReason.InvalidOrderSignature,
+                    {
+                        reason: RevertReason.InvalidOrderSignature,
+                        params: { orderHash },
+                    },
                 );
             });
         });

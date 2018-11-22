@@ -1,15 +1,33 @@
+import { abisToAbiBySelector, decodeCallData } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { logUtils } from '@0x/utils';
 import { NodeType } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceipt, TransactionReceiptStatus, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+
+import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
+import { constants } from './constants';
 import { web3Wrapper } from './web3_wrapper';
 
 const expect = chai.expect;
 
 let nodeType: NodeType | undefined;
+
+const ERROR_ABIS = _.map(
+    constants.ERROR_ABI_STRINGS,
+    (errorAbiString: string) => ethers.utils.parseSignature(errorAbiString) as ethers.utils.FunctionFragment,
+);
+const errorAbiBySelector = abisToAbiBySelector(ERROR_ABIS);
+interface InvalidOrderSignatureError {
+    reason: RevertReason.InvalidOrderSignature;
+    params: {
+        orderHash: string;
+    };
+}
+
+type SmartContractError = InvalidOrderSignatureError;
 
 // Represents the return value of a `sendTransaction` call. The Promise should
 // resolve with either a transaction receipt or a transaction hash.
@@ -80,6 +98,10 @@ export async function expectInsufficientFundsAsync<T>(p: Promise<T>): Promise<vo
     return expect(p).to.be.rejectedWith(errMessage);
 }
 
+function escapeRegExp(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
 /**
  * Resolves if the the sendTransaction call fails with the given revert reason.
  * However, since Geth does not support revert reasons for sendTransaction, this
@@ -104,7 +126,74 @@ export async function expectTransactionFailedAsync(p: sendTransactionResult, rea
     }
     switch (nodeType) {
         case NodeType.Ganache:
-            return expect(p).to.be.rejectedWith(reason);
+            return expect(p).to.be.rejectedWith(
+                new RegExp(`^${constants.GANACHE_REVERT_REASON_PREFIX}${escapeRegExp(reason)}$`),
+            );
+        case NodeType.Geth:
+            logUtils.warn(
+                'WARNING: Geth does not support revert reasons for sendTransaction. This test will pass if the transaction fails for any reason.',
+            );
+            return expectTransactionFailedWithoutReasonAsync(p);
+        default:
+            throw new Error(`Unknown node type: ${nodeType}`);
+    }
+}
+
+/**
+ * Resolves if the the sendTransaction call fails with the given revert reason and decoded revert params.
+ * However, since Geth does not support revert reasons for sendTransaction, this
+ * falls back to expectTransactionFailedWithoutReasonAsync if the backing
+ * Ethereum node is Geth.
+ * @param p a Promise resulting from a sendTransaction call
+ * @param expectedError Expected revert reason with params
+ * @returns a new Promise which will reject if the conditions are not met and
+ * otherwise resolve with no value.
+ */
+export async function expectTransactionFailedWithParamsAsync(
+    p: sendTransactionResult,
+    expectedError: SmartContractError,
+): Promise<void> {
+    // HACK(albrow): This dummy `catch` should not be necessary, but if you
+    // remove it, there is an uncaught exception and the Node process will
+    // forcibly exit. It's possible this is a false positive in
+    // make-promises-safe.
+    p.catch(e => {
+        _.noop(e);
+    });
+
+    if (_.isUndefined(nodeType)) {
+        nodeType = await web3Wrapper.getNodeTypeAsync();
+    }
+    switch (nodeType) {
+        case NodeType.Ganache:
+            try {
+                await p;
+            } catch (err) {
+                if (_.startsWith(err.message, constants.GANACHE_REVERT_REASON_PREFIX)) {
+                    if (err.hashes.length !== 1) {
+                        throw new Error('Expected just one transaction hash in Ganache error object');
+                    }
+                    const txHash = err.hashes[0];
+                    const ganacheError = err.results[txHash];
+                    const returnData: string = ganacheError.return;
+                    const REVERT_ERROR_SELECTOR_BYTES_LENGTH = 4;
+                    const [revertReasonHex] = ethers.utils.defaultAbiCoder.decode(
+                        ['bytes'],
+                        ethers.utils.hexDataSlice(returnData, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
+                    );
+                    const decodedCallData = decodeCallData(errorAbiBySelector, revertReasonHex);
+                    const decodedError = {
+                        reason: decodedCallData.name,
+                        params: decodedCallData.callParams,
+                    };
+                    expect(expectedError).to.be.deep.equal(decodedError, 'Revert reason mismatch');
+                } else {
+                    throw new chai.AssertionError(
+                        `Expected a transaction to fail with a parametrised error reason, but got ${err}`,
+                    );
+                }
+            }
+            break;
         case NodeType.Geth:
             logUtils.warn(
                 'WARNING: Geth does not support revert reasons for sendTransaction. This test will pass if the transaction fails for any reason.',

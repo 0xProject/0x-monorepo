@@ -19,6 +19,7 @@ const TESTRPC_PRIVATE_KEYS_STRINGS = [
 export const constants = {
     BASE_16: 16,
     INVALID_OPCODE: 'invalid opcode',
+    GANACHE_REVERT_REASON_PREFIX: 'VM Exception while processing transaction: revert ',
     TESTRPC_NETWORK_ID: 50,
     // Note(albrow): In practice V8 and most other engines limit the minimum
     // interval for setInterval to 10ms. We still set it to 0 here in order to
@@ -51,6 +52,7 @@ export const constants = {
     WORD_LENGTH: 32,
     ZERO_AMOUNT: new BigNumber(0),
     PERCENTAGE_DENOMINATOR: new BigNumber(10).pow(18),
+    ERROR_ABI_STRINGS: ['function INVALID_ORDER_SIGNATURE(bytes32 orderHash)'],
     FUNCTIONS_WITH_MUTEX: [
         'FILL_ORDER',
         'FILL_OR_KILL_ORDER',

@@ -1,5 +1,5 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
+import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -14,7 +14,7 @@ import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { ReentrantERC20TokenContract } from '../../generated-wrappers/reentrant_erc20_token';
 import { TestExchangeInternalsContract } from '../../generated-wrappers/test_exchange_internals';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync } from '../utils/assertions';
+import { expectTransactionFailedAsync, expectTransactionFailedWithParamsAsync } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -1168,14 +1168,22 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
+            const signedOrderRightPrim = {
+                ...signedOrderRight,
+                takerAssetData: signedOrderLeft.makerAssetData,
+            };
+            const orderHashRightPrim = orderHashUtils.getOrderHashHex(signedOrderRightPrim);
             // Match orders
-            return expectTransactionFailedAsync(
+            return expectTransactionFailedWithParamsAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
                 // We are assuming assetData fields of the right order are the
                 // reverse of the left order, rather than checking equality. This
                 // saves a bunch of gas, but as a result if the assetData fields are
                 // off then the failure ends up happening at signature validation
-                RevertReason.InvalidOrderSignature,
+                {
+                    reason: RevertReason.InvalidOrderSignature,
+                    params: { orderHash: orderHashRightPrim },
+                },
             );
         });
 
@@ -1190,10 +1198,18 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
+            const signedOrderRightPrim = {
+                ...signedOrderRight,
+                makerAssetData: signedOrderLeft.makerAssetData,
+            };
+            const orderHashRightPrim = orderHashUtils.getOrderHashHex(signedOrderRightPrim);
             // Match orders
-            return expectTransactionFailedAsync(
+            return expectTransactionFailedWithParamsAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
-                RevertReason.InvalidOrderSignature,
+                {
+                    reason: RevertReason.InvalidOrderSignature,
+                    params: { orderHash: orderHashRightPrim },
+                },
             );
         });
 

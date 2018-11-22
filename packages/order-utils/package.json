@@ -10,6 +10,7 @@
     "scripts": {
         "build": "yarn tsc -b",
         "build:ci": "yarn build",
+        "watch_without_deps": "tsc -w",
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:circleci": "yarn test:coverage",
