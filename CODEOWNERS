@@ -32,4 +32,4 @@ packages/web3-wrapper/ @LogvinovLeon @fabioberger
 python-packages/ @feuGeneA
 
 # Protocol/smart contracts
-packages/contracts/test/ @albrow
+contracts/core/test/ @albrow
