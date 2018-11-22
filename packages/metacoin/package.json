@@ -18,7 +18,7 @@
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
         "test:profile": "SOLIDITY_PROFILER=true run-s build run_mocha profiler:report:html",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --bail --exit --timeout 10000",
-        "generate_contract_wrappers": "abi-gen --abis 'artifacts/Metacoin.json' --template ../contract_templates/contract.handlebars --partials '../contract_templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers",
+        "generate_contract_wrappers": "abi-gen --abis 'artifacts/Metacoin.json' --template ../../node_modules/@0x/contract-templates/contract.handlebars --partials '../../node_modules/@0x/contract-templates/partials/**/*.handlebars' --output src/contract_wrappers --backend ethers",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "profiler:report:html": "istanbul report html && open coverage/index.html",
@@ -30,6 +30,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "@0x/abi-gen": "^1.0.17",
+        "@0x/contract-templates": "^1.0.0",
         "@0x/base-contract": "^3.0.7",
         "@0x/sol-cov": "^2.1.13",
         "@0x/subproviders": "^2.1.5",
