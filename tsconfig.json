@@ -30,7 +30,7 @@
         { "path": "./packages/contract-addresses" },
         { "path": "./packages/contract-artifacts" },
         { "path": "./packages/contract-wrappers" },
-        { "path": "./packages/contracts" },
+        { "path": "./contracts/core" },
         { "path": "./packages/dev-utils" },
         { "path": "./packages/ethereum-types" },
         { "path": "./packages/fill-scenarios" },
