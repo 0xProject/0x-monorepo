@@ -1,10 +1,13 @@
 import {
+    bytes32Values,
     chaiSetup,
     constants,
     FillResults,
     getRevertReasonOrErrorMessageForSendTransactionAsync,
     provider,
+    testCombinatoriallyWithReferenceFuncAsync,
     txDefaults,
+    uint256Values,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
@@ -15,7 +18,6 @@ import * as _ from 'lodash';
 
 import { TestExchangeInternalsContract } from '../../generated-wrappers/test_exchange_internals';
 import { artifacts } from '../../src/artifacts';
-import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
