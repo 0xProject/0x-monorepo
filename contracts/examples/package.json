@@ -1,11 +1,11 @@
 {
     "private": true,
-    "name": "@0x/contracts-core",
-    "version": "2.1.55",
+    "name": "@0x/contracts-examples",
+    "version": "1.0.0",
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Smart contract components of 0x protocol",
+    "description": "Smart contract examples of 0x protocol",
     "main": "lib/src/index.js",
     "directories": {
         "test": "test"
@@ -32,7 +32,7 @@
         "lint-contracts": "solhint contracts/**/**/**/**/*.sol"
     },
     "config": {
-        "abis": "generated-artifacts/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|DummyMultipleReturnERC20Token|DummyNoReturnERC20Token|ERC20Token|ERC20Proxy|ERC721Token|ERC721Proxy|Forwarder|Exchange|IAssetData|IAssetProxy|InvalidERC721Receiver|MixinAuthorizable|OrderValidator|ReentrantERC20Token|TestAssetProxyOwner|TestAssetProxyDispatcher|TestConstants|TestExchangeInternals|TestLibBytes|TestLibs|TestSignatureValidator|TestStaticCallReceiver|WETH9|ZRXToken).json"
+        "abis": "generated-artifacts/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|DummyMultipleReturnERC20Token|DummyNoReturnERC20Token|ERC20Token|ERC20Proxy|ERC721Token|ERC721Proxy|Forwarder|Exchange|ExchangeWrapper|IAssetData|IAssetProxy|InvalidERC721Receiver|MixinAuthorizable|OrderValidator|ReentrantERC20Token|TestAssetProxyOwner|TestAssetProxyDispatcher|TestConstants|TestExchangeInternals|TestLibBytes|TestLibs|TestSignatureValidator|TestStaticCallReceiver|Validator|Wallet|Whitelist|WETH9|ZRXToken).json"
     },
     "repository": {
         "type": "git",
@@ -45,7 +45,6 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/core/README.md",
     "devDependencies": {
-        "@0x/contracts-examples": "^1.0.0",
         "@0x/contracts-test-utils": "^1.0.0",
         "@0x/abi-gen": "^1.0.17",
         "@0x/dev-utils": "^1.0.18",
@@ -54,6 +53,7 @@
         "@0x/subproviders": "^2.1.5",
         "@0x/tslint-config": "^1.0.10",
         "@types/bn.js": "^4.11.0",
+        "@types/ethereumjs-abi": "^0.6.0",
         "@types/lodash": "4.14.104",
         "@types/node": "*",
         "@types/yargs": "^10.0.0",
@@ -72,6 +72,7 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
+        "@0x/contracts-core": "^2.1.55",
         "@0x/contracts-multisig": "^1.0.0",
         "@0x/base-contract": "^3.0.7",
         "@0x/order-utils": "^3.0.3",
@@ -79,9 +80,13 @@
         "@0x/typescript-typings": "^3.0.4",
         "@0x/utils": "^2.0.6",
         "@0x/web3-wrapper": "^3.1.5",
+        "@types/js-combinatorics": "^0.5.29",
         "bn.js": "^4.11.8",
         "ethereum-types": "^1.1.2",
+        "ethereumjs-abi": "0.6.5",
         "ethereumjs-util": "^5.1.1",
+        "ethers": "~4.0.4",
+        "js-combinatorics": "^0.5.3",
         "lodash": "^4.17.5"
     },
     "publishConfig": {

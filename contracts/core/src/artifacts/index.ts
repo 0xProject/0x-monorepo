@@ -11,7 +11,6 @@ import * as ERC20Token from '../../generated-artifacts/ERC20Token.json';
 import * as ERC721Proxy from '../../generated-artifacts/ERC721Proxy.json';
 import * as ERC721Token from '../../generated-artifacts/ERC721Token.json';
 import * as Exchange from '../../generated-artifacts/Exchange.json';
-import * as ExchangeWrapper from '../../generated-artifacts/ExchangeWrapper.json';
 import * as Forwarder from '../../generated-artifacts/Forwarder.json';
 import * as IAssetData from '../../generated-artifacts/IAssetData.json';
 import * as IAssetProxy from '../../generated-artifacts/IAssetProxy.json';
@@ -29,10 +28,7 @@ import * as TestLibBytes from '../../generated-artifacts/TestLibBytes.json';
 import * as TestLibs from '../../generated-artifacts/TestLibs.json';
 import * as TestSignatureValidator from '../../generated-artifacts/TestSignatureValidator.json';
 import * as TestStaticCallReceiver from '../../generated-artifacts/TestStaticCallReceiver.json';
-import * as Validator from '../../generated-artifacts/Validator.json';
-import * as Wallet from '../../generated-artifacts/Wallet.json';
 import * as WETH9 from '../../generated-artifacts/WETH9.json';
-import * as Whitelist from '../../generated-artifacts/Whitelist.json';
 import * as ZRXToken from '../../generated-artifacts/ZRXToken.json';
 
 export const artifacts = {
@@ -47,7 +43,6 @@ export const artifacts = {
     ERC721Proxy: ERC721Proxy as ContractArtifact,
     ERC721Token: ERC721Token as ContractArtifact,
     Exchange: Exchange as ContractArtifact,
-    ExchangeWrapper: ExchangeWrapper as ContractArtifact,
     Forwarder: Forwarder as ContractArtifact,
     IAssetData: IAssetData as ContractArtifact,
     IAssetProxy: IAssetProxy as ContractArtifact,
@@ -65,10 +60,7 @@ export const artifacts = {
     TestLibs: TestLibs as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
     TestStaticCallReceiver: TestStaticCallReceiver as ContractArtifact,
-    Validator: Validator as ContractArtifact,
     WETH9: WETH9 as ContractArtifact,
-    Wallet: Wallet as ContractArtifact,
-    Whitelist: Whitelist as ContractArtifact,
     // Note(albrow): "as any" hack still required here because ZRXToken does not
     // conform to the v2 artifact type.
     ZRXToken: (ZRXToken as any) as ContractArtifact,

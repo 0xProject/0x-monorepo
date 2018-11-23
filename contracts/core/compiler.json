@@ -30,7 +30,6 @@
         "ERC721Token",
         "ERC721Proxy",
         "Exchange",
-        "ExchangeWrapper",
         "Forwarder",
         "IAssetData",
         "IAssetProxy",
@@ -48,10 +47,7 @@
         "TestExchangeInternals",
         "TestSignatureValidator",
         "TestStaticCallReceiver",
-        "Validator",
-        "Wallet",
         "WETH9",
-        "Whitelist",
         "ZRXToken"
     ]
 }

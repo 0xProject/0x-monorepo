@@ -1,3 +1,4 @@
+import { artifacts as exampleArtifacts, ExchangeWrapperContract, WhitelistContract } from '@0x/contracts-examples';
 import {
     chaiSetup,
     constants,
@@ -21,8 +22,6 @@ import * as _ from 'lodash';
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
-import { ExchangeWrapperContract } from '../../generated-wrappers/exchange_wrapper';
-import { WhitelistContract } from '../../generated-wrappers/whitelist';
 import { artifacts } from '../../src/artifacts';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
@@ -222,7 +221,7 @@ describe('Exchange transactions', () => {
 
             before(async () => {
                 exchangeWrapperContract = await ExchangeWrapperContract.deployFrom0xArtifactAsync(
-                    artifacts.ExchangeWrapper,
+                    exampleArtifacts.ExchangeWrapper,
                     provider,
                     txDefaults,
                     exchange.address,
@@ -336,7 +335,7 @@ describe('Exchange transactions', () => {
 
         before(async () => {
             whitelist = await WhitelistContract.deployFrom0xArtifactAsync(
-                artifacts.Whitelist,
+                exampleArtifacts.Whitelist,
                 provider,
                 txDefaults,
                 exchange.address,
