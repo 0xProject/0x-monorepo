@@ -5,15 +5,14 @@ import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { AssetProxyOwnerContract } from '../../generated-wrappers/asset_proxy_owner';
-import { MultiSigWalletContract } from '../../generated-wrappers/multi_sig_wallet';
 import { artifacts } from '../../src/artifacts';
 
-export class MultiSigWrapper {
-    private readonly _multiSig: MultiSigWalletContract;
+export class AssetProxyOwnerWrapper {
+    private readonly _assetProxyOwner: AssetProxyOwnerContract;
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _logDecoder: LogDecoder;
-    constructor(multiSigContract: MultiSigWalletContract, provider: Provider) {
-        this._multiSig = multiSigContract;
+    constructor(assetproxyOwnerContract: AssetProxyOwnerContract, provider: Provider) {
+        this._assetProxyOwner = assetproxyOwnerContract;
         this._web3Wrapper = new Web3Wrapper(provider);
         this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
     }
@@ -24,19 +23,19 @@ export class MultiSigWrapper {
         opts: { value?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const value = _.isUndefined(opts.value) ? new BigNumber(0) : opts.value;
-        const txHash = await this._multiSig.submitTransaction.sendTransactionAsync(destination, value, data, {
+        const txHash = await this._assetProxyOwner.submitTransaction.sendTransactionAsync(destination, value, data, {
             from,
         });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async confirmTransactionAsync(txId: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._multiSig.confirmTransaction.sendTransactionAsync(txId, { from });
+        const txHash = await this._assetProxyOwner.confirmTransaction.sendTransactionAsync(txId, { from });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
     public async revokeConfirmationAsync(txId: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._multiSig.revokeConfirmation.sendTransactionAsync(txId, { from });
+        const txHash = await this._assetProxyOwner.revokeConfirmation.sendTransactionAsync(txId, { from });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
@@ -45,7 +44,7 @@ export class MultiSigWrapper {
         from: string,
         opts: { gas?: number } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._multiSig.executeTransaction.sendTransactionAsync(txId, {
+        const txHash = await this._assetProxyOwner.executeTransaction.sendTransactionAsync(txId, {
             from,
             gas: opts.gas,
         });
@@ -58,9 +57,12 @@ export class MultiSigWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         // tslint:disable-next-line:no-unnecessary-type-assertion
         const txHash = await (this
-            ._multiSig as AssetProxyOwnerContract).executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
-            from,
-        });
+            ._assetProxyOwner as AssetProxyOwnerContract).executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(
+            txId,
+            {
+                from,
+            },
+        );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
