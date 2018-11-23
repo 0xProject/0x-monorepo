@@ -833,11 +833,11 @@ describe('Exchange wrappers', () => {
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
-                const secondSignedOrderPrim = {
+                const secondSignedOrderWithOnChainDefaults = {
                     ...signedOrders[1],
                     takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
                 };
-                const orderHash = orderHashUtils.getOrderHashHex(secondSignedOrderPrim);
+                const orderHash = orderHashUtils.getOrderHashHex(secondSignedOrderWithOnChainDefaults);
 
                 return expectTransactionFailedWithParamsAsync(
                     exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
@@ -1102,11 +1102,11 @@ describe('Exchange wrappers', () => {
                     }),
                     await orderFactory.newSignedOrderAsync(),
                 ];
-                const secondSignedOrderPrim = {
+                const secondSignedOrderWithOnChainDefaults = {
                     ...signedOrders[1],
                     makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
                 };
-                const orderHash = orderHashUtils.getOrderHashHex(secondSignedOrderPrim);
+                const orderHash = orderHashUtils.getOrderHashHex(secondSignedOrderWithOnChainDefaults);
 
                 return expectTransactionFailedWithParamsAsync(
                     exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {

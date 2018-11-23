@@ -1168,11 +1168,11 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
-            const signedOrderRightPrim = {
+            const signedOrderRightWithOnChainDefaults = {
                 ...signedOrderRight,
                 takerAssetData: signedOrderLeft.makerAssetData,
             };
-            const orderHashRightPrim = orderHashUtils.getOrderHashHex(signedOrderRightPrim);
+            const orderHashRightWithOnChainDefaults = orderHashUtils.getOrderHashHex(signedOrderRightWithOnChainDefaults);
             // Match orders
             return expectTransactionFailedWithParamsAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
@@ -1182,7 +1182,7 @@ describe('matchOrders', () => {
                 // off then the failure ends up happening at signature validation
                 {
                     reason: RevertReason.InvalidOrderSignature,
-                    params: { orderHash: orderHashRightPrim },
+                    params: { orderHash: orderHashRightWithOnChainDefaults },
                 },
             );
         });
@@ -1198,17 +1198,17 @@ describe('matchOrders', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), 18),
             });
-            const signedOrderRightPrim = {
+            const signedOrderRightWithOnChainDefaults = {
                 ...signedOrderRight,
                 makerAssetData: signedOrderLeft.makerAssetData,
             };
-            const orderHashRightPrim = orderHashUtils.getOrderHashHex(signedOrderRightPrim);
+            const orderHashRightWithOnChainDefaults = orderHashUtils.getOrderHashHex(signedOrderRightWithOnChainDefaults);
             // Match orders
             return expectTransactionFailedWithParamsAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
                 {
                     reason: RevertReason.InvalidOrderSignature,
-                    params: { orderHash: orderHashRightPrim },
+                    params: { orderHash: orderHashRightWithOnChainDefaults },
                 },
             );
         });
