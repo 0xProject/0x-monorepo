@@ -15,8 +15,6 @@ export * from '../../generated-wrappers/i_asset_data';
 export * from '../../generated-wrappers/i_asset_proxy';
 export * from '../../generated-wrappers/invalid_erc721_receiver';
 export * from '../../generated-wrappers/mixin_authorizable';
-export * from '../../generated-wrappers/multi_sig_wallet';
-export * from '../../generated-wrappers/multi_sig_wallet_with_time_lock';
 export * from '../../generated-wrappers/order_validator';
 export * from '../../generated-wrappers/reentrant_erc20_token';
 export * from '../../generated-wrappers/test_asset_proxy_dispatcher';
