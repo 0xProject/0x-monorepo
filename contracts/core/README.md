@@ -14,8 +14,6 @@ Contracts that make up and interact with version 2.0.0 of the protocol can be fo
     *   This directory contains example implementations of contracts that interact with the protocol but are _not_ intended for use in production. Examples include [filter](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#filter-contracts) contracts, a [Wallet](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#wallet) contract, and a [Validator](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#validator) contract, among others.
 *   [tokens](./contracts/tokens)
     *   This directory contains implementations of different tokens and token standards, including [wETH](https://weth.io/), ZRX, [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md), and [ERC721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md).
-*   [multisig](./contracts/multisig)
-    *   This directory contains the [Gnosis MultiSigWallet](https://github.com/gnosis/MultiSigWallet) and a custom extension that adds a timelock to transactions within the MultiSigWallet.
 *   [utils](./contracts/utils)
     *   This directory contains libraries and utils that are shared across all of the other directories.
 *   [test](./contracts/test)
@@ -52,13 +50,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=contracts yarn build
+PKG=@0x/contracts-core yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=contracts yarn watch
+PKG=@0x/contracts-core yarn watch
 ```
 
 ### Clean
