@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as _ from 'lodash';
 import * as path from 'path';
 
 import { ContractSource } from '../types';
@@ -13,12 +14,20 @@ export class NPMResolver extends Resolver {
     }
     public resolveIfExists(importPath: string): ContractSource | undefined {
         if (!importPath.startsWith('/')) {
-            const [packageName, ...other] = importPath.split('/');
+            let packageName;
+            let packageScope;
+            let other;
+            if (importPath.startsWith('@')) {
+                [packageScope, packageName, ...other] = importPath.split('/');
+            } else {
+                [packageName, ...other] = importPath.split('/');
+            }
             const pathWithinPackage = path.join(...other);
             let currentPath = this._packagePath;
             const ROOT_PATH = '/';
             while (currentPath !== ROOT_PATH) {
-                const lookupPath = path.join(currentPath, 'node_modules', packageName, pathWithinPackage);
+                const packagePath = _.isUndefined(packageScope) ? packageName : path.join(packageScope, packageName);
+                const lookupPath = path.join(currentPath, 'node_modules', packagePath, pathWithinPackage);
                 if (fs.existsSync(lookupPath) && fs.lstatSync(lookupPath).isFile()) {
                     const fileContent = fs.readFileSync(lookupPath).toString();
                     return {
