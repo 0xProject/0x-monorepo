@@ -98,6 +98,9 @@ export async function expectInsufficientFundsAsync<T>(p: Promise<T>): Promise<vo
     return expect(p).to.be.rejectedWith(errMessage);
 }
 
+/**
+ * Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+ */
 function escapeRegExp(str: string): string {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
