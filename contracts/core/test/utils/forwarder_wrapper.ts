@@ -1,3 +1,4 @@
+import { constants, formatters, LogDecoder, MarketSellOrders } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -5,11 +6,7 @@ import { Provider, TransactionReceiptWithDecodedLogs, TxDataPayable } from 'ethe
 import * as _ from 'lodash';
 
 import { ForwarderContract } from '../../generated-wrappers/forwarder';
-
-import { constants } from './constants';
-import { formatters } from './formatters';
-import { LogDecoder } from './log_decoder';
-import { MarketSellOrders } from './types';
+import { artifacts } from '../../src/artifacts';
 
 export class ForwarderWrapper {
     private readonly _web3Wrapper: Web3Wrapper;
@@ -61,7 +58,7 @@ export class ForwarderWrapper {
     constructor(contractInstance: ForwarderContract, provider: Provider) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
     }
     public async marketSellOrdersWithEthAsync(
         orders: SignedOrder[],

@@ -1,3 +1,4 @@
+import { constants, ERC20BalancesByOwner, txDefaults } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -7,10 +8,6 @@ import * as _ from 'lodash';
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
 import { artifacts } from '../../src/artifacts';
-
-import { constants } from './constants';
-import { ERC20BalancesByOwner } from './types';
-import { txDefaults } from './web3_wrapper';
 
 export class ERC20Wrapper {
     private readonly _tokenOwnerAddresses: string[];

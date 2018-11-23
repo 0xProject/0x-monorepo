@@ -1,7 +1,7 @@
 import { BigNumber } from '@0x/utils';
 import * as combinatorics from 'js-combinatorics';
 
-import { testWithReferenceFuncAsync } from './test_with_reference';
+import { testWithReferenceFuncAsync } from '@0x/contracts-test-utils';
 
 // A set of values corresponding to the uint256 type in Solidity. This set
 // contains some notable edge cases, including some values which will overflow

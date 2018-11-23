@@ -1,3 +1,16 @@
+import {
+    chaiSetup,
+    constants,
+    ERC20BalancesByOwner,
+    expectTransactionFailedAsync,
+    OrderFactory,
+    orderUtils,
+    provider,
+    SignedTransaction,
+    TransactionFactory,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { OrderWithoutExchangeAddress, RevertReason, SignedOrder } from '@0x/types';
@@ -11,16 +24,8 @@ import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { ExchangeWrapperContract } from '../../generated-wrappers/exchange_wrapper';
 import { WhitelistContract } from '../../generated-wrappers/whitelist';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync } from '../utils/assertions';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
-import { OrderFactory } from '../utils/order_factory';
-import { orderUtils } from '../utils/order_utils';
-import { TransactionFactory } from '../utils/transaction_factory';
-import { ERC20BalancesByOwner, SignedTransaction } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

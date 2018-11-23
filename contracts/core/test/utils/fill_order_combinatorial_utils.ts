@@ -1,4 +1,21 @@
 import {
+    AllowanceAmountScenario,
+    AssetDataScenario,
+    BalanceAmountScenario,
+    chaiSetup,
+    constants,
+    expectTransactionFailedAsync,
+    ExpirationTimeSecondsScenario,
+    FeeRecipientAddressScenario,
+    FillScenario,
+    OrderAssetAmountScenario,
+    orderUtils,
+    signingUtils,
+    TakerAssetFillAmountScenario,
+    TakerScenario,
+    TraderStateScenario,
+} from '@0x/contracts-test-utils';
+import {
     assetDataUtils,
     BalanceAndProxyAllowanceLazyStore,
     ExchangeTransferSimulator,
@@ -18,30 +35,13 @@ import { ExchangeContract, ExchangeFillEventArgs } from '../../generated-wrapper
 import { TestLibsContract } from '../../generated-wrappers/test_libs';
 import { artifacts } from '../../src/artifacts';
 
-import { expectTransactionFailedAsync } from './assertions';
 import { AssetWrapper } from './asset_wrapper';
-import { chaiSetup } from './chai_setup';
-import { constants } from './constants';
 import { ERC20Wrapper } from './erc20_wrapper';
 import { ERC721Wrapper } from './erc721_wrapper';
 import { ExchangeWrapper } from './exchange_wrapper';
 import { OrderFactoryFromScenario } from './order_factory_from_scenario';
-import { orderUtils } from './order_utils';
-import { signingUtils } from './signing_utils';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from './simple_asset_balance_and_proxy_allowance_fetcher';
 import { SimpleOrderFilledCancelledFetcher } from './simple_order_filled_cancelled_fetcher';
-import {
-    AllowanceAmountScenario,
-    AssetDataScenario,
-    BalanceAmountScenario,
-    ExpirationTimeSecondsScenario,
-    FeeRecipientAddressScenario,
-    FillScenario,
-    OrderAssetAmountScenario,
-    TakerAssetFillAmountScenario,
-    TakerScenario,
-    TraderStateScenario,
-} from './types';
 
 chaiSetup.configure();
 const expect = chai.expect;

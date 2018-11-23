@@ -1,3 +1,14 @@
+import {
+    addressUtils,
+    chaiSetup,
+    constants,
+    expectContractCallFailedAsync,
+    LogDecoder,
+    OrderFactory,
+    provider,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
@@ -13,13 +24,6 @@ import { TestStaticCallReceiverContract } from '../../generated-wrappers/test_st
 import { ValidatorContract } from '../../generated-wrappers/validator';
 import { WalletContract } from '../../generated-wrappers/wallet';
 import { artifacts } from '../../src/artifacts';
-import { addressUtils } from '../utils/address_utils';
-import { expectContractCallFailedAsync } from '../utils/assertions';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
-import { LogDecoder } from '../utils/log_decoder';
-import { OrderFactory } from '../utils/order_factory';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -73,7 +77,7 @@ describe('MixinSignatureValidator', () => {
             provider,
             txDefaults,
         );
-        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper);
+        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
         await web3Wrapper.awaitTransactionSuccessAsync(
             await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
                 from: signerAddress,

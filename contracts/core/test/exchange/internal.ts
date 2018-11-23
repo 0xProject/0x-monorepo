@@ -1,3 +1,12 @@
+import {
+    chaiSetup,
+    constants,
+    FillResults,
+    getRevertReasonOrErrorMessageForSendTransactionAsync,
+    provider,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -6,12 +15,7 @@ import * as _ from 'lodash';
 
 import { TestExchangeInternalsContract } from '../../generated-wrappers/test_exchange_internals';
 import { artifacts } from '../../src/artifacts';
-import { getRevertReasonOrErrorMessageForSendTransactionAsync } from '../utils/assertions';
-import { chaiSetup } from '../utils/chai_setup';
 import { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from '../utils/combinatorial_utils';
-import { constants } from '../utils/constants';
-import { FillResults } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

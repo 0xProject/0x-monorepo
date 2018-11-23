@@ -1,3 +1,13 @@
+import {
+    chaiSetup,
+    constants,
+    expectTransactionFailedAsync,
+    expectTransactionFailedWithoutReasonAsync,
+    LogDecoder,
+    provider,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
@@ -14,13 +24,8 @@ import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { IAssetProxyContract } from '../../generated-wrappers/i_asset_proxy';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync, expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
-import { LogDecoder } from '../utils/log_decoder';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -490,7 +495,7 @@ describe('Asset Transfer Proxies', () => {
                     erc721Receiver.address,
                     amount,
                 );
-                const logDecoder = new LogDecoder(web3Wrapper);
+                const logDecoder = new LogDecoder(web3Wrapper, artifacts);
                 const tx = await logDecoder.getTxWithDecodedLogsAsync(
                     await web3Wrapper.sendTransactionAsync({
                         to: erc721Proxy.address,

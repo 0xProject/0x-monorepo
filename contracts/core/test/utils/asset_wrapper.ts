@@ -1,10 +1,9 @@
+import { AbstractAssetWrapper, constants } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber, errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { AbstractAssetWrapper } from './abstract_asset_wrapper';
-import { constants } from './constants';
 import { ERC20Wrapper } from './erc20_wrapper';
 import { ERC721Wrapper } from './erc721_wrapper';
 

@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "../../multisig/MultiSigWalletWithTimeLock.sol";
+import "@0x/contracts-multisig/contracts/multisig/MultiSigWalletWithTimeLock.sol";
 import "../../utils/LibBytes/LibBytes.sol";
 
 

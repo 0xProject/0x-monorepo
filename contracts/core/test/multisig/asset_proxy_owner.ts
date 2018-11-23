@@ -1,3 +1,16 @@
+import {
+    chaiSetup,
+    constants,
+    expectContractCallFailedAsync,
+    expectContractCreationFailedAsync,
+    expectTransactionFailedAsync,
+    expectTransactionFailedWithoutReasonAsync,
+    increaseTimeAndMineBlockAsync,
+    provider,
+    sendTransactionResult,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -14,18 +27,7 @@ import {
 import { MixinAuthorizableContract } from '../../generated-wrappers/mixin_authorizable';
 import { TestAssetProxyOwnerContract } from '../../generated-wrappers/test_asset_proxy_owner';
 import { artifacts } from '../../src/artifacts';
-import {
-    expectContractCallFailedAsync,
-    expectContractCreationFailedAsync,
-    expectTransactionFailedAsync,
-    expectTransactionFailedWithoutReasonAsync,
-    sendTransactionResult,
-} from '../utils/assertions';
-import { increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
 import { MultiSigWrapper } from '../utils/multi_sig_wrapper';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -495,4 +497,3 @@ describe('AssetProxyOwner', () => {
         });
     });
 });
-// tslint:enable:no-unnecessary-type-assertion
