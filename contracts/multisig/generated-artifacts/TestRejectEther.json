@@ -1,0 +1,57 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "TestRejectEther",
+    "compilerOutput": {
+        "abi": [],
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object":
+                    "0x6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a72305820ea424ee6408dea2ac74e33b10a7b68bf90463703a311d5c1b7186f81ccf0775c0029",
+                "opcodes":
+                    "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x35 DUP1 PUSH1 0x1D PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN STOP PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 0xea TIMESTAMP 0x4e 0xe6 BLOCKHASH DUP14 0xea 0x2a 0xc7 0x4e CALLER 0xb1 EXP PUSH28 0x68BF90463703A311D5C1B7186F81CCF0775C00290000000000000000 ",
+                "sourceMap": "641:27:2:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;641:27:2;;;;;;;"
+            },
+            "deployedBytecode": {
+                "linkReferences": {},
+                "object":
+                    "0x6080604052600080fd00a165627a7a72305820ea424ee6408dea2ac74e33b10a7b68bf90463703a311d5c1b7186f81ccf0775c0029",
+                "opcodes":
+                    "PUSH1 0x80 PUSH1 0x40 MSTORE PUSH1 0x0 DUP1 REVERT STOP LOG1 PUSH6 0x627A7A723058 KECCAK256 0xea TIMESTAMP 0x4e 0xe6 BLOCKHASH DUP14 0xea 0x2a 0xc7 0x4e CALLER 0xb1 EXP PUSH28 0x68BF90463703A311D5C1B7186F81CCF0775C00290000000000000000 ",
+                "sourceMap": "641:27:2:-;;;;;"
+            }
+        }
+    },
+    "sources": {
+        "test/TestRejectEther/TestRejectEther.sol": {
+            "id": 2
+        }
+    },
+    "sourceCodes": {
+        "test/TestRejectEther/TestRejectEther.sol":
+            "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity 0.4.24;\n\n\n// solhint-disable no-empty-blocks\ncontract TestRejectEther {}\n"
+    },
+    "sourceTreeHashHex": "0xad117870d1c81a5a5082749d69414a6a80cfd9fc0d7ed2a73c506e84c6e7ddaf",
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.4.24+commit.e67f0147.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            }
+        }
+    },
+    "networks": {}
+}

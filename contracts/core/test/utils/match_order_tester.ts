@@ -1,3 +1,12 @@
+import {
+    chaiSetup,
+    ERC20BalancesByOwner,
+    ERC721TokenIdsByOwner,
+    OrderInfo,
+    OrderStatus,
+    TransferAmountsByMatchOrders as TransferAmounts,
+    TransferAmountsLoggedByMatchOrders as LoggedTransferAmounts,
+} from '@0x/contracts-test-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -6,18 +15,9 @@ import * as _ from 'lodash';
 
 import { TransactionReceiptWithDecodedLogs } from '../../../../node_modules/ethereum-types';
 
-import { chaiSetup } from './chai_setup';
 import { ERC20Wrapper } from './erc20_wrapper';
 import { ERC721Wrapper } from './erc721_wrapper';
 import { ExchangeWrapper } from './exchange_wrapper';
-import {
-    ERC20BalancesByOwner,
-    ERC721TokenIdsByOwner,
-    OrderInfo,
-    OrderStatus,
-    TransferAmountsByMatchOrders as TransferAmounts,
-    TransferAmountsLoggedByMatchOrders as LoggedTransferAmounts,
-} from './types';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -270,18 +270,14 @@ export class MatchOrderTester {
         const leftExpectedStatus = expectedTransferAmounts.amountBoughtByLeftMaker.equals(maxAmountBoughtByLeftMaker)
             ? OrderStatus.FULLY_FILLED
             : OrderStatus.FILLABLE;
-        expect(leftOrderInfo.orderStatus as OrderStatus, 'Checking exchange status for left order').to.be.equal(
-            leftExpectedStatus,
-        );
+        expect(leftOrderInfo.orderStatus, 'Checking exchange status for left order').to.be.equal(leftExpectedStatus);
         // Assert right order status
         const maxAmountBoughtByRightMaker = signedOrderRight.takerAssetAmount.minus(initialRightOrderFilledAmount);
         const rightOrderInfo: OrderInfo = await this._exchangeWrapper.getOrderInfoAsync(signedOrderRight);
         const rightExpectedStatus = expectedTransferAmounts.amountBoughtByRightMaker.equals(maxAmountBoughtByRightMaker)
             ? OrderStatus.FULLY_FILLED
             : OrderStatus.FILLABLE;
-        expect(rightOrderInfo.orderStatus as OrderStatus, 'Checking exchange status for right order').to.be.equal(
-            rightExpectedStatus,
-        );
+        expect(rightOrderInfo.orderStatus, 'Checking exchange status for right order').to.be.equal(rightExpectedStatus);
     }
     /// @dev Asserts account balances after matching orders.
     /// @param signedOrderLeft First matched order.

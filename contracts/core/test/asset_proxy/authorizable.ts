@@ -1,3 +1,11 @@
+import {
+    chaiSetup,
+    constants,
+    expectTransactionFailedAsync,
+    provider,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -6,10 +14,6 @@ import * as _ from 'lodash';
 
 import { MixinAuthorizableContract } from '../../generated-wrappers/mixin_authorizable';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync } from '../utils/assertions';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

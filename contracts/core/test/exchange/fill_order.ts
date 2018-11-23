@@ -1,23 +1,25 @@
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import * as _ from 'lodash';
-
-import { chaiSetup } from '../utils/chai_setup';
-import {
-    FillOrderCombinatorialUtils,
-    fillOrderCombinatorialUtilsFactoryAsync,
-} from '../utils/fill_order_combinatorial_utils';
 import {
     AllowanceAmountScenario,
     AssetDataScenario,
     BalanceAmountScenario,
+    chaiSetup,
     ExpirationTimeSecondsScenario,
     FeeRecipientAddressScenario,
     FillScenario,
     OrderAssetAmountScenario,
+    provider,
     TakerAssetFillAmountScenario,
     TakerScenario,
-} from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
+import { BlockchainLifecycle } from '@0x/dev-utils';
+import * as _ from 'lodash';
+
+import {
+    FillOrderCombinatorialUtils,
+    fillOrderCombinatorialUtilsFactoryAsync,
+} from '../utils/fill_order_combinatorial_utils';
 
 chaiSetup.configure();
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);

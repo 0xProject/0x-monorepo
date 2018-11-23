@@ -1,3 +1,12 @@
+import {
+    chaiSetup,
+    constants,
+    expectContractCallFailedAsync,
+    provider,
+    txDefaults,
+    typeEncodingUtils,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
@@ -9,11 +18,6 @@ import * as _ from 'lodash';
 
 import { TestLibBytesContract } from '../../generated-wrappers/test_lib_bytes';
 import { artifacts } from '../../src/artifacts';
-import { expectContractCallFailedAsync } from '../utils/assertions';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
-import { typeEncodingUtils } from '../utils/type_encoding_utils';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

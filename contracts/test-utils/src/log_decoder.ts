@@ -11,8 +11,6 @@ import {
 } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts } from '../../src/artifacts';
-
 import { constants } from './constants';
 
 export class LogDecoder {
@@ -27,7 +25,7 @@ export class LogDecoder {
             }
         }
     }
-    constructor(web3Wrapper: Web3Wrapper) {
+    constructor(web3Wrapper: Web3Wrapper, artifacts: { [contractName: string]: ContractArtifact }) {
         this._web3Wrapper = web3Wrapper;
         const abiArrays: AbiDefinition[][] = [];
         _.forEach(artifacts, (artifact: ContractArtifact) => {
