@@ -47,6 +47,7 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         artifacts.Exchange,
         provider,
         txDefaults,
+        zrxAssetData,
     );
 
     // Multisigs
