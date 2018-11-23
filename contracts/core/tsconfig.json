@@ -26,8 +26,6 @@
         "./generated-artifacts/IWallet.json",
         "./generated-artifacts/InvalidERC721Receiver.json",
         "./generated-artifacts/MixinAuthorizable.json",
-        "./generated-artifacts/MultiSigWallet.json",
-        "./generated-artifacts/MultiSigWalletWithTimeLock.json",
         "./generated-artifacts/OrderValidator.json",
         "./generated-artifacts/ReentrantERC20Token.json",
         "./generated-artifacts/TestAssetProxyDispatcher.json",
