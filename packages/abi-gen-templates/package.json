@@ -1,5 +1,5 @@
 {
-    "name": "@0x/contract-templates",
+    "name": "@0x/abi-gen-templates",
     "version": "1.0.0",
     "engines": {
         "node": ">=6.12"
@@ -13,7 +13,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-templates/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen-templates/README.md",
     "publishConfig": {
         "access": "public"
     }
