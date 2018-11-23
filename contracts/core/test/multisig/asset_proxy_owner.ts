@@ -503,3 +503,4 @@ describe('AssetProxyOwner', () => {
         });
     });
 });
+// tslint:disable-line max-file-line-count
