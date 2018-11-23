@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.1.15",
+        "changes": [
+            {
+                "note": "Fix an issue when we tried to append base contracts path to absolute imports (NPM)",
+                "pr": 1311
+            }
+        ]
+    },
+    {
         "timestamp": 1543401373,
         "version": "1.1.14",
         "changes": [
