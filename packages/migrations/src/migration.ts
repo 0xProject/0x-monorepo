@@ -141,6 +141,11 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         zrxAssetData,
     );
 
+    // Fund the Forwarder with ZRX
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await zrxToken.transfer.sendTransactionAsync(forwarder.address, new BigNumber(1000000000000000000), txDefaults),
+    );
+
     return {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
