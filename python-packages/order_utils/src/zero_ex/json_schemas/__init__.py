@@ -8,6 +8,48 @@ from pkg_resources import resource_string
 import jsonschema
 
 
+class LocalRefResolver(jsonschema.RefResolver):
+    """Resolve package-local JSON schema id's."""
+
+    def __init__(self):
+        self.ref_to_file = {
+            "/addressSchema": "address_schema.json",
+            "/hexSchema": "hex_schema.json",
+            "/orderSchema": "order_schema.json",
+            "/wholeNumberSchema": "whole_number_schema.json",
+            "/ECSignature": "ec_signature_schema.json",
+            "/signedOrderSchema": "signed_order_schema.json",
+            "/ecSignatureParameterSchema": (
+                "ec_signature_parameter_schema.json" + ""
+            ),
+        }
+        jsonschema.RefResolver.__init__(self, "", "")
+
+    def resolve_from_url(self, url: str) -> str:
+        """Resolve the given URL.
+
+        :param url: a string representing the URL of the JSON schema to fetch.
+        :returns: a string representing the deserialized JSON schema
+        :raises jsonschema.ValidationError: when the resource associated with `url` does not exist.
+        """
+        ref = url.replace("file://", "")
+        if ref in self.ref_to_file:
+            return json.loads(
+                resource_string(
+                    "zero_ex.json_schemas", f"schemas/{self.ref_to_file[ref]}"
+                )
+            )
+        raise jsonschema.ValidationError(
+            f"Unknown ref '{ref}'. "
+            + f"Known refs: {list(self.ref_to_file.keys())}."
+        )
+
+
+# Instantiate the `LocalRefResolver()` only once so that `assert_valid()` can perform multiple schema validations without
+# reading from disk the schema every time.
+LOCAL_RESOLVER = LocalRefResolver()
+
+
 def assert_valid(data: Mapping, schema_id: str) -> None:
     """Validate the given `data` against the specified `schema`.
 
@@ -24,38 +66,6 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
     ... )
     """
     # noqa
-    class LocalRefResolver(jsonschema.RefResolver):
-        """Resolve package-local JSON schema id's."""
 
-        def __init__(self):
-            self.ref_to_file = {
-                "/addressSchema": "address_schema.json",
-                "/hexSchema": "hex_schema.json",
-                "/orderSchema": "order_schema.json",
-                "/wholeNumberSchema": "whole_number_schema.json",
-                "/ECSignature": "ec_signature_schema.json",
-                "/ecSignatureParameterSchema": (
-                    "ec_signature_parameter_schema.json" + ""
-                ),
-            }
-            jsonschema.RefResolver.__init__(self, "", "")
-
-        def resolve_from_url(self, url):
-            """Resolve the given URL."""
-            ref = url.replace("file://", "")
-            if ref in self.ref_to_file:
-                return json.loads(
-                    resource_string(
-                        "zero_ex.json_schemas",
-                        f"schemas/{self.ref_to_file[ref]}",
-                    )
-                )
-            raise jsonschema.ValidationError(
-                f"Unknown ref '{ref}'. "
-                + f"Known refs: {list(self.ref_to_file.keys())}."
-            )
-
-    resolver = LocalRefResolver()
-    jsonschema.validate(
-        data, resolver.resolve_from_url(schema_id), resolver=resolver
-    )
+    _, schema = LOCAL_RESOLVER.resolve(schema_id)
+    jsonschema.validate(data, schema, resolver=LOCAL_RESOLVER)
