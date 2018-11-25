@@ -7,7 +7,6 @@ import { RawCalldata } from '../calldata';
 import * as Constants from '../utils/constants';
 import { DecodingRules, EncodingRules } from '../utils/rules';
 
-import { StaticBytes } from './static_bytes';
 import { Tuple } from './tuple';
 
 export class Method extends MemberDataType {
@@ -16,19 +15,14 @@ export class Method extends MemberDataType {
 
     private readonly _methodSignature: string;
     private readonly _methodSelector: string;
-    private readonly _returnDataTypes: DataType[];
-    private readonly _returnDataItem: DataItem;
+    private readonly _returnDataType: DataType;
 
     public constructor(abi: MethodAbi, dataTypeFactory: DataTypeFactory) {
         super({ type: 'method', name: abi.name, components: abi.inputs }, dataTypeFactory);
         this._methodSignature = this._computeSignature();
         this.selector = this._methodSelector = this._computeSelector();
-        this._returnDataTypes = [];
-        this._returnDataItem = { type: 'tuple', name: abi.name, components: abi.outputs };
-        const dummy = new StaticBytes({ type: 'byte', name: 'DUMMY' }, dataTypeFactory); // @TODO TMP
-        _.each(abi.outputs, (dataItem: DataItem) => {
-            this._returnDataTypes.push(this.getFactory().create(dataItem, dummy));
-        });
+        const returnDataItem: DataItem = { type: 'tuple', name: abi.name, components: abi.outputs };
+        this._returnDataType = new Tuple(returnDataItem, this.getFactory());
     }
 
     public encode(value: any, rules?: EncodingRules): string {
@@ -48,18 +42,14 @@ export class Method extends MemberDataType {
     }
 
     public encodeReturnValues(value: any, rules?: EncodingRules): string {
-        const returnDataType = new Tuple(this._returnDataItem, this.getFactory());
-        const returndata = returnDataType.encode(value, rules);
-        return returndata;
+        const returnData = this._returnDataType.encode(value, rules);
+        return returnData;
     }
 
     public decodeReturnValues(returndata: string, rules?: DecodingRules): any {
-        const returnValues: any[] = [];
         const rules_: DecodingRules = rules ? rules : { structsAsObjects: false };
         const rawReturnData = new RawCalldata(returndata, false);
-        _.each(this._returnDataTypes, (dataType: DataType) => {
-            returnValues.push(dataType.generateValue(rawReturnData, rules_));
-        });
+        const returnValues = this._returnDataType.generateValue(rawReturnData, rules_);
         return returnValues;
     }
 

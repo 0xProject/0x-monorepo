@@ -82,42 +82,36 @@ export class EvmDataTypeFactory implements DataTypeFactory {
         return EvmDataTypeFactory._instance;
     }
 
-    public mapDataItemToDataType(dataItem: DataItem): DataType {
+    public create(dataItem: DataItem, parentDataType?: DataType): DataType {
+        // Create data type
+        let dataType: undefined | DataType;
         if (Array.matchType(dataItem.type)) {
-            return new Array(dataItem);
+            dataType = new Array(dataItem);
         } else if (Address.matchType(dataItem.type)) {
-            return new Address(dataItem);
+            dataType = new Address(dataItem);
         } else if (Bool.matchType(dataItem.type)) {
-            return new Bool(dataItem);
+            dataType = new Bool(dataItem);
         } else if (Int.matchType(dataItem.type)) {
-            return new Int(dataItem);
+            dataType = new Int(dataItem);
         } else if (UInt.matchType(dataItem.type)) {
-            return new UInt(dataItem);
+            dataType = new UInt(dataItem);
         } else if (StaticBytes.matchType(dataItem.type)) {
-            return new StaticBytes(dataItem);
+            dataType = new StaticBytes(dataItem);
         } else if (Tuple.matchType(dataItem.type)) {
-            return new Tuple(dataItem);
+            dataType = new Tuple(dataItem);
         } else if (DynamicBytes.matchType(dataItem.type)) {
-            return new DynamicBytes(dataItem);
+            dataType = new DynamicBytes(dataItem);
         } else if (String.matchType(dataItem.type)) {
-            return new String(dataItem);
+            dataType = new String(dataItem);
         }
         // @TODO: Implement Fixed/UFixed types
-        throw new Error(`Unrecognized data type: '${dataItem.type}'`);
-    }
-
-    public create(dataItem: DataItem, parentDataType?: DataType): DataType {
-        const dataType = this.mapDataItemToDataType(dataItem);
-        if (dataType.isStatic()) {
-            return dataType;
+        if (!dataType) {
+            throw new Error(`Unrecognized data type: '${dataItem.type}'`);
+        } else if (parentDataType && !dataType.isStatic()) {
+            const pointerToDataType = new Pointer(dataType, parentDataType);
+            return pointerToDataType;
         }
-
-        if (parentDataType === undefined) {
-            // @Todo -- will this work for return values?
-            throw new Error(`Trying to create a pointer`);
-        }
-        const pointer = new Pointer(dataType, parentDataType);
-        return pointer;
+        return dataType;
     }
 
     private constructor() {}

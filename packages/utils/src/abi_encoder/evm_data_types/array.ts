@@ -44,7 +44,7 @@ export class Array extends MemberDataType {
         if (components !== undefined) {
             dataItem.components = components;
         }
-        const elementDataType = this.getFactory().mapDataItemToDataType(dataItem);
+        const elementDataType = this.getFactory().create(dataItem);
         const type = elementDataType.getSignature();
         if (this._arrayLength === undefined) {
             return `${type}[]`;
