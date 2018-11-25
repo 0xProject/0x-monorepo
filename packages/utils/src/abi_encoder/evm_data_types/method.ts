@@ -3,7 +3,6 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { DataType, DataTypeFactory, MemberDataType } from '../abstract_data_types';
-import { RawCalldata } from '../calldata';
 import * as Constants from '../utils/constants';
 import { DecodingRules, EncodingRules } from '../utils/rules';
 
@@ -29,13 +28,7 @@ export class Method extends MemberDataType {
     }
 
     public decode(calldata: string, rules?: DecodingRules): any[] | object {
-        if (!calldata.startsWith(this._methodSelector)) {
-            throw new Error(
-                `Tried to decode calldata, but it was missing the function selector. Expected '${this._methodSelector}'.`,
-            );
-        }
-        const hasSelector = true;
-        const value = super.decode(calldata, rules, hasSelector);
+        const value = super.decode(calldata, rules, this._methodSelector);
         return value;
     }
 
@@ -44,11 +37,8 @@ export class Method extends MemberDataType {
         return returnData;
     }
 
-    public decodeReturnValues(returndata: string, rules_?: DecodingRules): any {
-        const rules: DecodingRules = rules_ ? rules_ : Constants.DEFAULT_DECODING_RULES;
-        const returnDataHasSelector = false;
-        const rawReturnData = new RawCalldata(returndata, returnDataHasSelector);
-        const returnValues = this._returnDataType.generateValue(rawReturnData, rules);
+    public decodeReturnValues(returndata: string, rules?: DecodingRules): any {
+        const returnValues = this._returnDataType.decode(returndata, rules);
         return returnValues;
     }
 

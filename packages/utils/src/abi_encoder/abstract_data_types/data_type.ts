@@ -36,7 +36,13 @@ export abstract class DataType {
         return calldataHex;
     }
 
-    public decode(calldata: string, rules?: DecodingRules, hasSelector: boolean = false): any {
+    public decode(calldata: string, rules?: DecodingRules, selector?: string): any {
+        if (selector && !calldata.startsWith(selector)) {
+            throw new Error(
+                `Tried to decode calldata, but it was missing the function selector. Expected '${selector}'.`,
+            );
+        }
+        const hasSelector = selector ? true : false;
         const rawCalldata = new RawCalldata(calldata, hasSelector);
         const rules_ = rules ? rules : Constants.DEFAULT_DECODING_RULES;
         const value = this.generateValue(rawCalldata, rules_);
