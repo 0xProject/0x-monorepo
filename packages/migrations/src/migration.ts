@@ -142,8 +142,10 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
     );
 
     // Fund the Forwarder with ZRX
+    const zrxDecimals = await zrxToken.decimals.callAsync();
+    const zrxForwarderAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5000), zrxDecimals);
     await web3Wrapper.awaitTransactionSuccessAsync(
-        await zrxToken.transfer.sendTransactionAsync(forwarder.address, new BigNumber(1000000000000000000), txDefaults),
+        await zrxToken.transfer.sendTransactionAsync(forwarder.address, zrxForwarderAmount, txDefaults),
     );
 
     return {
