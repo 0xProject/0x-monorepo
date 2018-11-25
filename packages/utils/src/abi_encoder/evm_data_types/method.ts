@@ -10,30 +10,28 @@ import { DecodingRules, EncodingRules } from '../utils/rules';
 import { Tuple } from './tuple';
 
 export class Method extends MemberDataType {
-    // TMP
-    public selector: string;
-
     private readonly _methodSignature: string;
     private readonly _methodSelector: string;
     private readonly _returnDataType: DataType;
 
     public constructor(abi: MethodAbi, dataTypeFactory: DataTypeFactory) {
-        super({ type: 'method', name: abi.name, components: abi.inputs }, dataTypeFactory);
+        const methodDataItem = { type: 'method', name: abi.name, components: abi.inputs };
+        super(methodDataItem, dataTypeFactory);
         this._methodSignature = this._computeSignature();
-        this.selector = this._methodSelector = this._computeSelector();
+        this._methodSelector = this._computeSelector();
         const returnDataItem: DataItem = { type: 'tuple', name: abi.name, components: abi.outputs };
         this._returnDataType = new Tuple(returnDataItem, this.getFactory());
     }
 
     public encode(value: any, rules?: EncodingRules): string {
-        const calldata = super.encode(value, rules, this.selector);
+        const calldata = super.encode(value, rules, this._methodSelector);
         return calldata;
     }
 
     public decode(calldata: string, rules?: DecodingRules): any[] | object {
-        if (!calldata.startsWith(this.selector)) {
+        if (!calldata.startsWith(this._methodSelector)) {
             throw new Error(
-                `Tried to decode calldata, but it was missing the function selector. Expected '${this.selector}'.`,
+                `Tried to decode calldata, but it was missing the function selector. Expected '${this._methodSelector}'.`,
             );
         }
         const hasSelector = true;
@@ -46,10 +44,11 @@ export class Method extends MemberDataType {
         return returnData;
     }
 
-    public decodeReturnValues(returndata: string, rules?: DecodingRules): any {
-        const rules_: DecodingRules = rules ? rules : { structsAsObjects: false };
-        const rawReturnData = new RawCalldata(returndata, false);
-        const returnValues = this._returnDataType.generateValue(rawReturnData, rules_);
+    public decodeReturnValues(returndata: string, rules_?: DecodingRules): any {
+        const rules: DecodingRules = rules_ ? rules_ : Constants.DEFAULT_DECODING_RULES;
+        const returnDataHasSelector = false;
+        const rawReturnData = new RawCalldata(returndata, returnDataHasSelector);
+        const returnValues = this._returnDataType.generateValue(rawReturnData, rules);
         return returnValues;
     }
 
