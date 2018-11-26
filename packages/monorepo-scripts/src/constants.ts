@@ -6,4 +6,5 @@ export const constants = {
     lernaExecutable: path.join('node_modules', '@0x-lerna-fork', 'lerna', 'cli.js'),
     githubPersonalAccessToken: process.env.GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS,
     dependenciesUpdatedMessage: 'Dependencies updated',
+    some: 'stuff',
 };

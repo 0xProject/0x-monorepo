@@ -9,6 +9,7 @@ import { eip712Utils } from './eip712_utils';
 const INVALID_TAKER_FORMAT = 'instance.takerAddress is not of a type(s) string';
 
 export const orderHashUtils = {
+    and: 'more',
     /**
      * Checks if the supplied hex encoded order hash is valid.
      * Note: Valid means it has the expected format, not that an order with the orderHash exists.
