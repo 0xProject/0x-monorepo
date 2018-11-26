@@ -1,6 +1,4 @@
-import { ObjectMap } from '@0x/types';
-
-import { heapUtil } from './heap';
+import { EventProperties, heapUtil } from './heap';
 
 let isDisabled = false;
 export const disableAnalytics = (shouldDisableAnalytics: boolean) => {
@@ -15,11 +13,15 @@ export const evaluateIfEnabled = (fnCall: () => void) => {
 
 enum EventNames {
     INSTANT_OPENED = 'Instant - Opened',
-    WALLET_READY = 'Wallet - Ready',
+    ACCOUNT_LOCKED = 'Account - Locked',
+    ACCOUNT_READY = 'Account - Ready',
+    ACCOUNT_UNLOCK_REQUESTED = 'Account - Unlock Requested',
+    ACCOUNT_UNLOCK_DENIED = 'Account - Unlock Denied',
+    ACCOUNT_ADDRESS_CHANGED = 'Account - Address Changed',
 }
-const track = (eventName: EventNames, eventData: ObjectMap<string | number> = {}): void => {
+const track = (eventName: EventNames, eventProperties: EventProperties = {}): void => {
     evaluateIfEnabled(() => {
-        heapUtil.evaluateHeapCall(heap => heap.track(eventName, eventData));
+        heapUtil.evaluateHeapCall(heap => heap.track(eventName, eventProperties));
     });
 };
 function trackingEventFnWithoutPayload(eventName: EventNames): () => void {
@@ -28,16 +30,14 @@ function trackingEventFnWithoutPayload(eventName: EventNames): () => void {
     };
 }
 // tslint:disable-next-line:no-unused-variable
-function trackingEventFnWithPayload<T extends ObjectMap<string | number>>(
-    eventName: EventNames,
-): (eventDataProperties: T) => void {
-    return (eventDataProperties: T) => {
-        track(eventName, eventDataProperties);
+function trackingEventFnWithPayload(eventName: EventNames): (eventProperties: EventProperties) => void {
+    return (eventProperties: EventProperties) => {
+        track(eventName, eventProperties);
     };
 }
 
 export interface AnalyticsUserOptions {
-    ethAddress?: string;
+    lastKnownEthAddress?: string;
     ethBalanceInUnitAmount?: string;
 }
 export interface AnalyticsEventOptions {
@@ -48,6 +48,7 @@ export interface AnalyticsEventOptions {
     gitSha?: string;
     npmVersion?: string;
 }
+
 export const analytics = {
     addUserProperties: (properties: AnalyticsUserOptions): void => {
         evaluateIfEnabled(() => {
@@ -59,6 +60,11 @@ export const analytics = {
             heapUtil.evaluateHeapCall(heap => heap.addEventProperties(properties));
         });
     },
-    trackWalletReady: trackingEventFnWithoutPayload(EventNames.WALLET_READY),
     trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),
+    trackAccountLocked: trackingEventFnWithoutPayload(EventNames.ACCOUNT_LOCKED),
+    trackAccountReady: (address: string) => trackingEventFnWithPayload(EventNames.ACCOUNT_READY)({ address }),
+    trackAccountUnlockRequested: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_REQUESTED),
+    trackAccountUnlockDenied: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_DENIED),
+    trackAccountAddressChanged: (address: string) =>
+        trackingEventFnWithPayload(EventNames.ACCOUNT_ADDRESS_CHANGED)({ address }),
 };

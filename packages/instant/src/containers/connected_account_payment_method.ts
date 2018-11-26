@@ -12,6 +12,7 @@ import { Action, actions } from '../redux/actions';
 import { asyncData } from '../redux/async_data';
 import { State } from '../redux/reducer';
 import { Network, Omit, OperatingSystem, ProviderState, StandardSlidingPanelContent } from '../types';
+import { analytics } from '../util/analytics';
 import { envUtil } from '../util/env';
 
 export interface ConnectedAccountPaymentMethodProps {}
@@ -40,8 +41,11 @@ const mapDispatchToProps = (
     ownProps: ConnectedAccountPaymentMethodProps,
 ): ConnectedDispatch => ({
     openInstallWalletPanel: () => dispatch(actions.openStandardSlidingPanel(StandardSlidingPanelContent.InstallWallet)),
-    unlockWalletAndDispatchToStore: async (providerState: ProviderState) =>
-        asyncData.fetchAccountInfoAndDispatchToStore(providerState, dispatch, true),
+    unlockWalletAndDispatchToStore: (providerState: ProviderState) => {
+        analytics.trackAccountUnlockRequested();
+        // tslint:disable-next-line:no-floating-promises
+        asyncData.fetchAccountInfoAndDispatchToStore(providerState, dispatch, true);
+    },
 });
 
 const mergeProps = (
