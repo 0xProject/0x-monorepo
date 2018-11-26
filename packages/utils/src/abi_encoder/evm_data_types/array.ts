@@ -12,21 +12,26 @@ export class Array extends MemberDataType {
         return Array._MATCHER.test(type);
     }
 
-    public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
-        // Sanity check
-        const matches = Array._MATCHER.exec(dataItem.type);
+    private static _decodeElementTypeAndLengthFromType(type: string): [string, undefined|number] {
+        const matches = Array._MATCHER.exec(type);
         if (matches === null || matches.length !== 3) {
-            throw new Error(`Could not parse array: ${dataItem.type}`);
+            throw new Error(`Could not parse array: ${type}`);
         } else if (matches[1] === undefined) {
-            throw new Error(`Could not parse array type: ${dataItem.type}`);
+            throw new Error(`Could not parse array type: ${type}`);
         } else if (matches[2] === undefined) {
-            throw new Error(`Could not parse array length: ${dataItem.type}`);
+            throw new Error(`Could not parse array length: ${type}`);
         }
-
-        const isArray = true;
         const arrayElementType = matches[1];
         const arrayLength = matches[2] === '' ? undefined : parseInt(matches[2], Constants.DEC_BASE);
+        return [arrayElementType, arrayLength];
+    }
+
+    public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
+        // Construct parent
+        const isArray = true;
+        const [arrayElementType, arrayLength] = Array._decodeElementTypeAndLengthFromType(dataItem.type);
         super(dataItem, dataTypeFactory, isArray, arrayLength, arrayElementType);
+        // Set array properties
         this._elementType = arrayElementType;
         this._arraySignature = this._computeSignature();
     }
@@ -36,20 +41,22 @@ export class Array extends MemberDataType {
     }
 
     private _computeSignature(): string {
-        const dataItem: DataItem = {
+        // Compute signature for a single array element
+        const elementDataItem: DataItem = {
             type: this._elementType,
             name: 'N/A',
         };
-        const components = this.getDataItem().components;
-        if (components !== undefined) {
-            dataItem.components = components;
+        const elementComponents = this.getDataItem().components;
+        if (elementComponents !== undefined) {
+            elementDataItem.components = elementComponents;
         }
-        const elementDataType = this.getFactory().create(dataItem);
-        const type = elementDataType.getSignature();
+        const elementDataType = this.getFactory().create(elementDataItem);
+        const elementSignature = elementDataType.getSignature();
+        // Construct signature for array of type `element`
         if (this._arrayLength === undefined) {
-            return `${type}[]`;
+            return `${elementSignature}[]`;
         } else {
-            return `${type}[${this._arrayLength}]`;
+            return `${elementSignature}[${this._arrayLength}]`;
         }
     }
 }
