@@ -1,5 +1,22 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Add CLI `0x-migrate` for running the 0x migrations in a language-agnostic way",
+                "pr": 1324
+            },
+            {
+                "note": "Deploy testnet Exchange arfitact. Previously mainnet Exchange artifact was deployed.",
+                "pr": 1309
+            },
+            {
+                "note": "Fund the Forwarder with ZRX for fees.",
+                "pr": 1309
+            }
+        ]
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {

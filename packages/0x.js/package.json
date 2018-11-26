@@ -42,7 +42,6 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0x/abi-gen": "^1.0.17",
         "@0x/abi-gen-wrappers": "^1.1.0",
         "@0x/contract-addresses": "^1.2.0",
         "@0x/dev-utils": "^1.0.18",
