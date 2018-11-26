@@ -208,7 +208,7 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
     const packageVersionString = _.map(packageToNextVersion, (nextVersion: string, packageName: string) => {
         return `${packageName}@${nextVersion}`;
     }).join(',');
-    let lernaPublishCmd = `node ${constants.lernaExecutable} publish --cdVersions=${packageVersionString} --registry=${
+    let lernaPublishCmd = `node ${constants.lernaExecutable} publish --cd-versions=${packageVersionString} --registry=${
         configs.NPM_REGISTRY_URL
     } --yes`;
     if (configs.IS_LOCAL_PUBLISH) {
