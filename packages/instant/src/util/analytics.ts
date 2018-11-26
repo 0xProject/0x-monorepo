@@ -18,6 +18,9 @@ enum EventNames {
     ACCOUNT_UNLOCK_REQUESTED = 'Account - Unlock Requested',
     ACCOUNT_UNLOCK_DENIED = 'Account - Unlock Denied',
     ACCOUNT_ADDRESS_CHANGED = 'Account - Address Changed',
+    TOKEN_SELECTOR_OPENED = 'Token Selector - Opened',
+    TOKEN_SELECTOR_CLOSED = 'Token Selector - Closed',
+    TOKEN_SELECTOR_CHOSE = 'Token Selector - Chose',
 }
 const track = (eventName: EventNames, eventProperties: EventProperties = {}): void => {
     evaluateIfEnabled(() => {
@@ -67,4 +70,8 @@ export const analytics = {
     trackAccountUnlockDenied: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_DENIED),
     trackAccountAddressChanged: (address: string) =>
         trackingEventFnWithPayload(EventNames.ACCOUNT_ADDRESS_CHANGED)({ address }),
+    trackTokenSelectorOpened: trackingEventFnWithoutPayload(EventNames.TOKEN_SELECTOR_OPENED),
+    trackTokenSelectorClosed: trackingEventFnWithoutPayload(EventNames.TOKEN_SELECTOR_CLOSED),
+    trackTokenSelectorChose: (payload: { assetName: string; assetData: string }) =>
+        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CHOSE)(payload),
 };

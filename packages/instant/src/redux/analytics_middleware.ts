@@ -53,6 +53,15 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                 ).toString();
                 analytics.addUserProperties({ ethBalanceInUnitAmount });
             }
+            break;
+        case ActionTypes.UPDATE_SELECTED_ASSET:
+            if (curState.selectedAsset) {
+                analytics.trackTokenSelectorChose({
+                    assetName: curState.selectedAsset.metaData.name,
+                    assetData: curState.selectedAsset.assetData,
+                });
+            }
+            break;
     }
 
     return nextAction;
