@@ -178,6 +178,12 @@ export class Calldata {
         if (this._root === undefined) {
             throw new Error('expected root');
         }
+        // Constants for constructing annotated string
+        const offsetPadding = 10;
+        const valuePadding = 74;
+        const namePadding = 80;
+        const evmWordStartIndex = 0;
+        const emptySize = 0;
         // Construct annotated calldata
         let hexValue = `${this._selector}`;
         let offset = 0;
@@ -189,11 +195,6 @@ export class Calldata {
             const name = block.getName();
             const parentName = block.getParentName();
             const prettyName = name.replace(`${parentName}.`, '').replace(`${functionName}.`, '');
-            const offsetPadding = 10;
-            const valuePadding = 74;
-            const namePadding = 80;
-            const evmWordStartIndex = 0;
-            const emptySize = 0;
             // Resulting line will be <offsetStr><valueStr><nameStr>
             let offsetStr = '';
             let valueStr = '';
