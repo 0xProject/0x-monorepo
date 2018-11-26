@@ -1,9 +1,9 @@
 import { DataItem } from 'ethereum-types';
 
-import { DataTypeFactory, MemberDataType } from '../abstract_data_types';
+import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import * as Constants from '../utils/constants';
 
-export class Array extends MemberDataType {
+export class Array extends AbstractDataTypes.Set {
     private static readonly _MATCHER = RegExp('^(.+)\\[([0-9]*)\\]$');
     private readonly _arraySignature: string;
     private readonly _elementType: string;

@@ -2,16 +2,17 @@ import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { BigNumber } from '../../configured_bignumber';
-import { CalldataBlock, MemberCalldataBlock, RawCalldata } from '../calldata';
-import * as Constants from '../utils/constants';
-import { DecodingRules } from '../utils/rules';
+import { BigNumber } from '../../../configured_bignumber';
+import { CalldataBlock, CalldataBlocks, RawCalldata } from '../../calldata';
+import * as Constants from '../../utils/constants';
+import { DecodingRules } from '../../utils/rules';
 
-import { DataType } from './data_type';
-import { DependentDataType } from './dependent_data_type';
-import { DataTypeFactory, MemberIndexByName } from './interfaces';
+import { DataType } from '../data_type';
+import { DataTypeFactory, MemberIndexByName } from '../interfaces';
 
-export abstract class MemberDataType extends DataType {
+import { Pointer } from './pointer';
+
+export abstract class Set extends DataType {
     protected readonly _arrayLength: number | undefined;
     protected readonly _arrayElementType: string | undefined;
     private readonly _memberIndexByName: MemberIndexByName;
@@ -38,7 +39,7 @@ export abstract class MemberDataType extends DataType {
         }
     }
 
-    public generateCalldataBlock(value: any[] | object, parentBlock?: CalldataBlock): MemberCalldataBlock {
+    public generateCalldataBlock(value: any[] | object, parentBlock?: CalldataBlock): CalldataBlocks.Set {
         const block =
             value instanceof Array
                 ? this._generateCalldataBlockFromArray(value, parentBlock)
@@ -94,13 +95,13 @@ export abstract class MemberDataType extends DataType {
 
         // Search for dependent members
         const dependentMember = _.find(this._members, (member: DataType) => {
-            return member instanceof DependentDataType;
+            return member instanceof Pointer;
         });
         const isStatic = dependentMember === undefined; // static if we couldn't find a dependent member
         return isStatic;
     }
 
-    protected _generateCalldataBlockFromArray(value: any[], parentBlock?: CalldataBlock): MemberCalldataBlock {
+    protected _generateCalldataBlockFromArray(value: any[], parentBlock?: CalldataBlock): CalldataBlocks.Set {
         // Sanity check length
         if (this._arrayLength !== undefined && value.length !== this._arrayLength) {
             throw new Error(
@@ -111,7 +112,7 @@ export abstract class MemberDataType extends DataType {
         }
 
         const parentName = parentBlock === undefined ? '' : parentBlock.getName();
-        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(
+        const methodBlock: CalldataBlocks.Set = new CalldataBlocks.Set(
             this.getDataItem().name,
             this.getSignature(),
             parentName,
@@ -128,23 +129,23 @@ export abstract class MemberDataType extends DataType {
             methodBlock.setHeader(lenBuf);
         }
 
-        const memberBlocks: CalldataBlock[] = [];
+        const memberCalldataBlocks: CalldataBlock[] = [];
         _.each(members, (member: DataType, idx: number) => {
             const block = member.generateCalldataBlock(value[idx], methodBlock);
-            memberBlocks.push(block);
+            memberCalldataBlocks.push(block);
         });
-        methodBlock.setMembers(memberBlocks);
+        methodBlock.setMembers(memberCalldataBlocks);
         return methodBlock;
     }
 
-    protected _generateCalldataBlockFromObject(obj: object, parentBlock?: CalldataBlock): MemberCalldataBlock {
+    protected _generateCalldataBlockFromObject(obj: object, parentBlock?: CalldataBlock): CalldataBlocks.Set {
         const parentName = parentBlock === undefined ? '' : parentBlock.getName();
-        const methodBlock: MemberCalldataBlock = new MemberCalldataBlock(
+        const methodBlock: CalldataBlocks.Set = new CalldataBlocks.Set(
             this.getDataItem().name,
             this.getSignature(),
             parentName,
         );
-        const memberBlocks: CalldataBlock[] = [];
+        const memberCalldataBlocks: CalldataBlock[] = [];
         const childMap = _.cloneDeep(this._memberIndexByName);
         _.forOwn(obj, (value: any, key: string) => {
             if (!(key in childMap)) {
@@ -153,7 +154,7 @@ export abstract class MemberDataType extends DataType {
                 );
             }
             const block = this._members[this._memberIndexByName[key]].generateCalldataBlock(value, methodBlock);
-            memberBlocks.push(block);
+            memberCalldataBlocks.push(block);
             delete childMap[key];
         });
 
@@ -161,7 +162,7 @@ export abstract class MemberDataType extends DataType {
             throw new Error(`Could not assign tuple to object: missing keys ${Object.keys(childMap)}`);
         }
 
-        methodBlock.setMembers(memberBlocks);
+        methodBlock.setMembers(memberCalldataBlocks);
         return methodBlock;
     }
 

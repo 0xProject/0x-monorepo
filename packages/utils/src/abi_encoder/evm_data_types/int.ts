@@ -2,21 +2,21 @@
 import { DataItem } from 'ethereum-types';
 
 import { BigNumber } from '../../configured_bignumber';
-import { DataTypeFactory, PayloadDataType } from '../abstract_data_types';
+import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import * as Constants from '../utils/constants';
 import * as EncoderMath from '../utils/math';
 
-export class Int extends PayloadDataType {
+export class Int extends AbstractDataTypes.Blob {
     private static readonly _MATCHER = RegExp(
         '^int(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
     );
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _MAX_WIDTH: number = 256;
     private static readonly _DEFAULT_WIDTH: number = Int._MAX_WIDTH;
-    private _width: number;
-    private _minValue: BigNumber;
-    private _maxValue: BigNumber;
+    private readonly _width: number;
+    private readonly _minValue: BigNumber;
+    private readonly _maxValue: BigNumber;
 
     public static matchType(type: string): boolean {
         return Int._MATCHER.test(type);

@@ -1,8 +1,8 @@
 import { DataItem } from 'ethereum-types';
 
-import { DataTypeFactory, MemberDataType } from '../abstract_data_types';
+import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 
-export class Tuple extends MemberDataType {
+export class Tuple extends AbstractDataTypes.Set {
     private readonly _signature: string;
 
     public static matchType(type: string): boolean {

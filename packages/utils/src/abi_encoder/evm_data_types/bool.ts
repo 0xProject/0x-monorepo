@@ -4,11 +4,11 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { BigNumber } from '../../configured_bignumber';
-import { DataTypeFactory, PayloadDataType } from '../abstract_data_types';
+import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import * as Constants from '../utils/constants';
 
-export class Bool extends PayloadDataType {
+export class Bool extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
 
     public static matchType(type: string): boolean {

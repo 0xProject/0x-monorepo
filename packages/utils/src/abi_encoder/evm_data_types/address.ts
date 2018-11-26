@@ -3,11 +3,11 @@ import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { DataTypeFactory, PayloadDataType } from '../abstract_data_types';
+import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import * as Constants from '../utils/constants';
 
-export class Address extends PayloadDataType {
+export class Address extends AbstractDataTypes.Blob {
     public static ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X = "Address must start with '0x'";
     public static ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES = 'Address must be 20 bytes';
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;

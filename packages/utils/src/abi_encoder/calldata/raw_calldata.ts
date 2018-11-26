@@ -8,26 +8,25 @@ export class RawCalldata {
     private readonly _value: Buffer;
     private readonly _selector: string;
     private readonly _scopes: Queue<number>;
-    private _offset: number; // tracks current offset into raw calldata; used for parsing
+    private _offset: number;
 
-    constructor(value: string | Buffer, hasSelectorPrefix: boolean = true) {
+    public constructor(value: string | Buffer, hasSelector: boolean = true) {
+        // Sanity check
         if (typeof value === 'string' && !value.startsWith('0x')) {
             throw new Error(`Expected raw calldata to start with '0x'`);
         }
-        const valueBuf = ethUtil.toBuffer(value);
-        if (hasSelectorPrefix) {
-            this._selector = ethUtil.bufferToHex(
-                valueBuf.slice(Constants.HEX_SELECTOR_BYTE_OFFSET_IN_CALLDATA, Constants.HEX_SELECTOR_LENGTH_IN_BYTES),
-            );
-            this._value = valueBuf.slice(Constants.HEX_SELECTOR_LENGTH_IN_BYTES); // disregard selector
-        } else {
-            this._selector = '0x';
-            this._value = valueBuf;
-        }
-
+        // Construct initial values
+        this._value = ethUtil.toBuffer(value);
+        this._selector = '0x';
         this._scopes = new Queue<number>();
         this._scopes.pushBack(RawCalldata._INITIAL_OFFSET);
         this._offset = RawCalldata._INITIAL_OFFSET;
+        // If there's a selector then slice it
+        if (hasSelector) {
+            const selectorBuf = this._value.slice(Constants.HEX_SELECTOR_LENGTH_IN_BYTES);
+            this._value = this._value.slice(Constants.HEX_SELECTOR_LENGTH_IN_BYTES);
+            this._selector = ethUtil.bufferToHex(selectorBuf);
+        }
     }
 
     public popBytes(lengthInBytes: number): Buffer {

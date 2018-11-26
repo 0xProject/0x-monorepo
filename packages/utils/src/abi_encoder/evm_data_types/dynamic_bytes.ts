@@ -3,11 +3,11 @@ import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { DataTypeFactory, PayloadDataType } from '../abstract_data_types';
+import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import * as Constants from '../utils/constants';
 
-export class DynamicBytes extends PayloadDataType {
+export class DynamicBytes extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
 
     public static matchType(type: string): boolean {

@@ -2,13 +2,13 @@ import { DataItem, MethodAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { DataType, DataTypeFactory, MemberDataType } from '../abstract_data_types';
+import { AbstractDataTypes, DataType, DataTypeFactory } from '../abstract_data_types';
 import * as Constants from '../utils/constants';
 import { DecodingRules, EncodingRules } from '../utils/rules';
 
 import { Tuple } from './tuple';
 
-export class Method extends MemberDataType {
+export class Method extends AbstractDataTypes.Set {
     private readonly _methodSignature: string;
     private readonly _methodSelector: string;
     private readonly _returnDataType: DataType;

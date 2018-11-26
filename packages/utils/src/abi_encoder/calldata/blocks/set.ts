@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 
-import { CalldataBlock } from './calldata_block';
+import { CalldataBlock } from '../calldata_block';
 
-export class MemberCalldataBlock extends CalldataBlock {
+export class Set extends CalldataBlock {
     private _header: Buffer | undefined;
     private _members: CalldataBlock[];
 
@@ -14,14 +14,13 @@ export class MemberCalldataBlock extends CalldataBlock {
 
     public getRawData(): Buffer {
         const rawDataComponents: Buffer[] = [];
-        if (this._header !== undefined) {
+        if (this._header) {
             rawDataComponents.push(this._header);
         }
         _.each(this._members, (member: CalldataBlock) => {
             const memberBuffer = member.getRawData();
             rawDataComponents.push(memberBuffer);
         });
-
         const rawData = Buffer.concat(rawDataComponents);
         return rawData;
     }
@@ -36,7 +35,7 @@ export class MemberCalldataBlock extends CalldataBlock {
     }
 
     public toBuffer(): Buffer {
-        if (this._header !== undefined) {
+        if (this._header) {
             return this._header;
         }
         return new Buffer('');

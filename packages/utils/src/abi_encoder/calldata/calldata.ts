@@ -5,8 +5,8 @@ import * as Constants from '../utils/constants';
 import { Queue } from '../utils/queue';
 import { EncodingRules } from '../utils/rules';
 
+import * as CalldataBlocks from './blocks';
 import { CalldataBlock } from './calldata_block';
-import * as CalldataBlocks from './calldata_blocks';
 
 export class Calldata {
     private readonly _rules: EncodingRules;
@@ -18,7 +18,7 @@ export class Calldata {
         const blockQueue = new Queue<CalldataBlock>();
 
         // Base Case
-        if (!(block instanceof CalldataBlocks.MemberCalldataBlock)) {
+        if (!(block instanceof CalldataBlocks.Set)) {
             blockQueue.pushBack(block);
             return blockQueue;
         }
@@ -26,7 +26,7 @@ export class Calldata {
         // This is a Member Block
         const memberBlock = block;
         _.eachRight(memberBlock.getMembers(), (member: CalldataBlock) => {
-            if (member instanceof CalldataBlocks.MemberCalldataBlock) {
+            if (member instanceof CalldataBlocks.Set) {
                 blockQueue.mergeFront(Calldata._createQueue(member));
             } else {
                 blockQueue.pushFront(member);
@@ -35,9 +35,9 @@ export class Calldata {
 
         // Children
         _.each(memberBlock.getMembers(), (member: CalldataBlock) => {
-            if (member instanceof CalldataBlocks.DependentCalldataBlock && member.getAlias() === undefined) {
+            if (member instanceof CalldataBlocks.Pointer && member.getAlias() === undefined) {
                 const dependency = member.getDependency();
-                if (dependency instanceof CalldataBlocks.MemberCalldataBlock) {
+                if (dependency instanceof CalldataBlocks.Set) {
                     blockQueue.mergeBack(Calldata._createQueue(dependency));
                 } else {
                     blockQueue.pushBack(dependency);
@@ -68,7 +68,7 @@ export class Calldata {
         const subtreeQueue = Calldata._createQueue(this._root);
         let block: CalldataBlock | undefined;
         for (block = subtreeQueue.popBack(); block !== undefined; block = subtreeQueue.popBack()) {
-            if (block instanceof CalldataBlocks.DependentCalldataBlock) {
+            if (block instanceof CalldataBlocks.Pointer) {
                 const dependencyBlockHashBuf = block.getDependency().computeHash();
                 const dependencyBlockHash = ethUtil.bufferToHex(dependencyBlockHashBuf);
                 if (dependencyBlockHash in blocksByHash) {
@@ -175,7 +175,7 @@ export class Calldata {
                         ),
                     )
                     .padEnd(valuePadding);
-                if (block instanceof CalldataBlocks.MemberCalldataBlock) {
+                if (block instanceof CalldataBlocks.Set) {
                     nameStr = `### ${prettyName.padEnd(namePadding)}`;
                     line = `\n${offsetStr}${value}${nameStr}`;
                 } else {

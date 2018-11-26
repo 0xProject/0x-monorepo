@@ -1,13 +1,13 @@
 import { DataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { CalldataBlock, PayloadCalldataBlock, RawCalldata } from '../calldata';
-import { DecodingRules } from '../utils/rules';
+import { CalldataBlock, CalldataBlocks, RawCalldata } from '../../calldata';
+import { DecodingRules } from '../../utils/rules';
 
-import { DataType } from './data_type';
-import { DataTypeFactory } from './interfaces';
+import { DataType } from '../data_type';
+import { DataTypeFactory } from '../interfaces';
 
-export abstract class PayloadDataType extends DataType {
+export abstract class Blob extends DataType {
     protected _hasConstantSize: boolean;
 
     public constructor(dataItem: DataItem, factory: DataTypeFactory, hasConstantSize: boolean) {
@@ -15,12 +15,12 @@ export abstract class PayloadDataType extends DataType {
         this._hasConstantSize = hasConstantSize;
     }
 
-    public generateCalldataBlock(value: any, parentBlock?: CalldataBlock): PayloadCalldataBlock {
+    public generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlocks.Blob {
         const encodedValue = this.encodeValue(value);
         const name = this.getDataItem().name;
         const signature = this.getSignature();
         const parentName = parentBlock ? parentBlock.getName() : '';
-        const block = new PayloadCalldataBlock(name, signature, parentName, encodedValue);
+        const block = new CalldataBlocks.Blob(name, signature, parentName, encodedValue);
         return block;
     }
 
