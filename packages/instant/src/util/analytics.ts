@@ -97,13 +97,9 @@ export const analytics = {
             orderSource: orderSourceName,
             affiliateAddress,
             affiliateFeePercent,
+            selectedAssetName: selectedAsset ? selectedAsset.metaData.name : 'none',
+            selectedAssetData: selectedAsset ? selectedAsset.assetData : 'none',
         };
-
-        if (selectedAsset) {
-            eventOptions.selectedAssetName = selectedAsset.metaData.name;
-            eventOptions.selectedAssetData = selectedAsset.assetData;
-        }
-
         return eventOptions;
     },
     trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),
