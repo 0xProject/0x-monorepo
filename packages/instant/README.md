@@ -2,35 +2,7 @@
 
 ## Installation
 
-```bash
-yarn add @0x/instant
-```
-
-**Import**
-
-**CommonJS module**
-
-```typescript
-import { ZeroExInstant } from '@0x/instant';
-```
-
-or
-
-```javascript
-var ZeroExInstant = require('@0x/instant').ZeroExInstant;
-```
-
-If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
-
-```json
-"compilerOptions": {
-    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
-}
-```
-
-**UMD Module**
-
-The package is also available as a UMD module named `zeroExInstant`.
+The package is available as a UMD module named `zeroExInstant`.
 
 ```html
 <head>
