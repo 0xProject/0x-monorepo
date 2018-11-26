@@ -18,7 +18,7 @@ const args = yargs
         demandOption: true,
     })
     .example(
-        '$0 --node-endpoiont http://localhost:8545 --from 0x5409ed021d9299bf6814279a6a1411a7e866a631',
+        '$0 --node-endpoint http://localhost:8545 --from 0x5409ed021d9299bf6814279a6a1411a7e866a631',
         'Full usage example',
     ).argv;
 
