@@ -6,8 +6,8 @@ import * as yargs from 'yargs';
 import { runMigrationsAsync } from './migration';
 
 const args = yargs
-    .option('node-endpoint', {
-        describe: 'Endpoint where backing Ethereum node is hosted',
+    .option('rpc-url', {
+        describe: 'Endpoint where backing Ethereum JSON RPC interface is available',
         type: 'string',
         demandOption: false,
         default: 'http://localhost:8545',
@@ -18,12 +18,12 @@ const args = yargs
         demandOption: true,
     })
     .example(
-        '$0 --node-endpoint http://localhost:8545 --from 0x5409ed021d9299bf6814279a6a1411a7e866a631',
+        '$0 --rpc-url http://localhost:8545 --from 0x5409ed021d9299bf6814279a6a1411a7e866a631',
         'Full usage example',
     ).argv;
 
 (async () => {
-    const rpcSubprovider = new RPCSubprovider(args['node-endpoint']);
+    const rpcSubprovider = new RPCSubprovider(args['rpc-url']);
     const provider = new Web3ProviderEngine();
     provider.addProvider(rpcSubprovider);
     provider.start();
