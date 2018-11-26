@@ -47,6 +47,7 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         artifacts.Exchange,
         provider,
         txDefaults,
+        zrxAssetData,
     );
 
     // Multisigs
@@ -138,6 +139,13 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         txDefaults,
         exchange.address,
         zrxAssetData,
+    );
+
+    // Fund the Forwarder with ZRX
+    const zrxDecimals = await zrxToken.decimals.callAsync();
+    const zrxForwarderAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5000), zrxDecimals);
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await zrxToken.transfer.sendTransactionAsync(forwarder.address, zrxForwarderAmount, txDefaults),
     );
 
     return {

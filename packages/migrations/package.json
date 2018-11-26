@@ -21,6 +21,9 @@
             "assets": []
         }
     },
+    "bin": {
+        "0x-migrate": "bin/0x-migrate.js"
+    },
     "license": "Apache-2.0",
     "devDependencies": {
         "@0x/dev-utils": "^1.0.18",
