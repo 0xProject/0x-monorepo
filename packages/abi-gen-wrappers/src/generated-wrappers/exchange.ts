@@ -3028,29 +3028,35 @@ export class ExchangeContract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         provider: Provider,
         txDefaults: Partial<TxData>,
+            _zrxAssetData: string,
     ): Promise<ExchangeContract> {
         if (_.isUndefined(artifact.compilerOutput)) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return ExchangeContract.deployAsync(bytecode, abi, provider, txDefaults, );
+        return ExchangeContract.deployAsync(bytecode, abi, provider, txDefaults, _zrxAssetData
+);
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         provider: Provider,
         txDefaults: Partial<TxData>,
+            _zrxAssetData: string,
     ): Promise<ExchangeContract> {
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [] = BaseContract._formatABIDataItemList(
+        [_zrxAssetData
+] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [],
+            [_zrxAssetData
+],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, []);
+        const txData = deployInfo.encode(bytecode, [_zrxAssetData
+]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {data: txData},
@@ -3062,7 +3068,8 @@ export class ExchangeContract extends BaseContract {
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`Exchange successfully deployed at ${txReceipt.contractAddress}`);
         const contractInstance = new ExchangeContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [];
+        contractInstance.constructorArgs = [_zrxAssetData
+];
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, provider: Provider, txDefaults?: Partial<TxData>) {
