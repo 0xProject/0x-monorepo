@@ -32,8 +32,8 @@ export class String extends PayloadDataType {
         const valueBuf = new Buffer(value);
         const valueBufPadded = ethUtil.setLengthRight(valueBuf, bytesToStoreValuePadded);
         // 3/3 Combine length and value
-        const encodedValueBuf = Buffer.concat([lengthBufPadded, valueBufPadded]);
-        return encodedValueBuf;
+        const encodedValue = Buffer.concat([lengthBufPadded, valueBufPadded]);
+        return encodedValue;
     }
 
     public decodeValue(calldata: RawCalldata): string {

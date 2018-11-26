@@ -22,10 +22,6 @@ export class Bool extends PayloadDataType {
         }
     }
 
-    public getSignature(): string {
-        return 'bool';
-    }
-
     public encodeValue(value: boolean): Buffer {
         const encodedValue = value ? '0x1' : '0x0';
         const encodedValueBuf = ethUtil.setLengthLeft(
@@ -46,5 +42,9 @@ export class Bool extends PayloadDataType {
         const value: boolean = valueNumber.equals(0) ? false : true;
         /* tslint:enable boolean-naming */
         return value;
+    }
+
+    public getSignature(): string {
+        return 'bool';
     }
 }
