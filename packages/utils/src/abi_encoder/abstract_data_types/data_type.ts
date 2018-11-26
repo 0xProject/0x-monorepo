@@ -32,8 +32,8 @@ export abstract class DataType {
         }
         const block = this.generateCalldataBlock(value);
         calldata.setRoot(block);
-        const calldataHex = calldata.toHexString();
-        return calldataHex;
+        const encodedCalldata = calldata.toString();
+        return encodedCalldata;
     }
 
     public decode(calldata: string, rules?: DecodingRules, selector?: string): any {
