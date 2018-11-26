@@ -248,6 +248,14 @@ const teamRow9: ProfileInfo[] = [
         linkedIn: 'https://www.linkedin.com/in/steveklebanoff/',
         github: 'https://github.com/steveklebanoff',
     },
+    {
+        name: 'Xianny Ng',
+        title: 'Engineer',
+        description: `Developer Experience. Previously telemetry at Mapbox and platform engineering at Bench Accounting.`,
+        image: 'images/team/xianny.png',
+        linkedIn: 'https://www.linkedin.com/in/xianny/',
+        github: 'https://github.com/xianny',
+    },
 ];
 
 const advisors1: ProfileInfo[] = [
