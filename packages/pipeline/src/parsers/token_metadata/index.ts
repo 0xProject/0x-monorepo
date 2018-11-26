@@ -14,7 +14,7 @@ export function parseMetamaskTrustedTokens(rawResp: Map<string, MetamaskTrustedT
 
 /**
  * Parses 0x's trusted tokens list.
- * @param rawResp raw response from the 0x json file.
+ * @param rawResp raw response from the 0x trusted tokensu file.
  */
 export function parseZeroExTrustedTokens(rawResp: ZeroExTrustedTokenMeta[]): TokenMetadata[] {
     return R.map(parseZeroExTrustedToken, rawResp);
