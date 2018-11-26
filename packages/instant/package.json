@@ -11,7 +11,7 @@
         "build": "yarn build:all",
         "build:all": "run-p build:umd:prod build:commonjs",
         "build:umd:prod": "webpack --mode production",
-        "build:commonjs": "tsc -b && shx cp -r src/assets lib",
+        "build:commonjs": "tsc -b",
         "build:ci": "yarn build",
         "watch_without_deps": "tsc -w",
         "dev": "webpack-dev-server --mode development",
