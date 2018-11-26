@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "pr": 1309,
+                "note": "Update Exchange artifact to receive ZRX asset data as a constructor argument"
+            }
+        ]
+    },
+    {
         "version": "1.1.0",
         "changes": [
             {
@@ -7,7 +16,8 @@
                     "`deployFrom0xArtifactAsync` additionally accepts artifacts that conform to the `SimpleContractArtifact` interface",
                 "pr": 1298
             }
-        ]
+        ],
+        "timestamp": 1542821676
     },
     {
         "timestamp": 1542208198,

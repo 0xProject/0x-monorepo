@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.3.0 - _November 21, 2018_
+
+    * Add the `SimpleContractArtifact` type, which describes the artifact format published in the `@0x/contract-artifacts` package (#1298)
+
 ## v1.2.1 - _November 9, 2018_
 
     * Dependencies updated

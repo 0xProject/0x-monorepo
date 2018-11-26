@@ -7,7 +7,8 @@
                     "Add a `nonce` field for `TxOpts` so that it's now possible to re-broadcast stuck transactions with a higher gas amount",
                 "pr": 1292
             }
-        ]
+        ],
+        "timestamp": 1542821676
     },
     {
         "timestamp": 1542208198,
