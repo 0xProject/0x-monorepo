@@ -34,17 +34,17 @@ export class Address extends PayloadDataType {
         if (!value.startsWith('0x')) {
             throw new Error(Address.ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X);
         }
-        const valueAsBuffer = ethUtil.toBuffer(value);
-        if (valueAsBuffer.byteLength !== Address._ADDRESS_SIZE_IN_BYTES) {
+        const valueBuf = ethUtil.toBuffer(value);
+        if (valueBuf.byteLength !== Address._ADDRESS_SIZE_IN_BYTES) {
             throw new Error(Address.ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES);
         }
-        const encodedValueBuf = ethUtil.setLengthLeft(valueAsBuffer, Constants.EVM_WORD_WIDTH_IN_BYTES);
+        const encodedValueBuf = ethUtil.setLengthLeft(valueBuf, Constants.EVM_WORD_WIDTH_IN_BYTES);
         return encodedValueBuf;
     }
 
     public decodeValue(calldata: RawCalldata): string {
-        const paddedValueBuf = calldata.popWord();
-        const valueBuf = paddedValueBuf.slice(Address._DECODED_ADDRESS_OFFSET_IN_BYTES);
+        const valueBufPadded = calldata.popWord();
+        const valueBuf = valueBufPadded.slice(Address._DECODED_ADDRESS_OFFSET_IN_BYTES);
         const value = ethUtil.bufferToHex(valueBuf);
         return value;
     }
