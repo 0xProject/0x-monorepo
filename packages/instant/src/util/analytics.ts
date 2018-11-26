@@ -102,7 +102,6 @@ export const analytics = {
     trackAccountAddressChanged: (address: string) =>
         trackingEventFnWithPayload(EventNames.ACCOUNT_ADDRESS_CHANGED)({ address }),
     trackTokenSelectorOpened: trackingEventFnWithoutPayload(EventNames.TOKEN_SELECTOR_OPENED),
-    trackTokenSelectorClosed: trackingEventFnWithoutPayload(EventNames.TOKEN_SELECTOR_CLOSED),
     trackTokenSelectorClosed: (closedVia: TokenSelectorClosedVia) =>
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CLOSED)({ closedVia }),
     trackTokenSelectorChose: (payload: { assetName: string; assetData: string }) =>
