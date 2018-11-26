@@ -1,14 +1,5 @@
 [
     {
-        "version": "1.0.7",
-        "changes": [
-            {
-                "note": "Fix the lerna parameter name from cdVersions to cd-versions",
-                "pr": 1312
-            }
-        ]
-    },
-    {
         "version": "1.0.6",
         "changes": [
             {
