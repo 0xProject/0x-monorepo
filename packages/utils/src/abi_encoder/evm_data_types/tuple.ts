@@ -3,8 +3,8 @@ import { DataItem } from 'ethereum-types';
 import { DataTypeFactory, MemberDataType } from '../abstract_data_types';
 
 export class Tuple extends MemberDataType {
-    private readonly _tupleSignature: string;
-
+    private readonly _signature: string;
+    
     public static matchType(type: string): boolean {
         return type === 'tuple';
     }
@@ -14,10 +14,10 @@ export class Tuple extends MemberDataType {
         if (!Tuple.matchType(dataItem.type)) {
             throw new Error(`Tried to instantiate Tuple with bad input: ${dataItem}`);
         }
-        this._tupleSignature = this._computeSignatureOfMembers();
+        this._signature = this._computeSignatureOfMembers();
     }
 
     public getSignature(): string {
-        return this._tupleSignature;
+        return this._signature;
     }
 }

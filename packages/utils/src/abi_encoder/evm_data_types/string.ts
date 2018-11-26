@@ -13,7 +13,7 @@ export class String extends PayloadDataType {
     public static matchType(type: string): boolean {
         return type === 'string';
     }
-
+    
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
         super(dataItem, dataTypeFactory, String._SIZE_KNOWN_AT_COMPILE_TIME);
         if (!String.matchType(dataItem.type)) {
@@ -22,21 +22,30 @@ export class String extends PayloadDataType {
     }
 
     public encodeValue(value: string): Buffer {
-        const wordsForValue = Math.ceil(value.length / Constants.EVM_WORD_WIDTH_IN_BYTES);
-        const paddedDynamicBytesForValue = wordsForValue * Constants.EVM_WORD_WIDTH_IN_BYTES;
-        const valueBuf = ethUtil.setLengthRight(new Buffer(value), paddedDynamicBytesForValue);
-        const lengthBuf = ethUtil.setLengthLeft(ethUtil.toBuffer(value.length), Constants.EVM_WORD_WIDTH_IN_BYTES);
-        const encodedValueBuf = Buffer.concat([lengthBuf, valueBuf]);
+        // Encoded value is of the form: <length><value>, with each field padded to be word-aligned.
+        // 1/3 Construct the length
+        const wordsToStoreValuePadded = Math.ceil(value.length / Constants.EVM_WORD_WIDTH_IN_BYTES);
+        const bytesToStoreValuePadded = wordsToStoreValuePadded * Constants.EVM_WORD_WIDTH_IN_BYTES;
+        const lengthBuf = ethUtil.toBuffer(value.length);
+        const lengthBufPadded = ethUtil.setLengthLeft(lengthBuf, Constants.EVM_WORD_WIDTH_IN_BYTES);
+        // 2/3 Construct the value
+        const valueBuf = new Buffer(value);
+        const valueBufPadded = ethUtil.setLengthRight(valueBuf, bytesToStoreValuePadded);
+        // 3/3 Combine length and value
+        const encodedValueBuf = Buffer.concat([lengthBufPadded, valueBufPadded]);
         return encodedValueBuf;
     }
 
     public decodeValue(calldata: RawCalldata): string {
-        const lengthBuf = calldata.popWord();
-        const lengthHex = ethUtil.bufferToHex(lengthBuf);
-        const length = parseInt(lengthHex, Constants.HEX_BASE);
-        const wordsForValue = Math.ceil(length / Constants.EVM_WORD_WIDTH_IN_BYTES);
-        const paddedValueBuf = calldata.popWords(wordsForValue);
-        const valueBuf = paddedValueBuf.slice(0, length);
+        // Encoded value is of the form: <length><value>, with each field padded to be word-aligned.
+        // 1/2 Decode length
+        const lengthBufPadded = calldata.popWord();
+        const lengthHexPadded = ethUtil.bufferToHex(lengthBufPadded);
+        const length = parseInt(lengthHexPadded, Constants.HEX_BASE);
+        // 2/2 Decode value
+        const wordsToStoreValuePadded = Math.ceil(length / Constants.EVM_WORD_WIDTH_IN_BYTES);
+        const valueBufPadded = calldata.popWords(wordsToStoreValuePadded);
+        const valueBuf = valueBufPadded.slice(0, length);
         const value = valueBuf.toString('ascii');
         return value;
     }
