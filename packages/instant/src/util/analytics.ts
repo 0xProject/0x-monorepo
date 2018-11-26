@@ -1,4 +1,4 @@
-import { AffiliateInfo, Network, OrderSource, ProviderState } from '../types';
+import { AffiliateInfo, Asset, Network, OrderSource, ProviderState } from '../types';
 
 import { EventProperties, heapUtil } from './heap';
 
@@ -25,6 +25,7 @@ enum EventNames {
     TOKEN_SELECTOR_CHOSE = 'Token Selector - Chose',
     TOKEN_SELECTOR_SEARCHED = 'Token Selector - Searched',
 }
+
 const track = (eventName: EventNames, eventProperties: EventProperties = {}): void => {
     evaluateIfEnabled(() => {
         heapUtil.evaluateHeapCall(heap => heap.track(eventName, eventProperties));
@@ -56,6 +57,9 @@ export interface AnalyticsEventOptions {
     orderSource?: string;
     affiliateAddress?: string;
     affiliateFeePercent?: number;
+    numberAvailableAssets?: number;
+    selectedAssetName?: string;
+    selectedAssetData?: string;
 }
 export enum TokenSelectorClosedVia {
     ClickedX = 'Clicked X',
@@ -77,12 +81,13 @@ export const analytics = {
         orderSource: OrderSource,
         providerState: ProviderState,
         window: Window,
+        selectedAsset?: Asset,
         affiliateInfo?: AffiliateInfo,
     ): AnalyticsEventOptions => {
         const affiliateAddress = affiliateInfo ? affiliateInfo.feeRecipient : 'none';
         const affiliateFeePercent = affiliateInfo ? parseFloat(affiliateInfo.feePercentage.toFixed(4)) : 0;
         const orderSourceName = typeof orderSource === 'string' ? orderSource : 'provided';
-        return {
+        const eventOptions: AnalyticsEventOptions = {
             embeddedHost: window.location.host,
             embeddedUrl: window.location.href,
             networkId: network,
@@ -93,6 +98,13 @@ export const analytics = {
             affiliateAddress,
             affiliateFeePercent,
         };
+
+        if (selectedAsset) {
+            eventOptions.selectedAssetName = selectedAsset.metaData.name;
+            eventOptions.selectedAssetData = selectedAsset.assetData;
+        }
+
+        return eventOptions;
     },
     trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),
     trackAccountLocked: trackingEventFnWithoutPayload(EventNames.ACCOUNT_LOCKED),
