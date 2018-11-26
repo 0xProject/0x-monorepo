@@ -21,6 +21,7 @@ enum EventNames {
     TOKEN_SELECTOR_OPENED = 'Token Selector - Opened',
     TOKEN_SELECTOR_CLOSED = 'Token Selector - Closed',
     TOKEN_SELECTOR_CHOSE = 'Token Selector - Chose',
+    TOKEN_SELECTOR_SEARCHED = 'Token Selector - Searched',
 }
 const track = (eventName: EventNames, eventProperties: EventProperties = {}): void => {
     evaluateIfEnabled(() => {
@@ -74,4 +75,6 @@ export const analytics = {
     trackTokenSelectorClosed: trackingEventFnWithoutPayload(EventNames.TOKEN_SELECTOR_CLOSED),
     trackTokenSelectorChose: (payload: { assetName: string; assetData: string }) =>
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CHOSE)(payload),
+    trackTokenSelectorSearched: (searchText: string) =>
+        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_SEARCHED)({ searchText }),
 };
