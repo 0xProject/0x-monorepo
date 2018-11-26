@@ -24,6 +24,8 @@ export const docGenConfigs: DocGenConfigs = {
             'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/ganache-core/index.d.ts#L8',
         'lightwallet.keystore':
             'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/eth-lightwallet/index.d.ts#L36',
+        'ethers.utils.FunctionFragment':
+            'https://github.com/ethers-io/ethers.js/blob/061b0eae1d4c570aedd9bee1971afa43fcdae1a6/utils/abi-coder.d.ts#L16',
     },
     // If a 0x package re-exports an external package, we should add a link to it's exported items here
     EXTERNAL_EXPORT_TO_LINK: {
