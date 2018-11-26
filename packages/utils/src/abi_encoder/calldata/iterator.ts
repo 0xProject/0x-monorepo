@@ -35,7 +35,7 @@ import { CalldataBlock } from './calldata_block';
  *            }
  * It will iterate as follows: [A, B, C, B.a, B.b, C.c]
  */
-abstract class BaseIterator {
+abstract class BaseIterator implements Iterable<CalldataBlock> {
     protected readonly _root: CalldataBlock;
     protected readonly _queue: Queue<CalldataBlock>;
 
@@ -70,7 +70,25 @@ abstract class BaseIterator {
         this._queue = BaseIterator._createQueue(root);
     }
 
-    public abstract next(): CalldataBlock | undefined;
+    public [Symbol.iterator](): { next: () => IteratorResult<CalldataBlock> } {
+        return {
+            next: () => {
+                const nextBlock = this.nextBlock();
+                if (nextBlock !== undefined) {
+                    return {
+                        value: nextBlock,
+                        done: false,
+                    };
+                }
+                return {
+                    done: true,
+                    value: new CalldataBlocks.Blob('', '', '', new Buffer('')),
+                };
+            },
+        };
+    }
+
+    public abstract nextBlock(): CalldataBlock | undefined;
 }
 
 export class CalldataIterator extends BaseIterator {
@@ -78,7 +96,7 @@ export class CalldataIterator extends BaseIterator {
         super(root);
     }
 
-    public next(): CalldataBlock | undefined {
+    public nextBlock(): CalldataBlock | undefined {
         return this._queue.popFront();
     }
 }
@@ -88,7 +106,7 @@ export class ReverseCalldataIterator extends BaseIterator {
         super(root);
     }
 
-    public next(): CalldataBlock | undefined {
+    public nextBlock(): CalldataBlock | undefined {
         return this._queue.popBack();
     }
 }

@@ -31,8 +31,7 @@ export class Calldata {
         // 1. Create a queue of subtrees by hash
         // Note that they are ordered the same as
         const iterator = new ReverseCalldataIterator(this._root);
-        let block: CalldataBlock | undefined;
-        while (block = iterator.next()) {
+        for (const block of iterator) {
             if (block instanceof CalldataBlocks.Pointer) {
                 const dependencyBlockHashBuf = block.getDependency().computeHash();
                 const dependencyBlockHash = ethUtil.bufferToHex(dependencyBlockHashBuf);
@@ -63,9 +62,8 @@ export class Calldata {
         }
 
         const iterator = new CalldataIterator(this._root);
-        let block: CalldataBlock | undefined;
         let offset = 0;
-        while (block = iterator.next()) {
+        for (const block of iterator) {
             block.setOffset(offset);
             offset += block.getSizeInBytes();
         }
@@ -102,11 +100,9 @@ export class Calldata {
         }
 
         const iterator = new CalldataIterator(this._root);
-
-        let block: CalldataBlock | undefined;
         let offset = 0;
         const functionName: string = this._root.getName();
-        while (block = iterator.next()) {
+        for (const block of iterator) {
             // Process each block 1 word at a time
             const size = block.getSizeInBytes();
             const name = block.getName();
@@ -175,8 +171,7 @@ export class Calldata {
 
         const iterator = new CalldataIterator(this._root);
         const valueBufs: Buffer[] = [selectorBuffer];
-        let block: CalldataBlock | undefined;
-        while (block = iterator.next()) {
+        for (const block of iterator) {
             valueBufs.push(block.toBuffer());
         }
 
