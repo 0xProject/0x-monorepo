@@ -8,11 +8,11 @@ import { DataType } from '../data_type';
 import { DataTypeFactory } from '../interfaces';
 
 export abstract class Blob extends DataType {
-    protected _hasConstantSize: boolean;
+    protected _sizeKnownAtCompileTime: boolean;
 
-    public constructor(dataItem: DataItem, factory: DataTypeFactory, hasConstantSize: boolean) {
+    public constructor(dataItem: DataItem, factory: DataTypeFactory, sizeKnownAtCompileTime: boolean) {
         super(dataItem, factory);
-        this._hasConstantSize = hasConstantSize;
+        this._sizeKnownAtCompileTime = sizeKnownAtCompileTime;
     }
 
     public generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlocks.Blob {
@@ -30,7 +30,7 @@ export abstract class Blob extends DataType {
     }
 
     public isStatic(): boolean {
-        return this._hasConstantSize;
+        return this._sizeKnownAtCompileTime;
     }
 
     public abstract encodeValue(value: any): Buffer;

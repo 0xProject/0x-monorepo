@@ -10,6 +10,6 @@ export class Pointer extends AbstractDataTypes.Pointer {
     }
 
     public getSignature(): string {
-        return this._dependency.getSignature();
+        return this._destination.getSignature();
     }
 }

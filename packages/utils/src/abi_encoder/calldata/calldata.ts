@@ -2,52 +2,17 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import * as Constants from '../utils/constants';
-import { Queue } from '../utils/queue';
 import { EncodingRules } from '../utils/rules';
 
 import * as CalldataBlocks from './blocks';
 import { CalldataBlock } from './calldata_block';
+import { CalldataIterator, ReverseCalldataIterator } from './iterator';
 
 export class Calldata {
     private readonly _rules: EncodingRules;
     private _selector: string;
     private _sizeInBytes: number;
     private _root: CalldataBlock | undefined;
-
-    private static _createQueue(block: CalldataBlock): Queue<CalldataBlock> {
-        const blockQueue = new Queue<CalldataBlock>();
-
-        // Base Case
-        if (!(block instanceof CalldataBlocks.Set)) {
-            blockQueue.pushBack(block);
-            return blockQueue;
-        }
-
-        // This is a Member Block
-        const memberBlock = block;
-        _.eachRight(memberBlock.getMembers(), (member: CalldataBlock) => {
-            if (member instanceof CalldataBlocks.Set) {
-                blockQueue.mergeFront(Calldata._createQueue(member));
-            } else {
-                blockQueue.pushFront(member);
-            }
-        });
-
-        // Children
-        _.each(memberBlock.getMembers(), (member: CalldataBlock) => {
-            if (member instanceof CalldataBlocks.Pointer && member.getAlias() === undefined) {
-                const dependency = member.getDependency();
-                if (dependency instanceof CalldataBlocks.Set) {
-                    blockQueue.mergeBack(Calldata._createQueue(dependency));
-                } else {
-                    blockQueue.pushBack(dependency);
-                }
-            }
-        });
-
-        blockQueue.pushFront(memberBlock);
-        return blockQueue;
-    }
 
     public constructor(rules: EncodingRules) {
         this._rules = rules;
@@ -65,9 +30,9 @@ export class Calldata {
 
         // 1. Create a queue of subtrees by hash
         // Note that they are ordered the same as
-        const subtreeQueue = Calldata._createQueue(this._root);
+        const iterator = new ReverseCalldataIterator(this._root);
         let block: CalldataBlock | undefined;
-        for (block = subtreeQueue.popBack(); block !== undefined; block = subtreeQueue.popBack()) {
+        while (block = iterator.next()) {
             if (block instanceof CalldataBlocks.Pointer) {
                 const dependencyBlockHashBuf = block.getDependency().computeHash();
                 const dependencyBlockHash = ethUtil.bufferToHex(dependencyBlockHashBuf);
@@ -97,10 +62,10 @@ export class Calldata {
             this.optimize();
         }
 
-        const offsetQueue = Calldata._createQueue(this._root);
+        const iterator = new CalldataIterator(this._root);
         let block: CalldataBlock | undefined;
         let offset = 0;
-        for (block = offsetQueue.popFront(); block !== undefined; block = offsetQueue.popFront()) {
+        while (block = iterator.next()) {
             block.setOffset(offset);
             offset += block.getSizeInBytes();
         }
@@ -136,13 +101,12 @@ export class Calldata {
             throw new Error('expected root');
         }
 
-        const valueQueue = Calldata._createQueue(this._root);
+        const iterator = new CalldataIterator(this._root);
 
         let block: CalldataBlock | undefined;
         let offset = 0;
-        const functionBlock = valueQueue.peekFront();
-        const functionName: string = functionBlock === undefined ? '' : functionBlock.getName();
-        for (block = valueQueue.popFront(); block !== undefined; block = valueQueue.popFront()) {
+        const functionName: string = this._root.getName();
+        while (block = iterator.next()) {
             // Process each block 1 word at a time
             const size = block.getSizeInBytes();
             const name = block.getName();
@@ -209,10 +173,10 @@ export class Calldata {
             throw new Error('expected root');
         }
 
-        const valueQueue = Calldata._createQueue(this._root);
+        const iterator = new CalldataIterator(this._root);
         const valueBufs: Buffer[] = [selectorBuffer];
         let block: CalldataBlock | undefined;
-        for (block = valueQueue.popFront(); block !== undefined; block = valueQueue.popFront()) {
+        while (block = iterator.next()) {
             valueBufs.push(block.toBuffer());
         }
 
