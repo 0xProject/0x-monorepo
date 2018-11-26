@@ -10,8 +10,7 @@ import { handleError } from '../utils';
 const METAMASK_TRUSTED_TOKENS_URL =
     'https://raw.githubusercontent.com/MetaMask/eth-contract-metadata/master/contract-map.json';
 
-const ZEROEX_TRUSTED_TOKENS_URL =
-    'https://website-api.0xproject.com/tokens';
+const ZEROEX_TRUSTED_TOKENS_URL = 'https://website-api.0xproject.com/tokens';
 
 let connection: Connection;
 
@@ -26,14 +25,16 @@ async function getMetamaskTrustedTokens(): Promise<void> {
     // tslint:disable-next-line
     console.log('Getting latest metamask trusted tokens list ...');
     const trustedTokensRepository = connection.getRepository(TokenMetadata);
-    const trustedTokensSource = new TrustedTokenSource<Map<string, MetamaskTrustedTokenMeta>>(METAMASK_TRUSTED_TOKENS_URL);
+    const trustedTokensSource = new TrustedTokenSource<Map<string, MetamaskTrustedTokenMeta>>(
+        METAMASK_TRUSTED_TOKENS_URL,
+    );
     const resp = await trustedTokensSource.getTrustedTokenMetaAsync();
     const trustedTokens = parseMetamaskTrustedTokens(resp);
     // tslint:disable-next-line
     console.log('Saving metamask trusted tokens list');
     await trustedTokensRepository.save(trustedTokens);
     // tslint:disable-next-line
-    console.log('Done saving metamask trusted tokens.')
+    console.log('Done saving metamask trusted tokens.');
 }
 
 async function getZeroExTrustedTokens(): Promise<void> {
