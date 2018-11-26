@@ -13,7 +13,7 @@ export class String extends PayloadDataType {
     public static matchType(type: string): boolean {
         return type === 'string';
     }
-    
+
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
         super(dataItem, dataTypeFactory, String._SIZE_KNOWN_AT_COMPILE_TIME);
         if (!String.matchType(dataItem.type)) {

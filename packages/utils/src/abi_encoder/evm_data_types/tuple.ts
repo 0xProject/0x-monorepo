@@ -4,7 +4,7 @@ import { DataTypeFactory, MemberDataType } from '../abstract_data_types';
 
 export class Tuple extends MemberDataType {
     private readonly _signature: string;
-    
+
     public static matchType(type: string): boolean {
         return type === 'tuple';
     }

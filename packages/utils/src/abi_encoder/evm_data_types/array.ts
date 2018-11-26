@@ -4,17 +4,17 @@ import { DataTypeFactory, MemberDataType } from '../abstract_data_types';
 import * as Constants from '../utils/constants';
 
 export class Array extends MemberDataType {
-    private static readonly _matcher = RegExp('^(.+)\\[([0-9]*)\\]$');
+    private static readonly _MATCHER = RegExp('^(.+)\\[([0-9]*)\\]$');
     private readonly _arraySignature: string;
     private readonly _elementType: string;
 
     public static matchType(type: string): boolean {
-        return Array._matcher.test(type);
+        return Array._MATCHER.test(type);
     }
 
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
         // Sanity check
-        const matches = Array._matcher.exec(dataItem.type);
+        const matches = Array._MATCHER.exec(dataItem.type);
         if (matches === null || matches.length !== 3) {
             throw new Error(`Could not parse array: ${dataItem.type}`);
         } else if (matches[1] === undefined) {

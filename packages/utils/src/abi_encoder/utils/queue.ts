@@ -32,7 +32,7 @@ export class Queue<T> {
     public getStore(): T[] {
         return this._store;
     }
-    
+
     public peekFront(): T | undefined {
         return this._store.length >= 0 ? this._store[0] : undefined;
     }
