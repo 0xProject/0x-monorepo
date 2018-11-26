@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Add CLI `0x-migrate` for running the 0x migrations in a language-agnostic way",
+                "pr": 1324
+            }
+        ]
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {
