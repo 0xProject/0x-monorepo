@@ -67,23 +67,23 @@ export class Calldata {
      * Scenarios arise where distinct pointers resolve to identical values.
      * We optimize by keeping only one such instance of the identical value, and redirecting all pointers here.
      * We keep the last such duplicate value because pointers can only be positive (they cannot point backwards).
-     * 
+     *
      * Example #1:
      *  function f(string[], string[])
      *  f(["foo", "bar", "blitz"], ["foo", "bar", "blitz"])
      *  The array ["foo", "bar", "blitz"] will only be included in the calldata once.
-     * 
+     *
      * Example #2:
      *  function f(string[], string)
      *  f(["foo", "bar", "blitz"], "foo")
      *  The string "foo" will only be included in the calldata once.
-     * 
+     *
      * Example #3:
      *  function f((string, uint, bytes), string, uint, bytes)
      *  f(("foo", 5, "0x05"), "foo", 5, "0x05")
      *  The string "foo" and bytes "0x05" will only be included in the calldata once.
      *  The duplicate `uint 5` values cannot be optimized out because they are static values (no pointer points to them).
-     * 
+     *
      * @TODO #1:
      *   This optimization strategy handles blocks that are exact duplicates of one another.
      *   But what if some block is a combination of two other blocks? Or a subset of another block?
@@ -92,14 +92,14 @@ export class Calldata {
      *   This strategy would be applied after assigning offsets to the tree, rather than before (as in this strategy).
      *   Note that one consequence of this strategy is pointers may resolve to offsets that are not word-aligned.
      *   This shouldn't be a problem but further investigation should be done.
-     * 
+     *
      * @TODO #2:
      *   To be done as a follow-up to @TODO #1.
      *   Since we optimize from the bottom-up, we could be affecting the outcome of a later potential optimization.
-     *   For example, what if by removing one duplicate value we miss out on optimizing another block higher in the tree. 
+     *   For example, what if by removing one duplicate value we miss out on optimizing another block higher in the tree.
      *   To handle this case, at each node we can store a candidate optimization in a priority queue (sorted by calldata size).
      *   At the end of traversing the tree, the candidate at the front of the queue will be the most optimal output.
-     *   
+     *
      */
     private _optimize(): void {
         // Step 1/1 Create a reverse iterator (starts from the end of the calldata to the beginning)
@@ -153,25 +153,25 @@ export class Calldata {
     }
     /**
      * Returns human-redable calldata.
-     * 
+     *
      * Example:
      *   simpleFunction(string[], string[])
      *   strings = ["Hello", "World"]
      *   simpleFunction(strings, strings)
-     * 
+     *
      * Output:
      *   0xbb4f12e3
-     *                                                                                      ### simpleFunction                                                                  
-     *   0x0       0000000000000000000000000000000000000000000000000000000000000040              ptr<array1> (alias for array2)                                                  
-     *   0x20      0000000000000000000000000000000000000000000000000000000000000040              ptr<array2>                                                                     
+     *                                                                                      ### simpleFunction
+     *   0x0       0000000000000000000000000000000000000000000000000000000000000040              ptr<array1> (alias for array2)
+     *   0x20      0000000000000000000000000000000000000000000000000000000000000040              ptr<array2>
      *
-     *   0x40      0000000000000000000000000000000000000000000000000000000000000002          ### array2                                                                          
-     *   0x60      0000000000000000000000000000000000000000000000000000000000000040              ptr<array2[0]>                                                                  
-     *   0x80      0000000000000000000000000000000000000000000000000000000000000080              ptr<array2[1]>                                                                  
-     *   0xa0      0000000000000000000000000000000000000000000000000000000000000005              array2[0]                                                                       
-     *   0xc0      48656c6c6f000000000000000000000000000000000000000000000000000000                                                                                          
-     *   0xe0      0000000000000000000000000000000000000000000000000000000000000005              array2[1]                                                                       
-     *   0x100     576f726c64000000000000000000000000000000000000000000000000000000     
+     *   0x40      0000000000000000000000000000000000000000000000000000000000000002          ### array2
+     *   0x60      0000000000000000000000000000000000000000000000000000000000000040              ptr<array2[0]>
+     *   0x80      0000000000000000000000000000000000000000000000000000000000000080              ptr<array2[1]>
+     *   0xa0      0000000000000000000000000000000000000000000000000000000000000005              array2[0]
+     *   0xc0      48656c6c6f000000000000000000000000000000000000000000000000000000
+     *   0xe0      0000000000000000000000000000000000000000000000000000000000000005              array2[1]
+     *   0x100     576f726c64000000000000000000000000000000000000000000000000000000
      */
     private _toAnnotatedString(): string {
         // Sanity check: must have a root block.
@@ -240,7 +240,6 @@ export class Calldata {
             hexValue = `${hexValue}\n${lineStr}`;
             offset += size;
         }
-
         return hexValue;
     }
 }
