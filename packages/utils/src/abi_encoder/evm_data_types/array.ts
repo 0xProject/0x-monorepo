@@ -12,7 +12,7 @@ export class Array extends AbstractDataTypes.Set {
         return Array._MATCHER.test(type);
     }
 
-    private static _decodeElementTypeAndLengthFromType(type: string): [string, undefined|number] {
+    private static _decodeElementTypeAndLengthFromType(type: string): [string, undefined | number] {
         const matches = Array._MATCHER.exec(type);
         if (matches === null || matches.length !== 3) {
             throw new Error(`Could not parse array: ${type}`);

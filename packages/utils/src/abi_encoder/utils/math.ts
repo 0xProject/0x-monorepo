@@ -4,7 +4,11 @@ import * as _ from 'lodash';
 
 import * as Constants from '../utils/constants';
 
-function sanityCheckBigNumberRange(value_: BigNumber | string | number, minValue: BigNumber, maxValue: BigNumber): void {
+function sanityCheckBigNumberRange(
+    value_: BigNumber | string | number,
+    minValue: BigNumber,
+    maxValue: BigNumber,
+): void {
     const value = new BigNumber(value_, 10);
     if (value.greaterThan(maxValue)) {
         throw new Error(`Tried to assign value of ${value}, which exceeds max value of ${maxValue}`);
@@ -51,7 +55,11 @@ export function encodeNumericValue(value_: BigNumber | string | number): Buffer 
  * @param value_    The value to encode.
  * @return ABI Encoded value
  */
-export function safeEncodeNumericValue(value: BigNumber | string | number, minValue: BigNumber, maxValue: BigNumber): Buffer {
+export function safeEncodeNumericValue(
+    value: BigNumber | string | number,
+    minValue: BigNumber,
+    maxValue: BigNumber,
+): Buffer {
     sanityCheckBigNumberRange(value, minValue, maxValue);
     const encodedValue = encodeNumericValue(value);
     return encodedValue;

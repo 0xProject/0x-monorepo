@@ -20,9 +20,10 @@ export class StaticBytes extends AbstractDataTypes.Blob {
 
     private static _decodeWidthFromType(type: string): number {
         const matches = StaticBytes._MATCHER.exec(type);
-        const width = (matches !== null && matches.length === 3 && matches[2] !== undefined)
-            ? parseInt(matches[2], Constants.DEC_BASE)
-            : StaticBytes._DEFAULT_WIDTH;
+        const width =
+            matches !== null && matches.length === 3 && matches[2] !== undefined
+                ? parseInt(matches[2], Constants.DEC_BASE)
+                : StaticBytes._DEFAULT_WIDTH;
         return width;
     }
 

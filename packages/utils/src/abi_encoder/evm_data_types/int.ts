@@ -24,9 +24,10 @@ export class Int extends AbstractDataTypes.Blob {
 
     private static _decodeWidthFromType(type: string): number {
         const matches = Int._MATCHER.exec(type);
-        const width = (matches !== null && matches.length === 2 && matches[1] !== undefined)
-        ? parseInt(matches[1], Constants.DEC_BASE)
-        : Int._DEFAULT_WIDTH;
+        const width =
+            matches !== null && matches.length === 2 && matches[1] !== undefined
+                ? parseInt(matches[1], Constants.DEC_BASE)
+                : Int._DEFAULT_WIDTH;
         return width;
     }
 
