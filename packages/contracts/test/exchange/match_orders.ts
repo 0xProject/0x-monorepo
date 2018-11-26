@@ -1172,7 +1172,9 @@ describe('matchOrders', () => {
                 ...signedOrderRight,
                 takerAssetData: signedOrderLeft.makerAssetData,
             };
-            const orderHashRightWithOnChainDefaults = orderHashUtils.getOrderHashHex(signedOrderRightWithOnChainDefaults);
+            const orderHashRightWithOnChainDefaults = orderHashUtils.getOrderHashHex(
+                signedOrderRightWithOnChainDefaults,
+            );
             // Match orders
             return expectTransactionFailedWithParamsAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
@@ -1202,7 +1204,9 @@ describe('matchOrders', () => {
                 ...signedOrderRight,
                 makerAssetData: signedOrderLeft.makerAssetData,
             };
-            const orderHashRightWithOnChainDefaults = orderHashUtils.getOrderHashHex(signedOrderRightWithOnChainDefaults);
+            const orderHashRightWithOnChainDefaults = orderHashUtils.getOrderHashHex(
+                signedOrderRightWithOnChainDefaults,
+            );
             // Match orders
             return expectTransactionFailedWithParamsAsync(
                 exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress),
