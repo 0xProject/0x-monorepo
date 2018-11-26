@@ -52,7 +52,10 @@ export interface AnalyticsEventOptions {
     gitSha?: string;
     npmVersion?: string;
 }
-
+export enum TokenSelectorClosedVia {
+    ClickedX = 'Clicked X',
+    TokenChose = 'Token Chose',
+}
 export const analytics = {
     addUserProperties: (properties: AnalyticsUserOptions): void => {
         evaluateIfEnabled(() => {
@@ -73,6 +76,8 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.ACCOUNT_ADDRESS_CHANGED)({ address }),
     trackTokenSelectorOpened: trackingEventFnWithoutPayload(EventNames.TOKEN_SELECTOR_OPENED),
     trackTokenSelectorClosed: trackingEventFnWithoutPayload(EventNames.TOKEN_SELECTOR_CLOSED),
+    trackTokenSelectorClosed: (closedVia: TokenSelectorClosedVia) =>
+        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CLOSED)({ closedVia }),
     trackTokenSelectorChose: (payload: { assetName: string; assetData: string }) =>
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CHOSE)(payload),
     trackTokenSelectorSearched: (searchText: string) =>
