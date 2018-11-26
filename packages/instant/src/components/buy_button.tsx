@@ -60,7 +60,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         // if we don't have a balance for the user, let the transaction through, it will be handled by the wallet
         const hasSufficientEth = _.isUndefined(accountEthBalanceInWei) || accountEthBalanceInWei.gte(ethNeededForBuy);
         if (!hasSufficientEth) {
-            analytics.trackBuyNotEnoughEth();
+            analytics.trackBuyNotEnoughEth(buyQuote);
             this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);
             return;
         }
@@ -68,21 +68,21 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         const gasInfo = await gasPriceEstimator.getGasInfoAsync();
         const feeRecipient = oc(affiliateInfo).feeRecipient();
         try {
-            analytics.trackBuyStarted();
+            analytics.trackBuyStarted(buyQuote);
             txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, {
                 feeRecipient,
                 takerAddress: accountAddress,
                 gasPrice: gasInfo.gasPriceInWei,
             });
-            analytics.trackBuyTxSubmitted(txHash);
+            analytics.trackBuyTxSubmitted(buyQuote, txHash);
         } catch (e) {
             if (e instanceof Error) {
                 if (e.message === AssetBuyerError.SignatureRequestDenied) {
-                    analytics.trackBuySignatureDenied();
+                    analytics.trackBuySignatureDenied(buyQuote);
                     this.props.onSignatureDenied(buyQuote);
                     return;
                 } else if (e.message === AssetBuyerError.TransactionValueTooLow) {
-                    analytics.trackBuySimulationFailed();
+                    analytics.trackBuySimulationFailed(buyQuote);
                     this.props.onValidationFail(buyQuote, AssetBuyerError.TransactionValueTooLow);
                     return;
                 }
@@ -95,14 +95,14 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         try {
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
-            analytics.trackBuyTxFailed(txHash);
+            analytics.trackBuyTxFailed(buyQuote, txHash);
             if (e instanceof Error && e.message.startsWith(WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX)) {
                 this.props.onBuyFailure(buyQuote, txHash);
                 return;
             }
             throw e;
         }
-        analytics.trackBuyTxSucceeded(txHash);
+        analytics.trackBuyTxSucceeded(buyQuote, txHash);
         this.props.onBuySuccess(buyQuote, txHash);
     };
 }

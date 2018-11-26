@@ -1,3 +1,6 @@
+import { BuyQuote } from '@0x/asset-buyer';
+import * as _ from 'lodash';
+
 import { EventProperties, heapUtil } from './heap';
 
 let isDisabled = false;
@@ -43,6 +46,25 @@ function trackingEventFnWithPayload(eventName: EventNames): (eventProperties: Ev
     };
 }
 
+const buyQuoteEventProperties = (buyQuote: BuyQuote) => {
+    const assetData = buyQuote.assetData.toString();
+    const assetBuyAmount = buyQuote.assetBuyAmount.toString();
+    const assetEthAmount = buyQuote.worstCaseQuoteInfo.assetEthAmount.toString();
+    const feeEthAmount = buyQuote.worstCaseQuoteInfo.feeEthAmount.toString();
+    const totalEthAmount = buyQuote.worstCaseQuoteInfo.totalEthAmount.toString();
+    const feePercentage = !_.isUndefined(buyQuote.feePercentage) ? buyQuote.feePercentage.toString() : 0;
+    const hasFeeOrders = !_.isEmpty(buyQuote.feeOrders) ? 'true' : 'false';
+    return {
+        assetData,
+        assetBuyAmount,
+        assetEthAmount,
+        feeEthAmount,
+        totalEthAmount,
+        feePercentage,
+        hasFeeOrders,
+    };
+};
+
 export interface AnalyticsUserOptions {
     lastKnownEthAddress?: string;
     ethBalanceInUnitAmount?: string;
@@ -74,11 +96,18 @@ export const analytics = {
     trackAccountUnlockDenied: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_DENIED),
     trackAccountAddressChanged: (address: string) =>
         trackingEventFnWithPayload(EventNames.ACCOUNT_ADDRESS_CHANGED)({ address }),
-    trackBuyNotEnoughEth: trackingEventFnWithoutPayload(EventNames.BUY_NOT_ENOUGH_ETH),
-    trackBuyStarted: trackingEventFnWithoutPayload(EventNames.BUY_STARTED),
-    trackBuySignatureDenied: trackingEventFnWithoutPayload(EventNames.BUY_SIGNATURE_DENIED),
-    trackBuySimulationFailed: trackingEventFnWithoutPayload(EventNames.BUY_SIMULATION_FAILED),
-    trackBuyTxSubmitted: (txHash: string) => trackingEventFnWithPayload(EventNames.BUY_TX_SUBMITTED)({ txHash }),
-    trackBuyTxSucceeded: (txHash: string) => trackingEventFnWithPayload(EventNames.BUY_TX_SUCCEEDED)({ txHash }),
-    trackBuyTxFailed: (txHash: string) => trackingEventFnWithPayload(EventNames.BUY_TX_FAILED)({ txHash }),
+    trackBuyNotEnoughEth: (buyQuote: BuyQuote) =>
+        trackingEventFnWithPayload(EventNames.BUY_NOT_ENOUGH_ETH)(buyQuoteEventProperties(buyQuote)),
+    trackBuyStarted: (buyQuote: BuyQuote) =>
+        trackingEventFnWithPayload(EventNames.BUY_STARTED)(buyQuoteEventProperties(buyQuote)),
+    trackBuySignatureDenied: (buyQuote: BuyQuote) =>
+        trackingEventFnWithPayload(EventNames.BUY_SIGNATURE_DENIED)(buyQuoteEventProperties(buyQuote)),
+    trackBuySimulationFailed: (buyQuote: BuyQuote) =>
+        trackingEventFnWithPayload(EventNames.BUY_SIMULATION_FAILED)(buyQuoteEventProperties(buyQuote)),
+    trackBuyTxSubmitted: (buyQuote: BuyQuote, txHash: string) =>
+        trackingEventFnWithPayload(EventNames.BUY_TX_SUBMITTED)({ ...buyQuoteEventProperties(buyQuote), txHash }),
+    trackBuyTxSucceeded: (buyQuote: BuyQuote, txHash: string) =>
+        trackingEventFnWithPayload(EventNames.BUY_TX_SUCCEEDED)({ ...buyQuoteEventProperties(buyQuote), txHash }),
+    trackBuyTxFailed: (buyQuote: BuyQuote, txHash: string) =>
+        trackingEventFnWithPayload(EventNames.BUY_TX_FAILED)({ ...buyQuoteEventProperties(buyQuote), txHash }),
 };
