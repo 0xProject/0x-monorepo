@@ -223,7 +223,10 @@ export class Web3Wrapper {
             method: 'eth_getTransactionReceipt',
             params: [txHash],
         });
-        if (!_.isNull(transactionReceiptRpc)) {
+        // HACK Parity can return a pending transaction receipt. We check for a non null
+        // block number before continuing with returning a fully realised receipt.
+        // ref: https://github.com/paritytech/parity-ethereum/issues/1180
+        if (!_.isNull(transactionReceiptRpc) && !_.isNull(transactionReceiptRpc.blockNumber)) {
             transactionReceiptRpc.status = Web3Wrapper._normalizeTxReceiptStatus(transactionReceiptRpc.status);
             const transactionReceipt = marshaller.unmarshalTransactionReceipt(transactionReceiptRpc);
             return transactionReceipt;
@@ -577,7 +580,7 @@ export class Web3Wrapper {
         }
         // Immediately check if the transaction has already been mined.
         let transactionReceipt = await this.getTransactionReceiptIfExistsAsync(txHash);
-        if (!_.isUndefined(transactionReceipt) && !_.isNull(transactionReceipt.blockNumber)) {
+        if (!_.isUndefined(transactionReceipt)) {
             const logsWithDecodedArgs = _.map(
                 transactionReceipt.logs,
                 this.abiDecoder.tryToDecodeLogOrNoop.bind(this.abiDecoder),

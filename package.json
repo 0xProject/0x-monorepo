@@ -22,9 +22,9 @@
         "install:all": "yarn install",
         "wsrun": "wsrun",
         "lerna": "lerna",
-        "build": "wsrun build $PKG --fast-exit -r --stages",
-        "build:no_website": "wsrun build $PKG --fast-exit -r --stages --exclude @0x/website",
-        "build:ci:no_website": "wsrun build:ci $PKG --fast-exit -r --stages --exclude @0x/website",
+        "build": "wsrun build $PKG --fast-exit -r --stages --exclude-missing",
+        "build:no_website": "wsrun build $PKG --fast-exit -r --stages --exclude @0x/website --exclude-missing",
+        "build:ci:no_website": "wsrun build:ci $PKG --fast-exit -r --stages --exclude @0x/website --exclude-missing",
         "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",
@@ -40,7 +40,7 @@
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
-        "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types asset-buyer"
+        "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types asset-buyer migrations"
     },
     "bundlewatch": {
         "files": [

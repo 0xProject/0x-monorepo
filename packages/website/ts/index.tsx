@@ -40,6 +40,9 @@ const LazyZeroExJSDocumentation = createLazyComponent('Documentation', async () 
 const LazyContractWrappersDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "contractWrapperDocs" */ 'ts/containers/contract_wrappers_documentation'),
 );
+const LazyMigrationsDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "migrationsDocs" */ 'ts/containers/migrations_documentation'),
+);
 const LazyOrderWatcherDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "orderWatcherDocs" */ 'ts/containers/order_watcher_documentation'),
 );
@@ -101,6 +104,10 @@ render(
                                 <Route
                                     path={`${WebsitePaths.ContractWrappers}/:version?`}
                                     component={LazyContractWrappersDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.Migrations}/:version?`}
+                                    component={LazyMigrationsDocumentation}
                                 />
                                 <Route
                                     path={`${WebsitePaths.OrderWatcher}/:version?`}

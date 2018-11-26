@@ -6,11 +6,13 @@ import { HEAP_ANALYTICS_ID } from '../constants';
 
 import { AnalyticsEventOptions, AnalyticsUserOptions } from './analytics';
 
+export type EventProperties = ObjectMap<string | number>;
+
 export interface HeapAnalytics {
     loaded: boolean;
     appid: string;
     identify(id: string, idType: string): void;
-    track(eventName: string, eventProperties?: ObjectMap<string | number>): void;
+    track(eventName: string, eventProperties?: EventProperties): void;
     resetIdentity(): void;
     addUserProperties(properties: AnalyticsUserOptions): void;
     addEventProperties(properties: AnalyticsEventOptions): void;

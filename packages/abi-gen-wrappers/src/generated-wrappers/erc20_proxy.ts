@@ -4,6 +4,7 @@
 import { BaseContract } from '@0x/base-contract';
 import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, Provider, TxData, TxDataPayable } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils } from '@0x/utils';
+import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
@@ -601,7 +602,7 @@ export class ERC20ProxyContract extends BaseContract {
         },
     };
     public static async deployFrom0xArtifactAsync(
-        artifact: ContractArtifact,
+        artifact: ContractArtifact | SimpleContractArtifact,
         provider: Provider,
         txDefaults: Partial<TxData>,
     ): Promise<ERC20ProxyContract> {
