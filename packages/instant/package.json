@@ -5,13 +5,10 @@
         "node": ">=6.12"
     },
     "description": "0x Instant React Component",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "umd/instant.js",
+    "private": true,
     "scripts": {
-        "build": "yarn build:all",
-        "build:all": "run-p build:umd:prod build:commonjs",
-        "build:umd:prod": "webpack --mode production",
-        "build:commonjs": "tsc -b",
+        "build": "webpack --mode production",
         "build:ci": "yarn build",
         "watch_without_deps": "tsc -w",
         "dev": "webpack-dev-server --mode development",
@@ -98,6 +95,6 @@
         "webpack-dev-server": "^3.1.9"
     },
     "publishConfig": {
-        "access": "public"
+        "access": "private"
     }
 }
