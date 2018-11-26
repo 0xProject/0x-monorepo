@@ -20,7 +20,7 @@ export const HEAP_ANALYTICS_ID = process.env.HEAP_ANALYTICS_ID;
 export const COINBASE_API_BASE_URL = 'https://api.coinbase.com/v2';
 export const PROGRESS_STALL_AT_WIDTH = '95%';
 export const PROGRESS_FINISH_ANIMATION_TIME_MS = 200;
-export const EMBEDDED_DOMAINS = [
+export const HOST_DOMAINS = [
     '0x-instant-staging.s3-website-us-east-1.amazonaws.com',
     '0x-instant-dogfood.s3-website-us-east-1.amazonaws.com',
     'localhost',

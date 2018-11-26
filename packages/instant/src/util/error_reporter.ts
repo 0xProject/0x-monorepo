@@ -1,7 +1,7 @@
 import { logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { EMBEDDED_DOMAINS, INSTANT_ENVIRONMENT, ROLLBAR_CLIENT_TOKEN, ROLLBAR_ENABLED } from '../constants';
+import { HOST_DOMAINS, INSTANT_ENVIRONMENT, ROLLBAR_CLIENT_TOKEN, ROLLBAR_ENABLED } from '../constants';
 
 // Import version of Rollbar designed for embedded components
 // See https://docs.rollbar.com/docs/using-rollbarjs-inside-an-embedded-component
@@ -29,7 +29,7 @@ export const setupRollbar = (): any => {
                     },
                 },
             },
-            hostWhiteList: EMBEDDED_DOMAINS,
+            hostWhiteList: HOST_DOMAINS,
             uncaughtErrorLevel: 'error',
             ignoredMessages: [
                 // Errors from the third-party scripts
