@@ -5,7 +5,7 @@
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Smart contract components of 0x protocol",
+    "description": "Multisig contracts used by 0x protocol",
     "main": "lib/src/index.js",
     "directories": {
         "test": "test"
