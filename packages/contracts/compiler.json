@@ -55,6 +55,7 @@
         "Wallet",
         "WETH9",
         "Whitelist",
+        "YesComplianceToken",
         "ZRXToken"
     ]
 }

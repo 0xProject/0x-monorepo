@@ -98,6 +98,7 @@ export enum ContractName {
     ERC721Proxy = 'ERC721Proxy',
     DummyERC721Receiver = 'DummyERC721Receiver',
     DummyERC721Token = 'DummyERC721Token',
+    DummyYesComplianceToken = 'DummyYesComplianceToken',
     TestLibBytes = 'TestLibBytes',
     TestWallet = 'TestWallet',
     Authorizable = 'Authorizable',

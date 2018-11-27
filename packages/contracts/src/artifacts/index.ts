@@ -36,6 +36,7 @@ import * as Validator from '../../generated-artifacts/Validator.json';
 import * as Wallet from '../../generated-artifacts/Wallet.json';
 import * as WETH9 from '../../generated-artifacts/WETH9.json';
 import * as Whitelist from '../../generated-artifacts/Whitelist.json';
+import * as YesComplianceToken from '../../generated-artifacts/YesComplianceToken.json';
 import * as ZRXToken from '../../generated-artifacts/ZRXToken.json';
 
 export const artifacts = {
@@ -75,6 +76,7 @@ export const artifacts = {
     WETH9: WETH9 as ContractArtifact,
     Wallet: Wallet as ContractArtifact,
     Whitelist: Whitelist as ContractArtifact,
+    YesComplianceToken: YesComplianceToken as ContractArtifact,
     // Note(albrow): "as any" hack still required here because ZRXToken does not
     // conform to the v2 artifact type.
     ZRXToken: (ZRXToken as any) as ContractArtifact,
