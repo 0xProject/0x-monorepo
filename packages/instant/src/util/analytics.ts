@@ -133,23 +133,20 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.BUY_TX_SUBMITTED)({
             ...buyQuoteEventProperties(buyQuote),
             txHash,
-            startTimeUnix,
-            expectedEndTimeUnix,
+            expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
         }),
     trackBuyTxSucceeded: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
         trackingEventFnWithPayload(EventNames.BUY_TX_SUCCEEDED)({
             ...buyQuoteEventProperties(buyQuote),
             txHash,
-            startTimeUnix,
-            expectedEndTimeUnix,
-            actualEndTimeUnix: new Date().getTime(),
+            expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
+            actualTxTimeMs: new Date().getTime() - startTimeUnix,
         }),
     trackBuyTxFailed: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
         trackingEventFnWithPayload(EventNames.BUY_TX_FAILED)({
             ...buyQuoteEventProperties(buyQuote),
             txHash,
-            startTimeUnix,
-            expectedEndTimeUnix,
-            actualEndTimeUnix: new Date().getTime(),
+            expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
+            actualTxTimeMs: new Date().getTime() - startTimeUnix,
         }),
 };
