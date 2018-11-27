@@ -1,7 +1,7 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 
 import { Container } from 'ts/components/ui/container';
-import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
@@ -16,29 +16,52 @@ export const Features = (props: FeatureProps) => (
             imgSrc="images/instant/snt_screenshot.png"
             title="Support ERC-20 and ERC-721 tokens"
             description="Seamlessly integrate token purchasing into your product experience by offering digital assets ranging from in-game items to stablecoins."
-            linkInfos={[]}
+            linkInfos={[
+                {
+                    displayText: 'Get started',
+                    linkSrc: 'google.com',
+                },
+                {
+                    displayText: 'Explore the docs',
+                    linkSrc: 'google.com',
+                },
+            ]}
             screenWidth={props.screenWidth}
         />
         <FeatureItem
             imgSrc="images/instant/snt_screenshot.png"
             title="Generate revenue for your business"
             description="With just a few lines of code, you can earn up to 5% in affiliate fees on every transaction from your crypto wallet or dApp."
-            linkInfos={[]}
+            linkInfos={[
+                {
+                    displayText: 'Learn about affiliate fees',
+                    linkSrc: 'google.com',
+                },
+            ]}
             screenWidth={props.screenWidth}
         />
         <FeatureItem
             imgSrc="images/instant/snt_screenshot.png"
             title="Easy and Flexible Integration"
             description="Use our out-of-the-box design or customize the user interface by integrating the AssetBuyer engine. You can also tap into 0x networked liquidity or choose your own liquidity pool."
-            linkInfos={[]}
+            linkInfos={[
+                {
+                    displayText: 'Explore AssetBuyer',
+                    linkSrc: 'google.com',
+                },
+                {
+                    displayText: 'Learn about liquidity',
+                    linkSrc: 'google.com',
+                },
+            ]}
             screenWidth={props.screenWidth}
         />
     </Container>
 );
 
 interface LinkInfo {
-    linkSrc: string;
     displayText: string;
+    linkSrc: string;
 }
 
 interface FeatureItemProps {
@@ -63,6 +86,28 @@ const FeatureItem = (props: FeatureItemProps) => {
                     {description}
                 </Text>
             </Container>
+            <Container className="flex" marginTop="28px">
+                {_.map(linkInfos, linkInfo => {
+                    const onClick = (event: React.MouseEvent<HTMLElement>) => {
+                        window.open(linkInfo.linkSrc, '_blank');
+                    };
+                    return (
+                        <Container className="flex items-center" marginRight="32px" onClick={onClick} cursor="pointer">
+                            <Container>
+                                <Text fontSize="16px" fontColor={colors.white}>
+                                    {linkInfo.displayText}
+                                </Text>
+                            </Container>
+                            <Container paddingTop="1px" paddingLeft="6px">
+                                <i
+                                    className="zmdi zmdi-chevron-right bold"
+                                    style={{ fontSize: 16, color: colors.white }}
+                                />
+                            </Container>
+                        </Container>
+                    );
+                })}
+            </Container>
         </Container>
     );
     return (
@@ -75,9 +120,7 @@ const FeatureItem = (props: FeatureItemProps) => {
             ) : (
                 <Container className="flex flex-column items-center">
                     {image}
-                    <Container className="center" marginTop="32px">
-                        {info}
-                    </Container>
+                    <Container marginTop="32px">{info}</Container>
                 </Container>
             )}
         </Container>
