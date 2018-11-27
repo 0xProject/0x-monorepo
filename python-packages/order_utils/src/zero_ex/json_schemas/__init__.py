@@ -12,6 +12,7 @@ class LocalRefResolver(jsonschema.RefResolver):
     """Resolve package-local JSON schema id's."""
 
     def __init__(self):
+        """Initialize a new LocalRefResolver instance."""
         self.ref_to_file = {
             "/addressSchema": "address_schema.json",
             "/hexSchema": "hex_schema.json",
@@ -30,7 +31,8 @@ class LocalRefResolver(jsonschema.RefResolver):
 
         :param url: a string representing the URL of the JSON schema to fetch.
         :returns: a string representing the deserialized JSON schema
-        :raises jsonschema.ValidationError: when the resource associated with `url` does not exist.
+        :raises jsonschema.ValidationError: when the resource associated with
+                                            `url` does not exist.
         """
         ref = url.replace("file://", "")
         if ref in self.ref_to_file:
@@ -45,8 +47,9 @@ class LocalRefResolver(jsonschema.RefResolver):
         )
 
 
-# Instantiate the `LocalRefResolver()` only once so that `assert_valid()` can perform multiple schema validations without
-# reading from disk the schema every time.
+# Instantiate the `LocalRefResolver()` only once so that `assert_valid()` can
+# perform multiple schema validations without reading from disk the schema
+# every time.
 LOCAL_RESOLVER = LocalRefResolver()
 
 
