@@ -18,7 +18,7 @@ export const ZeroExInstantOverlay: React.StatelessComponent<ZeroExInstantOverlay
     const { onClose, zIndex, ...rest } = props;
     return (
         <ZeroExInstantProvider {...rest}>
-            <Overlay zIndex={zIndex}>
+            <Overlay zIndex={zIndex} className="zeroExInstantOverlay">
                 <Flex height="100vh">
                     <Container position="absolute" top="0px" right="0px" display={{ default: 'initial', sm: 'none' }}>
                         <Icon
@@ -30,7 +30,11 @@ export const ZeroExInstantOverlay: React.StatelessComponent<ZeroExInstantOverlay
                             padding="2em 2em"
                         />
                     </Container>
-                    <Container width={{ default: 'auto', sm: '100%' }} height={{ default: 'auto', sm: '100%' }}>
+                    <Container
+                        width={{ default: 'auto', sm: '100%' }}
+                        height={{ default: 'auto', sm: '100%' }}
+                        className="zeroExInstantMainContainer"
+                    >
                         <ZeroExInstantContainer />
                     </Container>
                 </Flex>
