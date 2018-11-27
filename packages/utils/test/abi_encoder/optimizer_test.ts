@@ -23,9 +23,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Dynamic Arrays with Dynamic Elements', async () => {
         // Generate calldata
@@ -40,9 +38,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Static Arrays with Static Elements (should not optimize)', async () => {
         // Generate calldata
@@ -59,9 +55,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(unoptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Static Arrays with Dynamic Elements', async () => {
         // Generate calldata
@@ -76,9 +70,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Array Elements (should optimize)', async () => {
         // Generate calldata
@@ -92,9 +84,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Tuple Fields', async () => {
         // Generate calldata
@@ -108,9 +98,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Strings', async () => {
         // Description:
@@ -127,9 +115,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Bytes', async () => {
         // Description:
@@ -147,9 +133,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Tuples', async () => {
         // Generate calldata
@@ -164,9 +148,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Fields Across Two Tuples', async () => {
         // Description:
@@ -182,9 +164,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Arrays, Nested in Separate Tuples', async () => {
         // Generate calldata
@@ -200,9 +180,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Tuples, Nested in Separate Tuples', async () => {
         // Generate calldata
@@ -218,9 +196,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Two-Dimensional Arrays', async () => {
         // Generate calldata
@@ -235,9 +211,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Duplicate Array, Nested within Separate Two-Dimensional Arrays', async () => {
         // Generate calldata
@@ -252,9 +226,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Array Elements Duplicated as Tuple Fields', async () => {
         // Generate calldata
@@ -269,9 +241,7 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
     it('Array Elements Duplicated as Separate Parameter', async () => {
         // Generate calldata
@@ -286,8 +256,6 @@ describe('ABI Encoder: Optimized Method Encoding/Decoding', () => {
         expect(optimizedCalldata).to.be.equal(expectedOptimizedCalldata);
         // Validate decoding
         const decodedArgs = method.decode(optimizedCalldata);
-        const decodedArgsJson = JSON.stringify(decodedArgs);
-        const argsJson = JSON.stringify(args);
-        expect(decodedArgsJson).to.be.equal(argsJson);
+        expect(decodedArgs).to.be.deep.equal(args);
     });
 });

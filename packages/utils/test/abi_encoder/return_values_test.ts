@@ -16,9 +16,7 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         const returnValue = '0x';
         const decodedReturnValue = method.decodeReturnValues(returnValue);
         const expectedDecodedReturnValue: any[] = [];
-        const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
-        const expectedDecodedReturnValueJson = JSON.stringify(expectedDecodedReturnValue);
-        expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        expect(decodedReturnValue).to.be.deep.equal(expectedDecodedReturnValue);
     });
     it('Single static return value', async () => {
         // Generate Return Value
@@ -27,9 +25,7 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         const encodedReturnValue = method.encodeReturnValues(returnValue);
         const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
         // Validate decoded return value
-        const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
-        const expectedDecodedReturnValueJson = JSON.stringify(returnValue);
-        expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        expect(decodedReturnValue).to.be.deep.equal(returnValue);
     });
     it('Multiple static return values', async () => {
         // Generate Return Value
@@ -38,9 +34,7 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         const encodedReturnValue = method.encodeReturnValues(returnValue);
         const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
         // Validate decoded return value
-        const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
-        const expectedDecodedReturnValueJson = JSON.stringify(returnValue);
-        expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        expect(decodedReturnValue).to.be.deep.equal(returnValue);
     });
     it('Single dynamic return value', async () => {
         // Generate Return Value
@@ -49,9 +43,7 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         const encodedReturnValue = method.encodeReturnValues(returnValue);
         const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
         // Validate decoded return value
-        const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
-        const expectedDecodedReturnValueJson = JSON.stringify(returnValue);
-        expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        expect(decodedReturnValue).to.be.deep.equal(returnValue);
     });
     it('Multiple dynamic return values', async () => {
         // Generate Return Value
@@ -60,9 +52,7 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         const encodedReturnValue = method.encodeReturnValues(returnValue);
         const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
         // Validate decoded return value
-        const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
-        const expectedDecodedReturnValueJson = JSON.stringify(returnValue);
-        expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        expect(decodedReturnValue).to.be.deep.equal(returnValue);
     });
     it('Mixed static/dynamic return values', async () => {
         // Generate Return Value
@@ -71,8 +61,6 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         const encodedReturnValue = method.encodeReturnValues(returnValue);
         const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
         // Validate decoded return value
-        const decodedReturnValueJson = JSON.stringify(decodedReturnValue);
-        const expectedDecodedReturnValueJson = JSON.stringify(returnValue);
-        expect(decodedReturnValueJson).to.be.equal(expectedDecodedReturnValueJson);
+        expect(decodedReturnValue).to.be.deep.equal(returnValue);
     });
 });

@@ -24,9 +24,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Dynamic size; Static elements', async () => {
             // Create DataType object
@@ -41,9 +39,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Fixed size; Dynamic elements', async () => {
             // Create DataType object
@@ -58,9 +54,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Dynamic size; Dynamic elements', async () => {
             // Create DataType object
@@ -75,9 +69,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Dynamic Size; Multidimensional; Dynamic Elements', async () => {
             // Create DataType object
@@ -95,9 +87,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Dynamic Size; Multidimensional; Static Elements', async () => {
             // Create DataType object
@@ -115,9 +105,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Static Size; Multidimensional; Static Elements', async () => {
             // Create DataType object
@@ -134,9 +122,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Static Size; Multidimensional; Dynamic Elements', async () => {
             // Create DataType object
@@ -153,9 +139,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Static size; Too Few Elements', async () => {
             // Create DataType object
@@ -211,9 +195,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Dynamic elements only', async () => {
             // Create DataType object
@@ -233,9 +215,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Nested Static Array', async () => {
             // Create DataType object
@@ -255,9 +235,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Nested Dynamic Array', async () => {
             // Create DataType object
@@ -277,9 +255,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Nested Static Multidimensional Array', async () => {
             // Create DataType object
@@ -301,9 +277,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Nested Dynamic Multidimensional Array', async () => {
             // Create DataType object
@@ -325,9 +299,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Static and dynamic elements mixed', async () => {
             // Create DataType object
@@ -357,9 +329,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Decode Encoded Args and validate result
             const decodingRules: AbiEncoder.DecodingRules = { structsAsObjects: true };
             const decodedArgs = dataType.decode(encodedArgs, decodingRules);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Missing Key', async () => {
             // Create DataType object
@@ -406,9 +376,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Invalid Address - input is not valid hex', async () => {
             // Create DataType object
@@ -447,9 +415,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('False', async () => {
             // Create DataType object
@@ -463,9 +429,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
     });
 
@@ -489,9 +453,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Int256 - Negative Base Case', async () => {
             // Create DataType object
@@ -505,9 +467,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Int256 - Positive Value', async () => {
             // Create DataType object
@@ -521,9 +481,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Int256 - Negative Value', async () => {
             // Create DataType object
@@ -537,9 +495,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Int256 - Value too large', async () => {
             // Create DataType object
@@ -575,9 +531,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Int32 - Negative Base Case', async () => {
             // Create DataType object
@@ -591,9 +545,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Int32 - Positive Value', async () => {
             // Create DataType object
@@ -607,9 +559,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Int32 - Negative Value', async () => {
             // Create DataType object
@@ -623,9 +573,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Int32 - Value too large', async () => {
             // Create DataType object
@@ -671,9 +619,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('UInt256 - Positive Value', async () => {
             // Create DataType object
@@ -687,9 +633,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('UInt256 - Zero Value', async () => {
             // Create DataType object
@@ -703,9 +647,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('UInt256 - Value too large', async () => {
             // Create DataType object
@@ -741,9 +683,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('UInt32 - Positive Value', async () => {
             // Create DataType object
@@ -757,9 +697,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('UInt32 - Zero Value', async () => {
             // Create DataType object
@@ -773,9 +711,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('UInt32 - Value too large', async () => {
             // Create DataType object
@@ -814,9 +750,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Single Byte (bytes1)', async () => {
             // Create DataType object
@@ -830,9 +764,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('4 Bytes (bytes4)', async () => {
             // Create DataType object
@@ -846,9 +778,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('4 Bytes (bytes4); Encoder must pad input', async () => {
             // Create DataType object
@@ -863,10 +793,8 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
             const paddedArgs = '0x1a180000';
-            const paddedArgsAsJson = JSON.stringify(paddedArgs);
-            expect(decodedArgsAsJson).to.be.equal(paddedArgsAsJson);
+            expect(decodedArgs).to.be.deep.equal(paddedArgs);
         });
         it('32 Bytes (bytes32)', async () => {
             // Create DataType object
@@ -880,9 +808,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('32 Bytes (bytes32); Encoder must pad input', async () => {
             // Create DataType object
@@ -897,10 +823,8 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
             const paddedArgs = '0x1a18bf6100000000000000000000000000000000000000000000000000000000';
-            const paddedArgsAsJson = JSON.stringify(paddedArgs);
-            expect(decodedArgsAsJson).to.be.equal(paddedArgsAsJson);
+            expect(decodedArgs).to.be.deep.equal(paddedArgs);
         });
         it('Should throw when pass in too many bytes (bytes4)', async () => {
             // Create DataType object
@@ -967,9 +891,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Spans multiple EVM words', async () => {
             // Create DataType object
@@ -986,9 +908,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Input as Buffer', async () => {
             // Create DataType object
@@ -1005,9 +925,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Should throw when pass in bad hex (no 0x prefix)', async () => {
             // Create DataType object
@@ -1048,9 +966,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('Spans multiple EVM words', async () => {
             // Create DataType object
@@ -1067,9 +983,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
         it('String that begins with 0x prefix', async () => {
             // Create DataType object
@@ -1086,9 +1000,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
             const decodedArgs = dataType.decode(encodedArgs);
-            const decodedArgsAsJson = JSON.stringify(decodedArgs);
-            const argsAsJson = JSON.stringify(args);
-            expect(decodedArgsAsJson).to.be.equal(argsAsJson);
+            expect(decodedArgs).to.be.deep.equal(args);
         });
     });
 });
