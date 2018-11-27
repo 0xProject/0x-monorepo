@@ -21,7 +21,6 @@ export function parseZeroExTrustedTokens(rawResp: ZeroExTrustedTokenMeta[]): Tok
 }
 
 function parseMetamaskTrustedToken(resp: MetamaskTrustedTokenMeta, address: string): TokenMetadata {
-
     const trustedToken = new TokenMetadata();
 
     trustedToken.address = address;
@@ -34,7 +33,6 @@ function parseMetamaskTrustedToken(resp: MetamaskTrustedTokenMeta, address: stri
 }
 
 function parseZeroExTrustedToken(resp: ZeroExTrustedTokenMeta): TokenMetadata {
-
     const trustedToken = new TokenMetadata();
 
     trustedToken.address = resp.address;

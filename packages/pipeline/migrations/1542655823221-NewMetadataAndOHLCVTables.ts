@@ -1,10 +1,8 @@
-import {MigrationInterface, QueryRunner} from 'typeorm';
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class NewMetadataAndOHLCVTables1542655823221 implements MigrationInterface {
-
     // tslint:disable-next-line
     public async up(queryRunner: QueryRunner): Promise<any> {
-
         await queryRunner.query(`
             CREATE TABLE raw.token_metadata (
                 address VARCHAR NOT NULL,
@@ -44,7 +42,6 @@ export class NewMetadataAndOHLCVTables1542655823221 implements MigrationInterfac
 
     // tslint:disable-next-line
     public async down(queryRunner: QueryRunner): Promise<any> {
-
         await queryRunner.query(`
             CREATE TABLE raw.token_on_chain_metadata (
                 address VARCHAR NOT NULL,
@@ -60,5 +57,4 @@ export class NewMetadataAndOHLCVTables1542655823221 implements MigrationInterfac
 
         await queryRunner.dropTable('raw.ohlcv_external');
     }
-
 }
