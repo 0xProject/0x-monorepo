@@ -11,6 +11,7 @@ export interface TextProps {
     fontSize?: string;
     opacity?: number;
     letterSpacing?: string;
+    textAlign?: string;
     textTransform?: string;
     lineHeight?: string;
     className?: string;
@@ -22,6 +23,7 @@ export interface TextProps {
     noWrap?: boolean;
     display?: string;
     href?: string;
+    width?: string;
 }
 
 export const Text: React.StatelessComponent<TextProps> = ({ href, onClick, ...rest }) => {
@@ -51,6 +53,8 @@ export const StyledText =
         ${props => (props.display ? `display: ${props.display}` : '')};
         ${props => (props.letterSpacing ? `letter-spacing: ${props.letterSpacing}` : '')};
         ${props => (props.textTransform ? `text-transform: ${props.textTransform}` : '')};
+        ${props => (props.textAlign ? `text-align: ${props.textAlign}` : '')};
+        ${props => (props.width ? `width: ${props.width}` : '')};
         &:hover {
             ${props =>
                 props.onClick ? `color: ${darken(darkenOnHoverAmount, props.theme[props.fontColor || 'white'])}` : ''};

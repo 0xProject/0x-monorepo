@@ -20,8 +20,6 @@ import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
 
-fonts.include();
-
 export type ZeroExInstantProviderProps = ZeroExInstantProviderRequiredProps &
     Partial<ZeroExInstantProviderOptionalProps>;
 
@@ -88,6 +86,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
     }
     constructor(props: ZeroExInstantProviderProps) {
         super(props);
+        fonts.include();
         const initialAppState = ZeroExInstantProvider._mergeDefaultStateWithProps(this.props);
         this._store = store.create(initialAppState);
     }
@@ -126,14 +125,15 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
 
         // Analytics
         disableAnalytics(this.props.shouldDisableAnalyticsTracking || false);
-        analytics.addEventProperties({
-            embeddedHost: window.location.host,
-            embeddedUrl: window.location.href,
-            networkId: state.network,
-            providerName: state.providerState.name,
-            gitSha: process.env.GIT_SHA,
-            npmVersion: process.env.NPM_PACKAGE_VERSION,
-        });
+        analytics.addEventProperties(
+            analytics.generateEventProperties(
+                state.network,
+                this.props.orderSource,
+                state.providerState,
+                window,
+                this.props.affiliateInfo,
+            ),
+        );
         analytics.trackInstantOpened();
     }
     public componentWillUnmount(): void {

@@ -18,6 +18,7 @@ export interface ScalingAmountInputProps {
     value?: BigNumber;
     onAmountChange: (value?: BigNumber) => void;
     onFontSizeChange: (fontSizePx: number) => void;
+    hasAutofocus: boolean;
 }
 interface ScalingAmountInputState {
     stringValue: string;
@@ -29,6 +30,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
         onAmountChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,
         isDisabled: false,
+        hasAutofocus: false,
     };
     public constructor(props: ScalingAmountInputProps) {
         super(props);
@@ -64,6 +66,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
                 placeholder="0.00"
                 emptyInputWidthCh={3.5}
                 isDisabled={this.props.isDisabled}
+                hasAutofocus={this.props.hasAutofocus}
             />
         );
     }
