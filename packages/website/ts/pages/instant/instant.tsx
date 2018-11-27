@@ -6,7 +6,9 @@ import { Footer } from 'ts/components/footer';
 import { MetaTags } from 'ts/components/meta_tags';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Container } from 'ts/components/ui/container';
+import { Features } from 'ts/pages/instant/features';
 import { Introducing0xInstant } from 'ts/pages/instant/introducing_0x_instant';
+import { Screenshots } from 'ts/pages/instant/screenshots';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
@@ -51,6 +53,8 @@ export class Instant extends React.Component<InstantProps, InstantState> {
                 />
                 <Container backgroundColor={colors.instantBackground} />
                 <Introducing0xInstant />
+                <Screenshots />
+                <Features />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </Container>
         );
