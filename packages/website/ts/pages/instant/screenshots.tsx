@@ -1,15 +1,35 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 
 import { Container } from 'ts/components/ui/container';
 import { colors } from 'ts/style/colors';
+import { ScreenWidths } from 'ts/types';
 
-export const Screenshots = () => (
-    <Container backgroundColor={colors.instantPrimaryBackground} className="py3 flex justify-center">
-        <img className="px1" width="300px" height="420px" src="images/instant/snt_screenshot.png" />
-        <img className="px1" width="300px" height="420px" src="images/instant/omg_screenshot.png" />
-        <img className="px1" width="300px" height="420px" src="images/instant/kitty_screenshot.png" />
-        <img className="px1" width="300px" height="420px" src="images/instant/bat_screenshot.png" />
-        <img className="px1" width="300px" height="420px" src="images/instant/leroy_screenshot.png" />
-        <img className="px1" width="300px" height="420px" src="images/instant/mkr_screenshot.png" />
-    </Container>
-);
+export interface ScreenshotsProps {
+    screenWidth: ScreenWidths;
+}
+
+export const Screenshots = (props: ScreenshotsProps) => {
+    const isSmallScreen = props.screenWidth === ScreenWidths.Sm;
+    const images = isSmallScreen
+        ? [
+              'images/instant/omg_screenshot.png',
+              'images/instant/kitty_screenshot.png',
+              'images/instant/bat_screenshot.png',
+          ]
+        : [
+              'images/instant/snt_screenshot.png',
+              'images/instant/omg_screenshot.png',
+              'images/instant/kitty_screenshot.png',
+              'images/instant/bat_screenshot.png',
+              'images/instant/leroy_screenshot.png',
+              'images/instant/mkr_screenshot.png',
+          ];
+    return (
+        <Container backgroundColor={colors.instantPrimaryBackground} className="py3 flex justify-center">
+            {_.map(images, image => {
+                return <img className="px1" width="300px" height="420px" src={image} />;
+            })}
+        </Container>
+    );
+};
