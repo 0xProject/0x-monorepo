@@ -49,3 +49,12 @@ class BigNumberTransformer implements ValueTransformer {
 }
 
 export const bigNumberTransformer = new BigNumberTransformer();
+
+/**
+ * Returns the unix timestamp of the current hour
+ */
+export function getHourInUnixTime(): number {
+    const currentTime: number = Date.now();
+    // tslint:disable-next-line
+    return currentTime - currentTime % (3600 * 1000);
+}

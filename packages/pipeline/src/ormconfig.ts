@@ -8,6 +8,7 @@ import {
     Relayer,
     SraOrder,
     SraOrdersObservedTimeStamp,
+    TokenMetadata,
     Transaction,
 } from './entities';
 
@@ -19,6 +20,7 @@ const entities = [
     Relayer,
     SraOrder,
     SraOrdersObservedTimeStamp,
+    TokenMetadata,
     Transaction,
 ];
 
