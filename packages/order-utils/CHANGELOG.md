@@ -5,6 +5,29 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.3 - _November 21, 2018_
+
+    * Dependencies updated
+
+## v3.0.2 - _November 14, 2018_
+
+    * Dependencies updated
+
+## v3.0.1 - _November 13, 2018_
+
+    * Dependencies updated
+
+## v3.0.0 - _November 12, 2018_
+
+    * Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync` (#1235)
+    * Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive (#1235)
+    * Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218) (#1235)
+    * Modified the `AbstractOrderFilledCancelledFetcher` interface slightly such that `isOrderCancelledAsync` accepts a `signedOrder` instead of an `orderHash` param (#1235)
+
+## v2.0.1 - _November 9, 2018_
+
+    * Dependencies updated
+
 ## v2.0.0 - _October 18, 2018_
 
     * Added `ecSignOrderAsync` to first sign an order using `eth_signTypedData` and fallback to `eth_sign`. (#1102)

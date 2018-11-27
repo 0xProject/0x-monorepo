@@ -34,6 +34,7 @@
         { "path": "./packages/dev-utils" },
         { "path": "./packages/ethereum-types" },
         { "path": "./packages/fill-scenarios" },
+        { "path": "./packages/instant" },
         { "path": "./packages/json-schemas" },
         { "path": "./packages/metacoin" },
         { "path": "./packages/migrations" },

@@ -1,7 +1,7 @@
 import { ForwarderContract } from '@0x/abi-gen-wrappers';
 import { Forwarder } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
-import { AssetProxyId, SignedOrder } from '@0x/types';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
@@ -118,12 +118,13 @@ export class ForwarderWrapper extends ContractWrapper {
                 optimizedFeeOrders,
                 feeSignatures,
                 formattedFeePercentage,
-                feeRecipientAddress,
+                normalizedFeeRecipientAddress,
                 {
                     value: ethAmount,
                     from: normalizedTakerAddress,
                     gas: orderTransactionOpts.gasLimit,
                     gasPrice: orderTransactionOpts.gasPrice,
+                    nonce: orderTransactionOpts.nonce,
                 },
             );
         }
@@ -140,6 +141,7 @@ export class ForwarderWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -207,12 +209,13 @@ export class ForwarderWrapper extends ContractWrapper {
                 optimizedFeeOrders,
                 feeSignatures,
                 formattedFeePercentage,
-                feeRecipientAddress,
+                normalizedFeeRecipientAddress,
                 {
                     value: ethAmount,
                     from: normalizedTakerAddress,
                     gas: orderTransactionOpts.gasLimit,
                     gasPrice: orderTransactionOpts.gasPrice,
+                    nonce: orderTransactionOpts.nonce,
                 },
             );
         }
@@ -230,6 +233,7 @@ export class ForwarderWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;

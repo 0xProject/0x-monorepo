@@ -1,11 +1,16 @@
 .. source for the sphinx-generated build/docs/web/index.html
 
-order_utils.py
-==============
+Python zero_ex.order_utils
+==========================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+.. autoclass:: zero_ex.order_utils.Order
+   :members:
+
+See source for class properties.  Sphinx does not easily generate class property docs; pull requests welcome.
 
 .. automodule:: zero_ex.order_utils
    :members:
@@ -15,7 +20,10 @@ order_utils.py
 
 .. autoclass:: zero_ex.order_utils.asset_data_utils.ERC20AssetData
 
-See source for properties.  Sphinx does not easily generate class property docs; pull requests welcome.
+.. autoclass:: zero_ex.order_utils.asset_data_utils.ERC721AssetData
+
+.. automodule:: zero_ex.json_schemas
+   :members:
 
 Indices and tables
 ==================

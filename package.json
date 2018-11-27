@@ -8,7 +8,7 @@
         "packages/*"
     ],
     "scripts": {
-        "ganache": "ganache-cli -p 8545 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
+        "ganache": "ganache-cli -p 8545 --gasLimit 10000000 --networkId 50 -m \"${npm_package_config_mnemonic}\"",
         "prettier": "prettier --write '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "prettier:ci": "prettier --list-different '**/*.{ts,tsx,json,md}' --config .prettierrc",
         "report_coverage": "lcov-result-merger './{packages/*/coverage/lcov.info,python-packages/*/.coverage}' | coveralls",
@@ -22,13 +22,13 @@
         "install:all": "yarn install",
         "wsrun": "wsrun",
         "lerna": "lerna",
-        "build": "wsrun build $PKG --fast-exit -r --stages",
-        "build:no_website": "wsrun build $PKG --fast-exit -r --stages --exclude @0x/website",
-        "build:ci:no_website": "wsrun build:ci $PKG --fast-exit -r --stages --exclude @0x/website",
+        "build": "wsrun build $PKG --fast-exit -r --stages --exclude-missing",
+        "build:no_website": "wsrun build $PKG --fast-exit -r --stages --exclude @0x/website --exclude-missing",
+        "build:ci:no_website": "wsrun build:ci $PKG --fast-exit -r --stages --exclude @0x/website --exclude-missing",
         "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",
-        "clean": "wsrun clean $PKG --fast-exit -r --parallel",
+        "clean": "wsrun clean $PKG --fast-exit -r --parallel --exclude-missing",
         "remove_node_modules": "lerna clean --yes; rm -rf node_modules",
         "rebuild": "run-s clean build",
         "rebuild:no_website": "run-s clean build:no_website",
@@ -40,7 +40,7 @@
     },
     "config": {
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
-        "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types asset-buyer"
+        "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper contract-wrappers order-utils order-watcher sol-compiler sol-cov ethereum-types asset-buyer migrations"
     },
     "bundlewatch": {
         "files": [
@@ -49,8 +49,8 @@
                 "maxSize": "700kB"
             },
             {
-                "path": "packages/instant/public/main.bundle.js",
-                "maxSize": "500kB"
+                "path": "packages/instant/umd/instant.js",
+                "maxSize": "1000kB"
             }
         ],
         "ci": {

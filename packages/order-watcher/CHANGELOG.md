@@ -5,6 +5,27 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.5 - _November 21, 2018_
+
+    * Dependencies updated
+
+## v2.2.4 - _November 14, 2018_
+
+    * Fix the bug when order watcher was throwing an error on order removal when maker token was ZRX (#1259)
+
+## v2.2.3 - _November 13, 2018_
+
+    * Start jsonRpcRequestId at 1, not 0 as 0 breaks the web3.js websocket RPC provider (#1227)
+    * Fix the bug when order watcher was trying to convert undefined to an object in case of CancelUpTo event
+
+## v2.2.2 - _November 12, 2018_
+
+    * Dependencies updated
+
+## v2.2.1 - _November 9, 2018_
+
+    * Dependencies updated
+
 ## v2.2.0 - _October 18, 2018_
 
     * Added getStats function and returns a Stats object (#1118)

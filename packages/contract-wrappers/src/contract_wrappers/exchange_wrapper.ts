@@ -18,6 +18,7 @@ import { OrderFilledCancelledFetcher } from '../fetchers/order_filled_cancelled_
 import { methodOptsSchema } from '../schemas/method_opts_schema';
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
+import { validateOrderFillableOptsSchema } from '../schemas/validate_order_fillable_opts_schema';
 import {
     BlockRange,
     EventCallback,
@@ -46,8 +47,8 @@ export class ExchangeWrapper extends ContractWrapper {
     public address: string;
     public zrxTokenAddress: string;
     private _exchangeContractIfExists?: ExchangeContract;
-    private _erc721TokenWrapper: ERC721TokenWrapper;
-    private _erc20TokenWrapper: ERC20TokenWrapper;
+    private readonly _erc721TokenWrapper: ERC721TokenWrapper;
+    private readonly _erc20TokenWrapper: ERC20TokenWrapper;
     /**
      * Instantiate ExchangeWrapper
      * @param web3Wrapper Web3Wrapper instance to use.
@@ -195,6 +196,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
 
@@ -206,6 +208,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -242,6 +245,7 @@ export class ExchangeWrapper extends ContractWrapper {
                     from: normalizedTakerAddress,
                     gas: orderTransactionOpts.gasLimit,
                     gasPrice: orderTransactionOpts.gasPrice,
+                    nonce: orderTransactionOpts.nonce,
                 },
             );
         }
@@ -253,6 +257,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -286,6 +291,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.fillOrKillOrder.sendTransactionAsync(
@@ -296,6 +302,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -335,6 +342,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedSenderAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.executeTransaction.sendTransactionAsync(
@@ -346,6 +354,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedSenderAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -381,6 +390,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.batchFillOrders.sendTransactionAsync(
@@ -391,6 +401,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -424,6 +435,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.marketBuyOrders.sendTransactionAsync(
@@ -434,6 +446,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -467,6 +480,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.marketSellOrders.sendTransactionAsync(
@@ -477,6 +491,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -510,6 +525,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.marketBuyOrdersNoThrow.sendTransactionAsync(
@@ -520,6 +536,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -553,6 +570,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.marketSellOrdersNoThrow.sendTransactionAsync(
@@ -563,6 +581,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -598,6 +617,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.batchFillOrdersNoThrow.sendTransactionAsync(
@@ -608,6 +628,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -643,6 +664,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.batchFillOrKillOrders.sendTransactionAsync(
@@ -653,6 +675,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -681,12 +704,14 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedMakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.batchCancelOrders.sendTransactionAsync(orders, {
             from: normalizedMakerAddress,
             gas: orderTransactionOpts.gasLimit,
             gasPrice: orderTransactionOpts.gasPrice,
+            nonce: orderTransactionOpts.nonce,
         });
         return txHash;
     }
@@ -734,6 +759,7 @@ export class ExchangeWrapper extends ContractWrapper {
                     from: normalizedTakerAddress,
                     gas: orderTransactionOpts.gasLimit,
                     gasPrice: orderTransactionOpts.gasPrice,
+                    nonce: orderTransactionOpts.nonce,
                 },
             );
         }
@@ -746,6 +772,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -780,12 +807,14 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedTakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.preSign.sendTransactionAsync(hash, signerAddress, signature, {
             from: normalizedTakerAddress,
             gas: orderTransactionOpts.gasLimit,
             gasPrice: orderTransactionOpts.gasPrice,
+            nonce: orderTransactionOpts.nonce,
         });
         return txHash;
     }
@@ -955,12 +984,14 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedMakerAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.cancelOrder.sendTransactionAsync(order, {
             from: normalizedMakerAddress,
             gas: orderTransactionOpts.gasLimit,
             gasPrice: orderTransactionOpts.gasPrice,
+            nonce: orderTransactionOpts.nonce,
         });
         return txHash;
     }
@@ -991,6 +1022,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedSenderAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.setSignatureValidatorApproval.sendTransactionAsync(
@@ -1000,6 +1032,7 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedSenderAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             },
         );
         return txHash;
@@ -1029,12 +1062,14 @@ export class ExchangeWrapper extends ContractWrapper {
                 from: normalizedSenderAddress,
                 gas: orderTransactionOpts.gasLimit,
                 gasPrice: orderTransactionOpts.gasPrice,
+                nonce: orderTransactionOpts.nonce,
             });
         }
         const txHash = await exchangeInstance.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch, {
             from: normalizedSenderAddress,
             gas: orderTransactionOpts.gasLimit,
             gasPrice: orderTransactionOpts.gasPrice,
+            nonce: orderTransactionOpts.nonce,
         });
         return txHash;
     }
@@ -1114,6 +1149,9 @@ export class ExchangeWrapper extends ContractWrapper {
         signedOrder: SignedOrder,
         opts: ValidateOrderFillableOpts = {},
     ): Promise<void> {
+        assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
+        assert.doesConformToSchema('opts', opts, validateOrderFillableOptsSchema);
+
         const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
             this._erc20TokenWrapper,
             this._erc721TokenWrapper,
@@ -1124,7 +1162,7 @@ export class ExchangeWrapper extends ContractWrapper {
 
         const expectedFillTakerTokenAmountIfExists = opts.expectedFillTakerTokenAmount;
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
-        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
         await orderValidationUtils.validateOrderFillableOrThrowAsync(
             exchangeTradeSimulator,
             signedOrder,
@@ -1152,7 +1190,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
 
         const filledCancelledFetcher = new OrderFilledCancelledFetcher(this, BlockParamLiteral.Latest);
-        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher);
+        const orderValidationUtils = new OrderValidationUtils(filledCancelledFetcher, this._web3Wrapper.getProvider());
         await orderValidationUtils.validateFillOrderThrowIfInvalidAsync(
             exchangeTradeSimulator,
             this._web3Wrapper.getProvider(),

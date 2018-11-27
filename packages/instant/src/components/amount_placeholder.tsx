@@ -4,7 +4,7 @@ import { ColorOption } from '../style/theme';
 
 import { Pulse } from './animations/pulse';
 
-import { Text } from './ui';
+import { Text } from './ui/text';
 
 interface PlainPlaceholder {
     color: ColorOption;

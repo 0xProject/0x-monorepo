@@ -5,6 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.11 - _November 21, 2018_
+
+    * Dependencies updated
+
+## v1.0.10 - _November 14, 2018_
+
+    * Dependencies updated
+
+## v1.0.9 - _November 12, 2018_
+
+    * Dependencies updated
+
+## v1.0.8 - _November 9, 2018_
+
+    * Dependencies updated
+
 ## v1.0.7 - _October 18, 2018_
 
     * Make @loopback/openapi-v3-types a 'dependency' so it's available to users of the library (#1105)

@@ -1,33 +1,94 @@
 import * as React from 'react';
 
+import PoweredByLogo from '../assets/powered_by_0x.svg';
+import { ZERO_EX_SITE_URL } from '../constants';
+import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
+import { ConnectedBuyOrderProgressOrPaymentMethod } from '../containers/connected_buy_order_progress_or_payment_method';
+import { CurrentStandardSlidingPanel } from '../containers/current_standard_sliding_panel';
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
-import { SelectedAssetBuyButton } from '../containers/selected_asset_buy_button';
+import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_buy_order_state_buttons';
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
-
 import { ColorOption } from '../style/theme';
+import { zIndex } from '../style/z_index';
+import { OrderProcessState, SlideAnimationState } from '../types';
 
-import { Container, Flex } from './ui';
+import { CSSReset } from './css_reset';
+import { SlidingPanel } from './sliding_panel';
+import { Container } from './ui/container';
+import { Flex } from './ui/flex';
 
-export interface ZeroExInstantContainerProps {}
+export interface ZeroExInstantContainerProps {
+    orderProcessState: OrderProcessState;
+}
+export interface ZeroExInstantContainerState {
+    tokenSelectionPanelAnimationState: SlideAnimationState;
+}
 
-export const ZeroExInstantContainer: React.StatelessComponent<ZeroExInstantContainerProps> = props => (
-    <Container width="350px">
-        <Container zIndex={1} position="relative">
-            <LatestError />
-        </Container>
-        <Container
-            zIndex={2}
-            position="relative"
-            backgroundColor={ColorOption.white}
-            borderRadius="3px"
-            hasBoxShadow={true}
-        >
-            <Flex direction="column" justify="flex-start">
-                <SelectedAssetInstantHeading />
-                <LatestBuyQuoteOrderDetails />
-                <SelectedAssetBuyButton />
-            </Flex>
-        </Container>
-    </Container>
-);
+export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantContainerState> {
+    public state = {
+        tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
+    };
+    public render(): React.ReactNode {
+        return (
+            <React.Fragment>
+                <CSSReset />
+                <Container
+                    width={{ default: '350px', sm: '100%' }}
+                    height={{ default: 'auto', sm: '100%' }}
+                    position="relative"
+                >
+                    <Container position="relative">
+                        <LatestError />
+                    </Container>
+                    <Container
+                        zIndex={zIndex.mainContainer}
+                        position="relative"
+                        backgroundColor={ColorOption.white}
+                        borderRadius={{ default: '3px', sm: '0px' }}
+                        hasBoxShadow={true}
+                        overflow="hidden"
+                        height="100%"
+                    >
+                        <Flex direction="column" justify="flex-start" height="100%">
+                            <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
+                            <ConnectedBuyOrderProgressOrPaymentMethod />
+                            <LatestBuyQuoteOrderDetails />
+                            <Container padding="20px" width="100%">
+                                <SelectedAssetBuyOrderStateButtons />
+                            </Container>
+                        </Flex>
+                        <SlidingPanel
+                            animationState={this.state.tokenSelectionPanelAnimationState}
+                            onClose={this._handlePanelClose}
+                        >
+                            <AvailableERC20TokenSelector onTokenSelect={this._handlePanelClose} />
+                        </SlidingPanel>
+                        <CurrentStandardSlidingPanel />
+                    </Container>
+                    <Container
+                        display={{ sm: 'none', default: 'block' }}
+                        marginTop="10px"
+                        marginLeft="auto"
+                        marginRight="auto"
+                        width="140px"
+                    >
+                        <a href={ZERO_EX_SITE_URL} target="_blank">
+                            <PoweredByLogo />
+                        </a>
+                    </Container>
+                </Container>
+            </React.Fragment>
+        );
+    }
+    private readonly _handleSymbolClick = (): void => {
+        this.setState({
+            tokenSelectionPanelAnimationState: 'slidIn',
+        });
+    };
+    private readonly _handlePanelClose = (): void => {
+        this.setState({
+            tokenSelectionPanelAnimationState: 'slidOut',
+        });
+    };
+}

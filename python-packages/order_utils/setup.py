@@ -4,12 +4,13 @@
 
 import subprocess  # nosec
 from shutil import rmtree
-from os import environ, path, remove, walk
+from os import environ, path
+from pathlib import Path
 from sys import argv
 
 from distutils.command.clean import clean
 import distutils.command.build_py
-from setuptools import setup
+from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
 
@@ -20,12 +21,13 @@ class TestCommandExtension(TestCommand):
         """Invoke pytest."""
         import pytest
 
-        pytest.main()
+        exit(pytest.main())
 
 
-# pylint: disable=too-many-ancestors
 class LintCommand(distutils.command.build_py.build_py):
     """Custom setuptools command class for running linters."""
+
+    description = "Run linters"
 
     def run(self):
         """Run linter shell commands."""
@@ -57,8 +59,15 @@ class LintCommand(distutils.command.build_py.build_py):
         import eth_abi
 
         eth_abi_dir = path.dirname(path.realpath(eth_abi.__file__))
-        with open(path.join(eth_abi_dir, "py.typed"), "a"):
-            pass
+        Path(path.join(eth_abi_dir, "py.typed")).touch()
+
+        # HACK(gene): until eth_utils fixes
+        # https://github.com/ethereum/eth-utils/issues/140 , we need to simply
+        # create an empty file `py.typed` in the eth_abi package directory.
+        import eth_utils
+
+        eth_utils_dir = path.dirname(path.realpath(eth_utils.__file__))
+        Path(path.join(eth_utils_dir, "py.typed")).touch()
 
         for lint_command in lint_commands:
             print(
@@ -73,31 +82,101 @@ class CleanCommandExtension(clean):
     def run(self):
         """Run the regular clean, followed by our custom commands."""
         super().run()
-        rmtree("build", ignore_errors=True)
+        rmtree("dist", ignore_errors=True)
         rmtree(".mypy_cache", ignore_errors=True)
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
-        rmtree("src/order_utils.egg-info", ignore_errors=True)
-        # delete all .pyc files
-        for root, _, files in walk("."):
-            for file in files:
-                (_, extension) = path.splitext(file)
-                if extension == ".pyc":
-                    remove(path.join(root, file))
+        rmtree("src/0x_order_utils.egg-info", ignore_errors=True)
+
+
+class TestPublishCommand(distutils.command.build_py.build_py):
+    """Custom command to publish to test.pypi.org."""
+
+    description = (
+        "Publish dist/* to test.pypi.org. Run sdist & bdist_wheel first."
+    )
+
+    def run(self):
+        """Run twine to upload to test.pypi.org."""
+        subprocess.check_call(  # nosec
+            (
+                "twine upload --repository-url https://test.pypi.org/legacy/"
+                + " --verbose dist/*"
+            ).split()
+        )
+
+
+class PublishCommand(distutils.command.build_py.build_py):
+    """Custom command to publish to pypi.org."""
+
+    description = "Publish dist/* to pypi.org. Run sdist & bdist_wheel first."
+
+    def run(self):
+        """Run twine to upload to pypi.org."""
+        subprocess.check_call("twine upload dist/*".split())  # nosec
+
+
+class PublishDocsCommand(distutils.command.build_py.build_py):
+    """Custom command to publish docs to S3."""
+
+    description = (
+        "Publish docs to "
+        + "http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/"
+    )
+
+    def run(self):
+        """Run npm package `discharge` to build & upload docs."""
+        subprocess.check_call("discharge deploy".split())  # nosec
+
+
+class GanacheCommand(distutils.command.build_py.build_py):
+    """Custom command to publish to pypi.org."""
+
+    description = "Run ganache daemon to support tests."
+
+    def run(self):
+        """Run ganache."""
+        cmd_line = (
+            "docker run -d -p 8545:8545 0xorg/ganache-cli --gasLimit"
+            + " 10000000 --db /snapshot --noVMErrorsOnRPCResponse -p 8545"
+            + " --networkId 50 -m"
+        ).split()
+        cmd_line.append(
+            "concert load couple harbor equip island argue ramp clarify fence"
+            + " smart topic"
+        )
+        subprocess.call(cmd_line)  # nosec
+
+
+with open("README.md", "r") as file_handle:
+    README_MD = file_handle.read()
 
 
 setup(
-    name="order_utils",
-    version="1.0.0",
+    name="0x-order-utils",
+    version="1.0.1",
     description="Order utilities for 0x applications",
+    long_description=README_MD,
+    long_description_content_type="text/markdown",
+    url="https://github.com/0xproject/0x-monorepo/python-packages/order_utils",
     author="F. Eugene Aumson",
+    author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
         "clean": CleanCommandExtension,
         "lint": LintCommand,
         "test": TestCommandExtension,
+        "test_publish": TestPublishCommand,
+        "publish": PublishCommand,
+        "publish_docs": PublishDocsCommand,
+        "ganache": GanacheCommand,
     },
-    include_package_data=True,
-    install_requires=["eth-abi", "web3"],
+    install_requires=[
+        "eth-abi",
+        "eth_utils",
+        "jsonschema",
+        "mypy_extensions",
+        "web3",
+    ],
     extras_require={
         "dev": [
             "bandit",
@@ -108,22 +187,29 @@ setup(
             "mypy_extensions",
             "pycodestyle",
             "pydocstyle",
-            "pylint",
+            "pylint<=2.1.1",  # version pinned until resolution of
+            # https://github.com/PyCQA/pylint/issues/2612
             "pytest",
             "sphinx",
             "tox",
+            "twine",
         ]
     },
     python_requires=">=3.6, <4",
-    package_data={"zero_ex.order_utils": ["py.typed"]},
+    package_data={
+        "zero_ex.order_utils": ["py.typed"],
+        "zero_ex.contract_artifacts": ["artifacts/*"],
+        "zero_ex.json_schemas": ["schemas/*"],
+    },
     package_dir={"": "src"},
     license="Apache 2.0",
     keywords=(
         "ethereum cryptocurrency 0x decentralized blockchain dex exchange"
     ),
-    packages=["zero_ex.order_utils"],
+    namespace_packages=["zero_ex"],
+    packages=find_packages("src"),
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: Financial and Insurance Industry",
         "License :: OSI Approved :: Apache Software License",
@@ -133,7 +219,10 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Topic :: Internet :: WWW/HTTP",
         "Topic :: Office/Business :: Financial",
+        "Topic :: Other/Nonlisted Topic",
+        "Topic :: Security :: Cryptography",
         "Topic :: Software Development :: Libraries",
         "Topic :: Utilities",
     ],

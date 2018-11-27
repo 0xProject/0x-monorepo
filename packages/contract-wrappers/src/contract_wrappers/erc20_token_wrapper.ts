@@ -18,11 +18,10 @@ import {
 } from '../types';
 import { assert } from '../utils/assert';
 import { constants } from '../utils/constants';
+import { utils } from '../utils/utils';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ERC20ProxyWrapper } from './erc20_proxy_wrapper';
-
-const removeUndefinedProperties = _.pickBy;
 
 /**
  * This class includes all the functionality related to interacting with ERC20 token contracts.
@@ -32,8 +31,8 @@ const removeUndefinedProperties = _.pickBy;
 export class ERC20TokenWrapper extends ContractWrapper {
     public abi: ContractAbi = ERC20Token.compilerOutput.abi;
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
-    private _tokenContractsByAddress: { [address: string]: ERC20TokenContract };
-    private _erc20ProxyWrapper: ERC20ProxyWrapper;
+    private readonly _tokenContractsByAddress: { [address: string]: ERC20TokenContract };
+    private readonly _erc20ProxyWrapper: ERC20ProxyWrapper;
     /**
      * Instantiate ERC20TokenWrapper
      * @param web3Wrapper Web3Wrapper instance to use
@@ -108,10 +107,11 @@ export class ERC20TokenWrapper extends ContractWrapper {
         const txHash = await tokenContract.approve.sendTransactionAsync(
             normalizedSpenderAddress,
             amountInBaseUnits,
-            removeUndefinedProperties({
+            utils.removeUndefinedProperties({
                 from: normalizedOwnerAddress,
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
+                nonce: txOpts.nonce,
             }),
         );
         return txHash;
@@ -278,10 +278,11 @@ export class ERC20TokenWrapper extends ContractWrapper {
         const txHash = await tokenContract.transfer.sendTransactionAsync(
             normalizedToAddress,
             amountInBaseUnits,
-            removeUndefinedProperties({
+            utils.removeUndefinedProperties({
                 from: normalizedFromAddress,
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
+                nonce: txOpts.nonce,
             }),
         );
         return txHash;
@@ -339,10 +340,11 @@ export class ERC20TokenWrapper extends ContractWrapper {
             normalizedFromAddress,
             normalizedToAddress,
             amountInBaseUnits,
-            removeUndefinedProperties({
+            utils.removeUndefinedProperties({
                 from: normalizedSenderAddress,
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
+                nonce: txOpts.nonce,
             }),
         );
         return txHash;

@@ -11,10 +11,9 @@ import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
 
 /**
  * Creates and deploys all the contracts that are required for the latest
- * version of the 0x protocol. Custom migrations can be defined here. This will
- * be called with the CLI 'migrate:v2' command.
- * @param provider  Web3 provider instance.
- * @param txDefaults Default transaction values to use when deploying contracts.
+ * version of the 0x protocol.
+ * @param provider  Web3 provider instance. Your provider instance should connect to the testnet you want to deploy to.
+ * @param txDefaults Default transaction values to use when deploying contracts (e.g., specify the desired contract creator with the `from` parameter).
  * @returns The addresses of the contracts that were deployed.
  */
 export async function runMigrationsAsync(provider: Provider, txDefaults: Partial<TxData>): Promise<ContractAddresses> {
@@ -48,6 +47,7 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         artifacts.Exchange,
         provider,
         txDefaults,
+        zrxAssetData,
     );
 
     // Multisigs
@@ -141,6 +141,13 @@ export async function runMigrationsAsync(provider: Provider, txDefaults: Partial
         zrxAssetData,
     );
 
+    // Fund the Forwarder with ZRX
+    const zrxDecimals = await zrxToken.decimals.callAsync();
+    const zrxForwarderAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5000), zrxDecimals);
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await zrxToken.transfer.sendTransactionAsync(forwarder.address, zrxForwarderAmount, txDefaults),
+    );
+
     return {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
@@ -159,8 +166,8 @@ let _cachedContractAddresses: ContractAddresses;
  * Exactly like runMigrationsAsync but will only run the migrations the first
  * time it is called. Any subsequent calls will return the cached contract
  * addresses.
- * @param provider  Web3 provider instance.
- * @param txDefaults Default transaction values to use when deploying contracts.
+ * @param provider  Web3 provider instance. Your provider instance should connect to the testnet you want to deploy to.
+ * @param txDefaults Default transaction values to use when deploying contracts (e.g., specify the desired contract creator with the `from` parameter).
  * @returns The addresses of the contracts that were deployed.
  */
 export async function runMigrationsOnceAsync(

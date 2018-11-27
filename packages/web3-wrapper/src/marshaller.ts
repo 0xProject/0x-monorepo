@@ -9,6 +9,7 @@ import {
     LogEntry,
     RawLogEntry,
     Transaction,
+    TransactionReceipt,
     TxData,
 } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
@@ -21,6 +22,7 @@ import {
     BlockWithTransactionDataRPC,
     CallDataRPC,
     CallTxDataBaseRPC,
+    TransactionReceiptRPC,
     TransactionRPC,
     TxDataRPC,
 } from './types';
@@ -90,6 +92,22 @@ export const marshaller = {
             value: utils.convertAmountToBigNumber(txRpc.value),
         };
         return tx;
+    },
+    /**
+     * Unmarshall transaction receipt
+     * @param txReceiptRpc transaction receipt to unmarshall
+     * @return unmarshalled transaction receipt
+     */
+    unmarshalTransactionReceipt(txReceiptRpc: TransactionReceiptRPC): TransactionReceipt {
+        const txReceipt = {
+            ...txReceiptRpc,
+            blockNumber: utils.convertHexToNumber(txReceiptRpc.blockNumber),
+            transactionIndex: utils.convertHexToNumber(txReceiptRpc.transactionIndex),
+            cumulativeGasUsed: utils.convertHexToNumber(txReceiptRpc.cumulativeGasUsed),
+            gasUsed: utils.convertHexToNumber(txReceiptRpc.gasUsed),
+            logs: _.map(txReceiptRpc.logs, marshaller.unmarshalLog.bind(marshaller)),
+        };
+        return txReceipt;
     },
     /**
      * Unmarshall transaction data

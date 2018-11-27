@@ -1,61 +1,92 @@
 ## 0x Contribution Guide
 
-Thank you for your interest in contributing to 0x protocol! We welcome contributions from anyone on the internet, and are grateful for even the smallest of fixes!
+We welcome contributions from anyone on the internet and are grateful for even the smallest contributions. This document will help get you setup to start contributing back to 0x.
 
-### How to contribute
+### Getting started
 
-If you'd like to contribute to 0x protocol, please fork the repo, fix, commit and send a pull request against the `development` branch for the maintainers to review and merge into the main code base. If you wish to submit more complex changes though, please check with a core dev first on [our RocketChat #dev channel](http://chat.0xproject.com) to ensure those changes are in-line with the general philosophy of the project and/or to get some early feedback which can make both your efforts easier as well as our review and merge procedures quick and simple.
+1.  Fork `0xproject/0x-monorepo`
+2.  Clone your fork
+3.  Follow the [installation & build steps](https://github.com/0xProject/0x-monorepo#install-dependencies) in the repo's top-level README.
+4.  Setup the recommended [Development Tooling](#development-tooling).
+5.  Open a PR with the `[WIP]` flag against the `development` branch and describe the change you are intending to undertake in the PR description. (see [our branch naming conventions](#branch-structure))
 
-We encourage a “PR early” approach so create the PR as early as possible even without the fix/feature ready, so that devs and other contributors know you have picked up the issue. These early PRs should indicate an 'in progress' status by adding the '[WIP]' prefix to the PR title. Please make sure your contributions adhere to our coding guidelines:
+Before removing the `[WIP]` tag and submitting the PR for review, make sure:
 
-*   Pull requests adding features or refactoring should be opened against the `development` branch
-*   Pull requests fixing bugs in the latest release version should be opened again the `master` branch
-*   Write [good commit messages](https://chris.beams.io/posts/git-commit/)
+*   It passes our linter checks (`yarn lint`)
+*   It is properly formatted with Prettier (`yarn prettier`)
+*   It passes our continuous integration tests (See: [Enabling code coverage checks on your fork](#enabling-code-coverage-checks-on-your-fork) for instructions on getting the `submit-coverage` test to pass on forks)
+*   You've created/updated the corresponding [CHANGELOG](#CHANGELOGs) entries.
+*   Your changes have sufficient test coverage (e.g regression tests have been added for bug fixes)
 
-### Code quality
+### Branch structure
 
-Because 0x.js is used by multiple relayers in production and their businesses depend on it, we strive for exceptional code quality. Please follow the existing code standards and conventions. `tslint` and `prettier` (described below) will help you.
+We have two main branches:
 
-If you're adding functionality, please also add tests and make sure they pass. We have an automatic coverage reporting tool, so we'll see it if they are missing ;)
-If you're adding a new public function/member, make sure you document it with Java doc-style comments. We use typedoc to generate [awesome documentation](https://0xproject.com/docs/0xjs) from the comments within our source code.
+*   `master` represents the most recently released (published on npm) version of the codebase.
+*   `development` represents the current development state of the codebase.
 
-If the sub-package you are modifying has a `CHANGELOG.md` file, make sure to add an entry in it for the change made to the package. For published packages, only changes that modify the public interface or behavior of the package need a CHANGELOG entry.
+ALL PRs should be opened against `development`.
 
-#### Enabling code coverage checks on your fork
+Branch names should be prefixed with `fix`, `feature` or `refactor`.
 
-If you simply fork the repo and then create a PR sourced from it, your PR will fail its test coverage check. This is because the 0x CircleCI configuration sets the `COVERALLS_REPO_TOKEN` environment variable to the token for 0xProject/0x-monorepo, but when running the check against your fork the token needs to match the repo that is your fork, rather than the 0x repo.
+*   e.g `fix/broken-wiki-link`
+*   If the PR only edits a single package, add it's name too
+    *   e.g `fix/website/broken-wiki-link`
 
-To facilitate this check, after creating your fork, but before creating the branch for your PR, do the following:
+### CHANGELOGs
 
-1.  Log in to [coveralls.io](https://coveralls.io/), go to Add Repos, and enable your fork. Then go to the settings for that repo, and copy the Repo Token identifier.
-2.  Log in to [CircleCI](https://circleci.com/login), go to Add Projects, click the Set Up Project button corresponding to your fork, and then click Start Building. (Aside from step 3 below, no actual set up is needed, since it will use the `.circleci/config.yml` file in 0x-monorepo, so you can ignore all of the instruction/explanation given on the page with the Start Building button.)
-3.  In CircleCI, configure your project to add an Environment Variable, with name `COVERALLS_REPO_TOKEN`, and for the value paste in the Repo Token you copied in step 1.
+At 0x we use [Semantic Versioning](http://semver.org/) for all our published packages. If a change you make corresponds to a semver bump, you must modify the package's `CHANGELOG.json` file accordingly.
 
-Now, when you push to your branch, CircleCI will automatically run all of the checks in your own instance, and the coverage check will work since it has the proper Repo Token, and the PR will magically refer to your own checks rather than running them in the 0x CircleCI instance.
+Each CHANGELOG entry that corresponds to a published package will have a `timestamp`. If no entry exists without a `timestamp`, you must first create a new one:
 
-### Styleguide
+```
+{
+        "version": "1.0.1", <- The updated package version
+        "changes": [
+            {
+                "note": "", <- Describe your change
+                "PR": 100 <- Your PR number
+            }
+        ]
+    },
+```
 
-We use [TSLint](https://palantir.github.io/tslint/) with [custom configs](https://github.com/0xProject/0x-monorepo/tree/development/packages/tslint-config) to keep our code style consistent.
+If an entry without a `timestamp` already exists, this means other changes have been introduced by other collaborators since the last publish. Add your changes to the list of notes and adjust the version if your PR introduces a greater semver change (i.e current changes required a patch bump, but your changes require a major version bump).
 
-To lint your code just run: `yarn lint`
+### Development Tooling
 
-We also use [Prettier](https://prettier.io/) to auto-format our code. Be sure to either add a [text editor integration](https://prettier.io/docs/en/editors.html) or a [pre-commit hook](https://prettier.io/docs/en/precommit.html) to properly format your code changes.
+We strongly recommend you use the [VSCode](https://code.visualstudio.com/) text editor since most of our code is written in Typescript and it offers amazing support for the language.
+
+#### Linter
+
+We use [TSLint](https://palantir.github.io/tslint/) with [custom configs](https://github.com/0xProject/0x-monorepo/tree/development/packages/tslint-config) to keep our code-style consistent.
+
+Use `yarn:lint` to lint the entire monorepo, and `PKG={PACKAGE_NAME} yarn lint` to lint a specific package.
+
+If you want to change a rule, or add a custom rule, please make these changes to our [tslint-config](https://github.com/0xProject/0x-monorepo/tree/development/packages/tslint-config) package. All other packages have it as a dependency.
+
+Integrate it into your text editor:
+
+*   VSCode: [vscode-tslint](https://marketplace.visualstudio.com/items?itemName=eg2.tslint)
+*   Atom: [linter-tslint](https://atom.io/packages/linter-tslint)
+
+#### Auto-formatter
+
+We use [Prettier](https://prettier.io/) to auto-format our code. Be sure to either add a [text editor integration](https://prettier.io/docs/en/editors.html) or a [pre-commit hook](https://prettier.io/docs/en/precommit.html) to properly format your code changes.
 
 If using the Atom text editor, we recommend you install the following packages:
 
-*   [atom-typescript](https://atom.io/packages/atom-typescript)
-*   [linter-tslint](https://atom.io/packages/linter-tslint)
-*   [prettier-atom](https://atom.io/packages/prettier-atom)
-*   [language-ethereum](https://atom.io/packages/language-ethereum)
+*   VSCode: [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+*   Atom: [prettier-atom](https://atom.io/packages/prettier-atom)
 
-Our CI will also run TSLint and Prettier as a part of the test run when you submit your PR. Make sure that the CI tests pass for your contribution.
+## Fix `submit-coverage` CI failure
 
-### Branch structure & versioning
+If you simply fork the repo and then create a PR from it, your PR will fail the `submit-coverage` check on CI. This is because the 0x CircleCI configuration sets the `COVERALLS_REPO_TOKEN` environment variable to the token for `0xProject/0x-monorepo`, but when running the check against your fork the token needs to match your repo's name `your-username/0x-monorepo`.
 
-We use [semantic versioning](http://semver.org/), but before a package reaches v1.0.0 all breaking changes as well as new features will be minor version bumps.
+To facilitate this check, after creating your fork, but before creating the branch for your PR, do the following:
 
-We have two main branches: `master` and `development`.
+1.  Log in to [coveralls.io](https://coveralls.io/), go to `Add Repos`, and enable your fork. Then go to the settings for that repo, and copy the `Repo Token` identifier.
+2.  Log in to [CircleCI](https://circleci.com/login), go to `Add Projects`, click the `Set Up Project` button corresponding to your fork, and then click `Start Building`. (Aside from step 3 below, no actual set up is needed, since it will use the `.circleci/config.yml` file in 0x-monorepo, so you can ignore all of the instruction/explanation given on the page with the `Start Building` button.)
+3.  In CircleCI, configure your project to add an environment variable, with name `COVERALLS_REPO_TOKEN`, and for the value paste in the `Repo Token` you copied in step 1.
 
-`master` represents the most recent released (published on npm) version.
-
-`development` represents the development state and is a default branch to which you will submit a PR. We use this structure so that we can push hotfixes to the currently released version without needing to publish all the changes made towards the next release. If a hotfix is implemented on `master`, it is back-ported to `development`.
+Now, when you push to your branch, CircleCI will automatically run all of the checks in your own instance, and the coverage check will work since it has the proper `Repo Token`, and the PR will magically refer to your own checks rather than running them in the 0x CircleCI instance.

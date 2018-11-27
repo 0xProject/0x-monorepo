@@ -1,36 +1,59 @@
 import * as React from 'react';
 
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 
 import { SlidingError } from '../components/sliding_error';
+import { Overlay } from '../components/ui/overlay';
+import { Action } from '../redux/actions';
 import { State } from '../redux/reducer';
-import { DisplayStatus } from '../types';
-import { errorUtil } from '../util/error';
+import { ScreenWidths } from '../style/media';
+import { generateOverlayBlack } from '../style/theme';
+import { zIndex } from '../style/z_index';
+import { Asset, DisplayStatus, Omit, SlideAnimationState } from '../types';
+import { errorFlasher } from '../util/error_flasher';
 
 export interface LatestErrorComponentProps {
-    assetData?: string;
-    latestError?: any;
-    slidingDirection: 'down' | 'up';
+    asset?: Asset;
+    latestErrorMessage?: string;
+    animationState: SlideAnimationState;
+    shouldRenderOverlay: boolean;
+    onOverlayClick: () => void;
 }
 
 export const LatestErrorComponent: React.StatelessComponent<LatestErrorComponentProps> = props => {
-    if (!props.latestError) {
+    if (!props.latestErrorMessage) {
         return <div />;
     }
-    const { icon, message } = errorUtil.errorDescription(props.latestError, props.assetData);
-    return <SlidingError direction={props.slidingDirection} icon={icon} message={message} />;
+    return (
+        <React.Fragment>
+            <SlidingError animationState={props.animationState} icon="😢" message={props.latestErrorMessage} />
+            {props.shouldRenderOverlay && (
+                <Overlay
+                    onClick={props.onOverlayClick}
+                    zIndex={zIndex.containerOverlay}
+                    showMaxWidth={ScreenWidths.Sm}
+                    backgroundColor={generateOverlayBlack(0.4)}
+                />
+            )}
+        </React.Fragment>
+    );
 };
 
-interface ConnectedState {
-    assetData?: string;
-    latestError?: any;
-    slidingDirection: 'down' | 'up';
-}
 export interface LatestErrorProps {}
+interface ConnectedState extends Omit<LatestErrorComponentProps, 'onOverlayClick'> {}
 const mapStateToProps = (state: State, _ownProps: LatestErrorProps): ConnectedState => ({
-    assetData: state.selectedAssetData,
-    latestError: state.latestError,
-    slidingDirection: state.latestErrorDisplay === DisplayStatus.Present ? 'up' : 'down',
+    asset: state.selectedAsset,
+    latestErrorMessage: state.latestErrorMessage,
+    animationState: state.latestErrorDisplayStatus === DisplayStatus.Present ? 'slidIn' : 'slidOut',
+    shouldRenderOverlay: state.latestErrorDisplayStatus === DisplayStatus.Present,
 });
 
-export const LatestError = connect(mapStateToProps)(LatestErrorComponent);
+type ConnectedDispatch = Pick<LatestErrorComponentProps, 'onOverlayClick'>;
+const mapDispatchToProps = (dispatch: Dispatch<Action>, _ownProps: LatestErrorProps): ConnectedDispatch => ({
+    onOverlayClick: () => {
+        errorFlasher.clearError(dispatch);
+    },
+});
+
+export const LatestError = connect(mapStateToProps, mapDispatchToProps)(LatestErrorComponent);

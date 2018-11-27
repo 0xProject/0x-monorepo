@@ -91,6 +91,7 @@ export const utils = {
         const changelog = changelogUtils.getChangelogOrCreateIfMissing(packageName, packageLocation);
         if (_.isEmpty(changelog)) {
             nextVersionIfValid = semver.inc(currentVersion, 'patch');
+            return nextVersionIfValid as string;
         }
         const lastEntry = changelog[0];
         if (semver.gt(currentVersion, lastEntry.version)) {
