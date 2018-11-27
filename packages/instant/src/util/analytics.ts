@@ -47,7 +47,6 @@ function trackingEventFnWithPayload(eventName: EventNames): (eventProperties: Ev
 }
 
 const buyQuoteEventProperties = (buyQuote: BuyQuote) => {
-    const assetData = buyQuote.assetData.toString();
     const assetBuyAmount = buyQuote.assetBuyAmount.toString();
     const assetEthAmount = buyQuote.worstCaseQuoteInfo.assetEthAmount.toString();
     const feeEthAmount = buyQuote.worstCaseQuoteInfo.feeEthAmount.toString();
@@ -55,7 +54,6 @@ const buyQuoteEventProperties = (buyQuote: BuyQuote) => {
     const feePercentage = !_.isUndefined(buyQuote.feePercentage) ? buyQuote.feePercentage.toString() : 0;
     const hasFeeOrders = !_.isEmpty(buyQuote.feeOrders) ? 'true' : 'false';
     return {
-        assetData,
         assetBuyAmount,
         assetEthAmount,
         feeEthAmount,
@@ -104,10 +102,27 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.BUY_SIGNATURE_DENIED)(buyQuoteEventProperties(buyQuote)),
     trackBuySimulationFailed: (buyQuote: BuyQuote) =>
         trackingEventFnWithPayload(EventNames.BUY_SIMULATION_FAILED)(buyQuoteEventProperties(buyQuote)),
-    trackBuyTxSubmitted: (buyQuote: BuyQuote, txHash: string) =>
-        trackingEventFnWithPayload(EventNames.BUY_TX_SUBMITTED)({ ...buyQuoteEventProperties(buyQuote), txHash }),
-    trackBuyTxSucceeded: (buyQuote: BuyQuote, txHash: string) =>
-        trackingEventFnWithPayload(EventNames.BUY_TX_SUCCEEDED)({ ...buyQuoteEventProperties(buyQuote), txHash }),
-    trackBuyTxFailed: (buyQuote: BuyQuote, txHash: string) =>
-        trackingEventFnWithPayload(EventNames.BUY_TX_FAILED)({ ...buyQuoteEventProperties(buyQuote), txHash }),
+    trackBuyTxSubmitted: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+        trackingEventFnWithPayload(EventNames.BUY_TX_SUBMITTED)({
+            ...buyQuoteEventProperties(buyQuote),
+            txHash,
+            startTimeUnix,
+            expectedEndTimeUnix,
+        }),
+    trackBuyTxSucceeded: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+        trackingEventFnWithPayload(EventNames.BUY_TX_SUCCEEDED)({
+            ...buyQuoteEventProperties(buyQuote),
+            txHash,
+            startTimeUnix,
+            expectedEndTimeUnix,
+            actualEndTimeUnix: new Date().getTime(),
+        }),
+    trackBuyTxFailed: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
+        trackingEventFnWithPayload(EventNames.BUY_TX_FAILED)({
+            ...buyQuoteEventProperties(buyQuote),
+            txHash,
+            startTimeUnix,
+            expectedEndTimeUnix,
+            actualEndTimeUnix: new Date().getTime(),
+        }),
 };
