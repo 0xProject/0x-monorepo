@@ -13,17 +13,17 @@ export const Screenshots = (props: ScreenshotsProps) => {
     const isSmallScreen = props.screenWidth === ScreenWidths.Sm;
     const images = isSmallScreen
         ? [
-              'images/instant/omg_screenshot.png',
-              'images/instant/kitty_screenshot.png',
-              'images/instant/bat_screenshot.png',
+              'images/instant/rep_screenshot.png',
+              'images/instant/dai_screenshot.png',
+              'images/instant/gods_screenshot.png',
           ]
         : [
-              'images/instant/snt_screenshot.png',
-              'images/instant/omg_screenshot.png',
+              'images/instant/nmr_screenshot.png',
               'images/instant/kitty_screenshot.png',
-              'images/instant/bat_screenshot.png',
-              'images/instant/leroy_screenshot.png',
-              'images/instant/mkr_screenshot.png',
+              'images/instant/rep_screenshot.png',
+              'images/instant/dai_screenshot.png',
+              'images/instant/gods_screenshot.png',
+              'images/instant/gnt_screenshot.png',
           ];
     return (
         <Container backgroundColor={colors.instantPrimaryBackground} className="py3 flex justify-center">
