@@ -6,7 +6,7 @@ import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
 
 export const Introducing0xInstant = () => (
-    <div className="clearfix center lg-pt4 md-pt4" style={{ backgroundColor: colors.instantBackground }}>
+    <div className="clearfix center lg-pt4 md-pt4" style={{ backgroundColor: colors.instantPrimaryBackground }}>
         <div className="mx-auto inline-block align-middle py4" style={{ lineHeight: '44px', textAlign: 'center' }}>
             <Container className="sm-center sm-pt3">
                 <Text

@@ -47,14 +47,14 @@ export class Instant extends React.Component<InstantProps, InstantState> {
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
-                    style={{ backgroundColor: colors.instantBackground, position: 'relative' }}
+                    style={{ backgroundColor: colors.instantPrimaryBackground, position: 'relative' }}
                     translate={this.props.translate}
                     isNightVersion={true}
                 />
-                <Container backgroundColor={colors.instantBackground} />
+                <Container backgroundColor={colors.instantPrimaryBackground} />
                 <Introducing0xInstant />
                 <Screenshots />
-                <Features />
+                <Features screenWidth={this.props.screenWidth} />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </Container>
         );
