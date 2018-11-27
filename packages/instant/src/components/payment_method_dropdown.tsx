@@ -1,5 +1,5 @@
 import { BigNumber } from '@0x/utils';
-import copy from 'copy-to-clipboard';
+import * as copy from 'copy-to-clipboard';
 import * as React from 'react';
 
 import { Network } from '../types';
