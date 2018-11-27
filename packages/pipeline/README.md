@@ -47,26 +47,45 @@ formatted
 
 ## Test environment
 
-Make sure you have postgres installed. Then create a test database and export the connection string as the necessary environment variable. Example:
+The easiest way to start Postgres is via Docker. Depending on your
+platform, you may need to prepend `sudo` to the following command:
 
 ```
-$ psql -d postgres
-postgres=# CREATE DATABASE datapipeline_test;
-postgres=# \q
-$ export ZEROEX_DATA_PIPELINE_DB_URL='postgresql://localhost:5432/datapipeline_test'
+docker run --rm -d -p 5432:5432 --name pipeline_postgres postgres:11-alpine
 ```
 
-Run migrations:
+This will start a Postgres server with the default username and database name.
+You should set the environment variable as follows:
 
 ```
-$ yarn migrate:run
+export ZEROEX_DATA_PIPELINE_DB_URL=postgresql://postgres@localhost/postgres
 ```
 
-Now the scripts should work:
+First thing you will need to do is run the migrations:
 
 ```
-$ node packages/pipeline/lib/src/scripts/pull_radar_relay_orders.js
+yarn migrate:run
 ```
+
+Now you can run scripts locally:
+
+```
+node packages/pipeline/lib/src/scripts/pull_radar_relay_orders.js
+```
+
+To stop the Postgres server (you may need to add `sudo`):
+
+```
+docker stop pipeline_postgres
+```
+
+This will remove all data from the database.
+
+If you prefer, you can also install Postgres with e.g.,
+[Homebrew](https://wiki.postgresql.org/wiki/Homebrew) or
+[Postgress.app](https://postgresapp.com/). As long as you set the
+`ZEROEX_DATA_PIPELINE_DB_URL` environment variable appropriately, any Postgres
+server will work.
 
 ## Directory structure
 
