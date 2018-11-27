@@ -32,8 +32,8 @@ contract DutchAuction {
     IExchange internal EXCHANGE;
 
     struct AuctionDetails {
-        uint256 beginTimeSeconds;    // Auction begin time in seconds: sellOrder.makerAssetData
-        uint256 endTimeSeconds;      // Auction end time in seconds: sellOrder.expiryTimeSeconds
+        uint256 beginTimeSeconds;    // Auction begin unix timestamp: sellOrder.makerAssetData
+        uint256 endTimeSeconds;      // Auction end unix timestamp: sellOrder.expiryTimeSeconds
         uint256 beginAmount;         // Auction begin amount: sellOrder.makerAssetData
         uint256 endAmount;           // Auction end amount: sellOrder.takerAssetAmount
         uint256 currentAmount;       // Calculated amount given block.timestamp
@@ -80,8 +80,6 @@ contract DutchAuction {
         require(auctionDetails.currentTimeSeconds >= auctionDetails.beginTimeSeconds, "AUCTION_NOT_STARTED");
         // Ensure the auction has not expired. This will fail later in 0x but we can save gas by failing early
         require(sellOrder.expirationTimeSeconds > auctionDetails.currentTimeSeconds, "AUCTION_EXPIRED");
-        // Ensure the auction goes from high to low
-        require(auctionDetails.beginAmount > auctionDetails.endAmount, "INVALID_AMOUNT");
         // Validate the buyer amount is greater than the current auction amount
         require(buyOrder.makerAssetAmount >= auctionDetails.currentAmount, "INVALID_AMOUNT");
         // Match orders, maximally filling `buyOrder`
@@ -91,19 +89,34 @@ contract DutchAuction {
             buySignature,
             sellSignature
         );
-        // Return any spread to the seller
+        // The difference in sellOrder.takerAssetAmount and current amount is given as spread to the matcher
+        // This may include additional spread from the buyOrder.makerAssetAmount and the currentAmount.
+        // e.g currentAmount is 30, sellOrder.takerAssetAmount is 10 and buyOrder.makerAssetamount is 40.
+        // 10 (40-30) is returned to the buyer, 20 (30-10) sent to the seller and 10 has previously
+        // been transferred to the seller during matchOrders
         uint256 leftMakerAssetSpreadAmount = matchedFillResults.leftMakerAssetSpreadAmount;
         if (leftMakerAssetSpreadAmount > 0) {
+            // ERC20 Asset data itself is encoded as follows:
+            //
+            // | Area     | Offset | Length  | Contents                            |
+            // |----------|--------|---------|-------------------------------------|
+            // | Header   | 0      | 4       | function selector                   |
+            // | Params   |        | 1 * 32  | function parameters:                |
+            // |          | 4      | 12 + 20 |   1. token address                  |
+            bytes memory assetData = sellOrder.takerAssetData;
+            address token = assetData.readAddress(16);
             // Calculate the excess from the buy order. This can occur if the buyer sends in a higher
             // amount than the calculated current amount
             uint256 buyerExcessAmount = buyOrder.makerAssetAmount-auctionDetails.currentAmount;
             uint256 sellerExcessAmount = leftMakerAssetSpreadAmount-buyerExcessAmount;
-            bytes memory assetData = sellOrder.takerAssetData;
-            address token = assetData.readAddress(16);
+            // Return the difference between auctionDetails.currentAmount and sellOrder.takerAssetAmount
+            // to the seller
             if (sellerExcessAmount > 0) {
                 address makerAddress = sellOrder.makerAddress;
                 IERC20Token(token).transfer(makerAddress, sellerExcessAmount);
             }
+            // Return the difference between buyOrder.makerAssetAmount and auctionDetails.currentAmount
+            // to the buyer
             if (buyerExcessAmount > 0) {
                 address takerAddress = buyOrder.makerAddress;
                 IERC20Token(token).transfer(takerAddress, buyerExcessAmount);
@@ -122,12 +135,26 @@ contract DutchAuction {
         returns (AuctionDetails memory auctionDetails)
     {
         uint256 makerAssetDataLength = order.makerAssetData.length;
-        // We assume auctionBeginTimeSeconds and auctionBeginAmount are appended to the makerAssetData
+        // It is unknown the encoded data of makerAssetData, we assume the last 64 bytes
+        // are the Auction Details encoding.
+        // Auction Details is encoded as follows:
+        //
+        // | Area     | Offset | Length  | Contents                            |
+        // |----------|--------|---------|-------------------------------------|
+        // | Params   |        | 2 * 32  | parameters:                         |
+        // |          | -64    | 32      |   1. auction begin unix timestamp   |
+        // |          | -32    | 32      |   2. auction begin begin amount     |
+        // ERC20 asset data length is 4+32, 64 for auction details results in min length if 100
+        require(makerAssetDataLength > 10, "INVALID_ASSET_DATA");
         uint256 auctionBeginTimeSeconds = order.makerAssetData.readUint256(makerAssetDataLength-64);
         uint256 auctionBeginAmount = order.makerAssetData.readUint256(makerAssetDataLength-32);
+        // Ensure the auction has a valid begin time
         require(order.expirationTimeSeconds > auctionBeginTimeSeconds, "INVALID_BEGIN_TIME");
         uint256 auctionDurationSeconds = order.expirationTimeSeconds-auctionBeginTimeSeconds;
+        // Ensure the auction goes from high to low
         uint256 minAmount = order.takerAssetAmount;
+        require(auctionBeginAmount > minAmount, "INVALID_AMOUNT");
+        uint256 amountDelta = auctionBeginAmount-minAmount;
         // solhint-disable-next-line not-rely-on-time
         uint256 timestamp = block.timestamp;
         auctionDetails.beginTimeSeconds = auctionBeginTimeSeconds;
@@ -137,8 +164,9 @@ contract DutchAuction {
         auctionDetails.currentTimeSeconds = timestamp;
 
         uint256 remainingDurationSeconds = order.expirationTimeSeconds-timestamp;
-        uint256 amountDelta = auctionBeginAmount-minAmount;
         uint256 currentAmount = minAmount + (remainingDurationSeconds*amountDelta/auctionDurationSeconds);
+        // Check the bounds where we SafeMath was avoivded so the auction details can be queried prior
+        // and after the auction time.
         // If the auction has not yet begun the current amount is the auctionBeginAmount
         currentAmount = timestamp < auctionBeginTimeSeconds ? auctionBeginAmount : currentAmount;
         // If the auction has ended the current amount is the minAmount

@@ -6,6 +6,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import ethAbi = require('ethereumjs-abi');
 import * as ethUtil from 'ethereumjs-util';
+import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
@@ -29,7 +30,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 
-describe.only(ContractName.DutchAuction, () => {
+describe(ContractName.DutchAuction, () => {
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -46,7 +47,6 @@ describe.only(ContractName.DutchAuction, () => {
     let buyerOrderFactory: OrderFactory;
     let erc20Wrapper: ERC20Wrapper;
     let erc20Balances: ERC20BalancesByOwner;
-    let tenMinutesInSeconds: number;
     let currentBlockTimestamp: number;
     let auctionBeginTimeSeconds: BigNumber;
     let auctionEndTimeSeconds: BigNumber;
@@ -55,16 +55,14 @@ describe.only(ContractName.DutchAuction, () => {
     let sellOrder: SignedOrder;
     let buyOrder: SignedOrder;
     let erc721MakerAssetIds: BigNumber[];
+    const tenMinutesInSeconds = 10 * 60;
+
     async function increaseTimeAsync(): Promise<void> {
         const timestampBefore = await getLatestBlockTimestampAsync();
         await web3Wrapper.increaseTimeAsync(5);
         const timestampAfter = await getLatestBlockTimestampAsync();
         // HACK send some transactions when a time increase isn't supported
         if (timestampAfter === timestampBefore) {
-            await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
-            await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
-            await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
-            await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
             await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
         }
     }
@@ -159,7 +157,6 @@ describe.only(ContractName.DutchAuction, () => {
         web3Wrapper.abiDecoder.addABI(zrxToken.abi);
         erc20Wrapper.addTokenOwnerAddress(dutchAuctionContract.address);
 
-        tenMinutesInSeconds = 10 * 60;
         currentBlockTimestamp = await getLatestBlockTimestampAsync();
         // Default auction begins 10 minutes ago
         auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp).minus(tenMinutesInSeconds);
@@ -229,8 +226,8 @@ describe.only(ContractName.DutchAuction, () => {
             expect(auctionDetails.beginAmount).to.be.bignumber.equal(auctionBeginAmount);
         });
         it('should be be worth the end price at the end of the auction', async () => {
-            auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp - 1000);
-            auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp - 100);
+            auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp - tenMinutesInSeconds * 2);
+            auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp - tenMinutesInSeconds);
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
                 makerAssetData: extendMakerAssetData(
                     assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
@@ -244,9 +241,9 @@ describe.only(ContractName.DutchAuction, () => {
             expect(auctionDetails.beginAmount).to.be.bignumber.equal(auctionBeginAmount);
         });
         it('should match orders at current amount and send excess to buyer', async () => {
-            const auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
+            const beforeAuctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
             buyOrder = await buyerOrderFactory.newSignedOrderAsync({
-                makerAssetAmount: auctionDetails.currentAmount.times(2),
+                makerAssetAmount: beforeAuctionDetails.currentAmount.times(2),
             });
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await dutchAuctionContract.matchOrders.sendTransactionAsync(
@@ -259,6 +256,7 @@ describe.only(ContractName.DutchAuction, () => {
                     },
                 ),
             );
+            const afterAuctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             expect(newBalances[dutchAuctionContract.address][wethContract.address]).to.be.bignumber.equal(
                 constants.ZERO_AMOUNT,
@@ -267,13 +265,13 @@ describe.only(ContractName.DutchAuction, () => {
             // between multiple calls to the same block. Which can move the amount in our case
             // ref: https://github.com/trufflesuite/ganache-core/issues/111
             expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.gte(
-                erc20Balances[makerAddress][wethContract.address].plus(auctionDetails.currentAmount),
+                erc20Balances[makerAddress][wethContract.address].plus(afterAuctionDetails.currentAmount),
             );
-            expect(newBalances[takerAddress][wethContract.address]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][wethContract.address].minus(auctionDetails.currentAmount),
+            expect(newBalances[takerAddress][wethContract.address]).to.be.bignumber.gte(
+                erc20Balances[takerAddress][wethContract.address].minus(afterAuctionDetails.currentAmount),
             );
         });
-        it('should have valid getAuctionDetails at a block in the future', async () => {
+        it('should have valid getAuctionDetails at some block in the future', async () => {
             let auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
             const beforeAmount = auctionDetails.currentAmount;
             await increaseTimeAsync();
@@ -291,6 +289,8 @@ describe.only(ContractName.DutchAuction, () => {
                 sellOrder.signature,
                 {
                     from: takerAddress,
+                    // HACK geth seems to miscalculate the gas required intermittently
+                    gas: 400000,
                 },
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
@@ -303,7 +303,6 @@ describe.only(ContractName.DutchAuction, () => {
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
                 makerFee: new BigNumber(1),
             });
-            const auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
             const txHash = await dutchAuctionContract.matchOrders.sendTransactionAsync(
                 buyOrder,
                 sellOrder,
@@ -314,9 +313,10 @@ describe.only(ContractName.DutchAuction, () => {
                 },
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+            const afterAuctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.gte(
-                erc20Balances[makerAddress][wethContract.address].plus(auctionDetails.currentAmount),
+                erc20Balances[makerAddress][wethContract.address].plus(afterAuctionDetails.currentAmount),
             );
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[feeRecipientAddress][zrxToken.address].plus(sellOrder.makerFee),
@@ -326,7 +326,6 @@ describe.only(ContractName.DutchAuction, () => {
             buyOrder = await buyerOrderFactory.newSignedOrderAsync({
                 makerFee: new BigNumber(1),
             });
-            const auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
             const txHash = await dutchAuctionContract.matchOrders.sendTransactionAsync(
                 buyOrder,
                 sellOrder,
@@ -338,8 +337,9 @@ describe.only(ContractName.DutchAuction, () => {
             );
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
             const newBalances = await erc20Wrapper.getBalancesAsync();
+            const afterAuctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
             expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.gte(
-                erc20Balances[makerAddress][wethContract.address].plus(auctionDetails.currentAmount),
+                erc20Balances[makerAddress][wethContract.address].plus(afterAuctionDetails.currentAmount),
             );
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[feeRecipientAddress][zrxToken.address].plus(buyOrder.makerFee),
@@ -432,7 +432,6 @@ describe.only(ContractName.DutchAuction, () => {
                     takerAssetAmount: new BigNumber(1),
                     takerAssetData: sellOrder.makerAssetData,
                 });
-                const auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await dutchAuctionContract.matchOrders.sendTransactionAsync(
                         buyOrder,
@@ -444,12 +443,13 @@ describe.only(ContractName.DutchAuction, () => {
                         },
                     ),
                 );
+                const afterAuctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 // HACK gte used here due to a bug in ganache where the timestamp can change
                 // between multiple calls to the same block. Which can move the amount in our case
                 // ref: https://github.com/trufflesuite/ganache-core/issues/111
                 expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.gte(
-                    erc20Balances[makerAddress][wethContract.address].plus(auctionDetails.currentAmount),
+                    erc20Balances[makerAddress][wethContract.address].plus(afterAuctionDetails.currentAmount),
                 );
                 const newOwner = await erc721Token.ownerOf.callAsync(makerAssetId);
                 expect(newOwner).to.be.bignumber.equal(takerAddress);
