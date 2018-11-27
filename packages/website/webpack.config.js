@@ -85,6 +85,13 @@ const config = {
             ],
         },
         disableHostCheck: true,
+        // Fixes assertion error
+        // Source: https://github.com/webpack/webpack-dev-server/issues/1491
+        https: {
+            spdy: {
+                protocols: ['http/1.1']
+            }
+        },
     },
 };
 
