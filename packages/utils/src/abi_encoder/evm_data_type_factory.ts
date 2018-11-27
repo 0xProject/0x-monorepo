@@ -1,6 +1,4 @@
-/* tslint:disable prefer-function-over-method */
 /* tslint:disable max-classes-per-file */
-/* tslint:disable no-construct */
 import { DataItem, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -73,6 +71,7 @@ export class Method extends Impl.Method {
     }
 }
 
+/* tslint:disable no-construct */
 export class EvmDataTypeFactory implements DataTypeFactory {
     private static _instance: DataTypeFactory;
 
@@ -83,6 +82,7 @@ export class EvmDataTypeFactory implements DataTypeFactory {
         return EvmDataTypeFactory._instance;
     }
 
+    /* tslint:disable prefer-function-over-method */
     public create(dataItem: DataItem, parentDataType?: DataType): DataType {
         // Create data type
         let dataType: undefined | DataType;
@@ -114,6 +114,8 @@ export class EvmDataTypeFactory implements DataTypeFactory {
         }
         return dataType;
     }
+    /* tslint:enable prefer-function-over-method */
 
     private constructor() {}
 }
+/* tslint:enable no-construct */

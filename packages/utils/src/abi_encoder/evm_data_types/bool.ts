@@ -1,4 +1,3 @@
-/* tslint:disable prefer-function-over-method */
 import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -22,6 +21,8 @@ export class Bool extends AbstractDataTypes.Blob {
         }
     }
 
+    // Disable prefer-function-over-method for inherited abstract methods.
+    /* tslint:disable prefer-function-over-method */
     public encodeValue(value: boolean): Buffer {
         const encodedValue = value ? '0x1' : '0x0';
         const encodedValueBuf = ethUtil.setLengthLeft(
@@ -47,4 +48,5 @@ export class Bool extends AbstractDataTypes.Blob {
     public getSignature(): string {
         return 'bool';
     }
+    /* tslint:enable prefer-function-over-method */
 }

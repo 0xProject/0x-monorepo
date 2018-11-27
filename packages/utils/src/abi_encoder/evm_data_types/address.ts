@@ -1,4 +1,3 @@
-/* tslint:disable prefer-function-over-method */
 import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -26,10 +25,8 @@ export class Address extends AbstractDataTypes.Blob {
         }
     }
 
-    public getSignature(): string {
-        return 'address';
-    }
-
+    // Disable prefer-function-over-method for inherited abstract methods.
+    /* tslint:disable prefer-function-over-method */
     public encodeValue(value: string): Buffer {
         if (!_.startsWith(value, '0x')) {
             throw new Error(Address.ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X);
@@ -48,4 +45,9 @@ export class Address extends AbstractDataTypes.Blob {
         const value = ethUtil.bufferToHex(valueBuf);
         return value;
     }
+
+    public getSignature(): string {
+        return 'address';
+    }
+    /* tslint:enable prefer-function-over-method */
 }

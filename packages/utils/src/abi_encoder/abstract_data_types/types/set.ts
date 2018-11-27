@@ -50,7 +50,7 @@ export abstract class Set extends DataType {
     public generateValue(calldata: RawCalldata, rules: DecodingRules): any[] | object {
         let members = this._members;
         // Case 1: This is an array of undefined length, which means that `this._members` was not
-        //         populated in the constructor. So, construct the set of members it now.
+        //         populated in the constructor. So we must construct the set of members now.
         if (this._isArray && _.isUndefined(this._arrayLength)) {
             const arrayLengthBuf = calldata.popWord();
             const arrayLengthHex = ethUtil.bufferToHex(arrayLengthBuf);
@@ -176,7 +176,7 @@ export abstract class Set extends DataType {
     private _createMembersWithKeys(dataItem: DataItem): [DataType[], MemberIndexByName] {
         // Sanity check
         if (_.isUndefined(dataItem.components)) {
-            throw new Error(`Expected components`);
+            throw new Error(`Tried to create a set using key/value pairs, but no components were defined by the input DataItem '${dataItem.name}'.`);
         }
         // Create one member for each component of `dataItem`
         const members: DataType[] = [];

@@ -59,7 +59,7 @@ export class Calldata {
             offset += block.getSizeInBytes();
         }
         // Generate hex string
-        const hexString = this._rules.annotate ? this._toAnnotatedString() : this._toCondensedString();
+        const hexString = this._rules.annotate ? this._toHumanReadableCallData() : this._toEvmCompatibeCallDataHex();
         return hexString;
     }
     /**
@@ -131,10 +131,7 @@ export class Calldata {
             }
         }
     }
-    /**
-     * Returns EVM-compatible calldata as a Hex string.
-     */
-    private _toCondensedString(): string {
+    private _toEvmCompatibeCallDataHex(): string {
         // Sanity check: must have a root block.
         if (_.isUndefined(this._root)) {
             throw new Error('expected root');
@@ -152,7 +149,7 @@ export class Calldata {
         return hexValue;
     }
     /**
-     * Returns human-redable calldata.
+     * Returns human-readable calldata.
      *
      * Example:
      *   simpleFunction(string[], string[])
@@ -173,7 +170,7 @@ export class Calldata {
      *   0xe0      0000000000000000000000000000000000000000000000000000000000000005              array2[1]
      *   0x100     576f726c64000000000000000000000000000000000000000000000000000000
      */
-    private _toAnnotatedString(): string {
+    private _toHumanReadableCallData(): string {
         // Sanity check: must have a root block.
         if (_.isUndefined(this._root)) {
             throw new Error('expected root');

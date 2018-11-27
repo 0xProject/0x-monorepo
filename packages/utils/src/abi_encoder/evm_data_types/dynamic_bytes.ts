@@ -1,4 +1,3 @@
-/* tslint:disable prefer-function-over-method */
 import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -14,6 +13,17 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
         return type === 'bytes';
     }
 
+    private static _sanityCheckValue(value: string | Buffer): void {
+        if (typeof value !== 'string') {
+            return;
+        }
+        if (!_.startsWith(value, '0x')) {
+            throw new Error(`Tried to encode non-hex value. Value must inlcude '0x' prefix.`);
+        } else if (value.length % 2 !== 0) {
+            throw new Error(`Tried to assign ${value}, which is contains a half-byte. Use full bytes only.`);
+        }
+    }
+
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
         super(dataItem, dataTypeFactory, DynamicBytes._SIZE_KNOWN_AT_COMPILE_TIME);
         if (!DynamicBytes.matchType(dataItem.type)) {
@@ -21,6 +31,8 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
         }
     }
 
+    // Disable prefer-function-over-method for inherited abstract methods.
+    /* tslint:disable prefer-function-over-method */
     public encodeValue(value: string | Buffer): Buffer {
         // Encoded value is of the form: <length><value>, with each field padded to be word-aligned.
         // 1/3 Construct the length
@@ -48,22 +60,12 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
         const valueBufPadded = calldata.popWords(wordsToStoreValuePadded);
         const valueBuf = valueBufPadded.slice(0, length);
         const value = ethUtil.bufferToHex(valueBuf);
-        this._sanityCheckValue(value);
+        DynamicBytes._sanityCheckValue(value);
         return value;
     }
 
     public getSignature(): string {
         return 'bytes';
     }
-
-    private _sanityCheckValue(value: string | Buffer): void {
-        if (typeof value !== 'string') {
-            return;
-        }
-        if (!_.startsWith(value, '0x')) {
-            throw new Error(`Tried to encode non-hex value. Value must inlcude '0x' prefix.`);
-        } else if (value.length % 2 !== 0) {
-            throw new Error(`Tried to assign ${value}, which is contains a half-byte. Use full bytes only.`);
-        }
-    }
+    /* tslint:enable prefer-function-over-method */
 }

@@ -1,4 +1,3 @@
-/* tslint:disable prefer-function-over-method */
 import { DataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 

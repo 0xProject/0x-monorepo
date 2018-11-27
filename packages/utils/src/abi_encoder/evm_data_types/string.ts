@@ -1,4 +1,3 @@
-/* tslint:disable prefer-function-over-method */
 import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -21,6 +20,8 @@ export class String extends AbstractDataTypes.Blob {
         }
     }
 
+    // Disable prefer-function-over-method for inherited abstract methods.
+    /* tslint:disable prefer-function-over-method */
     public encodeValue(value: string): Buffer {
         // Encoded value is of the form: <length><value>, with each field padded to be word-aligned.
         // 1/3 Construct the length
@@ -53,4 +54,5 @@ export class String extends AbstractDataTypes.Blob {
     public getSignature(): string {
         return 'string';
     }
+    /* tslint:enable prefer-function-over-method */
 }

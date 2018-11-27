@@ -79,8 +79,8 @@ export function decodeNumericValue(encodedValue: Buffer, minValue: BigNumber): B
     }
     // Case 2/3: value is non-negative because there is no leading 1 (encoded as two's-complement)
     const valueBin = value.toString(Constants.BIN_BASE);
-    const valueIsNegative = valueBin.length === Constants.EVM_WORD_WIDTH_IN_BITS && _.startsWith(valueBin[0], '1');
-    if (!valueIsNegative) {
+    const isValueNegative = valueBin.length === Constants.EVM_WORD_WIDTH_IN_BITS && _.startsWith(valueBin[0], '1');
+    if (!isValueNegative) {
         return value;
     }
     // Case 3/3: value is negative

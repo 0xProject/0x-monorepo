@@ -1,4 +1,3 @@
-/* tslint:disable prefer-function-over-method  */
 import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -44,7 +43,10 @@ export abstract class Pointer extends DataType {
         return value;
     }
 
+    // Disable prefer-function-over-method for inherited abstract method.
+    /* tslint:disable prefer-function-over-method */
     public isStatic(): boolean {
         return true;
     }
+    /* tslint:enable prefer-function-over-method */
 }
