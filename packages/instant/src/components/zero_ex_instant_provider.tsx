@@ -131,6 +131,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
                 this.props.orderSource,
                 state.providerState,
                 window,
+                state.selectedAsset,
                 this.props.affiliateInfo,
             ),
         );

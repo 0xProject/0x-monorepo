@@ -1,7 +1,7 @@
 import { BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 
-import { AffiliateInfo, Network, OrderSource, ProviderState } from '../types';
+import { AffiliateInfo, Asset, Network, OrderSource, ProviderState } from '../types';
 
 import { EventProperties, heapUtil } from './heap';
 
@@ -30,7 +30,12 @@ enum EventNames {
     BUY_TX_SUBMITTED = 'Buy - Tx Submitted',
     BUY_TX_SUCCEEDED = 'Buy - Tx Succeeded',
     BUY_TX_FAILED = 'Buy - Tx Failed',
+    TOKEN_SELECTOR_OPENED = 'Token Selector - Opened',
+    TOKEN_SELECTOR_CLOSED = 'Token Selector - Closed',
+    TOKEN_SELECTOR_CHOSE = 'Token Selector - Chose',
+    TOKEN_SELECTOR_SEARCHED = 'Token Selector - Searched',
 }
+
 const track = (eventName: EventNames, eventProperties: EventProperties = {}): void => {
     evaluateIfEnabled(() => {
         heapUtil.evaluateHeapCall(heap => heap.track(eventName, eventProperties));
@@ -79,8 +84,14 @@ export interface AnalyticsEventOptions {
     orderSource?: string;
     affiliateAddress?: string;
     affiliateFeePercent?: number;
+    numberAvailableAssets?: number;
+    selectedAssetName?: string;
+    selectedAssetData?: string;
 }
-
+export enum TokenSelectorClosedVia {
+    ClickedX = 'Clicked X',
+    TokenChose = 'Token Chose',
+}
 export const analytics = {
     addUserProperties: (properties: AnalyticsUserOptions): void => {
         evaluateIfEnabled(() => {
@@ -97,12 +108,13 @@ export const analytics = {
         orderSource: OrderSource,
         providerState: ProviderState,
         window: Window,
+        selectedAsset?: Asset,
         affiliateInfo?: AffiliateInfo,
     ): AnalyticsEventOptions => {
         const affiliateAddress = affiliateInfo ? affiliateInfo.feeRecipient : 'none';
         const affiliateFeePercent = affiliateInfo ? parseFloat(affiliateInfo.feePercentage.toFixed(4)) : 0;
         const orderSourceName = typeof orderSource === 'string' ? orderSource : 'provided';
-        return {
+        const eventOptions: AnalyticsEventOptions = {
             embeddedHost: window.location.host,
             embeddedUrl: window.location.href,
             networkId: network,
@@ -112,7 +124,10 @@ export const analytics = {
             orderSource: orderSourceName,
             affiliateAddress,
             affiliateFeePercent,
+            selectedAssetName: selectedAsset ? selectedAsset.metaData.name : 'none',
+            selectedAssetData: selectedAsset ? selectedAsset.assetData : 'none',
         };
+        return eventOptions;
     },
     trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),
     trackAccountLocked: trackingEventFnWithoutPayload(EventNames.ACCOUNT_LOCKED),
@@ -149,4 +164,11 @@ export const analytics = {
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
             actualTxTimeMs: new Date().getTime() - startTimeUnix,
         }),
+    trackTokenSelectorOpened: trackingEventFnWithoutPayload(EventNames.TOKEN_SELECTOR_OPENED),
+    trackTokenSelectorClosed: (closedVia: TokenSelectorClosedVia) =>
+        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CLOSED)({ closedVia }),
+    trackTokenSelectorChose: (payload: { assetName: string; assetData: string }) =>
+        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CHOSE)(payload),
+    trackTokenSelectorSearched: (searchText: string) =>
+        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_SEARCHED)({ searchText }),
 };

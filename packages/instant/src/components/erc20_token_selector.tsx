@@ -3,6 +3,7 @@ import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
 import { ERC20Asset } from '../types';
+import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 
 import { SearchInput } from './search_input';
@@ -57,6 +58,7 @@ export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps>
         this.setState({
             searchQuery,
         });
+        analytics.trackTokenSelectorSearched(searchQuery);
     };
     private readonly _isTokenQueryMatch = (token: ERC20Asset): boolean => {
         const { searchQuery } = this.state;
