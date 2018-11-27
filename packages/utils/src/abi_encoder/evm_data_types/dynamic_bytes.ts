@@ -42,7 +42,7 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
         const lengthBuf = ethUtil.toBuffer(valueBuf.byteLength);
         const lengthBufPadded = ethUtil.setLengthLeft(lengthBuf, Constants.EVM_WORD_WIDTH_IN_BYTES);
         // 2/3 Construct the value
-        this._sanityCheckValue(value);
+        DynamicBytes._sanityCheckValue(value);
         const valueBufPadded = ethUtil.setLengthRight(valueBuf, bytesToStoreValuePadded);
         // 3/3 Combine length and value
         const encodedValue = Buffer.concat([lengthBufPadded, valueBufPadded]);
