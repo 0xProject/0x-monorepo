@@ -23,6 +23,9 @@ enum EventNames {
     ACCOUNT_UNLOCK_REQUESTED = 'Account - Unlock Requested',
     ACCOUNT_UNLOCK_DENIED = 'Account - Unlock Denied',
     ACCOUNT_ADDRESS_CHANGED = 'Account - Address Changed',
+    PAYMENT_METHOD_DROPDOWN_OPENED = 'Payment Method - Dropdown Opened',
+    PAYMENT_METHOD_OPENED_ETHERSCAN = 'Payment Method - Opened Etherscan',
+    PAYMENT_METHOD_COPIED_ADDRESS = 'Payment Method - Copied Address',
     BUY_NOT_ENOUGH_ETH = 'Buy - Not Enough Eth',
     BUY_STARTED = 'Buy - Started',
     BUY_SIGNATURE_DENIED = 'Buy - Signature Denied',
@@ -141,6 +144,9 @@ export const analytics = {
     trackAccountUnlockDenied: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_DENIED),
     trackAccountAddressChanged: (address: string) =>
         trackingEventFnWithPayload(EventNames.ACCOUNT_ADDRESS_CHANGED)({ address }),
+    trackPaymentMethodDropdownOpened: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_DROPDOWN_OPENED),
+    trackPaymentMethodOpenedEtherscan: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_OPENED_ETHERSCAN),
+    trackPaymentMethodCopiedAddress: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_COPIED_ADDRESS),
     trackBuyNotEnoughEth: (buyQuote: BuyQuote) =>
         trackingEventFnWithPayload(EventNames.BUY_NOT_ENOUGH_ETH)(buyQuoteEventProperties(buyQuote)),
     trackBuyStarted: (buyQuote: BuyQuote) =>
