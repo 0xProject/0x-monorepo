@@ -45,6 +45,27 @@ environment variable `ZEROEX_DATA_PIPELINE_DB_URL` which should be a properly
 formatted
 [PostgreSQL connection url](https://stackoverflow.com/questions/3582552/postgresql-connection-url).
 
+## Test environment
+
+Make sure you have postgres installed. Then create a test database and export the connection string as the necessary environment variable. Example:
+
+```
+$ psql -d postgres
+postgres=# CREATE DATABASE datapipeline_test;
+postgres=# \q
+$ export ZEROEX_DATA_PIPELINE_DB_URL='postgresql://localhost:5432/datapipeline_test'
+```
+
+Run migrations:
+```
+$ yarn migrate:run
+```
+
+Now the scripts should work:
+```
+$ node packages/pipeline/lib/src/scripts/pull_radar_relay_orders.js
+```
+
 ## Directory structure
 
 ```
