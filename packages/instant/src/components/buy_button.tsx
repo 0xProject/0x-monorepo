@@ -8,6 +8,7 @@ import { oc } from 'ts-optchain';
 import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
 import { AffiliateInfo, ZeroExInstantError } from '../types';
+import { analytics } from '../util/analytics';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { util } from '../util/util';
 
@@ -59,6 +60,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         // if we don't have a balance for the user, let the transaction through, it will be handled by the wallet
         const hasSufficientEth = _.isUndefined(accountEthBalanceInWei) || accountEthBalanceInWei.gte(ethNeededForBuy);
         if (!hasSufficientEth) {
+            analytics.trackBuyNotEnoughEth(buyQuote);
             this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);
             return;
         }
@@ -66,6 +68,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         const gasInfo = await gasPriceEstimator.getGasInfoAsync();
         const feeRecipient = oc(affiliateInfo).feeRecipient();
         try {
+            analytics.trackBuyStarted(buyQuote);
             txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, {
                 feeRecipient,
                 takerAddress: accountAddress,
@@ -74,9 +77,11 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         } catch (e) {
             if (e instanceof Error) {
                 if (e.message === AssetBuyerError.SignatureRequestDenied) {
+                    analytics.trackBuySignatureDenied(buyQuote);
                     this.props.onSignatureDenied(buyQuote);
                     return;
                 } else if (e.message === AssetBuyerError.TransactionValueTooLow) {
+                    analytics.trackBuySimulationFailed(buyQuote);
                     this.props.onValidationFail(buyQuote, AssetBuyerError.TransactionValueTooLow);
                     return;
                 }
@@ -87,14 +92,17 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         const expectedEndTimeUnix = startTimeUnix + gasInfo.estimatedTimeMs;
         this.props.onBuyProcessing(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
         try {
+            analytics.trackBuyTxSubmitted(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
             if (e instanceof Error && e.message.startsWith(WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX)) {
+                analytics.trackBuyTxFailed(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
                 this.props.onBuyFailure(buyQuote, txHash);
                 return;
             }
             throw e;
         }
+        analytics.trackBuyTxSucceeded(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
         this.props.onBuySuccess(buyQuote, txHash);
     };
 }
