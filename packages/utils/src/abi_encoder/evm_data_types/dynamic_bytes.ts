@@ -60,7 +60,7 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
         if (typeof value !== 'string') {
             return;
         }
-        if (!value.startsWith('0x')) {
+        if (!_.startsWith(value, '0x')) {
             throw new Error(`Tried to encode non-hex value. Value must inlcude '0x' prefix.`);
         } else if (value.length % 2 !== 0) {
             throw new Error(`Tried to assign ${value}, which is contains a half-byte. Use full bytes only.`);

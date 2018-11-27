@@ -13,7 +13,7 @@ export class RawCalldata {
 
     public constructor(value: string | Buffer, hasSelector: boolean = true) {
         // Sanity check
-        if (typeof value === 'string' && !value.startsWith('0x')) {
+        if (typeof value === 'string' && !_.startsWith(value, '0x')) {
             throw new Error(`Expected raw calldata to start with '0x'`);
         }
         // Construct initial values

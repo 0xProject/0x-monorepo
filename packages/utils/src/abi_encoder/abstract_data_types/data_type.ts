@@ -37,7 +37,7 @@ export abstract class DataType {
     }
 
     public decode(calldata: string, rules?: DecodingRules, selector?: string): any {
-        if (!_.isUndefined(selector) && !calldata.startsWith(selector)) {
+        if (!_.isUndefined(selector) && !_.startsWith(calldata, selector)) {
             throw new Error(
                 `Tried to decode calldata, but it was missing the function selector. Expected prefix '${selector}'. Got '${calldata}'.`,
             );

@@ -29,7 +29,7 @@ export class Calldata {
      * If the root block was created by a Method then a selector will likely be set.
      */
     public setSelector(selector: string): void {
-        if (!selector.startsWith('0x')) {
+        if (!_.startsWith(selector, '0x')) {
             throw new Error(`Expected selector to be hex. Missing prefix '0x'`);
         } else if (selector.length !== Constants.HEX_SELECTOR_LENGTH_IN_CHARS) {
             throw new Error(`Invalid selector '${selector}'`);

@@ -31,7 +31,7 @@ export class Address extends AbstractDataTypes.Blob {
     }
 
     public encodeValue(value: string): Buffer {
-        if (!value.startsWith('0x')) {
+        if (!_.startsWith(value, '0x')) {
             throw new Error(Address.ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X);
         }
         const valueBuf = ethUtil.toBuffer(value);
