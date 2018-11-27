@@ -37,6 +37,13 @@ export const buyQuoteUpdater = {
         } catch (error) {
             if (options.dispatchErrors) {
                 dispatch(actions.setQuoteRequestStateFailure());
+                analytics.trackQuoteError(
+                    error.message ? error.message : 'other',
+                    asset.metaData.name,
+                    asset.assetData,
+                    assetUnitAmount,
+                    options.fetchedVia,
+                );
                 let errorMessage;
                 if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
                     const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');

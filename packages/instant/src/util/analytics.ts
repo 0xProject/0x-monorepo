@@ -1,4 +1,5 @@
 import { BuyQuote } from '@0x/asset-buyer';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { AffiliateInfo, Asset, Network, OrderSource, ProviderState, QuoteFetchedVia } from '../types';
@@ -184,4 +185,19 @@ export const analytics = {
             ...buyQuoteEventProperties(buyQuote),
             fetchedVia,
         }),
+    trackQuoteError: (
+        errorMessage: string,
+        assetName: string,
+        assetData: string,
+        assetAmount: BigNumber,
+        fetchedVia: QuoteFetchedVia,
+    ) => {
+        trackingEventFnWithPayload(EventNames.QUOTE_ERROR)({
+            errorMessage,
+            assetName,
+            assetData,
+            assetAmount: assetAmount.toString(),
+            fetchedVia,
+        });
+    },
 };
