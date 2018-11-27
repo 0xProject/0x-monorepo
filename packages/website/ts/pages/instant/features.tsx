@@ -11,7 +11,7 @@ export interface FeatureProps {
 }
 
 export const Features = (props: FeatureProps) => (
-    <Container backgroundColor={colors.instantSecondaryBackground} className="py3 flex flex-column">
+    <Container backgroundColor={colors.instantSecondaryBackground} className="py3 flex flex-column px3">
         <FeatureItem
             imgSrc="images/instant/snt_screenshot.png"
             title="Support ERC-20 and ERC-721 tokens"
@@ -75,7 +75,7 @@ interface FeatureItemProps {
 const FeatureItem = (props: FeatureItemProps) => {
     const { imgSrc, title, description, linkInfos, screenWidth } = props;
     const isLargeScreen = screenWidth === ScreenWidths.Lg;
-    const image = <Container backgroundColor={colors.instantPrimaryBackground} width="425px" height="225px" />;
+    const image = <Container backgroundColor={colors.instantPrimaryBackground} maxWidth="425px" maxHeight="225px" />;
     const info = (
         <Container maxWidth="500px">
             <Text fontSize="24px" lineHeight="34px" fontColor={colors.white} fontWeight={500}>

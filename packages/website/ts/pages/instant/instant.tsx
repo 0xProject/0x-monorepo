@@ -8,6 +8,7 @@ import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Container } from 'ts/components/ui/container';
 import { Features } from 'ts/pages/instant/features';
 import { Introducing0xInstant } from 'ts/pages/instant/introducing_0x_instant';
+import { NeedMore } from 'ts/pages/instant/need_more';
 import { Screenshots } from 'ts/pages/instant/screenshots';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
@@ -55,6 +56,7 @@ export class Instant extends React.Component<InstantProps, InstantState> {
                 <Introducing0xInstant />
                 <Screenshots />
                 <Features screenWidth={this.props.screenWidth} />
+                <NeedMore screenWidth={this.props.screenWidth} />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </Container>
         );
