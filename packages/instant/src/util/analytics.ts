@@ -1,7 +1,7 @@
 import { BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 
-import { AffiliateInfo, Asset, Network, OrderSource, ProviderState } from '../types';
+import { AffiliateInfo, Asset, Network, OrderSource, ProviderState, QuoteFetchedVia } from '../types';
 
 import { EventProperties, heapUtil } from './heap';
 
@@ -37,6 +37,8 @@ enum EventNames {
     TOKEN_SELECTOR_CLOSED = 'Token Selector - Closed',
     TOKEN_SELECTOR_CHOSE = 'Token Selector - Chose',
     TOKEN_SELECTOR_SEARCHED = 'Token Selector - Searched',
+    QUOTE_FETCHED = 'Quote - Fetched',
+    QUOTE_ERROR = 'Quote - Error',
 }
 
 const track = (eventName: EventNames, eventProperties: EventProperties = {}): void => {
@@ -177,4 +179,9 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CHOSE)(payload),
     trackTokenSelectorSearched: (searchText: string) =>
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_SEARCHED)({ searchText }),
+    trackQuoteFetched: (buyQuote: BuyQuote, fetchedVia: QuoteFetchedVia) =>
+        trackingEventFnWithPayload(EventNames.QUOTE_FETCHED)({
+            ...buyQuoteEventProperties(buyQuote),
+            fetchedVia,
+        }),
 };

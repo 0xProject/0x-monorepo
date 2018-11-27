@@ -1,5 +1,6 @@
 import { asyncData } from '../redux/async_data';
 import { Store } from '../redux/store';
+import { QuoteFetchedVia } from '../types';
 
 import { Heartbeater } from './heartbeater';
 
@@ -19,6 +20,7 @@ export const generateBuyQuoteHeartbeater = (options: HeartbeatFactoryOptions): H
     return new Heartbeater(async () => {
         await asyncData.fetchCurrentBuyQuoteAndDispatchToStore(store.getState(), store.dispatch, {
             updateSilently: true,
+            fetchedVia: QuoteFetchedVia.Heartbeat,
         });
     }, shouldPerformImmediatelyOnStart);
 };

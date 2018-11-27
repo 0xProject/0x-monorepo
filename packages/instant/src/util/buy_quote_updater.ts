@@ -6,7 +6,8 @@ import { Dispatch } from 'redux';
 import { oc } from 'ts-optchain';
 
 import { Action, actions } from '../redux/actions';
-import { AffiliateInfo, ERC20Asset } from '../types';
+import { AffiliateInfo, ERC20Asset, QuoteFetchedVia } from '../types';
+import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
 
@@ -16,7 +17,12 @@ export const buyQuoteUpdater = {
         dispatch: Dispatch<Action>,
         asset: ERC20Asset,
         assetUnitAmount: BigNumber,
-        options: { setPending: boolean; dispatchErrors: boolean; affiliateInfo?: AffiliateInfo },
+        options: {
+            setPending: boolean;
+            dispatchErrors: boolean;
+            fetchedVia: QuoteFetchedVia;
+            affiliateInfo?: AffiliateInfo;
+        },
     ): Promise<void> => {
         // get a new buy quote.
         const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetUnitAmount, asset.metaData.decimals);
@@ -58,5 +64,6 @@ export const buyQuoteUpdater = {
         errorFlasher.clearError(dispatch);
         // invalidate the last buy quote.
         dispatch(actions.updateLatestBuyQuote(newBuyQuote));
+        analytics.trackQuoteFetched(newBuyQuote, options.fetchedVia);
     },
 };

@@ -21,6 +21,11 @@ export enum OrderProcessState {
     Failure = 'FAILURE',
 }
 
+export enum QuoteFetchedVia {
+    Manual = 'Manual',
+    Heartbeat = 'Heartbeat',
+}
+
 export interface SimulatedProgress {
     startTimeUnix: number;
     expectedEndTimeUnix: number;
