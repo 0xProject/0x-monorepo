@@ -78,7 +78,11 @@ formatted
 5.  Create an executable script in the _scripts_ directory for putting
     everything together. Your script can accept environment variables for things
     like API keys. It should pull the data, parse it, and save it to the
-    database.
+    database. Scripts should be idempotent and atomic (when possible). What this
+    means is that your script may be responsible for determining **which** data
+    needs to be updated. For example, you may need to query the database to find
+    the most recent block number that we have already pulled, then pull new data
+    starting from that block number.
 6.  Run the migrations and then run your new script locally and verify it works
     as expected.
 
