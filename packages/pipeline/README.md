@@ -57,11 +57,13 @@ $ export ZEROEX_DATA_PIPELINE_DB_URL='postgresql://localhost:5432/datapipeline_t
 ```
 
 Run migrations:
+
 ```
 $ yarn migrate:run
 ```
 
 Now the scripts should work:
+
 ```
 $ node packages/pipeline/lib/src/scripts/pull_radar_relay_orders.js
 ```
