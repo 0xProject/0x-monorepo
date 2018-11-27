@@ -1,4 +1,4 @@
-import { AffiliateInfo, Network, OrderSource, ProviderState } from '../types';
+import { AffiliateInfo, Asset, Network, OrderSource, ProviderState } from '../types';
 
 import { EventProperties, heapUtil } from './heap';
 
@@ -23,7 +23,12 @@ enum EventNames {
     PAYMENT_METHOD_DROPDOWN_OPENED = 'Payment Method - Dropdown Opened',
     PAYMENT_METHOD_OPENED_ETHERSCAN = 'Payment Method - Opened Etherscan',
     PAYMENT_METHOD_COPIED_ADDRESS = 'Payment Method - Copied Address',
+    TOKEN_SELECTOR_OPENED = 'Token Selector - Opened',
+    TOKEN_SELECTOR_CLOSED = 'Token Selector - Closed',
+    TOKEN_SELECTOR_CHOSE = 'Token Selector - Chose',
+    TOKEN_SELECTOR_SEARCHED = 'Token Selector - Searched',
 }
+
 const track = (eventName: EventNames, eventProperties: EventProperties = {}): void => {
     evaluateIfEnabled(() => {
         heapUtil.evaluateHeapCall(heap => heap.track(eventName, eventProperties));
@@ -55,8 +60,14 @@ export interface AnalyticsEventOptions {
     orderSource?: string;
     affiliateAddress?: string;
     affiliateFeePercent?: number;
+    numberAvailableAssets?: number;
+    selectedAssetName?: string;
+    selectedAssetData?: string;
 }
-
+export enum TokenSelectorClosedVia {
+    ClickedX = 'Clicked X',
+    TokenChose = 'Token Chose',
+}
 export const analytics = {
     addUserProperties: (properties: AnalyticsUserOptions): void => {
         evaluateIfEnabled(() => {
@@ -73,12 +84,13 @@ export const analytics = {
         orderSource: OrderSource,
         providerState: ProviderState,
         window: Window,
+        selectedAsset?: Asset,
         affiliateInfo?: AffiliateInfo,
     ): AnalyticsEventOptions => {
         const affiliateAddress = affiliateInfo ? affiliateInfo.feeRecipient : 'none';
         const affiliateFeePercent = affiliateInfo ? parseFloat(affiliateInfo.feePercentage.toFixed(4)) : 0;
         const orderSourceName = typeof orderSource === 'string' ? orderSource : 'provided';
-        return {
+        const eventOptions: AnalyticsEventOptions = {
             embeddedHost: window.location.host,
             embeddedUrl: window.location.href,
             networkId: network,
@@ -88,7 +100,10 @@ export const analytics = {
             orderSource: orderSourceName,
             affiliateAddress,
             affiliateFeePercent,
+            selectedAssetName: selectedAsset ? selectedAsset.metaData.name : 'none',
+            selectedAssetData: selectedAsset ? selectedAsset.assetData : 'none',
         };
+        return eventOptions;
     },
     trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),
     trackAccountLocked: trackingEventFnWithoutPayload(EventNames.ACCOUNT_LOCKED),
@@ -100,4 +115,11 @@ export const analytics = {
     trackPaymentMethodDropdownOpened: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_DROPDOWN_OPENED),
     trackPaymentMethodOpenedEtherscan: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_OPENED_ETHERSCAN),
     trackPaymentMethodCopiedAddress: trackingEventFnWithoutPayload(EventNames.PAYMENT_METHOD_COPIED_ADDRESS),
+    trackTokenSelectorOpened: trackingEventFnWithoutPayload(EventNames.TOKEN_SELECTOR_OPENED),
+    trackTokenSelectorClosed: (closedVia: TokenSelectorClosedVia) =>
+        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CLOSED)({ closedVia }),
+    trackTokenSelectorChose: (payload: { assetName: string; assetData: string }) =>
+        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CHOSE)(payload),
+    trackTokenSelectorSearched: (searchText: string) =>
+        trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_SEARCHED)({ searchText }),
 };
