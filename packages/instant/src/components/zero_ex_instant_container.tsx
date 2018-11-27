@@ -11,7 +11,7 @@ import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
-import { OrderProcessState, SlideAnimationState } from '../types';
+import { SlideAnimationState } from '../types';
 import { analytics, TokenSelectorClosedVia } from '../util/analytics';
 
 import { CSSReset } from './css_reset';
@@ -28,8 +28,8 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
     public state = {
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };
-    private _handlePanelCloseClickedX: () => void;
-    private _handlePanelCloseAfterChose: () => void;
+    private readonly _handlePanelCloseClickedX: () => void;
+    private readonly _handlePanelCloseAfterChose: () => void;
     public constructor(props: ZeroExInstantContainerProps) {
         super(props);
         this._handlePanelCloseClickedX = this._handlePanelClose.bind(this, TokenSelectorClosedVia.ClickedX);
