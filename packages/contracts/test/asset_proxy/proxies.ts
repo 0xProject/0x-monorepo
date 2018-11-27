@@ -695,6 +695,7 @@ describe('Asset Transfer Proxies', () => {
         });
         it('should have an id of 0x94cfcdd7', async () => {
             const proxyId = await multiAssetProxy.getProxyId.callAsync();
+            // first 4 bytes of `keccak256('MultiAsset(uint256[],bytes[])')`
             const expectedProxyId = '0x94cfcdd7';
             expect(proxyId).to.equal(expectedProxyId);
         });

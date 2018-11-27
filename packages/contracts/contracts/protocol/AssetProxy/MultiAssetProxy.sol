@@ -18,13 +18,11 @@
 
 pragma solidity 0.4.24;
 
-import "../../utils/SafeMath/SafeMath.sol";
 import "../Exchange/MixinAssetProxyDispatcher.sol";
 import "./MixinAuthorizable.sol";
 
 
 contract MultiAssetProxy is
-    SafeMath,
     MixinAssetProxyDispatcher,
     MixinAuthorizable
 {
@@ -172,6 +170,10 @@ contract MultiAssetProxy is
                 // Calculate number of bytes in `amounts` contents
                 let amountsByteLen := mul(amountsLen, 32)
 
+                // Initialize `assetProxyId` and `assetProxy` to 0
+                let assetProxyId := 0
+                let assetProxy := 0
+
                 // Loop through `amounts` and `nestedAssetData`, calling `transferFrom` for each respective element
                 for {let i := 0} lt(i, amountsByteLen) {i := add(i, 32)} {
 
@@ -221,16 +223,22 @@ contract MultiAssetProxy is
                     }
 
                     // Load AssetProxy id
-                    let assetProxyId := and(
+                    let currentAssetProxyId := and(
                         calldataload(nestedAssetDataElementContentsStart),
                         0xffffffff00000000000000000000000000000000000000000000000000000000
                     )
 
-                    // To lookup a value in a mapping, we load from the storage location keccak256(k, p),
-                    // where k is the key left padded to 32 bytes and p is the storage slot
-                    mstore(132, assetProxyId)
-                    mstore(164, assetProxies_slot)
-                    let assetProxy := sload(keccak256(132, 64))
+                    // Only load `assetProxy` if `currentAssetProxyId` does not equal `assetProxyId`
+                    // We do not need to check if `currentAssetProxyId` is 0 since `assetProxy` is also initialized to 0
+                    if iszero(eq(currentAssetProxyId, assetProxyId)) {
+                        // Update `assetProxyId`
+                        assetProxyId := currentAssetProxyId
+                        // To lookup a value in a mapping, we load from the storage location keccak256(k, p),
+                        // where k is the key left padded to 32 bytes and p is the storage slot
+                        mstore(132, assetProxyId)
+                        mstore(164, assetProxies_slot)
+                        assetProxy := sload(keccak256(132, 64))
+                    }
                     
                     // Revert if AssetProxy with given id does not exist
                     if iszero(assetProxy) {
@@ -257,7 +265,7 @@ contract MultiAssetProxy is
                         0,                                      // pointer to start of input
                         add(164, nestedAssetDataElementLen),    // length of input  
                         0,                                      // write output over memory that won't be reused
-                        0                                       // reserve 512 bytes for output
+                        0                                       // don't copy output to memory
                     )
 
                     // Revert with reason given by AssetProxy if `transferFrom` call failed
