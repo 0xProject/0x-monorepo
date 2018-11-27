@@ -6,7 +6,9 @@ import { Footer } from 'ts/components/footer';
 import { MetaTags } from 'ts/components/meta_tags';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Container } from 'ts/components/ui/container';
+import { Introducing0xInstant } from 'ts/pages/instant/introducing_0x_instant';
 import { Dispatcher } from 'ts/redux/dispatcher';
+import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
@@ -43,9 +45,12 @@ export class Instant extends React.Component<InstantProps, InstantState> {
                 <TopBar
                     blockchainIsLoaded={false}
                     location={this.props.location}
-                    style={{ position: 'relative' }}
+                    style={{ backgroundColor: colors.instantBackground, position: 'relative' }}
                     translate={this.props.translate}
+                    isNightVersion={true}
                 />
+                <Container backgroundColor={colors.instantBackground} />
+                <Introducing0xInstant />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </Container>
         );
