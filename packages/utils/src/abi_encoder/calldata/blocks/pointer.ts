@@ -1,4 +1,5 @@
 import * as ethUtil from 'ethereumjs-util';
+import * as _ from 'lodash';
 
 import * as Constants from '../../utils/constants';
 
@@ -24,7 +25,7 @@ export class Pointer extends CalldataBlock {
 
     public toBuffer(): Buffer {
         const destinationOffset =
-            this._aliasFor !== undefined ? this._aliasFor.getOffsetInBytes() : this._dependency.getOffsetInBytes();
+            !_.isUndefined(this._aliasFor) ? this._aliasFor.getOffsetInBytes() : this._dependency.getOffsetInBytes();
         const parentOffset = this._parent.getOffsetInBytes();
         const parentHeaderSize = this._parent.getHeaderSizeInBytes();
         const pointer: number = destinationOffset - (parentOffset + parentHeaderSize);

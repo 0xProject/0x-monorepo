@@ -1,4 +1,5 @@
 import * as ethUtil from 'ethereumjs-util';
+import * as _ from 'lodash';
 
 import * as Constants from '../utils/constants';
 import { Queue } from '../utils/queue';
@@ -68,7 +69,7 @@ export class RawCalldata {
 
     public toAbsoluteOffset(relativeOffset: number): number {
         const scopeOffset = this._scopes.peekFront();
-        if (scopeOffset === undefined) {
+        if (_.isUndefined(scopeOffset)) {
             throw new Error(`Tried to access undefined scope.`);
         }
         const absoluteOffset = relativeOffset + scopeOffset;

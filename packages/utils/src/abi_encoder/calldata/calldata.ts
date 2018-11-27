@@ -44,7 +44,7 @@ export class Calldata {
      */
     public toString(): string {
         // Sanity check: root block must be set
-        if (this._root === undefined) {
+        if (_.isUndefined(this._root)) {
             throw new Error('expected root');
         }
         // Optimize, if flag set
@@ -103,7 +103,7 @@ export class Calldata {
      */
     private _optimize(): void {
         // Step 1/1 Create a reverse iterator (starts from the end of the calldata to the beginning)
-        if (this._root === undefined) {
+        if (_.isUndefined(this._root)) {
             throw new Error('expected root');
         }
         const iterator = new ReverseCalldataIterator(this._root);
@@ -136,7 +136,7 @@ export class Calldata {
      */
     private _toCondensedString(): string {
         // Sanity check: must have a root block.
-        if (this._root === undefined) {
+        if (_.isUndefined(this._root)) {
             throw new Error('expected root');
         }
         // Construct an array of buffers (one buffer for each block).
@@ -175,7 +175,7 @@ export class Calldata {
      */
     private _toAnnotatedString(): string {
         // Sanity check: must have a root block.
-        if (this._root === undefined) {
+        if (_.isUndefined(this._root)) {
             throw new Error('expected root');
         }
         // Constants for constructing annotated string

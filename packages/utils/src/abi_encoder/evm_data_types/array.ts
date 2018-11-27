@@ -1,4 +1,5 @@
 import { DataItem } from 'ethereum-types';
+import * as _ from 'lodash';
 
 import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import * as Constants from '../utils/constants';
@@ -14,15 +15,15 @@ export class Array extends AbstractDataTypes.Set {
 
     private static _decodeElementTypeAndLengthFromType(type: string): [string, undefined | number] {
         const matches = Array._MATCHER.exec(type);
-        if (matches === null || matches.length !== 3) {
+        if (_.isNull(matches) || matches.length !== 3) {
             throw new Error(`Could not parse array: ${type}`);
-        } else if (matches[1] === undefined) {
+        } else if (_.isUndefined(matches[1])) {
             throw new Error(`Could not parse array type: ${type}`);
-        } else if (matches[2] === undefined) {
+        } else if (_.isUndefined(matches[2])) {
             throw new Error(`Could not parse array length: ${type}`);
         }
         const arrayElementType = matches[1];
-        const arrayLength = matches[2] === '' ? undefined : parseInt(matches[2], Constants.DEC_BASE);
+        const arrayLength = _.isEmpty(matches[2]) ? undefined : parseInt(matches[2], Constants.DEC_BASE);
         return [arrayElementType, arrayLength];
     }
 
@@ -47,13 +48,13 @@ export class Array extends AbstractDataTypes.Set {
             name: 'N/A',
         };
         const elementComponents = this.getDataItem().components;
-        if (elementComponents !== undefined) {
+        if (!_.isUndefined(elementComponents)) {
             elementDataItem.components = elementComponents;
         }
         const elementDataType = this.getFactory().create(elementDataItem);
         const elementSignature = elementDataType.getSignature();
         // Construct signature for array of type `element`
-        if (this._arrayLength === undefined) {
+        if (_.isUndefined(this._arrayLength)) {
             return `${elementSignature}[]`;
         } else {
             return `${elementSignature}[${this._arrayLength}]`;
