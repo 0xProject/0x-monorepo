@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ReactTooltip = require('react-tooltip');
+import ReactTooltip from 'react-tooltip';
 
 interface HelpTooltipProps {
     style?: React.CSSProperties;

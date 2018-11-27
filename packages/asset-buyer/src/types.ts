@@ -9,7 +9,6 @@ import { BigNumber } from '@0x/utils';
 export interface OrderProviderRequest {
     makerAssetData: string;
     takerAssetData: string;
-    networkId: number;
 }
 
 /**
@@ -27,10 +26,12 @@ export interface SignedOrderWithRemainingFillableMakerAssetAmount extends Signed
     remainingFillableMakerAssetAmount?: BigNumber;
 }
 /**
- * Given an OrderProviderRequest, get an OrderProviderResponse.
+ * gerOrdersAsync: Given an OrderProviderRequest, get an OrderProviderResponse.
+ * getAvailableMakerAssetDatasAsync: Given a taker asset data string, return all availabled paired maker asset data strings.
  */
 export interface OrderProvider {
     getOrdersAsync: (orderProviderRequest: OrderProviderRequest) => Promise<OrderProviderResponse>;
+    getAvailableMakerAssetDatasAsync: (takerAssetData: string) => Promise<string[]>;
 }
 
 /**
@@ -53,12 +54,12 @@ export interface BuyQuote {
 }
 
 /**
- * ethPerAssetPrice: The price of one unit of the desired asset in ETH
+ * assetEthAmount: The amount of eth required to pay for the requested asset.
  * feeEthAmount: The amount of eth required to pay the affiliate fee.
- * totalEthAmount: the total amount of eth required to complete the buy. (Filling orders, feeOrders, and paying affiliate fee)
+ * totalEthAmount: The total amount of eth required to complete the buy (filling orders, feeOrders, and paying affiliate fee).
  */
 export interface BuyQuoteInfo {
-    ethPerAssetPrice: BigNumber;
+    assetEthAmount: BigNumber;
     feeEthAmount: BigNumber;
     totalEthAmount: BigNumber;
 }

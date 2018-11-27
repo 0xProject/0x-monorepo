@@ -8,11 +8,10 @@ import * as _ from 'lodash';
 
 import { BlockRange, ContractWrappersError, EventCallback, IndexedFilterValues, TransactionOpts } from '../types';
 import { assert } from '../utils/assert';
+import { utils } from '../utils/utils';
 
 import { ContractWrapper } from './contract_wrapper';
 import { ERC20TokenWrapper } from './erc20_token_wrapper';
-
-const removeUndefinedProperties = _.pickBy;
 
 /**
  * This class includes all the functionality related to interacting with a wrapped Ether ERC20 token contract.
@@ -20,10 +19,10 @@ const removeUndefinedProperties = _.pickBy;
  */
 export class EtherTokenWrapper extends ContractWrapper {
     public abi: ContractAbi = WETH9.compilerOutput.abi;
-    private _etherTokenContractsByAddress: {
+    private readonly _etherTokenContractsByAddress: {
         [address: string]: WETH9Contract;
     } = {};
-    private _erc20TokenWrapper: ERC20TokenWrapper;
+    private readonly _erc20TokenWrapper: ERC20TokenWrapper;
     /**
      * Instantiate EtherTokenWrapper.
      * @param web3Wrapper Web3Wrapper instance to use
@@ -67,11 +66,12 @@ export class EtherTokenWrapper extends ContractWrapper {
 
         const wethContract = await this._getEtherTokenContractAsync(normalizedEtherTokenAddress);
         const txHash = await wethContract.deposit.sendTransactionAsync(
-            removeUndefinedProperties({
+            utils.removeUndefinedProperties({
                 from: normalizedDepositorAddress,
                 value: amountInWei,
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
+                nonce: txOpts.nonce,
             }),
         );
         return txHash;
@@ -109,10 +109,11 @@ export class EtherTokenWrapper extends ContractWrapper {
         const wethContract = await this._getEtherTokenContractAsync(normalizedEtherTokenAddress);
         const txHash = await wethContract.withdraw.sendTransactionAsync(
             amountInWei,
-            removeUndefinedProperties({
+            utils.removeUndefinedProperties({
                 from: normalizedWithdrawerAddress,
                 gas: txOpts.gasLimit,
                 gasPrice: txOpts.gasPrice,
+                nonce: txOpts.nonce,
             }),
         );
         return txHash;

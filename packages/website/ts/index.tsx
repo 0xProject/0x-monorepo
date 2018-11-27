@@ -9,6 +9,7 @@ import { DocsHome } from 'ts/containers/docs_home';
 import { FAQ } from 'ts/containers/faq';
 import { Jobs } from 'ts/containers/jobs';
 import { Landing } from 'ts/containers/landing';
+import { LaunchKit } from 'ts/containers/launch_kit';
 import { NotFound } from 'ts/containers/not_found';
 import { Wiki } from 'ts/containers/wiki';
 import { createLazyComponent } from 'ts/lazy_component';
@@ -38,6 +39,9 @@ const LazyZeroExJSDocumentation = createLazyComponent('Documentation', async () 
 );
 const LazyContractWrappersDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "contractWrapperDocs" */ 'ts/containers/contract_wrappers_documentation'),
+);
+const LazyMigrationsDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "migrationsDocs" */ 'ts/containers/migrations_documentation'),
 );
 const LazyOrderWatcherDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "orderWatcherDocs" */ 'ts/containers/order_watcher_documentation'),
@@ -87,6 +91,7 @@ render(
                             <Switch>
                                 <Route exact={true} path="/" component={Landing as any} />
                                 <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
+                                <Route path={WebsitePaths.LaunchKit} component={LaunchKit as any} />
                                 <Route path={WebsitePaths.Careers} component={Jobs as any} />
                                 <Route path={WebsitePaths.Portal} component={LazyPortal} />
                                 <Route path={WebsitePaths.FAQ} component={FAQ as any} />
@@ -99,6 +104,10 @@ render(
                                 <Route
                                     path={`${WebsitePaths.ContractWrappers}/:version?`}
                                     component={LazyContractWrappersDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.Migrations}/:version?`}
+                                    component={LazyMigrationsDocumentation}
                                 />
                                 <Route
                                     path={`${WebsitePaths.OrderWatcher}/:version?`}

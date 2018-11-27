@@ -5,6 +5,27 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.5 - _November 21, 2018_
+
+    * Add unmarshalling of transaction receipts (#1291)
+    * Return `undefined` instead of `null` if transaction receipt not found (#1291)
+
+## v3.1.4 - _November 14, 2018_
+
+    * Dependencies updated
+
+## v3.1.3 - _November 13, 2018_
+
+    * Dependencies updated
+
+## v3.1.2 - _November 12, 2018_
+
+    * Dependencies updated
+
+## v3.1.1 - _November 9, 2018_
+
+    * Fix bug in `getTransactionByHashAsync` which was causing the return value to have the wrong type (raw fields instead of unmarshalled fields). (#1177)
+
 ## v3.1.0 - _October 18, 2018_
 
     * Add `signTypedData` to perform EIP712 `eth_signTypedData`. (#1102)

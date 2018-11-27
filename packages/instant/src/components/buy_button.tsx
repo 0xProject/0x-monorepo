@@ -1,20 +1,31 @@
-import { BuyQuote } from '@0x/asset-buyer';
+import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
+import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { oc } from 'ts-optchain';
 
+import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
-import { assetBuyer } from '../util/asset_buyer';
+import { AffiliateInfo, ZeroExInstantError } from '../types';
+import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { util } from '../util/util';
-import { web3Wrapper } from '../util/web3_wrapper';
 
-import { Button, Container, Text } from './ui';
+import { Button } from './ui/button';
 
 export interface BuyButtonProps {
+    accountAddress?: string;
+    accountEthBalanceInWei?: BigNumber;
     buyQuote?: BuyQuote;
-    onClick: (buyQuote: BuyQuote) => void;
-    onBuySuccess: (buyQuote: BuyQuote, txnHash: string) => void;
-    onBuyFailure: (buyQuote: BuyQuote, tnxHash?: string) => void;
-    text: string;
+    assetBuyer: AssetBuyer;
+    web3Wrapper: Web3Wrapper;
+    affiliateInfo?: AffiliateInfo;
+    onValidationPending: (buyQuote: BuyQuote) => void;
+    onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
+    onSignatureDenied: (buyQuote: BuyQuote) => void;
+    onBuyProcessing: (buyQuote: BuyQuote, txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) => void;
+    onBuySuccess: (buyQuote: BuyQuote, txHash: string) => void;
+    onBuyFailure: (buyQuote: BuyQuote, txHash: string) => void;
 }
 
 export class BuyButton extends React.Component<BuyButtonProps> {
@@ -24,30 +35,66 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         onBuyFailure: util.boundNoop,
     };
     public render(): React.ReactNode {
-        const shouldDisableButton = _.isUndefined(this.props.buyQuote);
+        const { buyQuote, accountAddress } = this.props;
+        const shouldDisableButton = _.isUndefined(buyQuote) || _.isUndefined(accountAddress);
         return (
-            <Container padding="20px" width="100%">
-                <Button width="100%" onClick={this._handleClick} isDisabled={shouldDisableButton}>
-                    <Text fontColor={ColorOption.white} fontWeight={600} fontSize="20px">
-                        {this.props.text}
-                    </Text>
-                </Button>
-            </Container>
+            <Button
+                width="100%"
+                onClick={this._handleClick}
+                isDisabled={shouldDisableButton}
+                fontColor={ColorOption.white}
+            >
+                Buy
+            </Button>
         );
     }
     private readonly _handleClick = async () => {
         // The button is disabled when there is no buy quote anyway.
-        if (_.isUndefined(this.props.buyQuote)) {
+        const { buyQuote, assetBuyer, affiliateInfo, accountAddress, accountEthBalanceInWei, web3Wrapper } = this.props;
+        if (_.isUndefined(buyQuote) || _.isUndefined(accountAddress)) {
             return;
         }
-        this.props.onClick(this.props.buyQuote);
-        let txnHash;
-        try {
-            txnHash = await assetBuyer.executeBuyQuoteAsync(this.props.buyQuote);
-            await web3Wrapper.awaitTransactionSuccessAsync(txnHash);
-            this.props.onBuySuccess(this.props.buyQuote, txnHash);
-        } catch {
-            this.props.onBuyFailure(this.props.buyQuote, txnHash);
+        this.props.onValidationPending(buyQuote);
+        const ethNeededForBuy = buyQuote.worstCaseQuoteInfo.totalEthAmount;
+        // if we don't have a balance for the user, let the transaction through, it will be handled by the wallet
+        const hasSufficientEth = _.isUndefined(accountEthBalanceInWei) || accountEthBalanceInWei.gte(ethNeededForBuy);
+        if (!hasSufficientEth) {
+            this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);
+            return;
         }
+        let txHash: string | undefined;
+        const gasInfo = await gasPriceEstimator.getGasInfoAsync();
+        const feeRecipient = oc(affiliateInfo).feeRecipient();
+        try {
+            txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, {
+                feeRecipient,
+                takerAddress: accountAddress,
+                gasPrice: gasInfo.gasPriceInWei,
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                if (e.message === AssetBuyerError.SignatureRequestDenied) {
+                    this.props.onSignatureDenied(buyQuote);
+                    return;
+                } else if (e.message === AssetBuyerError.TransactionValueTooLow) {
+                    this.props.onValidationFail(buyQuote, AssetBuyerError.TransactionValueTooLow);
+                    return;
+                }
+            }
+            throw e;
+        }
+        const startTimeUnix = new Date().getTime();
+        const expectedEndTimeUnix = startTimeUnix + gasInfo.estimatedTimeMs;
+        this.props.onBuyProcessing(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
+        try {
+            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+        } catch (e) {
+            if (e instanceof Error && e.message.startsWith(WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX)) {
+                this.props.onBuyFailure(buyQuote, txHash);
+                return;
+            }
+            throw e;
+        }
+        this.props.onBuySuccess(buyQuote, txHash);
     };
 }

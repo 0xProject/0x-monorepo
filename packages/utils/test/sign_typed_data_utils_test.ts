@@ -136,5 +136,28 @@ describe('signTypedDataUtils', () => {
             const hashHex = `0x${hash}`;
             expect(hashHex).to.be.eq(orderSignTypedDataHashHex);
         });
+        it('creates a hash of an uninitialized order', () => {
+            const uninitializedOrder = {
+                ...orderSignTypedData,
+                message: {
+                    makerAddress: '0x0000000000000000000000000000000000000000',
+                    takerAddress: '0x0000000000000000000000000000000000000000',
+                    makerAssetAmount: 0,
+                    takerAssetAmount: 0,
+                    expirationTimeSeconds: 0,
+                    makerFee: 0,
+                    takerFee: 0,
+                    feeRecipientAddress: '0x0000000000000000000000000000000000000000',
+                    senderAddress: '0x0000000000000000000000000000000000000000',
+                    salt: 0,
+                    makerAssetData: '0x0000000000000000000000000000000000000000',
+                    takerAssetData: '0x0000000000000000000000000000000000000000',
+                    exchangeAddress: '0x0000000000000000000000000000000000000000',
+                },
+            };
+            const hash = signTypedDataUtils.generateTypedDataHash(uninitializedOrder).toString('hex');
+            const hashHex = `0x${hash}`;
+            expect(hashHex).to.be.eq('0xfaa49b35faeb9197e9c3ba7a52075e6dad19739549f153b77dfcf59408a4b422');
+        });
     });
 });

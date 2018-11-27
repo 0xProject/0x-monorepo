@@ -4,7 +4,9 @@ lib
 /packages/contracts/generated-artifacts
 /packages/abi-gen-wrappers/src/generated-wrappers
 /packages/contract-artifacts/artifacts
+/python-packages/order_utils/src/zero_ex/contract_artifacts/artifacts
 /packages/json-schemas/schemas
+/python-packages/order_utils/src/zero_ex/json_schemas/schemas
 /packages/metacoin/src/contract_wrappers
 /packages/metacoin/artifacts
 /packages/sra-spec/public/

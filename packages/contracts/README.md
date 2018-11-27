@@ -1,6 +1,6 @@
 ## Contracts
 
-Smart contracts that implement the 0x protocol. Addresses of the deployed contracts can be found [here](https://0xproject.com/wiki#Deployed-Addresses).
+Smart contracts that implement the 0x protocol. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [CHANGELOG](./CHANGELOG.json) of this package.
 
 ## Usage
 

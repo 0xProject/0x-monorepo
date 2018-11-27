@@ -67,6 +67,32 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
+                'Launch a 0x relayer in under a minute with Launch Kit. `0x-launch-kit` is an open-source, free-to-use 0x relayer template that you can use as a starting point for your own project.',
+            link: {
+                title: '0x launch kit',
+                to: 'https://github.com/0xProject/0x-launch-kit',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description:
+                'Reference documentation for the 0x smart contracts. Helpful for dApp developer wanting to integrate 0x at the smart contract level.',
+            link: {
+                title: '0x smart contracts',
+                to: WebsitePaths.SmartContracts,
+            },
+        },
+        {
+            description:
+                "A Python library for interacting with 0x orders. Generate an orderHash, sign an order, validate it's signature and more.",
+            link: {
+                title: '0x-order-utils.py',
+                to: 'http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description:
                 'An http & websocket client for interacting with relayers that have implemented the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api)',
             link: {
                 title: '@0x/connect',
@@ -79,6 +105,14 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             link: {
                 title: '@0x/contract-wrappers',
                 to: WebsitePaths.ContractWrappers,
+            },
+        },
+        {
+            description:
+                "A package to deploy the 0x protocol's system of smart contracts to the testnet of your choice",
+            link: {
+                title: '@0x/migrations',
+                to: WebsitePaths.Migrations,
             },
         },
         {
@@ -103,6 +137,23 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             link: {
                 title: '@0x/order-watcher',
                 to: WebsitePaths.OrderWatcher,
+            },
+        },
+        {
+            description:
+                'A tiny utility library for getting known deployed contract addresses for a particular network.',
+            link: {
+                title: '@0x/contract-addresses',
+                to: 'https://www.npmjs.com/package/@0x/contract-addresses',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description: 'Smart contract compilation artifacts for the latest version of the 0x protocol.',
+            link: {
+                title: '@0x/contract-artifacts',
+                to: 'https://www.npmjs.com/package/@0x/contract-artifacts',
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -346,6 +397,7 @@ export class DocsHome extends React.Component<DocsHomeProps, DocsHomeState> {
                 sidebarHeader={isSmallScreen ? this._renderSidebarHeader() : undefined}
                 sectionNameToLinks={sectionNameToLinks}
                 shouldReformatMenuItemNames={false}
+                screenWidth={this.props.screenWidth}
             />
         );
         return (

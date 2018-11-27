@@ -5,7 +5,7 @@ import { ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as bowser from 'bowser';
-import deepEqual = require('deep-equal');
+import deepEqual from 'deep-equal';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';

@@ -1,7 +1,7 @@
 import { colors, constants as sharedConstants, utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle = require('react-document-title');
+import DocumentTitle from 'react-document-title';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { DocsTopBar } from 'ts/components/documentation/docs_top_bar';
 import { Container } from 'ts/components/ui/container';
@@ -157,9 +157,10 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                     >
                         <Container
                             borderBottom={this.state.isSidebarScrolling ? `1px solid ${colors.grey300}` : 'none'}
+                            paddingBottom="2px"
                         >
                             <Container paddingTop="30px" paddingLeft="10px" paddingBottom="8px">
-                                <DocsLogo height={36} />
+                                <DocsLogo />
                             </Container>
                         </Container>
                         <SidebarContainer onWheel={this._throttledSidebarScrolling}>

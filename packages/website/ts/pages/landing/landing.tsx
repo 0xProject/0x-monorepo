@@ -1,7 +1,7 @@
 import { colors, Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
-import DocumentTitle = require('react-document-title');
+import DocumentTitle from 'react-document-title';
 import { Footer } from 'ts/components/footer';
 import { SubscribeForm } from 'ts/components/forms/subscribe_form';
 import { TopBar } from 'ts/components/top_bar/top_bar';
@@ -36,8 +36,8 @@ interface Project {
 }
 
 const THROTTLE_TIMEOUT = 100;
-const WHATS_NEW_TITLE = '0x Protocol v2 is Live!';
-const WHATS_NEW_URL = 'https://blog.0xproject.com/0x-protocol-v2-0-is-live-183aac180149';
+const WHATS_NEW_TITLE = 'Introducing the 0x Launch Kit';
+const WHATS_NEW_URL = 'https://blog.0xproject.com/introducing-the-0x-launch-kit-4acdc3453585';
 const TITLE_STYLE: React.CSSProperties = {
     fontFamily: 'Roboto Mono',
     color: colors.grey,
