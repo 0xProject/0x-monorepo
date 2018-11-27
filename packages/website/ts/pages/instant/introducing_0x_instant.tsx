@@ -26,13 +26,7 @@ export const Introducing0xInstant = () => (
                 </Text>
             </Container>
             <div className="py3">
-                <Button
-                    type="button"
-                    backgroundColor={colors.mediumBlue}
-                    fontColor={colors.white}
-                    fontSize="18px"
-                    fontFamily="Roboto Mono"
-                >
+                <Button type="button" backgroundColor={colors.mediumBlue} fontColor={colors.white} fontSize="18px">
                     Get Started
                 </Button>
             </div>
