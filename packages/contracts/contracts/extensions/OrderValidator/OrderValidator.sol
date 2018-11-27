@@ -148,7 +148,7 @@ contract OrderValidator {
             balance = target == owner ? 1 : 0;
 
             // Check if ERC721Proxy is approved to spend tokenId
-            bool isApproved = IERC721Token(token).isApprovedForAll(target, assetProxy) || IERC721Token(token).getApproved(tokenId) == assetProxy;
+            bool isApproved = IERC721Token(token).isApprovedForAll(target, assetProxy);
             
             // Set alowance to 1 if ERC721Proxy is approved to spend tokenId
             allowance = isApproved ? 1 : 0;

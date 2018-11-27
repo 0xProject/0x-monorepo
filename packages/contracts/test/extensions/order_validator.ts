@@ -198,7 +198,7 @@ describe('OrderValidator', () => {
                 );
                 expect(newAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
             });
-            it('should return an allowance of 1 when ERC721Proxy is approved for specific tokenId', async () => {
+            it('should return an allowance of 0 when ERC721Proxy is approved for specific tokenId', async () => {
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc721Token.mint.sendTransactionAsync(makerAddress, tokenId),
                     constants.AWAIT_TRANSACTION_MINED_MS,
@@ -213,7 +213,7 @@ describe('OrderValidator', () => {
                     makerAddress,
                     erc721AssetData,
                 );
-                expect(newAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+                expect(newAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             });
         });
     });
@@ -248,8 +248,9 @@ describe('OrderValidator', () => {
                 await erc721Token.mint.sendTransactionAsync(makerAddress, tokenId),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
+            const isApproved = true;
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc721Token.approve.sendTransactionAsync(erc721Proxy.address, tokenId, {
+                await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, isApproved, {
                     from: makerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
@@ -311,8 +312,9 @@ describe('OrderValidator', () => {
                 await erc721Token.mint.sendTransactionAsync(takerAddress, tokenId),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
+            const isApproved = true;
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc721Token.approve.sendTransactionAsync(erc721Proxy.address, tokenId, {
+                await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, isApproved, {
                     from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
@@ -465,8 +467,9 @@ describe('OrderValidator', () => {
                 await erc721Token.mint.sendTransactionAsync(takerAddress, tokenId),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
+            const isApproved = true;
             await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc721Token.approve.sendTransactionAsync(erc721Proxy.address, tokenId, {
+                await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, isApproved, {
                     from: takerAddress,
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,

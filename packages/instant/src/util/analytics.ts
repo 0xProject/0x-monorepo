@@ -1,6 +1,8 @@
 import { BuyQuote } from '@0x/asset-buyer';
 import * as _ from 'lodash';
 
+import { AffiliateInfo, Network, OrderSource, ProviderState } from '../types';
+
 import { EventProperties, heapUtil } from './heap';
 
 let isDisabled = false;
@@ -74,6 +76,9 @@ export interface AnalyticsEventOptions {
     providerName?: string;
     gitSha?: string;
     npmVersion?: string;
+    orderSource?: string;
+    affiliateAddress?: string;
+    affiliateFeePercent?: number;
 }
 
 export const analytics = {
@@ -86,6 +91,28 @@ export const analytics = {
         evaluateIfEnabled(() => {
             heapUtil.evaluateHeapCall(heap => heap.addEventProperties(properties));
         });
+    },
+    generateEventProperties: (
+        network: Network,
+        orderSource: OrderSource,
+        providerState: ProviderState,
+        window: Window,
+        affiliateInfo?: AffiliateInfo,
+    ): AnalyticsEventOptions => {
+        const affiliateAddress = affiliateInfo ? affiliateInfo.feeRecipient : 'none';
+        const affiliateFeePercent = affiliateInfo ? parseFloat(affiliateInfo.feePercentage.toFixed(4)) : 0;
+        const orderSourceName = typeof orderSource === 'string' ? orderSource : 'provided';
+        return {
+            embeddedHost: window.location.host,
+            embeddedUrl: window.location.href,
+            networkId: network,
+            providerName: providerState.name,
+            gitSha: process.env.GIT_SHA,
+            npmVersion: process.env.NPM_PACKAGE_VERSION,
+            orderSource: orderSourceName,
+            affiliateAddress,
+            affiliateFeePercent,
+        };
     },
     trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),
     trackAccountLocked: trackingEventFnWithoutPayload(EventNames.ACCOUNT_LOCKED),
