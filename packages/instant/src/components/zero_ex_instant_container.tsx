@@ -28,13 +28,6 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
     public state = {
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };
-    private readonly _handlePanelCloseClickedX: () => void;
-    private readonly _handlePanelCloseAfterChose: () => void;
-    public constructor(props: ZeroExInstantContainerProps) {
-        super(props);
-        this._handlePanelCloseClickedX = this._handlePanelClose.bind(this, TokenSelectorClosedVia.ClickedX);
-        this._handlePanelCloseAfterChose = this._handlePanelClose.bind(this, TokenSelectorClosedVia.TokenChose);
-    }
     public render(): React.ReactNode {
         return (
             <React.Fragment>
@@ -92,6 +85,12 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
         this.setState({
             tokenSelectionPanelAnimationState: 'slidIn',
         });
+    };
+    private readonly _handlePanelCloseClickedX = (): void => {
+        this._handlePanelClose(TokenSelectorClosedVia.ClickedX);
+    };
+    private readonly _handlePanelCloseAfterChose = (): void => {
+        this._handlePanelClose(TokenSelectorClosedVia.TokenChose);
     };
     private readonly _handlePanelClose = (closedVia: TokenSelectorClosedVia): void => {
         analytics.trackTokenSelectorClosed(closedVia);
