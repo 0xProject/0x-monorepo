@@ -2,6 +2,7 @@
 /* tslint:disable max-classes-per-file */
 /* tslint:disable no-construct */
 import { DataItem, MethodAbi } from 'ethereum-types';
+import * as _ from 'lodash';
 
 import { DataType, DataTypeFactory } from './abstract_data_types';
 import * as Impl from './evm_data_types';
@@ -105,9 +106,9 @@ export class EvmDataTypeFactory implements DataTypeFactory {
             dataType = new String(dataItem);
         }
         // @TODO: Implement Fixed/UFixed types
-        if (!dataType) {
+        if (_.isUndefined(dataType)) {
             throw new Error(`Unrecognized data type: '${dataItem.type}'`);
-        } else if (parentDataType && !dataType.isStatic()) {
+        } else if (!_.isUndefined(parentDataType) && !dataType.isStatic()) {
             const pointerToDataType = new Pointer(dataType, parentDataType);
             return pointerToDataType;
         }

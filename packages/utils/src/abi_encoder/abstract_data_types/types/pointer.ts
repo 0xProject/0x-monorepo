@@ -21,7 +21,7 @@ export abstract class Pointer extends DataType {
     }
 
     public generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlocks.Pointer {
-        if (!parentBlock) {
+        if (_.isUndefined(parentBlock)) {
             throw new Error(`DependentDataType requires a parent block to generate its block`);
         }
         const destinationBlock = this._destination.generateCalldataBlock(value, parentBlock);
