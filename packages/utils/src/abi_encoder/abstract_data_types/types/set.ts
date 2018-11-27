@@ -204,7 +204,7 @@ export abstract class Set extends DataType {
         const range = _.range(length);
         _.each(range, (idx: number) => {
             const memberDataItem: DataItem = {
-                type: this._arrayElementType ? this._arrayElementType : '',
+                type: _.isUndefined(this._arrayElementType) ? '' : this._arrayElementType,
                 name: `${dataItem.name}[${idx.toString(Constants.DEC_BASE)}]`,
             };
             const components = dataItem.components;

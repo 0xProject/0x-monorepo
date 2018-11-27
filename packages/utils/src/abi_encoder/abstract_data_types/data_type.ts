@@ -25,9 +25,9 @@ export abstract class DataType {
     }
 
     public encode(value: any, rules?: EncodingRules, selector?: string): string {
-        const rules_ = rules ? rules : Constants.DEFAULT_ENCODING_RULES;
+        const rules_ = _.isUndefined(rules) ? Constants.DEFAULT_ENCODING_RULES : rules;
         const calldata = new Calldata(rules_);
-        if (selector) {
+        if (!_.isUndefined(selector)) {
             calldata.setSelector(selector);
         }
         const block = this.generateCalldataBlock(value);
@@ -37,14 +37,14 @@ export abstract class DataType {
     }
 
     public decode(calldata: string, rules?: DecodingRules, selector?: string): any {
-        if (selector && !calldata.startsWith(selector)) {
+        if (!_.isUndefined(selector) && !calldata.startsWith(selector)) {
             throw new Error(
-                `Tried to decode calldata, but it was missing the function selector. Expected '${selector}'.`,
+                `Tried to decode calldata, but it was missing the function selector. Expected prefix '${selector}'. Got '${calldata}'.`,
             );
         }
-        const hasSelector = selector ? true : false;
+        const hasSelector = !_.isUndefined(selector);
         const rawCalldata = new RawCalldata(calldata, hasSelector);
-        const rules_ = rules ? rules : Constants.DEFAULT_DECODING_RULES;
+        const rules_ = _.isUndefined(rules) ? Constants.DEFAULT_DECODING_RULES : rules;
         const value = this.generateValue(rawCalldata, rules_);
         return value;
     }

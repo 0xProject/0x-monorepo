@@ -39,7 +39,7 @@ export class Bool extends AbstractDataTypes.Blob {
             throw new Error(`Failed to decode boolean. Expected 0x0 or 0x1, got ${valueHex}`);
         }
         /* tslint:disable boolean-naming */
-        const value: boolean = valueNumber.equals(0) ? false : true;
+        const value: boolean = !valueNumber.equals(0);
         /* tslint:enable boolean-naming */
         return value;
     }

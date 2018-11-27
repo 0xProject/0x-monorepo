@@ -19,7 +19,7 @@ export abstract class Blob extends DataType {
         const encodedValue = this.encodeValue(value);
         const name = this.getDataItem().name;
         const signature = this.getSignature();
-        const parentName = parentBlock ? parentBlock.getName() : '';
+        const parentName = _.isUndefined(parentBlock) ? '' : parentBlock.getName();
         const block = new CalldataBlocks.Blob(name, signature, parentName, encodedValue);
         return block;
     }
