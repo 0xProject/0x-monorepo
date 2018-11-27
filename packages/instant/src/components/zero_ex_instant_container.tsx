@@ -19,20 +19,18 @@ import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 
-export interface ZeroExInstantContainerProps {
-    orderProcessState: OrderProcessState;
-}
+export interface ZeroExInstantContainerProps {}
 export interface ZeroExInstantContainerState {
     tokenSelectionPanelAnimationState: SlideAnimationState;
 }
 
-export class ZeroExInstantContainer extends React.Component<{}, ZeroExInstantContainerState> {
+export class ZeroExInstantContainer extends React.Component<ZeroExInstantContainerProps, ZeroExInstantContainerState> {
     public state = {
         tokenSelectionPanelAnimationState: 'none' as SlideAnimationState,
     };
     private _handlePanelCloseClickedX: () => void;
     private _handlePanelCloseAfterChose: () => void;
-    public constructor(props: {}) {
+    public constructor(props: ZeroExInstantContainerProps) {
         super(props);
         this._handlePanelCloseClickedX = this._handlePanelClose.bind(this, TokenSelectorClosedVia.ClickedX);
         this._handlePanelCloseAfterChose = this._handlePanelClose.bind(this, TokenSelectorClosedVia.TokenChose);
