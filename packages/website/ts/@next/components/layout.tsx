@@ -29,7 +29,7 @@ interface ColumnProps {
 
 const GUTTER = 30 as number;
 const WRAPPER_WIDTHS: WrapWidths = {
-  default: `calc(100% - ${GUTTER * 2}px)`,
+  default: '1500px', // dunno
   full: '100%',
   medium: '1136px',
   narrow: '930px',

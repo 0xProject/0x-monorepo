@@ -28,7 +28,9 @@ const SiteWrap: React.StatelessComponent<Props> = props => {
 
 const Main = styled.main`
   border: 1px solid blue;
-  padding: 30px;
+  width: calc(100% - 60px);
+  max-width: 1500px;
+  margin: 0 auto;
 `;
 
 
