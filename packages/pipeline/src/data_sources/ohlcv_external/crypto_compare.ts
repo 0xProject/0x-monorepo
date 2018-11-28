@@ -1,27 +1,27 @@
 import axios from 'axios';
 
-export type CryptoCompareOHLCVResponse = {
-  Data: Array<CryptoCompareOHLCVRecord>
+export interface CryptoCompareOHLCVResponse {
+  Data: CryptoCompareOHLCVRecord[];
 }
 
-export type CryptoCompareOHLCVRecord = {
-  time: number,
-  close: number,
-  high: number,
-  low: number,
-  open: number,
-  volumefrom: number,
-  volumeto: number
+export interface CryptoCompareOHLCVRecord {
+  time: number;
+  close: number;
+  high: number;
+  low: number;
+  open: number;
+  volumefrom: number;
+  volumeto: number;
 }
 
-export type CryptoCompareOHLCVParams = {
-  fsym: string,
-  tsym: string,
-  e: string | null,
-  aggregate?: string,
-  aggregatePredictableTimePeriods?: Boolean,
-  limit?: number,
-  toTs?: number
+export interface CryptoCompareOHLCVParams {
+  fsym: string;
+  tsym: string;
+  e: string | null;
+  aggregate?: string;
+  aggregatePredictableTimePeriods?: boolean;
+  limit?: number;
+  toTs?: number;
 }
 
 export class CryptoCompareOHLCVSource {
@@ -32,7 +32,10 @@ export class CryptoCompareOHLCVSource {
         this._concurrency = maxConcurrentRequests;
     }
 
-    public async getAsync(params: CryptoCompareOHLCVParams): Promise<Array<CryptoCompareOHLCVRecord>> {
+    public async getAsync(params: CryptoCompareOHLCVParams): Promise<CryptoCompareOHLCVRecord[]> {
+      if (this._concurrency <= 0) {
+        return [];
+      }
       const resp = await axios.get<CryptoCompareOHLCVResponse>(this._url, { params });
       return resp.data.Data;
     }

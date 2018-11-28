@@ -14,8 +14,8 @@ export { SraOrdersObservedTimeStamp, createObservedTimestampForOrder } from './s
 export { OHLCVExternal } from './ohlcv_external';
 
 export type ExchangeEvent = ExchangeFillEvent | ExchangeCancelEvent | ExchangeCancelUpToEvent;
-export type TradingPair = {
-  fromSymbol: string,
-  toSymbol: string,
-  source: string
-};
+export interface TradingPair {
+  fromSymbol: string;
+  toSymbol: string;
+  source: string;
+}
