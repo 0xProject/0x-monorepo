@@ -8,7 +8,7 @@ import { About } from 'ts/containers/about';
 import { DocsHome } from 'ts/containers/docs_home';
 import { FAQ } from 'ts/containers/faq';
 import { Jobs } from 'ts/containers/jobs';
-import { Landing } from 'ts/containers/landing';
+import { Landing } from 'ts/containers/landing'; // Note(ez): When we're done we omit all old site imports
 import { LaunchKit } from 'ts/containers/launch_kit';
 import { NotFound } from 'ts/containers/not_found';
 import { Wiki } from 'ts/containers/wiki';
@@ -18,6 +18,11 @@ import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
+
+
+// Next (new website) routes. We should rename them later
+import { NextLanding } from 'ts/@next/pages/landing';
+
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();
@@ -89,6 +94,10 @@ render(
                     <Provider store={store}>
                         <div>
                             <Switch>
+                                {/*
+                                  Note(ez): We remove/replace all old routes with next routes
+                                  once we're ready to put a ring on it. for now let's keep em there for reference
+                                */}
                                 <Route exact={true} path="/" component={Landing as any} />
                                 <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
                                 <Route path={WebsitePaths.LaunchKit} component={LaunchKit as any} />
@@ -97,6 +106,12 @@ render(
                                 <Route path={WebsitePaths.FAQ} component={FAQ as any} />
                                 <Route path={WebsitePaths.About} component={About as any} />
                                 <Route path={WebsitePaths.Wiki} component={Wiki as any} />
+
+
+                                {/* Next (new site) routes */}
+                                <Route exact path="/next" component={NextLanding as any} />
+
+
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
                                     component={LazyZeroExJSDocumentation}
