@@ -31,7 +31,7 @@ export const Text: React.StatelessComponent<TextProps> = ({ href, onClick, ...re
     return <StyledText {...rest} onClick={computedOnClick} />;
 };
 
-const darkenOnHoverAmount = 0.3;
+const opacityOnHoverAmount = 0.5;
 export const StyledText =
     styled.div <
     TextProps >
@@ -56,8 +56,7 @@ export const StyledText =
         ${props => (props.textAlign ? `text-align: ${props.textAlign}` : '')};
         ${props => (props.width ? `width: ${props.width}` : '')};
         &:hover {
-            ${props =>
-                props.onClick ? `color: ${darken(darkenOnHoverAmount, props.theme[props.fontColor || 'white'])}` : ''};
+            ${props => (props.onClick ? `opacity: ${opacityOnHoverAmount};` : '')};
         }
     }
 `;
