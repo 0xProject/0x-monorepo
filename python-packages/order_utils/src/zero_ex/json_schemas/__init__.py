@@ -8,11 +8,11 @@ from pkg_resources import resource_string
 import jsonschema
 
 
-class LocalRefResolver(jsonschema.RefResolver):
+class _LocalRefResolver(jsonschema.RefResolver):
     """Resolve package-local JSON schema id's."""
 
     def __init__(self):
-        """Initialize a new LocalRefResolver instance."""
+        """Initialize a new instance."""
         self.ref_to_file = {
             "/addressSchema": "address_schema.json",
             "/hexSchema": "hex_schema.json",
@@ -32,7 +32,7 @@ class LocalRefResolver(jsonschema.RefResolver):
         :param url: a string representing the URL of the JSON schema to fetch.
         :returns: a string representing the deserialized JSON schema
         :raises jsonschema.ValidationError: when the resource associated with
-                                            `url` does not exist.
+                   `url` does not exist.
         """
         ref = url.replace("file://", "")
         if ref in self.ref_to_file:
@@ -47,10 +47,10 @@ class LocalRefResolver(jsonschema.RefResolver):
         )
 
 
-# Instantiate the `LocalRefResolver()` only once so that `assert_valid()` can
+# Instantiate the `_LocalRefResolver()` only once so that `assert_valid()` can
 # perform multiple schema validations without reading from disk the schema
 # every time.
-LOCAL_RESOLVER = LocalRefResolver()
+_LOCAL_RESOLVER = _LocalRefResolver()
 
 
 def assert_valid(data: Mapping, schema_id: str) -> None:
@@ -70,5 +70,5 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
     """
     # noqa
 
-    _, schema = LOCAL_RESOLVER.resolve(schema_id)
-    jsonschema.validate(data, schema, resolver=LOCAL_RESOLVER)
+    _, schema = _LOCAL_RESOLVER.resolve(schema_id)
+    jsonschema.validate(data, schema, resolver=_LOCAL_RESOLVER)
