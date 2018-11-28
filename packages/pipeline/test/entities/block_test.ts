@@ -11,7 +11,7 @@ chaiSetup.configure();
 
 // tslint:disable:custom-no-magic-numbers
 describe('Block entity', () => {
-    it('save/find a block', async () => {
+    it('save/find', async () => {
         const connection = await createDbConnectionOnceAsync();
         const block = new Block();
         block.hash = '0x12345';
