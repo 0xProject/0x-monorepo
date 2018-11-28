@@ -112,7 +112,7 @@ export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
                 </Col>
                 <Col width="46%">
                     <Links>
-                        {_.map(linkRows, (row, index) => <LinkRow heading={row.heading} links={row.links} />)}
+                        {_.map(linkRows, (row, index) => <LinkRow key={index} heading={row.heading} links={row.links} />)}
                     </Links>
                 </Col>
             </Inner>
