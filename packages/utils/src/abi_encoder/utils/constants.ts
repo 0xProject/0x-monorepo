@@ -10,5 +10,5 @@ export const constants = {
     HEX_SELECTOR_LENGTH_IN_BYTES: 4,
     HEX_SELECTOR_BYTE_OFFSET_IN_CALLDATA: 0,
     DEFAULT_DECODING_RULES: { structsAsObjects: false } as DecodingRules,
-    DEFAULT_ENCODING_RULES: { optimize: false, annotate: false } as EncodingRules,
+    DEFAULT_ENCODING_RULES: { optimize: true, annotate: false } as EncodingRules,
 };
