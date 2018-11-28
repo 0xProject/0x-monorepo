@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { Middleware } from 'redux';
 
 import { ETH_DECIMALS } from '../constants';
-import { Account, AccountState } from '../types';
+import { Account, AccountState, StandardSlidingPanelContent } from '../types';
 import { analytics } from '../util/analytics';
 
 import { Action, ActionTypes } from './actions';
@@ -75,6 +75,18 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                 analytics.addEventProperties({
                     numberAvailableAssets: availableAssets.length,
                 });
+            }
+            break;
+        case ActionTypes.OPEN_STANDARD_SLIDING_PANEL:
+            const openSlidingContent = curState.standardSlidingPanelSettings.content;
+            if (openSlidingContent === StandardSlidingPanelContent.InstallWallet) {
+                analytics.trackInstallWalletModalOpened();
+            }
+            break;
+        case ActionTypes.CLOSE_STANDARD_SLIDING_PANEL:
+            const closeSlidingContent = curState.standardSlidingPanelSettings.content;
+            if (closeSlidingContent === StandardSlidingPanelContent.InstallWallet) {
+                analytics.trackInstallWalletModalClosed();
             }
             break;
     }
