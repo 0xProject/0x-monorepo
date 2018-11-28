@@ -10,6 +10,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('ABI Encoder: Return Value Encoding/Decoding', () => {
+    const encodingRules: AbiEncoder.EncodingRules = { optimize: false }; // optimizer is tested separately.
     it('No Return Value', async () => {
         // Decode return value
         const method = new AbiEncoder.Method(ReturnValueAbis.noReturnValues);
@@ -22,7 +23,7 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         // Generate Return Value
         const method = new AbiEncoder.Method(ReturnValueAbis.singleStaticReturnValue);
         const returnValue = ['0x01020304'];
-        const encodedReturnValue = method.encodeReturnValues(returnValue);
+        const encodedReturnValue = method.encodeReturnValues(returnValue, encodingRules);
         const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
         // Validate decoded return value
         expect(decodedReturnValue).to.be.deep.equal(returnValue);
@@ -31,7 +32,7 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         // Generate Return Value
         const method = new AbiEncoder.Method(ReturnValueAbis.multipleStaticReturnValues);
         const returnValue = ['0x01020304', '0x05060708'];
-        const encodedReturnValue = method.encodeReturnValues(returnValue);
+        const encodedReturnValue = method.encodeReturnValues(returnValue, encodingRules);
         const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
         // Validate decoded return value
         expect(decodedReturnValue).to.be.deep.equal(returnValue);
@@ -40,7 +41,7 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         // Generate Return Value
         const method = new AbiEncoder.Method(ReturnValueAbis.singleDynamicReturnValue);
         const returnValue = ['0x01020304'];
-        const encodedReturnValue = method.encodeReturnValues(returnValue);
+        const encodedReturnValue = method.encodeReturnValues(returnValue, encodingRules);
         const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
         // Validate decoded return value
         expect(decodedReturnValue).to.be.deep.equal(returnValue);
@@ -49,7 +50,7 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         // Generate Return Value
         const method = new AbiEncoder.Method(ReturnValueAbis.multipleDynamicReturnValues);
         const returnValue = ['0x01020304', '0x05060708'];
-        const encodedReturnValue = method.encodeReturnValues(returnValue);
+        const encodedReturnValue = method.encodeReturnValues(returnValue, encodingRules);
         const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
         // Validate decoded return value
         expect(decodedReturnValue).to.be.deep.equal(returnValue);
@@ -58,7 +59,7 @@ describe('ABI Encoder: Return Value Encoding/Decoding', () => {
         // Generate Return Value
         const method = new AbiEncoder.Method(ReturnValueAbis.mixedStaticAndDynamicReturnValues);
         const returnValue = ['0x01020304', '0x05060708'];
-        const encodedReturnValue = method.encodeReturnValues(returnValue);
+        const encodedReturnValue = method.encodeReturnValues(returnValue, encodingRules);
         const decodedReturnValue = method.decodeReturnValues(encodedReturnValue);
         // Validate decoded return value
         expect(decodedReturnValue).to.be.deep.equal(returnValue);

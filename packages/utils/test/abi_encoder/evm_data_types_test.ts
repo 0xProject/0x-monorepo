@@ -10,6 +10,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
+    const encodingRules: AbiEncoder.EncodingRules = { optimize: false }; // optimizer is tested separately.
     describe('Array', () => {
         it('Fixed size; Static elements', async () => {
             // Create DataType object
@@ -18,7 +19,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = [new BigNumber(5), new BigNumber(6)];
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x00000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000006';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -33,7 +34,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = [new BigNumber(5), new BigNumber(6)];
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000006';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -48,7 +49,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = ['Hello', 'world'];
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000548656c6c6f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005776f726c64000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -63,7 +64,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = ['Hello', 'world'];
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000548656c6c6f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005776f726c64000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -81,7 +82,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const array3 = ['0x18192021'];
             const args = [array1, array2, array3];
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000001a000000000000000000000000000000000000000000000000000000000000002800000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000040102030400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000405060708000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004091011120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000041011121300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000414151617000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000041819202100000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -99,7 +100,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const array3 = ['0x18192021'];
             const args = [array1, array2, array3];
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000000301020304000000000000000000000000000000000000000000000000000000000506070800000000000000000000000000000000000000000000000000000000091011120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000021011121300000000000000000000000000000000000000000000000000000000141516170000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011819202100000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -116,7 +117,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const array2 = ['0x10111213', '0x14151617', '0x18192021'];
             const args = [array1, array2];
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x010203040000000000000000000000000000000000000000000000000000000005060708000000000000000000000000000000000000000000000000000000000910111200000000000000000000000000000000000000000000000000000000101112130000000000000000000000000000000000000000000000000000000014151617000000000000000000000000000000000000000000000000000000001819202100000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -133,7 +134,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const array2 = ['0x10111213', '0x14151617', '0x18192021'];
             const args = [array1, array2];
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000160000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000401020304000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004050607080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040910111200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000000410111213000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004141516170000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041819202100000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -149,7 +150,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = ['Hello', 'world'];
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw('Expected array of 3 elements, but got array of length 2');
         });
         it('Static size; Too Many Elements', async () => {
@@ -160,7 +161,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = ['Hello', 'world'];
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw('Expected array of 1 elements, but got array of length 2');
         });
         it('Element Type Mismatch', async () => {
@@ -171,7 +172,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = [new BigNumber(1), 'Bad Argument'];
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw();
         });
     });
@@ -188,7 +189,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = { field_1: new BigNumber(-5), field_2: true };
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb0000000000000000000000000000000000000000000000000000000000000001';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -208,7 +209,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = { field_1: 'Hello, World!', field_2: '0xabcdef0123456789' };
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20576f726c6421000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008abcdef0123456789000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -228,7 +229,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = { field: [new BigNumber(1), new BigNumber(2)] };
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -248,7 +249,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = { field: [new BigNumber(1), new BigNumber(2)] };
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -270,7 +271,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const array2 = ['0x09101112', '0x13141516'];
             const args = { field: [array1, array2] };
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x0102030400000000000000000000000000000000000000000000000000000000050607080000000000000000000000000000000000000000000000000000000009101112000000000000000000000000000000000000000000000000000000001314151600000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -292,7 +293,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const array2 = ['0x09101112', '0x13141516'];
             const args = { field: [array1, array2] };
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000004010203040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040506070800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000004091011120000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041314151600000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -322,7 +323,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
                 field_4: '0xabcdef0123456789',
             };
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000d48656c6c6f2c20576f726c6421000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008abcdef0123456789000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -343,7 +344,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = { field_1: new BigNumber(-5) };
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw('Could not assign tuple to object: missing keys field_2');
         });
         it('Bad Key', async () => {
@@ -358,7 +359,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = { unknown_field: new BigNumber(-5) };
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw("Could not assign tuple to object: unrecognized key 'unknown_field' in object Tuple");
         });
     });
@@ -371,7 +372,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = '0xe41d2489571d322189246dafa5ebde1f4699f498';
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -386,7 +387,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = 'e4';
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw(`Invalid address: '${args}'`);
         });
         it('Invalid Address - input is not 20 bytes', async () => {
@@ -397,7 +398,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = '0xe4';
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw(`Invalid address: '${args}'`);
         });
     });
@@ -410,7 +411,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = true;
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000001';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -424,7 +425,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = false;
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -448,7 +449,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = new BigNumber(1);
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000001';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -462,7 +463,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = new BigNumber(-1);
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -476,7 +477,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = max256BitInteger;
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -490,7 +491,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = min256BitInteger;
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = `0x8000000000000000000000000000000000000000000000000000000000000000`;
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -505,7 +506,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = max256BitInteger.plus(1);
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw();
         });
         it('Int256 - Value too small', async () => {
@@ -516,7 +517,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = min256BitInteger.minus(1);
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw();
         });
         it('Int32 - Positive Base Case', async () => {
@@ -526,7 +527,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = new BigNumber(1);
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000001';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -540,7 +541,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = new BigNumber(-1);
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -554,7 +555,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = max32BitInteger;
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x000000000000000000000000000000000000000000000000000000007fffffff';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -568,7 +569,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = min32BitInteger;
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = `0xffffffffffffffffffffffffffffffffffffffffffffffffffffffff80000000`;
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -583,7 +584,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = max32BitInteger.plus(1);
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw();
         });
         it('Int32 - Value too small', async () => {
@@ -594,7 +595,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = min32BitInteger.minus(1);
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw();
         });
     });
@@ -614,7 +615,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = new BigNumber(1);
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000001';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -628,7 +629,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = max256BitUnsignedInteger;
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -642,7 +643,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = min256BitUnsignedInteger;
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = `0x0000000000000000000000000000000000000000000000000000000000000000`;
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -657,7 +658,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = max256BitUnsignedInteger.plus(1);
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw();
         });
         it('UInt256 - Value too small', async () => {
@@ -668,7 +669,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = min256BitUnsignedInteger.minus(1);
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw();
         });
         it('UInt32 - Positive Base Case', async () => {
@@ -678,7 +679,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = new BigNumber(1);
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x0000000000000000000000000000000000000000000000000000000000000001';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -692,7 +693,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = max32BitUnsignedInteger;
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x00000000000000000000000000000000000000000000000000000000ffffffff';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -706,7 +707,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = min32BitUnsignedInteger;
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = `0x0000000000000000000000000000000000000000000000000000000000000000`;
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -721,7 +722,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = max32BitUnsignedInteger.plus(1);
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw();
         });
         it('UInt32 - Value too small', async () => {
@@ -732,7 +733,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = min32BitUnsignedInteger.minus(1);
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw();
         });
     });
@@ -745,7 +746,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = '0x05';
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x0500000000000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -759,7 +760,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = '0x05';
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x0500000000000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -773,7 +774,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = '0x00010203';
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x0001020300000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -788,7 +789,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const args = '0x1a18';
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x1a18000000000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -803,7 +804,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             const args = '0x0001020304050607080911121314151617181920212223242526272829303132';
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x0001020304050607080911121314151617181920212223242526272829303132';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -818,7 +819,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const args = '0x1a18bf61';
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs = '0x1a18bf6100000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
             // Decode Encoded Args and validate result
@@ -834,7 +835,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = '0x0102030405';
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw(
                 'Tried to assign 0x0102030405 (5 bytes), which exceeds max bytes that can be stored in a bytes4',
             );
@@ -847,7 +848,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = '0x010203040506070809101112131415161718192021222324252627282930313233';
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw(
                 'Tried to assign 0x010203040506070809101112131415161718192021222324252627282930313233 (33 bytes), which exceeds max bytes that can be stored in a bytes32',
             );
@@ -860,7 +861,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = '0102030405060708091011121314151617181920212223242526272829303132';
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw("Tried to encode non-hex value. Value must inlcude '0x' prefix.");
         });
         it('Should throw when pass in bad hex (include a half-byte)', async () => {
@@ -871,7 +872,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = '0x010';
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw('Tried to assign 0x010, which is contains a half-byte. Use full bytes only.');
         });
     });
@@ -885,7 +886,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const args = '0x1a18bf61';
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x00000000000000000000000000000000000000000000000000000000000000041a18bf6100000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -902,7 +903,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const bytesLength = 40;
             const args = '0x' + '61'.repeat(bytesLength);
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x000000000000000000000000000000000000000000000000000000000000002861616161616161616161616161616161616161616161616161616161616161616161616161616161000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -935,7 +936,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = '01';
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw("Tried to encode non-hex value. Value must inlcude '0x' prefix.");
         });
         it('Should throw when pass in bad hex (include a half-byte)', async () => {
@@ -946,7 +947,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const args = '0x010';
             // Encode Args and validate result
             expect(() => {
-                dataType.encode(args);
+                dataType.encode(args, encodingRules);
             }).to.throw('Tried to assign 0x010, which is contains a half-byte. Use full bytes only.');
         });
     });
@@ -960,7 +961,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const args = 'five';
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x00000000000000000000000000000000000000000000000000000000000000046669766500000000000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -977,7 +978,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const bytesLength = 40;
             const args = 'a'.repeat(bytesLength);
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x000000000000000000000000000000000000000000000000000000000000002861616161616161616161616161616161616161616161616161616161616161616161616161616161000000000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
@@ -994,7 +995,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const strLength = 40;
             const args = '0x' + 'a'.repeat(strLength);
             // Encode Args and validate result
-            const encodedArgs = dataType.encode(args);
+            const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
                 '0x000000000000000000000000000000000000000000000000000000000000002a30786161616161616161616161616161616161616161616161616161616161616161616161616161616100000000000000000000000000000000000000000000';
             expect(encodedArgs).to.be.equal(expectedEncodedArgs);
