@@ -11,13 +11,11 @@ export interface NeedMoreProps {
 }
 export const NeedMore = (props: NeedMoreProps) => {
     const isSmallScreen = props.screenWidth === ScreenWidths.Sm;
+    const backgroundColor = isSmallScreen ? colors.instantTertiaryBackground : colors.instantSecondaryBackground;
     const className = isSmallScreen ? 'flex flex-column items-center' : 'flex';
     const marginRight = isSmallScreen ? undefined : '200px';
     return (
-        <Container
-            className="flex flex-column items-center py4 px3"
-            backgroundColor={colors.instantSecondaryBackground}
-        >
+        <Container className="flex flex-column items-center py4 px3" backgroundColor={backgroundColor}>
             <Container className={className}>
                 <Container className="sm-center" marginRight={marginRight}>
                     <Text fontColor={colors.white} fontSize="32px" lineHeight="45px">
@@ -32,7 +30,7 @@ export const NeedMore = (props: NeedMoreProps) => {
                         <Button
                             type="button"
                             backgroundColor={colors.white}
-                            fontColor={colors.instantSecondaryBackground}
+                            fontColor={backgroundColor}
                             fontSize="18px"
                         >
                             Get in Touch
