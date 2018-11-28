@@ -7,7 +7,7 @@ import { DecodingRules } from '../../utils/rules';
 import { DataType } from '../data_type';
 import { DataTypeFactory } from '../interfaces';
 
-export abstract class Blob extends DataType {
+export abstract class AbstractBlobDataType extends DataType {
     protected _sizeKnownAtCompileTime: boolean;
 
     public constructor(dataItem: DataItem, factory: DataTypeFactory, sizeKnownAtCompileTime: boolean) {

@@ -1,8 +1,9 @@
 import { DataItem, SolidityTypes } from 'ethereum-types';
 
-import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
+import { DataTypeFactory } from '../abstract_data_types/interfaces';
+import { AbstractSetDataType } from '../abstract_data_types/types/set';
 
-export class TupleDataType extends AbstractDataTypes.Set {
+export class TupleDataType extends AbstractSetDataType {
     private readonly _signature: string;
 
     public static matchType(type: string): boolean {

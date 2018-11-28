@@ -2,11 +2,12 @@ import { DataItem, SolidityTypes } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
+import { DataTypeFactory } from '../abstract_data_types/interfaces';
+import { AbstractBlobDataType } from '../abstract_data_types/types/blob';
 import { RawCalldata } from '../calldata';
 import { constants } from '../utils/constants';
 
-export class StaticBytesDataType extends AbstractDataTypes.Blob {
+export class StaticBytesDataType extends AbstractBlobDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _MATCHER = RegExp(
         '^(byte|bytes(1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32))$',

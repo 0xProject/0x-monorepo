@@ -2,11 +2,12 @@ import { DataItem, SolidityTypes } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
+import { DataTypeFactory } from '../abstract_data_types/interfaces';
+import { AbstractBlobDataType } from '../abstract_data_types/types/blob';
 import { RawCalldata } from '../calldata';
 import { constants } from '../utils/constants';
 
-export class AddressDataType extends AbstractDataTypes.Blob {
+export class AddressDataType extends AbstractBlobDataType {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _ADDRESS_SIZE_IN_BYTES = 20;
     private static readonly _DECODED_ADDRESS_OFFSET_IN_BYTES = constants.EVM_WORD_WIDTH_IN_BYTES -

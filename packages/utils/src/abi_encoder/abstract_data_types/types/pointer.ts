@@ -9,7 +9,7 @@ import { DecodingRules } from '../../utils/rules';
 import { DataType } from '../data_type';
 import { DataTypeFactory } from '../interfaces';
 
-export abstract class Pointer extends DataType {
+export abstract class AbstractPointerDataType extends DataType {
     protected _destination: DataType;
     protected _parent: DataType;
 

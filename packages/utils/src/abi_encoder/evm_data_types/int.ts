@@ -2,12 +2,13 @@ import { DataItem, SolidityTypes } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { BigNumber } from '../../configured_bignumber';
-import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
+import { DataTypeFactory } from '../abstract_data_types/interfaces';
+import { AbstractBlobDataType } from '../abstract_data_types/types/blob';
 import { RawCalldata } from '../calldata';
 import { constants } from '../utils/constants';
 import * as EncoderMath from '../utils/math';
 
-export class IntDataType extends AbstractDataTypes.Blob {
+export class IntDataType extends AbstractBlobDataType {
     private static readonly _MATCHER = RegExp(
         '^int(8|16|24|32|40|48|56|64|72|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256){0,1}$',
     );

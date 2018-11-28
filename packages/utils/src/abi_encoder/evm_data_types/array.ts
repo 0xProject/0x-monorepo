@@ -1,10 +1,11 @@
 import { DataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
+import { DataTypeFactory } from '../abstract_data_types/interfaces';
+import { AbstractSetDataType } from '../abstract_data_types/types/set';
 import { constants } from '../utils/constants';
 
-export class ArrayDataType extends AbstractDataTypes.Set {
+export class ArrayDataType extends AbstractSetDataType {
     private static readonly _MATCHER = RegExp('^(.+)\\[([0-9]*)\\]$');
     private readonly _arraySignature: string;
     private readonly _elementType: string;

@@ -2,7 +2,8 @@
 import { DataItem, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DataType, DataTypeFactory } from './abstract_data_types';
+import { DataType } from './abstract_data_types/data_type';
+import { DataTypeFactory } from './abstract_data_types/interfaces';
 import { AddressDataType } from './evm_data_types/address';
 import { ArrayDataType } from './evm_data_types/array';
 import { BoolDataType } from './evm_data_types/bool';

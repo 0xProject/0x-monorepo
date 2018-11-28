@@ -10,9 +10,9 @@ import { DecodingRules } from '../../utils/rules';
 import { DataType } from '../data_type';
 import { DataTypeFactory, MemberIndexByName } from '../interfaces';
 
-import { Pointer } from './pointer';
+import { AbstractPointerDataType } from './pointer';
 
-export abstract class Set extends DataType {
+export abstract class AbstractSetDataType extends DataType {
     protected readonly _arrayLength: number | undefined;
     protected readonly _arrayElementType: string | undefined;
     private readonly _memberIndexByName: MemberIndexByName;
@@ -88,7 +88,7 @@ export abstract class Set extends DataType {
         }
         // If any member of the set is a pointer then the set is not static.
         const dependentMember = _.find(this._members, (member: DataType) => {
-            return member instanceof Pointer;
+            return member instanceof AbstractPointerDataType;
         });
         const isStatic = _.isUndefined(dependentMember);
         return isStatic;
