@@ -10,6 +10,12 @@ declare module '*.json' {
     export default json;
     /* tslint:enable */
 }
+
+declare module '*.svg' {
+    const svg: any;
+    export default svg;
+}
+
 declare module 'web3-provider-engine/subproviders/filters';
 
 // This will be defined by default in TS 2.4

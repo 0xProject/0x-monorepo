@@ -91,6 +91,7 @@
         "less-loader": "^4.1.0",
         "make-promises-safe": "^1.1.0",
         "raw-loader": "^0.5.1",
+        "react-svg-loader": "^2.1.0",
         "rollbar-sourcemap-webpack-plugin": "^2.4.0",
         "shx": "^0.2.2",
         "source-map-loader": "^0.2.4",
