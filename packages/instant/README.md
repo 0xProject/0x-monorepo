@@ -22,18 +22,26 @@ The package is available as a UMD module named `zeroExInstant`.
 
 You can deploy a work-in-progress version of 0x Instant at http://0x-instant-dogfood.s3-website-us-east-1.amazonaws.com for easy sharing.
 
-To build and deploy the site run
+To build and deploy the bundle run
 
 ```
 yarn deploy_dogfood
 ```
 
-We also have a staging bucket that is to be updated less frequently can be used to share instant externally: http://0x-instant-staging.s3-website-us-east-1.amazonaws.com/
+We also have a staging bucket that is to be updated less frequently can be used to share a beta version of instant externally: http://0x-instant-staging.s3-website-us-east-1.amazonaws.com/
 
-To build and deploy to this bucket, run
+To build and deploy to this bundle, run
 
 ```
 yarn deploy_staging
+```
+
+Finally, we have our live production bundle that is only meant to be updated with stable, polished releases.
+
+To build and deploy to this bundle, run
+
+```
+yarn deploy_live
 ```
 
 **NOTE: On deploying the site, it will say the site is available at a non-existent URL. Please ignore and use the (now updated) URL above.**
