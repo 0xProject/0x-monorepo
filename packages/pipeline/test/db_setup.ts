@@ -29,16 +29,15 @@ export async function setUpDbAsync(): Promise<void> {
  * If a docker container was created, it destroys that container too.
  */
 export async function tearDownDbAsync(): Promise<void> {
+    const connection = await createDbConnectionOnceAsync();
+    for (const _ of connection.migrations) {
+        await connection.undoLastMigration({ transaction: true });
+    }
     if (needsDocker()) {
         const docker = initDockerOnce();
         const postgresContainer = docker.getContainer(DOCKER_CONTAINER_NAME);
         await postgresContainer.kill();
         await postgresContainer.remove();
-    } else {
-        const connection = await createDbConnectionOnceAsync();
-        for (const _ of connection.migrations) {
-            await connection.undoLastMigration({ transaction: true });
-        }
     }
 }
 
