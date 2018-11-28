@@ -1,7 +1,8 @@
 import * as React from 'react';
+import styled from 'styled-components';
 import { GlobalStyles } from 'ts/@next/constants/globalStyle';
+import { Header } from 'ts/@next/components/header';
 
-import { Header } from './header';
 
 interface Props {
 
@@ -16,11 +17,19 @@ const SiteWrap: React.StatelessComponent<Props> = props => {
 
       <Header />
 
-      {children}
+      <Main>
+        { children }
+      </Main>
 
       <footer>OMG FOOTER</footer>
     </>
   );
 };
 
-export { SiteWrap };
+const Main = styled.main`
+  border: 1px solid blue;
+  padding: 30px;
+`;
+
+
+export { SiteWrap }
