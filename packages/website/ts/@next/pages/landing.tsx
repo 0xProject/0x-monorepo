@@ -18,6 +18,18 @@ export const NextLanding = () => (
       </Wrap>
     </Section>
 
+    <Section noPadding>
+      <Wrap width="full">
+        <Column colWidth="2/3">
+          SAMPLE FLUSHED width
+        </Column>
+
+        <Column colWidth="1/3">
+          RIGHT IMAGE
+        </Column>
+      </Wrap>
+    </Section>
+
     <Section bgColor="#003831">
       <Wrap
         width="narrow">
