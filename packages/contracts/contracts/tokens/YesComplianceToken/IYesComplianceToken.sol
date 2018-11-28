@@ -1,5 +1,6 @@
 pragma solidity ^0.4.24;
 
+import "./WyreERC721Token/ERC721Token.sol";
 
 /**
  * @notice an ERC721 "yes" compliance token supporting a collection of country-specific attributions which answer specific
@@ -30,7 +31,7 @@ pragma solidity ^0.4.24;
  *
  * any (non-view) methods not explicitly marked idempotent are not idempotent.
  */
-contract YesComplianceTokenV1 /*is ERC721Token*/ /*, ERC165 :should: */ {
+contract YesComplianceTokenV1 is ERC721Token /*, ERC165 :should: */ {
 
     uint256 public constant OWNER_ENTITY_ID = 1;
 

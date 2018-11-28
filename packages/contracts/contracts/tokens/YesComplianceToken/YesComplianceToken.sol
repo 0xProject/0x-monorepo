@@ -118,7 +118,6 @@ contract YesComplianceToken is YesComplianceTokenV1 {
      */
     function initialize(string _name, string _symbol) {
         // require(super._symbol.length == 0 || _symbol == super._symbol); // cannot change symbol after first init bc that could fuck shit up
-        _upgradeable_initialize(); // basically for security
         super.initialize(_name, _symbol); // init token info
 
         // grant the owner token
@@ -133,7 +132,6 @@ contract YesComplianceToken is YesComplianceTokenV1 {
      * executed in lieu of a constructor in a delegated context
      */
     function _upgradeable_initialize() public {
-        super._upgradeable_initialize(); // provides require(msg.sender == _upgradeable_delegate_owner);
 
         // some things are still tied to the owner (instead of the yesmark_owner :notsureif:)
         ownerAddress = msg.sender;

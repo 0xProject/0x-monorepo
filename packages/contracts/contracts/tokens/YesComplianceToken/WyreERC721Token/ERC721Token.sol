@@ -52,18 +52,9 @@ contract ERC721Token is ERC721BasicToken, ERC721 {
   /**
    * @dev Constructor function
    */
-  function initialize(string _name, string _symbol) public isInitializer("ERC721Token", "1.9.0") {
+  function initialize(string _name, string _symbol) public {
     name_ = _name;
     symbol_ = _symbol;
-  }
-
-  function _supportsInterface(bytes4 _interfaceId)
-    internal
-    view
-    returns (bool)
-  {
-    return super._supportsInterface(_interfaceId) || 
-      _interfaceId == InterfaceId_ERC721Enumerable || _interfaceId == InterfaceId_ERC721Metadata;
   }
 
   /**
@@ -161,7 +152,7 @@ contract ERC721Token is ERC721BasicToken, ERC721 {
     super.removeTokenFrom(_from, _tokenId);
 
     uint256 tokenIndex = ownedTokensIndex[_tokenId];
-    uint256 lastTokenIndex = ownedTokens[_from].length.sub(1);
+    uint256 lastTokenIndex = safeSub(ownedTokens[_from].length, 1);
     uint256 lastToken = ownedTokens[_from][lastTokenIndex];
 
     ownedTokens[_from][tokenIndex] = lastToken;
@@ -204,7 +195,7 @@ contract ERC721Token is ERC721BasicToken, ERC721 {
 
     // Reorg all tokens array
     uint256 tokenIndex = allTokensIndex[_tokenId];
-    uint256 lastTokenIndex = allTokens.length.sub(1);
+    uint256 lastTokenIndex = safeSub(allTokens.length, 1);
     uint256 lastToken = allTokens[lastTokenIndex];
 
     allTokens[tokenIndex] = lastToken;
