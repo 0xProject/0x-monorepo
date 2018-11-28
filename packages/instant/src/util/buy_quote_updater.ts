@@ -17,10 +17,10 @@ export const buyQuoteUpdater = {
         dispatch: Dispatch<Action>,
         asset: ERC20Asset,
         assetUnitAmount: BigNumber,
+        fetchOrigin: QuoteFetchOrigin,
         options: {
             setPending: boolean;
             dispatchErrors: boolean;
-            fetchOrigin: QuoteFetchOrigin;
             affiliateInfo?: AffiliateInfo;
         },
     ): Promise<void> => {
@@ -37,11 +37,7 @@ export const buyQuoteUpdater = {
         } catch (error) {
             if (options.dispatchErrors) {
                 dispatch(actions.setQuoteRequestStateFailure());
-                analytics.trackQuoteError(
-                    error.message ? error.message : 'other',
-                    assetUnitAmount,
-                    options.fetchOrigin,
-                );
+                analytics.trackQuoteError(error.message ? error.message : 'other', assetUnitAmount, fetchOrigin);
                 let errorMessage;
                 if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
                     const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
@@ -69,6 +65,6 @@ export const buyQuoteUpdater = {
         errorFlasher.clearError(dispatch);
         // invalidate the last buy quote.
         dispatch(actions.updateLatestBuyQuote(newBuyQuote));
-        analytics.trackQuoteFetched(newBuyQuote, options.fetchOrigin);
+        analytics.trackQuoteFetched(newBuyQuote, fetchOrigin);
     },
 };

@@ -84,7 +84,8 @@ export const asyncData = {
     fetchCurrentBuyQuoteAndDispatchToStore: async (
         state: State,
         dispatch: Dispatch,
-        options: { updateSilently: boolean; fetchOrigin: QuoteFetchOrigin },
+        fetchOrigin: QuoteFetchOrigin,
+        options: { updateSilently: boolean },
     ) => {
         const { buyOrderState, providerState, selectedAsset, selectedAssetUnitAmount, affiliateInfo } = state;
         const assetBuyer = providerState.assetBuyer;
@@ -99,10 +100,10 @@ export const asyncData = {
                 dispatch,
                 selectedAsset as ERC20Asset,
                 selectedAssetUnitAmount,
+                fetchOrigin,
                 {
                     setPending: !options.updateSilently,
                     dispatchErrors: !options.updateSilently,
-                    fetchOrigin: options.fetchOrigin,
                     affiliateInfo,
                 },
             );

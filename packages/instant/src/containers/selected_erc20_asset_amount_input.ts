@@ -88,11 +88,10 @@ const mapDispatchToProps = (
             // even if it's debounced, give them the illusion it's loading
             dispatch(actions.setQuoteRequestStatePending());
             // tslint:disable-next-line:no-floating-promises
-            debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value, {
+            debouncedUpdateBuyQuoteAsync(assetBuyer, dispatch, asset, value, QuoteFetchOrigin.Manual, {
                 setPending: true,
                 dispatchErrors: true,
                 affiliateInfo,
-                fetchOrigin: QuoteFetchOrigin.Manual,
             });
         }
     },
