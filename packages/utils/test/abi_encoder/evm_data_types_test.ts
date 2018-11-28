@@ -387,7 +387,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Encode Args and validate result
             expect(() => {
                 dataType.encode(args);
-            }).to.throw(AbiEncoder.Address.ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X);
+            }).to.throw(`Invalid address: '${args}'`);
         });
         it('Invalid Address - input is not 20 bytes', async () => {
             // Create DataType object
@@ -398,7 +398,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Encode Args and validate result
             expect(() => {
                 dataType.encode(args);
-            }).to.throw(AbiEncoder.Address.ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES);
+            }).to.throw(`Invalid address: '${args}'`);
         });
     });
 

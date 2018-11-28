@@ -7,8 +7,6 @@ import { RawCalldata } from '../calldata';
 import * as Constants from '../utils/constants';
 
 export class Address extends AbstractDataTypes.Blob {
-    public static ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X = "Address must start with '0x'";
-    public static ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES = 'Address must be 20 bytes';
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _ADDRESS_SIZE_IN_BYTES = 20;
     private static readonly _DECODED_ADDRESS_OFFSET_IN_BYTES = Constants.EVM_WORD_WIDTH_IN_BYTES -
@@ -28,13 +26,10 @@ export class Address extends AbstractDataTypes.Blob {
     // Disable prefer-function-over-method for inherited abstract methods.
     /* tslint:disable prefer-function-over-method */
     public encodeValue(value: string): Buffer {
-        if (!_.startsWith(value, '0x')) {
-            throw new Error(Address.ERROR_MESSAGE_ADDRESS_MUST_START_WITH_0X);
+        if (!ethUtil.isValidAddress(value)) {
+            throw new Error(`Invalid address: '${value}'`);
         }
         const valueBuf = ethUtil.toBuffer(value);
-        if (valueBuf.byteLength !== Address._ADDRESS_SIZE_IN_BYTES) {
-            throw new Error(Address.ERROR_MESSAGE_ADDRESS_MUST_BE_20_BYTES);
-        }
         const encodedValueBuf = ethUtil.setLengthLeft(valueBuf, Constants.EVM_WORD_WIDTH_IN_BYTES);
         return encodedValueBuf;
     }
