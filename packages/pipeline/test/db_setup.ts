@@ -159,8 +159,8 @@ function needsDocker(): boolean {
 
 // Note(albrow): This is partially based on
 // https://stackoverflow.com/questions/38258263/how-do-i-wait-for-a-pull
-function pullImageAsync(docker: Docker, imageName: string): Promise<void> {
-    return new Promise((resolve, reject) => {
+async function pullImageAsync(docker: Docker, imageName: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
         docker.pull(imageName, {}, (err, stream) => {
             if (err != null) {
                 reject(err);
