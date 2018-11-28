@@ -12,24 +12,24 @@ export interface Introducing0xInstantProps {
 
 export const Introducing0xInstant = (props: Introducing0xInstantProps) => {
     const isSmallScreen = props.screenWidth === ScreenWidths.Sm;
+    const zero = (
+        <Text fontColor={colors.white} fontSize="42px" fontWeight="600" fontFamily="Roboto Mono" Tag="span">
+            0
+        </Text>
+    );
     const title = isSmallScreen ? (
         <div>
-            Introducing<br />0x Instant
+            Introducing<br />
+            {zero}x Instant
         </div>
     ) : (
-        <div>Introducing 0x Instant</div>
+        <div>Introducing {zero}x Instant</div>
     );
     return (
         <div className="clearfix center lg-pt4 md-pt4" style={{ backgroundColor: colors.instantPrimaryBackground }}>
             <div className="mx-auto inline-block align-middle py4" style={{ lineHeight: '44px', textAlign: 'center' }}>
                 <Container className="sm-center sm-pt3">
-                    <Text
-                        fontColor={colors.white}
-                        fontSize="42px"
-                        lineHeight="52px"
-                        fontFamily="Roboto Mono"
-                        fontWeight="600"
-                    >
+                    <Text fontColor={colors.white} fontSize="42px" lineHeight="52px" fontWeight="600">
                         {title}
                     </Text>
                 </Container>
