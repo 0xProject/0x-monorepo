@@ -38,6 +38,7 @@
         "IValidator",
         "IWallet",
         "MixinAuthorizable",
+        "MultiAssetProxy",
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",
         "OrderValidator",
