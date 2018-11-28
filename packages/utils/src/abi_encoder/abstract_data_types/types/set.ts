@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { BigNumber } from '../../../configured_bignumber';
 import { CalldataBlock, CalldataBlocks, RawCalldata } from '../../calldata';
-import * as Constants from '../../utils/constants';
+import { constants } from '../../utils/constants';
 import { DecodingRules } from '../../utils/rules';
 
 import { DataType } from '../data_type';
@@ -54,7 +54,7 @@ export abstract class Set extends DataType {
         if (this._isArray && _.isUndefined(this._arrayLength)) {
             const arrayLengthBuf = calldata.popWord();
             const arrayLengthHex = ethUtil.bufferToHex(arrayLengthBuf);
-            const arrayLength = new BigNumber(arrayLengthHex, Constants.HEX_BASE);
+            const arrayLength = new BigNumber(arrayLengthHex, constants.HEX_BASE);
             [members] = this._createMembersWithLength(this.getDataItem(), arrayLength.toNumber());
         }
         // Create a new scope in the calldata, before descending into the members of this set.
@@ -115,8 +115,8 @@ export abstract class Set extends DataType {
         if (this._isArray && _.isUndefined(this._arrayLength)) {
             [members] = this._createMembersWithLength(this.getDataItem(), value.length);
             const lenBuf = ethUtil.setLengthLeft(
-                ethUtil.toBuffer(`0x${value.length.toString(Constants.HEX_BASE)}`),
-                Constants.EVM_WORD_WIDTH_IN_BYTES,
+                ethUtil.toBuffer(`0x${value.length.toString(constants.HEX_BASE)}`),
+                constants.EVM_WORD_WIDTH_IN_BYTES,
             );
             block.setHeader(lenBuf);
         }
@@ -205,14 +205,14 @@ export abstract class Set extends DataType {
         _.each(range, (idx: number) => {
             const memberDataItem: DataItem = {
                 type: _.isUndefined(this._arrayElementType) ? '' : this._arrayElementType,
-                name: `${dataItem.name}[${idx.toString(Constants.DEC_BASE)}]`,
+                name: `${dataItem.name}[${idx.toString(constants.DEC_BASE)}]`,
             };
             const components = dataItem.components;
             if (!_.isUndefined(components)) {
                 memberDataItem.components = components;
             }
             const memberType = this.getFactory().create(memberDataItem, this);
-            memberIndexByName[idx.toString(Constants.DEC_BASE)] = members.length;
+            memberIndexByName[idx.toString(constants.DEC_BASE)] = members.length;
             members.push(memberType);
         });
         return [members, memberIndexByName];

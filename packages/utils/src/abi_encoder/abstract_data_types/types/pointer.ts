@@ -3,7 +3,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { CalldataBlock, CalldataBlocks, RawCalldata } from '../../calldata';
-import * as Constants from '../../utils/constants';
+import { constants } from '../../utils/constants';
 import { DecodingRules } from '../../utils/rules';
 
 import { DataType } from '../data_type';
@@ -34,7 +34,7 @@ export abstract class Pointer extends DataType {
     public generateValue(calldata: RawCalldata, rules: DecodingRules): any {
         const destinationOffsetBuf = calldata.popWord();
         const destinationOffsetHex = ethUtil.bufferToHex(destinationOffsetBuf);
-        const destinationOffsetRelative = parseInt(destinationOffsetHex, Constants.HEX_BASE);
+        const destinationOffsetRelative = parseInt(destinationOffsetHex, constants.HEX_BASE);
         const destinationOffsetAbsolute = calldata.toAbsoluteOffset(destinationOffsetRelative);
         const currentOffset = calldata.getOffset();
         calldata.setOffset(destinationOffsetAbsolute);

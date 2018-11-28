@@ -3,7 +3,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { AbstractDataTypes, DataType, DataTypeFactory } from '../abstract_data_types';
-import * as Constants from '../utils/constants';
+import { constants } from '../utils/constants';
 import { DecodingRules, EncodingRules } from '../utils/rules';
 
 import { Tuple } from './tuple';
@@ -62,7 +62,7 @@ export class Method extends AbstractDataTypes.Set {
             ethUtil.toBuffer(
                 ethUtil
                     .sha3(signature)
-                    .slice(Constants.HEX_SELECTOR_BYTE_OFFSET_IN_CALLDATA, Constants.HEX_SELECTOR_LENGTH_IN_BYTES),
+                    .slice(constants.HEX_SELECTOR_BYTE_OFFSET_IN_CALLDATA, constants.HEX_SELECTOR_LENGTH_IN_BYTES),
             ),
         );
         return selector;

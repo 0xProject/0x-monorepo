@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
-import * as Constants from '../utils/constants';
+import { constants } from '../utils/constants';
 
 export class StaticBytes extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
@@ -22,7 +22,7 @@ export class StaticBytes extends AbstractDataTypes.Blob {
         const matches = StaticBytes._MATCHER.exec(type);
         const width =
             !_.isNull(matches) && matches.length === 3 && !_.isUndefined(matches[2])
-                ? parseInt(matches[2], Constants.DEC_BASE)
+                ? parseInt(matches[2], constants.DEC_BASE)
                 : StaticBytes._DEFAULT_WIDTH;
         return width;
     }
@@ -45,7 +45,7 @@ export class StaticBytes extends AbstractDataTypes.Blob {
         this._sanityCheckValue(value);
         const valueBuf = ethUtil.toBuffer(value);
         // 2/2 Store value as hex
-        const valuePadded = ethUtil.setLengthRight(valueBuf, Constants.EVM_WORD_WIDTH_IN_BYTES);
+        const valuePadded = ethUtil.setLengthRight(valueBuf, constants.EVM_WORD_WIDTH_IN_BYTES);
         return valuePadded;
     }
 

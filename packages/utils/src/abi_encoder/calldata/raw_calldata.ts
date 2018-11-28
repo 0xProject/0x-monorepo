@@ -1,7 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import * as Constants from '../utils/constants';
+import { constants } from '../utils/constants';
 import { Queue } from '../utils/queue';
 
 export class RawCalldata {
@@ -24,8 +24,8 @@ export class RawCalldata {
         this._offset = RawCalldata._INITIAL_OFFSET;
         // If there's a selector then slice it
         if (hasSelector) {
-            const selectorBuf = this._value.slice(Constants.HEX_SELECTOR_LENGTH_IN_BYTES);
-            this._value = this._value.slice(Constants.HEX_SELECTOR_LENGTH_IN_BYTES);
+            const selectorBuf = this._value.slice(constants.HEX_SELECTOR_LENGTH_IN_BYTES);
+            this._value = this._value.slice(constants.HEX_SELECTOR_LENGTH_IN_BYTES);
             this._selector = ethUtil.bufferToHex(selectorBuf);
         }
     }

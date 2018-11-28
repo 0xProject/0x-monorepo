@@ -2,7 +2,7 @@ import { DataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { Calldata, CalldataBlock, RawCalldata } from '../calldata';
-import * as Constants from '../utils/constants';
+import { constants } from '../utils/constants';
 import { DecodingRules, EncodingRules } from '../utils/rules';
 
 import { DataTypeFactory } from './interfaces';
@@ -25,7 +25,7 @@ export abstract class DataType {
     }
 
     public encode(value: any, rules?: EncodingRules, selector?: string): string {
-        const rules_ = _.isUndefined(rules) ? Constants.DEFAULT_ENCODING_RULES : rules;
+        const rules_ = _.isUndefined(rules) ? constants.DEFAULT_ENCODING_RULES : rules;
         const calldata = new Calldata(rules_);
         if (!_.isUndefined(selector)) {
             calldata.setSelector(selector);
@@ -44,7 +44,7 @@ export abstract class DataType {
         }
         const hasSelector = !_.isUndefined(selector);
         const rawCalldata = new RawCalldata(calldata, hasSelector);
-        const rules_ = _.isUndefined(rules) ? Constants.DEFAULT_DECODING_RULES : rules;
+        const rules_ = _.isUndefined(rules) ? constants.DEFAULT_DECODING_RULES : rules;
         const value = this.generateValue(rawCalldata, rules_);
         return value;
     }

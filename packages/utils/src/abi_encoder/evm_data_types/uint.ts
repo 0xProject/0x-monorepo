@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { BigNumber } from '../../configured_bignumber';
 import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
-import * as Constants from '../utils/constants';
+import { constants } from '../utils/constants';
 import * as EncoderMath from '../utils/math';
 
 export class UInt extends AbstractDataTypes.Blob {
@@ -26,7 +26,7 @@ export class UInt extends AbstractDataTypes.Blob {
         const matches = UInt._MATCHER.exec(type);
         const width =
             !_.isNull(matches) && matches.length === 2 && !_.isUndefined(matches[1])
-                ? parseInt(matches[1], Constants.DEC_BASE)
+                ? parseInt(matches[1], constants.DEC_BASE)
                 : UInt._DEFAULT_WIDTH;
         return width;
     }

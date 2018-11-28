@@ -1,7 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import * as Constants from '../utils/constants';
+import { constants } from '../utils/constants';
 import { EncodingRules } from '../utils/rules';
 
 import * as CalldataBlocks from './blocks';
@@ -31,7 +31,7 @@ export class Calldata {
     public setSelector(selector: string): void {
         if (!_.startsWith(selector, '0x')) {
             throw new Error(`Expected selector to be hex. Missing prefix '0x'`);
-        } else if (selector.length !== Constants.HEX_SELECTOR_LENGTH_IN_CHARS) {
+        } else if (selector.length !== constants.HEX_SELECTOR_LENGTH_IN_CHARS) {
             throw new Error(`Invalid selector '${selector}'`);
         }
         this._selector = selector;
@@ -206,11 +206,11 @@ export class Calldata {
                 lineStr = `\n${offsetStr}${valueStr}${nameStr}`;
             } else {
                 // This block has at least one word of value.
-                offsetStr = `0x${offset.toString(Constants.HEX_BASE)}`.padEnd(offsetPadding);
+                offsetStr = `0x${offset.toString(constants.HEX_BASE)}`.padEnd(offsetPadding);
                 valueStr = ethUtil
                     .stripHexPrefix(
                         ethUtil.bufferToHex(
-                            block.toBuffer().slice(evmWordStartIndex, Constants.EVM_WORD_WIDTH_IN_BYTES),
+                            block.toBuffer().slice(evmWordStartIndex, constants.EVM_WORD_WIDTH_IN_BYTES),
                         ),
                     )
                     .padEnd(valuePadding);
@@ -223,11 +223,11 @@ export class Calldata {
                 }
             }
             // This block has a value that is more than 1 word.
-            for (let j = Constants.EVM_WORD_WIDTH_IN_BYTES; j < size; j += Constants.EVM_WORD_WIDTH_IN_BYTES) {
-                offsetStr = `0x${(offset + j).toString(Constants.HEX_BASE)}`.padEnd(offsetPadding);
+            for (let j = constants.EVM_WORD_WIDTH_IN_BYTES; j < size; j += constants.EVM_WORD_WIDTH_IN_BYTES) {
+                offsetStr = `0x${(offset + j).toString(constants.HEX_BASE)}`.padEnd(offsetPadding);
                 valueStr = ethUtil
                     .stripHexPrefix(
-                        ethUtil.bufferToHex(block.toBuffer().slice(j, j + Constants.EVM_WORD_WIDTH_IN_BYTES)),
+                        ethUtil.bufferToHex(block.toBuffer().slice(j, j + constants.EVM_WORD_WIDTH_IN_BYTES)),
                     )
                     .padEnd(valuePadding);
                 nameStr = ' '.repeat(namePadding);

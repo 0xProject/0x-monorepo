@@ -4,12 +4,12 @@ import * as _ from 'lodash';
 
 import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
-import * as Constants from '../utils/constants';
+import { constants } from '../utils/constants';
 
 export class Address extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _ADDRESS_SIZE_IN_BYTES = 20;
-    private static readonly _DECODED_ADDRESS_OFFSET_IN_BYTES = Constants.EVM_WORD_WIDTH_IN_BYTES -
+    private static readonly _DECODED_ADDRESS_OFFSET_IN_BYTES = constants.EVM_WORD_WIDTH_IN_BYTES -
     Address._ADDRESS_SIZE_IN_BYTES;
 
     public static matchType(type: string): boolean {
@@ -30,7 +30,7 @@ export class Address extends AbstractDataTypes.Blob {
             throw new Error(`Invalid address: '${value}'`);
         }
         const valueBuf = ethUtil.toBuffer(value);
-        const encodedValueBuf = ethUtil.setLengthLeft(valueBuf, Constants.EVM_WORD_WIDTH_IN_BYTES);
+        const encodedValueBuf = ethUtil.setLengthLeft(valueBuf, constants.EVM_WORD_WIDTH_IN_BYTES);
         return encodedValueBuf;
     }
 

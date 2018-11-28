@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { BigNumber } from '../../configured_bignumber';
 import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
-import * as Constants from '../utils/constants';
+import { constants } from '../utils/constants';
 
 export class Bool extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
@@ -27,7 +27,7 @@ export class Bool extends AbstractDataTypes.Blob {
         const encodedValue = value ? '0x1' : '0x0';
         const encodedValueBuf = ethUtil.setLengthLeft(
             ethUtil.toBuffer(encodedValue),
-            Constants.EVM_WORD_WIDTH_IN_BYTES,
+            constants.EVM_WORD_WIDTH_IN_BYTES,
         );
         return encodedValueBuf;
     }
@@ -35,7 +35,7 @@ export class Bool extends AbstractDataTypes.Blob {
     public decodeValue(calldata: RawCalldata): boolean {
         const valueBuf = calldata.popWord();
         const valueHex = ethUtil.bufferToHex(valueBuf);
-        const valueNumber = new BigNumber(valueHex, Constants.HEX_BASE);
+        const valueNumber = new BigNumber(valueHex, constants.HEX_BASE);
         if (!(valueNumber.equals(0) || valueNumber.equals(1))) {
             throw new Error(`Failed to decode boolean. Expected 0x0 or 0x1, got ${valueHex}`);
         }

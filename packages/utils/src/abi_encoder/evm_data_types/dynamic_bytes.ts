@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
-import * as Constants from '../utils/constants';
+import { constants } from '../utils/constants';
 
 export class DynamicBytes extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
@@ -37,10 +37,10 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
         // Encoded value is of the form: <length><value>, with each field padded to be word-aligned.
         // 1/3 Construct the length
         const valueBuf = ethUtil.toBuffer(value);
-        const wordsToStoreValuePadded = Math.ceil(valueBuf.byteLength / Constants.EVM_WORD_WIDTH_IN_BYTES);
-        const bytesToStoreValuePadded = wordsToStoreValuePadded * Constants.EVM_WORD_WIDTH_IN_BYTES;
+        const wordsToStoreValuePadded = Math.ceil(valueBuf.byteLength / constants.EVM_WORD_WIDTH_IN_BYTES);
+        const bytesToStoreValuePadded = wordsToStoreValuePadded * constants.EVM_WORD_WIDTH_IN_BYTES;
         const lengthBuf = ethUtil.toBuffer(valueBuf.byteLength);
-        const lengthBufPadded = ethUtil.setLengthLeft(lengthBuf, Constants.EVM_WORD_WIDTH_IN_BYTES);
+        const lengthBufPadded = ethUtil.setLengthLeft(lengthBuf, constants.EVM_WORD_WIDTH_IN_BYTES);
         // 2/3 Construct the value
         DynamicBytes._sanityCheckValue(value);
         const valueBufPadded = ethUtil.setLengthRight(valueBuf, bytesToStoreValuePadded);
@@ -54,9 +54,9 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
         // 1/2 Decode length
         const lengthBuf = calldata.popWord();
         const lengthHex = ethUtil.bufferToHex(lengthBuf);
-        const length = parseInt(lengthHex, Constants.HEX_BASE);
+        const length = parseInt(lengthHex, constants.HEX_BASE);
         // 2/2 Decode value
-        const wordsToStoreValuePadded = Math.ceil(length / Constants.EVM_WORD_WIDTH_IN_BYTES);
+        const wordsToStoreValuePadded = Math.ceil(length / constants.EVM_WORD_WIDTH_IN_BYTES);
         const valueBufPadded = calldata.popWords(wordsToStoreValuePadded);
         const valueBuf = valueBufPadded.slice(0, length);
         const value = ethUtil.bufferToHex(valueBuf);

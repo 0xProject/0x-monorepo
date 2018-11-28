@@ -2,7 +2,7 @@ import { DataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
-import * as Constants from '../utils/constants';
+import { constants } from '../utils/constants';
 
 export class Array extends AbstractDataTypes.Set {
     private static readonly _MATCHER = RegExp('^(.+)\\[([0-9]*)\\]$');
@@ -23,7 +23,7 @@ export class Array extends AbstractDataTypes.Set {
             throw new Error(`Could not parse array length: ${type}`);
         }
         const arrayElementType = matches[1];
-        const arrayLength = _.isEmpty(matches[2]) ? undefined : parseInt(matches[2], Constants.DEC_BASE);
+        const arrayLength = _.isEmpty(matches[2]) ? undefined : parseInt(matches[2], constants.DEC_BASE);
         return [arrayElementType, arrayLength];
     }
 
