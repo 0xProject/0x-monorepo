@@ -16,6 +16,7 @@ export enum NetworkId {
     Ropsten = 3,
     Rinkeby = 4,
     Kovan = 42,
+    Ganache = 50,
 }
 
 const networkToAddresses: { [networkId: number]: ContractAddresses } = {
