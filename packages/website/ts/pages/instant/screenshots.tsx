@@ -28,7 +28,7 @@ export const Screenshots = (props: ScreenshotsProps) => {
     return (
         <Container backgroundColor={colors.instantPrimaryBackground} className="py3 flex justify-center">
             {_.map(images, image => {
-                return <img className="px1" width="300px" height="420px" src={image} />;
+                return <img className="px1 flex-none" width="300px" height="420px" src={image} key={image} />;
             })}
         </Container>
     );

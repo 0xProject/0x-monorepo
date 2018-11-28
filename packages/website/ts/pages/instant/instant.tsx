@@ -53,7 +53,7 @@ export class Instant extends React.Component<InstantProps, InstantState> {
                     isNightVersion={true}
                 />
                 <Container backgroundColor={colors.instantPrimaryBackground} />
-                <Introducing0xInstant />
+                <Introducing0xInstant screenWidth={this.props.screenWidth} />
                 <Screenshots screenWidth={this.props.screenWidth} />
                 <Features screenWidth={this.props.screenWidth} />
                 <NeedMore screenWidth={this.props.screenWidth} />
