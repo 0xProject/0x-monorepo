@@ -6,7 +6,7 @@ import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import { constants } from '../utils/constants';
 
-export class StaticBytes extends AbstractDataTypes.Blob {
+export class StaticBytesDataType extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _MATCHER = RegExp(
         '^(byte|bytes(1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32))$',
@@ -15,24 +15,24 @@ export class StaticBytes extends AbstractDataTypes.Blob {
     private readonly _width: number;
 
     public static matchType(type: string): boolean {
-        return StaticBytes._MATCHER.test(type);
+        return StaticBytesDataType._MATCHER.test(type);
     }
 
     private static _decodeWidthFromType(type: string): number {
-        const matches = StaticBytes._MATCHER.exec(type);
+        const matches = StaticBytesDataType._MATCHER.exec(type);
         const width =
             !_.isNull(matches) && matches.length === 3 && !_.isUndefined(matches[2])
                 ? parseInt(matches[2], constants.DEC_BASE)
-                : StaticBytes._DEFAULT_WIDTH;
+                : StaticBytesDataType._DEFAULT_WIDTH;
         return width;
     }
 
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
-        super(dataItem, dataTypeFactory, StaticBytes._SIZE_KNOWN_AT_COMPILE_TIME);
-        if (!StaticBytes.matchType(dataItem.type)) {
+        super(dataItem, dataTypeFactory, StaticBytesDataType._SIZE_KNOWN_AT_COMPILE_TIME);
+        if (!StaticBytesDataType.matchType(dataItem.type)) {
             throw new Error(`Tried to instantiate Static Bytes with bad input: ${dataItem}`);
         }
-        this._width = StaticBytes._decodeWidthFromType(dataItem.type);
+        this._width = StaticBytesDataType._decodeWidthFromType(dataItem.type);
     }
 
     public getSignature(): string {

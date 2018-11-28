@@ -6,9 +6,9 @@ import { AbstractDataTypes, DataType, DataTypeFactory } from '../abstract_data_t
 import { constants } from '../utils/constants';
 import { DecodingRules, EncodingRules } from '../utils/rules';
 
-import { Tuple } from './tuple';
+import { TupleDataType } from './tuple';
 
-export class Method extends AbstractDataTypes.Set {
+export class MethodDataType extends AbstractDataTypes.Set {
     private readonly _methodSignature: string;
     private readonly _methodSelector: string;
     private readonly _returnDataType: DataType;
@@ -19,7 +19,7 @@ export class Method extends AbstractDataTypes.Set {
         this._methodSignature = this._computeSignature();
         this._methodSelector = this._computeSelector();
         const returnDataItem: DataItem = { type: 'tuple', name: abi.name, components: abi.outputs };
-        this._returnDataType = new Tuple(returnDataItem, this.getFactory());
+        this._returnDataType = new TupleDataType(returnDataItem, this.getFactory());
     }
 
     public encode(value: any, rules?: EncodingRules): string {

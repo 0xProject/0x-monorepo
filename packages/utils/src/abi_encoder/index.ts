@@ -1,2 +1,14 @@
 export { EncodingRules, DecodingRules } from './utils/rules';
-export * from './evm_data_type_factory';
+export {
+    Address,
+    Array,
+    Bool,
+    DynamicBytes,
+    Int,
+    Method,
+    Pointer,
+    StaticBytes,
+    String,
+    Tuple,
+    UInt,
+} from './evm_data_type_factory';

@@ -6,7 +6,7 @@ import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import { constants } from '../utils/constants';
 
-export class DynamicBytes extends AbstractDataTypes.Blob {
+export class DynamicBytesDataType extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
 
     public static matchType(type: string): boolean {
@@ -25,8 +25,8 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
     }
 
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
-        super(dataItem, dataTypeFactory, DynamicBytes._SIZE_KNOWN_AT_COMPILE_TIME);
-        if (!DynamicBytes.matchType(dataItem.type)) {
+        super(dataItem, dataTypeFactory, DynamicBytesDataType._SIZE_KNOWN_AT_COMPILE_TIME);
+        if (!DynamicBytesDataType.matchType(dataItem.type)) {
             throw new Error(`Tried to instantiate Dynamic Bytes with bad input: ${dataItem}`);
         }
     }
@@ -42,7 +42,7 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
         const lengthBuf = ethUtil.toBuffer(valueBuf.byteLength);
         const lengthBufPadded = ethUtil.setLengthLeft(lengthBuf, constants.EVM_WORD_WIDTH_IN_BYTES);
         // 2/3 Construct the value
-        DynamicBytes._sanityCheckValue(value);
+        DynamicBytesDataType._sanityCheckValue(value);
         const valueBufPadded = ethUtil.setLengthRight(valueBuf, bytesToStoreValuePadded);
         // 3/3 Combine length and value
         const encodedValue = Buffer.concat([lengthBufPadded, valueBufPadded]);
@@ -60,7 +60,7 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
         const valueBufPadded = calldata.popWords(wordsToStoreValuePadded);
         const valueBuf = valueBufPadded.slice(0, length);
         const value = ethUtil.bufferToHex(valueBuf);
-        DynamicBytes._sanityCheckValue(value);
+        DynamicBytesDataType._sanityCheckValue(value);
         return value;
     }
 

@@ -4,17 +4,17 @@ import * as _ from 'lodash';
 import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { constants } from '../utils/constants';
 
-export class Array extends AbstractDataTypes.Set {
+export class ArrayDataType extends AbstractDataTypes.Set {
     private static readonly _MATCHER = RegExp('^(.+)\\[([0-9]*)\\]$');
     private readonly _arraySignature: string;
     private readonly _elementType: string;
 
     public static matchType(type: string): boolean {
-        return Array._MATCHER.test(type);
+        return ArrayDataType._MATCHER.test(type);
     }
 
     private static _decodeElementTypeAndLengthFromType(type: string): [string, undefined | number] {
-        const matches = Array._MATCHER.exec(type);
+        const matches = ArrayDataType._MATCHER.exec(type);
         if (_.isNull(matches) || matches.length !== 3) {
             throw new Error(`Could not parse array: ${type}`);
         } else if (_.isUndefined(matches[1])) {
@@ -30,7 +30,7 @@ export class Array extends AbstractDataTypes.Set {
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
         // Construct parent
         const isArray = true;
-        const [arrayElementType, arrayLength] = Array._decodeElementTypeAndLengthFromType(dataItem.type);
+        const [arrayElementType, arrayLength] = ArrayDataType._decodeElementTypeAndLengthFromType(dataItem.type);
         super(dataItem, dataTypeFactory, isArray, arrayLength, arrayElementType);
         // Set array properties
         this._elementType = arrayElementType;

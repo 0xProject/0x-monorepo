@@ -3,69 +3,79 @@ import { DataItem, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { DataType, DataTypeFactory } from './abstract_data_types';
-import * as Impl from './evm_data_types';
+import { AddressDataType } from './evm_data_types/address';
+import { ArrayDataType } from './evm_data_types/array';
+import { BoolDataType } from './evm_data_types/bool';
+import { DynamicBytesDataType } from './evm_data_types/dynamic_bytes';
+import { IntDataType } from './evm_data_types/int';
+import { MethodDataType } from './evm_data_types/method';
+import { PointerDataType } from './evm_data_types/pointer';
+import { StaticBytesDataType } from './evm_data_types/static_bytes';
+import { StringDataType } from './evm_data_types/string';
+import { TupleDataType } from './evm_data_types/tuple';
+import { UIntDataType } from './evm_data_types/uint';
 
-export class Address extends Impl.Address {
+export class Address extends AddressDataType {
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance());
     }
 }
 
-export class Bool extends Impl.Bool {
+export class Bool extends BoolDataType {
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance());
     }
 }
 
-export class Int extends Impl.Int {
+export class Int extends IntDataType {
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance());
     }
 }
 
-export class UInt extends Impl.UInt {
+export class UInt extends UIntDataType {
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance());
     }
 }
 
-export class StaticBytes extends Impl.StaticBytes {
+export class StaticBytes extends StaticBytesDataType {
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance());
     }
 }
 
-export class DynamicBytes extends Impl.DynamicBytes {
+export class DynamicBytes extends DynamicBytesDataType {
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance());
     }
 }
 
-export class String extends Impl.String {
+export class String extends StringDataType {
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance());
     }
 }
 
-export class Pointer extends Impl.Pointer {
+export class Pointer extends PointerDataType {
     public constructor(destDataType: DataType, parentDataType: DataType) {
         super(destDataType, parentDataType, EvmDataTypeFactory.getInstance());
     }
 }
 
-export class Tuple extends Impl.Tuple {
+export class Tuple extends TupleDataType {
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance());
     }
 }
 
-export class Array extends Impl.Array {
+export class Array extends ArrayDataType {
     public constructor(dataItem: DataItem) {
         super(dataItem, EvmDataTypeFactory.getInstance());
     }
 }
 
-export class Method extends Impl.Method {
+export class Method extends MethodDataType {
     public constructor(abi: MethodAbi) {
         super(abi, EvmDataTypeFactory.getInstance());
     }
@@ -105,7 +115,7 @@ export class EvmDataTypeFactory implements DataTypeFactory {
         } else if (String.matchType(dataItem.type)) {
             dataType = new String(dataItem);
         }
-        // @TODO: Implement Fixed/UFixed types
+        // @TODO: DataTypeement Fixed/UFixed types
         if (_.isUndefined(dataType)) {
             throw new Error(`Unrecognized data type: '${dataItem.type}'`);
         } else if (!_.isUndefined(parentDataType) && !dataType.isStatic()) {

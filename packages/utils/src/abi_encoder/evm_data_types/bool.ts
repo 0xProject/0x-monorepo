@@ -7,7 +7,7 @@ import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import { constants } from '../utils/constants';
 
-export class Bool extends AbstractDataTypes.Blob {
+export class BoolDataType extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
 
     public static matchType(type: string): boolean {
@@ -15,8 +15,8 @@ export class Bool extends AbstractDataTypes.Blob {
     }
 
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
-        super(dataItem, dataTypeFactory, Bool._SIZE_KNOWN_AT_COMPILE_TIME);
-        if (!Bool.matchType(dataItem.type)) {
+        super(dataItem, dataTypeFactory, BoolDataType._SIZE_KNOWN_AT_COMPILE_TIME);
+        if (!BoolDataType.matchType(dataItem.type)) {
             throw new Error(`Tried to instantiate Bool with bad input: ${dataItem}`);
         }
     }

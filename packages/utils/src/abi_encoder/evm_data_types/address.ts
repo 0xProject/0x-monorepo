@@ -6,19 +6,19 @@ import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 import { RawCalldata } from '../calldata';
 import { constants } from '../utils/constants';
 
-export class Address extends AbstractDataTypes.Blob {
+export class AddressDataType extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = true;
     private static readonly _ADDRESS_SIZE_IN_BYTES = 20;
     private static readonly _DECODED_ADDRESS_OFFSET_IN_BYTES = constants.EVM_WORD_WIDTH_IN_BYTES -
-    Address._ADDRESS_SIZE_IN_BYTES;
+    AddressDataType._ADDRESS_SIZE_IN_BYTES;
 
     public static matchType(type: string): boolean {
         return type === SolidityTypes.Address;
     }
 
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
-        super(dataItem, dataTypeFactory, Address._SIZE_KNOWN_AT_COMPILE_TIME);
-        if (!Address.matchType(dataItem.type)) {
+        super(dataItem, dataTypeFactory, AddressDataType._SIZE_KNOWN_AT_COMPILE_TIME);
+        if (!AddressDataType.matchType(dataItem.type)) {
             throw new Error(`Tried to instantiate Address with bad input: ${dataItem}`);
         }
     }
@@ -36,7 +36,7 @@ export class Address extends AbstractDataTypes.Blob {
 
     public decodeValue(calldata: RawCalldata): string {
         const valueBufPadded = calldata.popWord();
-        const valueBuf = valueBufPadded.slice(Address._DECODED_ADDRESS_OFFSET_IN_BYTES);
+        const valueBuf = valueBufPadded.slice(AddressDataType._DECODED_ADDRESS_OFFSET_IN_BYTES);
         const value = ethUtil.bufferToHex(valueBuf);
         return value;
     }
