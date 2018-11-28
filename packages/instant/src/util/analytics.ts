@@ -180,16 +180,16 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CHOSE)(payload),
     trackTokenSelectorSearched: (searchText: string) =>
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_SEARCHED)({ searchText }),
-    trackQuoteFetched: (buyQuote: BuyQuote, fetchedVia: QuoteFetchOrigin) =>
+    trackQuoteFetched: (buyQuote: BuyQuote, fetchOrigin: QuoteFetchOrigin) =>
         trackingEventFnWithPayload(EventNames.QUOTE_FETCHED)({
             ...buyQuoteEventProperties(buyQuote),
-            fetchedVia,
+            fetchOrigin,
         }),
-    trackQuoteError: (errorMessage: string, assetAmount: BigNumber, fetchedVia: QuoteFetchOrigin) => {
+    trackQuoteError: (errorMessage: string, assetAmount: BigNumber, fetchOrigin: QuoteFetchOrigin) => {
         trackingEventFnWithPayload(EventNames.QUOTE_ERROR)({
             errorMessage,
             assetAmount: assetAmount.toString(),
-            fetchedVia,
+            fetchOrigin,
         });
     },
 };

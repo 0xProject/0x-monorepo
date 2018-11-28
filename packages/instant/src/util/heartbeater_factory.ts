@@ -20,7 +20,7 @@ export const generateBuyQuoteHeartbeater = (options: HeartbeatFactoryOptions): H
     return new Heartbeater(async () => {
         await asyncData.fetchCurrentBuyQuoteAndDispatchToStore(store.getState(), store.dispatch, {
             updateSilently: true,
-            fetchedVia: QuoteFetchOrigin.Heartbeat,
+            fetchOrigin: QuoteFetchOrigin.Heartbeat,
         });
     }, shouldPerformImmediatelyOnStart);
 };

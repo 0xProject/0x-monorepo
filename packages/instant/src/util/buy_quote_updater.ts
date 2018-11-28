@@ -20,7 +20,7 @@ export const buyQuoteUpdater = {
         options: {
             setPending: boolean;
             dispatchErrors: boolean;
-            fetchedVia: QuoteFetchOrigin;
+            fetchOrigin: QuoteFetchOrigin;
             affiliateInfo?: AffiliateInfo;
         },
     ): Promise<void> => {
@@ -37,7 +37,11 @@ export const buyQuoteUpdater = {
         } catch (error) {
             if (options.dispatchErrors) {
                 dispatch(actions.setQuoteRequestStateFailure());
-                analytics.trackQuoteError(error.message ? error.message : 'other', assetUnitAmount, options.fetchedVia);
+                analytics.trackQuoteError(
+                    error.message ? error.message : 'other',
+                    assetUnitAmount,
+                    options.fetchOrigin,
+                );
                 let errorMessage;
                 if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
                     const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
@@ -65,6 +69,6 @@ export const buyQuoteUpdater = {
         errorFlasher.clearError(dispatch);
         // invalidate the last buy quote.
         dispatch(actions.updateLatestBuyQuote(newBuyQuote));
-        analytics.trackQuoteFetched(newBuyQuote, options.fetchedVia);
+        analytics.trackQuoteFetched(newBuyQuote, options.fetchOrigin);
     },
 };

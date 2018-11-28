@@ -92,7 +92,7 @@ const mapDispatchToProps = (
                 setPending: true,
                 dispatchErrors: true,
                 affiliateInfo,
-                fetchedVia: QuoteFetchOrigin.Manual,
+                fetchOrigin: QuoteFetchOrigin.Manual,
             });
         }
     },

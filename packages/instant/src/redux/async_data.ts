@@ -84,7 +84,7 @@ export const asyncData = {
     fetchCurrentBuyQuoteAndDispatchToStore: async (
         state: State,
         dispatch: Dispatch,
-        options: { updateSilently: boolean; fetchedVia: QuoteFetchOrigin },
+        options: { updateSilently: boolean; fetchOrigin: QuoteFetchOrigin },
     ) => {
         const { buyOrderState, providerState, selectedAsset, selectedAssetUnitAmount, affiliateInfo } = state;
         const assetBuyer = providerState.assetBuyer;
@@ -102,7 +102,7 @@ export const asyncData = {
                 {
                     setPending: !options.updateSilently,
                     dispatchErrors: !options.updateSilently,
-                    fetchedVia: options.fetchedVia,
+                    fetchOrigin: options.fetchOrigin,
                     affiliateInfo,
                 },
             );
