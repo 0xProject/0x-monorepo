@@ -24,7 +24,7 @@ const GlobalStyles = createGlobalStyle`
 
   html {
     font-size: 17px;
-    background-color: ${colors.backgroundDark};
+    background-color: ${colors.backgroundBlack};
   }
 
   body {
