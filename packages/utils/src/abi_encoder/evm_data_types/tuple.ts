@@ -1,4 +1,4 @@
-import { DataItem } from 'ethereum-types';
+import { DataItem, SolidityTypes } from 'ethereum-types';
 
 import { AbstractDataTypes, DataTypeFactory } from '../abstract_data_types';
 
@@ -6,7 +6,7 @@ export class Tuple extends AbstractDataTypes.Set {
     private readonly _signature: string;
 
     public static matchType(type: string): boolean {
-        return type === 'tuple';
+        return type === SolidityTypes.Tuple;
     }
 
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {

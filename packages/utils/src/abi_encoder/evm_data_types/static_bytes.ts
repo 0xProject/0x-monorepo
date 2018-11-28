@@ -1,4 +1,4 @@
-import { DataItem } from 'ethereum-types';
+import { DataItem, SolidityTypes } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -37,7 +37,7 @@ export class StaticBytes extends AbstractDataTypes.Blob {
 
     public getSignature(): string {
         // Note that `byte` reduces to `bytes1`
-        return `bytes${this._width}`;
+        return `${SolidityTypes.Bytes}${this._width}`;
     }
 
     public encodeValue(value: string | Buffer): Buffer {

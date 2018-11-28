@@ -1,4 +1,4 @@
-import { DataItem } from 'ethereum-types';
+import { DataItem, SolidityTypes } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { BigNumber } from '../../configured_bignumber';
@@ -53,6 +53,6 @@ export class Int extends AbstractDataTypes.Blob {
     }
 
     public getSignature(): string {
-        return `int${this._width}`;
+        return `${SolidityTypes.Int}${this._width}`;
     }
 }

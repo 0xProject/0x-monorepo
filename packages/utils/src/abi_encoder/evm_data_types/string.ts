@@ -1,4 +1,4 @@
-import { DataItem } from 'ethereum-types';
+import { DataItem, SolidityTypes } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -10,7 +10,7 @@ export class String extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
 
     public static matchType(type: string): boolean {
-        return type === 'string';
+        return type === SolidityTypes.String;
     }
 
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
@@ -52,7 +52,7 @@ export class String extends AbstractDataTypes.Blob {
     }
 
     public getSignature(): string {
-        return 'string';
+        return SolidityTypes.String;
     }
     /* tslint:enable prefer-function-over-method */
 }

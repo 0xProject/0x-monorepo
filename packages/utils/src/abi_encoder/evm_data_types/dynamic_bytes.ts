@@ -1,4 +1,4 @@
-import { DataItem } from 'ethereum-types';
+import { DataItem, SolidityTypes } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -10,7 +10,7 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
     private static readonly _SIZE_KNOWN_AT_COMPILE_TIME: boolean = false;
 
     public static matchType(type: string): boolean {
-        return type === 'bytes';
+        return type === SolidityTypes.Bytes;
     }
 
     private static _sanityCheckValue(value: string | Buffer): void {
@@ -65,7 +65,7 @@ export class DynamicBytes extends AbstractDataTypes.Blob {
     }
 
     public getSignature(): string {
-        return 'bytes';
+        return SolidityTypes.Bytes;
     }
     /* tslint:enable prefer-function-over-method */
 }

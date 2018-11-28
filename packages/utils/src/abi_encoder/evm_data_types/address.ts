@@ -1,4 +1,4 @@
-import { DataItem } from 'ethereum-types';
+import { DataItem, SolidityTypes } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -13,7 +13,7 @@ export class Address extends AbstractDataTypes.Blob {
     Address._ADDRESS_SIZE_IN_BYTES;
 
     public static matchType(type: string): boolean {
-        return type === 'address';
+        return type === SolidityTypes.Address;
     }
 
     public constructor(dataItem: DataItem, dataTypeFactory: DataTypeFactory) {
@@ -42,7 +42,7 @@ export class Address extends AbstractDataTypes.Blob {
     }
 
     public getSignature(): string {
-        return 'address';
+        return SolidityTypes.Address;
     }
     /* tslint:enable prefer-function-over-method */
 }
