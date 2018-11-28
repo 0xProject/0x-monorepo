@@ -10,7 +10,8 @@
                 "note": "Added Ganache snapshot addresses for network 50",
                 "pr": 1318
             }
-        ]
+        ],
+        "timestamp": 1543401373
     },
     {
         "version": "1.2.0",
