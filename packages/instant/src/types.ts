@@ -21,7 +21,7 @@ export enum OrderProcessState {
     Failure = 'FAILURE',
 }
 
-export enum QuoteFetchedVia {
+export enum QuoteFetchOrigin {
     Manual = 'Manual',
     Heartbeat = 'Heartbeat',
 }

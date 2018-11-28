@@ -11,7 +11,7 @@ import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource, QuoteFetchedVia } from '../types';
+import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource, QuoteFetchOrigin } from '../types';
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
@@ -117,7 +117,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, {
             updateSilently: false,
-            fetchedVia: QuoteFetchedVia.Manual,
+            fetchedVia: QuoteFetchOrigin.Manual,
         });
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction

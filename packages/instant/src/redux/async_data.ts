@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 
 import { BIG_NUMBER_ZERO } from '../constants';
-import { AccountState, ERC20Asset, OrderProcessState, ProviderState, QuoteFetchedVia } from '../types';
+import { AccountState, ERC20Asset, OrderProcessState, ProviderState, QuoteFetchOrigin } from '../types';
 import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
@@ -84,7 +84,7 @@ export const asyncData = {
     fetchCurrentBuyQuoteAndDispatchToStore: async (
         state: State,
         dispatch: Dispatch,
-        options: { updateSilently: boolean; fetchedVia: QuoteFetchedVia },
+        options: { updateSilently: boolean; fetchedVia: QuoteFetchOrigin },
     ) => {
         const { buyOrderState, providerState, selectedAsset, selectedAssetUnitAmount, affiliateInfo } = state;
         const assetBuyer = providerState.assetBuyer;

@@ -6,7 +6,7 @@ import { Dispatch } from 'redux';
 import { oc } from 'ts-optchain';
 
 import { Action, actions } from '../redux/actions';
-import { AffiliateInfo, ERC20Asset, QuoteFetchedVia } from '../types';
+import { AffiliateInfo, ERC20Asset, QuoteFetchOrigin } from '../types';
 import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
@@ -20,7 +20,7 @@ export const buyQuoteUpdater = {
         options: {
             setPending: boolean;
             dispatchErrors: boolean;
-            fetchedVia: QuoteFetchedVia;
+            fetchedVia: QuoteFetchOrigin;
             affiliateInfo?: AffiliateInfo;
         },
     ): Promise<void> => {

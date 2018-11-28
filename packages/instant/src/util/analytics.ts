@@ -2,7 +2,7 @@ import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { AffiliateInfo, Asset, Network, OrderSource, ProviderState, QuoteFetchedVia } from '../types';
+import { AffiliateInfo, Asset, Network, OrderSource, ProviderState, QuoteFetchOrigin } from '../types';
 
 import { EventProperties, heapUtil } from './heap';
 
@@ -180,12 +180,12 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CHOSE)(payload),
     trackTokenSelectorSearched: (searchText: string) =>
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_SEARCHED)({ searchText }),
-    trackQuoteFetched: (buyQuote: BuyQuote, fetchedVia: QuoteFetchedVia) =>
+    trackQuoteFetched: (buyQuote: BuyQuote, fetchedVia: QuoteFetchOrigin) =>
         trackingEventFnWithPayload(EventNames.QUOTE_FETCHED)({
             ...buyQuoteEventProperties(buyQuote),
             fetchedVia,
         }),
-    trackQuoteError: (errorMessage: string, assetAmount: BigNumber, fetchedVia: QuoteFetchedVia) => {
+    trackQuoteError: (errorMessage: string, assetAmount: BigNumber, fetchedVia: QuoteFetchOrigin) => {
         trackingEventFnWithPayload(EventNames.QUOTE_ERROR)({
             errorMessage,
             assetAmount: assetAmount.toString(),
