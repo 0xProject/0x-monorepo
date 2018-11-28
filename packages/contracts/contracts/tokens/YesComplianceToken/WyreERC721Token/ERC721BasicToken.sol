@@ -1,17 +1,15 @@
 pragma solidity ^0.4.21;
 
 import "./ERC721Basic.sol";
-import "./ERC721Receiver.sol";
-import "../../math/SafeMath.sol";
-import "../../AddressUtils.sol";
-import "../../introspection/ERC165Support.sol";
+import "../../ERC721Token/IERC721Receiver.sol";
+import "../../../utils/SafeMath/SafeMath.sol";
 
 
 /**
  * @title ERC721 Non-Fungible Token Standard basic implementation
  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
  */
-contract ERC721BasicToken is ERC165Support, ERC721Basic {
+contract ERC721BasicToken is ERC721Basic, SafeMath {
 
   bytes4 private constant InterfaceId_ERC721 = 0x80ac58cd;
   /*
@@ -32,9 +30,6 @@ contract ERC721BasicToken is ERC165Support, ERC721Basic {
    * 0x4f558e79 ===
    *   bytes4(keccak256('exists(uint256)'))
    */
-
-  using SafeMath for uint256;
-  using AddressUtils for address;
 
   // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
   // which can be also obtained as `ERC721Receiver(0).onERC721Received.selector`
@@ -68,15 +63,6 @@ contract ERC721BasicToken is ERC165Support, ERC721Basic {
   modifier canTransfer(uint256 _tokenId) {
     require(isApprovedOrOwner(msg.sender, _tokenId));
     _;
-  }
-
-  function _supportsInterface(bytes4 _interfaceId)
-    internal
-    view
-    returns (bool)
-  {
-    return super._supportsInterface(_interfaceId) || 
-      _interfaceId == InterfaceId_ERC721 || _interfaceId == InterfaceId_ERC721Exists;
   }
 
   /**
@@ -311,7 +297,7 @@ contract ERC721BasicToken is ERC165Support, ERC721Basic {
   function addTokenTo(address _to, uint256 _tokenId) internal {
     require(tokenOwner[_tokenId] == address(0));
     tokenOwner[_tokenId] = _to;
-    ownedTokensCount[_to] = ownedTokensCount[_to].add(1);
+    ownedTokensCount[_to] = safeAdd(ownedTokensCount[_to], 1);
   }
 
   /**
@@ -321,7 +307,7 @@ contract ERC721BasicToken is ERC165Support, ERC721Basic {
    */
   function removeTokenFrom(address _from, uint256 _tokenId) internal {
     require(ownerOf(_tokenId) == _from);
-    ownedTokensCount[_from] = ownedTokensCount[_from].sub(1);
+    ownedTokensCount[_from] = safeSub(ownedTokensCount[_from], 1);
     tokenOwner[_tokenId] = address(0);
   }
 
@@ -343,10 +329,14 @@ contract ERC721BasicToken is ERC165Support, ERC721Basic {
     internal
     returns (bool)
   {
-    if (!_to.isContract()) {
+    uint256 receiverCodeSize;
+    assembly {
+        receiverCodeSize := extcodesize(_to)
+    }
+    if (receiverCodeSize == 0) {
       return true;
     }
-    bytes4 retval = ERC721Receiver(_to).onERC721Received(
+    bytes4 retval = IERC721Receiver(_to).onERC721Received(
       msg.sender, _from, _tokenId, _data);
     return (retval == ERC721_RECEIVED);
   }

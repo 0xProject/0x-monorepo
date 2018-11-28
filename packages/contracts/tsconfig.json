@@ -43,6 +43,7 @@
         "./generated-artifacts/WETH9.json",
         "./generated-artifacts/Wallet.json",
         "./generated-artifacts/Whitelist.json",
+        "./generated-artifacts/YesComplianceToken.json"
         "./generated-artifacts/ZRXToken.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

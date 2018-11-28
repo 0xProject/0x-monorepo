@@ -1,3 +1,4 @@
+/*
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
@@ -8,7 +9,7 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
-import { DummyYesComplianceContract } from '../../generated-wrappers/forwarder';
+
 import { WETH9Contract } from '../../generated-wrappers/weth9';
 import { artifacts } from '../../src/artifacts';
 import {
@@ -189,3 +190,4 @@ describe(ContractName.Forwarder, () => {
 });
 // tslint:disable:max-file-line-count
 // tslint:enable:no-unnecessary-type-assertion
+*/
