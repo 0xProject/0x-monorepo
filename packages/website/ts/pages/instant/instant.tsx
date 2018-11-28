@@ -1,3 +1,4 @@
+import { utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as DocumentTitle from 'react-document-title';
@@ -26,6 +27,7 @@ export interface InstantProps {
 
 export interface InstantState {}
 
+const CONFIGURATOR_HASH = 'configure';
 const THROTTLE_TIMEOUT = 100;
 const DOCUMENT_TITLE = '0x Instant';
 const DOCUMENT_DESCRIPTION = '0x Instant';
@@ -42,7 +44,6 @@ export class Instant extends React.Component<InstantProps, InstantState> {
         window.scrollTo(0, 0);
     }
     public render(): React.ReactNode {
-        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         return (
             <Container overflowX="hidden">
                 <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
@@ -55,14 +56,29 @@ export class Instant extends React.Component<InstantProps, InstantState> {
                     isNightVersion={true}
                 />
                 <Container backgroundColor={colors.instantPrimaryBackground} />
-                <Introducing0xInstant screenWidth={this.props.screenWidth} />
+                <Introducing0xInstant screenWidth={this.props.screenWidth} onCTAClick={this._onHeaderCTAClick} />
                 <Screenshots screenWidth={this.props.screenWidth} />
                 <Features screenWidth={this.props.screenWidth} />
-                {!isSmallScreen && <Configurator />}
+                {!this._isSmallScreen() && <Configurator hash={CONFIGURATOR_HASH} />}
                 <NeedMore screenWidth={this.props.screenWidth} />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </Container>
         );
+    }
+    private readonly _onHeaderCTAClick = () => {
+        if (this._isSmallScreen()) {
+            utils.openUrl(`${utils.getCurrentBaseUrl()}/wiki#About`);
+        } else {
+            this._scrollToConfigurator();
+        }
+    };
+    private _isSmallScreen(): boolean {
+        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
+        return isSmallScreen;
+    }
+    private _scrollToConfigurator(): void {
+        sharedUtils.setUrlHash(CONFIGURATOR_HASH);
+        sharedUtils.scrollToHash(CONFIGURATOR_HASH, '');
     }
     private _updateScreenWidth(): void {
         const newScreenWidth = utils.getScreenWidth();

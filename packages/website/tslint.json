@@ -5,6 +5,7 @@
         "no-object-literal-type-assertion": false,
         "completed-docs": false,
         "prefer-function-over-method": false,
-        "custom-no-magic-numbers": false
+        "custom-no-magic-numbers": false,
+        "semicolon": [true, "always", "ignore-bound-class-methods"]
     }
 }

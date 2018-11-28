@@ -8,6 +8,7 @@ import { ScreenWidths } from 'ts/types';
 
 export interface Introducing0xInstantProps {
     screenWidth: ScreenWidths;
+    onCTAClick: () => void;
 }
 
 export const Introducing0xInstant = (props: Introducing0xInstantProps) => {
@@ -40,7 +41,13 @@ export const Introducing0xInstant = (props: Introducing0xInstantProps) => {
                     </Text>
                 </Container>
                 <div className="py3">
-                    <Button type="button" backgroundColor={colors.mediumBlue} fontColor={colors.white} fontSize="18px">
+                    <Button
+                        type="button"
+                        backgroundColor={colors.mediumBlue}
+                        fontColor={colors.white}
+                        fontSize="18px"
+                        onClick={props.onCTAClick}
+                    >
                         Get Started
                     </Button>
                 </div>
