@@ -1,5 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import { cssReset } from 'ts/@next/constants/cssReset';
+import { colors } from 'ts/style/colors';
 
 
 // Not sure if cssReset is already imported into index.tsx
@@ -8,8 +9,29 @@ import { cssReset } from 'ts/@next/constants/cssReset';
 const GlobalStyles = createGlobalStyle`
   ${cssReset};
 
+  @font-face {
+    font-family: "Formular";
+    src: url("/public/fonts/Formular-Light.woff2") format("woff2"), url("/public/fonts/Formular-Light.woff") format("woff");
+    font-weight: 300;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Formular";
+    src: url("/public/fonts/Formular-Regular.woff2") format("woff2"), url("/public/fonts/Formular-Regular.woff") format("woff");
+    font-weight: 500;
+    font-display: swap;
+  }
+
   html {
-    background-color: red;
+    font-size: 17px;
+    background-color: ${colors.backgroundDark};
+  }
+
+  body {
+    font-family: 'Formular', sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    color: #fff;
   }
 `;
 
