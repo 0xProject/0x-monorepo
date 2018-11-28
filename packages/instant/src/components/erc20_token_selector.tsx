@@ -19,12 +19,12 @@ export interface ERC20TokenSelectorProps {
 }
 
 export interface ERC20TokenSelectorState {
-    searchQuery?: string;
+    searchQuery: string;
 }
 
 export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps> {
     public state: ERC20TokenSelectorState = {
-        searchQuery: undefined,
+        searchQuery: '',
     };
     public render(): React.ReactNode {
         const { tokens, onTokenSelect } = this.props;
@@ -62,10 +62,10 @@ export class ERC20TokenSelector extends React.Component<ERC20TokenSelectorProps>
     };
     private readonly _isTokenQueryMatch = (token: ERC20Asset): boolean => {
         const { searchQuery } = this.state;
-        if (_.isUndefined(searchQuery)) {
+        const searchQueryLowerCase = searchQuery.toLowerCase().trim();
+        if (searchQueryLowerCase === '') {
             return true;
         }
-        const searchQueryLowerCase = searchQuery.toLowerCase();
         const tokenName = token.metaData.name.toLowerCase();
         const tokenSymbol = token.metaData.symbol.toLowerCase();
         return _.startsWith(tokenSymbol, searchQueryLowerCase) || _.startsWith(tokenName, searchQueryLowerCase);
