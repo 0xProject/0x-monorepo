@@ -79,7 +79,7 @@ const FeatureItem = (props: FeatureItemProps) => {
     const maxWidth = isLargeScreen ? '500px' : undefined;
     const image = (
         <Container className="center" minWidth="435px" maxHeight="225px">
-            <Image src={imgSrc} />
+            <Image src={imgSrc} additionalStyle={{ filter: 'drop-shadow(0px 4px 4px rgba(0,0,0,.25))' }} />
         </Container>
     );
     const info = (
