@@ -1,7 +1,7 @@
 import { BigNumber } from '@0x/utils';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-import { bigNumberTransformer } from '../utils';
+import { bigNumberTransformer, numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'exchange_cancel_up_to_events', schema: 'raw' })
 export class ExchangeCancelUpToEvent {
@@ -9,7 +9,7 @@ export class ExchangeCancelUpToEvent {
     public contractAddress!: string;
     @PrimaryColumn({ name: 'log_index' })
     public logIndex!: number;
-    @PrimaryColumn({ name: 'block_number' })
+    @PrimaryColumn({ name: 'block_number', transformer: numberToBigIntTransformer })
     public blockNumber!: number;
 
     // TODO(albrow): Include transaction hash

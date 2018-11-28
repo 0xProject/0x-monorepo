@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 import { AssetType } from '../types';
-import { bigNumberTransformer } from '../utils';
+import { bigNumberTransformer, numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'exchange_fill_events', schema: 'raw' })
 export class ExchangeFillEvent {
@@ -10,7 +10,7 @@ export class ExchangeFillEvent {
     public contractAddress!: string;
     @PrimaryColumn({ name: 'log_index' })
     public logIndex!: number;
-    @PrimaryColumn({ name: 'block_number' })
+    @PrimaryColumn({ name: 'block_number', transformer: numberToBigIntTransformer })
     public blockNumber!: number;
 
     @Column({ name: 'raw_data' })
