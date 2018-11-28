@@ -38,17 +38,34 @@ Create a new migration: `yarn migrate:create --name MigrationNameInCamelCase`
 Run migrations: `yarn migrate:run`
 Revert the most recent migration (CAUTION: may result in data loss!): `yarn migrate:revert`
 
-## Connecting to PostgreSQL
+## Testing
 
-Across the pipeline package, any code which accesses the database uses the
-environment variable `ZEROEX_DATA_PIPELINE_DB_URL` which should be a properly
-formatted
-[PostgreSQL connection url](https://stackoverflow.com/questions/3582552/postgresql-connection-url).
+There are several test scripts in **package.json**. You can run all the tests
+with `yarn test:all` or run certain tests seprately by following the
+instructions below. Some tests may not work out of the box on certain platforms.
 
-## Test environment
+### Unit tests
 
-The easiest way to start Postgres is via Docker. Depending on your
-platform, you may need to prepend `sudo` to the following command:
+The unit tests can be run with `yarn test`. These tests don't depend on any
+services or databases and will run in any environment that can run Node.
+
+### Database tests
+
+Database integration tests can be run with `yarn test:db`. These tests will
+attempt to automatically spin up a Postgres database via Docker. If this doesn't
+work you have two other options:
+
+1.  Set the `DOCKER_SOCKET` environment variable to a valid socket path to use
+    for communicating with Docker.
+2.  Start Postgres manually and set the `ZEROEX_DATA_PIPELINE_TEST_DB_URL`
+    environment variable. If this is set, the tests will use your existing
+    Postgres database instead of trying to create one with Docker.
+
+## Running locally
+
+`pipeline` requires access to a PostgreSQL database. The easiest way to start
+Postgres is via Docker. Depending on your platform, you may need to prepend
+`sudo` to the following command:
 
 ```
 docker run --rm -d -p 5432:5432 --name pipeline_postgres postgres:11-alpine
@@ -83,9 +100,9 @@ This will remove all data from the database.
 
 If you prefer, you can also install Postgres with e.g.,
 [Homebrew](https://wiki.postgresql.org/wiki/Homebrew) or
-[Postgress.app](https://postgresapp.com/). As long as you set the
-`ZEROEX_DATA_PIPELINE_DB_URL` environment variable appropriately, any Postgres
-server will work.
+[Postgress.app](https://postgresapp.com/). Keep in mind that you will need to
+set the`ZEROEX_DATA_PIPELINE_DB_URL` environment variable to a valid
+[PostgreSQL connection url](https://stackoverflow.com/questions/3582552/postgresql-connection-url)
 
 ## Directory structure
 
@@ -111,21 +128,23 @@ server will work.
 2.  Create a migration using the `yarn migrate:create` command. Create/update
     tables as needed. Remember to fill in both the `up` and `down` methods. Try
     to avoid data loss as much as possible in your migrations.
-3.  Create a class or function in the _data_sources_ directory for getting raw
-    data. This code should abstract away pagination and rate-limiting as much as
-    possible.
-4.  Create a class or function in the _parsers_ directory for converting the raw
-    data into an entity. Also add tests in the _tests_ directory to test the
-    parser.
-5.  Create an executable script in the _scripts_ directory for putting
+3.  Add basic tests for your entity and migrations to the **test/entities/**
+    directory.
+4.  Create a class or function in the **data_sources/** directory for getting
+    raw data. This code should abstract away pagination and rate-limiting as
+    much as possible.
+5.  Create a class or function in the **parsers/** directory for converting the
+    raw data into an entity. Also add tests in the **tests/** directory to test
+    the parser.
+6.  Create an executable script in the **scripts/** directory for putting
     everything together. Your script can accept environment variables for things
     like API keys. It should pull the data, parse it, and save it to the
     database. Scripts should be idempotent and atomic (when possible). What this
-    means is that your script may be responsible for determining **which** data
+    means is that your script may be responsible for determining _which_ data
     needs to be updated. For example, you may need to query the database to find
     the most recent block number that we have already pulled, then pull new data
     starting from that block number.
-6.  Run the migrations and then run your new script locally and verify it works
+7.  Run the migrations and then run your new script locally and verify it works
     as expected.
 
 #### Additional guidelines and tips:

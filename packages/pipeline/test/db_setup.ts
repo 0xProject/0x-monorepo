@@ -80,12 +80,16 @@ function initDockerOnce(): Docker {
     // Note(albrow): Code for determining the right socket path is partially
     // based on https://github.com/apocas/dockerode/blob/8f3aa85311fab64d58eca08fef49aa1da5b5f60b/test/spec_helper.js
     const isWin = require('os').type() === 'Windows_NT';
-    const socketPath = process.env.DOCKER_SOCKET || isWin ? '//./pipe/docker_engine' : '/var/run/docker.sock';
+    const socketPath = process.env.DOCKER_SOCKET || (isWin ? '//./pipe/docker_engine' : '/var/run/docker.sock');
     const isSocket = fs.existsSync(socketPath) ? fs.statSync(socketPath).isSocket() : false;
     if (!isSocket) {
-        throw new Error(`Tried to connect to Docker using socket path: "${socketPath}" in order to spin up Postgres, but it failed. You have two options:
-        1) Set the DOCKER_SOCKET environment variable to a socket that can be used to connect to Docker or
-        2) Set the ZEROEX_DATA_PIPELINE_TEST_DB_URL environment variable to connect directly to a Postgres database without programmatically connecting to Docker`);
+        throw new Error(`Failed to connect to Docker using socket path: "${socketPath}".
+
+The database integration tests need to be able to connect to a Postgres database. Make sure that Docker is running and accessible at the expected socket path. If Docker isn't working you have two options:
+
+    1) Set the DOCKER_SOCKET environment variable to a socket path that can be used to connect to Docker or
+    2) Set the ZEROEX_DATA_PIPELINE_TEST_DB_URL environment variable to connect directly to an existing Postgres database instead of trying to start Postgres via Docker
+`);
     }
     savedDocker = new Docker({
         socketPath,
