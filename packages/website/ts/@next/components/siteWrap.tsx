@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { GlobalStyles } from 'ts/@next/constants/globalStyle';
 
+import { Header } from './header'
 
 interface Props {
 
@@ -13,7 +14,7 @@ const SiteWrap:React.StatelessComponent<Props> = props => {
     <>
       <GlobalStyles />
 
-      <header>0x HEADER</header>
+      <Header />
 
       { children }
 
