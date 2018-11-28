@@ -5,6 +5,9 @@ import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import * as ormConfig from '../src/ormconfig';
 
+// The name of the image to pull and use for the container. This also affects
+// which version of Postgres we use.
+const DOCKER_IMAGE_NAME = 'postgres:11-alpine';
 // The name to use for the Docker container which will run Postgres.
 const DOCKER_CONTAINER_NAME = '0x_pipeline_postgres_test';
 // The port which will be exposed on the Docker container.
@@ -103,10 +106,13 @@ async function initContainerAsync(): Promise<Docker.Container> {
     // Tear down any existing containers with the same name.
     await tearDownExistingContainerIfAnyAsync();
 
+    // Pull the image we need.
+    await pullImageAsync(docker, DOCKER_IMAGE_NAME);
+
     // Create the container.
     const postgresContainer = await docker.createContainer({
         name: DOCKER_CONTAINER_NAME,
-        Image: 'postgres:11-alpine',
+        Image: DOCKER_IMAGE_NAME,
         ExposedPorts: {
             '5432': {},
         },
@@ -149,4 +155,20 @@ async function tearDownExistingContainerIfAnyAsync(): Promise<void> {
 
 function needsDocker(): boolean {
     return process.env.ZEROEX_DATA_PIPELINE_TEST_DB_URL === undefined;
+}
+
+// Note(albrow): This is partially based on
+// https://stackoverflow.com/questions/38258263/how-do-i-wait-for-a-pull
+function pullImageAsync(docker: Docker, imageName: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        docker.pull(imageName, {}, (err, stream) => {
+            if (err != null) {
+                reject(err);
+                return;
+            }
+            docker.modem.followProgress(stream, () => {
+                resolve();
+            });
+        });
+    });
 }
