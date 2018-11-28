@@ -1,6 +1,7 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 import { AssetType } from '../types';
+import { numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'exchange_cancel_events', schema: 'raw' })
 export class ExchangeCancelEvent {
@@ -8,7 +9,7 @@ export class ExchangeCancelEvent {
     public contractAddress!: string;
     @PrimaryColumn({ name: 'log_index' })
     public logIndex!: number;
-    @PrimaryColumn({ name: 'block_number' })
+    @PrimaryColumn({ name: 'block_number', transformer: numberToBigIntTransformer })
     public blockNumber!: number;
 
     @Column({ name: 'raw_data' })
