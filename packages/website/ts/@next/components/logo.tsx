@@ -8,7 +8,7 @@ export interface LogoInterface {
 }
 
 const StyledLogo = styled.div`
-    text-align: center;
+    text-align: left;
 `;
 
 const Icon = styled.div`
