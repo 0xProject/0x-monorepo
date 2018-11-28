@@ -6,6 +6,9 @@ import { DEFAULT_ZERO_EX_CONTAINER_SELECTOR, INJECTED_DIV_CLASS, INJECTED_DIV_ID
 import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
 import { assert } from './util/assert';
 import { util } from './util/util';
+import { versionUtil } from './util/version';
+
+versionUtil.writeVersionInfoToWindow();
 
 const isInstantRendered = (): boolean => !!document.getElementById(INJECTED_DIV_ID);
 
