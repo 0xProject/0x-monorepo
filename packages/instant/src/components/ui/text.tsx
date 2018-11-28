@@ -1,4 +1,3 @@
-import { darken } from 'polished';
 import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
