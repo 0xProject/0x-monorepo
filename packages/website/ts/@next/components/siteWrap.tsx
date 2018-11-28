@@ -1,8 +1,9 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { GlobalStyles } from 'ts/@next/constants/globalStyle';
-import { Header } from 'ts/@next/components/header';
+
 import { Footer } from 'ts/@next/components/footer';
+import { Header } from 'ts/@next/components/header';
+import { GlobalStyles } from 'ts/@next/constants/globalStyle';
 
 interface Props {
 
