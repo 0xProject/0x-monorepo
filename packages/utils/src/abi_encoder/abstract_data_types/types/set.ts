@@ -107,11 +107,7 @@ export abstract class AbstractSetDataType extends DataType {
         }
         // Create a new calldata block for this set.
         const parentName = _.isUndefined(parentBlock) ? '' : parentBlock.getName();
-        const block = new SetCalldataBlock(
-            this.getDataItem().name,
-            this.getSignature(),
-            parentName,
-        );
+        const block = new SetCalldataBlock(this.getDataItem().name, this.getSignature(), parentName);
         // If this set has an undefined length then set its header to be the number of elements.
         let members = this._members;
         if (this._isArray && _.isUndefined(this._arrayLength)) {
@@ -135,11 +131,7 @@ export abstract class AbstractSetDataType extends DataType {
     protected _generateCalldataBlockFromObject(obj: object, parentBlock?: CalldataBlock): SetCalldataBlock {
         // Create a new calldata block for this set.
         const parentName = _.isUndefined(parentBlock) ? '' : parentBlock.getName();
-        const block = new SetCalldataBlock(
-            this.getDataItem().name,
-            this.getSignature(),
-            parentName,
-        );
+        const block = new SetCalldataBlock(this.getDataItem().name, this.getSignature(), parentName);
         // Create blocks for members of set.
         const memberCalldataBlocks: CalldataBlock[] = [];
         const childMap = _.cloneDeep(this._memberIndexByName);
@@ -178,7 +170,11 @@ export abstract class AbstractSetDataType extends DataType {
     private _createMembersWithKeys(dataItem: DataItem): [DataType[], MemberIndexByName] {
         // Sanity check
         if (_.isUndefined(dataItem.components)) {
-            throw new Error(`Tried to create a set using key/value pairs, but no components were defined by the input DataItem '${dataItem.name}'.`);
+            throw new Error(
+                `Tried to create a set using key/value pairs, but no components were defined by the input DataItem '${
+                    dataItem.name
+                }'.`,
+            );
         }
         // Create one member for each component of `dataItem`
         const members: DataType[] = [];

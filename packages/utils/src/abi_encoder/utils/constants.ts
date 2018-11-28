@@ -9,6 +9,9 @@ export const constants = {
     HEX_SELECTOR_LENGTH_IN_CHARS: 10,
     HEX_SELECTOR_LENGTH_IN_BYTES: 4,
     HEX_SELECTOR_BYTE_OFFSET_IN_CALLDATA: 0,
+    // Disable no-object-literal-type-assertion so we can enforce cast
+    /* tslint:disable no-object-literal-type-assertion */
     DEFAULT_DECODING_RULES: { structsAsObjects: false } as DecodingRules,
     DEFAULT_ENCODING_RULES: { optimize: true, annotate: false } as EncodingRules,
+    /* tslint:enable no-object-literal-type-assertion */
 };
