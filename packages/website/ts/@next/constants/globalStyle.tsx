@@ -2,7 +2,6 @@ import { createGlobalStyle } from 'styled-components';
 import { cssReset } from 'ts/@next/constants/cssReset';
 import { colors } from 'ts/style/colors';
 
-
 // Not sure if cssReset is already imported into index.tsx
 // Also: currently createglobalStyle from styled-components is
 // throwing a warning about how there's not typing exported from styled-comps
@@ -11,15 +10,15 @@ const GlobalStyles = createGlobalStyle`
 
   @font-face {
     font-family: "Formular";
-    src: url("/public/fonts/Formular-Light.woff2") format("woff2"), url("/public/fonts/Formular-Light.woff") format("woff");
+    src: url("/fonts/Formular-Light.woff2") format("woff2"), url("/fonts/Formular-Light.woff") format("woff");
     font-weight: 300;
     font-display: swap;
   }
 
   @font-face {
     font-family: "Formular";
-    src: url("/public/fonts/Formular-Regular.woff2") format("woff2"), url("/public/fonts/Formular-Regular.woff") format("woff");
-    font-weight: 500;
+    src: url("/fonts/Formular-Regular.woff2") format("woff2"), url("/fonts/Formular-Regular.woff") format("woff");
+    font-weight: 400;
     font-display: swap;
   }
 
