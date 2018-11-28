@@ -31,14 +31,20 @@ const Link = styled.a`
     color: rgba(255, 255, 255, 0.5);
     font-size: 18px;
     margin: 0 1.764705882rem;
+    transition: color 0.25s ease-in-out;
+    text-decoration: none;
+
+    &:hover {
+        color: rgba(255, 255, 255, 1);
+    }
 `;
 
 const links = [
-    { url: '', text: 'Why 0x' },
-    { url: '', text: 'Products' },
-    { url: '', text: 'Developers' },
-    { url: '', text: 'About' },
-    { url: '', text: 'Blog' },
+    { url: '#', text: 'Why 0x' },
+    { url: '#', text: 'Products' },
+    { url: '#', text: 'Developers' },
+    { url: '#', text: 'About' },
+    { url: '#', text: 'Blog' },
 ];
 
 export const Header: React.StatelessComponent<HeaderInterface> = ({}) => (
@@ -46,7 +52,7 @@ export const Header: React.StatelessComponent<HeaderInterface> = ({}) => (
         <StyledHeader>
             <Logo/>
             <Links>
-                {_.map(links, link => <Link>{link.text}</Link>)}
+                {_.map(links, link => <Link href={link.url}>{link.text}</Link>)}
             </Links>
             <Button text="Trade on 0x" />
         </StyledHeader>
