@@ -6,6 +6,7 @@ import { Footer } from 'ts/components/footer';
 import { MetaTags } from 'ts/components/meta_tags';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Container } from 'ts/components/ui/container';
+import { Configurator } from 'ts/pages/instant/configurator';
 import { Features } from 'ts/pages/instant/features';
 import { Introducing0xInstant } from 'ts/pages/instant/introducing_0x_instant';
 import { NeedMore } from 'ts/pages/instant/need_more';
@@ -56,6 +57,7 @@ export class Instant extends React.Component<InstantProps, InstantState> {
                 <Introducing0xInstant screenWidth={this.props.screenWidth} />
                 <Screenshots screenWidth={this.props.screenWidth} />
                 <Features screenWidth={this.props.screenWidth} />
+                <Configurator />
                 <NeedMore screenWidth={this.props.screenWidth} />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </Container>
