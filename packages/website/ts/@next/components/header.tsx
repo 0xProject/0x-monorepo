@@ -52,7 +52,7 @@ export const Header: React.StatelessComponent<HeaderInterface> = ({}) => (
         <StyledHeader>
             <Logo/>
             <Links>
-                {_.map(links, link => <Link href={link.url}>{link.text}</Link>)}
+                {_.map(links, (link, index) => <Link key={index} href={link.url}>{link.text}</Link>)}
             </Links>
             <Button text="Trade on 0x" />
         </StyledHeader>
