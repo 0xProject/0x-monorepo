@@ -149,6 +149,11 @@ export enum Browser {
     Other = 'OTHER',
 }
 
+export enum WalletSuggestion {
+    CoinbaseWallet = 'Coinbase Wallet',
+    MetaMask = 'MetaMask',
+}
+
 export enum OperatingSystem {
     Android = 'ANDROID',
     iOS = 'IOS',
