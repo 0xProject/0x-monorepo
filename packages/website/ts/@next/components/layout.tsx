@@ -44,6 +44,7 @@ const COLUMN_WIDTHS: ColumnWidths = {
 export const Section = styled.section<SectionProps>`
   width: 100%;
   padding: ${props => !props.noPadding && '30px'};
+  margin-bottom: 30px;
   background-color: ${props => props.bgColor};
   border: 1px solid blue;
 `;
