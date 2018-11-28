@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
 import { SlidingError } from '../components/sliding_error';
+import { Container } from '../components/ui/container';
 import { Overlay } from '../components/ui/overlay';
 import { Action } from '../redux/actions';
 import { State } from '../redux/reducer';
@@ -23,7 +24,12 @@ export interface LatestErrorComponentProps {
 
 export const LatestErrorComponent: React.StatelessComponent<LatestErrorComponentProps> = props => {
     if (!props.latestErrorMessage) {
-        return <div />;
+        // Render a hidden SlidingError such that instant does not move when a real error is rendered.
+        return (
+            <Container isHidden={true}>
+                <SlidingError animationState="slidIn" icon="😢" message="" />
+            </Container>
+        );
     }
     return (
         <React.Fragment>
