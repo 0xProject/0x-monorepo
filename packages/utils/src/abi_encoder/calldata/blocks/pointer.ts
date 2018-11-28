@@ -5,7 +5,7 @@ import { constants } from '../../utils/constants';
 
 import { CalldataBlock } from '../calldata_block';
 
-export class Pointer extends CalldataBlock {
+export class PointerCalldataBlock extends CalldataBlock {
     public static readonly RAW_DATA_START = new Buffer('<');
     public static readonly RAW_DATA_END = new Buffer('>');
     private static readonly _DEPENDENT_PAYLOAD_SIZE_IN_BYTES = 32;
@@ -15,8 +15,8 @@ export class Pointer extends CalldataBlock {
     private _aliasFor: CalldataBlock | undefined;
 
     constructor(name: string, signature: string, parentName: string, dependency: CalldataBlock, parent: CalldataBlock) {
-        const headerSizeInBytes = Pointer._EMPTY_HEADER_SIZE;
-        const bodySizeInBytes = Pointer._DEPENDENT_PAYLOAD_SIZE_IN_BYTES;
+        const headerSizeInBytes = PointerCalldataBlock._EMPTY_HEADER_SIZE;
+        const bodySizeInBytes = PointerCalldataBlock._DEPENDENT_PAYLOAD_SIZE_IN_BYTES;
         super(name, signature, parentName, headerSizeInBytes, bodySizeInBytes);
         this._parent = parent;
         this._dependency = dependency;
@@ -51,9 +51,9 @@ export class Pointer extends CalldataBlock {
     public getRawData(): Buffer {
         const dependencyRawData = this._dependency.getRawData();
         const rawDataComponents: Buffer[] = [];
-        rawDataComponents.push(Pointer.RAW_DATA_START);
+        rawDataComponents.push(PointerCalldataBlock.RAW_DATA_START);
         rawDataComponents.push(dependencyRawData);
-        rawDataComponents.push(Pointer.RAW_DATA_END);
+        rawDataComponents.push(PointerCalldataBlock.RAW_DATA_END);
         const rawData = Buffer.concat(rawDataComponents);
         return rawData;
     }

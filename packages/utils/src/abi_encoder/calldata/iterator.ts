@@ -3,7 +3,9 @@ import * as _ from 'lodash';
 
 import { Queue } from '../utils/queue';
 
-import * as CalldataBlocks from './blocks';
+import { BlobCalldataBlock } from './blocks/blob';
+import { PointerCalldataBlock } from './blocks/pointer';
+import { SetCalldataBlock } from './blocks/set';
 import { CalldataBlock } from './calldata_block';
 
 /**
@@ -42,7 +44,7 @@ abstract class BaseIterator implements Iterable<CalldataBlock> {
     private static _createQueue(block: CalldataBlock): Queue<CalldataBlock> {
         const queue = new Queue<CalldataBlock>();
         // Base case
-        if (!(block instanceof CalldataBlocks.Set)) {
+        if (!(block instanceof SetCalldataBlock)) {
             queue.pushBack(block);
             return queue;
         }
@@ -55,7 +57,7 @@ abstract class BaseIterator implements Iterable<CalldataBlock> {
         _.each(set.getMembers(), (member: CalldataBlock) => {
             // Traverse child if it is a unique pointer.
             // A pointer that is an alias for another pointer is ignored.
-            if (member instanceof CalldataBlocks.Pointer && _.isUndefined(member.getAlias())) {
+            if (member instanceof PointerCalldataBlock && _.isUndefined(member.getAlias())) {
                 const dependency = member.getDependency();
                 queue.mergeBack(BaseIterator._createQueue(dependency));
             }
@@ -82,7 +84,7 @@ abstract class BaseIterator implements Iterable<CalldataBlock> {
                 }
                 return {
                     done: true,
-                    value: new CalldataBlocks.Blob('', '', '', new Buffer('')),
+                    value: new BlobCalldataBlock('', '', '', new Buffer('')),
                 };
             },
         };

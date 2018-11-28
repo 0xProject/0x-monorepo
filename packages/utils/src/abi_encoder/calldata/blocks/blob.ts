@@ -1,6 +1,6 @@
 import { CalldataBlock } from '../calldata_block';
 
-export class Blob extends CalldataBlock {
+export class BlobCalldataBlock extends CalldataBlock {
     private readonly _blob: Buffer;
 
     constructor(name: string, signature: string, parentName: string, blob: Buffer) {

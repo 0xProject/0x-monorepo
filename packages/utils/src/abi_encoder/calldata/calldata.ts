@@ -4,7 +4,8 @@ import * as _ from 'lodash';
 import { constants } from '../utils/constants';
 import { EncodingRules } from '../utils/rules';
 
-import * as CalldataBlocks from './blocks';
+import { PointerCalldataBlock } from './blocks/pointer';
+import { SetCalldataBlock } from './blocks/set';
 import { CalldataBlock } from './calldata_block';
 import { CalldataIterator, ReverseCalldataIterator } from './iterator';
 
@@ -112,7 +113,7 @@ export class Calldata {
         for (const block of iterator) {
             // If a block is a pointer and its value has already been observed, then update
             // the pointer to resolve to the existing value.
-            if (block instanceof CalldataBlocks.Pointer) {
+            if (block instanceof PointerCalldataBlock) {
                 const dependencyBlockHashBuf = block.getDependency().computeHash();
                 const dependencyBlockHash = ethUtil.bufferToHex(dependencyBlockHashBuf);
                 if (dependencyBlockHash in blocksByHash) {
@@ -214,7 +215,7 @@ export class Calldata {
                         ),
                     )
                     .padEnd(valuePadding);
-                if (block instanceof CalldataBlocks.Set) {
+                if (block instanceof SetCalldataBlock) {
                     nameStr = `### ${prettyName.padEnd(namePadding)}`;
                     lineStr = `\n${offsetStr}${valueStr}${nameStr}`;
                 } else {

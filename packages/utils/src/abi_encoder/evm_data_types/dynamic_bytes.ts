@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { DataTypeFactory } from '../abstract_data_types/interfaces';
 import { AbstractBlobDataType } from '../abstract_data_types/types/blob';
-import { RawCalldata } from '../calldata';
+import { RawCalldata } from '../calldata/raw_calldata';
 import { constants } from '../utils/constants';
 
 export class DynamicBytesDataType extends AbstractBlobDataType {

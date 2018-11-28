@@ -1,7 +1,9 @@
 import { DataItem } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { Calldata, CalldataBlock, RawCalldata } from '../calldata';
+import { Calldata } from '../calldata/calldata';
+import { CalldataBlock } from '../calldata/calldata_block';
+import { RawCalldata } from '../calldata/raw_calldata';
 import { constants } from '../utils/constants';
 import { DecodingRules, EncodingRules } from '../utils/rules';
 

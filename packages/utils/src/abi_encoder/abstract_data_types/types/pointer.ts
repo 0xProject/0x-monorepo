@@ -2,7 +2,9 @@ import { DataItem } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { CalldataBlock, CalldataBlocks, RawCalldata } from '../../calldata';
+import { PointerCalldataBlock } from '../../calldata/blocks/pointer';
+import { CalldataBlock } from '../../calldata/calldata_block';
+import { RawCalldata } from '../../calldata/raw_calldata';
 import { constants } from '../../utils/constants';
 import { DecodingRules } from '../../utils/rules';
 
@@ -19,7 +21,7 @@ export abstract class AbstractPointerDataType extends DataType {
         this._parent = parent;
     }
 
-    public generateCalldataBlock(value: any, parentBlock?: CalldataBlock): CalldataBlocks.Pointer {
+    public generateCalldataBlock(value: any, parentBlock?: CalldataBlock): PointerCalldataBlock {
         if (_.isUndefined(parentBlock)) {
             throw new Error(`DependentDataType requires a parent block to generate its block`);
         }
@@ -27,7 +29,7 @@ export abstract class AbstractPointerDataType extends DataType {
         const name = this.getDataItem().name;
         const signature = this.getSignature();
         const parentName = parentBlock.getName();
-        const block = new CalldataBlocks.Pointer(name, signature, parentName, destinationBlock, parentBlock);
+        const block = new PointerCalldataBlock(name, signature, parentName, destinationBlock, parentBlock);
         return block;
     }
 

@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 import { CalldataBlock } from '../calldata_block';
 
-export class Set extends CalldataBlock {
+export class SetCalldataBlock extends CalldataBlock {
     private _header: Buffer | undefined;
     private _members: CalldataBlock[];
 

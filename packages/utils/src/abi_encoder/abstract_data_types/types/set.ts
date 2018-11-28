@@ -3,7 +3,9 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { BigNumber } from '../../../configured_bignumber';
-import { CalldataBlock, CalldataBlocks, RawCalldata } from '../../calldata';
+import { SetCalldataBlock } from '../../calldata/blocks/set';
+import { CalldataBlock } from '../../calldata/calldata_block';
+import { RawCalldata } from '../../calldata/raw_calldata';
 import { constants } from '../../utils/constants';
 import { DecodingRules } from '../../utils/rules';
 
@@ -39,7 +41,7 @@ export abstract class AbstractSetDataType extends DataType {
         }
     }
 
-    public generateCalldataBlock(value: any[] | object, parentBlock?: CalldataBlock): CalldataBlocks.Set {
+    public generateCalldataBlock(value: any[] | object, parentBlock?: CalldataBlock): SetCalldataBlock {
         const block =
             value instanceof Array
                 ? this._generateCalldataBlockFromArray(value, parentBlock)
@@ -94,7 +96,7 @@ export abstract class AbstractSetDataType extends DataType {
         return isStatic;
     }
 
-    protected _generateCalldataBlockFromArray(value: any[], parentBlock?: CalldataBlock): CalldataBlocks.Set {
+    protected _generateCalldataBlockFromArray(value: any[], parentBlock?: CalldataBlock): SetCalldataBlock {
         // Sanity check: if the set has a defined length then `value` must have the same length.
         if (!_.isUndefined(this._arrayLength) && value.length !== this._arrayLength) {
             throw new Error(
@@ -105,7 +107,7 @@ export abstract class AbstractSetDataType extends DataType {
         }
         // Create a new calldata block for this set.
         const parentName = _.isUndefined(parentBlock) ? '' : parentBlock.getName();
-        const block: CalldataBlocks.Set = new CalldataBlocks.Set(
+        const block = new SetCalldataBlock(
             this.getDataItem().name,
             this.getSignature(),
             parentName,
@@ -130,10 +132,10 @@ export abstract class AbstractSetDataType extends DataType {
         return block;
     }
 
-    protected _generateCalldataBlockFromObject(obj: object, parentBlock?: CalldataBlock): CalldataBlocks.Set {
+    protected _generateCalldataBlockFromObject(obj: object, parentBlock?: CalldataBlock): SetCalldataBlock {
         // Create a new calldata block for this set.
         const parentName = _.isUndefined(parentBlock) ? '' : parentBlock.getName();
-        const block: CalldataBlocks.Set = new CalldataBlocks.Set(
+        const block = new SetCalldataBlock(
             this.getDataItem().name,
             this.getSignature(),
             parentName,
