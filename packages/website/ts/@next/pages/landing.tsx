@@ -1,6 +1,9 @@
 import * as React from 'react';
-import { render } from 'react-dom';
+import { SiteWrap } from 'ts/@next/components/siteWrap';
+
 
 export const NextLanding = () => (
-    <div>0x</div>
+  <SiteWrap>
+    <div>Hello</div>
+  </SiteWrap>
 );
