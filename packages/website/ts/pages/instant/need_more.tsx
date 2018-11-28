@@ -5,6 +5,8 @@ import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 export interface NeedMoreProps {
     screenWidth: ScreenWidths;
@@ -32,15 +34,29 @@ export const NeedMore = (props: NeedMoreProps) => {
                             backgroundColor={colors.white}
                             fontColor={backgroundColor}
                             fontSize="18px"
+                            onClick={onGetInTouchClick}
                         >
                             Get in Touch
                         </Button>
                     </Container>
-                    <Button type="button" backgroundColor={colors.mediumBlue} fontColor={colors.white} fontSize="18px">
+                    <Button
+                        type="button"
+                        backgroundColor={colors.mediumBlue}
+                        fontColor={colors.white}
+                        fontSize="18px"
+                        onClick={onDocsClick}
+                    >
                         Explore the Docs
                     </Button>
                 </Container>
             </Container>
         </Container>
     );
+};
+
+const onGetInTouchClick = () => {
+    utils.openUrl(constants.URL_ZEROEX_CHAT);
+};
+const onDocsClick = () => {
+    utils.openUrl(`${utils.getCurrentBaseUrl()}/wiki#Get-Started`);
 };

@@ -56,18 +56,18 @@ export class Instant extends React.Component<InstantProps, InstantState> {
                     isNightVersion={true}
                 />
                 <Container backgroundColor={colors.instantPrimaryBackground} />
-                <Introducing0xInstant screenWidth={this.props.screenWidth} onCTAClick={this._onHeaderCTAClick} />
+                <Introducing0xInstant screenWidth={this.props.screenWidth} onCTAClick={this._onGetStartedClick} />
                 <Screenshots screenWidth={this.props.screenWidth} />
-                <Features screenWidth={this.props.screenWidth} />
+                <Features screenWidth={this.props.screenWidth} onGetStartedClick={this._onGetStartedClick} />
                 {!this._isSmallScreen() && <Configurator hash={CONFIGURATOR_HASH} />}
                 <NeedMore screenWidth={this.props.screenWidth} />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </Container>
         );
     }
-    private readonly _onHeaderCTAClick = () => {
+    private readonly _onGetStartedClick = () => {
         if (this._isSmallScreen()) {
-            utils.openUrl(`${utils.getCurrentBaseUrl()}/wiki#About`);
+            utils.openUrl(`${utils.getCurrentBaseUrl()}/wiki#Get-Started`);
         } else {
             this._scrollToConfigurator();
         }
