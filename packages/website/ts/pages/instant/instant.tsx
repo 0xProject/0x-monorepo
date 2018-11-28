@@ -27,8 +27,8 @@ export interface InstantProps {
 export interface InstantState {}
 
 const THROTTLE_TIMEOUT = 100;
-const DOCUMENT_TITLE = 'Instant';
-const DOCUMENT_DESCRIPTION = 'Instant';
+const DOCUMENT_TITLE = '0x Instant';
+const DOCUMENT_DESCRIPTION = '0x Instant';
 
 export class Instant extends React.Component<InstantProps, InstantState> {
     // TODO: consolidate this small screen scaffolding into one place (its being used in portal and docs as well)
@@ -42,6 +42,7 @@ export class Instant extends React.Component<InstantProps, InstantState> {
         window.scrollTo(0, 0);
     }
     public render(): React.ReactNode {
+        const isSmallScreen = this.props.screenWidth === ScreenWidths.Sm;
         return (
             <Container overflowX="hidden">
                 <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
@@ -57,7 +58,7 @@ export class Instant extends React.Component<InstantProps, InstantState> {
                 <Introducing0xInstant screenWidth={this.props.screenWidth} />
                 <Screenshots screenWidth={this.props.screenWidth} />
                 <Features screenWidth={this.props.screenWidth} />
-                <Configurator />
+                {!isSmallScreen && <Configurator />}
                 <NeedMore screenWidth={this.props.screenWidth} />
                 <Footer translate={this.props.translate} dispatcher={this.props.dispatcher} />
             </Container>
