@@ -185,17 +185,9 @@ export const analytics = {
             ...buyQuoteEventProperties(buyQuote),
             fetchedVia,
         }),
-    trackQuoteError: (
-        errorMessage: string,
-        assetName: string,
-        assetData: string,
-        assetAmount: BigNumber,
-        fetchedVia: QuoteFetchedVia,
-    ) => {
+    trackQuoteError: (errorMessage: string, assetAmount: BigNumber, fetchedVia: QuoteFetchedVia) => {
         trackingEventFnWithPayload(EventNames.QUOTE_ERROR)({
             errorMessage,
-            assetName,
-            assetData,
             assetAmount: assetAmount.toString(),
             fetchedVia,
         });
