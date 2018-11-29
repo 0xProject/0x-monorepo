@@ -76,7 +76,7 @@ contract CompliantForwarder {
             *         takerAssetData                                                                  
             *         signature
             ------------------------------
-            * Context-dependent offsets, unknown at compile time.
+            * Context-dependent offsets; unknown at compile time.
         */
         // Add 0x4 to a given offset to account for the fillOrder selector prepended to `signedFillOrderTransaction`.
         // Add 0xc to the makerAddress since abi-encoded addresses are left padded with 12 bytes.
