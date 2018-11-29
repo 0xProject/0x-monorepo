@@ -177,3 +177,20 @@ export enum ProviderType {
     Cipher = 'CIPHER',
     Fallback = 'FALLBACK',
 }
+
+export interface ZeroExInstantRequiredBaseConfig {
+    orderSource: OrderSource;
+}
+
+export interface ZeroExInstantOptionalBaseConfig {
+    provider: Provider;
+    availableAssetDatas: string[];
+    defaultAssetBuyAmount: number;
+    defaultSelectedAssetData: string;
+    additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
+    networkId: Network;
+    affiliateInfo: AffiliateInfo;
+    shouldDisableAnalyticsTracking: boolean;
+}
+
+export type ZeroExInstantBaseConfig = ZeroExInstantRequiredBaseConfig & Partial<ZeroExInstantOptionalBaseConfig>;
