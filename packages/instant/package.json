@@ -8,8 +8,7 @@
     "main": "umd/instant.js",
     "private": true,
     "scripts": {
-        "build": "yarn build:prod --env.production_standalone",
-        "build:prod": "webpack --mode production",
+        "build": "webpack --mode production",
         "build:ci": "yarn build",
         "watch_without_deps": "tsc -w",
         "dev": "webpack-dev-server --mode development --env.development",
