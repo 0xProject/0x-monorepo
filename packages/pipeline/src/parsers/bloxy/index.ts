@@ -34,11 +34,11 @@ export function _parseBloxyTrade(rawTrade: BloxyTrade): DexTrade {
     // represented that way. Ideally they will switch to using strings and then
     // we can update this code.
     dexTrade.amountBuy = new BigNumber(rawTrade.amountBuy.toString());
-    dexTrade.makerFee = new BigNumber(rawTrade.makerFee.toString());
+    dexTrade.makerFeeAmount = new BigNumber(rawTrade.makerFee.toString());
     dexTrade.buyCurrencyId = rawTrade.buyCurrencyId;
     dexTrade.buySymbol = filterNullCharacters(rawTrade.buySymbol);
     dexTrade.amountSell = new BigNumber(rawTrade.amountSell.toString());
-    dexTrade.takerFee = new BigNumber(rawTrade.takerFee.toString());
+    dexTrade.takerFeeAmount = new BigNumber(rawTrade.takerFee.toString());
     dexTrade.sellCurrencyId = rawTrade.sellCurrencyId;
     dexTrade.sellSymbol = filterNullCharacters(rawTrade.sellSymbol);
     dexTrade.makerAnnotation = rawTrade.maker_annotation;

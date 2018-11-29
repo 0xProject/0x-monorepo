@@ -24,11 +24,11 @@ async function getAndSaveTrades(): Promise<void> {
     if (apiKey === undefined) {
         throw new Error('Missing required env var: BLOXY_API_KEY');
     }
-    console.log('Getting latest dex trades...');
     const bloxySource = new BloxySource(apiKey);
     const tradesRepository = connection.getRepository(DexTrade);
     const lastSeenTimestamp = await getLastSeenTimestampAsync(tradesRepository);
-    console.log(lastSeenTimestamp);
+    console.log(`Last seen timestamp: ${lastSeenTimestamp === 0 ? 'none' : lastSeenTimestamp}`);
+    console.log('Getting latest dex trades...');
     const rawTrades = await bloxySource.getDexTradesAsync(lastSeenTimestamp);
     console.log(`Parsing ${rawTrades.length} trades...`);
     const trades = parseBloxyTrades(rawTrades);

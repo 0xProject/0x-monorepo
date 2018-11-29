@@ -28,16 +28,16 @@ export class DexTrade {
     public taker!: string;
     @Column({ name: 'amount_buy', type: 'numeric', transformer: bigNumberTransformer })
     public amountBuy!: BigNumber;
-    @Column({ name: 'maker_fee', type: 'numeric', transformer: bigNumberTransformer })
-    public makerFee!: BigNumber;
+    @Column({ name: 'maker_fee_amount', type: 'numeric', transformer: bigNumberTransformer })
+    public makerFeeAmount!: BigNumber;
     @Column({ name: 'buy_currency_id', type: 'bigint', transformer: numberToBigIntTransformer })
     public buyCurrencyId!: number;
     @Column({ name: 'buy_symbol' })
     public buySymbol!: string;
     @Column({ name: 'amount_sell', type: 'numeric', transformer: bigNumberTransformer })
     public amountSell!: BigNumber;
-    @Column({ name: 'taker_fee', type: 'numeric', transformer: bigNumberTransformer })
-    public takerFee!: BigNumber;
+    @Column({ name: 'taker_fee_amount', type: 'numeric', transformer: bigNumberTransformer })
+    public takerFeeAmount!: BigNumber;
     @Column({ name: 'sell_currency_id', type: 'bigint', transformer: numberToBigIntTransformer })
     public sellCurrencyId!: number;
     @Column({ name: 'sell_symbol' })
