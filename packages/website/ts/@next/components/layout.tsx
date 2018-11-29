@@ -27,19 +27,33 @@ interface ColumnProps {
   colWidth?: '1/4' | '1/3' | '1/2' | '2/3';
 }
 
+interface GetColWidthArgs {
+  span?: number,
+  columns: number,
+}
+
+
+const _getColumnWidth = (args: GetColWidthArgs) => {
+  const { span = 1, columns } = args;
+  const percentWidth = (span / columns) * 100;
+  const gutterDiff = (GUTTER * (columns - 1)) / columns;
+  return `calc(${percentWidth}% - ${gutterDiff}px)`;
+};
+
 const GUTTER = 30 as number;
 const WRAPPER_WIDTHS: WrapWidths = {
-  default: '1500px', // dunno
+  default: '1500px', // tbd
   full: '100%',
   medium: '1136px',
   narrow: '930px',
 };
 const COLUMN_WIDTHS: ColumnWidths = {
-  '1/4': `calc(${(1 / 4) * 100}% - ${(GUTTER * 3) / 4}px)`,
-  '1/3': `calc(${(1 / 3) * 100}% - ${(GUTTER * 2) / 3}px)`,
-  '1/2': `calc(${(1 / 2) * 100}% - ${GUTTER / 2}px)`,
-  '2/3': `calc(${(2 / 3) * 100}% - ${GUTTER / 2}px)`,
+  '1/4': _getColumnWidth({ columns: 4 }),
+  '1/3': _getColumnWidth({ columns: 3 }),
+  '1/2': _getColumnWidth({ columns: 2 }),
+  '2/3': _getColumnWidth({ span: 2, columns: 4 }),
 };
+
 
 export const Section = styled.section<SectionProps>`
   width: 100%;
