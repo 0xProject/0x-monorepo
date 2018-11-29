@@ -20,7 +20,7 @@ The package is available as a UMD module named `zeroExInstant`.
 
 ## Deploying
 
-You can deploy a work-in-progress version of 0x Instant at http://0x-instant-dogfood.s3-website-us-east-1.amazonaws.com for easy sharing.
+You can deploy a work-in-progress version of 0x Instant at http://0x-instant-dogfood.s3-website-us-east-1.amazonaws.com/instant.js for easy sharing.
 
 To build and deploy the bundle run
 
@@ -28,7 +28,7 @@ To build and deploy the bundle run
 yarn deploy_dogfood
 ```
 
-We also have a staging bucket that is to be updated less frequently can be used to share a beta version of instant externally: http://0x-instant-staging.s3-website-us-east-1.amazonaws.com/
+We also have a staging bucket that is to be updated less frequently can be used to share a beta version of instant externally: http://0x-instant-staging.s3-website-us-east-1.amazonaws.com/instant.js
 
 To build and deploy to this bundle, run
 
@@ -36,7 +36,7 @@ To build and deploy to this bundle, run
 yarn deploy_staging
 ```
 
-Finally, we have our live production bundle that is only meant to be updated with stable, polished releases.
+Finally, we have our live production bundle that is only meant to be updated with stable, polished releases: https://instant.0xproject.com/instant.js
 
 To build and deploy to this bundle, run
 
