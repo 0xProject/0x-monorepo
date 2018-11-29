@@ -4,7 +4,8 @@ import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 export interface Props {
-    size?: string;
+    size?: 'normal' | 'medium' | 'large';
+    center?: boolean;
 }
 
 const StyledHeading = styled.h1`
@@ -20,6 +21,18 @@ const StyledIntro = styled.p`
     line-height: 1.823529412em;
 `;
 
+const StyledText = styled.p<Props>`
+    color: ${colors.white};
+    font-size: 1rem;
+    ${(props: Props) => props.size === 'medium' && `
+        font-size: 1.555555556rem;
+        line-height: 1.357142857em;
+    `}
+    ${(props: Props) => props.center && `
+        text-align: center
+    `}
+`;
+
 export const Heading: React.StatelessComponent<Props> = ({ children }) => (
     <StyledHeading>{children}</StyledHeading>
 );
@@ -27,3 +40,12 @@ export const Heading: React.StatelessComponent<Props> = ({ children }) => (
 export const Intro: React.StatelessComponent<Props> = ({ children }) => (
     <StyledIntro>{children}</StyledIntro>
 );
+
+export const Text: React.StatelessComponent<Props> = ({ children, ...props }) => (
+    <StyledText {...props}>{children}</StyledText>
+);
+
+Text.defaultProps = {
+    size: 'normal',
+    center: false,
+};

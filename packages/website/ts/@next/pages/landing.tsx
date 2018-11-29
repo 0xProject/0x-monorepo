@@ -5,12 +5,15 @@ import { colors } from 'ts/style/colors'
 import { Button, ButtonTransparent } from 'ts/@next/components/button';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
-import { Heading, Intro } from 'ts/@next/components/text';
+import { Heading, Intro, Text } from 'ts/@next/components/text';
 
 import logoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
+import protocol from 'ts/@next/icons/illustrations/protocol.svg';
 
 const Icon = styled.div`
     flex-shrink: 0;
+
+    ${props => props.center && `text-align: center`}
 `;
 
 export const NextLanding = () => (
@@ -22,7 +25,7 @@ export const NextLanding = () => (
           <Intro>0x is the best solution for adding exchange functionality to your business.</Intro>
           <div>
             <Button text="Get Started" inline={true} />
-            <Button text="Learn More" transparent={true} inline={true} />
+            <ButtonTransparent text="Learn More" inline={true} />
           </div>
         </Column>
 
@@ -31,6 +34,13 @@ export const NextLanding = () => (
         </Column>
       </Wrap>
     </Section>
+
+    <Section bgColor={colors.backgroundDark} noPadding>
+      <Icon as={protocol as 'svg'} />
+      <Text size="medium" center={true}>0x is the best solution for adding exchange functionality to your business.</Text>
+      <Text size="medium" center={true}>Discover how developers use 0x (need arrow + line under)</Text>
+    </Section>
+
     <Section>
       <Wrap>
         <Column colWidth="2/3">
