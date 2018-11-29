@@ -2,11 +2,11 @@
 
 ## Installation
 
-The package is available as a UMD module named `zeroExInstant`.
+The package is available as a UMD module named `zeroExInstant` at https://instant.0xproject.com/instant.js.
 
 ```html
 <head>
-    <script type="text/javascript" src="[zeroExInstantUMDPath]" charset="utf-8"></script>
+    <script type="text/javascript" src="https://instant.0xproject.com/instant.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="zeroExInstantContainer"></div>
