@@ -237,7 +237,7 @@ export enum RevertReason {
     TxFullyConfirmed = 'TX_FULLY_CONFIRMED',
     TxNotFullyConfirmed = 'TX_NOT_FULLY_CONFIRMED',
     TimeLockIncomplete = 'TIME_LOCK_INCOMPLETE',
-    MakerUnverified = 'MAKER_UNVERIFED',
+    MakerUnverified = 'MAKER_UNVERIFIED',
     TakerUnverified = 'TAKER_UNVERIFIED',
 }
 

@@ -93,12 +93,13 @@ contract CompliantForwarder {
             "MAKER_UNVERIFIED"
         );
         
+        /*
         // All entities are verified. Execute fillOrder.
         EXCHANGE.executeTransaction(
             salt,
             signerAddress,
             signedFillOrderTransaction,
             signature
-        );
+        );*/
     }
 }
