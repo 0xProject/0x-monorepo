@@ -1,6 +1,14 @@
 import * as styledComponents from 'styled-components';
 
-const { default: styled, css, keyframes, withTheme, createGlobalStyle, ThemeProvider } = styledComponents;
+const {
+    default: styled,
+    css,
+    keyframes,
+    withTheme,
+    createGlobalStyle,
+    ThemeConsumer,
+    ThemeProvider,
+} = styledComponents;
 
 export type Theme = { [key in ColorOption]: string };
 
@@ -45,4 +53,4 @@ export const generateOverlayBlack = (opacity = 0.6) => {
     return `rgba(0, 0, 0, ${opacity})`;
 };
 
-export { styled, css, keyframes, withTheme, createGlobalStyle, ThemeProvider };
+export { styled, css, keyframes, withTheme, createGlobalStyle, ThemeConsumer, ThemeProvider };

@@ -11,7 +11,7 @@ import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
+import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource, QuoteFetchOrigin } from '../types';
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
@@ -115,7 +115,9 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         this._buyQuoteHeartbeat.start(BUY_QUOTE_UPDATE_INTERVAL_TIME_MS);
         // Trigger first buyquote fetch
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, { updateSilently: false });
+        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, QuoteFetchOrigin.Manual, {
+            updateSilently: false,
+        });
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
         // tslint:disable-next-line:no-floating-promises

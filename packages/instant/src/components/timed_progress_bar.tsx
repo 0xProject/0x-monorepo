@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
+import { transparentize } from 'polished';
 import * as React from 'react';
 
 import { PROGRESS_FINISH_ANIMATION_TIME_MS, PROGRESS_STALL_AT_WIDTH } from '../constants';
-import { ColorOption, css, keyframes, styled } from '../style/theme';
+import { ColorOption, css, keyframes, styled, ThemeConsumer } from '../style/theme';
 
 import { Container } from './ui/container';
 
@@ -93,8 +94,16 @@ export interface ProgressBarProps extends ProgressProps {}
 
 export const ProgressBar: React.ComponentType<ProgressBarProps & React.ClassAttributes<{}>> = React.forwardRef(
     (props, ref) => (
-        <Container width="100%" backgroundColor={ColorOption.lightGrey} borderRadius="6px">
-            <Progress {...props} ref={ref as any} />
-        </Container>
+        <ThemeConsumer>
+            {theme => (
+                <Container
+                    width="100%"
+                    borderRadius="6px"
+                    rawBackgroundColor={transparentize(0.5, theme[ColorOption.primaryColor])}
+                >
+                    <Progress {...props} ref={ref as any} />
+                </Container>
+            )}
+        </ThemeConsumer>
     ),
 );

@@ -1,7 +1,16 @@
 import { BuyQuote } from '@0x/asset-buyer';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { AffiliateInfo, Asset, Network, OrderProcessState, OrderSource, ProviderState } from '../types';
+import {
+    AffiliateInfo,
+    Asset,
+    Network,
+    OrderSource,
+    ProviderState,
+    QuoteFetchOrigin,
+    WalletSuggestion,
+} from '../types';
 
 import { EventProperties, heapUtil } from './heap';
 
@@ -34,11 +43,18 @@ enum EventNames {
     BUY_TX_SUBMITTED = 'Buy - Tx Submitted',
     BUY_TX_SUCCEEDED = 'Buy - Tx Succeeded',
     BUY_TX_FAILED = 'Buy - Tx Failed',
+    INSTALL_WALLET_CLICKED = 'Install Wallet - Clicked',
+    INSTALL_WALLET_MODAL_OPENED = 'Install Wallet - Modal - Opened',
+    INSTALL_WALLET_MODAL_CLICKED_EXPLANATION = 'Install Wallet - Modal - Clicked Explanation',
+    INSTALL_WALLET_MODAL_CLICKED_GET = 'Install Wallet - Modal - Clicked Get',
+    INSTALL_WALLET_MODAL_CLOSED = 'Install Wallet - Modal - Closed',
     TOKEN_SELECTOR_OPENED = 'Token Selector - Opened',
     TOKEN_SELECTOR_CLOSED = 'Token Selector - Closed',
     TOKEN_SELECTOR_CHOSE = 'Token Selector - Chose',
     TOKEN_SELECTOR_SEARCHED = 'Token Selector - Searched',
     TRANSACTION_VIEWED = 'Transaction - Viewed',
+    QUOTE_FETCHED = 'Quote - Fetched',
+    QUOTE_ERROR = 'Quote - Error',
 }
 
 const track = (eventName: EventNames, eventProperties: EventProperties = {}): void => {
@@ -173,6 +189,14 @@ export const analytics = {
             expectedTxTimeMs: expectedEndTimeUnix - startTimeUnix,
             actualTxTimeMs: new Date().getTime() - startTimeUnix,
         }),
+    trackInstallWalletClicked: (walletSuggestion: WalletSuggestion) =>
+        trackingEventFnWithPayload(EventNames.INSTALL_WALLET_CLICKED)({ walletSuggestion }),
+    trackInstallWalletModalClickedExplanation: trackingEventFnWithoutPayload(
+        EventNames.INSTALL_WALLET_MODAL_CLICKED_EXPLANATION,
+    ),
+    trackInstallWalletModalClickedGet: trackingEventFnWithoutPayload(EventNames.INSTALL_WALLET_MODAL_CLICKED_GET),
+    trackInstallWalletModalOpened: trackingEventFnWithoutPayload(EventNames.INSTALL_WALLET_MODAL_OPENED),
+    trackInstallWalletModalClosed: trackingEventFnWithoutPayload(EventNames.INSTALL_WALLET_MODAL_CLOSED),
     trackTokenSelectorOpened: trackingEventFnWithoutPayload(EventNames.TOKEN_SELECTOR_OPENED),
     trackTokenSelectorClosed: (closedVia: TokenSelectorClosedVia) =>
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CLOSED)({ closedVia }),
@@ -182,4 +206,16 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_SEARCHED)({ searchText }),
     trackTransactionViewed: (orderProcesState: OrderProcessState) =>
         trackingEventFnWithPayload(EventNames.TRANSACTION_VIEWED)({ orderState: orderProcesState }),
+    trackQuoteFetched: (buyQuote: BuyQuote, fetchOrigin: QuoteFetchOrigin) =>
+        trackingEventFnWithPayload(EventNames.QUOTE_FETCHED)({
+            ...buyQuoteEventProperties(buyQuote),
+            fetchOrigin,
+        }),
+    trackQuoteError: (errorMessage: string, assetBuyAmount: BigNumber, fetchOrigin: QuoteFetchOrigin) => {
+        trackingEventFnWithPayload(EventNames.QUOTE_ERROR)({
+            errorMessage,
+            assetBuyAmount: assetBuyAmount.toString(),
+            fetchOrigin,
+        });
+    },
 };

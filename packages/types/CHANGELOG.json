@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.4.0",
+        "changes": [
+            {
+                "note": "Add `LengthMismatch` and `LengthGreaterThan3Required` revert reasons",
+                "pr": 1224
+            }
+        ]
+    },
+    {
         "version": "1.3.0",
         "changes": [
             {
