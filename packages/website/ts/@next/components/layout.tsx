@@ -77,12 +77,18 @@ export const Wrap = styled.div<WrapProps>`
   max-width: ${props => WRAPPER_WIDTHS[props.width || 'default']};
   background-color: ${props => props.bgColor};
   margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
+
+  @media (min-width: 768px) {
+    display: flex;
+    justify-content: space-between;
+  }
 `;
 
 export const Column = styled.div<ColumnProps>`
-  width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};
   padding: ${props => !props.noPadding && '30px'};
   border: 1px dotted rgba(255, 0, 0, 0.3);
+
+  @media (min-width: 768px) {
+    width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};
+  }
 `;
