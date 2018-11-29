@@ -2,36 +2,36 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 interface WrapWidths {
-  default: string,
-  full: string,
-  medium: string,
-  narrow: string,
-  [key: string]: string,
+  default: string;
+  full: string;
+  medium: string;
+  narrow: string;
+  [key: string]: string;
 }
 
 interface ColumnWidths {
-  [key: string]: string,
+  [key: string]: string;
 }
 
 interface SectionProps {
-  noPadding?: any,
-  noMargin?: any,
-  bgColor?: string,
+  noPadding?: any;
+  noMargin?: any;
+  bgColor?: string;
 }
 
 interface WrapProps {
-  width?: 'default' | 'full' | 'medium' | 'narrow',
-  bgColor?: string,
+  width?: 'default' | 'full' | 'medium' | 'narrow';
+  bgColor?: string;
 }
 
 interface ColumnProps {
-  colWidth?: '1/4' | '1/3' | '1/2' | '2/3',
-  noPadding?: any,
+  colWidth?: '1/4' | '1/3' | '1/2' | '2/3';
+  noPadding?: any;
 }
 
 interface GetColWidthArgs {
-  span?: number,
-  columns: number,
+  span?: number;
+  columns: number;
 }
 
 

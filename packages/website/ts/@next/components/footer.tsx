@@ -8,16 +8,27 @@ import { Button } from './button';
 import { Section, Wrap, Column } from './layout';
 import { Logo } from './logo';
 
-export interface FooterInterface {
+interface FooterInterface {
 }
 
-export interface LinkInterface {
+interface LinkInterface {
     text: string;
     url: string;
     newWindow?: boolean;
 }
 
-const linkRows = [
+interface LinkRows {
+  [key: string]: {
+    heading: string;
+    links: Array<LinkInterface>;
+  }
+}
+
+interface LinkListProps {
+    links: Array<LinkInterface>;
+}
+
+const linkRows: LinkRows = [
     {
         heading: 'Products',
         links: [
@@ -65,21 +76,26 @@ export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
                 { row.heading }
               </RowHeading>
 
-              <ul>
-                {_.map(row.links, (link, index) => (
-                  <li key={`fl-${index}`}>
-                    <Link href={link.url}>
-                      { link.text }
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <LinkList links={row.links} />
             </Column>
           ))}
         </Wrap>
       </Column>
     </Wrap>
   </FooterWrap>
+);
+
+
+const LinkList = (props: LinkListProps) => (
+  <ul>
+    {_.map(props.links, (link, index) => (
+      <li key={`fl-${index}`}>
+        <Link href={link.url}>
+          { link.text }
+        </Link>
+      </li>
+    ))}
+  </ul>
 );
 
 const FooterWrap = Section.withComponent('footer');
