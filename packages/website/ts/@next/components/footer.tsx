@@ -57,14 +57,17 @@ export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
       <Column colWidth="1/2" noPadding>
         <Wrap>
           {_.map(linkRows, (row, index) => (
-            <Column colWidth="1/3" noPadding>
+            <Column
+              key={`fc-${index}`}
+              colWidth="1/3"
+              noPadding>
               <RowHeading>
                 { row.heading }
               </RowHeading>
 
               <ul>
                 {_.map(row.links, (link, index) => (
-                  <li>
+                  <li key={`fl-${index}`}>
                     <Link href={link.url}>
                       { link.text }
                     </Link>
