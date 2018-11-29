@@ -2,6 +2,7 @@ import { ConnectionOptions } from 'typeorm';
 
 import {
     Block,
+    DexTrade,
     ExchangeCancelEvent,
     ExchangeCancelUpToEvent,
     ExchangeFillEvent,
@@ -14,6 +15,7 @@ import {
 
 const entities = [
     Block,
+    DexTrade,
     ExchangeCancelEvent,
     ExchangeCancelUpToEvent,
     ExchangeFillEvent,
@@ -28,7 +30,7 @@ const config: ConnectionOptions = {
     type: 'postgres',
     url: process.env.ZEROEX_DATA_PIPELINE_DB_URL,
     synchronize: false,
-    // logging: ['error'],
+    logging: ['error'],
     entities,
     migrations: ['./lib/migrations/**/*.js'],
 };
