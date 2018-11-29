@@ -1,4 +1,3 @@
-/*
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
@@ -9,6 +8,7 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
+import { CompliantForwarderContract } from '../../generated-wrappers/compliant_forwarder';
 
 import { WETH9Contract } from '../../generated-wrappers/weth9';
 import { artifacts } from '../../src/artifacts';
@@ -46,8 +46,7 @@ describe(ContractName.Forwarder, () => {
     let weth: DummyERC20TokenContract;
     let zrxToken: DummyERC20TokenContract;
     let erc20TokenA: DummyERC20TokenContract;
-    let erc721Token: DummyERC721TokenContract;
-    let forwarderContract: ForwarderContract;
+    let compliantForwarderContract: CompliantForwarderContract;
     let wethContract: WETH9Contract;
     let forwarderWrapper: ForwarderWrapper;
     let exchangeWrapper: ExchangeWrapper;
@@ -85,12 +84,6 @@ describe(ContractName.Forwarder, () => {
         const erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
-        [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
-        const erc721Proxy = await erc721Wrapper.deployProxyAsync();
-        await erc721Wrapper.setBalancesAndAllowancesAsync();
-        const erc721Balances = await erc721Wrapper.getBalancesAsync();
-        erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
-
         wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults);
         weth = new DummyERC20TokenContract(wethContract.abi, wethContract.address, provider);
         erc20Wrapper.addDummyTokenContract(weth);
@@ -105,12 +98,8 @@ describe(ContractName.Forwarder, () => {
         );
         exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
-            from: owner,
-        });
-        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
             from: owner,
         });
 
@@ -130,21 +119,28 @@ describe(ContractName.Forwarder, () => {
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
 
-        const forwarderInstance = await ForwarderContract.deployFrom0xArtifactAsync(
-            artifacts.Forwarder,
+        const compliantForwarderInstance = await CompliantForwarderContract.deployFrom0xArtifactAsync(
+            artifacts.CompliantForwarder,
             provider,
             txDefaults,
             exchangeInstance.address,
-            zrxAssetData,
-            wethAssetData,
+            exchangeInstance.address, // @TODO CHANGE to Yes Token
         );
-        forwarderContract = new ForwarderContract(forwarderInstance.abi, forwarderInstance.address, provider);
-        forwarderWrapper = new ForwarderWrapper(forwarderContract, provider);
+
+        compliantForwarderContract = new CompliantForwarderContract(
+            compliantForwarderInstance.abi,
+            compliantForwarderInstance.address,
+            provider,
+        );
+        /*
+        forwarderWrapper = new ForwarderWrapper(compliantForwarderContract, provider);
+        */
+
         const zrxDepositAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18);
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await zrxToken.transfer.sendTransactionAsync(forwarderContract.address, zrxDepositAmount),
+            await zrxToken.transfer.sendTransactionAsync(compliantForwarderContract.address, zrxDepositAmount),
         );
-        erc20Wrapper.addTokenOwnerAddress(forwarderInstance.address);
+        erc20Wrapper.addTokenOwnerAddress(compliantForwarderInstance.address);
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
@@ -167,27 +163,8 @@ describe(ContractName.Forwarder, () => {
     });
 
     describe('constructor', () => {
-        it('should revert if assetProxy is unregistered', async () => {
-            const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-                artifacts.Exchange,
-                provider,
-                txDefaults,
-                zrxAssetData,
-            );
-            return expectContractCreationFailedAsync(
-                (ForwarderContract.deployFrom0xArtifactAsync(
-                    artifacts.Forwarder,
-                    provider,
-                    txDefaults,
-                    exchangeInstance.address,
-                    zrxAssetData,
-                    wethAssetData,
-                ) as any) as sendTransactionResult,
-                RevertReason.UnregisteredAssetProxy,
-            );
-        });
+        it('should revert if assetProxy is unregistered', async () => {});
     });
 });
 // tslint:disable:max-file-line-count
 // tslint:enable:no-unnecessary-type-assertion
-*/

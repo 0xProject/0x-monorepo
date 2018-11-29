@@ -1,6 +1,7 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as AssetProxyOwner from '../../generated-artifacts/AssetProxyOwner.json';
+import * as CompliantForwarder from '../../generated-artifacts/CompliantForwarder.json';
 import * as DummyERC20Token from '../../generated-artifacts/DummyERC20Token.json';
 import * as DummyERC721Receiver from '../../generated-artifacts/DummyERC721Receiver.json';
 import * as DummyERC721Token from '../../generated-artifacts/DummyERC721Token.json';
@@ -41,6 +42,7 @@ import * as ZRXToken from '../../generated-artifacts/ZRXToken.json';
 
 export const artifacts = {
     AssetProxyOwner: AssetProxyOwner as ContractArtifact,
+    CompliantForwarder: CompliantForwarder as ContractArtifact,
     DummyERC20Token: DummyERC20Token as ContractArtifact,
     DummyERC721Receiver: DummyERC721Receiver as ContractArtifact,
     DummyERC721Token: DummyERC721Token as ContractArtifact,
