@@ -61,6 +61,7 @@ describe(ContractName.Forwarder, () => {
     let wethContract: WETH9Contract;
     let forwarderWrapper: ForwarderWrapper;
     let exchangeWrapper: ExchangeWrapper;
+    let takerPrivateKey: Buffer;
 
     let orderWithoutFee: SignedOrder;
     let orderWithFee: SignedOrder;
