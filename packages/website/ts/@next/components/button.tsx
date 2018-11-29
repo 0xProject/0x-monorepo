@@ -68,7 +68,7 @@ export const Button: React.StatelessComponent<ButtonInterface> = ({ ...props }) 
 
 // also feel like a transparent prop would suffice instead of having a separate button
 // so we have the logic with the Link/button--- and props = styling. in this case:
-// background-color: ${props => !props.transparent && 'somecolor'}
+// background-color: ${props => !props.transparent && 'somecolor'}..
 export const ButtonTransparent: React.StatelessComponent<ButtonInterface> = ({ ...props }) => (
     <StyledButton transparent={true} {...props}>
         <Text>{props.text}</Text>
