@@ -44,7 +44,7 @@ To build and deploy to this bundle, run
 yarn deploy_live
 ```
 
-**NOTE: On deploying the site, it will say the site is available at a non-existent URL. Please ignore and use the (now updated) URL above.**
+**NOTE: On deploying the site to staging and dogfood, it will say the site is available at a non-existent URL. Please ignore and use the (now updated) URL above.**
 
 ## Contributing
 
