@@ -46,10 +46,9 @@ const Text = styled.span`
 
 export const Button: React.StatelessComponent<ButtonInterface> = props => {
   const { onClick, href } = props;
+  const Component = onClick ? StyledButton : StyledButton.withComponent('a');
 
-  // This button is as link
-  if (props.href) return StyledButton.withComponent('a');
-  else return StyledButton;
+  return <Component {...props}>{ props.children || 'Text' }</Component>;
 };
 
 
@@ -60,11 +59,11 @@ export const Button: React.StatelessComponent<ButtonInterface> = props => {
 
 
 
-export const Button: React.StatelessComponent<ButtonInterface> = ({ ...props }) => (
-    <StyledButton {...props}>
-        <Text>{props.text}</Text>
-    </StyledButton>
-);
+// export const Button: React.StatelessComponent<ButtonInterface> = ({ ...props }) => (
+//     <StyledButton {...props}>
+//         <Text>{props.text}</Text>
+//     </StyledButton>
+// );
 
 // also feel like a transparent prop would suffice instead of having a separate button
 // so we have the logic with the Link/button--- and props = styling. in this case:
