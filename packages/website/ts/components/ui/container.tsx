@@ -1,5 +1,8 @@
 import { TextAlignProperty } from 'csstype';
+import { darken } from 'polished';
 import * as React from 'react';
+
+import { styled } from 'ts/style/theme';
 
 type StringOrNum = string | number;
 
@@ -17,10 +20,13 @@ export interface ContainerProps {
     paddingLeft?: StringOrNum;
     backgroundColor?: string;
     background?: string;
+    border?: string;
+    borderTop?: string;
     borderRadius?: StringOrNum;
     borderBottomLeftRadius?: StringOrNum;
     borderBottomRightRadius?: StringOrNum;
     borderBottom?: StringOrNum;
+    borderColor?: string;
     maxWidth?: StringOrNum;
     maxHeight?: StringOrNum;
     width?: StringOrNum;
@@ -42,10 +48,23 @@ export interface ContainerProps {
     id?: string;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
     overflowX?: 'scroll' | 'hidden' | 'auto' | 'visible';
+    shouldDarkenOnHover?: boolean;
+    shouldAddBoxShadowOnHover?: boolean;
 }
 
-export const Container: React.StatelessComponent<ContainerProps> = props => {
-    const { children, className, Tag, isHidden, id, onClick, ...style } = props;
+export const PlainContainer: React.StatelessComponent<ContainerProps> = props => {
+    const {
+        children,
+        className,
+        Tag,
+        isHidden,
+        id,
+        onClick,
+        shouldDarkenOnHover,
+        shouldAddBoxShadowOnHover,
+        // tslint:disable-next-line:trailing-comma
+        ...style
+    } = props;
     const visibility = isHidden ? 'hidden' : undefined;
     return (
         <Tag id={id} style={{ ...style, visibility }} className={className} onClick={onClick}>
@@ -53,6 +72,16 @@ export const Container: React.StatelessComponent<ContainerProps> = props => {
         </Tag>
     );
 };
+
+export const Container = styled(PlainContainer)`
+    &:hover {
+        ${props =>
+            props.shouldDarkenOnHover
+                ? `background-color: ${props.backgroundColor ? darken(0.05, props.backgroundColor) : 'none'} !important`
+                : ''};
+        ${props => (props.shouldAddBoxShadowOnHover ? 'box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)' : '')};
+    }
+`;
 
 Container.defaultProps = {
     Tag: 'div',

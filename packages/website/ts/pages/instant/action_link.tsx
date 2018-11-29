@@ -41,7 +41,7 @@ export class ActionLink extends React.Component<ActionLinkProps> {
         );
     }
 
-    private _handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    private readonly _handleClick = (event: React.MouseEvent<HTMLElement>) => {
         if (!_.isUndefined(this.props.onClick)) {
             this.props.onClick();
         } else if (!_.isUndefined(this.props.linkSrc)) {
