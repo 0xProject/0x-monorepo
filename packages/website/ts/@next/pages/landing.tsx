@@ -1,15 +1,15 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
-import { Button, ButtonTransparent } from 'ts/@next/components/button';
+import { colors } from 'ts/style/colors'
+import { Button } from 'ts/@next/components/button';
 import { Column, Section, Wrap, WrapCentered } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Intro, Text } from 'ts/@next/components/text';
 
 import logoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 import protocol from 'ts/@next/icons/illustrations/protocol.svg';
+
 
 const Icon = styled.div`
     flex-shrink: 0;
@@ -23,8 +23,13 @@ export const NextLanding = () => (
           <Heading>Powering Decentralized Exchange</Heading>
           <Intro>0x is the best solution for adding exchange functionality to your business.</Intro>
           <div>
-            <Button inline={true}>Get Started</Button>
-            <ButtonTransparent inline={true}>Learn More</ButtonTransparent>
+            <Button inline>
+              Get Started
+            </Button>
+
+            <Button transparent inline>
+              Learn More
+            </Button>
           </div>
         </Column>
 
