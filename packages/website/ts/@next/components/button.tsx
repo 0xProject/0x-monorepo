@@ -26,5 +26,6 @@ const StyledButton = styled.button<ButtonInterface>`
     border: ${props => props.transparent && '1px solid #6a6a6a'};
     color: ${colors.white};
     text-align: center;
-    padding: 13px 22px 14px;
+    padding: 14px 22px;
+    text-decoration: none;
 `;
