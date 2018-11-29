@@ -6,7 +6,7 @@ import { Button } from './button';
 import { Container } from './container';
 import { Logo } from './logo';
 
-export interface HeaderInterface {
+interface HeaderInterface {
 }
 
 const StyledHeader = styled.header`

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-export interface Props {
+interface Props {
     text: string;
     transparent?: boolean;
     inline?: boolean;

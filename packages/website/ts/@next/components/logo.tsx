@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import logoWithType from '../icons/logo-with-type.svg';
 
-export interface LogoInterface {
+interface LogoInterface {
     // showType: boolean;
 }
 
