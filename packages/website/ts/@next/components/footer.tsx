@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 import { Button } from './button';
-import { Section, Wrap, Column } from './layout';
+import { Column, Section, Wrap } from './layout';
 import { Logo } from './logo';
 
 interface FooterInterface {
@@ -18,17 +18,15 @@ interface LinkInterface {
 }
 
 interface LinkRows {
-  [key: string]: {
     heading: string;
-    links: Array<LinkInterface>;
-  }
+    links: LinkInterface[];
 }
 
 interface LinkListProps {
-    links: Array<LinkInterface>;
+    links: LinkInterface[];
 }
 
-const linkRows: LinkRows = [
+const linkRows: LinkRows[] = [
     {
         heading: 'Products',
         links: [
@@ -85,13 +83,12 @@ export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
   </FooterWrap>
 );
 
-
 const LinkList = (props: LinkListProps) => (
   <ul>
     {_.map(props.links, (link, index) => (
       <li key={`fl-${index}`}>
         <Link href={link.url}>
-          { link.text }
+          {link.text}
         </Link>
       </li>
     ))}
