@@ -30,15 +30,10 @@ import { TransactionFactory } from '../utils/transaction_factory';
 import { ContractName, ERC20BalancesByOwner, SignedTransaction } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
-import { AbiEncoder } from '@0x/utils';
-import { MethodAbi } from 'ethereum-types';
-
-
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
-const MAX_WETH_FILL_PERCENTAGE = 95;
 
 describe.only(ContractName.CompliantForwarder, () => {
     let compliantMakerAddress: string;
@@ -81,9 +76,9 @@ describe.only(ContractName.CompliantForwarder, () => {
     const compliantTakerEntityId = new BigNumber(2);
     let compliantTakerYesTokenId;
 
-    const takerAssetAmount =  Web3Wrapper.toBaseUnitAmount(new BigNumber(500), DECIMALS_DEFAULT);
-    const makerAssetAmount =  Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), DECIMALS_DEFAULT);
-    const takerAssetFillAmount =  Web3Wrapper.toBaseUnitAmount(new BigNumber(250), DECIMALS_DEFAULT);
+    const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(500), DECIMALS_DEFAULT);
+    const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), DECIMALS_DEFAULT);
+    const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(250), DECIMALS_DEFAULT);
     const salt = new BigNumber(0);
 
     let compliantForwarderInstance: CompliantForwarderContract;
@@ -92,7 +87,13 @@ describe.only(ContractName.CompliantForwarder, () => {
         // Create accounts
         await blockchainLifecycle.startAsync();
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, compliantMakerAddress, compliantTakerAddress, feeRecipientAddress, noncompliantAddress] = accounts);
+        const usedAddresses = ([
+            owner,
+            compliantMakerAddress,
+            compliantTakerAddress,
+            feeRecipientAddress,
+            noncompliantAddress,
+        ] = accounts);
         // Create wrappers
         const erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
@@ -107,7 +108,7 @@ describe.only(ContractName.CompliantForwarder, () => {
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
         // Deploy Yes Token
-        const yesTokenInstance =  await YesComplianceTokenContract.deployFrom0xArtifactAsync(
+        const yesTokenInstance = await YesComplianceTokenContract.deployFrom0xArtifactAsync(
             artifacts.YesComplianceToken,
             provider,
             txDefaults,
@@ -169,28 +170,46 @@ describe.only(ContractName.CompliantForwarder, () => {
         /*
         forwarderWrapper = new ForwarderWrapper(compliantForwarderContract, provider);
         */
-       // Initialize Yes Token
-       await yesTokenInstance._upgradeable_initialize.sendTransactionAsync({from: owner});
-       const yesTokenName = "YesToken";
-       const yesTokenTicker = "YEET";
-       await yesTokenInstance.initialize.sendTransactionAsync(yesTokenName, yesTokenTicker, {from: owner});
-       // Verify Maker / Taker
-       const addressesCanControlTheirToken = true;
-       compliantMakerYesTokenId = await yesTokenInstance.mint2.sendTransactionAsync(compliantMakerAddress, compliantMakerEntityId, addressesCanControlTheirToken, compliantMakerCountryCode, [compliantMakerYesMark], {from: owner});
-       compliantTakerYesTokenId = await yesTokenInstance.mint2.sendTransactionAsync(compliantTakerAddress, compliantTakerEntityId, addressesCanControlTheirToken, compliantTakerCountryCode, [compliantTakerYesMark], {from: owner});
+        // Initialize Yes Token
+        await yesTokenInstance._upgradeable_initialize.sendTransactionAsync({ from: owner });
+        const yesTokenName = 'YesToken';
+        const yesTokenTicker = 'YEET';
+        await yesTokenInstance.initialize.sendTransactionAsync(yesTokenName, yesTokenTicker, { from: owner });
+        // Verify Maker / Taker
+        const addressesCanControlTheirToken = true;
+        compliantMakerYesTokenId = await yesTokenInstance.mint2.sendTransactionAsync(
+            compliantMakerAddress,
+            compliantMakerEntityId,
+            addressesCanControlTheirToken,
+            compliantMakerCountryCode,
+            [compliantMakerYesMark],
+            { from: owner },
+        );
+        compliantTakerYesTokenId = await yesTokenInstance.mint2.sendTransactionAsync(
+            compliantTakerAddress,
+            compliantTakerEntityId,
+            addressesCanControlTheirToken,
+            compliantTakerCountryCode,
+            [compliantTakerYesMark],
+            { from: owner },
+        );
         // Create Valid/Invalid orders
         const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(compliantTakerAddress)];
         const takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchangeInstance.address);
         compliantSignedOrder = await orderFactory.newSignedOrderAsync({
             senderAddress: compliantForwarderInstance.address,
         });
-        const compliantSignedOrderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(compliantSignedOrder);
+        const compliantSignedOrderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(
+            compliantSignedOrder,
+        );
         const compliantSignedOrderWithoutExchangeAddressData = exchangeInstance.fillOrder.getABIEncodedTransactionData(
             compliantSignedOrderWithoutExchangeAddress,
             takerAssetFillAmount,
             compliantSignedOrder.signature,
         );
-        compliantSignedFillOrderTx = takerTransactionFactory.newSignedTransaction(compliantSignedOrderWithoutExchangeAddressData);
+        compliantSignedFillOrderTx = takerTransactionFactory.newSignedTransaction(
+            compliantSignedOrderWithoutExchangeAddressData,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -198,25 +217,19 @@ describe.only(ContractName.CompliantForwarder, () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-
     describe.only('fillOrder', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
 
-        // @TODO: Should fail if order's senderAddress is not set to the compliant forwarding contract
-        // @TODO: Should fail if the signed transaction is not intended for fillOrder
-        // @TODO: Should fail if maker is not verified
-        // @TODO: Should fail it taker is not verified
-
         it.only('should transfer the correct amounts when maker and taker are verified', async () => {
-           await compliantForwarderInstance.fillOrder.sendTransactionAsync(
-               compliantSignedFillOrderTx.salt,
-               compliantSignedFillOrderTx.signerAddress,
-               compliantSignedFillOrderTx.data,
-               compliantSignedFillOrderTx.signature
+            await compliantForwarderInstance.fillOrder.sendTransactionAsync(
+                compliantSignedFillOrderTx.salt,
+                compliantSignedFillOrderTx.signerAddress,
+                compliantSignedFillOrderTx.data,
+                compliantSignedFillOrderTx.signature,
             );
-           const newBalances = await erc20Wrapper.getBalancesAsync();
+            const newBalances = await erc20Wrapper.getBalancesAsync();
             const makerAssetFillAmount = takerAssetFillAmount
                 .times(compliantSignedOrder.makerAssetAmount)
                 .dividedToIntegerBy(compliantSignedOrder.takerAssetAmount);
@@ -248,6 +261,10 @@ describe.only(ContractName.CompliantForwarder, () => {
                 erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
             );
         });
+        // @TODO: Should fail if order's senderAddress is not set to the compliant forwarding contract
+        // @TODO: Should fail if the signed transaction is not intended for fillOrder
+        // @TODO: Should fail if maker is not verified
+        // @TODO: Should fail it taker is not verified
     });
 });
 // tslint:disable:max-file-line-count
