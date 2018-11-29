@@ -52,7 +52,7 @@ const COLUMN_WIDTHS: ColumnWidths = {
   '1/4': _getColumnWidth({ columns: 4 }),
   '1/3': _getColumnWidth({ columns: 3 }),
   '1/2': _getColumnWidth({ columns: 2 }),
-  '2/3': _getColumnWidth({ span: 2, columns: 4 }),
+  '2/3': _getColumnWidth({ span: 2, columns: 3 }),
 };
 
 
