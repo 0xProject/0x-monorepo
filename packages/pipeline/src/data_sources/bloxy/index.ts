@@ -35,15 +35,15 @@ export interface BloxyTrade {
     makerFee: number;
     buyCurrencyId: number;
     buySymbol: string;
-    amountSell: string;
+    amountSell: number;
     takerFee: number;
     sellCurrencyId: number;
     sellSymbol: string;
     maker_annotation: string;
     taker_annotation: string;
     protocol: string;
-    buyAddress: string;
-    sellAddress: string;
+    buyAddress: string | null;
+    sellAddress: string | null;
 }
 
 interface BloxyError {
