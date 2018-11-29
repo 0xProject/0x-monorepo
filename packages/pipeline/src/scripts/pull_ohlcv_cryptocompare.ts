@@ -1,14 +1,14 @@
 // tslint:disable:no-console
 import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
 
-import { CryptoCompareOHLCVSource } from '../data_sources/ohlcv_external/crypto_compare';
+import { CryptoCompareOHLCVSource, getBackfillIntervals } from '../data_sources/ohlcv_external/crypto_compare';
 import { OHLCVExternal } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseResponse } from '../parsers/ohlcv_external/crypto_compare';
 import { handleError } from '../utils';
 import { getOHLCVTradingPairs, TradingPair } from '../utils/get_ohlcv_trading_pairs';
 
-const maxConcurrentRequests = 50;
+const maxConcurrentRequests = 2;
 
 let connection: Connection;
 
@@ -18,24 +18,49 @@ let connection: Connection;
     const source = new CryptoCompareOHLCVSource(maxConcurrentRequests);
 
     const tradingPairs = await getOHLCVTradingPairs(connection);
-    console.log(`Starting ${tradingPairs.length} jobs to scrape Crypto Compare for OHLCV records...`);
+    console.log(`Starting ${tradingPairs.length} job(s) to scrape Crypto Compare for OHLCV records...`);
 
     const getAndSavePromises = tradingPairs.map(async pair => {
-      await getAndSaveAsync(source, repository, pair);
+      const pairs = getBackfillIntervals(pair);
+      return getAndSaveWithBackfillAsync(source, repository, pairs);
     });
     await Promise.all(getAndSavePromises);
     console.log(`Finished scraping OHLCV records from Crypto Compare, exiting...`);
     process.exit(0);
 })().catch(handleError);
 
-async function getAndSaveAsync(source: CryptoCompareOHLCVSource, repository: Repository<OHLCVExternal>, pair: TradingPair): Promise<void> {
-    const rawRecords = await source.getAsync(pair);
+async function getAndSaveWithBackfillAsync(source: CryptoCompareOHLCVSource, repository: Repository<OHLCVExternal>, pairs: TradingPair[]): Promise<void> {
+  const sortAscTimestamp = (a: TradingPair, b: TradingPair): number => {
+    if (a.latest < b.latest) {
+      return -1;
+    } else if (a.latest > b.latest) {
+      return 1;
+    } else {
+      return 0;
+    }
+  };
+  pairs.sort(sortAscTimestamp);
 
-    if (!rawRecords.length) {
+  let i = 0;
+  let shouldContinue = true;
+  while (i < pairs.length && shouldContinue) {
+    const p = pairs[i];
+    const rawRecords = await source.getAsync(p);
+    if (rawRecords.length < 2) {
+      console.log(`No new records for ${p}, stopping`);
+      shouldContinue = false;
       return;
     }
-    const parsedRecords = parseResponse(rawRecords, pair, new Date().getTime());
-    await saveRecordsAsync(repository, parsedRecords);
+    const parsedRecords = parseResponse(rawRecords, p, new Date().getTime());
+    try {
+      await saveRecordsAsync(repository, parsedRecords);
+      i++;
+    } catch (e) {
+      console.log(`Error saving OHLCVRecords, stopping task for ${JSON.stringify(p)} [${e}]`);
+      shouldContinue = false;
+    }
+  }
+  return Promise.resolve();
 }
 
 async function saveRecordsAsync(repository: Repository<OHLCVExternal>, records: OHLCVExternal[]): Promise<void> {

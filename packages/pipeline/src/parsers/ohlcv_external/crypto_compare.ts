@@ -9,10 +9,11 @@ const oneSecond = 1000; // Crypto Compare uses timestamps in seconds instead of 
  * @param rawRecords an array of OHLCV records from Crypto Compare (not the full response)
  */
 export function parseResponse(rawRecords: CryptoCompareOHLCVRecord[], pair: TradingPair, scraped: number): OHLCVExternal[] {
-  const intervalInSeconds = Math.abs(rawRecords[0].time - rawRecords[1].time);
-  return rawRecords
-    .filter(rec => !!rec.exchange)
-    .map(rec => {
+  if (rawRecords.length > 1) {
+    const intervalInSeconds = Math.abs(rawRecords[0].time - rawRecords[1].time);
+    return rawRecords
+      .filter(rec => !!rec.exchange)
+      .map(rec => {
       if (!rec.exchange) {
         throw new Error(`OHLCV record is missing exchange field`); // should never reach this line
       }
@@ -35,4 +36,7 @@ export function parseResponse(rawRecords: CryptoCompareOHLCVRecord[], pair: Trad
       ohlcvRecord.observedTimestamp = scraped;
       return ohlcvRecord;
     });
+  } else {
+    return [];
+  }
 }
