@@ -1,6 +1,6 @@
 {
     "domain": "0x-instant-staging",
-    "build_command": "WEBPACK_OUTPUT_PATH=public yarn build:prod --env.staging",
+    "build_command": "WEBPACK_OUTPUT_PATH=public yarn build:prod:prod --env.staging",
     "upload_directory": "public",
     "index_key": "index.html",
     "error_key": "index.html",

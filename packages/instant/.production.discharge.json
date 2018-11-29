@@ -1,6 +1,6 @@
 {
     "domain": "instant.0xproject.com",
-    "build_command": "yarn build --env.production_cdn",
+    "build_command": "yarn build:prod --env.production_cdn",
     "upload_directory": "umd",
     "index_key": "instant.js",
     "error_key": "404.html",
