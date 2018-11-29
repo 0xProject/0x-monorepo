@@ -3,12 +3,10 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-
 interface ButtonInterface {
-    text: string;
     transparent?: boolean;
     inline?: boolean;
-    href?: string,
+    href?: string;
     onClick?: () => void;
 }
 
@@ -16,13 +14,15 @@ const StyledButton = styled.button<ButtonInterface>`
     appearance: none;
     border: 0;
     background-color: ${colors.brandLight};
+    border: 1px solid ${colors.brandLight};
     color: ${colors.white};
     text-align: center;
     padding: 13px 22px 14px;
+    text-decoration: none;
 
     ${props => props.transparent && `
         background-color: transparent;
-        border: 1px solid #6A6A6A;
+        border-color: #6A6A6A;
     `}
 
     ${props => props.inline && `
@@ -33,14 +33,6 @@ const StyledButton = styled.button<ButtonInterface>`
     `}
 `;
 
-const Text = styled.span`
-    font-size: 1rem;
-    font-weight: 500;
-    line-height: 1.375rem;
-`;
-
-
-
 // A button that may exist as a button or a link
 // a button only makes sense with an onClick handler
 // a link with an href so we base the type of component we return
@@ -50,16 +42,12 @@ export const Button: React.StatelessComponent<ButtonInterface> = props => {
   const { onClick, href } = props;
   const Component = onClick ? StyledButton : StyledButton.withComponent('a');
 
-  return <Component {...props}>{ props.children || 'Text' }</Component>;
+  return <Component {...props}>{props.children}</Component>;
 };
-
 
 // usage
 // <Button href="#">Text</Button> ===> <a href="">Text</a>
 // <Button onClick={() => func}>I'm a button</Button> ====> <button></button>
-
-
-
 
 // export const Button: React.StatelessComponent<ButtonInterface> = ({ ...props }) => (
 //     <StyledButton {...props}>
@@ -71,9 +59,7 @@ export const Button: React.StatelessComponent<ButtonInterface> = props => {
 // so we have the logic with the Link/button--- and props = styling. in this case:
 // background-color: ${props => !props.transparent && 'somecolor'}..
 export const ButtonTransparent: React.StatelessComponent<ButtonInterface> = ({ ...props }) => (
-    <StyledButton transparent={true} {...props}>
-        <Text>{props.text}</Text>
-    </Button>
+    <Button transparent={true} {...props}>{props.children}</Button>
 );
 
 Button.defaultProps = {
