@@ -8,7 +8,7 @@
     "main": "umd/instant.js",
     "private": true,
     "scripts": {
-        "build": "webpack --mode production",
+        "build": "webpack --mode production --env.production_standalone",
         "build:ci": "yarn build",
         "watch_without_deps": "tsc -w",
         "dev": "webpack-dev-server --mode development",
@@ -25,10 +25,7 @@
     },
     "config": {
         "postpublish": {
-            "assets": [
-                "packages/instant/umd/instant.js",
-                "packages/instant/umd/instant.js.map"
-            ]
+            "assets": ["packages/instant/umd/instant.js", "packages/instant/umd/instant.js.map"]
         }
     },
     "repository": {
