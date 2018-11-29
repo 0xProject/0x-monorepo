@@ -2,6 +2,7 @@ import { colors, constants as sharedConstants, utils as sharedUtils } from '@0x/
 import * as _ from 'lodash';
 import * as React from 'react';
 import DocumentTitle from 'react-document-title';
+import { Helmet } from 'react-helmet';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
 import { DocsTopBar } from 'ts/components/documentation/docs_top_bar';
 import { Container } from 'ts/components/ui/container';
@@ -146,6 +147,9 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                 } 50%, ${colors.white} 100%)`}
             >
                 <DocumentTitle title="0x Docs" />
+                <Helmet>
+                    <link rel="stylesheet" href="/css/github-gist.css" />
+                </Helmet>
                 <Container className="flex mx-auto" height="100vh">
                     <Container
                         className="sm-hide xs-hide relative"
