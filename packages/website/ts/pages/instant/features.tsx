@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { Container } from 'ts/components/ui/container';
+import { ActionLink, ActionLinkProps } from 'ts/pages/instant/action_link';
 import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
@@ -61,17 +62,11 @@ export const Features = (props: FeatureProps) => {
     );
 };
 
-interface LinkInfo {
-    displayText: string;
-    linkSrc?: string;
-    onClick?: () => void;
-}
-
 interface FeatureItemProps {
     imgSrc: string;
     title: string;
     description: string;
-    linkInfos: LinkInfo[];
+    linkInfos: ActionLinkProps[];
     screenWidth: ScreenWidths;
 }
 
@@ -95,36 +90,7 @@ const FeatureItem = (props: FeatureItemProps) => {
                 </Text>
             </Container>
             <Container className="flex" marginTop="28px">
-                {_.map(linkInfos, linkInfo => {
-                    const onClick = (event: React.MouseEvent<HTMLElement>) => {
-                        if (!_.isUndefined(linkInfo.onClick)) {
-                            linkInfo.onClick();
-                        } else if (!_.isUndefined(linkInfo.linkSrc)) {
-                            utils.openUrl(linkInfo.linkSrc);
-                        }
-                    };
-                    return (
-                        <Container
-                            key={linkInfo.linkSrc}
-                            className="flex items-center"
-                            marginRight="32px"
-                            onClick={onClick}
-                            cursor="pointer"
-                        >
-                            <Container>
-                                <Text fontSize="16px" fontColor={colors.white}>
-                                    {linkInfo.displayText}
-                                </Text>
-                            </Container>
-                            <Container paddingTop="1px" paddingLeft="6px">
-                                <i
-                                    className="zmdi zmdi-chevron-right bold"
-                                    style={{ fontSize: 16, color: colors.white }}
-                                />
-                            </Container>
-                        </Container>
-                    );
-                })}
+                {_.map(linkInfos, linkInfo => <ActionLink key={linkInfo.displayText} {...linkInfo} />)}
             </Container>
         </Container>
     );
