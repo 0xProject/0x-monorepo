@@ -3,16 +3,13 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors'
 import { Button, ButtonTransparent } from 'ts/@next/components/button';
-import { Column, Section, Wrap } from 'ts/@next/components/layout';
+import { Column, Section, Wrap, WrapCentered } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
-<<<<<<< Updated upstream
 import { Heading, Intro, Text } from 'ts/@next/components/text';
 
 import logoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 import protocol from 'ts/@next/icons/illustrations/protocol.svg';
-=======
-import { Section, Wrap } from 'ts/@next/components/layout';
->>>>>>> Stashed changes
+
 
 const Icon = styled.div`
     flex-shrink: 0;
@@ -37,10 +34,12 @@ export const NextLanding = () => (
       </Wrap>
     </Section>
 
-    <Section bgColor={colors.backgroundDark} noPadding>
-      <Icon as={protocol as 'svg'} />
-      <Text size="medium">0x is the best solution for adding exchange functionality to your business.</Text>
-      <Text size="medium">Discover how developers use 0x (need arrow + line under)</Text>
+    <Section bgColor={colors.backgroundDark}>
+      <WrapCentered>
+        <Icon as={protocol as 'svg'} />
+        <Text size="medium">0x is the best solution for adding exchange functionality to your business.</Text>
+        <Text size="medium">Discover how developers use 0x (need arrow + line under)</Text>
+      </WrapCentered>
     </Section>
 
     <Section>

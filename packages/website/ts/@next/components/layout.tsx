@@ -83,15 +83,24 @@ export const Section = styled.section<SectionProps>`
   }
 `;
 
-export const Wrap = styled.div<WrapProps>`
+const WrapBase = styled.div<WrapProps>`
   max-width: ${props => WRAPPER_WIDTHS[props.width || 'default']};
   background-color: ${props => props.bgColor};
   margin: 0 auto;
+`;
 
+export const Wrap = styled(WrapBase)`
   @media (min-width: ${BREAKPOINTS.mobile}) {
     display: flex;
     justify-content: space-between;
   }
+`;
+
+export const WrapCentered = styled(WrapBase)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const Column = styled.div<ColumnProps>`
