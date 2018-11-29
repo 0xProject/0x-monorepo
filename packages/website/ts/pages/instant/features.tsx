@@ -2,9 +2,9 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { Container } from 'ts/components/ui/container';
-import { ActionLink, ActionLinkProps } from 'ts/pages/instant/action_link';
 import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
+import { ActionLink, ActionLinkProps } from 'ts/pages/instant/action_link';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths } from 'ts/types';
 import { utils } from 'ts/utils/utils';

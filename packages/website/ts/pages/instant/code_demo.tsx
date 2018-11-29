@@ -1,10 +1,7 @@
 import * as React from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { atelierCaveDark } from 'react-syntax-highlighter/styles/hljs';
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
-
-import { Container } from 'ts/components/ui/container';
 
 const CustomPre = styled.pre`
     margin: 0px;
