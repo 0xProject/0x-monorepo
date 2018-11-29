@@ -9,9 +9,8 @@ export interface ConfiguratorProps {
 }
 
 export const Configurator = (props: ConfiguratorProps) => (
-    <Container id={props.hash} height="400px" backgroundColor={colors.instantTertiaryBackground}>
-        <Container width="50%">
-            <CodeDemo />
-        </Container>
+    <Container className="flex" id={props.hash} height="400px" backgroundColor={colors.instantTertiaryBackground}>
+        <Container> Forms </Container>
+        <CodeDemo />
     </Container>
 );
