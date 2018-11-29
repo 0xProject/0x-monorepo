@@ -9,6 +9,10 @@ import { Container } from 'ts/components/ui/container';
 const CustomPre = styled.pre`
     margin: 0px;
     line-height: 24px;
+    overflow: hidden;
+    width: 600px;
+    height: 500px;
+    border-radius: 4px;
     code {
         background-color: inherit !important;
         border-radius: 0px;
@@ -22,7 +26,7 @@ const CustomPre = styled.pre`
         text-align: center;
         padding-right: 5px !important;
         padding-left: 5px;
-        margin-right: 5px;
+        margin-right: 15px;
         line-height: 25px;
         padding-top: 10px;
     }
