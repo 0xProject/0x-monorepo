@@ -3,13 +3,14 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-interface Props {
+
+interface ButtonInterface {
     text: string;
     transparent?: boolean;
     inline?: boolean;
 }
 
-const StyledButton = styled.button<Props>`
+const StyledButton = styled.button<ButtonInterface>`
     appearance: none;
     border: 0;
     background-color: ${colors.brandLight};
@@ -36,14 +37,40 @@ const Text = styled.span`
     line-height: 1.375rem;
 `;
 
-export const Button: React.StatelessComponent<Props> = ({ ...props }) => (
+
+
+// A button that may exist as a button or a link
+// a button only makes sense with an onClick handler
+// a link with an href so we base the type of component we return
+// based on those props
+
+export const Button: React.StatelessComponent<ButtonInterface> = props => {
+  const { onClick, href } = props;
+
+  // This button is as link
+  if (props.href) return StyledButton.withComponent('a');
+  else return StyledButton;
+};
+
+
+// usage
+// <Button href="#">Text</Button> ===> <a href="">Text</a>
+// <Button onClick={() => func}>I'm a button</Button> ====> <button></button>
+
+
+
+
+export const Button: React.StatelessComponent<ButtonInterface> = ({ ...props }) => (
     <StyledButton {...props}>
         <Text>{props.text}</Text>
     </StyledButton>
 );
 
-export const ButtonTransparent: React.StatelessComponent<Props> = ({ ...props }) => (
-    <Button transparent={true} {...props}>
+// also feel like a transparent prop would suffice instead of having a separate button
+// so we have the logic with the Link/button--- and props = styling. in this case:
+// background-color: ${props => !props.transparent && 'somecolor'}
+export const ButtonTransparent: React.StatelessComponent<ButtonInterface> = ({ ...props }) => (
+    <StyledButton transparent={true} {...props}>
         <Text>{props.text}</Text>
     </Button>
 );
