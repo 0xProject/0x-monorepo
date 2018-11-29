@@ -1,10 +1,35 @@
 import * as React from 'react';
-import { SiteWrap } from 'ts/@next/components/siteWrap';
-import { Section, Wrap, Column } from 'ts/@next/components/layout';
+import styled from 'styled-components'
 
+import { Button } from 'ts/@next/components/button';
+import { Column, Section, Wrap } from 'ts/@next/components/layout';
+import { SiteWrap } from 'ts/@next/components/siteWrap';
+import { Heading, Intro } from 'ts/@next/components/text';
+
+import logoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
+
+const Icon = styled.div`
+    flex-shrink: 0;
+`;
 
 export const NextLanding = () => (
   <SiteWrap>
+    <Section>
+      <Wrap>
+        <Column colWidth="2/3">
+          <Heading>Powering Decentralized Exchange</Heading>
+          <Intro>0x is the best solution for adding exchange functionality to your business.</Intro>
+          <Icon>
+            <Button text="Get Started" />
+            <Button text="Learn More" transparent />
+          </Icon>
+        </Column>
+
+        <Column colWidth="1/3">
+          <Icon as={logoOutlined as 'svg'} />
+        </Column>
+      </Wrap>
+    </Section>
     <Section>
       <Wrap>
         <Column colWidth="2/3">
