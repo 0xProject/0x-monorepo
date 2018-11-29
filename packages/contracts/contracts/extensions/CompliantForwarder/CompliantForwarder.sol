@@ -51,6 +51,7 @@ contract CompliantForwarder {
         if (selector != EXCHANGE_FILL_ORDER_SELECTOR) {
             revert("EXCHANGE_TRANSACTION_NOT_FILL_ORDER");
         }
+    
 
         // Extract maker address from fill order transaction
         // Below is the table of calldata offsets into a fillOrder transaction.

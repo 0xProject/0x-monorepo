@@ -147,7 +147,7 @@ describe.only(ContractName.Forwarder, () => {
         const defaultTakerAssetAddress = wethContract.address;
         const defaultOrderParams = {
             exchangeAddress: exchangeInstance.address,
-            compliantMakerAddress,
+            makerAddress: compliantMakerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
@@ -174,10 +174,15 @@ describe.only(ContractName.Forwarder, () => {
         /*
         forwarderWrapper = new ForwarderWrapper(compliantForwarderContract, provider);
         */
+       // Initialize Yes Token
+       await yesTokenInstance._upgradeable_initialize.sendTransactionAsync({from: owner});
+       const yesTokenName = "YesToken";
+       const yesTokenTicker = "YEET";
+       await yesTokenInstance.initialize.sendTransactionAsync(yesTokenName, yesTokenTicker, {from: owner});
        // Verify Maker / Taker
        const addressesCanControlTheirToken = true;
-       compliantMakerYesTokenId = await yesTokenInstance.mint2.sendTransactionAsync(compliantMakerAddress, compliantMakerEntityId, addressesCanControlTheirToken, compliantMakerCountryCode, [compliantMakerYesMark]);
-       compliantTakerYesTokenId = await yesTokenInstance.mint2.sendTransactionAsync(compliantTakerAddress, compliantTakerEntityId, addressesCanControlTheirToken, compliantTakerCountryCode, [compliantTakerYesMark]);
+       compliantMakerYesTokenId = await yesTokenInstance.mint2.sendTransactionAsync(compliantMakerAddress, compliantMakerEntityId, addressesCanControlTheirToken, compliantMakerCountryCode, [compliantMakerYesMark], {from: owner});
+       compliantTakerYesTokenId = await yesTokenInstance.mint2.sendTransactionAsync(compliantTakerAddress, compliantTakerEntityId, addressesCanControlTheirToken, compliantTakerCountryCode, [compliantTakerYesMark], {from: owner});
         // Create Valid/Invalid orders
         const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(compliantTakerAddress)];
         const takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchangeInstance.address);
@@ -200,13 +205,14 @@ describe.only(ContractName.Forwarder, () => {
     });
 
     describe.only('fillOrder', () => {
-        let takerAssetFillAmount: BigNumber;
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
 
         // @TODO: Should fail if order's senderAddress is not set to the compliant forwarding contract
-        // @TODO: Should fail if the 
+        // @TODO: Should fail if the signed transaction is not intended for fillOrder
+        // @TODO: Should fail if maker is not verified
+        // @TODO: Should fail it taker is not verified
 
         it.only('should transfer the correct amounts when maker and taker are verified', async () => {
             await compliantForwarderInstance.fillOrder.sendTransactionAsync(compliantSignedFillOrderTx.salt, compliantSignedFillOrderTx.signerAddress, compliantSignedFillOrderTx.data, compliantSignedFillOrderTx.signature);
