@@ -12,8 +12,6 @@ import protocol from 'ts/@next/icons/illustrations/protocol.svg';
 
 const Icon = styled.div`
     flex-shrink: 0;
-
-    ${props => props.center && `text-align: center`}
 `;
 
 export const NextLanding = () => (
@@ -37,8 +35,8 @@ export const NextLanding = () => (
 
     <Section bgColor={colors.backgroundDark} noPadding>
       <Icon as={protocol as 'svg'} />
-      <Text size="medium" center={true}>0x is the best solution for adding exchange functionality to your business.</Text>
-      <Text size="medium" center={true}>Discover how developers use 0x (need arrow + line under)</Text>
+      <Text size="medium">0x is the best solution for adding exchange functionality to your business.</Text>
+      <Text size="medium">Discover how developers use 0x (need arrow + line under)</Text>
     </Section>
 
     <Section>
