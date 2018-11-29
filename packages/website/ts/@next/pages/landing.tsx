@@ -5,10 +5,14 @@ import { colors } from 'ts/style/colors'
 import { Button, ButtonTransparent } from 'ts/@next/components/button';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
+<<<<<<< Updated upstream
 import { Heading, Intro, Text } from 'ts/@next/components/text';
 
 import logoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 import protocol from 'ts/@next/icons/illustrations/protocol.svg';
+=======
+import { Section, Wrap } from 'ts/@next/components/layout';
+>>>>>>> Stashed changes
 
 const Icon = styled.div`
     flex-shrink: 0;

@@ -70,10 +70,10 @@ export const Main = styled.main`
 `;
 
 export const Section = styled.section<SectionProps>`
-  width: ${props => props.fullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
+  width: ${props => props.fullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100vw'};
   padding: ${props => !props.noPadding && '30px'};
   margin-bottom: ${props => !props.noMargin && `${GUTTER}px`};
-  margin-left: ${props => props.fullWidth && `-${GUTTER}px`};
+  margin-left: ${props => props.fullWidth && `calc(750px - 50vw)`};
   background-color: ${props => props.bgColor};
   border: 1px dotted rgba(0, 255, 0, 0.3);
 `;
