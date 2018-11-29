@@ -9,7 +9,7 @@ interface ButtonInterface {
     transparent?: boolean;
     inline?: boolean;
     href?: string,
-    onClick?: Function,
+    onClick?: () => void;
 }
 
 const StyledButton = styled.button<ButtonInterface>`
