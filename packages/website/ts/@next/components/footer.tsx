@@ -46,9 +46,11 @@ const linkRows = [
 ];
 
 export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
-  <FooterWrap>
+  <FooterWrap
+    bgColor="#181818"
+    noMargin>
     <Wrap>
-      <Column colWidth="1/2">
+      <Column colWidth="1/2" noPadding>
         <Logo />
       </Column>
 

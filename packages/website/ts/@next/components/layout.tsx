@@ -15,6 +15,7 @@ interface ColumnWidths {
 
 interface SectionProps {
   noPadding?: any,
+  noMargin?: any,
   bgColor?: string,
 }
 
@@ -58,7 +59,7 @@ const COLUMN_WIDTHS: ColumnWidths = {
 
 
 export const Main = styled.main`
-  border: 1px solid blue;
+  border: 1px dotted rgba(0, 0, 255, 0.3);
   width: calc(100% - 60px);
   max-width: ${MAX_WIDTH}px;
   margin: 0 auto;
@@ -67,16 +68,15 @@ export const Main = styled.main`
 export const Section = styled.section<SectionProps>`
   width: 100%;
   padding: ${props => !props.noPadding && '30px'};
-  margin-bottom: 30px;
+  margin-bottom: ${props => !props.noMargin && '30px'};
   background-color: ${props => props.bgColor};
-  border: 1px solid blue;
+  border: 1px dotted rgba(0, 255, 0, 0.3);
 `;
 
 export const Wrap = styled.div<WrapProps>`
   max-width: ${props => WRAPPER_WIDTHS[props.width || 'default']};
   background-color: ${props => props.bgColor};
   margin: 0 auto;
-  border: 1px solid green;
   display: flex;
   justify-content: space-between;
 `;
@@ -84,5 +84,5 @@ export const Wrap = styled.div<WrapProps>`
 export const Column = styled.div<ColumnProps>`
   width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};
   padding: ${props => !props.noPadding && '30px'};
-  border: 1px solid yellow;
+  border: 1px dotted rgba(255, 0, 0, 0.3);
 `;
