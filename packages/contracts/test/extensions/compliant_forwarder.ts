@@ -30,19 +30,24 @@ import { TransactionFactory } from '../utils/transaction_factory';
 import { ContractName, ERC20BalancesByOwner, SignedTransaction } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
+import { AbiEncoder } from '@0x/utils';
+import { MethodAbi } from 'ethereum-types';
+
+
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 const MAX_WETH_FILL_PERCENTAGE = 95;
 
-describe.only(ContractName.Forwarder, () => {
+describe.only(ContractName.CompliantForwarder, () => {
     let compliantMakerAddress: string;
     let owner: string;
     let compliantTakerAddress: string;
     let feeRecipientAddress: string;
     let noncompliantAddress: string;
     let defaultMakerAssetAddress: string;
+    let defaultTakerAssetAddress: string;
     let zrxAssetData: string;
     let wethAssetData: string;
 
@@ -52,19 +57,11 @@ describe.only(ContractName.Forwarder, () => {
     let yesComplianceToken: YesComplianceTokenContract;
     let compliantForwarderContract: CompliantForwarderContract;
     let wethContract: WETH9Contract;
-    let forwarderWrapper: ForwarderWrapper;
     let exchangeWrapper: ExchangeWrapper;
 
-    let orderWithoutFee: SignedOrder;
-    let orderWithFee: SignedOrder;
-    let feeOrder: SignedOrder;
     let orderFactory: OrderFactory;
     let erc20Wrapper: ERC20Wrapper;
     let erc20Balances: ERC20BalancesByOwner;
-    let tx: TransactionReceiptWithDecodedLogs;
-
-    let makerAssetAddress: string;
-    let takerAssetAddress: string;
 
     let erc721MakerAssetIds: BigNumber[];
     let takerEthBalanceBefore: BigNumber;
@@ -107,8 +104,8 @@ describe.only(ContractName.Forwarder, () => {
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
-        makerAssetAddress = erc20TokenA.address;
-        takerAssetAddress = erc20TokenB.address;
+        defaultMakerAssetAddress = erc20TokenA.address;
+        defaultTakerAssetAddress = erc20TokenB.address;
         // Deploy Yes Token
         const yesTokenInstance =  await YesComplianceTokenContract.deployFrom0xArtifactAsync(
             artifacts.YesComplianceToken,
@@ -143,18 +140,16 @@ describe.only(ContractName.Forwarder, () => {
             from: owner,
         });
         // Default order parameters
-        defaultMakerAssetAddress = erc20TokenA.address;
-        const defaultTakerAssetAddress = wethContract.address;
         const defaultOrderParams = {
             exchangeAddress: exchangeInstance.address,
             makerAddress: compliantMakerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
-            makerAssetAmount: makerAssetAmount,
-            takerAssetAmount: takerAssetAmount,
-            makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
-            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            makerAssetAmount,
+            takerAssetAmount,
+            makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), DECIMALS_DEFAULT),
+            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(150), DECIMALS_DEFAULT),
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(compliantMakerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -187,7 +182,7 @@ describe.only(ContractName.Forwarder, () => {
         const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(compliantTakerAddress)];
         const takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchangeInstance.address);
         compliantSignedOrder = await orderFactory.newSignedOrderAsync({
-            senderAddress: compliantForwarderContract.address,
+            senderAddress: compliantForwarderInstance.address,
         });
         const compliantSignedOrderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(compliantSignedOrder);
         const compliantSignedOrderWithoutExchangeAddressData = exchangeInstance.fillOrder.getABIEncodedTransactionData(
@@ -215,8 +210,13 @@ describe.only(ContractName.Forwarder, () => {
         // @TODO: Should fail it taker is not verified
 
         it.only('should transfer the correct amounts when maker and taker are verified', async () => {
-            await compliantForwarderInstance.fillOrder.sendTransactionAsync(compliantSignedFillOrderTx.salt, compliantSignedFillOrderTx.signerAddress, compliantSignedFillOrderTx.data, compliantSignedFillOrderTx.signature);
-            const newBalances = await erc20Wrapper.getBalancesAsync();
+           await compliantForwarderInstance.fillOrder.sendTransactionAsync(
+               compliantSignedFillOrderTx.salt,
+               compliantSignedFillOrderTx.signerAddress,
+               compliantSignedFillOrderTx.data,
+               compliantSignedFillOrderTx.signature
+            );
+           const newBalances = await erc20Wrapper.getBalancesAsync();
             const makerAssetFillAmount = takerAssetFillAmount
                 .times(compliantSignedOrder.makerAssetAmount)
                 .dividedToIntegerBy(compliantSignedOrder.takerAssetAmount);
@@ -226,20 +226,20 @@ describe.only(ContractName.Forwarder, () => {
             const takerFeePaid = compliantSignedOrder.takerFee
                 .times(makerAssetFillAmount)
                 .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
-            expect(newBalances[compliantMakerAddress][makerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[compliantMakerAddress][makerAssetAddress].minus(makerAssetFillAmount),
+            expect(newBalances[compliantMakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
-            expect(newBalances[compliantMakerAddress][takerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[compliantMakerAddress][takerAssetAddress].add(takerAssetFillAmount),
+            expect(newBalances[compliantMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
             );
             expect(newBalances[compliantMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[compliantMakerAddress][zrxToken.address].minus(makerFeePaid),
             );
-            expect(newBalances[compliantTakerAddress][takerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[compliantTakerAddress][takerAssetAddress].minus(takerAssetFillAmount),
+            expect(newBalances[compliantTakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
             );
-            expect(newBalances[compliantTakerAddress][makerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[compliantTakerAddress][makerAssetAddress].add(makerAssetFillAmount),
+            expect(newBalances[compliantTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
             );
             expect(newBalances[compliantTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[compliantTakerAddress][zrxToken.address].minus(takerFeePaid),
