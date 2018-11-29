@@ -4,6 +4,7 @@ import { RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
+import * as ethUtil from 'ethereumjs-util';
 
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
@@ -12,9 +13,8 @@ import { YesComplianceTokenContract } from '../../generated-wrappers/yes_complia
 
 import { artifacts } from '../../src/artifacts';
 import {
-    expectContractCreationFailedAsync,
     expectTransactionFailedAsync,
-    sendTransactionResult,
+    expectTransactionFailedWithoutReasonAsync,
 } from '../utils/assertions';
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
@@ -36,17 +36,19 @@ describe.only(ContractName.CompliantForwarder, () => {
     let owner: string;
     let compliantTakerAddress: string;
     let feeRecipientAddress: string;
-    let noncompliantAddress: string;
+    let nonCompliantAddress: string;
     let defaultMakerAssetAddress: string;
     let defaultTakerAssetAddress: string;
     let zrxAssetData: string;
     let zrxToken: DummyERC20TokenContract;
+    let exchangeInstance: ExchangeContract;
     let exchangeWrapper: ExchangeWrapper;
 
     let orderFactory: OrderFactory;
     let erc20Wrapper: ERC20Wrapper;
     let erc20Balances: ERC20BalancesByOwner;
 
+    let takerTransactionFactory: TransactionFactory;
     let compliantSignedOrder: SignedOrder;
     let compliantSignedFillOrderTx: SignedTransaction;
     let noncompliantSignedFillOrderTx: SignedTransaction;
@@ -66,7 +68,7 @@ describe.only(ContractName.CompliantForwarder, () => {
             compliantMakerAddress,
             compliantTakerAddress,
             feeRecipientAddress,
-            noncompliantAddress,
+            nonCompliantAddress,
         ] = accounts);
         // Create wrappers
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
@@ -91,7 +93,7 @@ describe.only(ContractName.CompliantForwarder, () => {
         const erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // Deploy Exchange congtract
-        const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
+        exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
             txDefaults,
@@ -164,7 +166,7 @@ describe.only(ContractName.CompliantForwarder, () => {
         );
         // Create Valid/Invalid orders
         const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(compliantTakerAddress)];
-        const takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchangeInstance.address);
+        takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchangeInstance.address);
         compliantSignedOrder = await orderFactory.newSignedOrderAsync({
             senderAddress: compliantForwarderInstance.address,
         });
@@ -190,8 +192,7 @@ describe.only(ContractName.CompliantForwarder, () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
-
-        it.only('should transfer the correct amounts when maker and taker are verified', async () => {
+        it('should transfer the correct amounts when maker and taker are compliant', async () => {
             await compliantForwarderInstance.fillOrder.sendTransactionAsync(
                 compliantSignedFillOrderTx.salt,
                 compliantSignedFillOrderTx.signerAddress,
@@ -230,8 +231,76 @@ describe.only(ContractName.CompliantForwarder, () => {
                 erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
             );
         });
-        // @TODO: Should fail if order's senderAddress is not set to the compliant forwarding contract
-        // @TODO: Should fail if the signed transaction is not intended for fillOrder
+        it('should revert if the signed transaction is not intended for fillOrder', async () => {
+            // Create signed order without the fillOrder function selector
+            const txDataBuf = ethUtil.toBuffer(compliantSignedFillOrderTx.data);
+            const selectorLengthInBytes = 4;
+            const txDataBufMinusSelector = txDataBuf.slice(selectorLengthInBytes);
+            const badSelector = '0x00000000';
+            const badSelectorBuf = ethUtil.toBuffer(badSelector);
+            const txDataBufWithBadSelector = Buffer.concat([badSelectorBuf, txDataBufMinusSelector]);
+            const txDataBufWithBadSelectorHex = ethUtil.bufferToHex(txDataBufWithBadSelector);
+            // Call compliant forwarder
+            return expectTransactionFailedWithoutReasonAsync(compliantForwarderInstance.fillOrder.sendTransactionAsync(
+                compliantSignedFillOrderTx.salt,
+                compliantSignedFillOrderTx.signerAddress,
+                txDataBufWithBadSelectorHex,
+                compliantSignedFillOrderTx.signature,
+            ));
+        });
+        it('should revert if senderAddress is not set to the compliant forwarding contract', async () => {
+            // Create signed order with incorrect senderAddress
+            const notCompliantForwarderAddress = zrxToken.address;
+            const signedOrderWithBadSenderAddress = await orderFactory.newSignedOrderAsync({
+                senderAddress: notCompliantForwarderAddress,
+            });
+            const signedOrderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(
+                signedOrderWithBadSenderAddress,
+            );
+            const signedOrderWithoutExchangeAddressData = exchangeInstance.fillOrder.getABIEncodedTransactionData(
+                signedOrderWithoutExchangeAddress,
+                takerAssetFillAmount,
+                compliantSignedOrder.signature,
+            );
+            const signedFillOrderTx = takerTransactionFactory.newSignedTransaction(
+                signedOrderWithoutExchangeAddressData,
+            );
+            // Call compliant forwarder
+            return expectTransactionFailedWithoutReasonAsync(compliantForwarderInstance.fillOrder.sendTransactionAsync(
+                signedFillOrderTx.salt,
+                signedFillOrderTx.signerAddress,
+                signedFillOrderTx.data,
+                signedFillOrderTx.signature,
+            ));
+        });
+        it('should revert if maker address is not compliant (does not hold a Yes Token)', async () => {
+            // Create signed order with non-compliant maker address
+            const signedOrderWithBadSenderAddress = await orderFactory.newSignedOrderAsync({
+                senderAddress: compliantForwarderInstance.address,
+                makerAddress: nonCompliantAddress
+            });
+            const signedOrderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(
+                signedOrderWithBadSenderAddress,
+            );
+            const signedOrderWithoutExchangeAddressData = exchangeInstance.fillOrder.getABIEncodedTransactionData(
+                signedOrderWithoutExchangeAddress,
+                takerAssetFillAmount,
+                compliantSignedOrder.signature,
+            );
+            const signedFillOrderTx = takerTransactionFactory.newSignedTransaction(
+                signedOrderWithoutExchangeAddressData,
+            );
+            // Call compliant forwarder
+            return expectTransactionFailedAsync(
+                compliantForwarderInstance.fillOrder.sendTransactionAsync(
+                    signedFillOrderTx.salt,
+                    signedFillOrderTx.signerAddress,
+                    signedFillOrderTx.data,
+                    signedFillOrderTx.signature,
+                ),
+                RevertReason.MakerUnverified
+            );
+        });
         // @TODO: Should fail if maker is not verified
         // @TODO: Should fail it taker is not verified
     });

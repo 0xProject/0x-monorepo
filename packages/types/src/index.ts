@@ -243,6 +243,8 @@ export enum RevertReason {
     AuctionNotStarted = 'AUCTION_NOT_STARTED',
     AuctionInvalidBeginTime = 'INVALID_BEGIN_TIME',
     InvalidAssetData = 'INVALID_ASSET_DATA',
+    MakerUnverified = 'MAKER_UNVERIFED',
+    TakerUnverified = 'TAKER_UNVERIFIED',
 }
 
 export enum StatusCodes {
