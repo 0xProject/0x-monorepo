@@ -70,7 +70,7 @@ export const Main = styled.main`
 `;
 
 export const Section = styled.section<SectionProps>`
-  width: ${props => props.fullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100vw'};
+  width: ${props => props.fullWidth ? `100vw` : '100%'};
   padding: ${props => !props.noPadding && '30px'};
   margin-bottom: ${props => !props.noMargin && `${GUTTER}px`};
   margin-left: ${props => props.fullWidth && `calc(750px - 50vw)`};
