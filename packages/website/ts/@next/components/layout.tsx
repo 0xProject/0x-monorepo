@@ -25,6 +25,7 @@ interface WrapProps {
 
 interface ColumnProps {
   colWidth?: '1/4' | '1/3' | '1/2' | '2/3',
+  noPadding?: any,
 }
 
 interface GetColWidthArgs {
@@ -82,6 +83,6 @@ export const Wrap = styled.div<WrapProps>`
 
 export const Column = styled.div<ColumnProps>`
   width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};
-  padding: 30px;
+  padding: ${props => !props.noPadding && '30px'};
   border: 1px solid yellow;
 `;
