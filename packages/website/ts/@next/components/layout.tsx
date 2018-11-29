@@ -17,6 +17,7 @@ interface SectionProps {
   noPadding?: any;
   noMargin?: any;
   bgColor?: string;
+  fullWidth?: any;
 }
 
 interface WrapProps {
@@ -44,6 +45,9 @@ const _getColumnWidth = (args: GetColWidthArgs) => {
 
 const GUTTER = 30 as number;
 const MAX_WIDTH = 1500;
+const BREAKPOINTS = {
+  mobile: '768px',
+};
 const WRAPPER_WIDTHS: WrapWidths = {
   default: `${MAX_WIDTH}px`, // tbd
   full: '100%',
@@ -66,9 +70,10 @@ export const Main = styled.main`
 `;
 
 export const Section = styled.section<SectionProps>`
-  width: 100%;
+  width: ${props => props.fullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
   padding: ${props => !props.noPadding && '30px'};
-  margin-bottom: ${props => !props.noMargin && '30px'};
+  margin-bottom: ${props => !props.noMargin && `${GUTTER}px`};
+  margin-left: ${props => props.fullWidth && `-${GUTTER}px`};
   background-color: ${props => props.bgColor};
   border: 1px dotted rgba(0, 255, 0, 0.3);
 `;
@@ -78,7 +83,7 @@ export const Wrap = styled.div<WrapProps>`
   background-color: ${props => props.bgColor};
   margin: 0 auto;
 
-  @media (min-width: 768px) {
+  @media (min-width: ${BREAKPOINTS.mobile}) {
     display: flex;
     justify-content: space-between;
   }
@@ -88,7 +93,7 @@ export const Column = styled.div<ColumnProps>`
   padding: ${props => !props.noPadding && '30px'};
   border: 1px dotted rgba(255, 0, 0, 0.3);
 
-  @media (min-width: 768px) {
+  @media (min-width: ${BREAKPOINTS.mobile}) {
     width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};
   }
 `;
