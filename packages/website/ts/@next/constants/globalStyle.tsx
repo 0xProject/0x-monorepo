@@ -23,7 +23,7 @@ const GlobalStyles = createGlobalStyle `
   }
 
   html {
-    font-size: 17px;
+    font-size: 18px;
     background-color: ${colors.backgroundBlack};
   }
 

@@ -15,11 +15,12 @@ const StyledHeader = styled.header`
     align-items: center;
     justify-content: space-between;
     padding: 1.764705882rem 0;
+    padding: 1.666666667rem 0;
 `;
 
 const Text = styled.span`
     font-size: 1rem;
-    line-height: 1.375rem;
+    line-height: 1.222222222em;
 `;
 
 const Links = styled.div`
@@ -29,8 +30,8 @@ const Links = styled.div`
 
 const Link = styled.a`
     color: rgba(255, 255, 255, 0.5);
-    font-size: 18px;
-    margin: 0 1.764705882rem;
+    font-size: 1rem;
+    margin: 0 1.666666667em;
     transition: color 0.25s ease-in-out;
     text-decoration: none;
 
