@@ -51,8 +51,14 @@ contract CompliantForwarder {
         if (selector != EXCHANGE_FILL_ORDER_SELECTOR) {
             revert("EXCHANGE_TRANSACTION_NOT_FILL_ORDER");
         }
+        
+        // Taker must be compliant
+        require(
+            COMPLIANCE_TOKEN.balanceOf(signerAddress) > 0,
+            "TAKER_UNVERIFIED"
+        );
 
-        // Extract maker address from fill order transaction
+        // Extract maker address from fill order transaction and ensure maker is compliant
         // Below is the table of calldata offsets into a fillOrder transaction.
         /**
                     ### parameters 
@@ -82,13 +88,10 @@ contract CompliantForwarder {
         // Add 0xc to the makerAddress since abi-encoded addresses are left padded with 12 bytes.
         // Putting this together: makerAddress = 0x60 + 0x4 + 0xc = 0x70
         address makerAddress = signedFillOrderTransaction.readAddress(0x70);
-        
-        // Verify maker/taker have been verified by the compliance token.
-        if (COMPLIANCE_TOKEN.balanceOf(makerAddress) == 0) {
-            revert("MAKER_UNVERIFIED");
-        } else if (COMPLIANCE_TOKEN.balanceOf(signerAddress) == 0) {
-            revert("TAKER_UNVERIFIED");
-        }
+        require(
+            COMPLIANCE_TOKEN.balanceOf(makerAddress) > 0, 
+            "MAKER_UNVERIFIED"
+        );
         
         // All entities are verified. Execute fillOrder.
         EXCHANGE.executeTransaction(
