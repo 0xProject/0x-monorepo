@@ -70,12 +70,17 @@ export const Main = styled.main`
 `;
 
 export const Section = styled.section<SectionProps>`
-  width: ${props => props.fullWidth ? `100vw` : '100%'};
+  width: ${props => props.fullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
   padding: ${props => !props.noPadding && '30px'};
   margin-bottom: ${props => !props.noMargin && `${GUTTER}px`};
-  margin-left: ${props => props.fullWidth && `calc(750px - 50vw)`};
+  margin-left: ${props => props.fullWidth && `-${GUTTER}px`};
   background-color: ${props => props.bgColor};
   border: 1px dotted rgba(0, 255, 0, 0.3);
+
+  @media (min-width: 1560px) {
+    width: ${props => props.fullWidth && '100vw'};
+    margin-left: ${props => props.fullWidth && `calc(750px - 50vw)`};
+  }
 `;
 
 export const Wrap = styled.div<WrapProps>`

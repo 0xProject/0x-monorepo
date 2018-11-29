@@ -56,7 +56,10 @@ export const NextLanding = () => (
       </Wrap>
     </Section>
 
-    <Section fullWidth noPadding>
+    <Section
+      bgColor="#ff0000"
+      fullWidth
+      noPadding>
       <Wrap width="full">
         <Column colWidth="2/3">
           SAMPLE FLUSHED width
