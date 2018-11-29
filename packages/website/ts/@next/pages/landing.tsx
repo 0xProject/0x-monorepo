@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors'
-import { Button } from 'ts/@next/components/button';
+import { Button, ButtonWrap } from 'ts/@next/components/button';
 import { Column, Section, Wrap, WrapCentered } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Intro, Text } from 'ts/@next/components/text';
@@ -22,7 +22,8 @@ export const NextLanding = () => (
         <Column colWidth="2/3">
           <Heading>Powering Decentralized Exchange</Heading>
           <Intro>0x is the best solution for adding exchange functionality to your business.</Intro>
-          <div>
+
+          <ButtonWrap>
             <Button inline>
               Get Started
             </Button>
@@ -30,7 +31,7 @@ export const NextLanding = () => (
             <Button transparent inline>
               Learn More
             </Button>
-          </div>
+          </ButtonWrap>
         </Column>
 
         <Column colWidth="1/3">

@@ -18,6 +18,16 @@ export const Button: React.StatelessComponent<ButtonInterface> = props => {
     return <Component {...props}>{ props.children }</Component>;
 };
 
+// Added this, & + & doesnt really work since we switch with element types...
+export const ButtonWrap = styled.div`
+  button + button,
+  a + a,
+  a + button,
+  button + a {
+    margin-left: 10px;
+  }
+`;
+
 const StyledButton = styled.button<ButtonInterface>`
     appearance: none;
     border: 0;
