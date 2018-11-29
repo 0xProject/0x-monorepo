@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-export interface Props extends ButtonInterface {
+export interface Props {
     text: string;
     transparent?: boolean;
     inline?: boolean;
@@ -43,11 +43,12 @@ export const Button: React.StatelessComponent<Props> = ({ ...props }) => (
 );
 
 export const ButtonTransparent: React.StatelessComponent<Props> = ({ ...props }) => (
-    <StyledButton transparent={true} {...props}>
+    <Button transparent={true} {...props}>
         <Text>{props.text}</Text>
-    </StyledButton>
+    </Button>
 );
 
 Button.defaultProps = {
     transparent: false,
+    inline: false,
 };

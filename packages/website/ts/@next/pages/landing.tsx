@@ -1,7 +1,8 @@
 import * as React from 'react';
-import styled from 'styled-components'
+import styled from 'styled-components';
 
-import { Button } from 'ts/@next/components/button';
+import { colors } from 'ts/style/colors'
+import { Button, ButtonTransparent } from 'ts/@next/components/button';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Intro } from 'ts/@next/components/text';
