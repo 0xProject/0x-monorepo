@@ -20,6 +20,7 @@
     },
     "contracts": [
         "AssetProxyOwner",
+        "CompliantForwarder",
         "DummyERC20Token",
         "DummyERC721Receiver",
         "DummyERC721Token",

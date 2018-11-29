@@ -8,6 +8,7 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "./generated-artifacts/AssetProxyOwner.json",
+        "./generated-artifacts/CompliantForwarder.json",
         "./generated-artifacts/DummyERC20Token.json",
         "./generated-artifacts/DummyERC721Receiver.json",
         "./generated-artifacts/DummyERC721Token.json",
