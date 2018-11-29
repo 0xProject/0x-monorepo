@@ -11,7 +11,7 @@ import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
+import { AccountState, AffiliateInfo, AssetMetaData, Network, ZeroExInstantBaseConfig } from '../types';
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
@@ -20,23 +20,7 @@ import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
 
-export type ZeroExInstantProviderProps = ZeroExInstantProviderRequiredProps &
-    Partial<ZeroExInstantProviderOptionalProps>;
-
-export interface ZeroExInstantProviderRequiredProps {
-    orderSource: OrderSource;
-}
-
-export interface ZeroExInstantProviderOptionalProps {
-    provider: Provider;
-    availableAssetDatas: string[];
-    defaultAssetBuyAmount: number;
-    defaultSelectedAssetData: string;
-    additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
-    networkId: Network;
-    affiliateInfo: AffiliateInfo;
-    shouldDisableAnalyticsTracking: boolean;
-}
+export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
     private readonly _store: Store;
