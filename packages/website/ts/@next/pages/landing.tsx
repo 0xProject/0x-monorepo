@@ -19,10 +19,10 @@ export const NextLanding = () => (
         <Column colWidth="2/3">
           <Heading>Powering Decentralized Exchange</Heading>
           <Intro>0x is the best solution for adding exchange functionality to your business.</Intro>
-          <Icon>
-            <Button text="Get Started" />
-            <Button text="Learn More" transparent />
-          </Icon>
+          <div>
+            <Button text="Get Started" inline={true} />
+            <Button text="Learn More" transparent={true} inline={true} />
+          </div>
         </Column>
 
         <Column colWidth="1/3">
