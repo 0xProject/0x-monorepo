@@ -206,10 +206,10 @@ export const analytics = {
             ...buyQuoteEventProperties(buyQuote),
             fetchOrigin,
         }),
-    trackQuoteError: (errorMessage: string, assetAmount: BigNumber, fetchOrigin: QuoteFetchOrigin) => {
+    trackQuoteError: (errorMessage: string, assetBuyAmount: BigNumber, fetchOrigin: QuoteFetchOrigin) => {
         trackingEventFnWithPayload(EventNames.QUOTE_ERROR)({
             errorMessage,
-            assetAmount: assetAmount.toString(),
+            assetBuyAmount: assetBuyAmount.toString(),
             fetchOrigin,
         });
     },
