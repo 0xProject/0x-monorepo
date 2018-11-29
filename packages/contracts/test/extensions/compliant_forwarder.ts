@@ -273,14 +273,25 @@ describe.only(ContractName.CompliantForwarder, () => {
                 signedFillOrderTx.signature,
             ));
         });
+        it('should revert if taker address is not compliant (does not hold a Yes Token)', async () => {
+            return expectTransactionFailedAsync(
+                compliantForwarderInstance.fillOrder.sendTransactionAsync(
+                    compliantSignedFillOrderTx.salt,
+                    nonCompliantAddress,
+                    compliantSignedFillOrderTx.data,
+                    compliantSignedFillOrderTx.signature,
+                ),
+                RevertReason.TakerUnverified
+            );
+        });
         it('should revert if maker address is not compliant (does not hold a Yes Token)', async () => {
             // Create signed order with non-compliant maker address
-            const signedOrderWithBadSenderAddress = await orderFactory.newSignedOrderAsync({
+            const signedOrderWithBadMakerAddress = await orderFactory.newSignedOrderAsync({
                 senderAddress: compliantForwarderInstance.address,
                 makerAddress: nonCompliantAddress
             });
             const signedOrderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(
-                signedOrderWithBadSenderAddress,
+                signedOrderWithBadMakerAddress,
             );
             const signedOrderWithoutExchangeAddressData = exchangeInstance.fillOrder.getABIEncodedTransactionData(
                 signedOrderWithoutExchangeAddress,
@@ -301,8 +312,6 @@ describe.only(ContractName.CompliantForwarder, () => {
                 RevertReason.MakerUnverified
             );
         });
-        // @TODO: Should fail if maker is not verified
-        // @TODO: Should fail it taker is not verified
     });
 });
 // tslint:disable:max-file-line-count
