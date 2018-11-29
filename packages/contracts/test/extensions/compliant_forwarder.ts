@@ -4,14 +4,12 @@ import { RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
-import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { CompliantForwarderContract } from '../../generated-wrappers/compliant_forwarder';
 import { YesComplianceTokenContract } from '../../generated-wrappers/yes_compliance_token';
 
-import { WETH9Contract } from '../../generated-wrappers/weth9';
 import { artifacts } from '../../src/artifacts';
 import {
     expectContractCreationFailedAsync,
@@ -21,9 +19,7 @@ import {
 import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
-import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
-import { ForwarderWrapper } from '../utils/forwarder_wrapper';
 import { OrderFactory } from '../utils/order_factory';
 import { orderUtils } from '../utils/order_utils';
 import { TransactionFactory } from '../utils/transaction_factory';
@@ -44,42 +40,20 @@ describe.only(ContractName.CompliantForwarder, () => {
     let defaultMakerAssetAddress: string;
     let defaultTakerAssetAddress: string;
     let zrxAssetData: string;
-    let wethAssetData: string;
-
-    let weth: DummyERC20TokenContract;
     let zrxToken: DummyERC20TokenContract;
-    let erc20TokenA: DummyERC20TokenContract;
-    let yesComplianceToken: YesComplianceTokenContract;
-    let compliantForwarderContract: CompliantForwarderContract;
-    let wethContract: WETH9Contract;
     let exchangeWrapper: ExchangeWrapper;
 
     let orderFactory: OrderFactory;
     let erc20Wrapper: ERC20Wrapper;
     let erc20Balances: ERC20BalancesByOwner;
 
-    let erc721MakerAssetIds: BigNumber[];
-    let takerEthBalanceBefore: BigNumber;
-    let feePercentage: BigNumber;
-
     let compliantSignedOrder: SignedOrder;
     let compliantSignedFillOrderTx: SignedTransaction;
     let noncompliantSignedFillOrderTx: SignedTransaction;
 
-    const compliantMakerCountryCode = new BigNumber(519);
-    const compliantMakerYesMark = new BigNumber(1);
-    const compliantMakerEntityId = new BigNumber(2);
-    let compliantMakerYesTokenId;
-
-    const compliantTakerCountryCode = new BigNumber(519);
-    const compliantTakerYesMark = new BigNumber(1);
-    const compliantTakerEntityId = new BigNumber(2);
-    let compliantTakerYesTokenId;
-
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(500), DECIMALS_DEFAULT);
     const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), DECIMALS_DEFAULT);
     const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(250), DECIMALS_DEFAULT);
-    const salt = new BigNumber(0);
 
     let compliantForwarderInstance: CompliantForwarderContract;
 
@@ -95,7 +69,6 @@ describe.only(ContractName.CompliantForwarder, () => {
             noncompliantAddress,
         ] = accounts);
         // Create wrappers
-        const erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         // Deploy ERC20 tokens
         const numDummyErc20ToDeploy = 3;
@@ -107,26 +80,16 @@ describe.only(ContractName.CompliantForwarder, () => {
         );
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
+        zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         // Deploy Yes Token
         const yesTokenInstance = await YesComplianceTokenContract.deployFrom0xArtifactAsync(
             artifacts.YesComplianceToken,
             provider,
             txDefaults,
         );
-        compliantForwarderContract = new CompliantForwarderContract(
-            yesTokenInstance.abi,
-            yesTokenInstance.address,
-            provider,
-        );
         // Create proxies
         const erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
-        // Deploy tokens & set asset data
-        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults);
-        weth = new DummyERC20TokenContract(wethContract.abi, wethContract.address, provider);
-        erc20Wrapper.addDummyTokenContract(weth);
-        wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
-        zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         // Deploy Exchange congtract
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
@@ -162,12 +125,12 @@ describe.only(ContractName.CompliantForwarder, () => {
             exchangeInstance.address,
             yesTokenInstance.address,
         );
-        compliantForwarderContract = new CompliantForwarderContract(
+        /*
+        const compliantForwarderContract = new CompliantForwarderContract(
             compliantForwarderInstance.abi,
             compliantForwarderInstance.address,
             provider,
         );
-        /*
         forwarderWrapper = new ForwarderWrapper(compliantForwarderContract, provider);
         */
         // Initialize Yes Token
@@ -177,7 +140,10 @@ describe.only(ContractName.CompliantForwarder, () => {
         await yesTokenInstance.initialize.sendTransactionAsync(yesTokenName, yesTokenTicker, { from: owner });
         // Verify Maker / Taker
         const addressesCanControlTheirToken = true;
-        compliantMakerYesTokenId = await yesTokenInstance.mint2.sendTransactionAsync(
+        const compliantMakerCountryCode = new BigNumber(519);
+        const compliantMakerYesMark = new BigNumber(1);
+        const compliantMakerEntityId = new BigNumber(2);
+        await yesTokenInstance.mint2.sendTransactionAsync(
             compliantMakerAddress,
             compliantMakerEntityId,
             addressesCanControlTheirToken,
@@ -185,7 +151,10 @@ describe.only(ContractName.CompliantForwarder, () => {
             [compliantMakerYesMark],
             { from: owner },
         );
-        compliantTakerYesTokenId = await yesTokenInstance.mint2.sendTransactionAsync(
+        const compliantTakerCountryCode = new BigNumber(519);
+        const compliantTakerYesMark = new BigNumber(1);
+        const compliantTakerEntityId = new BigNumber(2);
+        await yesTokenInstance.mint2.sendTransactionAsync(
             compliantTakerAddress,
             compliantTakerEntityId,
             addressesCanControlTheirToken,
