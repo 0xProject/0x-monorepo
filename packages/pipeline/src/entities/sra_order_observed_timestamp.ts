@@ -1,5 +1,7 @@
 import { Entity, PrimaryColumn } from 'typeorm';
 
+import { numberToBigIntTransformer } from '../utils';
+
 import { SraOrder } from './sra_order';
 
 @Entity({ name: 'sra_orders_observed_timestamps', schema: 'raw' })
@@ -11,7 +13,7 @@ export class SraOrdersObservedTimeStamp {
     @PrimaryColumn({ name: 'source_url' })
     public sourceUrl!: string;
 
-    @PrimaryColumn({ name: 'observed_timestamp' })
+    @PrimaryColumn({ name: 'observed_timestamp', transformer: numberToBigIntTransformer })
     public observedTimestamp!: number;
 }
 
