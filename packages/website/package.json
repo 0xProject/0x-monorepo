@@ -32,7 +32,6 @@
         "@0x/web3-wrapper": "^3.1.5",
         "@types/styled-components": "^4.1.1",
         "accounting": "^0.4.1",
-        "awesome-typescript-loader": "^5.2.1",
         "basscss": "^8.0.3",
         "blockies": "^0.0.2",
         "bowser": "^1.9.3",
