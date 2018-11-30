@@ -19,7 +19,7 @@ export const NextWhy = () => (
         <Column colWidth="2/3">
           <Heading size="medium" center>The exchange layer for the crypto economy</Heading>
           <Heading size="large" center>The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastructure that allows anyone in the world to build products that enable the purchasing and trading of crypto tokens.</Heading>
-          <Paragraph center>Build on 0x (arrow)</>
+          <Paragraph center>Build on 0x (arrow)</Paragraph>
         </Column>
       </WrapCentered>
     </Section>
