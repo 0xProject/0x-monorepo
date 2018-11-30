@@ -39,14 +39,14 @@ export const NextLanding = () => (
         </Column>
 
         <Column colWidth="1/2">
-          <Icon as={logoOutlined as 'svg'} />
+          <Icon as={LogoOutlined as 'svg'} />
         </Column>
       </Wrap>
     </Section>
 
     <Section bgColor={colors.backgroundDark}>
       <WrapCentered width="narrow">
-        <Icon as={protocol as 'svg'} />
+        <Icon as={ProtocolIcon as 'svg'} />
 
         <Paragraph size="large" center>
             0x is an open protocol that enables the peer-to-peer exchange of Ethereum-based tokens. Anyone in the world can use 0x to service a wide variety of markets ranging from gaming items to financial instruments to assets that could have near existed before.
