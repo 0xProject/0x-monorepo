@@ -9,6 +9,7 @@ type StringOrNum = string | number;
 export type ContainerTag = 'div' | 'span';
 
 export interface ContainerProps {
+    margin?: string;
     marginTop?: StringOrNum;
     marginBottom?: StringOrNum;
     marginRight?: StringOrNum;
@@ -48,7 +49,9 @@ export interface ContainerProps {
     id?: string;
     onClick?: (event: React.MouseEvent<HTMLElement>) => void;
     overflowX?: 'scroll' | 'hidden' | 'auto' | 'visible';
+    overflowY?: 'scroll' | 'hidden' | 'auto' | 'visible';
     shouldDarkenOnHover?: boolean;
+    hasBoxShadow?: boolean;
     shouldAddBoxShadowOnHover?: boolean;
 }
 
@@ -62,6 +65,7 @@ export const PlainContainer: React.StatelessComponent<ContainerProps> = props =>
         onClick,
         shouldDarkenOnHover,
         shouldAddBoxShadowOnHover,
+        hasBoxShadow,
         // tslint:disable-next-line:trailing-comma
         ...style
     } = props;
@@ -74,6 +78,8 @@ export const PlainContainer: React.StatelessComponent<ContainerProps> = props =>
 };
 
 export const Container = styled(PlainContainer)`
+    box-sizing: border-box;
+    ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
     &:hover {
         ${props =>
             props.shouldDarkenOnHover

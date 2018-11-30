@@ -62,6 +62,7 @@ export class Select extends React.Component<SelectProps, SelectState> {
                         cursor={hasItems ? 'pointer' : undefined}
                         onClick={this._handleDropdownClick}
                         borderRadius={borderRadius}
+                        hasBoxShadow={isOpen}
                         border={border}
                         backgroundColor={backgroundColor}
                         padding="0.8em"
@@ -94,6 +95,7 @@ export class Select extends React.Component<SelectProps, SelectState> {
                             position="absolute"
                             onClick={this._closeDropdown}
                             zIndex={zIndex.aboveOverlay}
+                            hasBoxShadow={true}
                         >
                             {_.map(items, (item, index) => (
                                 <SelectItem

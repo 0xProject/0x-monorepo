@@ -2,40 +2,42 @@ import { colors } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { zIndex } from 'ts/style/z_index';
-
 import { Container } from './container';
-import { Overlay } from './overlay';
-import { Text } from './text';
 
 export interface MultiSelectItemConfig {
     value: string;
-    displayText: React.ReactNode;
+    renderItemContent: (isSelected: boolean) => React.ReactNode;
     onClick?: () => void;
 }
 
 export interface MultiSelectProps {
-    selectedValues: string[];
+    selectedValues?: string[];
     items: MultiSelectItemConfig[];
     backgroundColor?: string;
-    textColor?: string;
+    height?: string;
 }
 
 export class MultiSelect extends React.Component<MultiSelectProps> {
     public static defaultProps = {
         backgroundColor: colors.white,
-        textColor: colors.darkGrey,
     };
     public render(): React.ReactNode {
-        const { items, backgroundColor, selectedValues } = this.props;
+        const { items, backgroundColor, selectedValues, height } = this.props;
         return (
-            <Container backgroundColor={backgroundColor} borderRadius="4px">
+            <Container
+                backgroundColor={backgroundColor}
+                borderRadius="4px"
+                width="100%"
+                height={height}
+                overflowY="scroll"
+            >
                 {_.map(items, item => (
                     <MultiSelectItem
                         key={item.value}
-                        displayText={item.displayText}
+                        renderItemContent={item.renderItemContent}
+                        backgroundColor={backgroundColor}
                         onClick={item.onClick}
-                        isSelected={_.includes(selectedValues, item.value)}
+                        isSelected={_.isUndefined(selectedValues) || _.includes(selectedValues, item.value)}
                     />
                 ))}
             </Container>
@@ -44,19 +46,21 @@ export class MultiSelect extends React.Component<MultiSelectProps> {
 }
 
 export interface MultiSelectItemProps {
-    displayText: React.ReactNode;
+    renderItemContent: (isSelected: boolean) => React.ReactNode;
     isSelected?: boolean;
     onClick?: () => void;
+    backgroundColor?: string;
 }
 
 export const MultiSelectItem: React.StatelessComponent<MultiSelectItemProps> = ({
-    displayText,
+    renderItemContent,
     isSelected,
     onClick,
+    backgroundColor,
 }) => (
-    <Container shouldDarkenOnHover={true} onClick={onClick}>
-        <Container borderBottom="1px solid black" padding="0px 15px">
-            {displayText}
+    <Container cursor="pointer" shouldDarkenOnHover={true} onClick={onClick} backgroundColor={backgroundColor}>
+        <Container borderBottom={`1px solid ${colors.lightestGrey}`} margin="0px 15px" padding="10px 0px">
+            {renderItemContent(isSelected)}
         </Container>
     </Container>
 );
