@@ -1,5 +1,28 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Redeployed Rinkeby with testnet Exchange artifact",
+                "pr": 1318
+            },
+            {
+                "note": "Added Ganache snapshot addresses for network 50",
+                "pr": 1318
+            }
+        ],
+        "timestamp": 1543401373
+    },
+    {
+        "version": "1.2.0",
+        "changes": [
+            {
+                "note": "Rinkeby Deployment"
+            }
+        ],
+        "timestamp": 1542821676
+    },
+    {
         "version": "1.1.0",
         "changes": [
             {

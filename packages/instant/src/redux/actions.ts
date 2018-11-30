@@ -2,7 +2,7 @@ import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { ActionsUnion, AddressAndEthBalanceInWei, Asset } from '../types';
+import { ActionsUnion, AddressAndEthBalanceInWei, Asset, StandardSlidingPanelContent } from '../types';
 
 export interface PlainAction<T extends string> {
     type: T;
@@ -23,11 +23,10 @@ function createAction<T extends string, P>(type: T, data?: P): PlainAction<T> | 
 export enum ActionTypes {
     SET_ACCOUNT_STATE_LOADING = 'SET_ACCOUNT_STATE_LOADING',
     SET_ACCOUNT_STATE_LOCKED = 'SET_ACCOUNT_STATE_LOCKED',
-    SET_ACCOUNT_STATE_ERROR = 'SET_ACCOUNT_STATE_ERROR',
     SET_ACCOUNT_STATE_READY = 'SET_ACCOUNT_STATE_READY',
     UPDATE_ACCOUNT_ETH_BALANCE = 'UPDATE_ACCOUNT_ETH_BALANCE',
     UPDATE_ETH_USD_PRICE = 'UPDATE_ETH_USD_PRICE',
-    UPDATE_SELECTED_ASSET_AMOUNT = 'UPDATE_SELECTED_ASSET_AMOUNT',
+    UPDATE_SELECTED_ASSET_UNIT_AMOUNT = 'UPDATE_SELECTED_ASSET_UNIT_AMOUNT',
     SET_BUY_ORDER_STATE_NONE = 'SET_BUY_ORDER_STATE_NONE',
     SET_BUY_ORDER_STATE_VALIDATING = 'SET_BUY_ORDER_STATE_VALIDATING',
     SET_BUY_ORDER_STATE_PROCESSING = 'SET_BUY_ORDER_STATE_PROCESSING',
@@ -42,17 +41,19 @@ export enum ActionTypes {
     HIDE_ERROR = 'HIDE_ERROR',
     CLEAR_ERROR = 'CLEAR_ERROR',
     RESET_AMOUNT = 'RESET_AMOUNT',
+    OPEN_STANDARD_SLIDING_PANEL = 'OPEN_STANDARD_SLIDING_PANEL',
+    CLOSE_STANDARD_SLIDING_PANEL = 'CLOSE_STANDARD_SLIDING_PANEL',
 }
 
 export const actions = {
     setAccountStateLoading: () => createAction(ActionTypes.SET_ACCOUNT_STATE_LOADING),
     setAccountStateLocked: () => createAction(ActionTypes.SET_ACCOUNT_STATE_LOCKED),
-    setAccountStateError: () => createAction(ActionTypes.SET_ACCOUNT_STATE_ERROR),
     setAccountStateReady: (address: string) => createAction(ActionTypes.SET_ACCOUNT_STATE_READY, address),
     updateAccountEthBalance: (addressAndBalance: AddressAndEthBalanceInWei) =>
         createAction(ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE, addressAndBalance),
     updateEthUsdPrice: (price?: BigNumber) => createAction(ActionTypes.UPDATE_ETH_USD_PRICE, price),
-    updateSelectedAssetAmount: (amount?: BigNumber) => createAction(ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT, amount),
+    updateSelectedAssetAmount: (amount?: BigNumber) =>
+        createAction(ActionTypes.UPDATE_SELECTED_ASSET_UNIT_AMOUNT, amount),
     setBuyOrderStateNone: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_NONE),
     setBuyOrderStateValidating: () => createAction(ActionTypes.SET_BUY_ORDER_STATE_VALIDATING),
     setBuyOrderStateProcessing: (txHash: string, startTimeUnix: number, expectedEndTimeUnix: number) =>
@@ -68,4 +69,7 @@ export const actions = {
     hideError: () => createAction(ActionTypes.HIDE_ERROR),
     clearError: () => createAction(ActionTypes.CLEAR_ERROR),
     resetAmount: () => createAction(ActionTypes.RESET_AMOUNT),
+    openStandardSlidingPanel: (content: StandardSlidingPanelContent) =>
+        createAction(ActionTypes.OPEN_STANDARD_SLIDING_PANEL, content),
+    closeStandardSlidingPanel: () => createAction(ActionTypes.CLOSE_STANDARD_SLIDING_PANEL),
 };

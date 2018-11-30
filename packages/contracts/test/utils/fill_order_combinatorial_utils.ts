@@ -392,7 +392,7 @@ export class FillOrderCombinatorialUtils {
         );
 
         // 5. If I fill it by X, what are the resulting balances/allowances/filled amounts expected?
-        const orderValidationUtils = new OrderValidationUtils(orderFilledCancelledFetcher);
+        const orderValidationUtils = new OrderValidationUtils(orderFilledCancelledFetcher, provider);
         const lazyStore = new BalanceAndProxyAllowanceLazyStore(balanceAndProxyAllowanceFetcher);
         const exchangeTransferSimulator = new ExchangeTransferSimulator(lazyStore);
 

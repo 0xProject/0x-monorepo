@@ -6,11 +6,11 @@ import {
     SupportedDocJson,
     TypeDocUtils,
 } from '@0x/react-docs';
-import findVersions = require('find-versions');
+import findVersions from 'find-versions';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import * as React from 'react';
-import semverSort = require('semver-sort');
+import semverSort from 'semver-sort';
 import { SidebarHeader } from 'ts/components/documentation/sidebar_header';
 import { NestedSidebarMenu } from 'ts/components/nested_sidebar_menu';
 import { Container } from 'ts/components/ui/container';
@@ -39,6 +39,7 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.OrderWatcher]: 'order-watcher',
     [DocPackages.EthereumTypes]: 'ethereum-types',
     [DocPackages.AssetBuyer]: 'asset-buyer',
+    [DocPackages.Migrations]: 'migrations',
 };
 
 export interface DocPageProps {
@@ -94,7 +95,11 @@ export class DocPage extends React.Component<DocPageProps, DocPageState> {
         const sidebar = _.isUndefined(this.state.docAgnosticFormat) ? (
             <div />
         ) : (
-            <NestedSidebarMenu sidebarHeader={this._renderSidebarHeader()} sectionNameToLinks={sectionNameToLinks} />
+            <NestedSidebarMenu
+                sidebarHeader={this._renderSidebarHeader()}
+                sectionNameToLinks={sectionNameToLinks}
+                screenWidth={this.props.screenWidth}
+            />
         );
         return (
             <DevelopersPage

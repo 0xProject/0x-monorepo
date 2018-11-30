@@ -4,7 +4,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { ERROR_ACCOUNT, LOADING_ACCOUNT, LOCKED_ACCOUNT } from '../constants';
+import { LOADING_ACCOUNT, LOCKED_ACCOUNT } from '../constants';
 import { assetMetaDataMap } from '../data/asset_meta_data_map';
 import {
     Account,
@@ -19,6 +19,8 @@ import {
     OrderProcessState,
     OrderState,
     ProviderState,
+    StandardSlidingPanelContent,
+    StandardSlidingPanelSettings,
 } from '../types';
 
 import { Action, ActionTypes } from './actions';
@@ -30,6 +32,7 @@ export interface DefaultState {
     buyOrderState: OrderState;
     latestErrorDisplayStatus: DisplayStatus;
     quoteRequestState: AsyncProcessState;
+    standardSlidingPanelSettings: StandardSlidingPanelSettings;
 }
 
 // State that is required but needs to be derived from the props
@@ -41,7 +44,7 @@ interface PropsDerivedState {
 interface OptionalState {
     selectedAsset: Asset;
     availableAssets: Asset[];
-    selectedAssetAmount: BigNumber;
+    selectedAssetUnitAmount: BigNumber;
     ethUsdPrice: BigNumber;
     latestBuyQuote: BuyQuote;
     latestErrorMessage: string;
@@ -56,6 +59,10 @@ export const DEFAULT_STATE: DefaultState = {
     buyOrderState: { processState: OrderProcessState.None },
     latestErrorDisplayStatus: DisplayStatus.Hidden,
     quoteRequestState: AsyncProcessState.None,
+    standardSlidingPanelSettings: {
+        animationState: 'none',
+        content: StandardSlidingPanelContent.None,
+    },
 };
 
 export const createReducer = (initialState: State) => {
@@ -65,14 +72,20 @@ export const createReducer = (initialState: State) => {
                 return reduceStateWithAccount(state, LOADING_ACCOUNT);
             case ActionTypes.SET_ACCOUNT_STATE_LOCKED:
                 return reduceStateWithAccount(state, LOCKED_ACCOUNT);
-            case ActionTypes.SET_ACCOUNT_STATE_ERROR:
-                return reduceStateWithAccount(state, ERROR_ACCOUNT);
             case ActionTypes.SET_ACCOUNT_STATE_READY: {
-                const account: AccountReady = {
+                const address = action.data;
+                let newAccount: AccountReady = {
                     state: AccountState.Ready,
-                    address: action.data,
+                    address,
                 };
-                return reduceStateWithAccount(state, account);
+                const currentAccount = state.providerState.account;
+                if (currentAccount.state === AccountState.Ready && currentAccount.address === address) {
+                    newAccount = {
+                        ...newAccount,
+                        ethBalanceInWei: currentAccount.ethBalanceInWei,
+                    };
+                }
+                return reduceStateWithAccount(state, newAccount);
             }
             case ActionTypes.UPDATE_ACCOUNT_ETH_BALANCE: {
                 const { address, ethBalanceInWei } = action.data;
@@ -92,10 +105,10 @@ export const createReducer = (initialState: State) => {
                     ...state,
                     ethUsdPrice: action.data,
                 };
-            case ActionTypes.UPDATE_SELECTED_ASSET_AMOUNT:
+            case ActionTypes.UPDATE_SELECTED_ASSET_UNIT_AMOUNT:
                 return {
                     ...state,
-                    selectedAssetAmount: action.data,
+                    selectedAssetUnitAmount: action.data,
                 };
             case ActionTypes.UPDATE_LATEST_BUY_QUOTE:
                 const newBuyQuoteIfExists = action.data;
@@ -206,12 +219,28 @@ export const createReducer = (initialState: State) => {
                     latestBuyQuote: undefined,
                     quoteRequestState: AsyncProcessState.None,
                     buyOrderState: { processState: OrderProcessState.None },
-                    selectedAssetAmount: undefined,
+                    selectedAssetUnitAmount: undefined,
                 };
             case ActionTypes.SET_AVAILABLE_ASSETS:
                 return {
                     ...state,
                     availableAssets: action.data,
+                };
+            case ActionTypes.OPEN_STANDARD_SLIDING_PANEL:
+                return {
+                    ...state,
+                    standardSlidingPanelSettings: {
+                        content: action.data,
+                        animationState: 'slidIn',
+                    },
+                };
+            case ActionTypes.CLOSE_STANDARD_SLIDING_PANEL:
+                return {
+                    ...state,
+                    standardSlidingPanelSettings: {
+                        content: state.standardSlidingPanelSettings.content,
+                        animationState: 'slidOut',
+                    },
                 };
             default:
                 return state;
@@ -234,9 +263,9 @@ const reduceStateWithAccount = (state: State, account: Account) => {
 
 const doesBuyQuoteMatchState = (buyQuote: BuyQuote, state: State): boolean => {
     const selectedAssetIfExists = state.selectedAsset;
-    const selectedAssetAmountIfExists = state.selectedAssetAmount;
+    const selectedAssetUnitAmountIfExists = state.selectedAssetUnitAmount;
     // if no selectedAsset or selectedAssetAmount exists on the current state, return false
-    if (_.isUndefined(selectedAssetIfExists) || _.isUndefined(selectedAssetAmountIfExists)) {
+    if (_.isUndefined(selectedAssetIfExists) || _.isUndefined(selectedAssetUnitAmountIfExists)) {
         return false;
     }
     // if buyQuote's assetData does not match that of the current selected asset, return false
@@ -248,7 +277,7 @@ const doesBuyQuoteMatchState = (buyQuote: BuyQuote, state: State): boolean => {
     const selectedAssetMetaData = selectedAssetIfExists.metaData;
     if (selectedAssetMetaData.assetProxyId === AssetProxyId.ERC20) {
         const selectedAssetAmountBaseUnits = Web3Wrapper.toBaseUnitAmount(
-            selectedAssetAmountIfExists,
+            selectedAssetUnitAmountIfExists,
             selectedAssetMetaData.decimals,
         );
         const doesAssetAmountMatch = selectedAssetAmountBaseUnits.eq(buyQuote.assetBuyAmount);

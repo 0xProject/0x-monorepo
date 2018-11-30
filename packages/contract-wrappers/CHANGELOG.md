@@ -5,6 +5,28 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.1 - _November 28, 2018_
+
+    * Dependencies updated
+
+## v4.1.0 - _November 21, 2018_
+
+    * Add a `nonce` field for `TxOpts` so that it's now possible to re-broadcast stuck transactions with a higher gas amount (#1292)
+
+## v4.0.2 - _November 14, 2018_
+
+    * Dependencies updated
+
+## v4.0.1 - _November 13, 2018_
+
+    * Dependencies updated
+
+## v4.0.0 - _November 12, 2018_
+
+    * Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync` (#1235)
+    * Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive (#1235)
+    * Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218) (#1235)
+
 ## v3.0.1 - _November 9, 2018_
 
     * Fix bug in `ForwarderWrapper` where `feeRecipientAddress` was not correctly normalized. (#1178)

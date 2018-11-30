@@ -1,5 +1,61 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Add CLI `0x-migrate` for running the 0x migrations in a language-agnostic way",
+                "pr": 1324
+            },
+            {
+                "note": "Deploy testnet Exchange arfitact. Previously mainnet Exchange artifact was deployed.",
+                "pr": 1309
+            },
+            {
+                "note": "Fund the Forwarder with ZRX for fees.",
+                "pr": 1309
+            }
+        ],
+        "timestamp": 1543401373
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note":
+                    "Export all type declarations used by the public interface, as well as the `ContractAddresses` mapping",
+                "pr": 1301
+            }
+        ],
+        "timestamp": 1542821676
+    },
+    {
+        "timestamp": 1542208198,
+        "version": "2.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542028948,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "2.0.1",
         "changes": [
             {

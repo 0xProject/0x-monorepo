@@ -4,6 +4,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 
 // Reusable
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type Maybe<T> = T | undefined;
 export enum AsyncProcessState {
     None = 'NONE',
@@ -18,6 +19,11 @@ export enum OrderProcessState {
     Processing = 'PROCESSING',
     Success = 'SUCCESS',
     Failure = 'FAILURE',
+}
+
+export enum QuoteFetchOrigin {
+    Manual = 'Manual',
+    Heartbeat = 'Heartbeat',
 }
 
 export interface SimulatedProgress {
@@ -50,6 +56,7 @@ export interface ERC20AssetMetaData {
     primaryColor?: string;
     symbol: string;
     name: string;
+    iconUrl?: string;
 }
 
 export interface ERC721AssetMetaData {
@@ -94,6 +101,7 @@ export interface AffiliateInfo {
 }
 
 export interface ProviderState {
+    name: string;
     provider: Provider;
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;
@@ -101,11 +109,10 @@ export interface ProviderState {
 }
 
 export enum AccountState {
+    None = 'NONE,',
     Loading = 'LOADING',
     Ready = 'READY',
-    Locked = 'LOCKED', // TODO(bmillman): break this up into locked / privacy mode enabled
-    Error = 'ERROR',
-    None = 'NONE,',
+    Locked = 'LOCKED',
 }
 
 export interface AccountReady {
@@ -114,7 +121,7 @@ export interface AccountReady {
     ethBalanceInWei?: BigNumber;
 }
 export interface AccountNotReady {
-    state: AccountState.None | AccountState.Loading | AccountState.Locked | AccountState.Error;
+    state: AccountState.None | AccountState.Loading | AccountState.Locked;
 }
 
 export type Account = AccountReady | AccountNotReady;
@@ -124,4 +131,49 @@ export type OrderSource = string | SignedOrder[];
 export interface AddressAndEthBalanceInWei {
     address: string;
     ethBalanceInWei: BigNumber;
+}
+
+export type SlideAnimationState = 'slidIn' | 'slidOut' | 'none';
+
+export enum StandardSlidingPanelContent {
+    None = 'NONE',
+    InstallWallet = 'INSTALL_WALLET',
+}
+
+export interface StandardSlidingPanelSettings {
+    animationState: SlideAnimationState;
+    content: StandardSlidingPanelContent;
+}
+
+export enum Browser {
+    Chrome = 'CHROME',
+    Firefox = 'FIREFOX',
+    Opera = 'OPERA',
+    Safari = 'SAFARI',
+    Edge = 'EDGE',
+    Other = 'OTHER',
+}
+
+export enum WalletSuggestion {
+    CoinbaseWallet = 'Coinbase Wallet',
+    MetaMask = 'MetaMask',
+}
+
+export enum OperatingSystem {
+    Android = 'ANDROID',
+    iOS = 'IOS',
+    Mac = 'MAC',
+    Windows = 'WINDOWS',
+    WindowsPhone = 'WINDOWS_PHONE',
+    Linux = 'LINUX',
+    Other = 'OTHER',
+}
+
+export enum ProviderType {
+    Parity = 'PARITY',
+    MetaMask = 'META_MASK',
+    Mist = 'MIST',
+    CoinbaseWallet = 'COINBASE_WALLET',
+    Cipher = 'CIPHER',
+    Fallback = 'FALLBACK',
 }

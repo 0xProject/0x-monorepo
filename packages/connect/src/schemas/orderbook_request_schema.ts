@@ -1,9 +1,0 @@
-export const orderBookRequestSchema = {
-    id: '/OrderBookRequest',
-    type: 'object',
-    properties: {
-        baseAssetData: { $ref: '/hexSchema' },
-        quoteAssetData: { $ref: '/hexSchema' },
-    },
-    required: ['baseAssetData', 'quoteAssetData'],
-};

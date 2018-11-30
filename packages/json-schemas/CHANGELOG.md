@@ -5,9 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v2.0.1 - _November 9, 2018_
+## v2.1.2 - _November 21, 2018_
+
+    * Dependencies updated
+
+## v2.1.1 - _November 14, 2018_
+
+    * Dependencies updated
+
+## v2.1.0 - _November 12, 2018_
 
     * Improve schemas by enforcing that amounts that must be whole numbers (e.g Order asset amounts) no longer allow decimal amounts (#1173)
+    * Add schemas from @0x/connect (#1250)
 
 ## v2.0.0 - _October 18, 2018_
 

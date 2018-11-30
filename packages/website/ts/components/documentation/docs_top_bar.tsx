@@ -38,17 +38,17 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
         return (
             <Container height={80}>
                 <Container
-                    className="flex items-center lg-pt3 md-pt3 sm-pt1 lg-mt1 md-mt1 sm-mt0 lg-justify-end md-justify-end sm-justify-start"
+                    className="flex items-center lg-pt3 md-pt3 sm-pt1 lg-justify-end md-justify-end sm-justify-start"
                     width="100%"
                 >
                     <Container className="sm-hide xs-hide">
-                        <Container className="flex items-center justify-between right" width="300px">
+                        <Container className="flex items-center justify-between right" width="250px">
                             {this._renderMenuItems(constants.DEVELOPER_TOPBAR_LINKS)}
                         </Container>
                     </Container>
                     <Container className="lg-hide md-hide">
                         <Container paddingTop="6px">
-                            <DocsLogo height={30} />
+                            <DocsLogo />
                         </Container>
                     </Container>
                     <Container className="md-hide lg-hide absolute" right="18px" top="12px">
@@ -63,7 +63,7 @@ export class DocsTopBar extends React.Component<DocsTopBarProps, DocsTopBarState
                         />
                     </Container>
                 </Container>
-                <Container width={'100%'} height={'1px'} backgroundColor={colors.grey300} marginTop={'13px'} />
+                <Container width={'100%'} height={'1px'} backgroundColor={colors.grey300} marginTop={'16px'} />
                 {this.props.screenWidth === ScreenWidths.Sm && this._renderDrawer()}
             </Container>
         );

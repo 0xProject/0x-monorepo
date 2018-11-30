@@ -6,7 +6,8 @@ import { Dispatch } from 'redux';
 import { oc } from 'ts-optchain';
 
 import { Action, actions } from '../redux/actions';
-import { AffiliateInfo, ERC20Asset } from '../types';
+import { AffiliateInfo, ERC20Asset, QuoteFetchOrigin } from '../types';
+import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
 
@@ -15,42 +16,55 @@ export const buyQuoteUpdater = {
         assetBuyer: AssetBuyer,
         dispatch: Dispatch<Action>,
         asset: ERC20Asset,
-        assetAmount: BigNumber,
-        affiliateInfo?: AffiliateInfo,
+        assetUnitAmount: BigNumber,
+        fetchOrigin: QuoteFetchOrigin,
+        options: {
+            setPending: boolean;
+            dispatchErrors: boolean;
+            affiliateInfo?: AffiliateInfo;
+        },
     ): Promise<void> => {
         // get a new buy quote.
-        const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetAmount, asset.metaData.decimals);
-        // mark quote as pending
-        dispatch(actions.setQuoteRequestStatePending());
-        const feePercentage = oc(affiliateInfo).feePercentage();
+        const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetUnitAmount, asset.metaData.decimals);
+        if (options.setPending) {
+            // mark quote as pending
+            dispatch(actions.setQuoteRequestStatePending());
+        }
+        const feePercentage = oc(options.affiliateInfo).feePercentage();
         let newBuyQuote: BuyQuote | undefined;
         try {
             newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue, { feePercentage });
         } catch (error) {
-            dispatch(actions.setQuoteRequestStateFailure());
-            let errorMessage;
-            if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
-                const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
-                errorMessage = `Not enough ${assetName} available`;
-            } else if (error.message === AssetBuyerError.InsufficientZrxLiquidity) {
-                errorMessage = 'Not enough ZRX available';
-            } else if (
-                error.message === AssetBuyerError.StandardRelayerApiError ||
-                error.message.startsWith(AssetBuyerError.AssetUnavailable)
-            ) {
-                const assetName = assetUtils.bestNameForAsset(asset, 'This asset');
-                errorMessage = `${assetName} is currently unavailable`;
+            if (options.dispatchErrors) {
+                dispatch(actions.setQuoteRequestStateFailure());
+                analytics.trackQuoteError(error.message ? error.message : 'other', baseUnitValue, fetchOrigin);
+                let errorMessage;
+                if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
+                    const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
+                    errorMessage = `Not enough ${assetName} available`;
+                } else if (error.message === AssetBuyerError.InsufficientZrxLiquidity) {
+                    errorMessage = 'Not enough ZRX available';
+                } else if (
+                    error.message === AssetBuyerError.StandardRelayerApiError ||
+                    error.message.startsWith(AssetBuyerError.AssetUnavailable)
+                ) {
+                    const assetName = assetUtils.bestNameForAsset(asset, 'This asset');
+                    errorMessage = `${assetName} is currently unavailable`;
+                }
+                if (!_.isUndefined(errorMessage)) {
+                    errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
+                } else {
+                    throw error;
+                }
             }
-            if (!_.isUndefined(errorMessage)) {
-                errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
-            } else {
-                throw error;
-            }
+            // TODO: report to error reporter on else
+
             return;
         }
         // We have a successful new buy quote
         errorFlasher.clearError(dispatch);
         // invalidate the last buy quote.
         dispatch(actions.updateLatestBuyQuote(newBuyQuote));
+        analytics.trackQuoteFetched(newBuyQuote, fetchOrigin);
     },
 };

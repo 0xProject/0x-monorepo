@@ -1,5 +1,67 @@
 [
     {
+        "timestamp": 1543401373,
+        "version": "3.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542821676,
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542208198,
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1542134075,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note":
+                    "Add signature validation, regular cancellation and `cancelledUpTo` checks to `validateOrderFillableOrThrowAsync`",
+                "pr": 1235
+            },
+            {
+                "note":
+                    "Improved the errors thrown by `validateOrderFillableOrThrowAsync` by making them more descriptive",
+                "pr": 1235
+            },
+            {
+                "note":
+                    "Throw previously swallowed network errors when calling `validateOrderFillableOrThrowAsync` (see issue: #1218)",
+                "pr": 1235
+            },
+            {
+                "note":
+                    "Modified the `AbstractOrderFilledCancelledFetcher` interface slightly such that `isOrderCancelledAsync` accepts a `signedOrder` instead of an `orderHash` param",
+                "pr": 1235
+            }
+        ],
+        "timestamp": 1542028948
+    },
+    {
         "version": "2.0.1",
         "changes": [
             {

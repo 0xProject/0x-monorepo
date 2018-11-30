@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import * as React from 'react';
-import firstBy = require('thenby');
+import firstBy from 'thenby';
 
 import { Blockchain } from 'ts/blockchain';
 import { AccountConnection } from 'ts/components/ui/account_connection';

@@ -1,7 +1,7 @@
 // tslint:disable:max-file-line-count
 
 import { BigNumber } from 'bignumber.js';
-import { ContractAbi } from 'ethereum-types';
+import { ContractAbi, ContractNetworks, DevdocOutput } from 'ethereum-types';
 
 // HACK: Rather then extending from OrderWithoutExchangeAddress
 // we don't, because our docs don't expand inherited types, and it's unnecessarily
@@ -195,6 +195,7 @@ export enum RevertReason {
     FailedExecution = 'FAILED_EXECUTION',
     AssetProxyAlreadyExists = 'ASSET_PROXY_ALREADY_EXISTS',
     LengthGreaterThan0Required = 'LENGTH_GREATER_THAN_0_REQUIRED',
+    LengthGreaterThan3Required = 'LENGTH_GREATER_THAN_3_REQUIRED',
     LengthGreaterThan131Required = 'LENGTH_GREATER_THAN_131_REQUIRED',
     Length0Required = 'LENGTH_0_REQUIRED',
     Length65Required = 'LENGTH_65_REQUIRED',
@@ -209,6 +210,7 @@ export enum RevertReason {
     MakerNotWhitelisted = 'MAKER_NOT_WHITELISTED',
     TakerNotWhitelisted = 'TAKER_NOT_WHITELISTED',
     AssetProxyDoesNotExist = 'ASSET_PROXY_DOES_NOT_EXIST',
+    LengthMismatch = 'LENGTH_MISMATCH',
     LibBytesGreaterThanZeroLengthRequired = 'GREATER_THAN_ZERO_LENGTH_REQUIRED',
     LibBytesGreaterOrEqualTo4LengthRequired = 'GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED',
     LibBytesGreaterOrEqualTo20LengthRequired = 'GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED',
@@ -625,4 +627,25 @@ export interface EIP712TypedData {
 
 export interface Stats {
     orderCount: number;
+}
+
+export interface SimpleContractArtifact {
+    schemaVersion: string;
+    contractName: string;
+    compilerOutput: SimpleStandardContractOutput;
+    networks: ContractNetworks;
+}
+
+export interface SimpleStandardContractOutput {
+    abi: ContractAbi;
+    evm: SimpleEvmOutput;
+    devdoc?: DevdocOutput;
+}
+
+export interface SimpleEvmOutput {
+    bytecode: SimpleEvmBytecodeOutput;
+}
+
+export interface SimpleEvmBytecodeOutput {
+    object: string;
 }

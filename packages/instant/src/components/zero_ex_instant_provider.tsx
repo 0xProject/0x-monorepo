@@ -5,18 +5,20 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
+import { ACCOUNT_UPDATE_INTERVAL_TIME_MS, BUY_QUOTE_UPDATE_INTERVAL_TIME_MS } from '../constants';
 import { SelectedAssetThemeProvider } from '../containers/selected_asset_theme_provider';
 import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AffiliateInfo, AssetMetaData, Network, OrderSource } from '../types';
+import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource, QuoteFetchOrigin } from '../types';
+import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
+import { Heartbeater } from '../util/heartbeater';
+import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
-
-fonts.include();
 
 export type ZeroExInstantProviderProps = ZeroExInstantProviderRequiredProps &
     Partial<ZeroExInstantProviderOptionalProps>;
@@ -33,10 +35,14 @@ export interface ZeroExInstantProviderOptionalProps {
     additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
     networkId: Network;
     affiliateInfo: AffiliateInfo;
+    shouldDisableAnalyticsTracking: boolean;
 }
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
     private readonly _store: Store;
+    private _accountUpdateHeartbeat?: Heartbeater;
+    private _buyQuoteHeartbeat?: Heartbeater;
+
     // TODO(fragosti): Write tests for this beast once we inject a provider.
     private static _mergeDefaultStateWithProps(
         props: ZeroExInstantProviderProps,
@@ -67,7 +73,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
                       completeAssetMetaDataMap,
                       networkId,
                   ),
-            selectedAssetAmount: _.isUndefined(props.defaultAssetBuyAmount)
+            selectedAssetUnitAmount: _.isUndefined(props.defaultAssetBuyAmount)
                 ? undefined
                 : new BigNumber(props.defaultAssetBuyAmount),
             availableAssets: _.isUndefined(props.availableAssetDatas)
@@ -80,28 +86,66 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
     }
     constructor(props: ZeroExInstantProviderProps) {
         super(props);
+        fonts.include();
         const initialAppState = ZeroExInstantProvider._mergeDefaultStateWithProps(this.props);
         this._store = store.create(initialAppState);
     }
     public componentDidMount(): void {
         const state = this._store.getState();
+        const dispatch = this._store.dispatch;
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchEthPriceAndDispatchToStore(this._store);
+        asyncData.fetchEthPriceAndDispatchToStore(dispatch);
         // fetch available assets if none are specified
         if (_.isUndefined(state.availableAssets)) {
             // tslint:disable-next-line:no-floating-promises
-            asyncData.fetchAvailableAssetDatasAndDispatchToStore(this._store);
+            asyncData.fetchAvailableAssetDatasAndDispatchToStore(state, dispatch);
         }
+        if (state.providerState.account.state !== AccountState.None) {
+            this._accountUpdateHeartbeat = generateAccountHeartbeater({
+                store: this._store,
+                shouldPerformImmediatelyOnStart: true,
+            });
+            this._accountUpdateHeartbeat.start(ACCOUNT_UPDATE_INTERVAL_TIME_MS);
+        }
+
+        this._buyQuoteHeartbeat = generateBuyQuoteHeartbeater({
+            store: this._store,
+            shouldPerformImmediatelyOnStart: false,
+        });
+        this._buyQuoteHeartbeat.start(BUY_QUOTE_UPDATE_INTERVAL_TIME_MS);
+        // Trigger first buyquote fetch
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchAccountInfoAndDispatchToStore(this._store);
-        // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(this._store);
+        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, QuoteFetchOrigin.Manual, {
+            updateSilently: false,
+        });
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
         // tslint:disable-next-line:no-floating-promises
         gasPriceEstimator.getGasInfoAsync();
         // tslint:disable-next-line:no-floating-promises
         this._flashErrorIfWrongNetwork();
+
+        // Analytics
+        disableAnalytics(this.props.shouldDisableAnalyticsTracking || false);
+        analytics.addEventProperties(
+            analytics.generateEventProperties(
+                state.network,
+                this.props.orderSource,
+                state.providerState,
+                window,
+                state.selectedAsset,
+                this.props.affiliateInfo,
+            ),
+        );
+        analytics.trackInstantOpened();
+    }
+    public componentWillUnmount(): void {
+        if (this._accountUpdateHeartbeat) {
+            this._accountUpdateHeartbeat.stop();
+        }
+        if (this._buyQuoteHeartbeat) {
+            this._buyQuoteHeartbeat.stop();
+        }
     }
     public render(): React.ReactNode {
         return (

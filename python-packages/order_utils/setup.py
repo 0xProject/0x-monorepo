@@ -24,7 +24,6 @@ class TestCommandExtension(TestCommand):
         exit(pytest.main())
 
 
-# pylint: disable=too-many-ancestors
 class LintCommand(distutils.command.build_py.build_py):
     """Custom setuptools command class for running linters."""
 
@@ -90,7 +89,6 @@ class CleanCommandExtension(clean):
         rmtree("src/0x_order_utils.egg-info", ignore_errors=True)
 
 
-# pylint: disable=too-many-ancestors
 class TestPublishCommand(distutils.command.build_py.build_py):
     """Custom command to publish to test.pypi.org."""
 
@@ -108,7 +106,6 @@ class TestPublishCommand(distutils.command.build_py.build_py):
         )
 
 
-# pylint: disable=too-many-ancestors
 class PublishCommand(distutils.command.build_py.build_py):
     """Custom command to publish to pypi.org."""
 
@@ -119,7 +116,19 @@ class PublishCommand(distutils.command.build_py.build_py):
         subprocess.check_call("twine upload dist/*".split())  # nosec
 
 
-# pylint: disable=too-many-ancestors
+class PublishDocsCommand(distutils.command.build_py.build_py):
+    """Custom command to publish docs to S3."""
+
+    description = (
+        "Publish docs to "
+        + "http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/"
+    )
+
+    def run(self):
+        """Run npm package `discharge` to build & upload docs."""
+        subprocess.check_call("discharge deploy".split())  # nosec
+
+
 class GanacheCommand(distutils.command.build_py.build_py):
     """Custom command to publish to pypi.org."""
 
@@ -145,7 +154,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-order-utils",
-    version="0.1.0",
+    version="1.0.1",
     description="Order utilities for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",
@@ -158,9 +167,16 @@ setup(
         "test": TestCommandExtension,
         "test_publish": TestPublishCommand,
         "publish": PublishCommand,
+        "publish_docs": PublishDocsCommand,
         "ganache": GanacheCommand,
     },
-    install_requires=["eth-abi", "eth_utils", "mypy_extensions", "web3"],
+    install_requires=[
+        "eth-abi",
+        "eth_utils",
+        "jsonschema",
+        "mypy_extensions",
+        "web3",
+    ],
     extras_require={
         "dev": [
             "bandit",
@@ -182,6 +198,7 @@ setup(
     package_data={
         "zero_ex.order_utils": ["py.typed"],
         "zero_ex.contract_artifacts": ["artifacts/*"],
+        "zero_ex.json_schemas": ["schemas/*"],
     },
     package_dir={"": "src"},
     license="Apache 2.0",

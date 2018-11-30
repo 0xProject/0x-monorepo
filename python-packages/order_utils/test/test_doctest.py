@@ -8,7 +8,6 @@ import zero_ex
 
 def test_all_doctests():
     """Gather zero_ex.* modules and doctest them."""
-    # prefer `black` formatting. pylint: disable=bad-continuation
     for (importer, modname, _) in pkgutil.walk_packages(
         path=zero_ex.__path__, prefix="zero_ex."
     ):

@@ -1,5 +1,6 @@
 // tslint:disable:no-unnecessary-type-assertion
-import { AbstractOrderFilledCancelledFetcher } from '@0x/order-utils';
+import { AbstractOrderFilledCancelledFetcher, orderHashUtils } from '@0x/order-utils';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { BlockParamLiteral } from 'ethereum-types';
 
@@ -18,9 +19,18 @@ export class OrderFilledCancelledFetcher implements AbstractOrderFilledCancelled
         });
         return filledTakerAmount;
     }
-    public async isOrderCancelledAsync(orderHash: string): Promise<boolean> {
+    public async isOrderCancelledAsync(signedOrder: SignedOrder): Promise<boolean> {
+        const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         const isCancelled = await this._exchange.isCancelledAsync(orderHash);
-        return isCancelled;
+        const orderEpoch = await this._exchange.getOrderEpochAsync(
+            signedOrder.makerAddress,
+            signedOrder.senderAddress,
+            {
+                defaultBlock: this._stateLayer,
+            },
+        );
+        const isCancelledByOrderEpoch = orderEpoch > signedOrder.salt;
+        return isCancelled || isCancelledByOrderEpoch;
     }
     public getZRXAssetData(): string {
         const zrxAssetData = this._exchange.getZRXAssetData();

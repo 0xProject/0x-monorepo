@@ -28,6 +28,7 @@ export interface ScalingInputProps {
     maxLength?: number;
     scalingSettings: ScalingSettings;
     isDisabled: boolean;
+    hasAutofocus: boolean;
 }
 
 export interface ScalingInputState {
@@ -51,6 +52,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         maxLength: 7,
         scalingSettings: defaultScalingSettings,
         isDisabled: false,
+        hasAutofocus: false,
     };
     public state: ScalingInputState = {
         inputWidthPxAtPhaseChange: undefined,
@@ -96,6 +98,12 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
             inputWidthPx: this._getInputWidthInPx(),
         };
     }
+    public componentDidMount(): void {
+        // Trigger an initial notification of the calculated fontSize.
+        const currentPhase = ScalingInput.getPhaseFromProps(this.props);
+        const currentFontSize = ScalingInput.calculateFontSizeFromProps(this.props, currentPhase);
+        this.props.onFontSizeChange(currentFontSize);
+    }
     public componentDidUpdate(
         prevProps: ScalingInputProps,
         prevState: ScalingInputState,
@@ -123,7 +131,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         }
     }
     public render(): React.ReactNode {
-        const { isDisabled, fontColor, onChange, placeholder, value, maxLength } = this.props;
+        const { hasAutofocus, isDisabled, fontColor, onChange, placeholder, value, maxLength } = this.props;
         const phase = ScalingInput.getPhaseFromProps(this.props);
         return (
             <Input
@@ -136,6 +144,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
                 width={this._calculateWidth(phase)}
                 maxLength={maxLength}
                 disabled={isDisabled}
+                autoFocus={hasAutofocus}
             />
         );
     }
@@ -156,8 +165,6 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
                     return `${width}px`;
                 }
                 return `${textLengthThreshold}ch`;
-            default:
-                return '1ch';
         }
     };
     private readonly _calculateFontSize = (phase: ScalingInputPhase): number => {

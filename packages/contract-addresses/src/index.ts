@@ -14,7 +14,9 @@ export interface ContractAddresses {
 export enum NetworkId {
     Mainnet = 1,
     Ropsten = 3,
+    Rinkeby = 4,
     Kovan = 42,
+    Ganache = 50,
 }
 
 const networkToAddresses: { [networkId: number]: ContractAddresses } = {
@@ -38,6 +40,16 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         forwarder: '0x2240dab907db71e64d3e0dba4800c83b5c502d4e',
         orderValidator: '0x90431a90516ab49af23a0530e04e8c7836e7122f',
     },
+    4: {
+        exchange: '0xbce0b5f6eb618c565c3e5f5cd69652bbc279f44e',
+        erc20Proxy: '0x2f5ae4f6106e89b4147651688a92256885c5f410',
+        erc721Proxy: '0x7656d773e11ff7383a14dcf09a9c50990481cd10',
+        zrxToken: '0x8080c7e4b81ecf23aa6f877cfbfd9b0c228c6ffa',
+        etherToken: '0xc778417e063141139fce010982780140aa0cd5ab',
+        assetProxyOwner: '0xe1703da878afcebff5b7624a826902af475b9c03',
+        forwarder: '0x2d40589abbdee84961f3a7656b9af7adb0ee5ab4',
+        orderValidator: '0x0c5173a51e26b29d6126c686756fb9fbef71f762',
+    },
     42: {
         erc20Proxy: '0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e',
         erc721Proxy: '0x2a9127c745688a165106c11cd4d647d2220af821',
@@ -47,6 +59,17 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         assetProxyOwner: '0x2c824d2882baa668e0d5202b1e7f2922278703f8',
         forwarder: '0x17992e4ffb22730138e4b62aaa6367fa9d3699a6',
         orderValidator: '0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d',
+    },
+    // NetworkId 50 represents our Ganache snapshot generated from migrations.
+    50: {
+        exchange: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
+        erc20Proxy: '0x1dc4c1cefef38a777b15aa20260a54e584b16c48',
+        erc721Proxy: '0x1d7022f5b17d2f8b695918fb48fa1089c9f85401',
+        zrxToken: '0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c',
+        etherToken: '0x0b1ba0af832d7c05fd64161e0db78e85978e8082',
+        assetProxyOwner: '0x34d402f14d58e001d8efbe6585051bf9706aa064',
+        forwarder: '0xb69e673309512a9d726f87304c6984054f87a93b',
+        orderValidator: '0xe86bb98fcf9bff3512c74589b78fb168200cc546',
     },
 };
 

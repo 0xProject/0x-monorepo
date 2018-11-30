@@ -72,6 +72,7 @@ export const constants = {
     PROJECT_URL_OPEN_ANX: 'https://www.openanx.org',
     PROJECT_URL_IDT: 'https://kinalpha.com',
     URL_ANGELLIST: 'https://angel.co/0xproject/jobs',
+    URL_APACHE_LICENSE: 'http://www.apache.org/licenses/LICENSE-2.0',
     URL_BITLY_API: 'https://api-ssl.bitly.com',
     URL_BLOG: 'https://blog.0xproject.com/latest',
     URL_DISCOURSE_FORUM: 'https://forum.0xproject.com',
@@ -95,6 +96,8 @@ export const constants = {
     URL_TWITTER: 'https://twitter.com/0xproject',
     URL_WETH_IO: 'https://weth.io/',
     URL_ZEROEX_CHAT,
+    URL_LAUNCH_KIT: 'https://github.com/0xProject/0x-launch-kit',
+    URL_LAUNCH_KIT_BLOG_POST: 'https://blog.0xproject.com/introducing-the-0x-launch-kit-4acdc3453585',
     URL_WEB3_DOCS: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
     URL_WEB3_DECODED_LOG_ENTRY_EVENT:
         'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L123',
@@ -103,10 +106,6 @@ export const constants = {
     URL_BIGNUMBERJS_GITHUB: 'http://mikemcl.github.io/bignumber.js',
     URL_MISSION_AND_VALUES_BLOG_POST: 'https://blog.0xproject.com/the-0x-mission-and-values-181a58706f9f',
     DEVELOPER_TOPBAR_LINKS: [
-        {
-            title: Key.Home,
-            to: WebsitePaths.Home,
-        },
         {
             title: Key.Wiki,
             to: WebsitePaths.Wiki,

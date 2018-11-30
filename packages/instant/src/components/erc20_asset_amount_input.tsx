@@ -22,7 +22,8 @@ export interface ERC20AssetAmountInputProps {
     onSelectAssetClick?: (asset?: ERC20Asset) => void;
     startingFontSizePx: number;
     fontColor?: ColorOption;
-    isDisabled: boolean;
+    isInputDisabled: boolean;
+    canSelectOtherAsset: boolean;
     numberOfAssetsAvailable?: number;
 }
 
@@ -50,18 +51,22 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         );
     }
     private readonly _renderContentForAsset = (asset: ERC20Asset): React.ReactNode => {
-        const { onChange, ...rest } = this.props;
-        const amountBorderBottom = this.props.isDisabled ? '' : `1px solid ${transparentWhite}`;
+        const { onChange, isInputDisabled, ...rest } = this.props;
+        const amountBorderBottom = isInputDisabled ? '' : `1px solid ${transparentWhite}`;
         const onSymbolClick = this._generateSelectAssetClickHandler();
         return (
             <React.Fragment>
                 <Container borderBottom={amountBorderBottom} display="inline-block">
                     <ScalingAmountInput
                         {...rest}
+                        isDisabled={isInputDisabled}
                         textLengthThreshold={this._textLengthThresholdForAsset(asset)}
                         maxFontSizePx={this.props.startingFontSizePx}
                         onAmountChange={this._handleChange}
                         onFontSizeChange={this._handleFontSizeChange}
+                        hasAutofocus={true}
+                        /* We send in a key of asset data to force a rerender of this component when the user selects a new asset.  We do this so the autofocus attribute will bring focus onto this input */
+                        key={asset.assetData}
                     />
                 </Container>
                 <Container
@@ -74,11 +79,11 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
                             fontSize={`${this.state.currentFontSizePx}px`}
                             fontColor={ColorOption.white}
                             textTransform="uppercase"
-                            onClick={onSymbolClick}
+                            onClick={this.props.canSelectOtherAsset ? onSymbolClick : undefined}
                         >
                             {assetUtils.formattedSymbolForAsset(asset)}
                         </Text>
-                        {this._renderChevronIcon()}
+                        {this.props.canSelectOtherAsset && this._renderChevronIcon()}
                     </Flex>
                 </Container>
             </React.Fragment>

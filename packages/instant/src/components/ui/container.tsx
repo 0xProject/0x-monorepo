@@ -20,13 +20,14 @@ export interface ContainerProps {
     marginBottom?: string;
     marginLeft?: string;
     padding?: string;
-    borderRadius?: string;
+    borderRadius?: MediaChoice;
     border?: string;
     borderColor?: ColorOption;
     borderTop?: string;
     borderBottom?: string;
     className?: string;
     backgroundColor?: ColorOption;
+    rawBackgroundColor?: string;
     hasBoxShadow?: boolean;
     zIndex?: number;
     whiteSpace?: string;
@@ -37,6 +38,16 @@ export interface ContainerProps {
     boxShadowOnHover?: boolean;
     flexGrow?: string | number;
 }
+
+const getBackgroundColor = (theme: any, backgroundColor?: ColorOption, rawBackgroundColor?: string): string => {
+    if (backgroundColor) {
+        return theme[backgroundColor] as string;
+    }
+    if (rawBackgroundColor) {
+        return rawBackgroundColor;
+    }
+    return 'none';
+};
 
 export const Container =
     styled.div <
@@ -57,7 +68,6 @@ export const Container =
         ${props => cssRuleIfExists(props, 'margin-bottom')}
         ${props => cssRuleIfExists(props, 'margin-left')}
         ${props => cssRuleIfExists(props, 'padding')}
-        ${props => cssRuleIfExists(props, 'border-radius')}
         ${props => cssRuleIfExists(props, 'border')}
         ${props => cssRuleIfExists(props, 'border-top')}
         ${props => cssRuleIfExists(props, 'border-bottom')}
@@ -70,7 +80,8 @@ export const Container =
         ${props => props.display && stylesForMedia<string>('display', props.display)}
         ${props => props.width && stylesForMedia<string>('width', props.width)}
         ${props => props.height && stylesForMedia<string>('height', props.height)}
-        background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
+        ${props => props.borderRadius && stylesForMedia<string>('border-radius', props.borderRadius)}
+        background-color: ${props => getBackgroundColor(props.theme, props.backgroundColor, props.rawBackgroundColor)};
         border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
         &:hover {
             ${props =>

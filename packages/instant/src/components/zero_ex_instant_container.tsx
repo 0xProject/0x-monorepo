@@ -1,15 +1,19 @@
 import * as React from 'react';
 
+import PoweredByLogo from '../assets/powered_by_0x.svg';
+import { ZERO_EX_SITE_URL } from '../constants';
 import { AvailableERC20TokenSelector } from '../containers/available_erc20_token_selector';
+import { ConnectedBuyOrderProgressOrPaymentMethod } from '../containers/connected_buy_order_progress_or_payment_method';
+import { CurrentStandardSlidingPanel } from '../containers/current_standard_sliding_panel';
 import { LatestBuyQuoteOrderDetails } from '../containers/latest_buy_quote_order_details';
 import { LatestError } from '../containers/latest_error';
-import { SelectedAssetBuyOrderProgress } from '../containers/selected_asset_buy_order_progress';
 import { SelectedAssetBuyOrderStateButtons } from '../containers/selected_asset_buy_order_state_buttons';
 import { SelectedAssetInstantHeading } from '../containers/selected_asset_instant_heading';
 import { ColorOption } from '../style/theme';
 import { zIndex } from '../style/z_index';
+import { SlideAnimationState } from '../types';
+import { analytics, TokenSelectorClosedVia } from '../util/analytics';
 
-import { SlideAnimationState } from './animations/slide_animation';
 import { CSSReset } from './css_reset';
 import { SlidingPanel } from './sliding_panel';
 import { Container } from './ui/container';
@@ -40,37 +44,56 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         zIndex={zIndex.mainContainer}
                         position="relative"
                         backgroundColor={ColorOption.white}
-                        borderRadius="3px"
+                        borderRadius={{ default: '3px', sm: '0px' }}
                         hasBoxShadow={true}
                         overflow="hidden"
                         height="100%"
                     >
                         <Flex direction="column" justify="flex-start" height="100%">
                             <SelectedAssetInstantHeading onSelectAssetClick={this._handleSymbolClick} />
-                            <SelectedAssetBuyOrderProgress />
+                            <ConnectedBuyOrderProgressOrPaymentMethod />
                             <LatestBuyQuoteOrderDetails />
                             <Container padding="20px" width="100%">
                                 <SelectedAssetBuyOrderStateButtons />
                             </Container>
                         </Flex>
                         <SlidingPanel
-                            title="Select Token"
                             animationState={this.state.tokenSelectionPanelAnimationState}
-                            onClose={this._handlePanelClose}
+                            onClose={this._handlePanelCloseClickedX}
                         >
-                            <AvailableERC20TokenSelector onTokenSelect={this._handlePanelClose} />
+                            <AvailableERC20TokenSelector onTokenSelect={this._handlePanelCloseAfterChose} />
                         </SlidingPanel>
+                        <CurrentStandardSlidingPanel />
+                    </Container>
+                    <Container
+                        display={{ sm: 'none', default: 'block' }}
+                        marginTop="10px"
+                        marginLeft="auto"
+                        marginRight="auto"
+                        width="140px"
+                    >
+                        <a href={ZERO_EX_SITE_URL} target="_blank">
+                            <PoweredByLogo />
+                        </a>
                     </Container>
                 </Container>
             </React.Fragment>
         );
     }
     private readonly _handleSymbolClick = (): void => {
+        analytics.trackTokenSelectorOpened();
         this.setState({
             tokenSelectionPanelAnimationState: 'slidIn',
         });
     };
-    private readonly _handlePanelClose = (): void => {
+    private readonly _handlePanelCloseClickedX = (): void => {
+        this._handlePanelClose(TokenSelectorClosedVia.ClickedX);
+    };
+    private readonly _handlePanelCloseAfterChose = (): void => {
+        this._handlePanelClose(TokenSelectorClosedVia.TokenChose);
+    };
+    private readonly _handlePanelClose = (closedVia: TokenSelectorClosedVia): void => {
+        analytics.trackTokenSelectorClosed(closedVia);
         this.setState({
             tokenSelectionPanelAnimationState: 'slidOut',
         });

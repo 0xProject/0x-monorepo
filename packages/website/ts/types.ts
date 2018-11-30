@@ -352,6 +352,7 @@ export enum WebsitePaths {
     Home = '/',
     FAQ = '/faq',
     About = '/about',
+    LaunchKit = '/launch-kit',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',
@@ -365,6 +366,7 @@ export enum WebsitePaths {
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
     AssetBuyer = '/docs/asset-buyer',
+    Migrations = '/docs/migrations',
     Careers = '/careers',
 }
 
@@ -382,6 +384,7 @@ export enum DocPackages {
     ContractWrappers = 'CONTRACT_WRAPPERS',
     OrderWatcher = 'ORDER_WATCHER',
     AssetBuyer = 'ASSET_BUYER',
+    Migrations = 'MIGRATIONS',
 }
 
 export enum Key {
@@ -479,6 +482,19 @@ export enum Key {
     More = 'MORE',
     StartBuildOn0x = 'START_BUILDING_ON_0X',
     StartBuildOn0xDescription = 'START_BUILDING_ON_0X_DESCRIPTION',
+    LaunchKit = 'LAUNCH_KIT',
+    LaunchKitPitch = 'LAUNCH_KIT_PITCH',
+    ExploreTheDocs = 'EXPLORE_THE_DOCS',
+    EnableTrading = 'ENABLE_TRADING',
+    ForkAndExtend = 'FORK_AND_EXTEND',
+    LocalMarket = 'LOCAL_MARKET',
+    SeemlesslyCreate = 'SEEMLESSLY_CREATE',
+    QuicklyLaunch = 'QUICKLY_LAUNCH',
+    TapIntoAndShare = 'TAP_INTO_AND_SHARE',
+    PerfectForDevelopers = 'PERFECT_FOR_DEVELOPERS',
+    GetInTouch = 'GET_IN_TOUCH',
+    LearnMore = 'LEARN_MORE',
+    GetStarted = 'GET_STARTED',
 }
 
 export enum SmartContractDocSections {

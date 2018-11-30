@@ -41,6 +41,33 @@ export interface TransactionRPC {
     input: string;
 }
 
+export interface TransactionReceiptRPC {
+    blockHash: string;
+    blockNumber: string;
+    transactionHash: string;
+    transactionIndex: string;
+    from: string;
+    to: string;
+    status: TransactionReceiptStatusRPC;
+    cumulativeGasUsed: string;
+    gasUsed: string;
+    contractAddress: string | null;
+    logs: LogEntryRPC[];
+}
+
+export interface LogEntryRPC {
+    logIndex: string | null;
+    transactionIndex: string | null;
+    transactionHash: string;
+    blockHash: string | null;
+    blockNumber: string | null;
+    address: string;
+    data: string;
+    topics: string[];
+}
+
+export type TransactionReceiptStatusRPC = null | string | 0 | 1;
+
 export interface CallTxDataBaseRPC {
     to?: string;
     value?: string;

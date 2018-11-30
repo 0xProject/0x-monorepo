@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _November 28, 2018_
+
+    * Redeployed Rinkeby with testnet Exchange artifact (#1318)
+    * Added Ganache snapshot addresses for network 50 (#1318)
+
+## v1.2.0 - _November 21, 2018_
+
+    * Rinkeby Deployment
+
 ## v1.1.0 - _November 9, 2018_
 
     * Update Forwarder addresses (#1192)
