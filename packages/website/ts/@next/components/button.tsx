@@ -6,6 +6,7 @@ import { colors } from 'ts/style/colors';
 interface ButtonInterface {
     children: Node | string;
     transparent?: any;
+    hasIcon?: any;
     inline?: any;
     href?: string;
     onClick?: () => void;
@@ -19,12 +20,12 @@ export const Button: React.StatelessComponent<ButtonInterface> = props => {
 
 // Added this, & + & doesnt really work since we switch with element types...
 export const ButtonWrap = styled.div`
-  button + button,
-  a + a,
-  a + button,
-  button + a {
-    margin-left: 10px;
-  }
+    button + button,
+    a + a,
+    a + button,
+    button + a {
+        margin-left: 10px;
+    }
 `;
 
 const StyledButton = styled.button<ButtonInterface>`
