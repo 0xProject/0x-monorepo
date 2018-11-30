@@ -20,9 +20,9 @@ const getHeapConfigForDischargeTarget = dischargeTarget => {
     };
 };
 
-const DISCHARGE_TARGETS_THAT_REQUIRE = ['production', 'staging', 'dogfood'];
+const DISCHARGE_TARGETS_THAT_REQUIRE_ROLLBAR = ['production', 'staging', 'dogfood'];
 const getRollbarConfigForDischargeTarget = dischargeTarget => {
-    if (DISCHARGE_TARGETS_THAT_REQUIRE.includes(dischargeTarget)) {
+    if (DISCHARGE_TARGETS_THAT_REQUIRE_ROLLBAR.includes(dischargeTarget)) {
         const rollbarSourceMapPublicPath =
             dischargeTarget === 'production'
                 ? 'https://instant.0xproject.com'
