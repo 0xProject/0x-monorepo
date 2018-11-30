@@ -20,6 +20,7 @@ import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
 
 // Next (new website) routes. We should rename them later
+import { Next0xInstant } from 'ts/@next/pages/instant';
 import { NextLanding } from 'ts/@next/pages/landing';
 import { NextWhy } from 'ts/@next/pages/why';
 
@@ -110,6 +111,7 @@ render(
                                 {/* Next (new site) routes */}
                                 <Route exact path="/next" component={NextLanding as any} />
                                 <Route exact path="/next/why" component={NextWhy as any} />
+                                <Route exact path="/next/0x-instant" component={Next0xInstant as any} />
 
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}

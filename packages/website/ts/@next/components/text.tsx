@@ -42,6 +42,7 @@ const HEADING_SIZES: HeadingSizes = {
 
 const PARAGRAPH_SIZES: ParagraphSizes = {
     default: '18px',
+    small: '14px',
     medium: '22px',
     large: '28px',
 };
