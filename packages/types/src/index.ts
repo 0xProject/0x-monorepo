@@ -155,6 +155,7 @@ export enum SignatureType {
 export enum AssetProxyId {
     ERC20 = '0xf47261b0',
     ERC721 = '0x02571792',
+    MultiAsset = '0x94cfcdd7',
 }
 
 export interface ERC20AssetData {
@@ -168,7 +169,13 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
 }
 
-export type AssetData = ERC20AssetData | ERC721AssetData;
+export interface MultiAssetData {
+    assetProxyId: string;
+    amounts: BigNumber[];
+    nestedAssetData: string[];
+}
+
+export type AssetData = ERC20AssetData | ERC721AssetData | MultiAssetData;
 
 // TODO: DRY. These should be extracted from contract code.
 export enum RevertReason {
