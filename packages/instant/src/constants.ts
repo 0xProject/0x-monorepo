@@ -28,7 +28,7 @@ export const HOST_DOMAINS = [
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
-    'https://instant.0xproject.com',
+    'instant.0xproject.com',
 ];
 export const ROLLBAR_CLIENT_TOKEN = process.env.ROLLBAR_CLIENT_TOKEN;
 export const ROLLBAR_ENABLED = process.env.ROLLBAR_ENABLED;
