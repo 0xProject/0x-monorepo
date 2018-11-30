@@ -8,10 +8,41 @@ interface Props {
     center?: boolean;
 }
 
+export const Heading: React.StatelessComponent<Props> = ({ children, ...props }) => (
+    <StyledHeading {...props}>{children}</StyledHeading>
+);
+
+export const Intro: React.StatelessComponent<Props> = ({ children, ...props }) => (
+    <StyledIntro {...props}>{children}</StyledIntro>
+);
+
+export const Text: React.StatelessComponent<Props> = ({ children, ...props }) => (
+    <StyledText {...props}>{children}</StyledText>
+);
+
+Heading.defaultProps = {
+    size: 'normal',
+    center: false,
+};
+
+Intro.defaultProps = {
+    size: 'normal',
+    center: false,
+};
+
+Text.defaultProps = {
+    size: 'normal',
+    center: false,
+};
+
 const StyledHeading = styled.h1`
     color: ${colors.white};
     font-size: 80px;
     line-height: 1em;
+
+    ${(props: Props) => props.center && `
+        text-align: center
+    `}
 `;
 
 const StyledIntro = styled.p`
@@ -19,6 +50,10 @@ const StyledIntro = styled.p`
     opacity: 0.75;
     font-size: 22px;
     line-height: 1.823529412em;
+
+    ${(props: Props) => props.center && `
+        text-align: center
+    `}
 `;
 
 const StyledText = styled.p<Props>`
@@ -32,20 +67,3 @@ const StyledText = styled.p<Props>`
         text-align: center
     `}
 `;
-
-export const Heading: React.StatelessComponent<Props> = ({ children }) => (
-    <StyledHeading>{children}</StyledHeading>
-);
-
-export const Intro: React.StatelessComponent<Props> = ({ children }) => (
-    <StyledIntro>{children}</StyledIntro>
-);
-
-export const Text: React.StatelessComponent<Props> = ({ children, ...props }) => (
-    <StyledText {...props}>{children}</StyledText>
-);
-
-Text.defaultProps = {
-    size: 'normal',
-    center: false,
-};
