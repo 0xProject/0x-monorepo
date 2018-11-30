@@ -1,0 +1,31 @@
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+
+const dexTrades = new Table({
+    name: 'raw.nft_trades',
+    columns: [
+        { name: 'source_url', type: 'varchar', isPrimary: true },
+        { name: 'transaction_hash', type: 'varchar', isPrimary: true },
+
+        { name: 'block_number', type: 'bigint' },
+        { name: 'log_index', type: 'integer' },
+        { name: 'block_timestamp', type: 'bigint' },
+        { name: 'asset_id', type: 'varchar' },
+        { name: 'asset_descriptor', type: 'varchar' },
+        { name: 'market_address', type: 'varchar(42)' },
+        { name: 'total_price', type: 'numeric' },
+        { name: 'usd_price', type: 'numeric' },
+        { name: 'buyer_address', type: 'varchar(42)' },
+        { name: 'seller_address', type: 'varchar(42)' },
+        { name: 'meta', type: 'jsonb' },
+    ],
+});
+
+export class CreateNftTrades1543540108767 implements MigrationInterface {
+    public async up(queryRunner: QueryRunner): Promise<any> {
+        await queryRunner.createTable(dexTrades);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<any> {
+        await queryRunner.dropTable(dexTrades);
+    }
+}
