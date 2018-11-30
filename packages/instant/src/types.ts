@@ -21,6 +21,11 @@ export enum OrderProcessState {
     Failure = 'FAILURE',
 }
 
+export enum QuoteFetchOrigin {
+    Manual = 'Manual',
+    Heartbeat = 'Heartbeat',
+}
+
 export interface SimulatedProgress {
     startTimeUnix: number;
     expectedEndTimeUnix: number;
@@ -147,6 +152,11 @@ export enum Browser {
     Safari = 'SAFARI',
     Edge = 'EDGE',
     Other = 'OTHER',
+}
+
+export enum WalletSuggestion {
+    CoinbaseWallet = 'Coinbase Wallet',
+    MetaMask = 'MetaMask',
 }
 
 export enum OperatingSystem {
