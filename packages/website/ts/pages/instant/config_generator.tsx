@@ -3,6 +3,8 @@ import * as React from 'react';
 
 import { Container } from 'ts/components/ui/container';
 import { Select, SelectItemConfig } from 'ts/components/ui/select';
+import { Text } from 'ts/components/ui/text';
+import { colors } from 'ts/style/colors';
 
 import { ZeroExInstantBaseConfig } from '../../../../instant/src/types';
 
@@ -18,7 +20,10 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps> {
         const { value } = this.props;
         return (
             <Container>
-                <Select value={value.orderSource as string} items={this._generateItems()} />
+                <ConfigGeneratorSection title="Standard Relayer API Endpoint">
+                    <Select value={value.orderSource as string} items={this._generateItems()} />
+                </ConfigGeneratorSection>
+                <ConfigGeneratorSection title="What tokens can users buy?">BLAH</ConfigGeneratorSection>
             </Container>
         );
     }
@@ -36,3 +41,20 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps> {
         this.props.onConfigChange(newConfig);
     };
 }
+
+export interface ConfigGeneratorSectionProps {
+    title: string;
+    actionText?: string;
+    onActionTextClick?: () => void;
+}
+
+export const ConfigGeneratorSection: React.StatelessComponent<ConfigGeneratorSectionProps> = props => (
+    <Container marginBottom="30px">
+        <Container marginBottom="10px">
+            <Text fontColor={colors.white} fontSize="16px" lineHeight="18px">
+                {props.title}
+            </Text>
+        </Container>
+        {props.children}
+    </Container>
+);
