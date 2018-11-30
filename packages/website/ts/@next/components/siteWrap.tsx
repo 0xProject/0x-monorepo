@@ -12,26 +12,20 @@ interface Props {
 
 }
 
-const SiteWrap: React.StatelessComponent<Props> = props => {
+export const SiteWrap: React.StatelessComponent<Props> = props => {
   const { children } = props;
 
   return (
     <>
-      {/* GlobalStyles will be exposed the theme via provider,
-          same is true for all children of SiteWrap
-      */}
-      <GlobalStyles />
-
-      <Header />
-
-      <Main>
-        { children }
-      </Main>
-
-      <Footer/>
+        {/* GlobalStyles will be exposed the theme via provider,
+            same is true for all children of SiteWrap
+        */}
+        <GlobalStyles />
+        <Header />
+        <Main>
+            {children}
+        </Main>
+        <Footer/>
     </>
   );
 };
-
-
-export { SiteWrap };
