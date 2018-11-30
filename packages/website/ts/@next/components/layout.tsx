@@ -42,23 +42,19 @@ interface GetColWidthArgs {
     columns: number;
 }
 
-const _getColumnWidth = (args: GetColWidthArgs) => {
+const _getColumnWidth = (args: GetColWidthArgs): string => {
     const { span = 1, columns } = args;
     const percentWidth = (span / columns) * 100;
     const gutterDiff = (GUTTER * (columns - 1)) / columns;
     return `calc(${percentWidth}% - ${gutterDiff}px)`;
 };
 
-const _getPadding = (value: number | (string | number)[]) => {
-    let padding: string = '';
-
+const _getPadding = (value: number | (string | number)[]): string => {
     if (Array.isArray(value)) {
-        padding = value.map(val => PADDING_SIZES[val] || `${val}px`).join(' ');
+        return value.map(val => PADDING_SIZES[val] || `${val}px`).join(' ');
     } else {
-        padding = `${value}px`;
+        return `${value}px`;
     }
-
-    return padding;
 }
 
 const GUTTER = 30 as number;
