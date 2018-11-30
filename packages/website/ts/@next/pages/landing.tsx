@@ -1,8 +1,6 @@
 import * as React from 'react';
-import styled, { css } from 'styled-components';
 
 import {colors} from 'ts/style/colors';
-
 import {Button, ButtonWrap} from 'ts/@next/components/button';
 import {Column, Section, Wrap, WrapCentered} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
@@ -12,10 +10,6 @@ import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
 import IconReadyToBuild from 'ts/@next/icons/illustrations/ready-to-build.svg';
 
-
-const Icon = styled.div `
-    flex-shrink: 0;
-`;
 
 export const NextLanding = () => (
     <SiteWrap>
