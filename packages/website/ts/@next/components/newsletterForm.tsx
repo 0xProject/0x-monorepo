@@ -3,10 +3,9 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import formArrow from 'ts/@next/icons/form-arrow.svg';
-
 import {Button} from 'ts/@next/components/button';
-import {Icon} from 'ts/@next/components/icon';
+
+import ArrowIcon from 'ts/@next/icons/form-arrow.svg';
 
 interface InputProps {
     name: string;
@@ -25,14 +24,16 @@ const Input = ({ ...props }) => {
             <label className="visuallyHidden" htmlFor={id}>{label}</label>
             <StyledInput id={id} placeholder={label} {...props} />
         </>
-    )
+    );
 };
 
 export const NewsletterForm: React.StatelessComponent = (props: Props) => (
     <StyledForm>
         <InputWrapper>
             <Input name="email" type="email" label="Email Address" />
-            <Icon icon={formArrow} />
+            <SubmitButton hasIcon>
+                Submit
+            </SubmitButton>
         </InputWrapper>
         <Text>Subscribe to our newsletter for updates in the 0x ecosystem</Text>
     </StyledForm>
@@ -62,10 +63,13 @@ const InputWrapper = styled.div`
     position: relative;
 `;
 
-const ButtonWrapper = styled(Button)`
+const SubmitButton = styled(Button)`
     display: flex;
     justify-content: center;
     align-items: center;
+    position: absolute;
+    right: 0;
+    top: calc(50% - 29px);
 `;
 
 const Text = styled.span`
