@@ -31,6 +31,8 @@ contract CompliantForwarder {
     IExchange internal EXCHANGE;
     IERC721Token internal COMPLIANCE_TOKEN;
 
+    bytes4 constant internal EXCHANGE_FILL_ORDER_SELECTOR_2 = 0xb4be83d5;
+
     constructor(address exchange, address complianceToken)
         public
     {
@@ -41,16 +43,42 @@ contract CompliantForwarder {
     function executeTransaction(
         uint256 salt,
         address signerAddress,
-        bytes signedFillOrderTransaction,
+        bytes signedExchangeTransaction,
         bytes signature
     ) 
-        public
+        external
     {
         // Validate `signedFillOrderTransaction`
-        bytes4 selector = signedFillOrderTransaction.readBytes4(0);
-        if (selector != EXCHANGE_FILL_ORDER_SELECTOR) {
-            revert("EXCHANGE_TRANSACTION_NOT_FILL_ORDER");
+        bytes4 selector = signedExchangeTransaction.readBytes4(0);
+        address makerAddress = 0x00;
+        assembly {
+            function getMakerAddress(orderPtr) -> makerAddress {
+                let orderOffset := calldataload(orderPtr)
+                makerAddress := calldataload(orderOffset)
+            }
+
+            switch selector
+            case 0xb4be83d500000000000000000000000000000000000000000000000000000000 {
+                let exchangeTxPtr := calldataload(0x44)
+
+                // Add 0x20 for length offset and 0x04 for selector offset
+                let orderPtrRelativeToExchangeTx := calldataload(add(0x4, add(exchangeTxPtr, 0x24))) // 0x60
+                let orderPtr := add(0x4,add(exchangeTxPtr, add(0x24, orderPtrRelativeToExchangeTx)))
+                
+                makerAddress := calldataload(orderPtr)
+                
+                
+                //makerAddress := getMakerAddress(orderPtr)
+            }
+            default {
+                // revert(0, 100)
+            }
         }
+        
+        /*
+        if (selector != 0xb4be83d5) {
+            revert("EXCHANGE_TRANSACTION_NOT_FILL_ORDER");
+        }*/
         
         // Taker must be compliant
         require(
@@ -87,7 +115,7 @@ contract CompliantForwarder {
         // Add 0x4 to a given offset to account for the fillOrder selector prepended to `signedFillOrderTransaction`.
         // Add 0xc to the makerAddress since abi-encoded addresses are left padded with 12 bytes.
         // Putting this together: makerAddress = 0x60 + 0x4 + 0xc = 0x70
-        address makerAddress = signedFillOrderTransaction.readAddress(0x70);
+        //address makerAddress = signedExchangeTransaction.readAddress(0x70);
         require(
             COMPLIANCE_TOKEN.balanceOf(makerAddress) > 0, 
             "MAKER_UNVERIFIED"
@@ -97,7 +125,7 @@ contract CompliantForwarder {
         EXCHANGE.executeTransaction(
             salt,
             signerAddress,
-            signedFillOrderTransaction,
+            signedExchangeTransaction,
             signature
         );
     }

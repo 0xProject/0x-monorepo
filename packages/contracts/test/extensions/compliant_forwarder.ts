@@ -26,6 +26,9 @@ import { TransactionFactory } from '../utils/transaction_factory';
 import { ContractName, ERC20BalancesByOwner, SignedTransaction } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
+import { MethodAbi } from 'ethereum-types';
+import { AbiEncoder } from '@0x/utils';
+
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
@@ -192,7 +195,18 @@ describe.only(ContractName.CompliantForwarder, () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
-        it('should transfer the correct amounts when maker and taker are compliant', async () => {
+        it.only('should transfer the correct amounts when maker and taker are compliant', async () => {
+        
+ 
+            const method = new AbiEncoder.Method(compliantForwarderInstance.abi[0] as MethodAbi);
+            const args = [
+                compliantSignedFillOrderTx.salt,
+                compliantSignedFillOrderTx.signerAddress,
+                compliantSignedFillOrderTx.data,
+                compliantSignedFillOrderTx.signature
+            ];
+            console.log(method.encode(args, {annotate: true}));
+            
             await compliantForwarderInstance.executeTransaction.sendTransactionAsync(
                 compliantSignedFillOrderTx.salt,
                 compliantSignedFillOrderTx.signerAddress,
