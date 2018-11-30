@@ -6,7 +6,7 @@ import { styled } from 'ts/style/theme';
 const CustomPre = styled.pre`
     margin: 0px;
     line-height: 24px;
-    overflow: hidden;
+    overflow: scroll;
     width: 600px;
     height: 500px;
     border-radius: 4px;
@@ -123,7 +123,7 @@ const customStyle = {
     },
     hljs: {
         display: 'block',
-        overflowX: 'auto',
+        overflowX: 'hidden',
         background: colors.instantSecondaryBackground,
         color: 'white',
         fontSize: '12px',
@@ -136,26 +136,12 @@ const customStyle = {
     },
 };
 
-export interface CodeDemoProps {}
+export interface CodeDemoProps {
+    children: string;
+}
 
-export const CodeDemo: React.StatelessComponent<CodeDemoProps> = props => {
-    const codeString = `<head>
-    <script src="https://instant.0xproject.com/instant.js"></script>
-</head>
-<body>
-    <script>
-        zeroExInstant.render({
-            liquiditySource: 'https://api.relayer.com/sra/v2/',
-            affiliateInfo: {
-                feeRecipient: '0x50ff5828a216170cf224389f1c5b0301a5d0a230',
-                feePercentage: 0.03
-            }
-        }, 'body');
-    </script>
-</body>`;
-    return (
-        <SyntaxHighlighter language="html" style={customStyle} showLineNumbers={true} PreTag={CustomPre}>
-            {codeString}
-        </SyntaxHighlighter>
-    );
-};
+export const CodeDemo: React.StatelessComponent<CodeDemoProps> = props => (
+    <SyntaxHighlighter language="html" style={customStyle} showLineNumbers={true} PreTag={CustomPre}>
+        {props.children}
+    </SyntaxHighlighter>
+);

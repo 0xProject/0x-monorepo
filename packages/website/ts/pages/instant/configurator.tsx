@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 
 import { Container } from 'ts/components/ui/container';
@@ -26,6 +27,7 @@ export class Configurator extends React.Component<ConfiguratorProps> {
     };
     public render(): React.ReactNode {
         const { hash } = this.props;
+        const codeToDisplay = this._generateCodeDemoCode();
         return (
             <Container
                 className="flex justify-center py4 px3"
@@ -47,7 +49,7 @@ export class Configurator extends React.Component<ConfiguratorProps> {
                         </Text>
                         <ActionLink displayText="Explore the Docs" linkSrc="/docs/instant" color={colors.grey} />
                     </Container>
-                    <CodeDemo />
+                    <CodeDemo key={codeToDisplay}>{codeToDisplay}</CodeDemo>
                 </Container>
             </Container>
         );
@@ -56,5 +58,39 @@ export class Configurator extends React.Component<ConfiguratorProps> {
         this.setState({
             instantConfig: config,
         });
+    };
+    private readonly _generateCodeDemoCode = (): string => {
+        const { instantConfig } = this.state;
+        console.log(instantConfig.availableAssetDatas);
+        return `<head>
+        <script src="https://instant.0xproject.com/instant.js"></script>
+    </head>
+    <body>
+        <script>
+            zeroExInstant.render({
+                liquiditySource: '${instantConfig.orderSource}',${
+            !_.isUndefined(instantConfig.availableAssetDatas)
+                ? `\n\t\tavailableAssetDatas: ${this._renderAvailableAssetDatasString(
+                      instantConfig.availableAssetDatas,
+                  )}`
+                : ''
+        }${
+            !_.isUndefined(instantConfig.affiliateInfo)
+                ? `affiliateInfo: {
+                    feeRecipient: '${instantConfig.affiliateInfo.feeRecipient}',
+                    feePercentage: ${instantConfig.affiliateInfo.feePercentage}
+                }`
+                : ''
+        }
+            }, 'body');
+        </script>
+    </body>`;
+    };
+    private readonly _renderAvailableAssetDatasString = (availableAssetDatas: string[]): string => {
+        const stringAvailableAssetDatas = availableAssetDatas.map(assetData => `'${assetData}'`);
+        if (availableAssetDatas.length < 2) {
+            return `[${stringAvailableAssetDatas.join(', ')}]`;
+        }
+        return `[\n\t\t\t${stringAvailableAssetDatas.join(', \n\t\t\t')}\n\t\t]`;
     };
 }
