@@ -5,7 +5,10 @@
         "rootDir": "src",
         "jsx": "react",
         "noImplicitAny": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "declaration": false,
+        "declarationMap": false,
+        "composite": false
     },
     "include": ["./src/**/*"]
 }
