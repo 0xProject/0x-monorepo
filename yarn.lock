@@ -472,6 +472,14 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
+"@0x/json-schemas@^1.0.7":
+  version "2.1.2"
+  dependencies:
+    "@0x/typescript-typings" "^3.0.4"
+    "@types/node" "*"
+    jsonschema "^1.2.0"
+    lodash.values "^4.3.0"
+
 "@0xproject/npm-cli-login@^0.0.11":
   version "0.0.11"
   resolved "https://registry.yarnpkg.com/@0xproject/npm-cli-login/-/npm-cli-login-0.0.11.tgz#3f1ec06112ce62aad300ff0575358f68aeecde2e"
@@ -13995,6 +14003,11 @@ solhint@^1.2.1:
 solidity-parser-antlr@^0.2.12:
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/solidity-parser-antlr/-/solidity-parser-antlr-0.2.12.tgz#1154f183d5cdda2c7677549ee584dbdb7fb2269c"
+
+solidity-parser-antlr@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/solidity-parser-antlr/-/solidity-parser-antlr-0.3.2.tgz#1cf9d019280550a31299dc380e87a310dc4ca154"
+  integrity sha512-aO/lbnc14A81cQigN5sKNuwbxohPyJOq7kpLirYT/6emCw5Gjb0TJoZ3TzL1tYdIX6gjTAMlQ1UZwOcrzOAp4w==
 
 sort-keys@^1.0.0:
   version "1.1.2"
