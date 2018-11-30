@@ -30,10 +30,10 @@ export const ButtonWrap = styled.div`
 
 const StyledButton = styled.button<ButtonInterface>`
     appearance: none;
-    border: 0;
+    border: 1px solid transparent;
     display: ${props => props.inline && 'inline-block'};
     background-color: ${props => !props.transparent && colors.brandLight};
-    border: ${props => props.transparent && '1px solid #6a6a6a'};
+    border-color: ${props => props.transparent && '#6a6a6a'};
     color: ${colors.white};
     text-align: center;
     padding: 14px 22px;
