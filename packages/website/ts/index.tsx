@@ -23,6 +23,7 @@ import { muiTheme } from 'ts/utils/mui_theme';
 import { Next0xInstant } from 'ts/@next/pages/instant';
 import { NextLanding } from 'ts/@next/pages/landing';
 import { NextWhy } from 'ts/@next/pages/why';
+import { NextAboutMission } from 'ts/@next/pages/about/mission';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();
@@ -112,6 +113,7 @@ render(
                                 <Route exact path="/next" component={NextLanding as any} />
                                 <Route exact path="/next/why" component={NextWhy as any} />
                                 <Route exact path="/next/0x-instant" component={Next0xInstant as any} />
+                                <Route exact path="/next/about/mission" component={NextAboutMission as any} />
 
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
