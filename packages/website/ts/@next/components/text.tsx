@@ -44,7 +44,7 @@ const PARAGRAPH_SIZES: ParagraphSizes = {
     default: '18px',
     medium: '22px',
     large: '28px',
-}
+};
 
 const StyledHeading = styled.h1<HeadingProps>`
     color: ${props => props.color || colors.white};
@@ -60,7 +60,7 @@ export const Heading: React.StatelessComponent<HeadingProps> = props => {
     } = props;
     const Component = StyledHeading.withComponent(asElement);
 
-    return <Component {...props}>{ children }</Component>;
+    return <Component {...props}>{children}</Component>;
 };
 
 // No need to declare it twice as Styled then rewrap as a stateless comp
