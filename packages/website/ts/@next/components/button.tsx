@@ -3,19 +3,18 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-
 interface ButtonInterface {
     children: Node | string;
     transparent?: any;
     inline?: any;
-    href?: string,
+    href?: string;
     onClick?: () => void;
 }
 
 export const Button: React.StatelessComponent<ButtonInterface> = props => {
     const { onClick } = props;
     const Component = onClick ? StyledButton : StyledButton.withComponent('a');
-    return <Component {...props}>{ props.children }</Component>;
+    return <Component {...props}>{props.children}</Component>;
 };
 
 // Added this, & + & doesnt really work since we switch with element types...
