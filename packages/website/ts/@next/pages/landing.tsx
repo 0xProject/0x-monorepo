@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import {colors} from 'ts/style/colors';
 
@@ -10,6 +10,8 @@ import {Heading, Paragraph} from 'ts/@next/components/text';
 
 import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
+import IconReadyToBuild from 'ts/@next/icons/illustrations/ready-to-build.svg';
+
 
 const Icon = styled.div `
     flex-shrink: 0;
@@ -97,12 +99,18 @@ export const NextLanding = () => (
 
         <Section>
             <Wrap>
-                <Column bgColor="#003831" colWidth="1/2">
-                    This is a 2 COLUMN section
+                <Column bgColor="#003831" colWidth="1/2" padLarge>
+                    <WrapCentered>
+                        <Icon as={IconReadyToBuild as 'svg'} />
+                        Ready to build on 0x?
+                    </WrapCentered>
                 </Column>
 
-                <Column bgColor="#003831" colWidth="1/2">
-                    Again a 2 column section
+                <Column bgColor="#003831" colWidth="1/2" padLarge>
+                    <WrapCentered>
+                        <Icon as={IconReadyToBuild as 'svg'} />
+                        Ready to build on 0x?
+                    </WrapCentered>
                 </Column>
             </Wrap>
         </Section>
@@ -120,7 +128,10 @@ export const NextLanding = () => (
             </Wrap>
         </Section>
 
-        <Section bgColor="#ff0000" fullWidth noPadding>
+        <Section
+            bgColor="#ff0000"
+            fullWidth
+            noPadding>
             <Wrap width="full">
                 <Column colWidth="2/3">
                     SAMPLE FLUSHED width
@@ -134,9 +145,7 @@ export const NextLanding = () => (
 
         <Section bgColor="#003831">
             <Wrap width="narrow">
-                0x is an open protocol that enables the peer-to-peer exchange of Ethereum-based
-                tokens. Anyone can utilize 0x to service a wide variety of markets ranging from
-                gaming items to traditional financial assets.
+                0x is an open protocol that enables the peer-to-peer exchange of Ethereum-based tokens. Anyone can utilize 0x to service a wide variety of markets ranging from gaming items to traditional financial assets.
             </Wrap>
 
             <Wrap>
@@ -149,7 +158,7 @@ export const NextLanding = () => (
                 </Column>
 
                 <Column colWidth="1/3">
-                    three-column module
+                     three-column module
                 </Column>
             </Wrap>
         </Section>

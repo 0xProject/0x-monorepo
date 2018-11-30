@@ -15,6 +15,7 @@ interface ColumnWidths {
 
 interface SectionProps {
     noPadding?: any;
+    padLarge?: any;
     noMargin?: any;
     bgColor?: string;
     fullWidth?: any;
@@ -28,6 +29,7 @@ interface WrapProps {
 interface ColumnProps {
     colWidth?: '1/4' | '1/3' | '1/2' | '2/3';
     noPadding?: any;
+    padLarge?: any;
     bgColor?: string;
 }
 
@@ -72,7 +74,7 @@ export const Main = styled.main`
 
 export const Section = styled.section<SectionProps>`
     width: ${props => props.fullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
-    padding: ${props => !props.noPadding && '30px'};
+    padding: ${props => !props.noPadding && (props.padLarge ? '60px 30px' : '30px')};
     margin-bottom: ${props => !props.noMargin && `${GUTTER}px`};
     margin-left: ${props => props.fullWidth && `-${GUTTER}px`};
     background-color: ${props => props.bgColor};
@@ -105,7 +107,7 @@ export const WrapCentered = styled(WrapBase)`
 `;
 
 export const Column = styled.div<ColumnProps>`
-    padding: ${props => !props.noPadding && '30px'};
+    padding: ${props => !props.noPadding && (props.padLarge ? '60px 30px' : '30px')};
     border: 1px dotted rgba(255, 0, 0, 0.3);
     background-color: ${props => props.bgColor};
 
