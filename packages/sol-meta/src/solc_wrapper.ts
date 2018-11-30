@@ -14,9 +14,7 @@ export const compile = async (sources: SourceCollection, ast: S.SourceUnit) => {
         _.map(utils.pragmaNodes(ast).filter(({ name }) => name === 'solidity'), ({ value }) => value)[0] || 'latest';
 
     // Get Solidity compiler
-    console.time('Loading solc-js');
     const compiler = await Solc.getSolcAsync(version);
-    console.timeEnd('Loading solc-js');
 
     // Solidity standard JSON input
     // TODO: Typescript typings
@@ -44,11 +42,10 @@ export const compile = async (sources: SourceCollection, ast: S.SourceUnit) => {
         throw new Error(`Could not find ${importPath}.`);
     };
 
-    console.time('Compiling');
+    // Run the compiler
     const result: StandardOutput = JSON.parse(
         compiler.compileStandardWrapper(JSON.stringify(input), findImportsCallback),
     );
-    console.timeEnd('Compiling');
 
     // Throw errors
     const errors = result.errors.filter(({ severity }) => severity === 'error');
