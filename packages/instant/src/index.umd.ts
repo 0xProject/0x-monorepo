@@ -89,11 +89,10 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
     // If the integrator defined a popstate handler, save it to __zeroExInstantIntegratorsPopStateHandler
     // unless we have already done so on a previous render.
     const anyWindow = window as any;
-    if (window.onpopstate && !anyWindow.__zeroExInstantIntegratorsPopStateHandler) {
-        anyWindow.__zeroExInstantIntegratorsPopStateHandler = window.onpopstate.bind(window);
-    } else {
-        anyWindow.__zeroExInstantIntegratorsPopStateHandler = util.boundNoop;
-    }
+    const popStateExistsAndNotSetPreviously = window.onpopstate && !anyWindow.__zeroExInstantIntegratorsPopStateHandler;
+    anyWindow.__zeroExInstantIntegratorsPopStateHandler = popStateExistsAndNotSetPreviously
+        ? anyWindow.onpopstate.bind(window)
+        : util.boundNoop;
     const onPopStateHandler = (e: PopStateEvent) => {
         anyWindow.__zeroExInstantIntegratorsPopStateHandler(e);
         const newState = e.state;
