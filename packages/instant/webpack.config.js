@@ -39,7 +39,6 @@ const generateConfig = (dischargeTarget, configOptions) => {
     if (heapAnalyticsId) {
         envVars.HEAP_ANALYTICS_ID = JSON.stringify(heapAnalyticsId);
     }
-    console.log(envVars);
 
     const config = {
         entry: {
