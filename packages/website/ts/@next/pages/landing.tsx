@@ -7,9 +7,8 @@ import { Column, Section, Wrap, WrapCentered } from 'ts/@next/components/layout'
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Intro, Text } from 'ts/@next/components/text';
 
-import logoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
-import protocol from 'ts/@next/icons/illustrations/protocol.svg';
-
+import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
+import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
 
 const Icon = styled.div`
     flex-shrink: 0;
@@ -35,14 +34,14 @@ export const NextLanding = () => (
         </Column>
 
         <Column colWidth="1/3">
-          <Icon as={logoOutlined as 'svg'} />
+          <ProtocolIcon />
         </Column>
       </Wrap>
     </Section>
 
     <Section bgColor={colors.backgroundDark}>
       <WrapCentered>
-        <Icon as={protocol as 'svg'} />
+        <Icon><LogoOutlined /></Icon>
         <Text size="medium">0x is the best solution for adding exchange functionality to your business.</Text>
         <Text size="medium">Discover how developers use 0x (need arrow + line under)</Text>
       </WrapCentered>

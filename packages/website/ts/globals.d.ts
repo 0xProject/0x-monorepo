@@ -12,8 +12,10 @@ declare module '*.json' {
 }
 
 declare module '*.svg' {
-    const svg: any;
-    export default svg;
+    //const svg: any;
+    //export default svg;
+    import {PureComponent, SVGProps} from "react";
+    export default class extends PureComponent<SVGProps<SVGSVGElement>> {}
 }
 
 declare module 'web3-provider-engine/subproviders/filters';
