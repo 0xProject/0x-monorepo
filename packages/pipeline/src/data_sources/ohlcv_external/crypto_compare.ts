@@ -33,24 +33,28 @@ export interface CryptoCompareOHLCVParams {
 }
 
 // tslint:disable:custom-no-magic-numbers
-const defaultExchange = 'CCCAGG'; // defaults to Crypto Compare aggregated average
-const oneWeek = 7 * 24 * 60 * 60 * 1000;
-const oneSecond = 1000;
+const DEFAULT_EXCHANGE = 'CCCAGG'; // defaults to Crypto Compare aggregated average
+const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+const ONE_SECOND = 1000;
+
+const HISTORICAL_HOURLY_OHLCV_URI = 'https://min-api.cryptocompare.com/data/histohour';
 
 export class CryptoCompareOHLCVSource {
-    private readonly _url: string = 'https://min-api.cryptocompare.com/data/histohour';
+    public readonly _interval = ONE_WEEK; // the hourly API returns data for one week at a time
+    private readonly _url: string = HISTORICAL_HOURLY_OHLCV_URI;
     private readonly _plimit: (fetchFn: () => Promise<AxiosResponse<CryptoCompareOHLCVResponse>>) => Promise<AxiosResponse<CryptoCompareOHLCVResponse>>;
 
-    constructor(maxConcurrentRequests: number) {
+    constructor(maxConcurrentRequests: number = 50) {
         this._plimit = promiseLimit(maxConcurrentRequests);
     }
 
+    // gets OHLCV records starting from pair.latest
     public async getAsync(pair: TradingPair): Promise<CryptoCompareOHLCVRecord[]> {
       const params = {
-        e: defaultExchange,
+        e: DEFAULT_EXCHANGE,
         fsym: pair.fromSymbol,
         tsym: pair.toSymbol,
-        toTs: Math.floor((pair.latest + oneWeek) / oneSecond), // CryptoCompare uses timestamp in seconds. not ms
+        toTs: Math.floor((pair.latest + this._interval) / ONE_SECOND), // CryptoCompare uses timestamp in seconds. not ms
       };
 
       const fetchPromise = this._plimit(() => {
@@ -62,32 +66,28 @@ export class CryptoCompareOHLCVSource {
       const resp = await Promise.resolve(fetchPromise);
 
       return resp.data.Data
-        .filter(rec => rec.time * oneSecond >= pair.latest)
+        .filter(rec => rec.time * ONE_SECOND >= pair.latest)
         .map(rec => {
-          rec.exchange = defaultExchange;
+          rec.exchange = DEFAULT_EXCHANGE;
           return rec;
         });
 
     }
 
-}
+    public getBackfillIntervals(pair: TradingPair): TradingPair[] {
+      const now = new Date().getTime();
+      const f = (p: TradingPair): false | [TradingPair, TradingPair] => {
+        if (p.latest > now) {
+          return false;
+        } else {
+          return [
+            p,
+            merge(p, { latest: p.latest + this._interval }),
+          ];
+        }
+      };
+      const pairs = unfold(f, pair);
+      return pairs;
+    }
 
-/**
- * Expand a single trading pair into an array of trading pairs with a range of timestamps starting from the original pair and ending in the present timestamp
- * @param interval the interval between timestamps, in milliseconds
- */
-export function getBackfillIntervals(pair: TradingPair, interval: number = oneWeek): TradingPair[] {
-    const now = new Date().getTime();
-    const f = (p: TradingPair): false | [TradingPair, TradingPair] => {
-      if (p.latest > now) {
-        return false;
-      } else {
-        return [
-          p,
-          merge(p, { latest: p.latest + interval }),
-        ];
-      }
-    };
-    const pairs = unfold(f, pair);
-    return pairs;
-  }
+}
