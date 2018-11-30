@@ -1,4 +1,4 @@
-# 0x / sol-meta
+# 0x/sol-meta
 
 Sol-meta is a Solidity to Solidity compiler to automatically generate testing
 contracts. It does two things: exposing internal logic and stubbing/scripting
@@ -13,12 +13,12 @@ downside is that we can not directly test contract members marked `private`.
 ### Command line interface
 
 ```
-Usage: sol-meta.js <sources> [options]
+Usage: sol-meta <sources> [options]
 
 Options:
   --version    Show version number                                     [boolean]
   --help       Show help                                               [boolean]
-  --config     config file                                              [string]
+  --config     path to config file                                      [string]
   --remapping  path remappings for import statements                     [array]
   --includes   search paths for imported source files                    [array]
   --output     directory to output too                                  [string]
@@ -77,8 +77,6 @@ unaccesible variables and functoins from a test. Stubbing implements missing
 functions for you so you can test a partial contract such as a mixin in
 isolation.
 
-The
-
 ### Exposing
 
 Given an implemented contract it generates a contract that exposes all internal
@@ -86,7 +84,7 @@ functions with public wrappers.
 
 #### Exposed Functions
 
-All functions marked `internal` functions receive a public wrapper. The name of
+All functions marked `internal` receive a public wrapper. The name of
 the wrapper is `functionNamePublic`. The wrapped function signature is
 identical to the original.
 
@@ -140,7 +138,7 @@ Example generated emitter:
 
 #### Exposed Variables
 
-All contract variable are given getters and setters to allow the tester to
+All contract variables are given getters and setters to allow the tester to
 manipulate state variables directly. The getter is named `variableNameGet`,
 takes no arguments and returns the current value. The setter is named
 `variableNameSet` and takes an instance of the variable type as argument.
@@ -151,7 +149,7 @@ Example generated getter and setter:
 
 ```solidity
     function totalSupplyGet()
-        public
+        public view
         returns (uint256)
     {
         return totalSupply;
@@ -217,12 +215,12 @@ Example generate stub for above configuration:
 #### Stubbed Functions
 
 For any abstract function that is not scripted, a stub is generated. Depending
-on wheter the function is `pure` and has return values, the behaviour is
+on whether the function is `pure` and has return values, the behaviour is
 slightly different.
 
-For non-pure functions, the stub will log the call with all the arugments and
+For non-pure functions, the stub will log the call with all the arguments and
 give the next from a sequence of responses. The responses are programmed using
-as separate function. When no response is scheduled, it will revert with
+a separate function. When no response is scheduled, it will revert with
 `Unprogrammed input for <function name>`.
 
 Due to usage of logs and storage, this can not be used to implement `pure`
@@ -256,7 +254,7 @@ Example stub:
         public view
         returns (bool  isValid)
     {
-        // Log the inputs and return the next schedult result.
+        // Log the inputs and return the next scheduled result.
         // ...
     }
 ```
@@ -298,13 +296,15 @@ A constructor is created that will call all parent constructors
 that require arguments. The constructor arguments need to be supplied by config
 file.
 
+Example, the following config file:
+
 ```json
     "constructors": {
         "LibConstants": ["\"ZRXASSETSTRING\""]
     },
 ```
 
-Example:
+will allow sol-meta to construct contracts inheriting from `LibConstants`:
 
 ```solidity
     constructor() public
@@ -312,8 +312,10 @@ Example:
     { }
 ```
 
-Note: Constructors calling parent constructors is not taken into consideration.
-These will incorrectly appear as to-be-call.
+Note: Currently `sol-meta` assumes that all parent constructors need to be
+called. If you have a contract `A is B` and `B is C` where `B` calls the
+constructor of `C`, then `sol-meta` incorrectly assumes that `C` still needs to
+be called.
 
 ### Non Abstract Forcer
 
@@ -324,7 +326,7 @@ will fail to compile if the original contract is abstract:
 
 ```solidity
 contract MixinExchangeCoreMockNonAbstractForcer {
-    constructor() {
+    constructor() public {
         new MixinExchangeCoreMock;
     }
 }
