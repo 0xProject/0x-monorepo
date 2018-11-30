@@ -122,7 +122,7 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
                 const decodedAssetData = assetDataUtils.decodeERC721AssetData(assetData);
                 if (
                     decodedAssetData.assetProxyId === AssetProxyId.ERC721 &&
-                    !_.isUndefined(decodedAssetData.tokenAddress) &&
+                    decodedAssetData.tokenAddress === tokenAddress &&
                     !_.isUndefined(this._proxyAllowance[assetData][userAddress])
                 ) {
                     delete this._proxyAllowance[assetData][userAddress];

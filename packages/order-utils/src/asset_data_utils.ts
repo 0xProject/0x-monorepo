@@ -73,6 +73,13 @@ export const assetDataUtils = {
      * @return The hex encoded assetData string
      */
     encodeMultiAssetData(amounts: BigNumber[], nestedAssetData: string[]): string {
+        if (amounts.length !== nestedAssetData.length) {
+            throw new Error(
+                `Invalid MultiAsset arguments. Expected length of 'amounts' (${
+                    amounts.length
+                }) to equal length of 'nestedAssetData' (${nestedAssetData.length})`,
+            );
+        }
         _.forEach(nestedAssetData, assetDataElement => assetDataUtils.validateAssetDataOrThrow(assetDataElement));
         const abiEncoder = new AbiEncoder.Method(constants.MULTI_ASSET_METHOD_ABI as MethodAbi);
         const args = [amounts, nestedAssetData];
