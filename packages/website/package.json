@@ -20,6 +20,8 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
+        "@0x/asset-buyer": "^3.0.2",
+        "@0x/contract-addresses": "^2.0.0",
         "@0x/contract-wrappers": "^4.1.1",
         "@0x/json-schemas": "^2.1.2",
         "@0x/order-utils": "^3.0.4",
