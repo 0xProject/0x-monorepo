@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import styled from 'styled-components';
 
 import {colors} from 'ts/style/colors';
+
 import {Button, ButtonWrap} from 'ts/@next/components/button';
 import {Column, Section, Wrap, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
@@ -10,8 +11,8 @@ import {Heading, Paragraph} from 'ts/@next/components/text';
 
 import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
-import IconReadyToBuild from 'ts/@next/icons/illustrations/ready-to-build.svg';
-
+import ReadyToBuildIcon from 'ts/@next/icons/illustrations/ready-to-build.svg';
+import SupportIcon from 'ts/@next/icons/illustrations/support.svg';
 
 /**
     Note(ez): Maybe when we're done at least with a basic structure,
@@ -23,6 +24,7 @@ import IconReadyToBuild from 'ts/@next/icons/illustrations/ready-to-build.svg';
         <LandingSectionWhatever />
     </SiteWrap>
 */
+
 export const NextLanding = () => (
     <SiteWrap>
         <Section>
@@ -120,14 +122,14 @@ export const NextLanding = () => (
             <Wrap>
                 <Column bgColor="#003831" colWidth="1/2" padLarge>
                     <WrapCentered>
-                        <IconReadyToBuild />
+                        <ReadyToBuildIcon width="150" />
                         Ready to build on 0x?
                     </WrapCentered>
                 </Column>
 
                 <Column bgColor="#003831" colWidth="1/2" padLarge>
                     <WrapCentered>
-                        <IconReadyToBuild />
+                        <ReadyToBuildIcon width="150" />
                         Ready to build on 0x?
                     </WrapCentered>
                 </Column>
