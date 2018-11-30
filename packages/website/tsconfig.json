@@ -22,6 +22,7 @@
     },
     "awesomeTypescriptLoaderOptions": {
         "useCache": true,
+        "errorsAsWarnings": true,
         "reportFiles": [
             "./ts/**/*"
         ]
