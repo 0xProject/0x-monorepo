@@ -12,6 +12,10 @@ interface ColumnWidths {
     [key: string]: string;
 }
 
+interface PaddingSizes {
+    [key: string]: string;
+}
+
 interface SectionProps {
     noPadding?: any;
     padLarge?: any;
@@ -23,6 +27,7 @@ interface SectionProps {
 interface WrapProps {
     width?: 'default' | 'full' | 'medium' | 'narrow';
     bgColor?: string;
+    margin?: number | (string | number)[];
 }
 
 interface ColumnProps {
@@ -37,13 +42,24 @@ interface GetColWidthArgs {
     columns: number;
 }
 
-
 const _getColumnWidth = (args: GetColWidthArgs) => {
     const { span = 1, columns } = args;
     const percentWidth = (span / columns) * 100;
     const gutterDiff = (GUTTER * (columns - 1)) / columns;
     return `calc(${percentWidth}% - ${gutterDiff}px)`;
 };
+
+const _getPadding = (value: number | (string | number)[]) => {
+    let padding = '';
+
+    if (Array.isArray(value)) {
+        padding = value.map(val => PADDING_SIZES[val] || '0px').join(' ');
+    } else {
+        padding = `${value}px`;
+    }
+
+    return padding;
+}
 
 const GUTTER = 30 as number;
 const MAX_WIDTH = 1500;
@@ -61,6 +77,10 @@ const COLUMN_WIDTHS: ColumnWidths = {
     '1/3': _getColumnWidth({ columns: 3 }),
     '1/2': _getColumnWidth({ columns: 2 }),
     '2/3': _getColumnWidth({ span: 2, columns: 3 }),
+};
+const PADDING_SIZES: PaddingSizes = {
+    'default': '30px',
+    'large': '60px',
 };
 
 
@@ -87,6 +107,7 @@ export const Section = styled.section<SectionProps>`
 
 const WrapBase = styled.div<WrapProps>`
     max-width: ${props => WRAPPER_WIDTHS[props.width || 'default']};
+    padding: ${props => _getPadding(props.margin)};
     background-color: ${props => props.bgColor};
     margin: 0 auto;
 `;

@@ -69,9 +69,9 @@ export const NextLanding = () => (
                 </Button>
             </WrapCentered>
 
-            <Wrap>
+            <Wrap margin={['large', 0, 0, 0]}>
                 {/* NOTE: this probably should be withComponent as part of a <dl> */}
-                <Column colWidth="1/3">
+                <Column colWidth="1/3" noPadding>
                     <Heading size="medium" center>
                         873,435
                     </Heading>
@@ -81,7 +81,7 @@ export const NextLanding = () => (
                     </Paragraph>
                 </Column>
 
-                <Column colWidth="1/3">
+                <Column colWidth="1/3" noPadding>
                     <Heading size="medium" center>
                         $203M
                     </Heading>
@@ -91,7 +91,7 @@ export const NextLanding = () => (
                     </Paragraph>
                 </Column>
 
-                <Column colWidth="1/3">
+                <Column colWidth="1/3" noPadding>
                     <Heading size="medium" center>
                         227,372
                     </Heading>
