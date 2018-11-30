@@ -17,7 +17,7 @@ interface LinkProps {
 
 const links = [
     { url: '/next/why', text: 'Why 0x' },
-    { url: '#', text: 'Products' },
+    { url: '/next/0x-instant', text: 'Products' },
     { url: '#', text: 'Developers' },
     { url: '#', text: 'About' },
     { url: '#', text: 'Blog' },
