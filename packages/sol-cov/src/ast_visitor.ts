@@ -156,7 +156,7 @@ export class ASTVisitor {
         }
         const loc = this._getExpressionRange(ast);
         this._fnMap[this._entryId++] = {
-            name: ast.name,
+            name: ast.name || '',
             line: loc.start.line,
             loc,
         };
