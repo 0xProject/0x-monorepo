@@ -7,6 +7,5 @@
         "noImplicitAny": true,
         "allowSyntheticDefaultImports": true
     },
-    "include": ["./src/**/*"],
-    "exclude": ["./src/index.umd.ts"]
+    "include": ["./src/**/*"]
 }
