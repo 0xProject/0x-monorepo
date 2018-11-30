@@ -6,6 +6,7 @@ import {
     AffiliateInfo,
     Asset,
     Network,
+    OrderProcessState,
     OrderSource,
     ProviderState,
     QuoteFetchOrigin,
@@ -27,6 +28,7 @@ export const evaluateIfEnabled = (fnCall: () => void) => {
 
 enum EventNames {
     INSTANT_OPENED = 'Instant - Opened',
+    INSTANT_CLOSED = 'Instant - Closed',
     ACCOUNT_LOCKED = 'Account - Locked',
     ACCOUNT_READY = 'Account - Ready',
     ACCOUNT_UNLOCK_REQUESTED = 'Account - Unlock Requested',
@@ -51,6 +53,7 @@ enum EventNames {
     TOKEN_SELECTOR_CLOSED = 'Token Selector - Closed',
     TOKEN_SELECTOR_CHOSE = 'Token Selector - Chose',
     TOKEN_SELECTOR_SEARCHED = 'Token Selector - Searched',
+    TRANSACTION_VIEWED = 'Transaction - Viewed',
     QUOTE_FETCHED = 'Quote - Fetched',
     QUOTE_ERROR = 'Quote - Error',
 }
@@ -149,6 +152,7 @@ export const analytics = {
         return eventOptions;
     },
     trackInstantOpened: trackingEventFnWithoutPayload(EventNames.INSTANT_OPENED),
+    trackInstantClosed: trackingEventFnWithoutPayload(EventNames.INSTANT_CLOSED),
     trackAccountLocked: trackingEventFnWithoutPayload(EventNames.ACCOUNT_LOCKED),
     trackAccountReady: (address: string) => trackingEventFnWithPayload(EventNames.ACCOUNT_READY)({ address }),
     trackAccountUnlockRequested: trackingEventFnWithoutPayload(EventNames.ACCOUNT_UNLOCK_REQUESTED),
@@ -201,6 +205,8 @@ export const analytics = {
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_CHOSE)(payload),
     trackTokenSelectorSearched: (searchText: string) =>
         trackingEventFnWithPayload(EventNames.TOKEN_SELECTOR_SEARCHED)({ searchText }),
+    trackTransactionViewed: (orderProcesState: OrderProcessState) =>
+        trackingEventFnWithPayload(EventNames.TRANSACTION_VIEWED)({ orderState: orderProcesState }),
     trackQuoteFetched: (buyQuote: BuyQuote, fetchOrigin: QuoteFetchOrigin) =>
         trackingEventFnWithPayload(EventNames.QUOTE_FETCHED)({
             ...buyQuoteEventProperties(buyQuote),
