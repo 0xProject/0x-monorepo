@@ -5,6 +5,7 @@ import { colors } from 'ts/style/colors';
 
 interface Props {
     size?: 'normal' | 'medium' | 'large';
+    muted?: any;
     center?: boolean;
 }
 
@@ -37,11 +38,21 @@ Text.defaultProps = {
 
 const StyledHeading = styled.h1`
     color: ${colors.white};
-    font-size: 80px;
-    line-height: 1em;
+    font-size: 1.111111111rem;
+    line-height: 1.4em;
 
     ${(props: Props) => props.center && `
         text-align: center
+    `}
+
+    ${(props: Props) => props.size === 'medium' && `
+        font-size: 3.222222222rem; // 50px
+        line-height: 1.16em;
+    `}
+
+    ${(props: Props) => props.size === 'large' && `
+        font-size: 4.444444444rem; // 80px
+        line-height: 1em;
     `}
 `;
 
@@ -65,5 +76,9 @@ const StyledText = styled.p<Props>`
     `}
     ${(props: Props) => props.center && `
         text-align: center
+    `}
+
+    ${(props: Props) => props.muted && `
+        opacity: ${typeof props.muted === 'string' ? props.muted : '0.8'};
     `}
 `;
