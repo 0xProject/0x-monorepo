@@ -19,10 +19,9 @@ import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
 
-
 // Next (new website) routes. We should rename them later
 import { NextLanding } from 'ts/@next/pages/landing';
-
+import { NextWhy } from 'ts/@next/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();
@@ -110,7 +109,7 @@ render(
 
                                 {/* Next (new site) routes */}
                                 <Route exact path="/next" component={NextLanding as any} />
-
+                                <Route exact path="/next/why" component={NextWhy as any} />
 
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
