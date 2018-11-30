@@ -41,7 +41,7 @@ Finally, we have our live production bundle that is only meant to be updated wit
 To build and deploy to this bundle, run
 
 ```
-yarn deploy_live
+yarn deploy_production
 ```
 
 **NOTE: On deploying the site to staging and dogfood, it will say the site is available at a non-existent URL. Please ignore and use the (now updated) URL above.**

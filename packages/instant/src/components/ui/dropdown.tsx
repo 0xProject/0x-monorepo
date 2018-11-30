@@ -19,6 +19,7 @@ export interface DropdownProps {
     value: string;
     label?: string;
     items: DropdownItemConfig[];
+    onOpen?: () => void;
 }
 
 export interface DropdownState {
@@ -97,9 +98,14 @@ export class Dropdown extends React.Component<DropdownProps, DropdownState> {
         if (_.isEmpty(this.props.items)) {
             return;
         }
+        const isOpen = !this.state.isOpen;
         this.setState({
-            isOpen: !this.state.isOpen,
+            isOpen,
         });
+
+        if (isOpen && this.props.onOpen) {
+            this.props.onOpen();
+        }
     };
     private readonly _closeDropdown = (): void => {
         this.setState({

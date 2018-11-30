@@ -3,9 +3,6 @@ const ip = require('ip');
 const path = require('path');
 const webpack = require('webpack');
 
-// The common js bundle (not this one) is built using tsc.
-// The umd bundle (this one) has a different entrypoint.
-
 const DISCHARGE_TARGETS_THAT_REQUIRED_HEAP = ['production', 'staging', 'dogfood'];
 const getConfigForDischargeTarget = dischargeTarget => {
     return {

@@ -14,6 +14,8 @@ import { DummyNoReturnERC20TokenContract } from '../../generated-wrappers/dummy_
 import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated-wrappers/exchange';
+import { IAssetDataContract } from '../../generated-wrappers/i_asset_data';
+import { MultiAssetProxyContract } from '../../generated-wrappers/multi_asset_proxy';
 import { ReentrantERC20TokenContract } from '../../generated-wrappers/reentrant_erc20_token';
 import { TestStaticCallReceiverContract } from '../../generated-wrappers/test_static_call_receiver';
 import { artifacts } from '../../src/artifacts';
@@ -31,6 +33,11 @@ import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+const assetDataInterface = new IAssetDataContract(
+    artifacts.IAssetData.compilerOutput.abi,
+    constants.NULL_ADDRESS,
+    provider,
+);
 // tslint:disable:no-unnecessary-type-assertion
 describe('Exchange core', () => {
     let makerAddress: string;
@@ -47,6 +54,7 @@ describe('Exchange core', () => {
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
+    let multiAssetProxy: MultiAssetProxyContract;
     let maliciousWallet: TestStaticCallReceiverContract;
     let maliciousValidator: TestStaticCallReceiverContract;
 
@@ -76,44 +84,26 @@ describe('Exchange core', () => {
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
+        // Deploy AssetProxies, Exchange, tokens, and malicious contracts
+        erc20Proxy = await erc20Wrapper.deployProxyAsync();
+        erc721Proxy = await erc721Wrapper.deployProxyAsync();
+        multiAssetProxy = await MultiAssetProxyContract.deployFrom0xArtifactAsync(
+            artifacts.MultiAssetProxy,
+            provider,
+            txDefaults,
+        );
         const numDummyErc20ToDeploy = 3;
         [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
-        erc20Proxy = await erc20Wrapper.deployProxyAsync();
-        await erc20Wrapper.setBalancesAndAllowancesAsync();
-
         [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
-        erc721Proxy = await erc721Wrapper.deployProxyAsync();
-        await erc721Wrapper.setBalancesAndAllowancesAsync();
-        const erc721Balances = await erc721Wrapper.getBalancesAsync();
-        erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
-        erc721TakerAssetIds = erc721Balances[takerAddress][erc721Token.address];
-
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
             txDefaults,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
         );
-        exchangeWrapper = new ExchangeWrapper(exchange, provider);
-        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
-
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-
         maliciousWallet = maliciousValidator = await TestStaticCallReceiverContract.deployFrom0xArtifactAsync(
             artifacts.TestStaticCallReceiver,
             provider,
@@ -126,9 +116,72 @@ describe('Exchange core', () => {
             exchange.address,
         );
 
+        // Configure ERC20Proxy
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+
+        // Configure ERC721Proxy
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+
+        // Configure MultiAssetProxy
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await multiAssetProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc721Proxy.address, {
+                from: owner,
+            }),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+
+        // Configure Exchange
+        exchangeWrapper = new ExchangeWrapper(exchange, provider);
+        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
+        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
+        await exchangeWrapper.registerAssetProxyAsync(multiAssetProxy.address, owner);
+
+        // Configure ERC20 tokens
+        await erc20Wrapper.setBalancesAndAllowancesAsync();
+
+        // Configure ERC721 tokens
+        await erc721Wrapper.setBalancesAndAllowancesAsync();
+        const erc721Balances = await erc721Wrapper.getBalancesAsync();
+        erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
+        erc721TakerAssetIds = erc721Balances[takerAddress][erc721Token.address];
+
+        // Configure order defaults
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
-
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
             exchangeAddress: exchange.address,
@@ -703,6 +756,292 @@ describe('Exchange core', () => {
             return expectTransactionFailedAsync(
                 exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount }),
                 RevertReason.RoundingError,
+            );
+        });
+    });
+
+    describe('Testing exchange of multiple assets', () => {
+        it('should allow multiple assets to be exchanged for a single asset', async () => {
+            const makerAmounts = [new BigNumber(10), new BigNumber(20)];
+            const makerNestedAssetData = [
+                assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
+                assetDataUtils.encodeERC20AssetData(erc20TokenB.address),
+            ];
+            const makerAssetData = assetDataInterface.MultiAsset.getABIEncodedTransactionData(
+                makerAmounts,
+                makerNestedAssetData,
+            );
+            const makerAssetAmount = new BigNumber(1);
+            const takerAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+            const takerAssetAmount = new BigNumber(10);
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData,
+                takerAssetData,
+                makerAssetAmount,
+                takerAssetAmount,
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: constants.ZERO_AMOUNT,
+            });
+
+            const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
+            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
+            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+
+            const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
+            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
+            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+
+            expect(finalMakerBalanceA).to.be.bignumber.equal(
+                initialMakerBalanceA.minus(makerAmounts[0].times(makerAssetAmount)),
+            );
+            expect(finalMakerBalanceB).to.be.bignumber.equal(
+                initialMakerBalanceB.minus(makerAmounts[1].times(makerAssetAmount)),
+            );
+            expect(finalMakerZrxBalance).to.be.bignumber.equal(initialMakerZrxBalance.plus(takerAssetAmount));
+            expect(finalTakerBalanceA).to.be.bignumber.equal(
+                initialTakerBalanceA.plus(makerAmounts[0].times(makerAssetAmount)),
+            );
+            expect(finalTakerBalanceB).to.be.bignumber.equal(
+                initialTakerBalanceB.plus(makerAmounts[1].times(makerAssetAmount)),
+            );
+            expect(finalTakerZrxBalance).to.be.bignumber.equal(initialTakerZrxBalance.minus(takerAssetAmount));
+        });
+        it('should allow multiple assets to be exchanged for multiple assets', async () => {
+            const makerAmounts = [new BigNumber(10), new BigNumber(20)];
+            const makerNestedAssetData = [
+                assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
+                assetDataUtils.encodeERC20AssetData(erc20TokenB.address),
+            ];
+            const makerAssetData = assetDataInterface.MultiAsset.getABIEncodedTransactionData(
+                makerAmounts,
+                makerNestedAssetData,
+            );
+            const makerAssetAmount = new BigNumber(1);
+            const takerAmounts = [new BigNumber(10), new BigNumber(1)];
+            const takerAssetId = erc721TakerAssetIds[0];
+            const takerNestedAssetData = [
+                assetDataUtils.encodeERC20AssetData(zrxToken.address),
+                assetDataUtils.encodeERC721AssetData(erc721Token.address, takerAssetId),
+            ];
+            const takerAssetData = assetDataInterface.MultiAsset.getABIEncodedTransactionData(
+                takerAmounts,
+                takerNestedAssetData,
+            );
+            const takerAssetAmount = new BigNumber(1);
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData,
+                takerAssetData,
+                makerAssetAmount,
+                takerAssetAmount,
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: constants.ZERO_AMOUNT,
+            });
+
+            const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
+            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
+            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const initialOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
+            expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
+
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+
+            const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
+            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
+            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+            const finalOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
+
+            expect(finalMakerBalanceA).to.be.bignumber.equal(
+                initialMakerBalanceA.minus(makerAmounts[0].times(makerAssetAmount)),
+            );
+            expect(finalMakerBalanceB).to.be.bignumber.equal(
+                initialMakerBalanceB.minus(makerAmounts[1].times(makerAssetAmount)),
+            );
+            expect(finalMakerZrxBalance).to.be.bignumber.equal(
+                initialMakerZrxBalance.plus(takerAmounts[0].times(takerAssetAmount)),
+            );
+            expect(finalTakerBalanceA).to.be.bignumber.equal(
+                initialTakerBalanceA.plus(makerAmounts[0].times(makerAssetAmount)),
+            );
+            expect(finalTakerBalanceB).to.be.bignumber.equal(
+                initialTakerBalanceB.plus(makerAmounts[1].times(makerAssetAmount)),
+            );
+            expect(finalTakerZrxBalance).to.be.bignumber.equal(
+                initialTakerZrxBalance.minus(takerAmounts[0].times(takerAssetAmount)),
+            );
+            expect(finalOwnerTakerAsset).to.be.equal(makerAddress);
+        });
+        it('should allow an order selling multiple assets to be partially filled', async () => {
+            const makerAmounts = [new BigNumber(10), new BigNumber(20)];
+            const makerNestedAssetData = [
+                assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
+                assetDataUtils.encodeERC20AssetData(erc20TokenB.address),
+            ];
+            const makerAssetData = assetDataInterface.MultiAsset.getABIEncodedTransactionData(
+                makerAmounts,
+                makerNestedAssetData,
+            );
+            const makerAssetAmount = new BigNumber(30);
+            const takerAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+            const takerAssetAmount = new BigNumber(10);
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData,
+                takerAssetData,
+                makerAssetAmount,
+                takerAssetAmount,
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: constants.ZERO_AMOUNT,
+            });
+
+            const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
+            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
+            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+
+            const takerAssetFillAmount = takerAssetAmount.dividedToIntegerBy(2);
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
+                takerAssetFillAmount,
+            });
+
+            const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
+            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
+            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+
+            expect(finalMakerBalanceA).to.be.bignumber.equal(
+                initialMakerBalanceA.minus(
+                    makerAmounts[0].times(
+                        makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                    ),
+                ),
+            );
+            expect(finalMakerBalanceB).to.be.bignumber.equal(
+                initialMakerBalanceB.minus(
+                    makerAmounts[1].times(
+                        makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                    ),
+                ),
+            );
+            expect(finalMakerZrxBalance).to.be.bignumber.equal(
+                initialMakerZrxBalance.plus(
+                    takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                ),
+            );
+            expect(finalTakerBalanceA).to.be.bignumber.equal(
+                initialTakerBalanceA.plus(
+                    makerAmounts[0].times(
+                        makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                    ),
+                ),
+            );
+            expect(finalTakerBalanceB).to.be.bignumber.equal(
+                initialTakerBalanceB.plus(
+                    makerAmounts[1].times(
+                        makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                    ),
+                ),
+            );
+            expect(finalTakerZrxBalance).to.be.bignumber.equal(
+                initialTakerZrxBalance.minus(
+                    takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                ),
+            );
+        });
+        it('should allow an order buying multiple assets to be partially filled', async () => {
+            const takerAmounts = [new BigNumber(10), new BigNumber(20)];
+            const takerNestedAssetData = [
+                assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
+                assetDataUtils.encodeERC20AssetData(erc20TokenB.address),
+            ];
+            const takerAssetData = assetDataInterface.MultiAsset.getABIEncodedTransactionData(
+                takerAmounts,
+                takerNestedAssetData,
+            );
+            const takerAssetAmount = new BigNumber(30);
+            const makerAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+            const makerAssetAmount = new BigNumber(10);
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData,
+                takerAssetData,
+                makerAssetAmount,
+                takerAssetAmount,
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: constants.ZERO_AMOUNT,
+            });
+
+            const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
+            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const initialMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
+            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const initialTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+
+            const takerAssetFillAmount = takerAssetAmount.dividedToIntegerBy(2);
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
+                takerAssetFillAmount,
+            });
+
+            const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
+            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
+            const finalMakerZrxBalance = await zrxToken.balanceOf.callAsync(makerAddress);
+            const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
+            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
+            const finalTakerZrxBalance = await zrxToken.balanceOf.callAsync(takerAddress);
+
+            expect(finalMakerBalanceA).to.be.bignumber.equal(
+                initialMakerBalanceA.plus(
+                    takerAmounts[0].times(
+                        takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                    ),
+                ),
+            );
+            expect(finalMakerBalanceB).to.be.bignumber.equal(
+                initialMakerBalanceB.plus(
+                    takerAmounts[1].times(
+                        takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                    ),
+                ),
+            );
+            expect(finalMakerZrxBalance).to.be.bignumber.equal(
+                initialMakerZrxBalance.minus(
+                    makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                ),
+            );
+            expect(finalTakerBalanceA).to.be.bignumber.equal(
+                initialTakerBalanceA.minus(
+                    takerAmounts[0].times(
+                        takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                    ),
+                ),
+            );
+            expect(finalTakerBalanceB).to.be.bignumber.equal(
+                initialTakerBalanceB.minus(
+                    takerAmounts[1].times(
+                        takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                    ),
+                ),
+            );
+            expect(finalTakerZrxBalance).to.be.bignumber.equal(
+                initialTakerZrxBalance.plus(
+                    makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
+                ),
             );
         });
     });
