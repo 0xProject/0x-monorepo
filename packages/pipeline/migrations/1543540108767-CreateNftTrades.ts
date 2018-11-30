@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-const dexTrades = new Table({
+const nftTrades = new Table({
     name: 'raw.nft_trades',
     columns: [
         { name: 'source_url', type: 'varchar', isPrimary: true },
@@ -22,10 +22,10 @@ const dexTrades = new Table({
 
 export class CreateNftTrades1543540108767 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<any> {
-        await queryRunner.createTable(dexTrades);
+        await queryRunner.createTable(nftTrades);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
-        await queryRunner.dropTable(dexTrades);
+        await queryRunner.dropTable(nftTrades);
     }
 }
