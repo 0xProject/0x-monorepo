@@ -4,9 +4,10 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Button } from './button';
-import { Column, Section, Wrap } from './layout';
-import { Logo } from './logo';
+import { Button } from 'ts/@next/components/button';
+import { Column, Section, Wrap } from 'ts/@next/components/layout';
+import { Logo } from 'ts/@next/components/logo';
+import { NewsletterForm } from 'ts/@next/components/newsletterForm';
 
 interface FooterInterface {
 }
@@ -61,6 +62,7 @@ export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
     <Wrap>
       <Column colWidth="1/2" noPadding>
         <Logo />
+        <NewsletterForm />
       </Column>
 
       <Column colWidth="1/2" noPadding>
