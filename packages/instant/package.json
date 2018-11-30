@@ -25,10 +25,7 @@
     },
     "config": {
         "postpublish": {
-            "assets": [
-                "packages/instant/umd/instant.js",
-                "packages/instant/umd/instant.js.map"
-            ]
+            "assets": ["packages/instant/umd/instant.js", "packages/instant/umd/instant.js.map"]
         }
     },
     "repository": {

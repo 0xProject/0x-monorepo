@@ -3,27 +3,43 @@ const ip = require('ip');
 const path = require('path');
 const webpack = require('webpack');
 
+const DISCHARGE_TARGETS_THAT_REQUIRED_HEAP = ['production', 'staging', 'dogfood'];
+const getConfigForDischargeTarget = dischargeTarget => {
+    return {
+        heapAnalyticsIdEnvName:
+            dischargeTarget === 'production'
+                ? 'INSTANT_HEAP_ANALYTICS_ID_PRODUCTION'
+                : 'INSTANT_HEAP_ANALYTICS_ID_DEVELOPMENT',
+        heapAnalyticsIdRequired: DISCHARGE_TARGETS_THAT_REQUIRED_HEAP.includes(dischargeTarget),
+    };
+};
+
 const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
     .toString()
     .trim();
-
-const HEAP_PRODUCTION_ENV_VAR_NAME = 'INSTANT_HEAP_ANALYTICS_ID_PRODUCTION';
-const HEAP_DEVELOPMENT_ENV_VAR_NAME = 'INSTANT_HEAP_ANALYTICS_ID_DEVELOPMENT';
-const getHeapAnalyticsId = modeName => {
-    if (modeName === 'production') {
-        return process.env[HEAP_PRODUCTION_ENV_VAR_NAME];
-    }
-
-    if (modeName === 'development') {
-        return process.env[HEAP_DEVELOPMENT_ENV_VAR_NAME];
-    }
-
-    return undefined;
-};
-
-module.exports = (env, argv) => {
+const generateConfig = (dischargeTarget, configOptions) => {
     const outputPath = process.env.WEBPACK_OUTPUT_PATH || 'umd';
+
+    const { heapAnalyticsIdEnvName, heapAnalyticsIdRequired } = configOptions;
+    const heapAnalyticsId = process.env[heapAnalyticsIdEnvName];
+    if (heapAnalyticsIdRequired && !heapAnalyticsId) {
+        throw new Error(
+            `Must define heap analytics id in ENV var ${heapAnalyticsIdEnvName} when building for ${dischargeTarget}`,
+        );
+    }
+
+    const envVars = {
+        GIT_SHA: JSON.stringify(GIT_SHA),
+        NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
+    };
+    if (dischargeTarget) {
+        envVars.INSTANT_DISCHARGE_TARGET = JSON.stringify(dischargeTarget);
+    }
+    if (heapAnalyticsId) {
+        envVars.HEAP_ANALYTICS_ID = JSON.stringify(heapAnalyticsId);
+    }
+
     const config = {
         entry: {
             instant: './src/index.umd.ts',
@@ -36,11 +52,7 @@ module.exports = (env, argv) => {
         },
         plugins: [
             new webpack.DefinePlugin({
-                'process.env': {
-                    GIT_SHA: JSON.stringify(GIT_SHA),
-                    HEAP_ANALYTICS_ID: getHeapAnalyticsId(argv.mode),
-                    NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
-                },
+                'process.env': envVars,
             }),
         ],
         devtool: 'source-map',
@@ -75,4 +87,10 @@ module.exports = (env, argv) => {
         },
     };
     return config;
+};
+
+module.exports = (env, _argv) => {
+    const dischargeTarget = env ? env.discharge_target : undefined;
+    const configOptions = getConfigForDischargeTarget(dischargeTarget);
+    return generateConfig(dischargeTarget, configOptions);
 };
