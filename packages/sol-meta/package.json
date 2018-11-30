@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-meta",
-    "version": "1.1.7",
+    "version": "1.0.0",
     "engines": {
         "node": ">=6.12"
     },
