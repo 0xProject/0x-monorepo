@@ -95,6 +95,26 @@ export const Next0xInstant = () => (
             </Wrap>
         </Section>
 
+        <Section bgColor={colors.brandDark}>
+            <Wrap>
+                <Column colWidth="1/2" padLarge>
+                    <WrapCentered>
+                        <Heading>Need more flexibility?</Heading>
+                        <Paragraph>Dive into our docs, or contact us if needed</Paragraph>
+                    </WrapCentered>
+                </Column>
+
+                <Column colWidth="1/2" padLarge>
+                    <WrapCentered>
+                        <div>
+                            <Button href="#">Explore the Docs</Button>
+                            <Button href="#" transparent>Get in Touch</Button>
+                        </div>
+                    </WrapCentered>
+                </Column>
+            </Wrap>
+        </Section>
+
         <Section>
             <Wrap width="full">
                 <Column>
