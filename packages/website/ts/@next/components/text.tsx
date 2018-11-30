@@ -2,7 +2,6 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
-
 interface HeadingProps {
     asElement?: 'h1'| 'h2'| 'h3'| 'h4';
     size?: 'default' | 'medium' | 'large' | 'small';
