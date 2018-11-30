@@ -6,15 +6,11 @@
     },
     "private": true,
     "description": "0x Instant React Component",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "umd/instant.js",
+    "private": true,
     "scripts": {
-        "build": "yarn build:all",
-        "build:all": "run-p build:umd:prod build:commonjs",
-        "build:umd:prod": "webpack --mode production",
-        "build:commonjs": "tsc -b",
+        "build": "webpack --mode production",
         "build:ci": "yarn build",
-        "watch_without_deps": "tsc -w",
         "dev": "webpack-dev-server --mode development",
         "lint": "tslint --format stylish --project .",
         "test": "jest",
@@ -24,6 +20,7 @@
         "clean": "shx rm -rf lib coverage scripts",
         "deploy_dogfood": "discharge deploy -c .dogfood.discharge.json",
         "deploy_staging": "discharge deploy -c .staging.discharge.json",
+        "deploy_production": "discharge deploy -c .production.discharge.json",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "config": {
@@ -99,6 +96,6 @@
         "webpack-dev-server": "^3.1.9"
     },
     "publishConfig": {
-        "access": "public"
+        "access": "private"
     }
 }
