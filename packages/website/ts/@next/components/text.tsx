@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled, { withTheme } from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 interface HeadingProps {
@@ -47,7 +47,7 @@ const PARAGRAPH_SIZES: ParagraphSizes = {
 };
 
 const StyledHeading = styled.h1<HeadingProps>`
-    color: ${props => props.color || colors.white};
+    color: ${props => props.color || props.theme.textColor};
     font-size: ${props => HEADING_SIZES[props.size || 'default']};
     font-weight: 300;
     margin-bottom: ${props => !props.noMargin && '30px'};
@@ -60,7 +60,6 @@ export const Heading: React.StatelessComponent<HeadingProps> = props => {
         children,
     } = props;
     const Component = StyledHeading.withComponent(asElement);
-
     return <Component {...props}>{children}</Component>;
 };
 
@@ -69,6 +68,7 @@ export const Paragraph = styled.p<ParagraphProps>`
     font-size: ${props => PARAGRAPH_SIZES[props.size || 'default']};
     margin-bottom: ${props => !props.noMargin && '30px'};
     line-height: 1.4;
-    color: ${props => `rgba(255, 255, 255, ${props.muted || 0.75})`};
+    color: ${props => props.color || props.theme.textColor};
+    opacity: ${props => props.muted || 0.75};
     text-align: ${props => props.center && 'center'};
 `;

@@ -25,8 +25,8 @@ import SupportIcon from 'ts/@next/icons/illustrations/support.svg';
     </SiteWrap>
 */
 
-export const NextLanding = () => (
-    <SiteWrap>
+export const NextLanding: React.StatelessComponent<{}> = () => (
+    <SiteWrap theme="dark">
         <Section>
             <Wrap>
                 <Column colWidth="1/2">
