@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 // Implements C3 Linearization as used in Solidity
 // see: https://www.python.org/download/releases/2.3/mro/
 
@@ -15,8 +17,8 @@ export function merge<T>(...ilists: T[][]): T[] {
     }
 
     // The first item of each list are heads, the remainders are tails
-    const heads = lists.map(([head, ...tail]) => head);
-    const tails = lists.map(([head, ...tail]) => tail);
+    const heads = _.map(lists, ([head, ...tail]) => head);
+    const tails = _.map(lists, ([head, ...tail]) => tail);
 
     // A good head is one that does not occur in any tail.
     const goodHead = heads.find(head => tails.every(tail => !tail.includes(head)));
@@ -27,7 +29,7 @@ export function merge<T>(...ilists: T[][]): T[] {
     }
 
     // Remove the good head from the lists
-    const newLists = lists.map(list => list.filter(elem => elem !== goodHead));
+    const newLists = _.map(lists, list => list.filter(elem => elem !== goodHead));
 
     // Prepend head to the linearization and repeat
     return [goodHead, ...merge(...newLists)];
@@ -50,12 +52,12 @@ export function linearize<T>(final: T, parents: (_: T) => T[]): T[] {
     // TODO: Memoization
     // TODO: Throw on cycles (instead of stack overflowing)
     const p = parents(final);
-    const recurse = p.map(a => linearize<T>(a, parents));
+    const recurse = _.map(p, a => linearize<T>(a, parents));
     return [...merge(p, ...recurse), final];
 }
 
 export async function linearizeAsync<T>(final: T, parents: (_: T) => Promise<T[]>): Promise<T[]> {
     const p = await parents(final);
-    const recurse = await Promise.all(p.map(a => linearizeAsync<T>(a, parents)));
+    const recurse = await Promise.all(_.map(p, a => linearizeAsync<T>(a, parents)));
     return [...merge(p, ...recurse), final];
 }

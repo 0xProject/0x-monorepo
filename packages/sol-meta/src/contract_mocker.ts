@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
 
 import { makeConstructor, nonAbstractForcer } from './constructor';
@@ -13,7 +14,7 @@ export const mockContractName = (contractName: string) => `${contractName}Mock`;
 
 export interface ContractMockOptions {
     constructors: {
-        [parentName: string]: utils.Litteral[];
+        [parentName: string]: utils.Literal[];
     };
     scripted: {
         [functionName: string]: FunctionScript[];
@@ -42,16 +43,17 @@ export function mockContract(
 
     // Find all constructors that require arguments
     // TODO: Ignore constructors already called from other constructors
-    const constructors = parents
-        .filter(({ subNodes }) =>
+    const constructors = _.map(
+        _.filter(parents, ({ subNodes }) =>
             subNodes.some(
                 node =>
                     node.type === S.NodeType.FunctionDefinition &&
                     node.isConstructor &&
                     node.parameters.parameters.length > 0,
             ),
-        )
-        .map(({ name }) => name);
+        ),
+        ({ name }) => name,
+    );
 
     // Check that we have arguments for all constructors that require them
     constructors.forEach(name => {
@@ -91,7 +93,7 @@ export function mockContract(
             ...utils.flatMap(flat.subNodes, exposeNode),
 
             // Compile-time specified scripted functions
-            ...scripted.map(func => scriptFunction(func, options.scripted[func.name || ''])),
+            ..._.map(scripted, func => scriptFunction(func, options.scripted[func.name || ''])),
 
             // Mock all remaining abstract functions
             ...utils.flatMap(mocked, stubFunction),

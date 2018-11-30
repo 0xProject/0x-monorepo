@@ -4,9 +4,5 @@
         "outDir": "lib",
         "rootDir": "."
     },
-    "include": [
-        "./src/**/*",
-        "./test/**/*",
-        "../typescript-typings/types/solidity-parser-antlr/*"
-    ]
+    "include": ["./src/**/*", "./test/**/*", "../typescript-typings/types/solidity-parser-antlr/*"]
 }

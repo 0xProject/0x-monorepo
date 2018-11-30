@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
 
 import * as utils from './utils';
@@ -63,7 +64,7 @@ const makeCountedEvent = (name: string, parameters: S.ParameterList) =>
                 typeName: utils.types.uint256,
                 storageLocation: S.StorageLocation.Default,
             },
-            ...parameters.parameters.map(param => ({
+            ..._.map(parameters.parameters, param => ({
                 ...param,
                 storageLocation: S.StorageLocation.Default,
             })),
@@ -120,7 +121,7 @@ const makeResultType = (name: string, fields: S.ParameterList): S.StructDefiniti
     members: [
         variableDeclaration('_enabled', utils.types.bool),
         variableDeclaration('_reverts', utils.types.bool),
-        ...fields.parameters.map(({ name, typeName }) => variableDeclaration(name as string, typeName)),
+        ..._.map(fields.parameters, ({ name, typeName }) => variableDeclaration(name as string, typeName)),
     ],
 });
 
@@ -257,11 +258,14 @@ const makeFunction = (
                             expression: {
                                 type: S.NodeType.TupleExpression,
                                 isArray: false,
-                                components: returnParameters.parameters.map(({ name: memberName }): S.MemberAccess => ({
-                                    type: S.NodeType.MemberAccess,
-                                    expression: identifier('_result'),
-                                    memberName: memberName as string,
-                                })),
+                                components: _.map(
+                                    returnParameters.parameters,
+                                    ({ name: memberName }): S.MemberAccess => ({
+                                        type: S.NodeType.MemberAccess,
+                                        expression: identifier('_result'),
+                                        memberName: memberName as string,
+                                    }),
+                                ),
                             },
                         },
                     ],

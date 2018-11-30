@@ -111,7 +111,8 @@ export class Compiler {
         return { solcInstance, fullSolcVersion };
     }
     public static async getSolcAsync(solcVersion: string): Promise<solc.SolcInstance> {
-        return (await this._getSolcAsync(solcVersion)).solcInstance;
+        const solcInstance = (await this._getSolcAsync(solcVersion)).solcInstance;
+        return solcInstance;
     }
     private static _addHexPrefixToContractBytecode(compiledContract: solc.StandardContractOutput): void {
         if (!_.isUndefined(compiledContract.evm)) {

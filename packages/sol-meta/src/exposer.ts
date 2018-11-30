@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
 
 import { argumentExpressions, identifier, nameParameters } from './utils';
@@ -54,7 +55,7 @@ const setter = (stateVar: S.StateVariableDeclaration): S.FunctionDefinition => {
         name: setterName(name),
         visibility: S.Visibility.Public,
         isConstructor: false,
-        stateMutability: S.StateMutability.Default,
+        stateMutability: S.StateMutability.View,
         parameters: {
             type: S.NodeType.ParameterList,
             parameters: [
@@ -131,7 +132,7 @@ const emitEvent = (event: S.EventDefinition): S.FunctionDefinition => {
         stateMutability: S.StateMutability.Default,
         parameters: {
             type: S.NodeType.ParameterList,
-            parameters: parameters.parameters.map(param => ({
+            parameters: _.map(parameters.parameters, param => ({
                 ...param,
                 isIndexed: false,
             })),

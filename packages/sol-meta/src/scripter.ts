@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
 
 import * as utils from './utils';
@@ -32,7 +33,7 @@ export const guard = (clauses: { [argName: string]: string }, statements: S.Stat
                 type: S.NodeType.BinaryOperation,
                 operator: '==',
                 left: utils.identifier(argName),
-                right: utils.litteral(clauses[argName]),
+                right: utils.literal(clauses[argName]),
             },
         }),
         utils.litTrue,
@@ -51,7 +52,7 @@ export const scriptStatementReturn = (s: FunctionScriptReturn): S.IfStatement =>
             expression: {
                 type: S.NodeType.TupleExpression,
                 isArray: false,
-                components: s.outputs.map(utils.litteral),
+                components: _.map(s.outputs, utils.literal),
             },
         },
     ]);
@@ -97,7 +98,7 @@ export const scriptFunction = (func: S.FunctionDefinition, script: FunctionScrip
         isConstructor: false,
         body: {
             type: S.NodeType.Block,
-            statements: catchAllScript.map(scriptStatement),
+            statements: _.map(catchAllScript, scriptStatement),
         },
     };
 };

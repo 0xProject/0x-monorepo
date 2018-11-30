@@ -1,9 +1,10 @@
+import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
 
 import * as utils from './utils';
 
 export interface ConstructorArguments {
-    [contractName: string]: utils.Litteral[];
+    [contractName: string]: utils.Literal[];
 }
 
 export function makeConstructor(consArgs: ConstructorArguments): S.FunctionDefinition {
@@ -18,10 +19,10 @@ export function makeConstructor(consArgs: ConstructorArguments): S.FunctionDefin
         returnParameters: null,
         visibility: S.Visibility.Public,
         stateMutability: S.StateMutability.Default,
-        modifiers: Object.keys(consArgs).map<S.ModifierInvocation>(name => ({
+        modifiers: _.map<string, S.ModifierInvocation>(_.keys(consArgs), name => ({
             type: S.NodeType.ModifierInvocation,
             name,
-            arguments: consArgs[name].map(utils.litteral),
+            arguments: _.map(consArgs[name], utils.literal),
         })),
         isConstructor: true,
         body: {
@@ -55,7 +56,7 @@ export function nonAbstractForcer(contractName: string): S.ContractDefinition {
                     parameters: [],
                 },
                 returnParameters: null,
-                visibility: S.Visibility.Default,
+                visibility: S.Visibility.Public,
                 stateMutability: S.StateMutability.Default,
                 modifiers: [],
                 isConstructor: true,

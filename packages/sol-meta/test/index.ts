@@ -9,11 +9,6 @@ import { unparse } from '../src/unparser';
 
 const expect = chai.expect;
 
-const promisify = <T>(func: ((...args: any[]) => void)) => (...args: any[]) =>
-    new Promise<T>((resolve, reject) =>
-        func(...args, (error: any, result: T) => (error ? reject(error) : resolve(result))),
-    );
-
 const findContracts = (searchPath: string) =>
     glob.sync(searchPath).map(file => ({
         name: path.basename(file, '.sol') + ` (${file})`,
@@ -34,13 +29,17 @@ describe('Parser', () => {
     );
 });
 
-describe.only('Unparser', () => {
+describe('Unparser', () => {
     contracts.forEach(({ name, source }) =>
         it(`should unparse ${name}`, () => {
             const ast = parse(source);
             const src = unparse(ast);
             const ast2 = parse(src);
-            //expect(ast2).to.deep.equal(ast);
+            // Ideally, we would test the following:
+            //     expect(ast2).to.deep.equal(ast);
+            // But this fails on on expressiong like `2 * 3 + 1` which get rewritten
+            // to `((2 * 2) + 1)`. This prevents the ASTs from being identicall in
+            // syntax, even though they should be identical in meaning.
         }),
     );
 });

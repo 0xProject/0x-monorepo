@@ -1,6 +1,8 @@
 import * as glob from 'glob';
+import * as _ from 'lodash';
 import * as pathUtils from 'path';
 import * as S from 'solidity-parser-antlr';
+import { Deferred } from '@0x/utils';
 
 import * as utils from './utils';
 
@@ -24,7 +26,7 @@ export interface SourceInfo {
 // TODO: We are missing the remapping and import statements. This information is necessary
 //       to fully interpret the ImportDirectives. We could solve this by including the
 //       SourceReaderOptions as part of the SourceCollection, but then we'd need to
-//       but the path mapping in a separate variable.
+//       put the path mapping in a separate variable.
 export interface SourceCollection {
     [path: string]: SourceInfo;
 }
@@ -58,14 +60,14 @@ export class ContractReader {
         const makeAbsolute = (path: string) => (pathUtils.isAbsolute(path) ? path : pathUtils.join(cwd, path));
 
         // Make all paths absolute
-        this._opts.sources = this._opts.sources.map(makeAbsolute);
-        this._opts.includes = this._opts.includes.map(makeAbsolute);
+        this._opts.sources = _.map(this._opts.sources, makeAbsolute);
+        this._opts.includes = _.map(this._opts.includes, makeAbsolute);
         this._opts.remapping = utils.objectMap(this._opts.remapping, makeAbsolute);
     }
 
     public async processSourcesAsync(): Promise<SourceCollection> {
         // Read all contract sources and imports
-        await Promise.all(this._opts.sources.map(path => this._readSourceAsync(path)));
+        await Promise.all(_.map(this._opts.sources, path => this._readSourceAsync(path)));
 
         // Resolve the result
         return utils.objectPromise(this._result);
@@ -117,7 +119,7 @@ export class ContractReader {
         // Create promise here so it will act as a mutex.
         // When we recursively re-enter this function below, the deferred
         // promise will already be there and we will not repeat the work.
-        const deffered = new utils.Deferred<SourceInfo>();
+        const deffered = new Deferred<SourceInfo>();
         this._result[absolutePath] = deffered.promise;
 
         // Read and save in cache
@@ -128,12 +130,12 @@ export class ContractReader {
         const imports = parsed.children.filter(
             ({ type }) => type === S.NodeType.ImportDirective,
         ) as S.ImportDirective[];
-        const importPaths = await Promise.all(imports.map(({ path }) => this._resolveAsync(absolutePath, path)));
+        const importPaths = await Promise.all(_.map(imports, ({ path }) => this._resolveAsync(absolutePath, path)));
 
         // Recursively parse imported sources
         // Note: This will deadlock on cyclical imports. (We will end up awaiting our own promise.)
         // TODO: Throw an error instead.
-        const importInfo = await Promise.all(importPaths.map(path => this._readSourceAsync(path)));
+        const importInfo = await Promise.all(_.map(importPaths, path => this._readSourceAsync(path)));
 
         // Compute global scope include imports
         // TODO: Support `SomeContract as SomeAlias` in import directives.
@@ -160,6 +162,7 @@ export class ContractReader {
     }
 }
 
+// TODO(remco): Deduplicate with sol-compiler
 export const readSources = async (
     sources: string[],
     options?: Partial<SourceReaderOptions>,

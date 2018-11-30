@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
 
 import { linearize, linearizeAsync } from './linearization';
@@ -56,7 +57,7 @@ export function flattenContract(
 ): [S.ContractDefinition, S.ContractDefinition[]] {
     // Close over resolve to create a parents function
     const parents = (child: S.ContractDefinition) =>
-        child.baseContracts.map(({ baseName: { namePath } }) => resolve(namePath));
+        _.map(child.baseContracts, ({ baseName: { namePath } }) => resolve(namePath));
 
     // Linearize the contract inheritance tree from least to most derived
     const linear = linearize(contract, parents);

@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
 import { ImportContents, StandardOutput } from 'solc';
 
@@ -10,10 +11,7 @@ import * as utils from './utils';
 export const compile = async (sources: SourceCollection, ast: S.SourceUnit) => {
     // Extract required version from pragma of ast
     const version =
-        utils
-            .pragmaNodes(ast)
-            .filter(({ name }) => name === 'solidity')
-            .map(({ value }) => value)[0] || 'latest';
+        _.map(utils.pragmaNodes(ast).filter(({ name }) => name === 'solidity'), ({ value }) => value)[0] || 'latest';
 
     // Get Solidity compiler
     console.time('Loading solc-js');
@@ -55,6 +53,6 @@ export const compile = async (sources: SourceCollection, ast: S.SourceUnit) => {
     // Throw errors
     const errors = result.errors.filter(({ severity }) => severity === 'error');
     if (errors.length > 0) {
-        throw new Error(errors.map(({ formattedMessage }) => formattedMessage).join('\n'));
+        throw new Error(_.map(errors, ({ formattedMessage }) => formattedMessage).join('\n'));
     }
 };

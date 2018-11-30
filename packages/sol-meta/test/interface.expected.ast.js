@@ -1,4 +1,4 @@
-x={ type: 'SourceUnit',
+{ type: 'SourceUnit',
   children:
    [ { type: 'PragmaDirective', name: 'solidity', value: '^0.4.23' },
      { type: 'PragmaDirective',

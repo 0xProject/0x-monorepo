@@ -1,5 +1,6 @@
 // TODO: instead use https://github.com/prettier-solidity/prettier-plugin-solidity/blob/master/src/printer.js
 
+import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
 
 import { visit, Visitor } from './visitor';
@@ -12,21 +13,21 @@ const unparen = (s: string) => s.replace(/^\((.*)\)$/, '$1');
 const visitor: Visitor<string> = {
     // Source level
 
-    SourceUnit: ({ children }) => children.map(unparse).join('\n'),
+    SourceUnit: ({ children }) => _.map(children, unparse).join('\n'),
 
     PragmaDirective: ({ name, value }) => `pragma ${name} ${value};`,
 
     ImportDirective: ({ path, symbolAliases }) =>
         `import ` +
         (symbolAliases
-            ? `{${symbolAliases.map(([from, to]) => from + (to ? ` as ${to}` : '')).join(', ')}} from `
+            ? `{${_.map(symbolAliases, ([from, to]) => from + (to ? ` as ${to}` : '')).join(', ')}} from `
             : '') +
         `${stresc(path)};`,
 
     ContractDefinition: ({ name, kind, baseContracts, subNodes }) =>
         `${kind} ${name} ${baseContracts.length > 0 ? 'is ' : ''}` +
-        baseContracts.map(unparse).join(', ') +
-        block('\n' + subNodes.map(unparse).join('\n\n')),
+        _.map(baseContracts, unparse).join(', ') +
+        block('\n' + _.map(subNodes, unparse).join('\n\n')),
 
     InheritanceSpecifier: ({ baseName: { namePath } }) => namePath,
 
@@ -34,11 +35,11 @@ const visitor: Visitor<string> = {
 
     UsingForDeclaration: ({ typeName, libraryName }) => `using ${libraryName} for ${unparse(typeName)};`,
 
-    StateVariableDeclaration: ({ variables }) => variables.map(unparse).join(', ') + ';',
+    StateVariableDeclaration: ({ variables }) => _.map(variables, unparse).join(', ') + ';',
 
-    StructDefinition: ({ name, members }) => `struct ${name} ${block(members.map(unparse).join(';\n') + ';')}`,
+    StructDefinition: ({ name, members }) => `struct ${name} ${block(_.map(members, unparse).join(';\n') + ';')}`,
 
-    EnumDefinition: ({ name, members }) => `enum ${name} ${block(members.map(unparse).join(',\n'))}`,
+    EnumDefinition: ({ name, members }) => `enum ${name} ${block(_.map(members, unparse).join(',\n'))}`,
 
     EnumValue: ({ name }) => name,
 
@@ -64,24 +65,24 @@ const visitor: Visitor<string> = {
         indent(
             (visibility && visibility != 'default' ? visibility + ' ' : '') +
                 (stateMutability || '') +
-                modifiers.map(unparse).join('\n') +
+                _.map(modifiers, unparse).join('\n') +
                 (returnParameters ? `\nreturns ${unparse(returnParameters)}` : ''),
         ) +
         '\n' +
         (body ? unparse(body) : ';'),
 
-    ParameterList: ({ parameters }) => `(${parameters.map(unparse).join(', ')})`,
+    ParameterList: ({ parameters }) => `(${_.map(parameters, unparse).join(', ')})`,
 
     Parameter: ({ typeName, name, storageLocation }) => `${unparse(typeName)} ${storageLocation || ''} ${name || ''}`,
 
-    ModifierInvocation: ({ name, arguments: args }) => `${name}(${args.map(unparse).join(', ')})`,
+    ModifierInvocation: ({ name, arguments: args }) => `${name}(${_.map(args, unparse).join(', ')})`,
 
     // Statements
 
-    Block: ({ statements }) => block(statements.map(unparse).join('\n')),
+    Block: ({ statements }) => block(_.map(statements, unparse).join('\n')),
 
     VariableDeclarationStatement: ({ variables, initialValue }) =>
-        variables.map(unparse) + (initialValue ? ` = ${unparse(initialValue)};` : ';'),
+        _.map(variables, unparse) + (initialValue ? ` = ${unparse(initialValue)};` : ';'),
 
     ExpressionStatement: ({ expression }) => `${unparen(unparse(expression))};`,
 
@@ -129,7 +130,7 @@ const visitor: Visitor<string> = {
 
     FunctionCall: (
         { expression, arguments: args, names }, // TODO: names
-    ) => `(${unparse(expression)}(${args.map(unparse).join(', ')}))`,
+    ) => `(${unparse(expression)}(${_.map(args, unparse).join(', ')}))`,
 
     Conditional: ({ condition, trueExpression, falseExpression }) =>
         `(${unparse(condition)} ? ${unparse(trueExpression)} : ${unparse(falseExpression)})`,
@@ -157,25 +158,25 @@ const visitor: Visitor<string> = {
     NewExpression: ({ typeName }) => `(new ${unparse(typeName)})`,
 
     TupleExpression: ({ isArray, components }) =>
-        isArray ? `[${components.map(unparse).join(', ')}]` : `(${components.map(unparse).join(', ')})`,
+        isArray ? `[${_.map(components, unparse).join(', ')}]` : `(${_.map(components, unparse).join(', ')})`,
 
     // Assembly
 
-    AssemblyBlock: ({ operations }) => block(operations.map(unparse).join('\n')),
+    AssemblyBlock: ({ operations }) => block(_.map(operations, unparse).join('\n')),
 
-    AssemblyAssignment: ({ names, expression }) => `${names.map(unparse).join(', ')} := ${unparse(expression)}`,
+    AssemblyAssignment: ({ names, expression }) => `${_.map(names, unparse).join(', ')} := ${unparse(expression)}`,
 
     AssemblyLocalDefinition: ({ names, expression }) =>
-        `let ${names.map(unparse).join(', ')} := ${unparse(expression)}`,
+        `let ${_.map(names, unparse).join(', ')} := ${unparse(expression)}`,
 
     AssemblyCall: ({ functionName, arguments: args }) =>
-        args.length == 0 ? functionName : `${functionName}(${args.map(unparse).join(', ')})`,
+        args.length == 0 ? functionName : `${functionName}(${_.map(args, unparse).join(', ')})`,
 
     AssemblyIf: ({ condition, body }) => `if ${unparse(condition)} ${unparse(body)}`,
 
-    AssemblyFor: ({ pre, condition, post, body }) => `for ${[pre, condition, post, body].map(unparse).join(' ')}`,
+    AssemblyFor: ({ pre, condition, post, body }) => `for ${_.map([pre, condition, post, body], unparse).join(' ')}`,
 
-    AssemblySwitch: ({ expression, cases }) => `switch ${unparse(expression)}\n${cases.map(unparse).join('\n')}`,
+    AssemblySwitch: ({ expression, cases }) => `switch ${unparse(expression)}\n${_.map(cases, unparse).join('\n')}`,
 
     AssemblyCase: ({ value, block }) => `case ${unparse(value)} ${unparse(block)}`,
 
