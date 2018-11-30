@@ -5,6 +5,10 @@
             {
                 "note": "Add `LengthMismatch` and `LengthGreaterThan3Required` revert reasons",
                 "pr": 1224
+            },
+            {
+                "note": "Add RevertReasons for DutchAuction contract",
+                "pr": 1225
             }
         ]
     },

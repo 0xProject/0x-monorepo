@@ -1,6 +1,6 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
-import { SignedOrder } from '@0x/types';
+import { RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -268,7 +268,7 @@ describe(ContractName.DutchAuction, () => {
                 erc20Balances[makerAddress][wethContract.address].plus(afterAuctionDetails.currentAmount),
             );
             expect(newBalances[takerAddress][wethContract.address]).to.be.bignumber.gte(
-                erc20Balances[takerAddress][wethContract.address].minus(afterAuctionDetails.currentAmount),
+                erc20Balances[takerAddress][wethContract.address].minus(beforeAuctionDetails.currentAmount),
             );
         });
         it('should have valid getAuctionDetails at some block in the future', async () => {
@@ -346,9 +346,15 @@ describe(ContractName.DutchAuction, () => {
             );
         });
         it('should revert when auction expires', async () => {
-            auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp - 100);
+            auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp - tenMinutesInSeconds * 2);
+            auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp - tenMinutesInSeconds);
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
                 expirationTimeSeconds: auctionEndTimeSeconds,
+                makerAssetData: extendMakerAssetData(
+                    assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                    auctionBeginTimeSeconds,
+                    auctionBeginAmount,
+                ),
             });
             return expectTransactionFailedAsync(
                 dutchAuctionContract.matchOrders.sendTransactionAsync(
@@ -360,7 +366,7 @@ describe(ContractName.DutchAuction, () => {
                         from: takerAddress,
                     },
                 ),
-                'AUCTION_EXPIRED' as any,
+                RevertReason.AuctionExpired,
             );
         });
         it('cannot be filled for less than the current price', async () => {
@@ -378,26 +384,7 @@ describe(ContractName.DutchAuction, () => {
                         from: takerAddress,
                     },
                 ),
-                'INVALID_AMOUNT' as any,
-            );
-        });
-        it('cannot match an expired auction', async () => {
-            auctionBeginTimeSeconds = new BigNumber(currentBlockTimestamp - 1000);
-            auctionEndTimeSeconds = new BigNumber(currentBlockTimestamp - 100);
-            sellOrder = await sellerOrderFactory.newSignedOrderAsync({
-                expirationTimeSeconds: auctionEndTimeSeconds,
-            });
-            return expectTransactionFailedAsync(
-                dutchAuctionContract.matchOrders.sendTransactionAsync(
-                    buyOrder,
-                    sellOrder,
-                    buyOrder.signature,
-                    sellOrder.signature,
-                    {
-                        from: takerAddress,
-                    },
-                ),
-                'AUCTION_EXPIRED' as any,
+                RevertReason.AuctionInvalidAmount,
             );
         });
         it('auction begin amount must be higher than final amount ', async () => {
@@ -414,7 +401,47 @@ describe(ContractName.DutchAuction, () => {
                         from: takerAddress,
                     },
                 ),
-                'INVALID_AMOUNT' as any,
+                RevertReason.AuctionInvalidAmount,
+            );
+        });
+        it('begin time is less than end time', async () => {
+            auctionBeginTimeSeconds = new BigNumber(auctionEndTimeSeconds).plus(tenMinutesInSeconds);
+            sellOrder = await sellerOrderFactory.newSignedOrderAsync({
+                expirationTimeSeconds: auctionEndTimeSeconds,
+                makerAssetData: extendMakerAssetData(
+                    assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                    auctionBeginTimeSeconds,
+                    auctionBeginAmount,
+                ),
+            });
+            return expectTransactionFailedAsync(
+                dutchAuctionContract.matchOrders.sendTransactionAsync(
+                    buyOrder,
+                    sellOrder,
+                    buyOrder.signature,
+                    sellOrder.signature,
+                    {
+                        from: takerAddress,
+                    },
+                ),
+                RevertReason.AuctionInvalidBeginTime,
+            );
+        });
+        it('asset data contains auction parameters', async () => {
+            sellOrder = await sellerOrderFactory.newSignedOrderAsync({
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+            });
+            return expectTransactionFailedAsync(
+                dutchAuctionContract.matchOrders.sendTransactionAsync(
+                    buyOrder,
+                    sellOrder,
+                    buyOrder.signature,
+                    sellOrder.signature,
+                    {
+                        from: takerAddress,
+                    },
+                ),
+                RevertReason.InvalidAssetData,
             );
         });
         describe('ERC721', () => {

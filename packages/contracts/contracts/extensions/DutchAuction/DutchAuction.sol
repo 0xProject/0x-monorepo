@@ -154,9 +154,9 @@ contract DutchAuction is
         // | Params   |        | 2 * 32  | parameters:                         |
         // |          | -64    | 32      |   1. auction begin unix timestamp   |
         // |          | -32    | 32      |   2. auction begin begin amount     |
-        // ERC20 asset data length is 4+32, 64 for auction details results in min length if 100
+        // ERC20 asset data length is 4+32, 64 for auction details results in min length 100
         require(
-            makerAssetDataLength > 10,
+            makerAssetDataLength >= 100,
             "INVALID_ASSET_DATA"
         );
         uint256 auctionBeginTimeSeconds = order.makerAssetData.readUint256(makerAssetDataLength - 64);

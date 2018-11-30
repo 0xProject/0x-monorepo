@@ -237,6 +237,12 @@ export enum RevertReason {
     TxFullyConfirmed = 'TX_FULLY_CONFIRMED',
     TxNotFullyConfirmed = 'TX_NOT_FULLY_CONFIRMED',
     TimeLockIncomplete = 'TIME_LOCK_INCOMPLETE',
+    // DutchAuction
+    AuctionInvalidAmount = 'INVALID_AMOUNT',
+    AuctionExpired = 'AUCTION_EXPIRED',
+    AuctionNotStarted = 'AUCTION_NOT_STARTED',
+    AuctionInvalidBeginTime = 'INVALID_BEGIN_TIME',
+    InvalidAssetData = 'INVALID_ASSET_DATA',
 }
 
 export enum StatusCodes {
