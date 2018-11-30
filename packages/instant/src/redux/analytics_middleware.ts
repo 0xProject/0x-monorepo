@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { Middleware } from 'redux';
 
 import { ETH_DECIMALS } from '../constants';
-import { Account, AccountState, StandardSlidingPanelContent } from '../types';
+import { AccountState, StandardSlidingPanelContent } from '../types';
 import { analytics } from '../util/analytics';
 
 import { Action, ActionTypes } from './actions';
