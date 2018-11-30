@@ -29,6 +29,7 @@ export interface ContainerProps {
     backgroundColor?: ColorOption;
     rawBackgroundColor?: string;
     hasBoxShadow?: boolean;
+    isHidden?: boolean;
     zIndex?: number;
     whiteSpace?: string;
     opacity?: number;
@@ -81,6 +82,7 @@ export const Container =
         ${props => props.width && stylesForMedia<string>('width', props.width)}
         ${props => props.height && stylesForMedia<string>('height', props.height)}
         ${props => props.borderRadius && stylesForMedia<string>('border-radius', props.borderRadius)}
+        ${props => (props.isHidden ? 'visibility: hidden;' : '')}
         background-color: ${props => getBackgroundColor(props.theme, props.backgroundColor, props.rawBackgroundColor)};
         border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
         &:hover {

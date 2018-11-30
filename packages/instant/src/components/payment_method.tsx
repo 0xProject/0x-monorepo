@@ -26,7 +26,7 @@ export interface PaymentMethodProps {
 export class PaymentMethod extends React.Component<PaymentMethodProps> {
     public render(): React.ReactNode {
         return (
-            <Container padding="20px" width="100%">
+            <Container padding="20px" width="100%" height="133px">
                 <Container marginBottom="12px">
                     <Flex justify="space-between">
                         <Text
@@ -83,8 +83,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         const colors = { primaryColor, secondaryColor };
         switch (account.state) {
             case AccountState.Loading:
-                // Just take up the same amount of space as the other states.
-                return <Container height="52px" />;
+                return null;
             case AccountState.Locked:
                 return (
                     <WalletPrompt
