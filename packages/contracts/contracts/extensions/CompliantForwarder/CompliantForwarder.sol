@@ -38,7 +38,7 @@ contract CompliantForwarder {
         COMPLIANCE_TOKEN = IERC721Token(complianceToken);
     }
 
-    function fillOrder(
+    function executeTransaction(
         uint256 salt,
         address signerAddress,
         bytes signedFillOrderTransaction,

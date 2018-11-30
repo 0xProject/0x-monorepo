@@ -193,7 +193,7 @@ describe.only(ContractName.CompliantForwarder, () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
         it('should transfer the correct amounts when maker and taker are compliant', async () => {
-            await compliantForwarderInstance.fillOrder.sendTransactionAsync(
+            await compliantForwarderInstance.executeTransaction.sendTransactionAsync(
                 compliantSignedFillOrderTx.salt,
                 compliantSignedFillOrderTx.signerAddress,
                 compliantSignedFillOrderTx.data,
@@ -241,7 +241,7 @@ describe.only(ContractName.CompliantForwarder, () => {
             const txDataBufWithBadSelector = Buffer.concat([badSelectorBuf, txDataBufMinusSelector]);
             const txDataBufWithBadSelectorHex = ethUtil.bufferToHex(txDataBufWithBadSelector);
             // Call compliant forwarder
-            return expectTransactionFailedWithoutReasonAsync(compliantForwarderInstance.fillOrder.sendTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(compliantForwarderInstance.executeTransaction.sendTransactionAsync(
                 compliantSignedFillOrderTx.salt,
                 compliantSignedFillOrderTx.signerAddress,
                 txDataBufWithBadSelectorHex,
@@ -266,7 +266,7 @@ describe.only(ContractName.CompliantForwarder, () => {
                 signedOrderWithoutExchangeAddressData,
             );
             // Call compliant forwarder
-            return expectTransactionFailedWithoutReasonAsync(compliantForwarderInstance.fillOrder.sendTransactionAsync(
+            return expectTransactionFailedWithoutReasonAsync(compliantForwarderInstance.executeTransaction.sendTransactionAsync(
                 signedFillOrderTx.salt,
                 signedFillOrderTx.signerAddress,
                 signedFillOrderTx.data,
@@ -275,7 +275,7 @@ describe.only(ContractName.CompliantForwarder, () => {
         });
         it('should revert if taker address is not compliant (does not hold a Yes Token)', async () => {
             return expectTransactionFailedAsync(
-                compliantForwarderInstance.fillOrder.sendTransactionAsync(
+                compliantForwarderInstance.executeTransaction.sendTransactionAsync(
                     compliantSignedFillOrderTx.salt,
                     nonCompliantAddress,
                     compliantSignedFillOrderTx.data,
@@ -303,7 +303,7 @@ describe.only(ContractName.CompliantForwarder, () => {
             );
             // Call compliant forwarder
             return expectTransactionFailedAsync(
-                compliantForwarderInstance.fillOrder.sendTransactionAsync(
+                compliantForwarderInstance.executeTransaction.sendTransactionAsync(
                     signedFillOrderTx.salt,
                     signedFillOrderTx.signerAddress,
                     signedFillOrderTx.data,
