@@ -5,7 +5,11 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
-import { ACCOUNT_UPDATE_INTERVAL_TIME_MS, BUY_QUOTE_UPDATE_INTERVAL_TIME_MS } from '../constants';
+import {
+    ACCOUNT_UPDATE_INTERVAL_TIME_MS,
+    BUY_QUOTE_UPDATE_INTERVAL_TIME_MS,
+    INSTANT_DISCHARGE_TARGET,
+} from '../constants';
 import { SelectedAssetThemeProvider } from '../containers/selected_asset_theme_provider';
 import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
@@ -132,6 +136,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             providerName: state.providerState.name,
             gitSha: process.env.GIT_SHA,
             npmVersion: process.env.NPM_PACKAGE_VERSION,
+            instantEnvironment: INSTANT_DISCHARGE_TARGET || `Local ${process.env.NODE_ENV}`,
         });
         analytics.trackInstantOpened();
     }

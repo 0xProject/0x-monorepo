@@ -6,12 +6,14 @@ const webpack = require('webpack');
 // The common js bundle (not this one) is built using tsc.
 // The umd bundle (this one) has a different entrypoint.
 
-const CDNS_THAT_REQUIRE_HEAP = ['production', 'staging', 'dogfood'];
-const getConfigForCdn = cdnName => {
+const DISCHARGE_TARGETS_THAT_REQUIRED_HEAP = ['production', 'staging', 'dogfood'];
+const getConfigForDischargeTarget = dischargeTarget => {
     return {
         heapAnalyticsIdEnvName:
-            cdnName === 'production' ? 'INSTANT_HEAP_ANALYTICS_ID_PRODUCTION' : 'INSTANT_HEAP_ANALYTICS_ID_DEVELOPMENT',
-        heapAnalyticsIdRequired: CDNS_THAT_REQUIRE_HEAP.includes(cdnName),
+            dischargeTarget === 'production'
+                ? 'INSTANT_HEAP_ANALYTICS_ID_PRODUCTION'
+                : 'INSTANT_HEAP_ANALYTICS_ID_DEVELOPMENT',
+        heapAnalyticsIdRequired: DISCHARGE_TARGETS_THAT_REQUIRED_HEAP.includes(dischargeTarget),
     };
 };
 
@@ -19,14 +21,14 @@ const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
     .toString()
     .trim();
-const generateConfig = (cdnName, configOptions) => {
+const generateConfig = (dischargeTarget, configOptions) => {
     const outputPath = process.env.WEBPACK_OUTPUT_PATH || 'umd';
 
     const { heapAnalyticsIdEnvName, heapAnalyticsIdRequired } = configOptions;
     const heapAnalyticsId = process.env[heapAnalyticsIdEnvName];
     if (heapAnalyticsIdRequired && !heapAnalyticsId) {
         throw new Error(
-            `Must define heap analytics id in ENV var ${heapAnalyticsIdEnvName} when building for ${cdnName}`,
+            `Must define heap analytics id in ENV var ${heapAnalyticsIdEnvName} when building for ${dischargeTarget}`,
         );
     }
 
@@ -34,12 +36,13 @@ const generateConfig = (cdnName, configOptions) => {
         GIT_SHA: JSON.stringify(GIT_SHA),
         NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
     };
-    if (cdnName) {
-        envVars.INSTANT_CDN = JSON.stringify(cdnName);
+    if (dischargeTarget) {
+        envVars.INSTANT_DISCHARGE_TARGET = JSON.stringify(dischargeTarget);
     }
     if (heapAnalyticsId) {
         envVars.HEAP_ANALYTICS_ID = JSON.stringify(heapAnalyticsId);
     }
+    console.log(envVars);
 
     const config = {
         entry: {
@@ -91,7 +94,7 @@ const generateConfig = (cdnName, configOptions) => {
 };
 
 module.exports = (env, _argv) => {
-    const cdnName = env ? env.cdn : undefined;
-    const configOptions = getConfigForCdn(cdnName);
-    return generateConfig(cdnName, configOptions);
+    const dischargeTarget = env ? env.discharge_target : undefined;
+    const configOptions = getConfigForDischargeTarget(dischargeTarget);
+    return generateConfig(dischargeTarget, configOptions);
 };

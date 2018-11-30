@@ -47,6 +47,7 @@ export interface AnalyticsEventOptions {
     providerName?: string;
     gitSha?: string;
     npmVersion?: string;
+    instantEnvironment?: string;
 }
 
 export const analytics = {

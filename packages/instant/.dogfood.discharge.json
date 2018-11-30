@@ -1,6 +1,6 @@
 {
     "domain": "0x-instant-dogfood",
-    "build_command": "WEBPACK_OUTPUT_PATH=public yarn build:prod --env.cdn=staging",
+    "build_command": "WEBPACK_OUTPUT_PATH=public yarn build --env.discharge_target=dogfood",
     "upload_directory": "public",
     "index_key": "index.html",
     "error_key": "index.html",
