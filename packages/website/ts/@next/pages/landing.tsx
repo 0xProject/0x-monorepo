@@ -72,7 +72,7 @@ export const NextLanding = () => (
             </WrapCentered>
 
             {/* Note you can also pass in a string "large/default" or a number for custom margins */}
-            <Wrap margin={['large', 0, 0, 0]}>
+            <Wrap padding={['large', 0, 0, 0]}>
                 {/* NOTE: this probably should be withComponent as part of a <dl> */}
                 <Column colWidth="1/3" noPadding>
                     <Heading size="medium" center>

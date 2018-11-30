@@ -27,7 +27,7 @@ interface SectionProps {
 interface WrapProps {
     width?: 'default' | 'full' | 'medium' | 'narrow';
     bgColor?: string;
-    margin?: number | ('large' | 'default' | number)[];
+    padding?: number | ('large' | 'default' | number)[];
 }
 
 interface ColumnProps {
@@ -99,11 +99,15 @@ export const Section = styled.section<SectionProps>`
         width: ${props => props.fullWidth && '100vw'};
         margin-left: ${props => props.fullWidth && `calc(750px - 50vw)`};
     }
+
+    @media (max-width: ${BREAKPOINTS.mobile}) {
+        padding: 30px;
+    }
 `;
 
 const WrapBase = styled.div<WrapProps>`
     max-width: ${props => WRAPPER_WIDTHS[props.width || 'default']};
-    padding: ${props => props.margin && _getPadding(props.margin)};
+    padding: ${props => props.padding && _getPadding(props.padding)};
     background-color: ${props => props.bgColor};
     margin: 0 auto;
 `;
