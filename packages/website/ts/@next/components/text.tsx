@@ -1,84 +1,71 @@
 import * as React from 'react';
 import styled from 'styled-components';
-
 import { colors } from 'ts/style/colors';
 
-interface Props {
-    size?: 'normal' | 'medium' | 'large';
-    muted?: any;
+
+interface HeadingProps {
+    asElement?: 'h1'| 'h2'| 'h3'| 'h4';
+    size?: 'default' | 'medium' | 'large';
     center?: boolean;
+    children: Node | string;
+    noMargin?: any;
 }
 
-export const Heading: React.StatelessComponent<Props> = ({ children, ...props }) => (
-    <StyledHeading {...props}>{children}</StyledHeading>
-);
+interface ParagraphProps {
+    noMargin?: any;
+    size?: 'default' | 'small' | 'medium' | 'large';
+    muted?: any;
+    center?: any;
+}
 
-export const Intro: React.StatelessComponent<Props> = ({ children, ...props }) => (
-    <StyledIntro {...props}>{children}</StyledIntro>
-);
+interface HeadingSizes {
+    large: string;
+    medium: string;
+    default: string;
+    small: string;
+    [key: string]: string;
+}
 
-export const Text: React.StatelessComponent<Props> = ({ children, ...props }) => (
-    <StyledText {...props}>{children}</StyledText>
-);
+interface ParagraphSizes {
+    default: string;
+    [key: string]: string;
+}
 
-Heading.defaultProps = {
-    size: 'normal',
-    center: false,
+const HEADING_SIZES: HeadingSizes = {
+    large: '80px',
+    medium: '50px',
+    default: '28px',
+    small: '20px',
 };
 
-Intro.defaultProps = {
-    size: 'normal',
-    center: false,
-};
+const PARAGRAPH_SIZES: ParagraphSizes = {
+    default: '18px',
+    medium: '22px',
+    large: '28px',
+}
 
-Text.defaultProps = {
-    size: 'normal',
-    center: false,
-};
-
-const StyledHeading = styled.h1`
-    color: ${colors.white};
-    font-size: 1.111111111rem;
-    line-height: 1.4em;
-
-    ${(props: Props) => props.center && `
-        text-align: center
-    `}
-
-    ${(props: Props) => props.size === 'medium' && `
-        font-size: 3.222222222rem; // 50px
-        line-height: 1.16em;
-    `}
-
-    ${(props: Props) => props.size === 'large' && `
-        font-size: 4.444444444rem; // 80px
-        line-height: 1em;
-    `}
+const StyledHeading = styled.h1<HeadingProps>`
+    color: ${props => props.color || colors.white};
+    font-size: ${props => HEADING_SIZES[props.size || 'default']};
+    margin-bottom: ${props => !props.noMargin && '30px'};
+    text-align: ${props => props.center && 'center'};
 `;
 
-const StyledIntro = styled.p`
-    color: ${colors.white};
-    opacity: 0.75;
-    font-size: 22px;
-    line-height: 1.823529412em;
+export const Heading: React.StatelessComponent<HeadingProps> = props => {
+    const {
+    asElement = 'h1',
+    children,
+    } = props;
+    const Component = StyledHeading.withComponent(asElement);
 
-    ${(props: Props) => props.center && `
-        text-align: center
-    `}
-`;
+    return <Component {...props}>{ children }</Component>;
+};
 
-const StyledText = styled.p<Props>`
-    color: ${colors.white};
-    font-size: 1rem;
-    ${(props: Props) => props.size === 'medium' && `
-        font-size: 1.555555556rem;
-        line-height: 1.357142857em;
-    `}
-    ${(props: Props) => props.center && `
-        text-align: center
-    `}
-
-    ${(props: Props) => props.muted && `
-        opacity: ${typeof props.muted === 'string' ? props.muted : '0.8'};
-    `}
+// No need to declare it twice as Styled then rewrap as a stateless comp
+export const Paragraph = styled.p<ParagraphProps>`
+    font-size: ${props => PARAGRAPH_SIZES[props.size || 'default']};
+    margin-bottom: ${props => !props.noMargin && '30px'};
+    line-height: 1.4;
+    color: ${props => `rgba(255, 255, 255, ${props.muted || 0.75})`};
+    text-align: ${props => props.center && 'center'};
 `;
