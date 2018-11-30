@@ -44,6 +44,11 @@ const GlobalStyles = createGlobalStyle `
         overflow: hidden;
     }
 
+    img {
+        max-width: 100%;
+        object-fit: contain;
+    }
+
     p {
         font-size: 1rem;
         line-height: 1.444444444em; // 26px
