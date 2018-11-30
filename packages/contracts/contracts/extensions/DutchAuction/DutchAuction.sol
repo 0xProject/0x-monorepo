@@ -23,9 +23,12 @@ import "../../protocol/Exchange/interfaces/IExchange.sol";
 import "../../protocol/Exchange/libs/LibOrder.sol";
 import "../../tokens/ERC20Token/IERC20Token.sol";
 import "../../utils/LibBytes/LibBytes.sol";
+import "../../utils/SafeMath/SafeMath.sol";
 
 
-contract DutchAuction {
+contract DutchAuction is
+    SafeMath
+{
     using LibBytes for bytes;
 
     // solhint-disable var-name-mixedcase
@@ -77,11 +80,20 @@ contract DutchAuction {
     {
         AuctionDetails memory auctionDetails = getAuctionDetails(sellOrder);
         // Ensure the auction has not yet started
-        require(auctionDetails.currentTimeSeconds >= auctionDetails.beginTimeSeconds, "AUCTION_NOT_STARTED");
+        require(
+            auctionDetails.currentTimeSeconds >= auctionDetails.beginTimeSeconds,
+            "AUCTION_NOT_STARTED"
+        );
         // Ensure the auction has not expired. This will fail later in 0x but we can save gas by failing early
-        require(sellOrder.expirationTimeSeconds > auctionDetails.currentTimeSeconds, "AUCTION_EXPIRED");
+        require(
+            sellOrder.expirationTimeSeconds > auctionDetails.currentTimeSeconds,
+            "AUCTION_EXPIRED"
+        );
         // Validate the buyer amount is greater than the current auction amount
-        require(buyOrder.makerAssetAmount >= auctionDetails.currentAmount, "INVALID_AMOUNT");
+        require(
+            buyOrder.makerAssetAmount >= auctionDetails.currentAmount,
+            "INVALID_AMOUNT"
+        );
         // Match orders, maximally filling `buyOrder`
         matchedFillResults = EXCHANGE.matchOrders(
             buyOrder,
@@ -107,19 +119,17 @@ contract DutchAuction {
             address token = assetData.readAddress(16);
             // Calculate the excess from the buy order. This can occur if the buyer sends in a higher
             // amount than the calculated current amount
-            uint256 buyerExcessAmount = buyOrder.makerAssetAmount-auctionDetails.currentAmount;
-            uint256 sellerExcessAmount = leftMakerAssetSpreadAmount-buyerExcessAmount;
+            uint256 buyerExcessAmount = safeSub(buyOrder.makerAssetAmount, auctionDetails.currentAmount);
+            uint256 sellerExcessAmount = safeSub(leftMakerAssetSpreadAmount, buyerExcessAmount);
             // Return the difference between auctionDetails.currentAmount and sellOrder.takerAssetAmount
             // to the seller
             if (sellerExcessAmount > 0) {
-                address makerAddress = sellOrder.makerAddress;
-                IERC20Token(token).transfer(makerAddress, sellerExcessAmount);
+                IERC20Token(token).transfer(sellOrder.makerAddress, sellerExcessAmount);
             }
             // Return the difference between buyOrder.makerAssetAmount and auctionDetails.currentAmount
             // to the buyer
             if (buyerExcessAmount > 0) {
-                address takerAddress = buyOrder.makerAddress;
-                IERC20Token(token).transfer(takerAddress, buyerExcessAmount);
+                IERC20Token(token).transfer(buyOrder.makerAddress, buyerExcessAmount);
             }
         }
         return matchedFillResults;
@@ -145,15 +155,24 @@ contract DutchAuction {
         // |          | -64    | 32      |   1. auction begin unix timestamp   |
         // |          | -32    | 32      |   2. auction begin begin amount     |
         // ERC20 asset data length is 4+32, 64 for auction details results in min length if 100
-        require(makerAssetDataLength > 10, "INVALID_ASSET_DATA");
-        uint256 auctionBeginTimeSeconds = order.makerAssetData.readUint256(makerAssetDataLength-64);
-        uint256 auctionBeginAmount = order.makerAssetData.readUint256(makerAssetDataLength-32);
+        require(
+            makerAssetDataLength > 10,
+            "INVALID_ASSET_DATA"
+        );
+        uint256 auctionBeginTimeSeconds = order.makerAssetData.readUint256(makerAssetDataLength - 64);
+        uint256 auctionBeginAmount = order.makerAssetData.readUint256(makerAssetDataLength - 32);
         // Ensure the auction has a valid begin time
-        require(order.expirationTimeSeconds > auctionBeginTimeSeconds, "INVALID_BEGIN_TIME");
+        require(
+            order.expirationTimeSeconds > auctionBeginTimeSeconds,
+            "INVALID_BEGIN_TIME"
+        );
         uint256 auctionDurationSeconds = order.expirationTimeSeconds-auctionBeginTimeSeconds;
         // Ensure the auction goes from high to low
         uint256 minAmount = order.takerAssetAmount;
-        require(auctionBeginAmount > minAmount, "INVALID_AMOUNT");
+        require(
+            auctionBeginAmount > minAmount,
+            "INVALID_AMOUNT"
+        );
         uint256 amountDelta = auctionBeginAmount-minAmount;
         // solhint-disable-next-line not-rely-on-time
         uint256 timestamp = block.timestamp;
