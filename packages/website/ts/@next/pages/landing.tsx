@@ -101,14 +101,14 @@ export const NextLanding = () => (
             <Wrap>
                 <Column bgColor="#003831" colWidth="1/2" padLarge>
                     <WrapCentered>
-                        <Icon as={IconReadyToBuild as 'svg'} />
+                        <IconReadyToBuild />
                         Ready to build on 0x?
                     </WrapCentered>
                 </Column>
 
                 <Column bgColor="#003831" colWidth="1/2" padLarge>
                     <WrapCentered>
-                        <Icon as={IconReadyToBuild as 'svg'} />
+                        <IconReadyToBuild />
                         Ready to build on 0x?
                     </WrapCentered>
                 </Column>
