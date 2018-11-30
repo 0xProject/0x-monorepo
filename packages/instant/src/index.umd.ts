@@ -91,10 +91,11 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
     const anyWindow = window as any;
     if (window.onpopstate && !anyWindow.__zeroExInstantIntegratorsPopStateHandler) {
         anyWindow.__zeroExInstantIntegratorsPopStateHandler = window.onpopstate.bind(window);
+    } else {
+        anyWindow.__zeroExInstantIntegratorsPopStateHandler = util.boundNoop;
     }
-    const integratorsOnPopStateHandler = anyWindow.__zeroExInstantIntegratorsPopStateHandler || util.boundNoop;
     const onPopStateHandler = (e: PopStateEvent) => {
-        integratorsOnPopStateHandler(e);
+        anyWindow.__zeroExInstantIntegratorsPopStateHandler(e);
         const newState = e.state;
         if (newState && newState.zeroExInstantShowing) {
             // We have returned to a history state that expects instant to be rendered.
