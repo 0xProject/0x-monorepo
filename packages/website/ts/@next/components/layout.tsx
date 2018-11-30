@@ -1,4 +1,3 @@
-import * as React from 'react';
 import styled from 'styled-components';
 
 interface WrapWidths {
@@ -104,6 +103,12 @@ export const WrapCentered = styled(WrapBase)`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+`;
+
+export const WrapGrid = styled(WrapBase)`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 `;
 
 export const Column = styled.div<ColumnProps>`

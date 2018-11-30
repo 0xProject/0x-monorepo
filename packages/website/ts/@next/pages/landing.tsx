@@ -1,8 +1,10 @@
 import * as React from 'react';
+import * as _ from 'lodash';
+import styled from 'styled-components';
 
 import {colors} from 'ts/style/colors';
 import {Button, ButtonWrap} from 'ts/@next/components/button';
-import {Column, Section, Wrap, WrapCentered} from 'ts/@next/components/layout';
+import {Column, Section, Wrap, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 
@@ -11,6 +13,16 @@ import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
 import IconReadyToBuild from 'ts/@next/icons/illustrations/ready-to-build.svg';
 
 
+/**
+    Note(ez): Maybe when we're done at least with a basic structure,
+    we can take out each section into e.g. LandingSectionIntro.tsx in
+    @next/sections/landing ? so then our routes would only look like
+
+    <SiteWrap>
+        <LandingSectionIntro />
+        <LandingSectionWhatever />
+    </SiteWrap>
+*/
 export const NextLanding = () => (
     <SiteWrap>
         <Section>
@@ -41,7 +53,7 @@ export const NextLanding = () => (
             </Wrap>
         </Section>
 
-        <Section bgColor={colors.backgroundDark}>
+        <Section bgColor={colors.backgroundDark} padLarge>
             <WrapCentered width="narrow">
                 <ProtocolIcon/>
 
@@ -91,6 +103,18 @@ export const NextLanding = () => (
             </Wrap>
         </Section>
 
+        <Section padLarge>
+            <WrapCentered>
+                <Heading size="small">You're in good company</Heading>
+            </WrapCentered>
+
+            <WrapGrid width="narrow">
+                {_.map([...Array(9)], (item, index) => (
+                    <SampleLogo />
+                ))}
+            </WrapGrid>
+        </Section>
+
         <Section>
             <Wrap>
                 <Column bgColor="#003831" colWidth="1/2" padLarge>
@@ -105,56 +129,16 @@ export const NextLanding = () => (
                         <IconReadyToBuild />
                         Ready to build on 0x?
                     </WrapCentered>
-                </Column>
-            </Wrap>
-        </Section>
-
-        <Section>
-            <Wrap>
-                <Column colWidth="2/3">
-                    Powering Decentralized Exchange<br/>
-                    Example of a 2/3 1/3 assymetric composition
-                </Column>
-
-                <Column colWidth="1/3">
-                    RIGHT IMAGE
-                </Column>
-            </Wrap>
-        </Section>
-
-        <Section
-            bgColor="#ff0000"
-            fullWidth
-            noPadding>
-            <Wrap width="full">
-                <Column colWidth="2/3">
-                    SAMPLE FLUSHED width
-                </Column>
-
-                <Column colWidth="1/3">
-                    RIGHT IMAGE
-                </Column>
-            </Wrap>
-        </Section>
-
-        <Section bgColor="#003831">
-            <Wrap width="narrow">
-                0x is an open protocol that enables the peer-to-peer exchange of Ethereum-based tokens. Anyone can utilize 0x to service a wide variety of markets ranging from gaming items to traditional financial assets.
-            </Wrap>
-
-            <Wrap>
-                <Column colWidth="1/3">
-                    This
-                </Column>
-
-                <Column colWidth="1/3">
-                    is a
-                </Column>
-
-                <Column colWidth="1/3">
-                     three-column module
                 </Column>
             </Wrap>
         </Section>
     </SiteWrap>
 );
+
+
+const SampleLogo = styled.div`
+    width: 60px;
+    height: 60px;
+    border: 1px solid blue;
+    margin: 30px 60px;
+`;

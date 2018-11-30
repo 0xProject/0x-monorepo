@@ -5,7 +5,7 @@ import { colors } from 'ts/style/colors';
 
 interface HeadingProps {
     asElement?: 'h1'| 'h2'| 'h3'| 'h4';
-    size?: 'default' | 'medium' | 'large';
+    size?: 'default' | 'medium' | 'large' | 'small';
     center?: boolean;
     children: Node | string;
     noMargin?: any;
