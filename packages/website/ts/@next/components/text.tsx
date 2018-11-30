@@ -28,6 +28,8 @@ interface HeadingSizes {
 
 interface ParagraphSizes {
     default: string;
+    medium: string;
+    large: string;
     [key: string]: string;
 }
 
