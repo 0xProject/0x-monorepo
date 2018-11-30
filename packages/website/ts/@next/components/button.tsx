@@ -34,7 +34,7 @@ const StyledButton = styled.button<ButtonInterface>`
     display: ${props => props.inline && 'inline-block'};
     background-color: ${props => !props.transparent && colors.brandLight};
     border-color: ${props => props.transparent && '#6a6a6a'};
-    color: ${colors.white};
+    color: ${props => props.color || props.theme.textColor};
     text-align: center;
     padding: 14px 22px;
     text-decoration: none;

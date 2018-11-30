@@ -14,7 +14,7 @@ import RightThingIcon from 'ts/@next/icons/illustrations/right-thing.svg';
 import LongTermImpactIcon from 'ts/@next/icons/illustrations/long-term-impact.svg';
 
 export const NextAboutMission = () => (
-  <SiteWrap>
+  <SiteWrap theme="light">
     <Section>
       <Wrap>
          <Column colWidth="1/3">

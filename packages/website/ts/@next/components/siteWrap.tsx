@@ -27,11 +27,11 @@ const GLOBAL_THEMES: GlobalThemes = {
     },
     light: {
         bgColor: '#FFFFFF',
-        textColor: '#FFFFFF',
+        textColor: '#000000',
     },
     gray: {
         bgColor: '#e0e0e0',
-        textColor: '#FFFFFF',
+        textColor: '#000000',
     },
 }
 

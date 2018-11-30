@@ -33,7 +33,7 @@ export const NextWhy = () => (
         </Column>
 
         <Column colWidth="1/3">
-            <LogoOutlined width="150" />
+            <ProtocolIcon width="150" />
             <Heading>Shared Networked Liquidity</Heading>
             <Paragraph>0x is building a layer of networked liquidity that will lower the barriers to entry. By enabling businesses to tap into a shared pool of digital assets, it will create a more stable financial system.</Paragraph>
         </Column>

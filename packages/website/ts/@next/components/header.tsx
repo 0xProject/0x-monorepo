@@ -38,7 +38,10 @@ const Link: React.StatelessComponent<LinkProps> = props => {
 export const Header: React.StatelessComponent<HeaderProps> = ({}) => (
     <Container>
         <StyledHeader>
-            <Logo/>
+            <Link href="/next">
+                <Logo/>
+            </Link>
+
             <Links>
                 {_.map(links, (link, index) => <Link key={index} href={link.url}>{link.text}</Link>)}
             </Links>

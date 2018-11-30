@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
+import { Link as ReactRouterLink } from 'react-router-dom';
 
 import { colors } from 'ts/style/colors';
 
@@ -31,7 +32,7 @@ const linkRows: LinkRows[] = [
     {
         heading: 'Products',
         links: [
-            { url: '#', text: '0x Instant' },
+            { url: '/next/0x-instant', text: '0x Instant' },
             { url: '#', text: '0x Launch Kit' },
         ],
     },
@@ -61,7 +62,7 @@ export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
     noMargin>
     <Wrap>
       <Column colWidth="1/2" noPadding>
-        <Logo />
+        <Logo light />
         <NewsletterForm />
       </Column>
 
@@ -89,7 +90,7 @@ const LinkList = (props: LinkListProps) => (
   <ul>
     {_.map(props.links, (link, index) => (
       <li key={`fl-${index}`}>
-        <Link href={link.url}>
+        <Link to={link.url}>
           {link.text}
         </Link>
       </li>
@@ -97,7 +98,10 @@ const LinkList = (props: LinkListProps) => (
   </ul>
 );
 
-const FooterWrap = Section.withComponent('footer');
+const FooterSection = Section.withComponent('footer');
+const FooterWrap = styled(FooterSection)`
+    color: ${colors.white};
+`;
 
 const RowHeading = styled.h3`
     color: ${colors.white};
@@ -107,7 +111,7 @@ const RowHeading = styled.h3`
     margin-bottom: 1.25em;
 `;
 
-const Link = styled.a`
+const Link = styled(ReactRouterLink)`
     color: rgba(255, 255, 255, 0.5);
     display: block;
     font-size: 16px;
