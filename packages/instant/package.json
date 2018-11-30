@@ -10,7 +10,6 @@
     "scripts": {
         "build": "webpack --mode production",
         "build:ci": "yarn build",
-        "watch_without_deps": "tsc -w",
         "dev": "webpack-dev-server --mode development",
         "lint": "tslint --format stylish --project .",
         "test": "jest",

@@ -112,5 +112,5 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
 };
 
 // Write version info to the exported object for debugging
-export const GitSha = process.env.GIT_SHA;
-export const NpmVersion = process.env.NPM_PACKAGE_VERSION;
+export const GIT_SHA = process.env.GIT_SHA;
+export const NPM_VERSION = process.env.NPM_PACKAGE_VERSION;

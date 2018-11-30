@@ -3,9 +3,6 @@ const ip = require('ip');
 const path = require('path');
 const webpack = require('webpack');
 
-// The common js bundle (not this one) is built using tsc.
-// The umd bundle (this one) has a different entrypoint.
-
 const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
     .toString()
