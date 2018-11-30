@@ -10,7 +10,7 @@ import { Text } from './text';
 
 export interface MultiSelectItemConfig {
     value: string;
-    displayText: string;
+    displayText: React.ReactNode;
     onClick?: () => void;
 }
 
@@ -27,11 +27,16 @@ export class MultiSelect extends React.Component<MultiSelectProps> {
         textColor: colors.darkGrey,
     };
     public render(): React.ReactNode {
-        const { items, backgroundColor } = this.props;
+        const { items, backgroundColor, selectedValues } = this.props;
         return (
             <Container backgroundColor={backgroundColor} borderRadius="4px">
                 {_.map(items, item => (
-                    <MultiSelectItem key={item.value} displayText={item.displayText} onClick={item.onClick} />
+                    <MultiSelectItem
+                        key={item.value}
+                        displayText={item.displayText}
+                        onClick={item.onClick}
+                        isSelected={_.includes(selectedValues, item.value)}
+                    />
                 ))}
             </Container>
         );
@@ -39,7 +44,7 @@ export class MultiSelect extends React.Component<MultiSelectProps> {
 }
 
 export interface MultiSelectItemProps {
-    displayText: string;
+    displayText: React.ReactNode;
     isSelected?: boolean;
     onClick?: () => void;
 }
