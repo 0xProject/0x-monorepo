@@ -4,6 +4,7 @@ import * as ReactDOM from 'react-dom';
 
 import { DEFAULT_ZERO_EX_CONTAINER_SELECTOR, INJECTED_DIV_CLASS, INJECTED_DIV_ID } from './constants';
 import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
+import { analytics } from './util/analytics';
 import { assert } from './util/assert';
 import { util } from './util/util';
 
@@ -57,6 +58,7 @@ const renderInstant = (config: ZeroExInstantConfig, selector: string) => {
     injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
     appendTo.appendChild(injectedDiv);
     const closeInstant = () => {
+        analytics.trackInstantClosed();
         if (!_.isUndefined(config.onClose)) {
             config.onClose();
         }

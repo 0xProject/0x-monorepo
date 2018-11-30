@@ -10,6 +10,7 @@ import { BuyOrderStateButtons } from '../components/buy_order_state_buttons';
 import { Action, actions } from '../redux/actions';
 import { State } from '../redux/reducer';
 import { AccountState, AffiliateInfo, OrderProcessState, ZeroExInstantError } from '../types';
+import { analytics } from '../util/analytics';
 import { errorFlasher } from '../util/error_flasher';
 import { etherscanUtil } from '../util/etherscan';
 
@@ -59,6 +60,8 @@ const mapStateToProps = (state: State, _ownProps: SelectedAssetBuyOrderStateButt
                     assetBuyer.networkId,
                 );
                 if (etherscanUrl) {
+                    analytics.trackTransactionViewed(state.buyOrderState.processState);
+
                     window.open(etherscanUrl, '_blank');
                     return;
                 }
