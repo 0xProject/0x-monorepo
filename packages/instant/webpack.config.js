@@ -4,111 +4,113 @@ const path = require('path');
 const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
 const webpack = require('webpack');
 
-// The common js bundle (not this one) is built using tsc.
-// The umd bundle (this one) has a different entrypoint.
-
 const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
     .toString()
     .trim();
 
-const getEnvironmentName = (env, argv) => {
-    if (env && env.dogfood) {
-        return 'dogfood';
-    } else if (env && env.staging) {
-        return 'staging';
-    }
-
-    // argv.mode should be 'development' or 'production'
-    return argv.mode;
-};
-
-const getHeapAnalyticsId = environmentName => {
-    if (environmentName === 'production') {
-        return process.env['INSTANT_HEAP_ANALYTICS_ID_PRODUCTION'];
-    }
-
-    if (environmentName === 'development' || environmentName === 'dogfood' || environmentName === 'staging') {
-        return process.env['INSTANT_HEAP_ANALYTICS_ID_DEVELOPMENT'];
-    }
-
-    return undefined;
-};
-
-const ROLLBAR_PUBLISH_TOKEN_ENV_NAME = 'INSTANT_ROLLBAR_PUBLISH_TOKEN';
-const ROLLBAR_CLIENT_TOKEN_ENV_NAME = 'INSTANT_ROLLBAR_CLIENT_TOKEN';
-const getRollbarSourceMapPlugin = environmentName => {
-    if (!environmentName) {
-        return undefined;
-    }
-
-    const publishToken = process.env[ROLLBAR_PUBLISH_TOKEN_ENV_NAME];
-    if (!publishToken) {
-        return undefined;
-    }
-
-    let rollbarPublicPath;
-    if (environmentName === 'dogfood') {
-        rollbarPublicPath = 'http://0x-instant-dogfood.s3-website-us-east-1.amazonaws.com';
-    } else if (environmentName === 'staging') {
-        rollbarPublicPath = 'http://0x-instant-staging.s3-website-us-east-1.amazonaws.com';
-    } // TODO(sk): When we decide on JS cdn, add public path here
-
-    if (!rollbarPublicPath) {
-        console.log('No rollbar public path');
-        return undefined;
-    }
-
-    const rollbarPluginOptions = {
-        accessToken: publishToken,
-        version: GIT_SHA,
-        publicPath: rollbarPublicPath,
+const DISCHARGE_TARGETS_THAT_REQUIRED_HEAP = ['production', 'staging', 'dogfood'];
+const getHeapConfigForDischargeTarget = dischargeTarget => {
+    return {
+        heapAnalyticsIdEnvName:
+            dischargeTarget === 'production'
+                ? 'INSTANT_HEAP_ANALYTICS_ID_PRODUCTION'
+                : 'INSTANT_HEAP_ANALYTICS_ID_DEVELOPMENT',
+        heapAnalyticsIdRequired: DISCHARGE_TARGETS_THAT_REQUIRED_HEAP.includes(dischargeTarget),
     };
-    return new RollbarSourceMapPlugin(rollbarPluginOptions);
 };
-const validateRollbarPresence = (environmentName, rollbarEnabled, rollbarSourceMapPlugin) => {
-    const requiresRollbar = environmentName === 'dogfood' || environmentName === 'staging';
-    if (!requiresRollbar) {
-        return;
+
+const DISCHARGE_TARGETS_THAT_REQUIRE = ['production', 'staging', 'dogfood'];
+const getRollbarConfigForDischargeTarget = dischargeTarget => {
+    if (DISCHARGE_TARGETS_THAT_REQUIRE.includes(dischargeTarget)) {
+        const rollbarSourceMapPublicPath =
+            dischargeTarget === 'production'
+                ? 'https://instant.0xproject.com'
+                : `http://0x-instant-${dischargeTarget}.s3-website-us-east-1.amazonaws.com`;
+
+        return {
+            rollbarSourceMapPublicPath,
+            rollbarRequired: true,
+        };
     }
-    if (!rollbarEnabled || !rollbarSourceMapPlugin) {
+
+    return {
+        rollbarRequired: false,
+    };
+};
+
+const ROLLBAR_CLIENT_TOKEN_ENV_VAR_NAME = 'INSTANT_ROLLBAR_CLIENT_TOKEN';
+const ROLLBAR_PUBLISH_TOKEN_ENV_VAR_NAME = 'INSTANT_ROLLBAR_PUBLISH_TOKEN';
+const getRollbarTokens = (dischargeTarget, rollbarRequired) => {
+    const clientToken = process.env[ROLLBAR_CLIENT_TOKEN_ENV_VAR_NAME];
+    const publishToken = process.env[ROLLBAR_PUBLISH_TOKEN_ENV_VAR_NAME];
+
+    if (rollbarRequired) {
+        if (!clientToken) {
+            throw new Error(
+                `Rollbar client token required for ${dischargeTarget}, please set env var ${ROLLBAR_CLIENT_TOKEN_ENV_VAR_NAME}`,
+            );
+        }
+        if (!publishToken) {
+            throw new Error(
+                `Rollbar publish token required for ${dischargeTarget}, please set env var ${ROLLBAR_PUBLISH_TOKEN_ENV_VAR_NAME}`,
+            );
+        }
+    }
+
+    return { clientToken, publishToken };
+};
+
+const generateConfig = (dischargeTarget, heapConfigOptions, rollbarConfigOptions, nodeEnv) => {
+    const outputPath = process.env.WEBPACK_OUTPUT_PATH || 'umd';
+
+    const { heapAnalyticsIdEnvName, heapAnalyticsIdRequired } = heapConfigOptions;
+    const heapAnalyticsId = process.env[heapAnalyticsIdEnvName];
+    if (heapAnalyticsIdRequired && !heapAnalyticsId) {
         throw new Error(
-            `Rollbar env vars must be set to build for ${environmentName}. Please set ${ROLLBAR_CLIENT_TOKEN_ENV_NAME} to a rollbar access token with post_client_item permissions, and ${ROLLBAR_PUBLISH_TOKEN_ENV_NAME} to a rollbar access token with post_server_item permissions.`,
+            `Must define heap analytics id in ENV var ${heapAnalyticsIdEnvName} when building for ${dischargeTarget}`,
         );
     }
-};
 
-module.exports = (env, argv) => {
-    const environmentName = getEnvironmentName(env, argv);
-    const outputPath = process.env.WEBPACK_OUTPUT_PATH || 'umd';
+    const rollbarTokens = getRollbarTokens(dischargeTarget, rollbarConfigOptions.rollbarRequired);
+    const rollbarEnabled =
+        rollbarTokens.clientToken && (nodeEnv !== 'development' || process.env.INSTANT_ROLLBAR_FORCE_DEVELOPMENT);
+
+    let rollbarPlugin;
+    if (rollbarConfigOptions.rollbarRequired) {
+        if (!rollbarEnabled || !rollbarTokens.publishToken || !rollbarConfigOptions.rollbarSourceMapPublicPath) {
+            throw new Error(`Rollbar required for ${dischargeTarget} but not configured`);
+        }
+        rollbarPlugin = new RollbarSourceMapPlugin({
+            accessToken: rollbarTokens.publishToken,
+            version: GIT_SHA,
+            publicPath: rollbarConfigOptions.rollbarSourceMapPublicPath,
+        });
+    }
 
     const envVars = {
         GIT_SHA: JSON.stringify(GIT_SHA),
         NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
-        HEAP_ANALYTICS_ID: getHeapAnalyticsId(environmentName),
-        INSTANT_ENVIRONMENT: JSON.stringify(environmentName),
-        ROLLBAR_CLIENT_TOKEN: JSON.stringify(process.env[ROLLBAR_CLIENT_TOKEN_ENV_NAME]),
+        ROLLBAR_ENABLED: rollbarEnabled,
     };
-
-    const canRollbarBeEnabled =
-        environmentName === 'development' ? process.env.INSTANT_ROLLBAR_FORCE_DEVELOPMENT_REPORT : true;
-    if (envVars.INSTANT_ENVIRONMENT && envVars.ROLLBAR_CLIENT_TOKEN && canRollbarBeEnabled) {
-        envVars['ROLLBAR_ENABLED'] = JSON.stringify(true);
+    if (dischargeTarget) {
+        envVars.INSTANT_DISCHARGE_TARGET = JSON.stringify(dischargeTarget);
+    }
+    if (heapAnalyticsId) {
+        envVars.HEAP_ANALYTICS_ID = JSON.stringify(heapAnalyticsId);
+    }
+    if (rollbarTokens.clientToken) {
+        envVars.ROLLBAR_CLIENT_TOKEN = JSON.stringify(rollbarTokens.clientToken);
     }
 
-    let plugins = [
+    const plugins = [
         new webpack.DefinePlugin({
             'process.env': envVars,
         }),
     ];
-    const rollbarSourceMapPlugin = getRollbarSourceMapPlugin(environmentName);
-    if (rollbarSourceMapPlugin) {
-        console.log('Using rollbar source map plugin');
-        plugins = plugins.concat(rollbarSourceMapPlugin);
-    } else {
-        console.log('Not using rollbar source map plugin');
+    if (rollbarPlugin) {
+        plugins.push(rollbarPlugin);
     }
-    validateRollbarPresence(environmentName, envVars['ROLLBAR_ENABLED'], rollbarSourceMapPlugin);
 
     const config = {
         entry: {
@@ -162,4 +164,11 @@ module.exports = (env, argv) => {
         },
     };
     return config;
+};
+
+module.exports = (env, argv) => {
+    const dischargeTarget = env ? env.discharge_target : undefined;
+    const heapConfigOptions = getHeapConfigForDischargeTarget(dischargeTarget);
+    const rollbarConfigOptions = getRollbarConfigForDischargeTarget(dischargeTarget);
+    return generateConfig(dischargeTarget, heapConfigOptions, rollbarConfigOptions, argv.mode);
 };

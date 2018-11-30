@@ -34,7 +34,6 @@
         { "path": "./packages/dev-utils" },
         { "path": "./packages/ethereum-types" },
         { "path": "./packages/fill-scenarios" },
-        { "path": "./packages/instant" },
         { "path": "./packages/json-schemas" },
         { "path": "./packages/metacoin" },
         { "path": "./packages/migrations" },
@@ -57,5 +56,8 @@
         // Skipping website because it requires allowJs: false and this is
         // incompatible with project references.
         // { "path": "./packages/website" }
+        // Skipping instant because it only produces a UMD bundle
+        // which it uses webpack to create
+        // { "path": "./packages/instant" },
     ]
 }

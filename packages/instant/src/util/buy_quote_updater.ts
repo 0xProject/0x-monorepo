@@ -6,7 +6,8 @@ import { Dispatch } from 'redux';
 import { oc } from 'ts-optchain';
 
 import { Action, actions } from '../redux/actions';
-import { AffiliateInfo, ERC20Asset } from '../types';
+import { AffiliateInfo, ERC20Asset, QuoteFetchOrigin } from '../types';
+import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
 import { errorReporter } from '../util/error_reporter';
@@ -17,7 +18,12 @@ export const buyQuoteUpdater = {
         dispatch: Dispatch<Action>,
         asset: ERC20Asset,
         assetUnitAmount: BigNumber,
-        options: { setPending: boolean; dispatchErrors: boolean; affiliateInfo?: AffiliateInfo },
+        fetchOrigin: QuoteFetchOrigin,
+        options: {
+            setPending: boolean;
+            dispatchErrors: boolean;
+            affiliateInfo?: AffiliateInfo;
+        },
     ): Promise<void> => {
         // get a new buy quote.
         const baseUnitValue = Web3Wrapper.toBaseUnitAmount(assetUnitAmount, asset.metaData.decimals);
@@ -39,6 +45,7 @@ export const buyQuoteUpdater = {
 
             if (options.dispatchErrors) {
                 dispatch(actions.setQuoteRequestStateFailure());
+                analytics.trackQuoteError(error.message ? error.message : 'other', baseUnitValue, fetchOrigin);
                 errorFlasher.flashNewErrorMessage(dispatch, errorMessage || 'Error fetching price, please try again');
             }
             return;
@@ -47,5 +54,6 @@ export const buyQuoteUpdater = {
         errorFlasher.clearError(dispatch);
         // invalidate the last buy quote.
         dispatch(actions.updateLatestBuyQuote(newBuyQuote));
+        analytics.trackQuoteFetched(newBuyQuote, fetchOrigin);
     },
 };

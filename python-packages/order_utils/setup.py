@@ -187,8 +187,7 @@ setup(
             "mypy_extensions",
             "pycodestyle",
             "pydocstyle",
-            "pylint<=2.1.1",  # version pinned until resolution of
-            # https://github.com/PyCQA/pylint/issues/2612
+            "pylint",
             "pytest",
             "sphinx",
             "tox",

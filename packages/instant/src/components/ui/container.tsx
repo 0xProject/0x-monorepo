@@ -27,7 +27,9 @@ export interface ContainerProps {
     borderBottom?: string;
     className?: string;
     backgroundColor?: ColorOption;
+    rawBackgroundColor?: string;
     hasBoxShadow?: boolean;
+    isHidden?: boolean;
     zIndex?: number;
     whiteSpace?: string;
     opacity?: number;
@@ -37,6 +39,16 @@ export interface ContainerProps {
     boxShadowOnHover?: boolean;
     flexGrow?: string | number;
 }
+
+const getBackgroundColor = (theme: any, backgroundColor?: ColorOption, rawBackgroundColor?: string): string => {
+    if (backgroundColor) {
+        return theme[backgroundColor] as string;
+    }
+    if (rawBackgroundColor) {
+        return rawBackgroundColor;
+    }
+    return 'none';
+};
 
 export const Container =
     styled.div <
@@ -70,7 +82,8 @@ export const Container =
         ${props => props.width && stylesForMedia<string>('width', props.width)}
         ${props => props.height && stylesForMedia<string>('height', props.height)}
         ${props => props.borderRadius && stylesForMedia<string>('border-radius', props.borderRadius)}
-        background-color: ${props => (props.backgroundColor ? props.theme[props.backgroundColor] : 'none')};
+        ${props => (props.isHidden ? 'visibility: hidden;' : '')}
+        background-color: ${props => getBackgroundColor(props.theme, props.backgroundColor, props.rawBackgroundColor)};
         border-color: ${props => (props.borderColor ? props.theme[props.borderColor] : 'none')};
         &:hover {
             ${props =>

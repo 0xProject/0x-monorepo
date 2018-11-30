@@ -1,7 +1,7 @@
 import { logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { HOST_DOMAINS, INSTANT_ENVIRONMENT, ROLLBAR_CLIENT_TOKEN, ROLLBAR_ENABLED } from '../constants';
+import { HOST_DOMAINS, INSTANT_DISCHARGE_TARGET, ROLLBAR_CLIENT_TOKEN, ROLLBAR_ENABLED } from '../constants';
 
 // Import version of Rollbar designed for embedded components
 // See https://docs.rollbar.com/docs/using-rollbarjs-inside-an-embedded-component
@@ -11,7 +11,7 @@ const Rollbar = require('rollbar/dist/rollbar.noconflict.umd');
 let rollbar: any;
 // Configures rollbar and sets up error catching
 export const setupRollbar = (): any => {
-    if (_.isUndefined(rollbar) && ROLLBAR_CLIENT_TOKEN && INSTANT_ENVIRONMENT && ROLLBAR_ENABLED) {
+    if (_.isUndefined(rollbar) && ROLLBAR_CLIENT_TOKEN && ROLLBAR_ENABLED) {
         rollbar = new Rollbar({
             accessToken: ROLLBAR_CLIENT_TOKEN,
             captureUncaught: true,
@@ -20,7 +20,7 @@ export const setupRollbar = (): any => {
             itemsPerMinute: 10,
             maxItems: 500,
             payload: {
-                environment: INSTANT_ENVIRONMENT,
+                environment: INSTANT_DISCHARGE_TARGET || `Local ${process.env.NODE_ENV}`,
                 client: {
                     javascript: {
                         source_map_enabled: true,

@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { Middleware } from 'redux';
 
 import { ETH_DECIMALS } from '../constants';
-import { Account, AccountState } from '../types';
+import { AccountState, StandardSlidingPanelContent } from '../types';
 import { analytics } from '../util/analytics';
 
 import { Action, ActionTypes } from './actions';
@@ -53,6 +53,42 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                 ).toString();
                 analytics.addUserProperties({ ethBalanceInUnitAmount });
             }
+            break;
+        case ActionTypes.UPDATE_SELECTED_ASSET:
+            const selectedAsset = curState.selectedAsset;
+            if (selectedAsset) {
+                const assetName = selectedAsset.metaData.name;
+                const assetData = selectedAsset.assetData;
+                analytics.trackTokenSelectorChose({
+                    assetName,
+                    assetData,
+                });
+                analytics.addEventProperties({
+                    selectedAssetName: assetName,
+                    selectedAssetData: assetData,
+                });
+            }
+            break;
+        case ActionTypes.SET_AVAILABLE_ASSETS:
+            const availableAssets = curState.availableAssets;
+            if (availableAssets) {
+                analytics.addEventProperties({
+                    numberAvailableAssets: availableAssets.length,
+                });
+            }
+            break;
+        case ActionTypes.OPEN_STANDARD_SLIDING_PANEL:
+            const openSlidingContent = curState.standardSlidingPanelSettings.content;
+            if (openSlidingContent === StandardSlidingPanelContent.InstallWallet) {
+                analytics.trackInstallWalletModalOpened();
+            }
+            break;
+        case ActionTypes.CLOSE_STANDARD_SLIDING_PANEL:
+            const closeSlidingContent = curState.standardSlidingPanelSettings.content;
+            if (closeSlidingContent === StandardSlidingPanelContent.InstallWallet) {
+                analytics.trackInstallWalletModalClosed();
+            }
+            break;
     }
 
     return nextAction;

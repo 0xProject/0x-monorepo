@@ -7,6 +7,8 @@ export const ETH_DECIMALS = 18;
 export const DEFAULT_ZERO_EX_CONTAINER_SELECTOR = '#zeroExInstantContainer';
 export const INJECTED_DIV_CLASS = 'zeroExInstantResetRoot';
 export const INJECTED_DIV_ID = 'zeroExInstant';
+export const OVERLAY_DIV_CLASS = 'zeroExInstantOverlay';
+export const MAIN_CONTAINER_DIV_CLASS = 'zeroExInstantMainContainer';
 export const WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX = 'Transaction failed';
 export const GWEI_IN_WEI = new BigNumber(1000000000);
 export const ONE_SECOND_MS = 1000;
@@ -30,13 +32,12 @@ export const HOST_DOMAINS = [
     'jsdelivr.com',
 ];
 export const ROLLBAR_CLIENT_TOKEN = process.env.ROLLBAR_CLIENT_TOKEN;
-export const INSTANT_ENVIRONMENT = process.env.INSTANT_ENVIRONMENT as
+export const ROLLBAR_ENABLED = process.env.ROLLBAR_ENABLED;
+export const INSTANT_DISCHARGE_TARGET = process.env.INSTANT_DISCHARGE_TARGET as
+    | 'production'
     | 'dogfood'
     | 'staging'
-    | 'development'
-    | 'production'
     | undefined;
-export const ROLLBAR_ENABLED = process.env.ROLLBAR_ENABLED;
 export const COINBASE_WALLET_IOS_APP_STORE_URL = 'https://itunes.apple.com/us/app/coinbase-wallet/id1278383455?mt=8';
 export const COINBASE_WALLET_ANDROID_APP_STORE_URL = 'https://play.google.com/store/apps/details?id=org.toshi&hl=en';
 export const COINBASE_WALLET_SITE_URL = 'https://wallet.coinbase.com/';
