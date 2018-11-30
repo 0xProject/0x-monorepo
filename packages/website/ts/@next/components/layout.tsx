@@ -107,7 +107,7 @@ export const Section = styled.section<SectionProps>`
 
 const WrapBase = styled.div<WrapProps>`
     max-width: ${props => WRAPPER_WIDTHS[props.width || 'default']};
-    padding: ${props => _getPadding(props.margin)};
+    padding: ${props => props.margin && _getPadding(props.margin)};
     background-color: ${props => props.bgColor};
     margin: 0 auto;
 `;
