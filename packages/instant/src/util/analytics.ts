@@ -6,6 +6,7 @@ import {
     AffiliateInfo,
     Asset,
     Network,
+    OrderProcessState,
     OrderSource,
     ProviderState,
     QuoteFetchOrigin,
