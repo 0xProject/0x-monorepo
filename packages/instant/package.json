@@ -7,7 +7,6 @@
     "private": true,
     "description": "0x Instant React Component",
     "main": "umd/instant.js",
-    "private": true,
     "scripts": {
         "build": "webpack --mode production",
         "build:ci": "yarn build",
