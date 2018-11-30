@@ -50,6 +50,7 @@ const PARAGRAPH_SIZES: ParagraphSizes = {
 const StyledHeading = styled.h1<HeadingProps>`
     color: ${props => props.color || colors.white};
     font-size: ${props => HEADING_SIZES[props.size || 'default']};
+    font-weight: 300;
     margin-bottom: ${props => !props.noMargin && '30px'};
     text-align: ${props => props.center && 'center'};
 `;
