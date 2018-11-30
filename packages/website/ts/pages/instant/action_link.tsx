@@ -23,12 +23,7 @@ export class ActionLink extends React.Component<ActionLinkProps> {
     public render(): React.ReactNode {
         const { displayText, fontSize, color, className } = this.props;
         return (
-            <Container
-                className={`flex items-center ${className}`}
-                marginRight="32px"
-                onClick={this._handleClick}
-                cursor="pointer"
-            >
+            <Container className={`flex items-center ${className}`} onClick={this._handleClick} cursor="pointer">
                 <Container>
                     <Text fontSize="16px" fontColor={color}>
                         {displayText}

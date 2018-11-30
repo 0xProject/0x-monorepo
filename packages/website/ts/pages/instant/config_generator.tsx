@@ -5,6 +5,7 @@ import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { CheckMark } from 'ts/components/ui/check_mark';
 import { Container } from 'ts/components/ui/container';
 import { MultiSelect } from 'ts/components/ui/multi_select';
 import { Select, SelectItemConfig } from 'ts/components/ui/select';
@@ -54,42 +55,79 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps> {
                 <ConfigGeneratorSection title="Standard Relayer API Endpoint">
                     <Select value={value.orderSource} items={this._generateItems()} />
                 </ConfigGeneratorSection>
-                <ConfigGeneratorSection title="What tokens can users buy?">
+                <ConfigGeneratorSection {...this._getTokenSelectorProps()}>
                     {this._renderTokenMultiSelectOrSpinner()}
                 </ConfigGeneratorSection>
             </Container>
         );
     }
+    private readonly _getTokenSelectorProps = (): ConfigGeneratorSectionProps => {
+        if (_.isUndefined(this.props.value.availableAssetDatas)) {
+            return {
+                title: 'What tokens can users buy?',
+                actionText: 'Unselect All',
+                onActionTextClick: this._handleUnselectAllClick,
+            };
+        }
+        return {
+            title: 'What tokens can users buy?',
+            actionText: 'Select All',
+            onActionTextClick: this._handleSelectAllClick,
+        };
+    };
     private readonly _generateItems = (): SelectItemConfig[] => {
         return _.map(SRA_ENDPOINTS, endpoint => ({
             text: endpoint,
             onClick: this._handleSRASelection.bind(this, endpoint),
         }));
     };
+    private readonly _getAllKnownAssetDatas = (): string[] => {
+        return _.map(this.state.allKnownTokens, token => assetDataUtils.encodeERC20AssetData(token.address));
+    };
     private readonly _handleSRASelection = (sraEndpoint: string) => {
-        const newConfig = {
+        const newConfig: ZeroExInstantBaseConfig = {
             ...this.props.value,
             orderSource: sraEndpoint,
         };
         this.props.onConfigChange(newConfig);
     };
+    private readonly _handleSelectAllClick = () => {
+        const newConfig: ZeroExInstantBaseConfig = {
+            ...this.props.value,
+            availableAssetDatas: undefined,
+        };
+        this.props.onConfigChange(newConfig);
+    };
+    private readonly _handleUnselectAllClick = () => {
+        const newConfig: ZeroExInstantBaseConfig = {
+            ...this.props.value,
+            availableAssetDatas: [],
+        };
+        this.props.onConfigChange(newConfig);
+    };
     private readonly _handleTokenClick = (assetData: string) => {
         const { value } = this.props;
-        let newAvailableAssetDatas = [];
-        if (_.includes(value.availableAssetDatas, assetData)) {
+        const { allKnownTokens } = this.state;
+        let newAvailableAssetDatas: string[] = [];
+        const availableAssetDatas = value.availableAssetDatas;
+        if (_.isUndefined(availableAssetDatas)) {
+            // It being undefined means it's all tokens.
+            const allKnownAssetDatas = this._getAllKnownAssetDatas();
+            newAvailableAssetDatas = _.pull(allKnownAssetDatas, assetData);
+        } else if (!_.includes(availableAssetDatas, assetData)) {
             // Add it
-            newAvailableAssetDatas = [...value.availableAssetDatas, assetData];
+            newAvailableAssetDatas = [...availableAssetDatas, assetData];
         } else {
             // Remove it
-            newAvailableAssetDatas = _.remove(value.availableAssetDatas, assetData);
+            newAvailableAssetDatas = _.pull(availableAssetDatas, assetData);
         }
-        const newConfig = {
+        const newConfig: ZeroExInstantBaseConfig = {
             ...this.props.value,
             availableAssetDatas: newAvailableAssetDatas,
         };
         this.props.onConfigChange(newConfig);
     };
-    private _setAllKnownTokens = async (callback: () => void): Promise<void> => {
+    private readonly _setAllKnownTokens = async (callback: () => void): Promise<void> => {
         const tokenInfos = await backendClient.getTokenInfosAsync();
         const allKnownTokens = _.reduce(
             tokenInfos,
@@ -101,7 +139,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps> {
         );
         this.setState({ allKnownTokens }, callback);
     };
-    private _setAvailableAssetsFromOrderProvider = async (): Promise<void> => {
+    private readonly _setAvailableAssetsFromOrderProvider = async (): Promise<void> => {
         const { value } = this.props;
         if (!_.isUndefined(value.orderSource) && _.isString(value.orderSource)) {
             this.setState({ isLoadingAvailableTokens: true });
@@ -119,13 +157,23 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps> {
             this.setState({ availableTokens, isLoadingAvailableTokens: false });
         }
     };
-    private _renderTokenMultiSelectOrSpinner = (): React.ReactNode => {
+    private readonly _renderTokenMultiSelectOrSpinner = (): React.ReactNode => {
         const { value } = this.props;
         const { availableTokens, isLoadingAvailableTokens } = this.state;
+        const multiSelectHeight = '200px';
         if (isLoadingAvailableTokens) {
             return (
-                <Container className="flex items-center">
-                    <Spinner />
+                <Container
+                    className="flex flex-column items-center justify-center"
+                    height={multiSelectHeight}
+                    backgroundColor={colors.white}
+                    borderRadius="4px"
+                    width="100%"
+                >
+                    <Container position="relative" left="12px" marginBottom="20px">
+                        <Spinner />
+                    </Container>
+                    <Text fontSize="16px">Loading...</Text>
                 </Container>
             );
         }
@@ -133,15 +181,24 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps> {
             const assetData = assetDataUtils.encodeERC20AssetData(token.address);
             return {
                 value: assetDataUtils.encodeERC20AssetData(token.address),
-                displayText: (
-                    <Text>
-                        <b>{token.symbol}</b> - {token.name}
-                    </Text>
+                renderItemContent: (isSelected: boolean) => (
+                    <Container className="flex items-center">
+                        <Container marginRight="10px">
+                            <CheckMark isChecked={isSelected} />
+                        </Container>
+                        <Text
+                            fontSize="16px"
+                            fontColor={isSelected ? colors.mediumBlue : colors.darkerGrey}
+                            fontWeight={300}
+                        >
+                            <b>{token.symbol}</b> — {token.name}
+                        </Text>
+                    </Container>
                 ),
                 onClick: this._handleTokenClick.bind(this, assetData),
             };
         });
-        return <MultiSelect items={items} selectedValues={value.availableAssetDatas || []} />;
+        return <MultiSelect items={items} selectedValues={value.availableAssetDatas} height={multiSelectHeight} />;
     };
 }
 
@@ -151,13 +208,23 @@ export interface ConfigGeneratorSectionProps {
     onActionTextClick?: () => void;
 }
 
-export const ConfigGeneratorSection: React.StatelessComponent<ConfigGeneratorSectionProps> = props => (
+export const ConfigGeneratorSection: React.StatelessComponent<ConfigGeneratorSectionProps> = ({
+    title,
+    actionText,
+    onActionTextClick,
+    children,
+}) => (
     <Container marginBottom="30px">
-        <Container marginBottom="10px">
+        <Container marginBottom="10px" className="flex justify-between items-center">
             <Text fontColor={colors.white} fontSize="16px" lineHeight="18px">
-                {props.title}
+                {title}
             </Text>
+            {actionText && (
+                <Text fontSize="12px" fontColor={colors.grey} onClick={onActionTextClick}>
+                    {actionText}
+                </Text>
+            )}
         </Container>
-        {props.children}
+        {children}
     </Container>
 );

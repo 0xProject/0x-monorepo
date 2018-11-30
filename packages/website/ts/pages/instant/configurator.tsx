@@ -18,9 +18,10 @@ export interface ConfiguratorState {
 }
 
 export class Configurator extends React.Component<ConfiguratorProps> {
-    public state = {
+    public state: ConfiguratorState = {
         instantConfig: {
             orderSource: 'https://api.radarrelay.com/0x/v2/',
+            availableAssetDatas: [],
         },
     };
     public render(): React.ReactNode {

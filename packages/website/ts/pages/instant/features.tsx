@@ -90,7 +90,11 @@ const FeatureItem = (props: FeatureItemProps) => {
                 </Text>
             </Container>
             <Container className="flex" marginTop="28px">
-                {_.map(linkInfos, linkInfo => <ActionLink key={linkInfo.displayText} {...linkInfo} />)}
+                {_.map(linkInfos, linkInfo => (
+                    <Container marginRight="32px">
+                        <ActionLink key={linkInfo.displayText} {...linkInfo} />
+                    </Container>
+                ))}
             </Container>
         </Container>
     );
