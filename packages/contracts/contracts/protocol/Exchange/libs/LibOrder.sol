@@ -51,8 +51,8 @@ contract LibOrder is
         INVALID_TAKER_ASSET_AMOUNT,  // 2 Order does not have a valid taker asset amount
         FILLABLE,                    // 3 Order is fillable
         EXPIRED,                     // 4 Order has already expired
-        FULLY_FILLED,                // Order is fully filled
-        CANCELLED                    // Order has been cancelled
+        FULLY_FILLED,                // 5 Order is fully filled
+        CANCELLED                    // 6 Order has been cancelled
     }
 
     // solhint-disable max-line-length
