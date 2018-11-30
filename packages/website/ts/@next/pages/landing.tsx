@@ -69,6 +69,7 @@ export const NextLanding = () => (
                 </Button>
             </WrapCentered>
 
+            {/* Note you can also pass in a string "large/default" or a number for custom margins */}
             <Wrap margin={['large', 0, 0, 0]}>
                 {/* NOTE: this probably should be withComponent as part of a <dl> */}
                 <Column colWidth="1/3" noPadding>

@@ -27,7 +27,7 @@ interface SectionProps {
 interface WrapProps {
     width?: 'default' | 'full' | 'medium' | 'narrow';
     bgColor?: string;
-    margin?: number | (string | number)[];
+    margin?: number | ('large' | 'default' | number)[];
 }
 
 interface ColumnProps {
@@ -50,10 +50,10 @@ const _getColumnWidth = (args: GetColWidthArgs) => {
 };
 
 const _getPadding = (value: number | (string | number)[]) => {
-    let padding = '';
+    let padding: string = '';
 
     if (Array.isArray(value)) {
-        padding = value.map(val => PADDING_SIZES[val] || '0px').join(' ');
+        padding = value.map(val => PADDING_SIZES[val] || `${val}px`).join(' ');
     } else {
         padding = `${value}px`;
     }
