@@ -19,7 +19,7 @@
         "clean": "shx rm -rf lib coverage scripts",
         "deploy_dogfood": "discharge deploy -c .dogfood.discharge.json",
         "deploy_staging": "discharge deploy -c .staging.discharge.json",
-        "deploy_live": "discharge deploy -c .production.discharge.json",
+        "deploy_production": "discharge deploy -c .production.discharge.json",
         "manual:postpublish": "yarn build; node ./scripts/postpublish.js"
     },
     "config": {
