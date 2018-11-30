@@ -5,8 +5,8 @@ import { NONFUNGIBLE_DOT_COM_URL, NonfungibleDotComTrade } from '../../data_sour
 import { NftTrade } from '../../entities';
 
 /**
- * Parses a raw trades response from the Bloxy Dex API and returns an array of
- * DexTrade entities.
+ * Parses a raw trades from the nonfungible.com API and returns an array of
+ * NftTrade entities.
  * @param rawTrades A raw order response from an SRA endpoint.
  */
 export function parseNonFungibleDotComTrades(rawTrades: NonfungibleDotComTrade[]): NftTrade[] {
