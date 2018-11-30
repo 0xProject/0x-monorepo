@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Use new ABI encoder and add encoding/decoding logic for MultiAsset assetData",
+                "pr": 1363
+            }
+        ]
+    },
+    {
         "version": "3.0.7",
         "changes": [
             {
