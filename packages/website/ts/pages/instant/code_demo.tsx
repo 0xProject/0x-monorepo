@@ -8,7 +8,8 @@ const CustomPre = styled.pre`
     line-height: 24px;
     overflow: scroll;
     width: 600px;
-    height: 500px;
+    height: 100%;
+    max-height: 800px;
     border-radius: 4px;
     code {
         background-color: inherit !important;
@@ -16,7 +17,7 @@ const CustomPre = styled.pre`
         font-family: 'Roboto Mono', sans-serif;
         border: none;
     }
-    .lsl {
+    code:first-of-type {
         background-color: #2a2a2a !important;
         color: #999;
         height: 100%;
@@ -27,7 +28,7 @@ const CustomPre = styled.pre`
         line-height: 25px;
         padding-top: 10px;
     }
-    .xml {
+    code:last-of-type {
         position: relative;
         top: 10px;
     }
