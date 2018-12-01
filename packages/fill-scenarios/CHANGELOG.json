@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.0.17",
+        "changes": [
+            {
+                "note": "Add error message if assetProxyId is not ERC20 or ERC721",
+                "pr": 1363
+            }
+        ]
+    },
+    {
         "version": "1.0.16",
         "changes": [
             {

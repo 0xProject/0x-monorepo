@@ -2,7 +2,14 @@ import { DummyERC20TokenContract, DummyERC721TokenContract, ExchangeContract } f
 import * as artifacts from '@0x/contract-artifacts';
 import { assetDataUtils } from '@0x/order-utils';
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
-import { AssetProxyId, ERC721AssetData, OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
+import {
+    AssetData,
+    AssetProxyId,
+    ERC20AssetData,
+    ERC721AssetData,
+    OrderWithoutExchangeAddress,
+    SignedOrder,
+} from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -153,35 +160,39 @@ export class FillScenarios {
         const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
         if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC20) {
             await this._increaseERC20BalanceAndAllowanceAsync(
-                decodedMakerAssetData.tokenAddress,
+                (decodedMakerAssetData as ERC20AssetData).tokenAddress,
                 makerAddress,
                 makerFillableAmount,
             );
-        } else {
+        } else if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
             if (!makerFillableAmount.equals(1)) {
                 throw new Error(`ERC721 makerFillableAmount should be equal 1. Found: ${makerFillableAmount}`);
             }
             await this._increaseERC721BalanceAndAllowanceAsync(
-                decodedMakerAssetData.tokenAddress,
+                (decodedMakerAssetData as ERC721AssetData).tokenAddress,
                 makerAddress,
                 // tslint:disable-next-line:no-unnecessary-type-assertion
                 (decodedMakerAssetData as ERC721AssetData).tokenId,
             );
+        } else {
+            throw new Error(`Proxy with id ${decodedMakerAssetData.assetProxyId} not supported`);
         }
         const decodedTakerAssetData = assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
         if (decodedTakerAssetData.assetProxyId === AssetProxyId.ERC20) {
-            const takerTokenAddress = decodedTakerAssetData.tokenAddress;
+            const takerTokenAddress = (decodedTakerAssetData as ERC20AssetData).tokenAddress;
             await this._increaseERC20BalanceAndAllowanceAsync(takerTokenAddress, takerAddress, takerFillableAmount);
-        } else {
+        } else if (decodedTakerAssetData.assetProxyId === AssetProxyId.ERC721) {
             if (!takerFillableAmount.equals(1)) {
                 throw new Error(`ERC721 takerFillableAmount should be equal 1. Found: ${takerFillableAmount}`);
             }
             await this._increaseERC721BalanceAndAllowanceAsync(
-                decodedTakerAssetData.tokenAddress,
+                (decodedTakerAssetData as ERC721AssetData).tokenAddress,
                 takerAddress,
                 // tslint:disable-next-line:no-unnecessary-type-assertion
                 (decodedMakerAssetData as ERC721AssetData).tokenId,
             );
+        } else {
+            throw new Error(`Proxy with id ${decodedTakerAssetData.assetProxyId} not supported`);
         }
         // Fees
         await Promise.all([
