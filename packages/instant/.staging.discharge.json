@@ -1,6 +1,6 @@
 {
     "domain": "0x-instant-staging",
-    "build_command": "WEBPACK_OUTPUT_PATH=public yarn build --env.discharge_target=staging",
+    "build_command": "dotenv WEBPACK_OUTPUT_PATH=public yarn build --env.discharge_target=staging",
     "upload_directory": "public",
     "index_key": "index.html",
     "error_key": "index.html",

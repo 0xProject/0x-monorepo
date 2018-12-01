@@ -7,7 +7,6 @@
     "private": true,
     "description": "0x Instant React Component",
     "main": "umd/instant.js",
-    "private": true,
     "scripts": {
         "build": "webpack --mode production",
         "build:ci": "yarn build",
@@ -25,7 +24,10 @@
     },
     "config": {
         "postpublish": {
-            "assets": ["packages/instant/umd/instant.js", "packages/instant/umd/instant.js.map"]
+            "assets": [
+                "packages/instant/umd/instant.js",
+                "packages/instant/umd/instant.js.map"
+            ]
         }
     },
     "repository": {
@@ -75,6 +77,7 @@
         "@types/redux": "^3.6.0",
         "@types/styled-components": "^4.0.1",
         "awesome-typescript-loader": "^5.2.1",
+        "dotenv-cli": "^1.4.0",
         "enzyme": "^3.6.0",
         "enzyme-adapter-react-16": "^1.5.0",
         "ip": "^1.1.5",
