@@ -175,6 +175,7 @@
                     defaultSelectedAssetData: queryParams.getQueryParamValue('defaultSelectedAssetData'),
                     affiliateInfo: affiliateInfoOverride,
                     shouldDisablePushToHistory: !!queryParams.getQueryParamValue('shouldDisablePushToHistory'),
+                    walletDisplayName: queryParams.getQueryParamValue('walletDisplayName') || undefined,
                 };
                 return renderOptionsOverrides;
             };
