@@ -5,6 +5,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
+import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
@@ -26,8 +27,10 @@ import { TransactionFactory } from '../utils/transaction_factory';
 import { ContractName, ERC20BalancesByOwner, SignedTransaction } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
-import { MethodAbi } from 'ethereum-types';
+import { MethodAbi, AbiDefinition } from 'ethereum-types';
 import { AbiEncoder } from '@0x/utils';
+import { Method } from '@0x/utils/lib/src/abi_encoder';
+import { LogDecoder } from '../utils/log_decoder';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -184,6 +187,18 @@ describe.only(ContractName.CompliantForwarder, () => {
         compliantSignedFillOrderTx = takerTransactionFactory.newSignedTransaction(
             compliantSignedOrderWithoutExchangeAddressData,
         );
+
+        /* generate selectors for every exchange method
+        _.each(exchangeInstance.abi, (abiDefinition: AbiDefinition) => {
+            try {
+                const method = new Method(abiDefinition as MethodAbi);
+                console.log('\n', `// ${method.getDataItem().name}`);
+                console.log(`bytes4 constant ${method.getDataItem().name}Selector = ${method.getSelector()};`);
+                console.log(`bytes4 constant ${method.getDataItem().name}SelectorGenerator = byes4(keccak256('${method.getSignature()}'));`);
+            } catch(e) {
+                _.noop();
+            }
+        });*/
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -196,23 +211,15 @@ describe.only(ContractName.CompliantForwarder, () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
         it.only('should transfer the correct amounts when maker and taker are compliant', async () => {
-        
- 
-            const method = new AbiEncoder.Method(compliantForwarderInstance.abi[0] as MethodAbi);
-            const args = [
-                compliantSignedFillOrderTx.salt,
-                compliantSignedFillOrderTx.signerAddress,
-                compliantSignedFillOrderTx.data,
-                compliantSignedFillOrderTx.signature
-            ];
-            console.log(method.encode(args, {annotate: true}));
-            
-            await compliantForwarderInstance.executeTransaction.sendTransactionAsync(
+            const txHash = await compliantForwarderInstance.executeTransaction.sendTransactionAsync(
                 compliantSignedFillOrderTx.salt,
                 compliantSignedFillOrderTx.signerAddress,
                 compliantSignedFillOrderTx.data,
                 compliantSignedFillOrderTx.signature,
             );
+            const decoder = new LogDecoder(web3Wrapper);
+            const tx = await decoder.getTxWithDecodedLogsAsync(txHash);
+            console.log(JSON.stringify(tx, null, 4));
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const makerAssetFillAmount = takerAssetFillAmount
                 .times(compliantSignedOrder.makerAssetAmount)
@@ -298,7 +305,7 @@ describe.only(ContractName.CompliantForwarder, () => {
                 RevertReason.TakerUnverified
             );
         });
-        it('should revert if maker address is not compliant (does not hold a Yes Token)', async () => {
+        it.only('should revert if maker address is not compliant (does not hold a Yes Token)', async () => {
             // Create signed order with non-compliant maker address
             const signedOrderWithBadMakerAddress = await orderFactory.newSignedOrderAsync({
                 senderAddress: compliantForwarderInstance.address,

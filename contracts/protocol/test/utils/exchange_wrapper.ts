@@ -214,6 +214,7 @@ export class ExchangeWrapper {
             { from },
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        console.log(JSON.stringify(tx));
         return tx;
     }
     public async getTakerAssetFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
