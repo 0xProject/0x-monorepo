@@ -1,69 +1,101 @@
+import axios from 'axios';
+import { chain } from 'ramda';
 import { Connection, Repository } from 'typeorm';
 
 import { OHLCVExternal } from '../entities';
 
 export interface TradingPair {
-  fromSymbol: string;
-  toSymbol: string;
-  latest: number;
+    fromSymbol: string;
+    toSymbol: string;
+    latest: number;
 }
 
 interface StaticPair {
-  fromSymbol: string;
-  toSymbol: string;
+    fromSymbol: string;
+    toSymbol: string;
 }
+
+const COINLIST_API = 'https://min-api.cryptocompare.com/data/all/coinlist?BuiltOn=7605';
+
+interface CryptoCompareCoinListResp {
+    Data: Map<string, CryptoCompareCoin>;
+}
+
+interface CryptoCompareCoin {
+    Symbol: string;
+    BuiltOn: string;
+    SmartContractAddress: string;
+}
+
+const TO_CURRENCIES = ['USD', 'EUR', 'ETH'];
+
 /**
  * Get trading pairs with latest scraped time for OHLCV records
  * @param conn a typeorm Connection to postgres
  */
-export async function getOHLCVTradingPairs(conn: Connection): Promise<TradingPair[]> {
+export async function getOHLCVTradingPairs(
+    conn: Connection,
+    source: string,
+    earliestBackfillTime: number,
+): Promise<TradingPair[]> {
+    const rawTokenAddresses: Array<{ tokenaddress: string }> = await conn.query(
+        `SELECT DISTINCT(maker_token_address) as tokenaddress FROM raw.exchange_fill_events UNION
+        SELECT DISTINCT(taker_token_address) as tokenaddress FROM raw.exchange_fill_events
+        LIMIT 1`,
+    );
+    const tokenAddresses = rawTokenAddresses.map(obj => obj.tokenaddress);
 
-  // @xianny todo replace with querying the db and joining with CC coin list
-  const pairs = [
-    {
-      fromSymbol: 'ETH',
-      toSymbol: 'USD',
-    },
-    {
-      fromSymbol: 'ETH',
-      toSymbol: 'EUR',
-    },
-    {
-      fromSymbol: 'ETH',
-      toSymbol: 'ZRX',
-    },
-  ];
+    // get token symbols used by Crypto Compare
+    const allCoins = await axios.get<CryptoCompareCoinListResp>(COINLIST_API);
+    const erc20Coins: Map<string, string> = new Map();
+    Object.entries(allCoins.data.Data).forEach(pair => {
+        const [k, v] = pair;
+        if (v.BuiltOn === '7605' && v.SmartContractAddress !== 'N/A') {
+            erc20Coins.set(v.SmartContractAddress, k);
+        }
+    });
 
-  const repository = conn.getRepository(OHLCVExternal);
-  const tradingPairsPromises = pairs.map(async pair => {
-    const latest = await getLatestAsync(repository, pair);
-    const tradingPair = {
-      fromSymbol: pair.fromSymbol,
-      toSymbol: pair.toSymbol,
-      latest,
+    const mapFn = (tokenAddress: string): StaticPair[] => {
+        return chain(fiat => {
+            const fromSymbol = erc20Coins.get(tokenAddress);
+            if (!!fromSymbol) {
+                return [
+                    {
+                        toSymbol: fiat,
+                        fromSymbol,
+                    },
+                ];
+            } else {
+                return [];
+            }
+        }, TO_CURRENCIES);
     };
-    return tradingPair;
-  });
+    const tradingPairs: StaticPair[] = chain(mapFn, tokenAddresses);
 
-  return Promise.all(tradingPairsPromises);
-}
+    const tradingPairsLatestQuery: string = tradingPairs
+        .map(pair => {
+            return `SELECT
+              case COUNT(*) when 0 then ${earliestBackfillTime} else MAX(end_time) end AS latest,
+              '${pair.fromSymbol}' as from_symbol,
+              '${pair.toSymbol}' as to_symbol
+            FROM raw.ohlcv_external
+            WHERE
+              from_symbol = '${pair.fromSymbol}' AND
+              to_symbol = '${pair.toSymbol}' AND
+              source = '${source}'`;
+        })
+        .join('\nUNION\n');
 
-async function getLatestAsync(repository: Repository<OHLCVExternal>, pair: StaticPair): Promise<number> {
-  // tslint:disable:custom-no-magic-numbers
-  return new Date().getTime() - 6 * 24 * 60 * 60 * 1000; // < one week ago
-  // const beginningOfTime = new Date('2010-09-01').getTime(); // the time when BTC/USD info starts appearing on Crypto Compare
-  // const query = await repository.find({
-  //   where: {
-  //     fromSymbol: pair.fromSymbol,
-  //     toSymbol: pair.toSymbol,
-  //   },
-  //   order: {
-  //     endTime: 'DESC',
-  //   },
-  //   take: 1,
-  // });
-  // if (!query[0]) {
-  //   return beginningOfTime;
-  // }
-  // return query[0].endTime;
+    const latestTradingPairsResult: Array<{
+        from_symbol: string;
+        to_symbol: string;
+        latest: string;
+    }> = await conn.query(tradingPairsLatestQuery);
+
+    const latestTradingPairs = latestTradingPairsResult.map(p => ({
+        fromSymbol: p.from_symbol,
+        toSymbol: p.to_symbol,
+        latest: parseInt(p.latest),
+    }));
+    return latestTradingPairs;
 }
