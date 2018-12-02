@@ -33,7 +33,7 @@ const TO_CURRENCIES = ['USD', 'EUR', 'ETH'];
  * Get trading pairs with latest scraped time for OHLCV records
  * @param conn a typeorm Connection to postgres
  */
-export async function getOHLCVTradingPairs(
+export async function fetchOHLCVTradingPairs(
     conn: Connection,
     source: string,
     earliestBackfillTime: number,

@@ -10,7 +10,7 @@ const expect = chai.expect;
 
 // tslint:disable:custom-no-magic-numbers
 describe('ohlcv_external data source (Crypto Compare)', () => {
-    describe('getBackfillIntervals', () => {
+    describe('generateBackfillIntervals', () => {
         it('generates pairs with intervals to query', () => {
             const source = new CryptoCompareOHLCVSource();
             const pair = {
@@ -25,7 +25,7 @@ describe('ohlcv_external data source (Crypto Compare)', () => {
                 merge(pair, { latest: pair.latest + source.interval * 2 }),
             ];
 
-            const actual = source.getBackfillIntervals(pair);
+            const actual = source.generateBackfillIntervals(pair);
             expect(actual).deep.equal(expected);
         });
 
@@ -39,7 +39,7 @@ describe('ohlcv_external data source (Crypto Compare)', () => {
 
             const expected = [pair];
 
-            const actual = source.getBackfillIntervals(pair);
+            const actual = source.generateBackfillIntervals(pair);
             expect(actual).deep.equal(expected);
         });
     });

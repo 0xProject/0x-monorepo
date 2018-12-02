@@ -6,7 +6,7 @@ import { OHLCVExternal } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { OHLCVMetadata, parseRecords } from '../parsers/ohlcv_external/crypto_compare';
 import { handleError } from '../utils';
-import { getOHLCVTradingPairs, TradingPair } from '../utils/get_ohlcv_trading_pairs';
+import { fetchOHLCVTradingPairs, TradingPair } from '../utils/get_ohlcv_trading_pairs';
 
 const SOURCE_NAME = 'CryptoCompare';
 
@@ -21,19 +21,19 @@ let connection: Connection;
     const repository = connection.getRepository(OHLCVExternal);
     const source = new CryptoCompareOHLCVSource(MAX_CONCURRENT_REQUESTS);
 
-    const tradingPairs = await getOHLCVTradingPairs(connection, SOURCE_NAME, EARLIEST_BACKFILL_TIME);
+    const tradingPairs = await fetchOHLCVTradingPairs(connection, SOURCE_NAME, EARLIEST_BACKFILL_TIME);
     console.log(`Starting ${tradingPairs.length} job(s) to scrape Crypto Compare for OHLCV records...`);
 
-    const getAndSavePromises = tradingPairs.map(async pair => {
-        const pairs = source.getBackfillIntervals(pair);
-        return getAndSaveWithBackfillAsync(source, repository, pairs);
+    const fetchAndSavePromises = tradingPairs.map(async pair => {
+        const pairs = source.generateBackfillIntervals(pair);
+        return fetchAndSaveAsync(source, repository, pairs);
     });
-    await Promise.all(getAndSavePromises);
+    await Promise.all(fetchAndSavePromises);
     console.log(`Finished scraping OHLCV records from Crypto Compare, exiting...`);
     process.exit(0);
 })().catch(handleError);
 
-async function getAndSaveWithBackfillAsync(
+async function fetchAndSaveAsync(
     source: CryptoCompareOHLCVSource,
     repository: Repository<OHLCVExternal>,
     pairs: TradingPair[],

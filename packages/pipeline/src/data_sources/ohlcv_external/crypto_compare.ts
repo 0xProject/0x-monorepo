@@ -73,7 +73,7 @@ export class CryptoCompareOHLCVSource {
         return resp.data.Data.filter(rec => rec.time * ONE_SECOND >= pair.latest);
     }
 
-    public getBackfillIntervals(pair: TradingPair): TradingPair[] {
+    public generateBackfillIntervals(pair: TradingPair): TradingPair[] {
         const now = new Date().getTime();
         const f = (p: TradingPair): false | [TradingPair, TradingPair] => {
             if (p.latest > now) {
