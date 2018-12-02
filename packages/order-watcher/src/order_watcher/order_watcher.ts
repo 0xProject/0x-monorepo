@@ -32,7 +32,16 @@ import {
     orderHashUtils,
     OrderStateUtils,
 } from '@0x/order-utils';
-import { AssetProxyId, ExchangeContractErrs, OrderState, SignedOrder, Stats } from '@0x/types';
+import {
+    AssetProxyId,
+    ERC20AssetData,
+    ERC721AssetData,
+    ExchangeContractErrs,
+    MultiAssetData,
+    OrderState,
+    SignedOrder,
+    Stats,
+} from '@0x/types';
 import { errorUtils, intervalUtils } from '@0x/utils';
 import { BlockParamLiteral, LogEntryEvent, LogWithDecodedArgs, Provider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -161,14 +170,7 @@ export class OrderWatcher {
         this._dependentOrderHashesTracker.addToDependentOrderHashes(signedOrder);
 
         const orderAssetDatas = [signedOrder.makerAssetData, signedOrder.takerAssetData];
-        _.each(orderAssetDatas, assetData => {
-            const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
-            if (decodedAssetData.assetProxyId === AssetProxyId.ERC20) {
-                this._collisionResistantAbiDecoder.addERC20Token(decodedAssetData.tokenAddress);
-            } else if (decodedAssetData.assetProxyId === AssetProxyId.ERC721) {
-                this._collisionResistantAbiDecoder.addERC721Token(decodedAssetData.tokenAddress);
-            }
-        });
+        _.each(orderAssetDatas, assetData => this._addAssetDataToAbiDecoder(assetData));
     }
     /**
      * Removes an order from the orderWatcher
@@ -236,31 +238,77 @@ export class OrderWatcher {
             await this._emitRevalidateOrdersAsync([orderHash]);
         }
     }
+    private _addAssetDataToAbiDecoder(assetData: string): void {
+        const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
+        switch (decodedAssetData.assetProxyId) {
+            case AssetProxyId.ERC20:
+                this._collisionResistantAbiDecoder.addERC20Token((decodedAssetData as ERC20AssetData).tokenAddress);
+                break;
+            case AssetProxyId.ERC721:
+                this._collisionResistantAbiDecoder.addERC721Token((decodedAssetData as ERC721AssetData).tokenAddress);
+                break;
+            case AssetProxyId.MultiAsset:
+                _.each((decodedAssetData as MultiAssetData).nestedAssetData, nestedAssetDataElement =>
+                    this._addAssetDataToAbiDecoder(nestedAssetDataElement),
+                );
+                break;
+            default:
+                break;
+        }
+    }
+    private _deleteLazyStoreBalance(assetData: string, userAddress: string): void {
+        const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
+        switch (assetProxyId) {
+            case AssetProxyId.ERC20:
+            case AssetProxyId.ERC721:
+                this._balanceAndProxyAllowanceLazyStore.deleteBalance(assetData, userAddress);
+                break;
+            case AssetProxyId.MultiAsset:
+                const decodedAssetData = assetDataUtils.decodeMultiAssetData(assetData);
+                _.each(decodedAssetData.nestedAssetData, nestedAssetDataElement =>
+                    this._deleteLazyStoreBalance(nestedAssetDataElement, userAddress),
+                );
+                break;
+            default:
+                break;
+        }
+    }
+    private _deleteLazyStoreProxyAllowance(assetData: string, userAddress: string): void {
+        const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
+        switch (assetProxyId) {
+            case AssetProxyId.ERC20:
+            case AssetProxyId.ERC721:
+                this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(assetData, userAddress);
+                break;
+            case AssetProxyId.MultiAsset:
+                const decodedAssetData = assetDataUtils.decodeMultiAssetData(assetData);
+                _.each(decodedAssetData.nestedAssetData, nestedAssetDataElement =>
+                    this._deleteLazyStoreProxyAllowance(nestedAssetDataElement, userAddress),
+                );
+                break;
+            default:
+                break;
+        }
+    }
     private _cleanupOrderRelatedState(orderHash: string): void {
         const signedOrder = this._orderByOrderHash[orderHash];
 
         this._orderFilledCancelledLazyStore.deleteFilledTakerAmount(orderHash);
         this._orderFilledCancelledLazyStore.deleteIsCancelled(orderHash);
 
-        this._balanceAndProxyAllowanceLazyStore.deleteBalance(signedOrder.makerAssetData, signedOrder.makerAddress);
-        this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(
-            signedOrder.makerAssetData,
-            signedOrder.makerAddress,
-        );
-        this._balanceAndProxyAllowanceLazyStore.deleteBalance(signedOrder.takerAssetData, signedOrder.takerAddress);
-        this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(
-            signedOrder.takerAssetData,
-            signedOrder.takerAddress,
-        );
+        this._deleteLazyStoreBalance(signedOrder.makerAssetData, signedOrder.makerAddress);
+        this._deleteLazyStoreProxyAllowance(signedOrder.makerAssetData, signedOrder.makerAddress);
+        this._deleteLazyStoreBalance(signedOrder.takerAssetData, signedOrder.takerAddress);
+        this._deleteLazyStoreProxyAllowance(signedOrder.takerAssetData, signedOrder.takerAddress);
 
         const zrxAssetData = this._orderFilledCancelledLazyStore.getZRXAssetData();
         if (!signedOrder.makerFee.isZero()) {
-            this._balanceAndProxyAllowanceLazyStore.deleteBalance(zrxAssetData, signedOrder.makerAddress);
-            this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(zrxAssetData, signedOrder.makerAddress);
+            this._deleteLazyStoreBalance(zrxAssetData, signedOrder.makerAddress);
+            this._deleteLazyStoreProxyAllowance(zrxAssetData, signedOrder.makerAddress);
         }
         if (!signedOrder.takerFee.isZero()) {
-            this._balanceAndProxyAllowanceLazyStore.deleteBalance(zrxAssetData, signedOrder.takerAddress);
-            this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(zrxAssetData, signedOrder.takerAddress);
+            this._deleteLazyStoreBalance(zrxAssetData, signedOrder.takerAddress);
+            this._deleteLazyStoreProxyAllowance(zrxAssetData, signedOrder.takerAddress);
         }
     }
     private _onOrderExpired(orderHash: string): void {
@@ -302,7 +350,7 @@ export class OrderWatcher {
                     // Invalidate cache
                     const args = decodedLog.args as ERC20TokenApprovalEventArgs;
                     const tokenAssetData = assetDataUtils.encodeERC20AssetData(decodedLog.address);
-                    this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(tokenAssetData, args._owner);
+                    this._deleteLazyStoreProxyAllowance(tokenAssetData, args._owner);
                     // Revalidate orders
                     const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
                         args._owner,
@@ -315,7 +363,7 @@ export class OrderWatcher {
                     // Invalidate cache
                     const args = decodedLog.args as ERC721TokenApprovalEventArgs;
                     const tokenAssetData = assetDataUtils.encodeERC721AssetData(decodedLog.address, args._tokenId);
-                    this._balanceAndProxyAllowanceLazyStore.deleteProxyAllowance(tokenAssetData, args._owner);
+                    this._deleteLazyStoreProxyAllowance(tokenAssetData, args._owner);
                     // Revalidate orders
                     const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
                         args._owner,
@@ -333,8 +381,8 @@ export class OrderWatcher {
                     // Invalidate cache
                     const args = decodedLog.args as ERC20TokenTransferEventArgs;
                     const tokenAssetData = assetDataUtils.encodeERC20AssetData(decodedLog.address);
-                    this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._from);
-                    this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._to);
+                    this._deleteLazyStoreBalance(tokenAssetData, args._from);
+                    this._deleteLazyStoreBalance(tokenAssetData, args._to);
                     // Revalidate orders
                     const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
                         args._from,
@@ -347,8 +395,8 @@ export class OrderWatcher {
                     // Invalidate cache
                     const args = decodedLog.args as ERC721TokenTransferEventArgs;
                     const tokenAssetData = assetDataUtils.encodeERC721AssetData(decodedLog.address, args._tokenId);
-                    this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._from);
-                    this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._to);
+                    this._deleteLazyStoreBalance(tokenAssetData, args._from);
+                    this._deleteLazyStoreBalance(tokenAssetData, args._to);
                     // Revalidate orders
                     const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
                         args._from,
@@ -375,7 +423,7 @@ export class OrderWatcher {
                 // Invalidate cache
                 const args = decodedLog.args as WETH9DepositEventArgs;
                 const tokenAssetData = assetDataUtils.encodeERC20AssetData(decodedLog.address);
-                this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._owner);
+                this._deleteLazyStoreBalance(tokenAssetData, args._owner);
                 // Revalidate orders
                 const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
                     args._owner,
@@ -388,7 +436,7 @@ export class OrderWatcher {
                 // Invalidate cache
                 const args = decodedLog.args as WETH9WithdrawalEventArgs;
                 const tokenAssetData = assetDataUtils.encodeERC20AssetData(decodedLog.address);
-                this._balanceAndProxyAllowanceLazyStore.deleteBalance(tokenAssetData, args._owner);
+                this._deleteLazyStoreBalance(tokenAssetData, args._owner);
                 // Revalidate orders
                 const orderHashes = this._dependentOrderHashesTracker.getDependentOrderHashesByAssetDataByMaker(
                     args._owner,
