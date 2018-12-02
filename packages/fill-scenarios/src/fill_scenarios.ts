@@ -3,10 +3,10 @@ import * as artifacts from '@0x/contract-artifacts';
 import { assetDataUtils } from '@0x/order-utils';
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
 import {
-    AssetData,
     AssetProxyId,
     ERC20AssetData,
     ERC721AssetData,
+    MultiAssetData,
     OrderWithoutExchangeAddress,
     SignedOrder,
 } from '@0x/types';
@@ -157,43 +157,8 @@ export class FillScenarios {
         feeRecipientAddress: string,
         expirationTimeSeconds?: BigNumber,
     ): Promise<SignedOrder> {
-        const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
-        if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC20) {
-            await this._increaseERC20BalanceAndAllowanceAsync(
-                (decodedMakerAssetData as ERC20AssetData).tokenAddress,
-                makerAddress,
-                makerFillableAmount,
-            );
-        } else if (decodedMakerAssetData.assetProxyId === AssetProxyId.ERC721) {
-            if (!makerFillableAmount.equals(1)) {
-                throw new Error(`ERC721 makerFillableAmount should be equal 1. Found: ${makerFillableAmount}`);
-            }
-            await this._increaseERC721BalanceAndAllowanceAsync(
-                (decodedMakerAssetData as ERC721AssetData).tokenAddress,
-                makerAddress,
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                (decodedMakerAssetData as ERC721AssetData).tokenId,
-            );
-        } else {
-            throw new Error(`Proxy with id ${decodedMakerAssetData.assetProxyId} not supported`);
-        }
-        const decodedTakerAssetData = assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
-        if (decodedTakerAssetData.assetProxyId === AssetProxyId.ERC20) {
-            const takerTokenAddress = (decodedTakerAssetData as ERC20AssetData).tokenAddress;
-            await this._increaseERC20BalanceAndAllowanceAsync(takerTokenAddress, takerAddress, takerFillableAmount);
-        } else if (decodedTakerAssetData.assetProxyId === AssetProxyId.ERC721) {
-            if (!takerFillableAmount.equals(1)) {
-                throw new Error(`ERC721 takerFillableAmount should be equal 1. Found: ${takerFillableAmount}`);
-            }
-            await this._increaseERC721BalanceAndAllowanceAsync(
-                (decodedTakerAssetData as ERC721AssetData).tokenAddress,
-                takerAddress,
-                // tslint:disable-next-line:no-unnecessary-type-assertion
-                (decodedMakerAssetData as ERC721AssetData).tokenId,
-            );
-        } else {
-            throw new Error(`Proxy with id ${decodedTakerAssetData.assetProxyId} not supported`);
-        }
+        await this._increaseBalanceAndAllowanceWithAssetDataAsync(makerAssetData, makerAddress, makerFillableAmount);
+        await this._increaseBalanceAndAllowanceWithAssetDataAsync(takerAssetData, takerAddress, takerFillableAmount);
         // Fees
         await Promise.all([
             this._increaseERC20BalanceAndAllowanceAsync(this._zrxTokenAddress, makerAddress, makerFee),
@@ -308,5 +273,45 @@ export class FillScenarios {
             from: address,
         });
         await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+    }
+    private async _increaseBalanceAndAllowanceWithAssetDataAsync(
+        assetData: string,
+        userAddress: string,
+        amount: BigNumber,
+    ): Promise<void> {
+        const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
+        switch (decodedAssetData.assetProxyId) {
+            case AssetProxyId.ERC20:
+                await this._increaseERC20BalanceAndAllowanceAsync(
+                    (decodedAssetData as ERC20AssetData).tokenAddress,
+                    userAddress,
+                    amount,
+                );
+                break;
+            case AssetProxyId.ERC721:
+                await this._increaseERC721BalanceAndAllowanceAsync(
+                    (decodedAssetData as ERC721AssetData).tokenAddress,
+                    userAddress,
+                    // tslint:disable-next-line:no-unnecessary-type-assertion
+                    (decodedAssetData as ERC721AssetData).tokenId,
+                );
+                break;
+            case AssetProxyId.MultiAsset:
+                for (const [
+                    index,
+                    nestedAssetDataElement,
+                ] of (decodedAssetData as MultiAssetData).nestedAssetData.entries()) {
+                    const amountsElement = (decodedAssetData as MultiAssetData).amounts[index];
+                    const totalAmount = amount.times(amountsElement);
+                    await this._increaseBalanceAndAllowanceWithAssetDataAsync(
+                        nestedAssetDataElement,
+                        userAddress,
+                        totalAmount,
+                    );
+                }
+                break;
+            default:
+                throw new Error(`Proxy with id ${decodedAssetData.assetProxyId} not supported`);
+        }
     }
 }

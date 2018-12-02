@@ -1,9 +1,9 @@
 [
     {
-        "version": "1.0.17",
+        "version": "1.1.0",
         "changes": [
             {
-                "note": "Add error message if assetProxyId is not ERC20 or ERC721",
+                "note": "Add support for MultiAssetProxy",
                 "pr": 1363
             }
         ]
