@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.9",
+        "changes": [
+            {
+                "note": "Export `MultiAssetData` from types",
+                "pr": 1363
+            }
+        ]
+    },
+    {
         "version": "2.0.8",
         "changes": [
             {
