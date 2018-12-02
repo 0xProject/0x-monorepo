@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { chain } from 'ramda';
-import { Connection, Repository } from 'typeorm';
-
-import { OHLCVExternal } from '../entities';
+import { Connection } from 'typeorm';
 
 export interface TradingPair {
     fromSymbol: string;
@@ -95,7 +93,8 @@ export async function fetchOHLCVTradingPairs(
     const latestTradingPairs = latestTradingPairsResult.map(p => ({
         fromSymbol: p.from_symbol,
         toSymbol: p.to_symbol,
-        latest: parseInt(p.latest),
+        // tslint:disable:custom-no-magic-numbers
+        latest: parseInt(p.latest, 10),
     }));
     return latestTradingPairs;
 }

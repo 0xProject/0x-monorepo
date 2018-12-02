@@ -31,8 +31,6 @@ describe('ohlcv_external parser (Crypto Compare)', () => {
             observedTimestamp: new Date().getTime(),
         };
 
-        const scraped = new Date().getTime();
-
         const entity = new OHLCVExternal();
         entity.exchange = metadata.exchange;
         entity.fromSymbol = metadata.fromSymbol;
