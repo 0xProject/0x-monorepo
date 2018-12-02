@@ -60,14 +60,6 @@ describe('ohlcv_external parser (Crypto Compare)', () => {
             expect(actual).deep.equal(expected);
         });
 
-        it('ignores records with no exchange specified', () => {
-            const input = [record, merge(record, { time: 300, exchange: undefined }), merge(record, { time: 400 })];
-            const expected = [entity, merge(entity, { startTime: 300000, endTime: 400000 })];
-
-            const actual = parseRecords(input, metadata);
-            expect(actual).deep.equal(expected);
-        });
-
         it('ignores records if there is only one record in the batch', () => {
             const input = [record];
             const expected: OHLCVExternal[] = [];
