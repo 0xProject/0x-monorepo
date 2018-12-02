@@ -283,6 +283,7 @@ export class FillScenarios {
         switch (decodedAssetData.assetProxyId) {
             case AssetProxyId.ERC20:
                 await this._increaseERC20BalanceAndAllowanceAsync(
+                    // tslint:disable-next-line:no-unnecessary-type-assertion
                     (decodedAssetData as ERC20AssetData).tokenAddress,
                     userAddress,
                     amount,
@@ -290,6 +291,7 @@ export class FillScenarios {
                 break;
             case AssetProxyId.ERC721:
                 await this._increaseERC721BalanceAndAllowanceAsync(
+                    // tslint:disable-next-line:no-unnecessary-type-assertion
                     (decodedAssetData as ERC721AssetData).tokenAddress,
                     userAddress,
                     // tslint:disable-next-line:no-unnecessary-type-assertion
@@ -300,7 +302,9 @@ export class FillScenarios {
                 for (const [
                     index,
                     nestedAssetDataElement,
+                    // tslint:disable-next-line:no-unnecessary-type-assertion
                 ] of (decodedAssetData as MultiAssetData).nestedAssetData.entries()) {
+                    // tslint:disable-next-line:no-unnecessary-type-assertion
                     const amountsElement = (decodedAssetData as MultiAssetData).amounts[index];
                     const totalAmount = amount.times(amountsElement);
                     await this._increaseBalanceAndAllowanceWithAssetDataAsync(

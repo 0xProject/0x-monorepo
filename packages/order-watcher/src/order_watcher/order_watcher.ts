@@ -502,4 +502,4 @@ export class OrderWatcher {
             this._callbackIfExists(null, orderState);
         }
     }
-}
+} // tslint:disable:max-file-line-count
