@@ -30,10 +30,11 @@ export const assetDataUtils = {
         assetDataUtils.validateERC20AssetDataThrow(assetData);
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
         const abiEncoder = new AbiEncoder.Method(constants.ERC20_METHOD_ABI as MethodAbi);
-        const [tokenAddress] = abiEncoder.decode(assetData, decodingRules);
+        const decodedAssetData = abiEncoder.decode(assetData, decodingRules);
         return {
             assetProxyId,
-            tokenAddress,
+            // TODO(abandeali1): fix decode return types
+            tokenAddress: (decodedAssetData as any).tokenContract,
         };
     },
     /**
@@ -58,11 +59,12 @@ export const assetDataUtils = {
         assetDataUtils.validateERC721AssetDataOrThrow(assetData);
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
         const abiEncoder = new AbiEncoder.Method(constants.ERC721_METHOD_ABI as MethodAbi);
-        const [tokenAddress, tokenId] = abiEncoder.decode(assetData, decodingRules);
+        const decodedAssetData = abiEncoder.decode(assetData, decodingRules);
         return {
             assetProxyId,
-            tokenAddress,
-            tokenId,
+            // TODO(abandeali1): fix decode return types
+            tokenAddress: (decodedAssetData as any).tokenContract,
+            tokenId: (decodedAssetData as any).tokenId,
         };
     },
     /**
@@ -95,7 +97,10 @@ export const assetDataUtils = {
         assetDataUtils.validateMultiAssetDataOrThrow(assetData);
         const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
         const abiEncoder = new AbiEncoder.Method(constants.MULTI_ASSET_METHOD_ABI as MethodAbi);
-        const [amounts, nestedAssetData] = abiEncoder.decode(assetData, decodingRules);
+        const decodedAssetData = abiEncoder.decode(assetData, decodingRules);
+        // TODO(abandeali1): fix decode return types
+        const amounts = (decodedAssetData as any).amounts;
+        const nestedAssetData = (decodedAssetData as any).nestedAssetData;
         if (amounts.length !== nestedAssetData.length) {
             throw new Error(
                 `Invalid MultiAsset assetData. Expected length of 'amounts' (${
