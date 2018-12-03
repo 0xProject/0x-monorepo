@@ -267,11 +267,12 @@ export const ConfigGeneratorSection: React.StatelessComponent<ConfigGeneratorSec
     <Container marginBottom={marginBottom}>
         <Container marginBottom="10px" className="flex justify-between items-center">
             <Container>
-                <Text fontColor={colors.white} fontSize="16px" lineHeight="18px">
+                <Text fontColor={colors.white} fontSize="16px" lineHeight="18px" display="inline">
                     {title}
                 </Text>
                 {isOptional && (
-                    <Text fontColor={colors.grey} fontSize="16px" lineHeight="18px">
+                    <Text fontColor={colors.grey} fontSize="16px" lineHeight="18px" display="inline">
+                        {' '}
                         (optional)
                     </Text>
                 )}
