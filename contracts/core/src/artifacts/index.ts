@@ -56,12 +56,7 @@ export const artifacts = {
     IWallet: IWallet as ContractArtifact,
     InvalidERC721Receiver: InvalidERC721Receiver as ContractArtifact,
     MixinAuthorizable: MixinAuthorizable as ContractArtifact,
-<<<<<<< HEAD
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
-    MultiSigWallet: MultiSigWallet as ContractArtifact,
-    MultiSigWalletWithTimeLock: MultiSigWalletWithTimeLock as ContractArtifact,
-=======
->>>>>>> Remove multisig contracts from the core list of contracts
     OrderValidator: OrderValidator as ContractArtifact,
     ReentrantERC20Token: ReentrantERC20Token as ContractArtifact,
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
