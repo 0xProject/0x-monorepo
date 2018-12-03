@@ -87,6 +87,10 @@ export const Main = styled.main`
     margin: 0 auto;
 `;
 
+// We can also turn Section into a stateless comp,
+// passing a asElement (same patter nas Heading) so we dont have to
+// make a const on every route to withComponent-size it.
+// just <Section asElement?="div/section/footer/header/whatever" /> ?
 export const Section = styled.section<SectionProps>`
     width: ${props => props.fullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
     padding: ${props => !props.noPadding && (props.padLarge ? '60px 30px' : '30px')};
