@@ -37,6 +37,7 @@ interface ColumnProps {
     isNoPadding?: boolean;
     isPadLarge?: boolean;
     bgColor?: string;
+    borderColor?: string;
 }
 
 interface GetColWidthArgs {
@@ -142,6 +143,7 @@ export const Column = styled.div<ColumnProps>`
     padding: ${props => !props.isNoPadding && (props.isPadLarge ? '60px 30px' : '30px')};
     border: 1px dotted rgba(255, 0, 0, 0.3);
     background-color: ${props => props.bgColor};
+    border-color: ${props => props.borderColor && `${props.borderColor}`};
 
     @media (min-width: ${BREAKPOINTS.mobile}) {
         width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};

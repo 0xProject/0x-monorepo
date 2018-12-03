@@ -26,6 +26,7 @@ import { NextAboutPress } from 'ts/@next/pages/about/press';
 import { NextAboutTeam } from 'ts/@next/pages/about/team';
 import { Next0xInstant } from 'ts/@next/pages/instant';
 import { NextLanding } from 'ts/@next/pages/landing';
+import { NextLaunchKit } from 'ts/@next/pages/launchKit';
 import { NextWhy } from 'ts/@next/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
@@ -116,6 +117,7 @@ render(
                                 <Route exact path="/next" component={NextLanding as any} />
                                 <Route exact path="/next/why" component={NextWhy as any} />
                                 <Route exact path="/next/0x-instant" component={Next0xInstant as any} />
+                                <Route exact path="/next/launch-kit" component={NextLaunchKit as any} />
                                 <Route exact path="/next/about/mission" component={NextAboutMission as any} />
                                 <Route exact path="/next/about/team" component={NextAboutTeam as any} />
                                 <Route exact path="/next/about/press" component={NextAboutPress as any} />
