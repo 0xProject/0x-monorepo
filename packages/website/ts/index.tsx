@@ -20,10 +20,13 @@ import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
 
 // Next (new website) routes. We should rename them later
+import { NextAboutJobs } from 'ts/@next/pages/about/jobs';
+import { NextAboutMission } from 'ts/@next/pages/about/mission';
+import { NextAboutPress } from 'ts/@next/pages/about/press';
+import { NextAboutTeam } from 'ts/@next/pages/about/team';
 import { Next0xInstant } from 'ts/@next/pages/instant';
 import { NextLanding } from 'ts/@next/pages/landing';
 import { NextWhy } from 'ts/@next/pages/why';
-import { NextAboutMission } from 'ts/@next/pages/about/mission';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();
@@ -114,6 +117,9 @@ render(
                                 <Route exact path="/next/why" component={NextWhy as any} />
                                 <Route exact path="/next/0x-instant" component={Next0xInstant as any} />
                                 <Route exact path="/next/about/mission" component={NextAboutMission as any} />
+                                <Route exact path="/next/about/team" component={NextAboutTeam as any} />
+                                <Route exact path="/next/about/press" component={NextAboutPress as any} />
+                                <Route exact path="/next/about/jobs" component={NextAboutJobs as any} />
 
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
