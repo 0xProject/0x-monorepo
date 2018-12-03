@@ -15,7 +15,7 @@ export class NPMResolver extends Resolver {
     public resolveIfExists(importPath: string): ContractSource | undefined {
         if (!importPath.startsWith('/')) {
             let packageName;
-            let packageScope;
+            let packageScopeIfExists;
             let other;
             if (importPath.startsWith('@')) {
                 [packageScope, packageName, ...other] = importPath.split('/');
