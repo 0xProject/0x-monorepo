@@ -162,6 +162,7 @@ const StyledMember = styled.div`
 
     img, svg {
         width: 100%;
+        height: auto;
         object-fit: contain;
         margin-bottom: 10px;
     }
