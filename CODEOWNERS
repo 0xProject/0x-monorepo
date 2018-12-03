@@ -14,7 +14,7 @@ packages/website/  @BMillman19 @fragosti @fabioberger @steveklebanoff
 packages/abi-gen/ @LogvinovLeon
 packages/base-contract/ @LogvinovLeon
 packages/connect/ @fragosti 
-packages/contract_templates/ @LogvinovLeon
+packages/abi-gen-templates/ @LogvinovLeon
 packages/contract-addresses/ @albrow
 packages/contract-artifacts/ @albrow
 packages/dev-utils/ @LogvinovLeon @fabioberger
