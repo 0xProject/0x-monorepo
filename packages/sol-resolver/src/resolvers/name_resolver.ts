@@ -17,7 +17,9 @@ export class NameResolver extends EnumerableResolver {
         let contractSource: ContractSource | undefined;
         const onFile = (filePath: string) => {
             const contractName = path.basename(filePath, SOLIDITY_FILE_EXTENSION);
-            if (contractName === lookupContractName) {
+            const contractFile = path.basename(filePath);
+            const baseLookupFile = path.basename(lookupContractName);
+            if (contractName === lookupContractName || contractFile === lookupContractName || contractFile === baseLookupFile) {
                 const absoluteContractPath = path.join(this._contractsDir, filePath);
                 const source = fs.readFileSync(absoluteContractPath).toString();
                 contractSource = {
