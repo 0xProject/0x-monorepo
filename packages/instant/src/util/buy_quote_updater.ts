@@ -1,4 +1,4 @@
-import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
+import { AssetBuyer, BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -10,6 +10,7 @@ import { AffiliateInfo, ERC20Asset, QuoteFetchOrigin } from '../types';
 import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
+import { errorReporter } from '../util/error_reporter';
 
 export const buyQuoteUpdater = {
     updateBuyQuoteAsync: async (
@@ -35,30 +36,18 @@ export const buyQuoteUpdater = {
         try {
             newBuyQuote = await assetBuyer.getBuyQuoteAsync(asset.assetData, baseUnitValue, { feePercentage });
         } catch (error) {
+            const errorMessage = assetUtils.assetBuyerErrorMessage(asset, error);
+
+            if (_.isUndefined(errorMessage)) {
+                // This is an unknown error, report it to rollbar
+                errorReporter.report(error);
+            }
+
             if (options.dispatchErrors) {
                 dispatch(actions.setQuoteRequestStateFailure());
                 analytics.trackQuoteError(error.message ? error.message : 'other', baseUnitValue, fetchOrigin);
-                let errorMessage;
-                if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
-                    const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
-                    errorMessage = `Not enough ${assetName} available`;
-                } else if (error.message === AssetBuyerError.InsufficientZrxLiquidity) {
-                    errorMessage = 'Not enough ZRX available';
-                } else if (
-                    error.message === AssetBuyerError.StandardRelayerApiError ||
-                    error.message.startsWith(AssetBuyerError.AssetUnavailable)
-                ) {
-                    const assetName = assetUtils.bestNameForAsset(asset, 'This asset');
-                    errorMessage = `${assetName} is currently unavailable`;
-                }
-                if (!_.isUndefined(errorMessage)) {
-                    errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
-                } else {
-                    throw error;
-                }
+                errorFlasher.flashNewErrorMessage(dispatch, errorMessage || 'Error fetching price, please try again');
             }
-            // TODO: report to error reporter on else
-
             return;
         }
         // We have a successful new buy quote
