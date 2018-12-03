@@ -7,6 +7,7 @@ interface HeadingProps {
     size?: 'default' | 'medium' | 'large' | 'small';
     isCentered?: boolean;
     isNoMargin?: boolean;
+    color?: string;
 }
 
 interface ParagraphProps {
