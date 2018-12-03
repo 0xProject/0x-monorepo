@@ -10,6 +10,8 @@ interface LogoInterface {
 
 
 // Note let's refactor this
+// is it absolutely necessary to have a stateless component
+// to pass props down into the styled icon?
 const StyledLogo = styled.div`
     text-align: left;
 `;
