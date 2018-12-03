@@ -114,7 +114,8 @@ contract DutchAuction is
             // |----------|--------|---------|-------------------------------------|
             // | Header   | 0      | 4       | function selector                   |
             // | Params   |        | 1 * 32  | function parameters:                |
-            // |          | 4      | 12 + 20 |   1. token address                  |
+            // |          | 4      | 12      |   1. token address padding          |
+            // |          | 16     | 20      |   2. token address                  |
             bytes memory assetData = sellOrder.takerAssetData;
             address token = assetData.readAddress(16);
             // Calculate the excess from the buy order. This can occur if the buyer sends in a higher
@@ -183,15 +184,22 @@ contract DutchAuction is
         auctionDetails.currentTimeSeconds = timestamp;
 
         uint256 remainingDurationSeconds = order.expirationTimeSeconds-timestamp;
-        uint256 currentAmount = minAmount + (remainingDurationSeconds*amountDelta/auctionDurationSeconds);
-        // Check the bounds where we SafeMath was avoivded so the auction details can be queried prior
-        // and after the auction time.
-        // If the auction has not yet begun the current amount is the auctionBeginAmount
-        currentAmount = timestamp < auctionBeginTimeSeconds ? auctionBeginAmount : currentAmount;
-        // If the auction has ended the current amount is the minAmount
-        // auction end time is guaranteed by 0x Exchange to fail due to the order expiration
-        currentAmount = timestamp >= order.expirationTimeSeconds ? minAmount : currentAmount;
-        auctionDetails.currentAmount = currentAmount;
+        if (timestamp < auctionBeginTimeSeconds) {
+            // If the auction has not yet begun the current amount is the auctionBeginAmount
+            auctionDetails.currentAmount = auctionBeginAmount;
+        } else if (timestamp >= order.expirationTimeSeconds) {
+            // If the auction has ended the current amount is the minAmount.
+            // Auction end time is guaranteed by 0x Exchange due to the order expiration
+            auctionDetails.currentAmount = minAmount;
+        } else {
+            auctionDetails.currentAmount = safeAdd(
+                minAmount,
+                safeDiv(
+                    safeMul(remainingDurationSeconds, amountDelta),
+                    auctionDurationSeconds
+                )
+            );
+        }
         return auctionDetails;
     }
 }
