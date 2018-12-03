@@ -48,7 +48,7 @@ export class ConfigGeneratorAddressInput extends React.Component<
         );
     }
 
-    private _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const address = event.target.value;
         const isValidAddress = addressUtils.isAddress(address.toLowerCase()) || address === '';
         const errMsg = isValidAddress ? '' : 'Please enter a valid Ethereum address';
