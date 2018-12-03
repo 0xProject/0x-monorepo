@@ -54,7 +54,7 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
         object-fit: contain;
     }
 
-    p {
+    p, li {
         font-size: 1rem;
         line-height: 1.444444444em; // 26px
     }
