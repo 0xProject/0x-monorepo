@@ -16,11 +16,9 @@ export const Next0xInstant = () => (
     <SiteWrap>
         <Section>
             <WrapCentered>
-                <Column colWidth="2/3">
-                    <Heading size="medium" center>Introducing 0x Instant</Heading>
-                    <Paragraph size="medium" center>A free and flexible way to offer simple crypto purchasing in any app or website</Paragraph>
-                    <Button href="#">Get Started</Button>
-                </Column>
+                <Heading size="medium" center>Introducing 0x Instant</Heading>
+                <Paragraph size="medium" center>A free and flexible way to offer simple crypto purchasing in any app or website</Paragraph>
+                <Button href="#">Get Started</Button>
             </WrapCentered>
         </Section>
 

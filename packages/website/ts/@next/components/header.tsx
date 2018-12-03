@@ -23,18 +23,6 @@ const links = [
     { url: '#', text: 'Blog' },
 ];
 
-const Link: React.StatelessComponent<LinkProps> = props => {
-    const { children, href } = props;
-
-    return (
-        <StyledRouterLink
-            to={href}
-        >
-            {children}
-        </StyledRouterLink>
-    );
-};
-
 export const Header: React.StatelessComponent<HeaderProps> = ({}) => (
       <StyledHeader>
         <HeaderWrap>
@@ -49,6 +37,16 @@ export const Header: React.StatelessComponent<HeaderProps> = ({}) => (
         </HeaderWrap>
     </StyledHeader>
 );
+
+const Link: React.StatelessComponent<LinkProps> = props => {
+    const { children, href } = props;
+
+    return (
+        <StyledRouterLink to={href}>
+            {children}
+        </StyledRouterLink>
+    );
+};
 
 const StyledHeader = Section.withComponent('header');
 const HeaderWrap = styled(Wrap)`
