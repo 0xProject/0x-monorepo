@@ -20,6 +20,8 @@ The package is available as a UMD module named `zeroExInstant` at https://instan
 
 ## Deploying
 
+To run any of the following commands you need to configure your `.env` file. There is an example `.env_example` file to show you what values are required.
+
 You can deploy a work-in-progress version of 0x Instant at http://0x-instant-dogfood.s3-website-us-east-1.amazonaws.com/instant.js for easy sharing.
 
 To build and deploy the bundle run
