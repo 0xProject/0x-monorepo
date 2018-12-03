@@ -92,16 +92,16 @@ export const Main = styled.main`
 // make a const on every route to withComponent-size it.
 // just <Section asElement?="div/section/footer/header/whatever" /> ?
 export const Section = styled.section<SectionProps>`
-    width: ${props => props.fullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
+    width: ${props => props.isFullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
     padding: ${props => !props.isNoPadding && (props.isPadLarge ? '60px 30px' : '30px')};
     margin-bottom: ${props => !props.isNoMargin && `${GUTTER}px`};
-    margin-left: ${props => props.fullWidth && `-${GUTTER}px`};
+    margin-left: ${props => props.isFullWidth && `-${GUTTER}px`};
     background-color: ${props => props.bgColor};
     border: 1px dotted rgba(0, 255, 0, 0.3);
 
     @media (min-width: 1560px) {
-        width: ${props => props.fullWidth && '100vw'};
-        margin-left: ${props => props.fullWidth && `calc(750px - 50vw)`};
+        width: ${props => props.isFullWidth && '100vw'};
+        margin-left: ${props => props.isFullWidth && `calc(750px - 50vw)`};
     }
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
