@@ -71,6 +71,7 @@ const generateConfig = (dischargeTarget, heapConfigOptions, rollbarConfigOptions
             `Must define heap analytics id in ENV var ${heapAnalyticsIdEnvName} when building for ${dischargeTarget}`,
         );
     }
+    const heapEnabled = heapAnalyticsId && (nodeEnv !== 'development' || process.env.INSTANT_HEAP_FORCE_DEVELOPMENT);
 
     const rollbarTokens = getRollbarTokens(dischargeTarget, rollbarConfigOptions.rollbarRequired);
     const rollbarEnabled =
@@ -92,6 +93,7 @@ const generateConfig = (dischargeTarget, heapConfigOptions, rollbarConfigOptions
         GIT_SHA: JSON.stringify(GIT_SHA),
         NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
         ROLLBAR_ENABLED: rollbarEnabled,
+        HEAP_ENABLED: heapEnabled
     };
     if (dischargeTarget) {
         envVars.INSTANT_DISCHARGE_TARGET = JSON.stringify(dischargeTarget);
