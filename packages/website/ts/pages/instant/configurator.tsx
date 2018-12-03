@@ -23,6 +23,10 @@ export class Configurator extends React.Component<ConfiguratorProps> {
         instantConfig: {
             orderSource: 'https://api.radarrelay.com/0x/v2/',
             availableAssetDatas: [],
+            affiliateInfo: {
+                feeRecipient: '',
+                feePercentage: 0.1,
+            },
         },
     };
     public render(): React.ReactNode {
@@ -61,7 +65,6 @@ export class Configurator extends React.Component<ConfiguratorProps> {
     };
     private readonly _generateCodeDemoCode = (): string => {
         const { instantConfig } = this.state;
-        console.log(instantConfig.availableAssetDatas);
         return `<head>
         <script src="https://instant.0xproject.com/instant.js"></script>
     </head>
@@ -69,17 +72,17 @@ export class Configurator extends React.Component<ConfiguratorProps> {
         <script>
             zeroExInstant.render({
                 liquiditySource: '${instantConfig.orderSource}',${
+            !_.isUndefined(instantConfig.affiliateInfo) && instantConfig.affiliateInfo.feeRecipient
+                ? `\n\t\taffiliateInfo: {
+                    feeRecipient: '${instantConfig.affiliateInfo.feeRecipient}',
+                    feePercentage: ${instantConfig.affiliateInfo.feePercentage}
+                }`
+                : ''
+        }${
             !_.isUndefined(instantConfig.availableAssetDatas)
                 ? `\n\t\tavailableAssetDatas: ${this._renderAvailableAssetDatasString(
                       instantConfig.availableAssetDatas,
                   )}`
-                : ''
-        }${
-            !_.isUndefined(instantConfig.affiliateInfo)
-                ? `affiliateInfo: {
-                    feeRecipient: '${instantConfig.affiliateInfo.feeRecipient}',
-                    feePercentage: ${instantConfig.affiliateInfo.feePercentage}
-                }`
                 : ''
         }
             }, 'body');

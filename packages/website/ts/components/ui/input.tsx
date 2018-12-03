@@ -8,6 +8,7 @@ export interface InputProps {
     width?: string;
     fontSize?: string;
     fontColor?: string;
+    border?: string;
     placeholderColor?: string;
     placeholder?: string;
     backgroundColor?: string;
@@ -23,9 +24,11 @@ export const Input = styled(PlainInput)`
     width: ${props => props.width};
     padding: 0.8em 1.2em;
     border-radius: 3px;
+    box-sizing: border-box;
     font-family: 'Roboto Mono';
     color: ${props => props.fontColor};
-    border: none;
+    border: ${props => props.border};
+    outline: none;
     background-color: ${props => props.backgroundColor};
     &::placeholder {
         color: ${props => props.placeholderColor};
@@ -38,6 +41,7 @@ Input.defaultProps = {
     fontColor: colors.darkestGrey,
     placeholderColor: colors.darkGrey,
     fontSize: '12px',
+    border: 'none',
 };
 
 Input.displayName = 'Input';
