@@ -4,8 +4,8 @@ import styled from 'styled-components';
 
 import { Link as ReactRouterLink } from 'react-router-dom';
 
+import { Section, Wrap } from './layout';
 import { Button } from './button';
-import { Container } from './container';
 import { Logo } from './logo';
 
 interface HeaderProps {
@@ -36,27 +36,24 @@ const Link: React.StatelessComponent<LinkProps> = props => {
 };
 
 export const Header: React.StatelessComponent<HeaderProps> = ({}) => (
-    <Container>
-        <StyledHeader>
-            <Link href="/next">
-                <Logo/>
-            </Link>
+      <StyledHeader>
+        <HeaderWrap>
+          <Link href="/next">
+              <Logo/>
+          </Link>
 
-            <Links>
-                {_.map(links, (link, index) => <Link key={index} href={link.url}>{link.text}</Link>)}
-            </Links>
-            <TradeButton href="#">Trade on 0x</TradeButton>
-        </StyledHeader>
-    </Container>
+          <Links>
+              {_.map(links, (link, index) => <Link key={index} href={link.url}>{link.text}</Link>)}
+          </Links>
+          <TradeButton href="#">Trade on 0x</TradeButton>
+        </HeaderWrap>
+    </StyledHeader>
 );
 
-const StyledHeader = styled.header`
-    display: flex;
-    flex-wrap: wrap;
-    text-align: center;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.666666667rem 0;
+const StyledHeader = Section.withComponent('header');
+const HeaderWrap = styled(Wrap)`
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const TradeButton = styled(Button)`
