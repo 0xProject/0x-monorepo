@@ -66,9 +66,69 @@ const team: TeamMember[] = [
         title: 'Co-Founder and CEO',
         imageUrl: '#',
     },
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
 ];
 
 const advisors: TeamMember[] = [
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
+    {
+        name: 'Will Warren',
+        title: 'Co-Founder and CEO',
+        imageUrl: '#',
+    },
     {
         name: 'Will Warren',
         title: 'Co-Founder and CEO',
@@ -134,7 +194,7 @@ export const NextAboutTeam = () => (
 
         <Column colWidth="2/3">
         <Wrap isWrapped={true} isCentered={false}>
-            {team.map((info, index) => <Member key={`team-${index}`} name={info.name} title={info.title} />)}
+            {advisors.map((info, index) => <Member key={`team-${index}`} name={info.name} title={info.title} />)}
         </Wrap>
         </Column>
       </Wrap>
