@@ -24,6 +24,7 @@ import { NextAboutJobs } from 'ts/@next/pages/about/jobs';
 import { NextAboutMission } from 'ts/@next/pages/about/mission';
 import { NextAboutPress } from 'ts/@next/pages/about/press';
 import { NextAboutTeam } from 'ts/@next/pages/about/team';
+import { NextEcosystem } from 'ts/@next/pages/ecosystem';
 import { Next0xInstant } from 'ts/@next/pages/instant';
 import { NextLanding } from 'ts/@next/pages/landing';
 import { NextLaunchKit } from 'ts/@next/pages/launchKit';
@@ -118,6 +119,7 @@ render(
                                 <Route exact path="/next/why" component={NextWhy as any} />
                                 <Route exact path="/next/0x-instant" component={Next0xInstant as any} />
                                 <Route exact path="/next/launch-kit" component={NextLaunchKit as any} />
+                                <Route exact path="/next/ecosystem" component={NextEcosystem as any} />
                                 <Route exact path="/next/about/mission" component={NextAboutMission as any} />
                                 <Route exact path="/next/about/team" component={NextAboutTeam as any} />
                                 <Route exact path="/next/about/press" component={NextAboutPress as any} />
