@@ -19,7 +19,7 @@ interface PaddingSizes {
 interface SectionProps {
     isNoPadding?: boolean;
     isPadLarge?: boolean;
-    isNoMargin?: any;
+    isNoMargin?: boolean;
     bgColor?: string;
     isFullWidth?: boolean;
 }
@@ -27,6 +27,8 @@ interface SectionProps {
 interface WrapProps {
     width?: 'default' | 'full' | 'medium' | 'narrow';
     bgColor?: string;
+    isWrapped?: boolean;
+    isCentered?: boolean;
     padding?: number | ('large' | 'default' | number)[];
 }
 
@@ -55,7 +57,7 @@ const _getPadding = (value: number | (string | number)[]): string => {
     } else {
         return `${value}px`;
     }
-}
+};
 
 const GUTTER = 30 as number;
 const MAX_WIDTH = 1500;
@@ -78,7 +80,6 @@ const PADDING_SIZES: PaddingSizes = {
     'default': '30px',
     'large': '60px',
 };
-
 
 export const Main = styled.main`
     border: 1px dotted rgba(0, 0, 255, 0.3);
@@ -120,6 +121,7 @@ export const Wrap = styled(WrapBase)`
     @media (min-width: ${BREAKPOINTS.mobile}) {
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
     }
 `;
 
@@ -132,8 +134,8 @@ export const WrapCentered = styled(WrapBase)`
 
 export const WrapGrid = styled(WrapBase)`
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-wrap: ${props => props.isWrapped && `wrap`};
+    justify-content: ${props => props.isCentered ? `center` : 'space-between'};
 `;
 
 export const Column = styled.div<ColumnProps>`
@@ -145,3 +147,7 @@ export const Column = styled.div<ColumnProps>`
         width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};
     }
 `;
+
+WrapGrid.defaultProps = {
+    isCentered: true,
+};
