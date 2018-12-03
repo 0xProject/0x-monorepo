@@ -46,7 +46,7 @@ export class Configurator extends React.Component<ConfiguratorProps> {
                     </Container>
                     <ConfigGenerator value={this.state.instantConfig} onConfigChange={this._handleConfigChange} />
                 </Container>
-                <Container className="mx3">
+                <Container className="mx3" height="550px">
                     <Container className="mb3 flex justify-between">
                         <Text fontSize="20px" lineHeight="28px" fontColor={colors.white} fontWeight={500}>
                             Code Snippet
@@ -66,34 +66,34 @@ export class Configurator extends React.Component<ConfiguratorProps> {
     private readonly _generateCodeDemoCode = (): string => {
         const { instantConfig } = this.state;
         return `<head>
-        <script src="https://instant.0xproject.com/instant.js"></script>
-    </head>
-    <body>
-        <script>
-            zeroExInstant.render({
-                liquiditySource: '${instantConfig.orderSource}',${
+    <script src="https://instant.0xproject.com/instant.js"></script>
+</head>
+<body>
+    <script>
+        zeroExInstant.render({
+            liquiditySource: '${instantConfig.orderSource}',${
             !_.isUndefined(instantConfig.affiliateInfo) && instantConfig.affiliateInfo.feeRecipient
-                ? `\n\t\taffiliateInfo: {
-                    feeRecipient: '${instantConfig.affiliateInfo.feeRecipient}',
-                    feePercentage: ${instantConfig.affiliateInfo.feePercentage}
-                }`
+                ? `\n            affiliateInfo: {
+                feeRecipient: '${instantConfig.affiliateInfo.feeRecipient}',
+                feePercentage: ${instantConfig.affiliateInfo.feePercentage}
+            }`
                 : ''
         }${
             !_.isUndefined(instantConfig.availableAssetDatas)
-                ? `\n\t\tavailableAssetDatas: ${this._renderAvailableAssetDatasString(
+                ? `\n            availableAssetDatas: ${this._renderAvailableAssetDatasString(
                       instantConfig.availableAssetDatas,
                   )}`
                 : ''
         }
-            }, 'body');
-        </script>
-    </body>`;
+        }, 'body');
+    </script>
+</body>`;
     };
     private readonly _renderAvailableAssetDatasString = (availableAssetDatas: string[]): string => {
         const stringAvailableAssetDatas = availableAssetDatas.map(assetData => `'${assetData}'`);
         if (availableAssetDatas.length < 2) {
             return `[${stringAvailableAssetDatas.join(', ')}]`;
         }
-        return `[\n\t\t\t${stringAvailableAssetDatas.join(', \n\t\t\t')}\n\t\t]`;
+        return `[\n\t\t${stringAvailableAssetDatas.join(', \n\t\t')}\n            ]`;
     };
 }
