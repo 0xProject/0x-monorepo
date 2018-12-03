@@ -17,11 +17,11 @@ interface PaddingSizes {
 }
 
 interface SectionProps {
-    noPadding?: any;
-    padLarge?: any;
-    noMargin?: any;
+    isNoPadding?: boolean;
+    isPadLarge?: boolean;
+    isNoMargin?: any;
     bgColor?: string;
-    fullWidth?: any;
+    isFullWidth?: boolean;
 }
 
 interface WrapProps {
@@ -32,8 +32,8 @@ interface WrapProps {
 
 interface ColumnProps {
     colWidth?: '1/4' | '1/3' | '1/2' | '2/3';
-    noPadding?: any;
-    padLarge?: any;
+    isNoPadding?: boolean;
+    isPadLarge?: boolean;
     bgColor?: string;
 }
 
@@ -93,8 +93,8 @@ export const Main = styled.main`
 // just <Section asElement?="div/section/footer/header/whatever" /> ?
 export const Section = styled.section<SectionProps>`
     width: ${props => props.fullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
-    padding: ${props => !props.noPadding && (props.padLarge ? '60px 30px' : '30px')};
-    margin-bottom: ${props => !props.noMargin && `${GUTTER}px`};
+    padding: ${props => !props.isNoPadding && (props.isPadLarge ? '60px 30px' : '30px')};
+    margin-bottom: ${props => !props.isNoMargin && `${GUTTER}px`};
     margin-left: ${props => props.fullWidth && `-${GUTTER}px`};
     background-color: ${props => props.bgColor};
     border: 1px dotted rgba(0, 255, 0, 0.3);
@@ -137,7 +137,7 @@ export const WrapGrid = styled(WrapBase)`
 `;
 
 export const Column = styled.div<ColumnProps>`
-    padding: ${props => !props.noPadding && (props.padLarge ? '60px 30px' : '30px')};
+    padding: ${props => !props.isNoPadding && (props.isPadLarge ? '60px 30px' : '30px')};
     border: 1px dotted rgba(255, 0, 0, 0.3);
     background-color: ${props => props.bgColor};
 

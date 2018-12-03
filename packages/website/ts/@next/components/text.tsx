@@ -1,20 +1,19 @@
 import * as React from 'react';
-import styled, { withTheme } from 'styled-components';
-import { colors } from 'ts/style/colors';
+import styled from 'styled-components';
+
 
 interface HeadingProps {
     asElement?: 'h1'| 'h2'| 'h3'| 'h4';
     size?: 'default' | 'medium' | 'large' | 'small';
-    center?: boolean;
-    children: Node | string;
-    noMargin?: any;
+    isCentered?: boolean;
+    isNoMargin?: boolean;
 }
 
 interface ParagraphProps {
-    noMargin?: any;
+    isNoMargin?: boolean;
     size?: 'default' | 'small' | 'medium' | 'large';
-    muted?: any;
-    center?: any;
+    isMuted?: boolean | number;
+    isCentered?: boolean;
 }
 
 interface HeadingSizes {
@@ -50,8 +49,8 @@ const StyledHeading = styled.h1<HeadingProps>`
     color: ${props => props.color || props.theme.textColor};
     font-size: ${props => HEADING_SIZES[props.size || 'default']};
     font-weight: 300;
-    margin-bottom: ${props => !props.noMargin && '30px'};
-    text-align: ${props => props.center && 'center'};
+    margin-bottom: ${props => !props.isNoMargin && '30px'};
+    text-align: ${props => props.isCentered && 'center'};
 `;
 
 export const Heading: React.StatelessComponent<HeadingProps> = props => {
@@ -69,9 +68,9 @@ export const Heading: React.StatelessComponent<HeadingProps> = props => {
 // for literally anything =
 export const Paragraph = styled.p<ParagraphProps>`
     font-size: ${props => PARAGRAPH_SIZES[props.size || 'default']};
-    margin-bottom: ${props => !props.noMargin && '30px'};
+    margin-bottom: ${props => !props.isNoMargin && '30px'};
     line-height: 1.4;
     color: ${props => props.color || props.theme.textColor};
-    opacity: ${props => props.muted || 0.75};
-    text-align: ${props => props.center && 'center'};
+    opacity: ${props => typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted};
+    text-align: ${props => props.isCentered && 'center'};
 `;

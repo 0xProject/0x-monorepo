@@ -61,18 +61,18 @@ export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
     bgColor="#181818"
     noMargin>
     <Wrap>
-      <Column colWidth="1/2" noPadding>
+      <Column colWidth="1/2" isNoPadding={true}>
         <Logo light />
         <NewsletterForm />
       </Column>
 
-      <Column colWidth="1/2" noPadding>
+      <Column colWidth="1/2" isNoPadding={true}>
         <Wrap>
           {_.map(linkRows, (row, index) => (
             <Column
               key={`fc-${index}`}
               colWidth="1/3"
-              noPadding>
+              isNoPadding={true}>
               <RowHeading>
                 { row.heading }
               </RowHeading>

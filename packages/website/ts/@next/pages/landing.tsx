@@ -55,11 +55,15 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
             </Wrap>
         </Section>
 
-        <Section bgColor={colors.backgroundDark} padLarge>
+        <Section
+            bgColor={colors.backgroundDark}
+            isPadLarge={true}>
             <WrapCentered width="narrow">
                 <ProtocolIcon/>
 
-                <Paragraph size="large" center>
+                <Paragraph
+                    size="large"
+                    isCentered={true}>
                     0x is an open protocol that enables the peer-to-peer exchange of Ethereum-based
                     tokens. Anyone in the world can use 0x to service a wide variety of markets
                     ranging from gaming items to financial instruments to assets that could have
@@ -74,60 +78,88 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
             {/* Note you can also pass in a string "large/default" or a number for custom margins */}
             <Wrap padding={['large', 0, 0, 0]}>
                 {/* NOTE: this probably should be withComponent as part of a <dl> */}
-                <Column colWidth="1/3" noPadding>
-                    <Heading size="medium" center>
+                <Column
+                    colWidth="1/3"
+                    isNoPadding={true}>
+                    <Heading
+                        size="medium"
+                        isCentered={true}>
                         873,435
                     </Heading>
 
-                    <Paragraph muted={0.4} center noMargin>
+                    <Paragraph
+                        isMuted={0.4}
+                        isCentered={true}
+                        isNoMargin={true}>
                         Number of transactions
                     </Paragraph>
                 </Column>
 
-                <Column colWidth="1/3" noPadding>
-                    <Heading size="medium" center>
+                <Column
+                    colWidth="1/3"
+                    isNoPadding={true}>
+                    <Heading
+                        size="medium"
+                        isCentered={true}>
                         $203M
                     </Heading>
 
-                    <Paragraph muted={0.4} center noMargin>
+                    <Paragraph
+                        isMuted={0.4}
+                        isCentered={true}
+                        isNoMargin={true}>
                         Total volume
                     </Paragraph>
                 </Column>
 
-                <Column colWidth="1/3" noPadding>
-                    <Heading size="medium" center>
+                <Column
+                    colWidth="1/3"
+                    isNoPadding={true}>
+                    <Heading
+                        size="medium"
+                        isCentered={true}>
                         227,372
                     </Heading>
 
-                    <Paragraph muted={0.4} center noMargin>
+                    <Paragraph
+                        isMuted={0.4}
+                        isCentered={true}
+                        isNoMargin={true}>
                         Number of relayers
                     </Paragraph>
                 </Column>
             </Wrap>
         </Section>
 
-        <Section padLarge>
+        <Section
+            isPadLarge={true}>
             <WrapCentered>
                 <Heading size="small">You're in good company</Heading>
             </WrapCentered>
 
             <WrapGrid width="narrow">
                 {_.map([...Array(9)], (item, index) => (
-                    <SampleLogo />
+                    <SampleLogo key={index} />
                 ))}
             </WrapGrid>
         </Section>
 
         <Section>
             <Wrap>
-                <Column bgColor="#003831" colWidth="1/2" padLarge>
+                <Column
+                    bgColor="#003831"
+                    colWidth="1/2"
+                    isPadLarge={true}>
                     <WrapCentered>
                         <ReadyToBuildIcon width="150" />
                         Ready to build on 0x?
                     </WrapCentered>
                 </Column>
 
-                <Column bgColor="#003831" colWidth="1/2" padLarge>
+                <Column
+                    bgColor="#003831"
+                    colWidth="1/2"
+                    isPadLarge={true}>
                     <WrapCentered>
                         <ReadyToBuildIcon width="150" />
                         Ready to build on 0x?

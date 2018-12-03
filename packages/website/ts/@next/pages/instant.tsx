@@ -16,13 +16,15 @@ export const Next0xInstant = () => (
     <SiteWrap>
         <Section>
             <WrapCentered>
-                <Heading size="medium" center>Introducing 0x Instant</Heading>
-                <Paragraph size="medium" center>A free and flexible way to offer simple crypto purchasing in any app or website</Paragraph>
+                <Heading size="medium" isCentered={true}>Introducing 0x Instant</Heading>
+                <Paragraph size="medium" isCentered={true}>A free and flexible way to offer simple crypto purchasing in any app or website</Paragraph>
                 <Button href="#">Get Started</Button>
             </WrapCentered>
         </Section>
 
-        <Section fullWidth noPadding>
+        <Section
+            isFullWidth={true}
+            isNoPadding={true}>
             <Wrap width="full">
                 <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
             </Wrap>
@@ -36,7 +38,7 @@ export const Next0xInstant = () => (
 
                 <Column colWidth="2/3">
                     <Heading>Support ERC-20 and ERC-721 tokens</Heading>
-                    <Paragraph muted>Seamlessly integrate token purchasing into your product experience by offering digital assets ranging from in-game items to stablecoins.</Paragraph>
+                    <Paragraph isMuted={true}>Seamlessly integrate token purchasing into your product experience by offering digital assets ranging from in-game items to stablecoins.</Paragraph>
                     <div>
                         <a href="#">Get Started</a><a href="#">Explore the Docs</a>
                     </div>
@@ -51,7 +53,7 @@ export const Next0xInstant = () => (
 
                 <Column colWidth="2/3">
                     <Heading>Generate revenue for your business</Heading>
-                    <Paragraph muted>With just a few lines of code, you can earn up to 5% in affiliate fees on every transaction from your crypto wallet or dApp.</Paragraph>
+                    <Paragraph isMuted={true}>With just a few lines of code, you can earn up to 5% in affiliate fees on every transaction from your crypto wallet or dApp.</Paragraph>
                     <div>
                         <a href="#">Learn more about affiliate fees</a>
                     </div>
@@ -66,7 +68,7 @@ export const Next0xInstant = () => (
 
                 <Column colWidth="2/3">
                     <Heading>Easy and flexible integration</Heading>
-                    <Paragraph muted>Use our out-of-the-box design or customize the user interface by integrating the AssetBuyer engine. You can also tap into 0x networked liquidity or choose your own liquidity pool.</Paragraph>
+                    <Paragraph isMuted={true}>Use our out-of-the-box design or customize the user interface by integrating the AssetBuyer engine. You can also tap into 0x networked liquidity or choose your own liquidity pool.</Paragraph>
                     <div>
                         <a href="#">Explore AssetBuyer</a>
                         <a href="#">Learn about liquidity</a>
@@ -95,14 +97,14 @@ export const Next0xInstant = () => (
 
         <Section bgColor={colors.brandDark}>
             <Wrap>
-                <Column colWidth="1/2" padLarge>
+                <Column colWidth="1/2" isPadLarge={true}>
                     <WrapCentered>
                         <Heading>Need more flexibility?</Heading>
                         <Paragraph>Dive into our docs, or contact us if needed</Paragraph>
                     </WrapCentered>
                 </Column>
 
-                <Column colWidth="1/2" padLarge>
+                <Column colWidth="1/2" isPadLarge={true}>
                     <WrapCentered>
                         <div>
                             <Button href="#">Explore the Docs</Button>
@@ -116,8 +118,8 @@ export const Next0xInstant = () => (
         <Section>
             <Wrap width="full">
                 <Column>
-                    <Paragraph size="small" muted="0.5">Disclaimer: The laws and regulations applicable to the use and exchange of digital assets and blockchain-native tokens, including through any software developed using the licensed work created by ZeroEx Intl. (the “Work”), vary by jurisdiction. As set forth in the Apache License, Version 2.0 applicable to the Work, developers are “solely responsible for determining the appropriateness of using or redistributing the Work,” which includes responsibility for ensuring compliance with any such applicable laws and regulations.</Paragraph>
-                    <Paragraph size="small" muted="0.5">See the Apache License, Version 2.0 for the specific language governing all applicable permissions and limitations.</Paragraph>
+                    <Paragraph size="small" isMuted={0.5}>Disclaimer: The laws and regulations applicable to the use and exchange of digital assets and blockchain-native tokens, including through any software developed using the licensed work created by ZeroEx Intl. (the “Work”), vary by jurisdiction. As set forth in the Apache License, Version 2.0 applicable to the Work, developers are “solely responsible for determining the appropriateness of using or redistributing the Work,” which includes responsibility for ensuring compliance with any such applicable laws and regulations.</Paragraph>
+                    <Paragraph size="small" isMuted={0.5}>See the Apache License, Version 2.0 for the specific language governing all applicable permissions and limitations.</Paragraph>
                 </Column>
             </Wrap>
         </Section>

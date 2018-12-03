@@ -13,14 +13,15 @@ interface Props {
     children: any;
 }
 
-interface GlobalThemes {
+// we proabbly want to put this somewhere else (themes)
+export interface ThemeInterface {
     [key: string]: {
         bgColor: string;
         textColor: string;
     }
 }
 
-const GLOBAL_THEMES: GlobalThemes = {
+const GLOBAL_THEMES: ThemeInterface = {
     dark: {
         bgColor: '#000000',
         textColor: '#FFFFFF',

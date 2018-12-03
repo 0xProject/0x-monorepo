@@ -17,9 +17,9 @@ export const NextWhy = () => (
     <Section>
       <WrapCentered>
         <Column colWidth="2/3">
-          <Heading size="medium" center>The exchange layer for the crypto economy</Heading>
-          <Paragraph size="medium" center>The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastructure that allows anyone in the world to build products that enable the purchasing and trading of crypto tokens.</Paragraph>
-          <Paragraph center>Build on 0x (arrow)</Paragraph>
+          <Heading size="medium" isCentered={true}>The exchange layer for the crypto economy</Heading>
+          <Paragraph size="medium" isCentered={true}>The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastructure that allows anyone in the world to build products that enable the purchasing and trading of crypto tokens.</Paragraph>
+          <Paragraph isCentered={true}>Build on 0x (arrow)</Paragraph>
         </Column>
       </WrapCentered>
     </Section>
@@ -58,40 +58,40 @@ export const NextWhy = () => (
           <Heading size="medium">What 0x offers</Heading>
           <CoinIcon width="150" />
           <Heading>A Standard for Exchange</Heading>
-          <Paragraph muted>0x provides developers with a technical standard for trading Ethereum-based tokens such as ERC 20 and ERC 721.</Paragraph>
+          <Paragraph isMuted={true}>0x provides developers with a technical standard for trading Ethereum-based tokens such as ERC 20 and ERC 721.</Paragraph>
 
           <CoinIcon width="150" />
           <Heading>Robust Smart Contracts</Heading>
-          <Paragraph muted>0x Protocol's smart contracts have been put through two rounds of rigorous security audits.</Paragraph>
+          <Paragraph isMuted={true}>0x Protocol's smart contracts have been put through two rounds of rigorous security audits.</Paragraph>
 
           <CoinIcon width="150" />
           <Heading>Extensible Architecture</Heading>
-          <Paragraph muted>0x's modular pipeline enables you to plug in your own smart contracts through an extensible API.</Paragraph>
+          <Paragraph isMuted={true}>0x's modular pipeline enables you to plug in your own smart contracts through an extensible API.</Paragraph>
 
           <CoinIcon width="150" />
           <Heading>Efficient Design</Heading>
-          <Paragraph muted>0x’s off-chain order relay with on-chain settlement is a gas efficient approach to p2p exchange, reducing blockchain bloat.</Paragraph>
+          <Paragraph isMuted={true}>0x’s off-chain order relay with on-chain settlement is a gas efficient approach to p2p exchange, reducing blockchain bloat.</Paragraph>
 
           <Heading size="medium">Use Cases</Heading>
-          <Paragraph muted>slider</Paragraph>
+          <Paragraph isMuted={true}>slider</Paragraph>
 
           <Heading size="medium">Exchange Functionality</Heading>
 
           <CoinIcon width="150" />
           <Heading>Secure Non-custodial Trading</Heading>
-          <Paragraph muted>Enable tokens to be traded wallet-to-wallet with no deposits or withdrawals.</Paragraph>
+          <Paragraph isMuted={true}>Enable tokens to be traded wallet-to-wallet with no deposits or withdrawals.</Paragraph>
 
           <CoinIcon width="150" />
           <Heading>Flexible Order Types</Heading>
-          <Paragraph muted>Choose to sell assets at a specific “buy it now” price or allow potential buyers to submit bids.</Paragraph>
+          <Paragraph isMuted={true}>Choose to sell assets at a specific “buy it now” price or allow potential buyers to submit bids.</Paragraph>
 
           <CoinIcon width="150" />
           <Heading>Build a Business</Heading>
-          <Paragraph muted>Monetize your product by taking fees on each transaction and join a growing number of relayers in the 0x ecosystem.</Paragraph>
+          <Paragraph isMuted={true}>Monetize your product by taking fees on each transaction and join a growing number of relayers in the 0x ecosystem.</Paragraph>
 
           <CoinIcon width="150" />
           <Heading>Networked Liquidity</Heading>
-          <Paragraph muted>Allow your assets to appear on other 0x-based marketplaces by sharing your liquidity through an open order book.</Paragraph>
+          <Paragraph isMuted={true}>Allow your assets to appear on other 0x-based marketplaces by sharing your liquidity through an open order book.</Paragraph>
         </Column>
       </Wrap>
     </Section>
