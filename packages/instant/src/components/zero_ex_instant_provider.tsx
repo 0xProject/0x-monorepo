@@ -29,6 +29,7 @@ export interface ZeroExInstantProviderRequiredProps {
 
 export interface ZeroExInstantProviderOptionalProps {
     provider: Provider;
+    walletDisplayName: string;
     availableAssetDatas: string[];
     defaultAssetBuyAmount: number;
     defaultSelectedAssetData: string;
@@ -66,6 +67,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             ...defaultState,
             providerState,
             network: networkId,
+            walletDisplayName: props.walletDisplayName,
             selectedAsset: _.isUndefined(props.defaultSelectedAssetData)
                 ? undefined
                 : assetUtils.createAssetFromAssetDataOrThrow(

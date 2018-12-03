@@ -49,6 +49,7 @@ interface OptionalState {
     latestBuyQuote: BuyQuote;
     latestErrorMessage: string;
     affiliateInfo: AffiliateInfo;
+    walletDisplayName: string;
 }
 
 export type State = DefaultState & PropsDerivedState & Partial<OptionalState>;
