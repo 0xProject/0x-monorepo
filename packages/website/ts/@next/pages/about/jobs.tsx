@@ -25,53 +25,80 @@ export const NextAboutJobs = () => (
             <ChapterLink to="/next/about/jobs">Jobs</ChapterLink>
         </Column>
         <Column colWidth="2/3">
-            <Heading size="medium">Creating a tokenized world where all value can flow freely.</Heading>
-            <Paragraph size="medium">0x Protocol is an important infrastructure layer for the emerging crypto economy and enables markets to be created that couldn't have existed before. As more assets become tokenized, public blockchains provide the opportunity to establish a new financial stack that is more efficient, transparent, and equitable than any system in the past.</Paragraph>
-            <Paragraph>Our missions and values (arrow)</Paragraph>
+            <Heading size="medium">Join Us in Our Mission</Heading>
+            <Paragraph size="medium">To create a tokenized world where all value can flow freely.
+We are powering a growing ecosystem of decentralized applications and solving novel challenges to make our technology intuitive, flexible, and accessible to all. Read more about our mission, and join us in building financial infrastructure upon which the exchange of anything of value will take place.</Paragraph>
         </Column>
       </Wrap>
     </Section>
 
-    <Section
-        isFullWidth={true}
-        isNoPadding={true}>
-        <Wrap width="full">
-            <Image src="/images/@next/about/about-mission@2x.jpg" height="320" alt="" center />
-        </Wrap>
+    <Section bgColor="#F3F6F4">
+      <Wrap>
+        <Column colWidth="1/3">
+            <Heading size="medium">Powered by a Diverse Worldwide Community</Heading>
+            <Paragraph>We're a highly technical team with varied backgrounds in engineering, science, business, finance, and research. While the core team is headquartered in San Francisco, there are 30+ teams building on 0x and hundreds of thousands of participants behind our efforts globally. We're passionate about open-source software and decentralized technology's potential to act as an equalizing force in the world.</Paragraph>
+        </Column>
+
+        <Column colWidth="2/3">
+            <img src="/images/@next/jobs/map@2x.png" height="365" alt="Map of community"/>
+        </Column>
+      </Wrap>
     </Section>
 
     <Section>
       <Wrap>
         <Column colWidth="1/3">
-            <Heading size="medium">Core<br/>Values</Heading>
+            <Heading size="medium">Benefits</Heading>
+        </Column>
+
+        <Column colWidth="2/3">
+            <Wrap>
+                <Column>
+                    <BenefitsList>
+                        <li>Comprehensive Insurance</li>
+                        <li>Unlimited Vacation</li>
+                        <li>Meals and snacks provided daily</li>
+                        <li>Flexible hours and liberal  work-from-home-policy</li>
+                        <li>Supportive of remote working</li>
+                        <li>Transportation, phone, and wellness expense</li>
+                        <li>Relocation assistance</li>
+                        <li>Optional team excursions</li>
+                        <li>Competitive salary</li>
+                        <li>Cryptocurrency based compensation</li>
+                    </BenefitsList>
+                </Column>
+            </Wrap>
+        </Column>
+      </Wrap>
+    </Section>
+
+    <Section>
+      <Wrap>
+        <Column colWidth="1/3">
+            <Heading size="medium">Current<br/>Openings</Heading>
         </Column>
 
         <Column colWidth="2/3">
             <Wrap>
                 <Column colWidth="1/3">
-                    <RightThingIcon width="100" />
+                    <Heading size="small">Product Designer</Heading>
                 </Column>
-                <Column colWidth="2/3">
-                    <Heading size="medium">Do The Right Thing</Heading>
-                    <Paragraph isMuted={true}>We acknowledge the broad subjectivity behind doing “the right thing,” and are committed to rigorously exploring its nuance in our decision making. We believe this responsibility drives our decision making above all else, and pledge to act in the best interest of our peers, community, and society as a whole.</Paragraph>
+                <Column colWidth="1/3">
+                    <Paragraph isMuted={true}>San Francisco, Remote</Paragraph>
+                </Column>
+                <Column colWidth="1/3">
+                    <Paragraph><a href="#">Apply</a></Paragraph>
                 </Column>
             </Wrap>
             <Wrap>
                 <Column colWidth="1/3">
-                    <ConsistentlyShipIcon width="100" />
+                    <Heading size="small">Open Positition</Heading>
                 </Column>
-                <Column colWidth="2/3">
-                    <Heading size="medium">Consistently Ship</Heading>
-                    <Paragraph isMuted={true}>Achieving our mission requires dedication and diligence. We aspire to be an organization that consistently ships. We set high-impact goals that are rooted in data and pride ourselves in consistently outputting outstanding results across the organization.</Paragraph>
-                </Column>
-            </Wrap>
-            <Wrap>
                 <Column colWidth="1/3">
-                    <LongTermImpactIcon width="100" />
+                    <Paragraph isMuted={true}>We're always interested in talking to talented people. Send us an application if you think you're the right fit.</Paragraph>
                 </Column>
-                <Column colWidth="2/3">
-                    <Heading size="medium">Focus on long-term Impact</Heading>
-                    <Paragraph isMuted={true}>We anticipate that over time, awareness of the fundamentally disruptive nature of frictionless global exchange will cause some to see this technology as a threat. There will be setbacks, some will claim that this technology is too disruptive, and we will face adversity. Persistence and a healthy long-term focus will see us through these battles.</Paragraph>
+                <Column colWidth="1/3">
+                    <Paragraph><a href="#">Apply</a></Paragraph>
                 </Column>
             </Wrap>
         </Column>
@@ -79,6 +106,17 @@ export const NextAboutJobs = () => (
     </Section>
   </SiteWrap>
 );
+
+const BenefitsList = styled.ul`
+    color: #000;
+    list-style: disc;
+    columns: auto 2;
+    column-gap: 80px;
+
+    li {
+        margin-bottom: 1em;
+    }
+`;
 
 const ChapterLink = styled(ReactRouterLink)`
     font-size: 1.222222222rem;
