@@ -398,7 +398,7 @@ export class Compiler {
                 /**
                  * Some imports path are relative ("../Token.sol", "./Wallet.sol")
                  * while others are absolute ("Token.sol", "@0x/contracts/Wallet.sol")
-                 * And we need to do the hack mentooned above only for relative imports.
+                 * And we need to append the base path for relative imports.
                  */
                 importPath = path.resolve('/' + contractFolder, importPath).replace('/', '');
             }
