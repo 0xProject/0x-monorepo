@@ -3,7 +3,7 @@
         "version": "1.1.15",
         "changes": [
             {
-                "note": "Fix an issue when we tried to append base contracts path to absolute imports (NPM)",
+                "note": "Fix bug where we were appending base path to absolute imports (e.g NPM imports)",
                 "pr": 1311
             }
         ]
