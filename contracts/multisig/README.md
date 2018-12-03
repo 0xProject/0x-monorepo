@@ -1,4 +1,4 @@
-## Contracts
+## MultisSig Contracts
 
 MultiSig smart contracts
 
