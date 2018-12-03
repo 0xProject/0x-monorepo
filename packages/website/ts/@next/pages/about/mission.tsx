@@ -1,27 +1,28 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import { Link as ReactRouterLink } from 'react-router-dom';
 
 import { colors } from 'ts/style/colors';
 
+import { Image } from 'ts/@next/components/image';
 import { Column, Section, Wrap, WrapCentered } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
-import { Image } from 'ts/@next/components/image';
 
 import CoinIcon from 'ts/@next/icons/illustrations/coin.svg';
 import ConsistentlyShipIcon from 'ts/@next/icons/illustrations/consistently-ship.svg';
-import RightThingIcon from 'ts/@next/icons/illustrations/right-thing.svg';
 import LongTermImpactIcon from 'ts/@next/icons/illustrations/long-term-impact.svg';
+import RightThingIcon from 'ts/@next/icons/illustrations/right-thing.svg';
 
 export const NextAboutMission = () => (
   <SiteWrap theme="light">
     <Section>
       <Wrap>
          <Column colWidth="1/3">
-            <ChapterLink href="#">Our Mission</ChapterLink>
-            <ChapterLink href="#">Team</ChapterLink>
-            <ChapterLink href="#">Press</ChapterLink>
-            <ChapterLink href="#">Jobs</ChapterLink>
+            <ChapterLink to="/next/about/mission">Our Mission</ChapterLink>
+            <ChapterLink to="/next/about/team">Team</ChapterLink>
+            <ChapterLink to="/next/about/press">Press</ChapterLink>
+            <ChapterLink to="/next/about/jobs">Jobs</ChapterLink>
         </Column>
         <Column colWidth="2/3">
             <Heading size="medium">Creating a tokenized world where all value can flow freely.</Heading>
@@ -79,7 +80,7 @@ export const NextAboutMission = () => (
   </SiteWrap>
 );
 
-const ChapterLink = styled.a`
+const ChapterLink = styled(ReactRouterLink)`
     font-size: 1.222222222rem;
     display: block;
     opacity: 0.8;
