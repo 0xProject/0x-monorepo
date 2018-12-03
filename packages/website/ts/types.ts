@@ -353,6 +353,7 @@ export enum WebsitePaths {
     FAQ = '/faq',
     About = '/about',
     LaunchKit = '/launch-kit',
+    Instant = '/instant',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',

@@ -7,6 +7,7 @@ import { MetaTags } from 'ts/components/meta_tags';
 import { About } from 'ts/containers/about';
 import { DocsHome } from 'ts/containers/docs_home';
 import { FAQ } from 'ts/containers/faq';
+import { Instant } from 'ts/containers/instant';
 import { Jobs } from 'ts/containers/jobs';
 import { Landing } from 'ts/containers/landing';
 import { LaunchKit } from 'ts/containers/launch_kit';
@@ -92,6 +93,7 @@ render(
                                 <Route exact={true} path="/" component={Landing as any} />
                                 <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
                                 <Route path={WebsitePaths.LaunchKit} component={LaunchKit as any} />
+                                <Route path={WebsitePaths.Instant} component={Instant as any} />
                                 <Route path={WebsitePaths.Careers} component={Jobs as any} />
                                 <Route path={WebsitePaths.Portal} component={LazyPortal} />
                                 <Route path={WebsitePaths.FAQ} component={FAQ as any} />

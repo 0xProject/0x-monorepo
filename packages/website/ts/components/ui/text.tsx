@@ -3,7 +3,7 @@ import { darken } from 'polished';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
 
-export type TextTag = 'p' | 'div' | 'span' | 'label' | 'h1' | 'h2' | 'h3' | 'h4' | 'i';
+export type TextTag = 'p' | 'div' | 'span' | 'label' | 'h1' | 'h2' | 'h3' | 'h4' | 'i' | 'span';
 
 export interface TextProps {
     className?: string;
