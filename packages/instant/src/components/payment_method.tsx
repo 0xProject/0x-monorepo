@@ -18,7 +18,7 @@ import { WalletPrompt } from './wallet_prompt';
 export interface PaymentMethodProps {
     account: Account;
     network: Network;
-    walletName: string;
+    walletDisplayName: string;
     onInstallWalletClick: () => void;
     onUnlockWalletClick: () => void;
 }
@@ -26,7 +26,7 @@ export interface PaymentMethodProps {
 export class PaymentMethod extends React.Component<PaymentMethodProps> {
     public render(): React.ReactNode {
         return (
-            <Container padding="20px" width="100%">
+            <Container padding="20px" width="100%" height="133px">
                 <Container marginBottom="12px">
                     <Flex justify="space-between">
                         <Text
@@ -62,11 +62,11 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         if (account.state === AccountState.Ready || account.state === AccountState.Locked) {
             const circleColor: ColorOption = account.state === AccountState.Ready ? ColorOption.green : ColorOption.red;
             return (
-                <Flex>
+                <Flex align="center">
                     <Circle diameter={8} color={circleColor} />
-                    <Container marginLeft="3px">
-                        <Text fontColor={ColorOption.darkGrey} fontSize="12px">
-                            {this.props.walletName}
+                    <Container marginLeft="5px">
+                        <Text fontColor={ColorOption.darkGrey} fontSize="12px" lineHeight="30px">
+                            {this.props.walletDisplayName}
                         </Text>
                     </Container>
                 </Flex>
@@ -83,8 +83,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
         const colors = { primaryColor, secondaryColor };
         switch (account.state) {
             case AccountState.Loading:
-                // Just take up the same amount of space as the other states.
-                return <Container height="52px" />;
+                return null;
             case AccountState.Locked:
                 return (
                     <WalletPrompt
@@ -92,7 +91,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                         image={<Icon width={13} icon="lock" color={ColorOption.black} />}
                         {...colors}
                     >
-                        Please Unlock {this.props.walletName}
+                        Please Unlock {this.props.walletDisplayName}
                     </WalletPrompt>
                 );
             case AccountState.None:

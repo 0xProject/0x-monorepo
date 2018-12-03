@@ -2,39 +2,11 @@
 
 ## Installation
 
-```bash
-yarn add @0x/instant
-```
-
-**Import**
-
-**CommonJS module**
-
-```typescript
-import { ZeroExInstant } from '@0x/instant';
-```
-
-or
-
-```javascript
-var ZeroExInstant = require('@0x/instant').ZeroExInstant;
-```
-
-If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
-
-```json
-"compilerOptions": {
-    "typeRoots": ["node_modules/@0x/typescript-typings/types", "node_modules/@types"],
-}
-```
-
-**UMD Module**
-
-The package is also available as a UMD module named `zeroExInstant`.
+The package is available as a UMD module named `zeroExInstant` at https://instant.0xproject.com/instant.js.
 
 ```html
 <head>
-    <script type="text/javascript" src="[zeroExInstantUMDPath]" charset="utf-8"></script>
+    <script type="text/javascript" src="https://instant.0xproject.com/instant.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="zeroExInstantContainer"></div>
@@ -48,23 +20,33 @@ The package is also available as a UMD module named `zeroExInstant`.
 
 ## Deploying
 
-You can deploy a work-in-progress version of 0x Instant at http://0x-instant-dogfood.s3-website-us-east-1.amazonaws.com for easy sharing.
+To run any of the following commands you need to configure your `.env` file. There is an example `.env_example` file to show you what values are required.
 
-To build and deploy the site run
+You can deploy a work-in-progress version of 0x Instant at http://0x-instant-dogfood.s3-website-us-east-1.amazonaws.com/instant.js for easy sharing.
+
+To build and deploy the bundle run
 
 ```
 yarn deploy_dogfood
 ```
 
-We also have a staging bucket that is to be updated less frequently can be used to share instant externally: http://0x-instant-staging.s3-website-us-east-1.amazonaws.com/
+We also have a staging bucket that is to be updated less frequently can be used to share a beta version of instant externally: http://0x-instant-staging.s3-website-us-east-1.amazonaws.com/instant.js
 
-To build and deploy to this bucket, run
+To build and deploy to this bundle, run
 
 ```
 yarn deploy_staging
 ```
 
-**NOTE: On deploying the site, it will say the site is available at a non-existent URL. Please ignore and use the (now updated) URL above.**
+Finally, we have our live production bundle that is only meant to be updated with stable, polished releases: https://instant.0xproject.com/instant.js
+
+To build and deploy to this bundle, run
+
+```
+yarn deploy_production
+```
+
+**NOTE: On deploying the site to staging and dogfood, it will say the site is available at a non-existent URL. Please ignore and use the (now updated) URL above.**
 
 ## Contributing
 

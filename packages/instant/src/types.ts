@@ -21,6 +21,11 @@ export enum OrderProcessState {
     Failure = 'FAILURE',
 }
 
+export enum QuoteFetchOrigin {
+    Manual = 'Manual',
+    Heartbeat = 'Heartbeat',
+}
+
 export interface SimulatedProgress {
     startTimeUnix: number;
     expectedEndTimeUnix: number;
@@ -149,6 +154,11 @@ export enum Browser {
     Other = 'OTHER',
 }
 
+export enum WalletSuggestion {
+    CoinbaseWallet = 'Coinbase Wallet',
+    MetaMask = 'MetaMask',
+}
+
 export enum OperatingSystem {
     Android = 'ANDROID',
     iOS = 'IOS',
@@ -174,6 +184,7 @@ export interface ZeroExInstantRequiredBaseConfig {
 
 export interface ZeroExInstantOptionalBaseConfig {
     provider: Provider;
+    walletDisplayName: string;
     availableAssetDatas: string[];
     defaultAssetBuyAmount: number;
     defaultSelectedAssetData: string;

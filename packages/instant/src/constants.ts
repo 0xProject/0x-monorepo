@@ -22,6 +22,21 @@ export const HEAP_ANALYTICS_ID = process.env.HEAP_ANALYTICS_ID;
 export const COINBASE_API_BASE_URL = 'https://api.coinbase.com/v2';
 export const PROGRESS_STALL_AT_WIDTH = '95%';
 export const PROGRESS_FINISH_ANIMATION_TIME_MS = 200;
+export const HOST_DOMAINS = [
+    '0x-instant-staging.s3-website-us-east-1.amazonaws.com',
+    '0x-instant-dogfood.s3-website-us-east-1.amazonaws.com',
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    'instant.0xproject.com',
+];
+export const ROLLBAR_CLIENT_TOKEN = process.env.ROLLBAR_CLIENT_TOKEN;
+export const ROLLBAR_ENABLED = process.env.ROLLBAR_ENABLED;
+export const INSTANT_DISCHARGE_TARGET = process.env.INSTANT_DISCHARGE_TARGET as
+    | 'production'
+    | 'dogfood'
+    | 'staging'
+    | undefined;
 export const COINBASE_WALLET_IOS_APP_STORE_URL = 'https://itunes.apple.com/us/app/coinbase-wallet/id1278383455?mt=8';
 export const COINBASE_WALLET_ANDROID_APP_STORE_URL = 'https://play.google.com/store/apps/details?id=org.toshi&hl=en';
 export const COINBASE_WALLET_SITE_URL = 'https://wallet.coinbase.com/';

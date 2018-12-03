@@ -11,10 +11,18 @@ import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AccountState, AffiliateInfo, AssetMetaData, Network, ZeroExInstantBaseConfig } from '../types';
+import {
+    AccountState,
+    AffiliateInfo,
+    AssetMetaData,
+    Network,
+    QuoteFetchOrigin,
+    ZeroExInstantBaseConfig,
+} from '../types';
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
+import { setupRollbar } from '../util/error_reporter';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
@@ -50,6 +58,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             ...defaultState,
             providerState,
             network: networkId,
+            walletDisplayName: props.walletDisplayName,
             selectedAsset: _.isUndefined(props.defaultSelectedAssetData)
                 ? undefined
                 : assetUtils.createAssetFromAssetDataOrThrow(
@@ -70,6 +79,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
     }
     constructor(props: ZeroExInstantProviderProps) {
         super(props);
+        setupRollbar();
         fonts.include();
         const initialAppState = ZeroExInstantProvider._mergeDefaultStateWithProps(this.props);
         this._store = store.create(initialAppState);
@@ -99,7 +109,9 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         this._buyQuoteHeartbeat.start(BUY_QUOTE_UPDATE_INTERVAL_TIME_MS);
         // Trigger first buyquote fetch
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, { updateSilently: false });
+        asyncData.fetchCurrentBuyQuoteAndDispatchToStore(state, dispatch, QuoteFetchOrigin.Manual, {
+            updateSilently: false,
+        });
         // warm up the gas price estimator cache just in case we can't
         // grab the gas price estimate when submitting the transaction
         // tslint:disable-next-line:no-floating-promises
