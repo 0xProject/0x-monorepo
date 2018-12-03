@@ -193,7 +193,8 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                 <Column
                     bgColor="#003831"
                     colWidth="1/2"
-                    isPadLarge={true}>
+                    isPadLarge={true}
+                >
                     <WrapCentered>
                         <ReadyToBuildIcon width="150" />
                         Ready to build on 0x?
@@ -203,10 +204,11 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                 <Column
                     bgColor="#003831"
                     colWidth="1/2"
-                    isPadLarge={true}>
+                    isPadLarge={true}
+                >
                     <WrapCentered>
-                        <ReadyToBuildIcon width="150" />
-                        Ready to build on 0x?
+                        <SupportIcon width="150" />
+                        Want help from the 0x team?
                     </WrapCentered>
                 </Column>
             </Wrap>
