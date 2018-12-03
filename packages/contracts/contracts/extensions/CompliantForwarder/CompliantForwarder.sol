@@ -72,12 +72,12 @@ contract CompliantForwarder is ExchangeSelectors{
                 mstore(add(addressesToValidate_, offset), addressToValidate)
             }
 
-            function appendMakerAddressFromOrder(paramIndex) -> makerAddress {
+            function appendMakerAddressFromOrder(paramIndex) {
                 let exchangeTxPtr := calldataload(0x44)
                 // Add 0x20 for length offset and 0x04 for selector offset
                 let orderPtrRelativeToExchangeTx := calldataload(add(0x4, add(exchangeTxPtr, 0x24))) // 0x60
                 let orderPtr := add(0x4,add(exchangeTxPtr, add(0x24, orderPtrRelativeToExchangeTx)))
-                makerAddress := calldataload(orderPtr)
+                let makerAddress := calldataload(orderPtr)
                 addAddressToValidate(makerAddress)
             }
 
@@ -96,8 +96,8 @@ contract CompliantForwarder is ExchangeSelectors{
             }
             case 0xb4be83d500000000000000000000000000000000000000000000000000000000 /* fillOrder */
             {
-                one := appendMakerAddressFromOrder(0)
-                //appendSignerAddress()
+                appendMakerAddressFromOrder(0)
+                addAddressToValidate(signerAddress)
             }
             case 0xd46b02c300000000000000000000000000000000000000000000000000000000 /* cancelOrder */ {}
             default {
@@ -110,23 +110,32 @@ contract CompliantForwarder is ExchangeSelectors{
             mstore(0x40, newMemFreePtr)
 
             // Validate addresses
-            /*
             let complianceTokenAddress := sload(COMPLIANCE_TOKEN_slot)
-            for {let i := add(32, mload(addressesToValidate))} lt(i, add(addressesToValidate, add(32, mul(nAddressesToValidate, 32)))) {i := add(i, 32)} {
+            for {let i := add(0x20, addressesToValidate)} lt(i, add(addressesToValidate, add(32, mul(nAddressesToValidate, 32)))) {i := add(i, 32)} {
+                // Construct calldata for `COMPLIANCE_TOKEN.balanceOf`
+                mstore(newMemFreePtr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
+                mstore(add(4, newMemFreePtr), mload(i))
+               
                 // call `COMPLIANCE_TOKEN.balanceOf`
                 let success := call(
                     gas,                                    // forward all gas
                     complianceTokenAddress,                 // call address of asset proxy
                     0,                                      // don't send any ETH
-                    i,                                      // pointer to start of input
-                    32,                                     // length of input (one padded address) 
-                    0,                                      // write output over memory that won't be reused
-                    0                                       // don't copy output to memory
+                    newMemFreePtr,                          // pointer to start of input
+                    0x24,                                   // length of input (one padded address) 
+                    newMemFreePtr,                          // write output to next free memory offset
+                    0x20                                    // reserve space for return balance (0x20 bytes)
                 )
                 if eq(success, 0) {
                     revert(0, 100)
                 }
-            }*/
+
+                // Revert if balance not held
+                let addressBalance := mload(newMemFreePtr)
+                if eq(addressBalance, 0) {
+                    revert(0, 100)
+                }
+            }
 
             validatedAddresses := addressesToValidate
             selectorS := selector
@@ -135,12 +144,11 @@ contract CompliantForwarder is ExchangeSelectors{
         emit ValidatedAddresses(selectorS, one, validatedAddresses);
         
         // All entities are verified. Execute fillOrder.
-        /*
         EXCHANGE.executeTransaction(
             salt,
             signerAddress,
             signedExchangeTransaction,
             signature
-        );*/
+        );
     }
 }
