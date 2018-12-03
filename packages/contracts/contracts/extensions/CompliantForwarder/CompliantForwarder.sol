@@ -127,13 +127,23 @@ contract CompliantForwarder is ExchangeSelectors{
                     0x20                                    // reserve space for return balance (0x20 bytes)
                 )
                 if eq(success, 0) {
+                    // Revert with `Error("BALANCE_CHECK_FAILED")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x0000001453454e4445525f4e4f545f415554484f52495a454400000000000000)
+                    mstore(96, 0)
                     revert(0, 100)
                 }
 
                 // Revert if balance not held
                 let addressBalance := mload(newMemFreePtr)
                 if eq(addressBalance, 0) {
-                    revert(0, 100)
+                    // Revert with `Error("AT_LEAST_ONE_ADDRESS_HAS_ZERO_BALANCE")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x0000002541545f4c454153545f4f4e455f414444524553535f4841535f5a4552)
+                    mstore(96, 0x4f5f42414c414e43450000000000000000000000000000000000000000000000)
+                    revert(0, 109)
                 }
             }
 

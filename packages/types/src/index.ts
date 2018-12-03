@@ -245,6 +245,7 @@ export enum RevertReason {
     InvalidAssetData = 'INVALID_ASSET_DATA',
     MakerUnverified = 'MAKER_UNVERIFED',
     TakerUnverified = 'TAKER_UNVERIFIED',
+    AtLeastOneAddressHasZeroBalance = 'AT_LEAST_ONE_ADDRESS_HAS_ZERO_BALANCE',
 }
 
 export enum StatusCodes {

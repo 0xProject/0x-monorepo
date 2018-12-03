@@ -210,7 +210,7 @@ describe.only(ContractName.CompliantForwarder, () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
-        it.only('should transfer the correct amounts when maker and taker are compliant', async () => {
+        it('should transfer the correct amounts when maker and taker are compliant', async () => {
             const txHash = await compliantForwarderInstance.executeTransaction.sendTransactionAsync(
                 compliantSignedFillOrderTx.salt,
                 compliantSignedFillOrderTx.signerAddress,
@@ -302,10 +302,10 @@ describe.only(ContractName.CompliantForwarder, () => {
                     compliantSignedFillOrderTx.data,
                     compliantSignedFillOrderTx.signature,
                 ),
-                RevertReason.TakerUnverified
+                RevertReason.AtLeastOneAddressHasZeroBalance
             );
         });
-        it.only('should revert if maker address is not compliant (does not hold a Yes Token)', async () => {
+        it('should revert if maker address is not compliant (does not hold a Yes Token)', async () => {
             // Create signed order with non-compliant maker address
             const signedOrderWithBadMakerAddress = await orderFactory.newSignedOrderAsync({
                 senderAddress: compliantForwarderInstance.address,
@@ -330,7 +330,7 @@ describe.only(ContractName.CompliantForwarder, () => {
                     signedFillOrderTx.data,
                     signedFillOrderTx.signature,
                 ),
-                RevertReason.MakerUnverified
+                RevertReason.AtLeastOneAddressHasZeroBalance
             );
         });
     });
