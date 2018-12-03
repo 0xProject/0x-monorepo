@@ -11,6 +11,7 @@ import { MultiSelect } from 'ts/components/ui/multi_select';
 import { Select, SelectItemConfig } from 'ts/components/ui/select';
 import { Spinner } from 'ts/components/ui/spinner';
 import { Text } from 'ts/components/ui/text';
+import { ConfigGeneratorAddressInput } from 'ts/pages/instant/config_generator_address_input';
 import { colors } from 'ts/style/colors';
 import { WebsiteBackendTokenInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
@@ -32,7 +33,7 @@ export interface ConfigGeneratorState {
 
 const SRA_ENDPOINTS = ['https://api.radarrelay.com/0x/v2/', 'https://api.openrelay.xyz/v2/'];
 
-export class ConfigGenerator extends React.Component<ConfigGeneratorProps> {
+export class ConfigGenerator extends React.Component<ConfigGeneratorProps, ConfigGeneratorState> {
     public state: ConfigGeneratorState = {
         isLoadingAvailableTokens: true,
         allKnownTokens: {},
@@ -52,11 +53,17 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps> {
         }
         return (
             <Container>
-                <ConfigGeneratorSection title="Standard Relayer API Endpoint">
+                <ConfigGeneratorSection title="Standard relayer API endpoint">
                     <Select value={value.orderSource} items={this._generateItems()} />
                 </ConfigGeneratorSection>
                 <ConfigGeneratorSection {...this._getTokenSelectorProps()}>
                     {this._renderTokenMultiSelectOrSpinner()}
+                </ConfigGeneratorSection>
+                <ConfigGeneratorSection title="Transaction fee ETH address">
+                    <ConfigGeneratorAddressInput
+                        value={value.affiliateInfo ? value.affiliateInfo.feeRecipient : ''}
+                        onChange={this._handleAffiliateAddressChange}
+                    />
                 </ConfigGeneratorSection>
             </Container>
         );
@@ -88,6 +95,17 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps> {
         const newConfig: ZeroExInstantBaseConfig = {
             ...this.props.value,
             orderSource: sraEndpoint,
+        };
+        this.props.onConfigChange(newConfig);
+    };
+    private readonly _handleAffiliateAddressChange = (address: string) => {
+        const oldConfig: ZeroExInstantBaseConfig = this.props.value;
+        const newConfig: ZeroExInstantBaseConfig = {
+            ...oldConfig,
+            affiliateInfo: {
+                feeRecipient: address,
+                feePercentage: oldConfig.affiliateInfo.feePercentage,
+            },
         };
         this.props.onConfigChange(newConfig);
     };
