@@ -52,7 +52,7 @@ export const SiteWrap: React.StatelessComponent<Props> = props => {
                     <Header />
 
                     <Main>
-                        { children }
+                        {children}
                     </Main>
 
                     <Footer/>
