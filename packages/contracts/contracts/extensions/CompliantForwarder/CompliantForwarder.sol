@@ -72,7 +72,42 @@ contract CompliantForwarder is ExchangeSelectors{
                 mstore(add(addressesToValidate_, offset), addressToValidate)
             }
 
-            function appendMakerAddressFromOrder(paramIndex) {
+            function toGlobalCalldataOffset(offset) -> globalOffset {
+                globalOffset := add(0x4, offset)
+            }
+
+            function toExchangeCalldataOffset(offset, orderParamIndex) -> exchangeOffset {
+                // exchangeTxPtr at global level
+                // 0x20 for length offset into exchange TX
+                // 0x4 for function selector in exhcange TX
+                let exchangeTxPtr := calldataload(0x44)
+                exchangeOffset := add(0x4, add(exchangeTxPtr, add(0x24, offset)))
+            }
+
+            function toOrderOffset(offset, orderParamIndex) -> orderOffset {
+                let exchangeOffset := calldataload(
+                    toExchangeCalldataOffset(
+                        offset,
+                        orderParamIndex
+                    )
+                )
+                orderOffset := toExchangeCalldataOffset(exchangeOffset, orderParamIndex)
+            }
+
+           // function readMakerFieldFromOrder()
+
+            /*
+            function readFieldFromOrder()
+
+            function readMakerFieldFromOrder()*/
+
+            function appendMakerAddressFromOrder(orderParamIndex) {
+                let makerAddress := calldataload(toOrderOffset(0 /* makerAddress is at 0'th field */, 0 /*order is 1st param*/))
+                addAddressToValidate(makerAddress)
+            }
+
+/*
+            function appendMakerAddressFromOrderSet(paramIndex) {
                 let exchangeTxPtr := calldataload(0x44)
                 // Add 0x20 for length offset and 0x04 for selector offset
                 let orderPtrRelativeToExchangeTx := calldataload(add(0x4, add(exchangeTxPtr, 0x24))) // 0x60
@@ -80,6 +115,7 @@ contract CompliantForwarder is ExchangeSelectors{
                 let makerAddress := calldataload(orderPtr)
                 addAddressToValidate(makerAddress)
             }
+*/
 
 
             // Extract addresses to validate
@@ -88,11 +124,13 @@ contract CompliantForwarder is ExchangeSelectors{
             switch selector
             case 0x097bb70b00000000000000000000000000000000000000000000000000000000 /* batchFillOrders */
             {
-
+                //appendMakerAddressFromOrderSet()
             }
             case 0x3c28d86100000000000000000000000000000000000000000000000000000000 /* matchOrders */
             {
-
+               // appendMakerAddressFromOrder(0)
+               //// appendMakerAddressFromOrder(1)
+               // addAddressToValidate(signerAddress)
             }
             case 0xb4be83d500000000000000000000000000000000000000000000000000000000 /* fillOrder */
             {
