@@ -25,6 +25,50 @@ import SupportIcon from 'ts/@next/icons/illustrations/support.svg';
     </SiteWrap>
 */
 
+interface ProjectLogo {
+    name: string;
+    imageUrl?: string;
+}
+
+const projects: ProjectLogo[] = [
+    {
+        name: 'Radar Relay',
+        imageUrl: '/images/@next/relayer-logos/logo_1.png',
+    },
+    {
+        name: 'Paradex',
+        imageUrl: '/images/@next/relayer-logos/logo_5.png',
+    },
+    {
+        name: 'Amadeus',
+        imageUrl: '/images/@next/relayer-logos/logo_3.png',
+    },
+    {
+        name: 'The Ocean X',
+        imageUrl: '/images/@next/relayer-logos/logo_4.png',
+    },
+    {
+        name: 'Paradex',
+        imageUrl: '/images/@next/relayer-logos/logo_5.png',
+    },
+    {
+        name: 'Decent EX',
+        imageUrl: '/images/@next/relayer-logos/logo_2.1.png',
+    },
+    {
+        name: 'dEX',
+        imageUrl: '/images/@next/relayer-logos/logo_2.2.png',
+    },
+    {
+        name: 'OpenRelay',
+        imageUrl: '/images/@next/relayer-logos/logo_2.3.png',
+    },
+    {
+        name: 'DDEX',
+        imageUrl: '/images/@next/relayer-logos/logo_2.png',
+    },
+];
+
 export const NextLanding: React.StatelessComponent<{}> = () => (
     <SiteWrap theme="dark">
         <Section>
@@ -138,8 +182,8 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
             </WrapCentered>
 
             <WrapGrid width="narrow">
-                {_.map([...Array(9)], (item, index) => (
-                    <SampleLogo key={index} />
+                {_.map(projects, (item: ProjectLogo, index) => (
+                    <Project key={index} name={item.name} imageUrl={item.imageUrl} />
                 ))}
             </WrapGrid>
         </Section>
@@ -170,10 +214,21 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
     </SiteWrap>
 );
 
+const Project = ({ name, imageUrl }: ProjectLogo) => (
+    <StyledProject>
+        <img src={imageUrl} alt={name} />
+    </StyledProject>
+);
 
-const SampleLogo = styled.div`
-    width: 60px;
-    height: 60px;
+const StyledProject = styled.div`
+    width: 80px;
+    height: 116px;
     border: 1px solid blue;
     margin: 30px 60px;
+
+    img {
+        object-fit: contain;
+        width: 100%;
+        height: 100%;
+    }
 `;
