@@ -53,14 +53,14 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
             throw new Error('ConfigGenerator component only supports string values as an orderSource.');
         }
         return (
-            <Container>
+            <Container minWidth="350px">
                 <ConfigGeneratorSection title="Standard relayer API endpoint">
                     <Select value={value.orderSource} items={this._generateItems()} />
                 </ConfigGeneratorSection>
                 <ConfigGeneratorSection {...this._getTokenSelectorProps()}>
                     {this._renderTokenMultiSelectOrSpinner()}
                 </ConfigGeneratorSection>
-                <ConfigGeneratorSection title="Transaction fee ETH address">
+                <ConfigGeneratorSection title="Transaction fee ETH address" marginBottom="10px" isOptional={true}>
                     <ConfigGeneratorAddressInput
                         value={value.affiliateInfo ? value.affiliateInfo.feeRecipient : ''}
                         onChange={this._handleAffiliateAddressChange}
@@ -252,19 +252,30 @@ export interface ConfigGeneratorSectionProps {
     title: string;
     actionText?: string;
     onActionTextClick?: () => void;
+    isOptional?: boolean;
+    marginBottom?: string;
 }
 
 export const ConfigGeneratorSection: React.StatelessComponent<ConfigGeneratorSectionProps> = ({
     title,
     actionText,
     onActionTextClick,
+    isOptional,
+    marginBottom,
     children,
 }) => (
-    <Container marginBottom="30px">
+    <Container marginBottom={marginBottom}>
         <Container marginBottom="10px" className="flex justify-between items-center">
-            <Text fontColor={colors.white} fontSize="16px" lineHeight="18px">
-                {title}
-            </Text>
+            <Container>
+                <Text fontColor={colors.white} fontSize="16px" lineHeight="18px">
+                    {title}
+                </Text>
+                {isOptional && (
+                    <Text fontColor={colors.grey} fontSize="16px" lineHeight="18px">
+                        (optional)
+                    </Text>
+                )}
+            </Container>
             {actionText && (
                 <Text fontSize="12px" fontColor={colors.grey} onClick={onActionTextClick}>
                     {actionText}
@@ -274,3 +285,7 @@ export const ConfigGeneratorSection: React.StatelessComponent<ConfigGeneratorSec
         {children}
     </Container>
 );
+
+ConfigGeneratorSection.defaultProps = {
+    marginBottom: '30px',
+};

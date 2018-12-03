@@ -28,7 +28,7 @@ export class ConfigGeneratorAddressInput extends React.Component<
         const hasError = !_.isEmpty(errMsg);
         const border = hasError ? '1px solid red' : undefined;
         return (
-            <Container>
+            <Container height="80px">
                 <Input
                     width="100%"
                     fontSize="16px"
@@ -37,13 +37,11 @@ export class ConfigGeneratorAddressInput extends React.Component<
                     placeholder="0xe99...aa8da4"
                     border={border}
                 />
-                {hasError && (
-                    <Container marginTop="5px">
-                        <Text fontSize="14px" fontColor={colors.grey} fontStyle="italic">
-                            {errMsg}
-                        </Text>
-                    </Container>
-                )}
+                <Container marginTop="5px" isHidden={!hasError} height="25px">
+                    <Text fontSize="14px" fontColor={colors.grey} fontStyle="italic">
+                        {errMsg}
+                    </Text>
+                </Container>
             </Container>
         );
     }
