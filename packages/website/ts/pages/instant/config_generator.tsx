@@ -3,6 +3,7 @@ import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { assetDataUtils } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
+import Slider from 'material-ui/Slider';
 import * as React from 'react';
 
 import { CheckMark } from 'ts/components/ui/check_mark';
@@ -65,6 +66,19 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                         onChange={this._handleAffiliateAddressChange}
                     />
                 </ConfigGeneratorSection>
+                <ConfigGeneratorSection
+                    title="Fee percentage"
+                    actionText="Learn more"
+                    onActionTextClick={this._handleAffiliatePercentageLearnMoreClick}
+                >
+                    <Slider
+                        min={0}
+                        max={0.05}
+                        step={0.0025}
+                        value={value.affiliateInfo.feePercentage}
+                        onChange={this._handleAffiliatePercentageChange}
+                    />
+                </ConfigGeneratorSection>
             </Container>
         );
     }
@@ -91,6 +105,9 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
     private readonly _getAllKnownAssetDatas = (): string[] => {
         return _.map(this.state.allKnownTokens, token => assetDataUtils.encodeERC20AssetData(token.address));
     };
+    private readonly _handleAffiliatePercentageLearnMoreClick = (): void => {
+        window.open('/wiki#Learn-About-Affiliate-Fees', '_blank');
+    };
     private readonly _handleSRASelection = (sraEndpoint: string) => {
         const newConfig: ZeroExInstantBaseConfig = {
             ...this.props.value,
@@ -105,6 +122,17 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
             affiliateInfo: {
                 feeRecipient: address,
                 feePercentage: oldConfig.affiliateInfo.feePercentage,
+            },
+        };
+        this.props.onConfigChange(newConfig);
+    };
+    private readonly _handleAffiliatePercentageChange = (event: any, value: number) => {
+        const oldConfig: ZeroExInstantBaseConfig = this.props.value;
+        const newConfig: ZeroExInstantBaseConfig = {
+            ...oldConfig,
+            affiliateInfo: {
+                feeRecipient: oldConfig.affiliateInfo.feeRecipient,
+                feePercentage: value,
             },
         };
         this.props.onConfigChange(newConfig);
