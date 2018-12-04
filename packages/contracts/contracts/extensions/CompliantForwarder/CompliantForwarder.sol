@@ -84,68 +84,28 @@ contract CompliantForwarder is ExchangeSelectors{
                 exchangeOffset := add(0x4, add(exchangeTxPtr, add(0x24, offset)))
             }
 
-            function toOrderOffset(offset, orderParamIndex) -> orderOffset {
-                let exchangeOffset := calldataload(
-                    toExchangeCalldataOffset(
-                        offset,
-                        orderParamIndex
-                    )
-                )
-                orderOffset := toExchangeCalldataOffset(exchangeOffset, orderParamIndex)
+            function exchangeCalldataload(offset) -> value {
+                
+                value := calldataload(toExchangeCalldataOffset(offset, 0))
             }
 
-           // function readMakerFieldFromOrder()
-
-            /*
-            function readFieldFromOrder()
-
-            function readMakerFieldFromOrder()*/
-
             function appendMakerAddressFromOrder(orderParamIndex) {
-                let makerAddress := calldataload(toOrderOffset(0 /* makerAddress is at 0'th field */, 0 /*order is 1st param*/))
+                let orderPtr := exchangeCalldataload(0)
+                let makerAddress := exchangeCalldataload(orderPtr)
                 addAddressToValidate(makerAddress)
             }
 
             function appendMakerAddressesFromOrderSet(orderSetParamIndex) -> one {
-                let orderSetPtr := calldataload(toExchangeCalldataOffset(0, 0))
-                let orderSetPtrCalldata := toExchangeCalldataOffset(add(orderSetPtr, 0x20), 0)
-                let orderSetLength := calldataload(toExchangeCalldataOffset(orderSetPtr, 0))
-                for {let orderPtrOffset := add(0x20, orderSetPtr)} lt(orderPtrOffset, add(0x20, add(orderSetPtr, mul(0x20, orderSetLength)))) {orderPtrOffset := add(0x20, orderPtrOffset)} {
-                    let orderPtr := calldataload(toExchangeCalldataOffset(orderPtrOffset, 0))
-                    let makerAddress := calldataload(add(orderSetPtrCalldata, orderPtr))
-                    addAddressToValidate(makerAddress)
-                }
-            }
-
-            function exchangeCalldataload(offset) -> value {
-                value := calldataload(toExchangeCalldataOffset(offset, 0))
-            }
-
-
-            function appendMakerAddressesFromOrderSet2(orderSetParamIndex) -> one {
                 let orderSetPtr := exchangeCalldataload(0)
                 let orderSetLength := exchangeCalldataload(orderSetPtr)
-                
-                for {let orderPtrOffset := add(0x20, orderSetPtr)} lt(orderPtrOffset, add(0x20, add(orderSetPtr, mul(0x20, orderSetLength)))) {orderPtrOffset := add(0x20, orderPtrOffset)} {
+                let orderSetElementPtr := add(orderSetPtr, 0x20)
+                let orderSetElementEndPtr := add(orderSetElementPtr, mul(orderSetLength, 0x20))
+                for {let orderPtrOffset := orderSetElementPtr} lt(orderPtrOffset, orderSetElementEndPtr) {orderPtrOffset := add(orderPtrOffset, 0x20)} {
                     let orderPtr := exchangeCalldataload(orderPtrOffset)
-                    let makerAddress := exchangeCalldataload(add(orderSetPtr, add(0x20, orderPtr)))
+                    let makerAddress := exchangeCalldataload(add(orderPtr, orderSetElementPtr))
                     addAddressToValidate(makerAddress)
                 }
             }
-
-/*
-            function appendMakerAddressFromOrderSet(paramIndex) {
-                let exchangeTxPtr := calldataload(0x44)
-                // Add 0x20 for length offset and 0x04 for selector offset
-                let orderPtrRelativeToExchangeTx := calldataload(add(0x4, add(exchangeTxPtr, 0x24))) // 0x60
-                let orderPtr := add(0x4,add(exchangeTxPtr, add(0x24, orderPtrRelativeToExchangeTx)))
-                let makerAddress := calldataload(orderPtr)
-                addAddressToValidate(makerAddress)
-            }
-*/
-
-
-
 
             // Extract addresses to validate
             let exchangeTxPtr1 := calldataload(0x44)
@@ -153,7 +113,7 @@ contract CompliantForwarder is ExchangeSelectors{
             switch selector
             case 0x297bb70b00000000000000000000000000000000000000000000000000000000 /* batchFillOrders */
             {
-                one := appendMakerAddressesFromOrderSet2(0)
+                one := appendMakerAddressesFromOrderSet(0)
             }
             case 0x3c28d86100000000000000000000000000000000000000000000000000000000 /* matchOrders */
             {
