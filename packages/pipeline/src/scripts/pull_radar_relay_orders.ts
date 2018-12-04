@@ -33,11 +33,12 @@ async function getOrderbook(): Promise<void> {
     // Save all the orders and update the observed time stamps in a single
     // transaction.
     console.log('Saving orders and updating timestamps...');
+    const observedTimestamp = Date.now();
     await connection.transaction(async (manager: EntityManager): Promise<void> => {
         for (const order of orders) {
             await manager.save(SraOrder, order);
-            const observedTimestamp = createObservedTimestampForOrder(order);
-            await manager.save(observedTimestamp);
+            const orderObservation = createObservedTimestampForOrder(order, observedTimestamp);
+            await manager.save(orderObservation);
         }
     });
 }
