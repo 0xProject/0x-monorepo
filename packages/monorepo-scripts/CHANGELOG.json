@@ -13,6 +13,10 @@
             {
                 "note": "Add ForwarderError to the IGNORED_EXCESSIVE_TYPES array",
                 "pr": 1147
+            },
+            {
+                "note": "Fix a bug when hardcoded CHANGELOG paths cause fetching release notes to fail",
+                "pr": 1311
             }
         ]
     },

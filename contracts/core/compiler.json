@@ -40,8 +40,6 @@
         "IWallet",
         "MixinAuthorizable",
         "MultiAssetProxy",
-        "MultiSigWallet",
-        "MultiSigWalletWithTimeLock",
         "OrderValidator",
         "ReentrantERC20Token",
         "TestAssetProxyOwner",

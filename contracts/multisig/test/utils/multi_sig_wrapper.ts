@@ -1,12 +1,11 @@
+import { LogDecoder } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { AssetProxyOwnerContract } from '../../generated-wrappers/asset_proxy_owner';
 import { MultiSigWalletContract } from '../../generated-wrappers/multi_sig_wallet';
-
-import { LogDecoder } from './log_decoder';
+import { artifacts } from '../../src/artifacts';
 
 export class MultiSigWrapper {
     private readonly _multiSig: MultiSigWalletContract;
@@ -15,7 +14,7 @@ export class MultiSigWrapper {
     constructor(multiSigContract: MultiSigWalletContract, provider: Provider) {
         this._multiSig = multiSigContract;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
     }
     public async submitTransactionAsync(
         destination: string,
@@ -48,18 +47,6 @@ export class MultiSigWrapper {
         const txHash = await this._multiSig.executeTransaction.sendTransactionAsync(txId, {
             from,
             gas: opts.gas,
-        });
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
-        return tx;
-    }
-    public async executeRemoveAuthorizedAddressAtIndexAsync(
-        txId: BigNumber,
-        from: string,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        // tslint:disable-next-line:no-unnecessary-type-assertion
-        const txHash = await (this
-            ._multiSig as AssetProxyOwnerContract).executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
-            from,
         });
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;

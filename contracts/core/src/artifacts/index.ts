@@ -21,8 +21,6 @@ import * as IValidator from '../../generated-artifacts/IValidator.json';
 import * as IWallet from '../../generated-artifacts/IWallet.json';
 import * as MixinAuthorizable from '../../generated-artifacts/MixinAuthorizable.json';
 import * as MultiAssetProxy from '../../generated-artifacts/MultiAssetProxy.json';
-import * as MultiSigWallet from '../../generated-artifacts/MultiSigWallet.json';
-import * as MultiSigWalletWithTimeLock from '../../generated-artifacts/MultiSigWalletWithTimeLock.json';
 import * as OrderValidator from '../../generated-artifacts/OrderValidator.json';
 import * as ReentrantERC20Token from '../../generated-artifacts/ReentrantERC20Token.json';
 import * as TestAssetProxyDispatcher from '../../generated-artifacts/TestAssetProxyDispatcher.json';
@@ -61,8 +59,6 @@ export const artifacts = {
     InvalidERC721Receiver: InvalidERC721Receiver as ContractArtifact,
     MixinAuthorizable: MixinAuthorizable as ContractArtifact,
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
-    MultiSigWallet: MultiSigWallet as ContractArtifact,
-    MultiSigWalletWithTimeLock: MultiSigWalletWithTimeLock as ContractArtifact,
     OrderValidator: OrderValidator as ContractArtifact,
     ReentrantERC20Token: ReentrantERC20Token as ContractArtifact,
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,

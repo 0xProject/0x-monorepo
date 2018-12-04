@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 
-import { chaiSetup } from '../utils/chai_setup';
-import { testWithReferenceFuncAsync } from '../utils/test_with_reference';
+import { chaiSetup } from '../src/chai_setup';
+import { testWithReferenceFuncAsync } from '../src/test_with_reference';
 
 chaiSetup.configure();
 const expect = chai.expect;

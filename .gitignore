@@ -80,12 +80,14 @@ packages/testnet-faucets/server/
 
 # generated contract artifacts/
 contracts/core/generated-artifacts/
+contracts/multisig/generated-artifacts/
 packages/sol-cov/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 
 # generated contract wrappers
 packages/abi-gen-wrappers/wrappers
 contracts/core/generated-wrappers/
+contracts/multisig/generated-wrappers/
 packages/metacoin/src/contract_wrappers
 
 # solc-bin in sol-compiler

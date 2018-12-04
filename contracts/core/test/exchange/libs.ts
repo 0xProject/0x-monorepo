@@ -1,3 +1,12 @@
+import {
+    addressUtils,
+    chaiSetup,
+    constants,
+    OrderFactory,
+    provider,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
@@ -7,11 +16,6 @@ import * as chai from 'chai';
 import { TestConstantsContract } from '../../generated-wrappers/test_constants';
 import { TestLibsContract } from '../../generated-wrappers/test_libs';
 import { artifacts } from '../../src/artifacts';
-import { addressUtils } from '../utils/address_utils';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
-import { OrderFactory } from '../utils/order_factory';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

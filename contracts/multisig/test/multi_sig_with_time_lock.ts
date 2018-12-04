@@ -1,3 +1,13 @@
+import {
+    chaiSetup,
+    constants,
+    expectTransactionFailedAsync,
+    expectTransactionFailedWithoutReasonAsync,
+    increaseTimeAndMineBlockAsync,
+    provider,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -5,7 +15,6 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import {
     MultiSigWalletWithTimeLockConfirmationEventArgs,
     MultiSigWalletWithTimeLockConfirmationTimeSetEventArgs,
@@ -13,14 +22,11 @@ import {
     MultiSigWalletWithTimeLockExecutionEventArgs,
     MultiSigWalletWithTimeLockExecutionFailureEventArgs,
     MultiSigWalletWithTimeLockSubmissionEventArgs,
-} from '../../generated-wrappers/multi_sig_wallet_with_time_lock';
-import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync, expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
-import { increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
-import { MultiSigWrapper } from '../utils/multi_sig_wrapper';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+} from '../generated-wrappers/multi_sig_wallet_with_time_lock';
+import { TestRejectEtherContract } from '../generated-wrappers/test_reject_ether';
+import { artifacts } from '../src/artifacts';
+
+import { MultiSigWrapper } from './utils/multi_sig_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -189,14 +195,10 @@ describe('MultiSigWalletWithTimeLock', () => {
             await expectTransactionFailedWithoutReasonAsync(multiSigWrapper.executeTransactionAsync(txId, owners[1]));
         });
         it("should log an ExecutionFailure event and not update the transaction's execution state if unsuccessful", async () => {
-            const contractWithoutFallback = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
-                artifacts.DummyERC20Token,
+            const contractWithoutFallback = await TestRejectEtherContract.deployFrom0xArtifactAsync(
+                artifacts.TestRejectEther,
                 provider,
                 txDefaults,
-                constants.DUMMY_TOKEN_NAME,
-                constants.DUMMY_TOKEN_SYMBOL,
-                constants.DUMMY_TOKEN_DECIMALS,
-                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             );
             const data = constants.NULL_BYTES;
             const value = new BigNumber(10);

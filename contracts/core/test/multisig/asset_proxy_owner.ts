@@ -1,3 +1,16 @@
+import {
+    chaiSetup,
+    constants,
+    expectContractCallFailedAsync,
+    expectContractCreationFailedAsync,
+    expectTransactionFailedAsync,
+    expectTransactionFailedWithoutReasonAsync,
+    increaseTimeAndMineBlockAsync,
+    provider,
+    sendTransactionResult,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -14,18 +27,7 @@ import {
 import { MixinAuthorizableContract } from '../../generated-wrappers/mixin_authorizable';
 import { TestAssetProxyOwnerContract } from '../../generated-wrappers/test_asset_proxy_owner';
 import { artifacts } from '../../src/artifacts';
-import {
-    expectContractCallFailedAsync,
-    expectContractCreationFailedAsync,
-    expectTransactionFailedAsync,
-    expectTransactionFailedWithoutReasonAsync,
-    sendTransactionResult,
-} from '../utils/assertions';
-import { increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
-import { MultiSigWrapper } from '../utils/multi_sig_wrapper';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { AssetProxyOwnerWrapper } from '../utils/asset_proxy_owner_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -41,7 +43,7 @@ describe('AssetProxyOwner', () => {
     let erc20Proxy: MixinAuthorizableContract;
     let erc721Proxy: MixinAuthorizableContract;
     let testAssetProxyOwner: TestAssetProxyOwnerContract;
-    let multiSigWrapper: MultiSigWrapper;
+    let assetProxyOwnerWrapper: AssetProxyOwnerWrapper;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -75,7 +77,7 @@ describe('AssetProxyOwner', () => {
             REQUIRED_APPROVALS,
             SECONDS_TIME_LOCKED,
         );
-        multiSigWrapper = new MultiSigWrapper(testAssetProxyOwner, provider);
+        assetProxyOwnerWrapper = new AssetProxyOwnerWrapper(testAssetProxyOwner, provider);
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.transferOwnership.sendTransactionAsync(testAssetProxyOwner.address, {
                 from: initialOwner,
@@ -172,7 +174,7 @@ describe('AssetProxyOwner', () => {
                 addressToRegister,
                 isRegistered,
             );
-            const submitTxRes = await multiSigWrapper.submitTransactionAsync(
+            const submitTxRes = await assetProxyOwnerWrapper.submitTransactionAsync(
                 testAssetProxyOwner.address,
                 registerAssetProxyData,
                 owners[0],
@@ -181,10 +183,10 @@ describe('AssetProxyOwner', () => {
             const log = submitTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
             const txId = log.args.transactionId;
 
-            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            await assetProxyOwnerWrapper.confirmTransactionAsync(txId, owners[1]);
             await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
 
-            const executeTxRes = await multiSigWrapper.executeTransactionAsync(txId, owners[0]);
+            const executeTxRes = await assetProxyOwnerWrapper.executeTransactionAsync(txId, owners[0]);
             const registerLog = executeTxRes.logs[0] as LogWithDecodedArgs<
                 AssetProxyOwnerAssetProxyRegistrationEventArgs
             >;
@@ -204,7 +206,7 @@ describe('AssetProxyOwner', () => {
                 addressToRegister,
                 isRegistered,
             );
-            const submitTxRes = await multiSigWrapper.submitTransactionAsync(
+            const submitTxRes = await assetProxyOwnerWrapper.submitTransactionAsync(
                 testAssetProxyOwner.address,
                 registerAssetProxyData,
                 owners[0],
@@ -212,10 +214,10 @@ describe('AssetProxyOwner', () => {
             const log = submitTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
             const txId = log.args.transactionId;
 
-            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            await assetProxyOwnerWrapper.confirmTransactionAsync(txId, owners[1]);
             await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
 
-            const executeTxRes = await multiSigWrapper.executeTransactionAsync(txId, owners[0]);
+            const executeTxRes = await assetProxyOwnerWrapper.executeTransactionAsync(txId, owners[0]);
             const failureLog = executeTxRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerExecutionFailureEventArgs>;
             expect(failureLog.args.transactionId).to.be.bignumber.equal(txId);
 
@@ -237,7 +239,7 @@ describe('AssetProxyOwner', () => {
                 addressToRegister,
                 isRegistered,
             );
-            const registerAssetProxySubmitRes = await multiSigWrapper.submitTransactionAsync(
+            const registerAssetProxySubmitRes = await assetProxyOwnerWrapper.submitTransactionAsync(
                 testAssetProxyOwner.address,
                 registerAssetProxyData,
                 owners[0],
@@ -247,12 +249,12 @@ describe('AssetProxyOwner', () => {
             >;
 
             const addAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(authorized);
-            const erc20AddAuthorizedAddressSubmitRes = await multiSigWrapper.submitTransactionAsync(
+            const erc20AddAuthorizedAddressSubmitRes = await assetProxyOwnerWrapper.submitTransactionAsync(
                 erc20Proxy.address,
                 addAuthorizedAddressData,
                 owners[0],
             );
-            const erc721AddAuthorizedAddressSubmitRes = await multiSigWrapper.submitTransactionAsync(
+            const erc721AddAuthorizedAddressSubmitRes = await assetProxyOwnerWrapper.submitTransactionAsync(
                 erc721Proxy.address,
                 addAuthorizedAddressData,
                 owners[0],
@@ -267,15 +269,15 @@ describe('AssetProxyOwner', () => {
             const erc20AddAuthorizedAddressTxId = erc20AddAuthorizedAddressSubmitLog.args.transactionId;
             const erc721AddAuthorizedAddressTxId = erc721AddAuthorizedAddressSubmitLog.args.transactionId;
 
-            await multiSigWrapper.confirmTransactionAsync(registerAssetProxyTxId, owners[1]);
-            await multiSigWrapper.confirmTransactionAsync(erc20AddAuthorizedAddressTxId, owners[1]);
-            await multiSigWrapper.confirmTransactionAsync(erc721AddAuthorizedAddressTxId, owners[1]);
+            await assetProxyOwnerWrapper.confirmTransactionAsync(registerAssetProxyTxId, owners[1]);
+            await assetProxyOwnerWrapper.confirmTransactionAsync(erc20AddAuthorizedAddressTxId, owners[1]);
+            await assetProxyOwnerWrapper.confirmTransactionAsync(erc721AddAuthorizedAddressTxId, owners[1]);
             await increaseTimeAndMineBlockAsync(SECONDS_TIME_LOCKED.toNumber());
-            await multiSigWrapper.executeTransactionAsync(registerAssetProxyTxId, owners[0]);
-            await multiSigWrapper.executeTransactionAsync(erc20AddAuthorizedAddressTxId, owners[0], {
+            await assetProxyOwnerWrapper.executeTransactionAsync(registerAssetProxyTxId, owners[0]);
+            await assetProxyOwnerWrapper.executeTransactionAsync(erc20AddAuthorizedAddressTxId, owners[0], {
                 gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
             });
-            await multiSigWrapper.executeTransactionAsync(erc721AddAuthorizedAddressTxId, owners[0], {
+            await assetProxyOwnerWrapper.executeTransactionAsync(erc721AddAuthorizedAddressTxId, owners[0], {
                 gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
             });
         });
@@ -285,7 +287,7 @@ describe('AssetProxyOwner', () => {
                 const notRemoveAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(
                     authorized,
                 );
-                const submitTxRes = await multiSigWrapper.submitTransactionAsync(
+                const submitTxRes = await assetProxyOwnerWrapper.submitTransactionAsync(
                     erc20Proxy.address,
                     notRemoveAuthorizedAddressData,
                     owners[0],
@@ -303,7 +305,7 @@ describe('AssetProxyOwner', () => {
                     authorized,
                     erc20Index,
                 );
-                const submitTxRes = await multiSigWrapper.submitTransactionAsync(
+                const submitTxRes = await assetProxyOwnerWrapper.submitTransactionAsync(
                     erc20Proxy.address,
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
@@ -321,7 +323,7 @@ describe('AssetProxyOwner', () => {
                     authorized,
                     erc721Index,
                 );
-                const submitTxRes = await multiSigWrapper.submitTransactionAsync(
+                const submitTxRes = await assetProxyOwnerWrapper.submitTransactionAsync(
                     erc721Proxy.address,
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
@@ -341,7 +343,7 @@ describe('AssetProxyOwner', () => {
                     authorized,
                     erc20Index,
                 );
-                const res = await multiSigWrapper.submitTransactionAsync(
+                const res = await assetProxyOwnerWrapper.submitTransactionAsync(
                     erc20Proxy.address,
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
@@ -362,7 +364,7 @@ describe('AssetProxyOwner', () => {
                     authorized,
                     erc721Index,
                 );
-                const res = await multiSigWrapper.submitTransactionAsync(
+                const res = await assetProxyOwnerWrapper.submitTransactionAsync(
                     erc721Proxy.address,
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
@@ -370,7 +372,7 @@ describe('AssetProxyOwner', () => {
                 const log = res.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
 
-                await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+                await assetProxyOwnerWrapper.confirmTransactionAsync(txId, owners[1]);
 
                 return expectTransactionFailedAsync(
                     testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
@@ -385,7 +387,7 @@ describe('AssetProxyOwner', () => {
                 const addAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(
                     newAuthorized,
                 );
-                const res = await multiSigWrapper.submitTransactionAsync(
+                const res = await assetProxyOwnerWrapper.submitTransactionAsync(
                     erc20Proxy.address,
                     addAuthorizedAddressData,
                     owners[0],
@@ -393,7 +395,7 @@ describe('AssetProxyOwner', () => {
                 const log = res.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = log.args.transactionId;
 
-                await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+                await assetProxyOwnerWrapper.confirmTransactionAsync(txId, owners[1]);
 
                 return expectTransactionFailedAsync(
                     testAssetProxyOwner.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(txId, {
@@ -411,7 +413,7 @@ describe('AssetProxyOwner', () => {
                     authorized,
                     erc20Index,
                 );
-                const submitRes = await multiSigWrapper.submitTransactionAsync(
+                const submitRes = await assetProxyOwnerWrapper.submitTransactionAsync(
                     erc20Proxy.address,
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
@@ -419,9 +421,12 @@ describe('AssetProxyOwner', () => {
                 const submitLog = submitRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = submitLog.args.transactionId;
 
-                await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+                await assetProxyOwnerWrapper.confirmTransactionAsync(txId, owners[1]);
 
-                const execRes = await multiSigWrapper.executeRemoveAuthorizedAddressAtIndexAsync(txId, owners[0]);
+                const execRes = await assetProxyOwnerWrapper.executeRemoveAuthorizedAddressAtIndexAsync(
+                    txId,
+                    owners[0],
+                );
                 const execLog = execRes.logs[1] as LogWithDecodedArgs<AssetProxyOwnerExecutionEventArgs>;
                 expect(execLog.args.transactionId).to.be.bignumber.equal(txId);
 
@@ -441,7 +446,7 @@ describe('AssetProxyOwner', () => {
                     authorized,
                     erc20Index,
                 );
-                const submitRes = await multiSigWrapper.submitTransactionAsync(
+                const submitRes = await assetProxyOwnerWrapper.submitTransactionAsync(
                     erc20Proxy.address,
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
@@ -449,9 +454,9 @@ describe('AssetProxyOwner', () => {
                 const submitLog = submitRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = submitLog.args.transactionId;
 
-                await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+                await assetProxyOwnerWrapper.confirmTransactionAsync(txId, owners[1]);
 
-                const execRes = await multiSigWrapper.executeRemoveAuthorizedAddressAtIndexAsync(txId, notOwner);
+                const execRes = await assetProxyOwnerWrapper.executeRemoveAuthorizedAddressAtIndexAsync(txId, notOwner);
                 const execLog = execRes.logs[1] as LogWithDecodedArgs<AssetProxyOwnerExecutionEventArgs>;
                 expect(execLog.args.transactionId).to.be.bignumber.equal(txId);
 
@@ -468,7 +473,7 @@ describe('AssetProxyOwner', () => {
                     authorized,
                     erc20Index,
                 );
-                const submitRes = await multiSigWrapper.submitTransactionAsync(
+                const submitRes = await assetProxyOwnerWrapper.submitTransactionAsync(
                     erc20Proxy.address,
                     removeAuthorizedAddressAtIndexData,
                     owners[0],
@@ -476,9 +481,12 @@ describe('AssetProxyOwner', () => {
                 const submitLog = submitRes.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>;
                 const txId = submitLog.args.transactionId;
 
-                await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+                await assetProxyOwnerWrapper.confirmTransactionAsync(txId, owners[1]);
 
-                const execRes = await multiSigWrapper.executeRemoveAuthorizedAddressAtIndexAsync(txId, owners[0]);
+                const execRes = await assetProxyOwnerWrapper.executeRemoveAuthorizedAddressAtIndexAsync(
+                    txId,
+                    owners[0],
+                );
                 const execLog = execRes.logs[1] as LogWithDecodedArgs<AssetProxyOwnerExecutionEventArgs>;
                 expect(execLog.args.transactionId).to.be.bignumber.equal(txId);
 
@@ -495,4 +503,4 @@ describe('AssetProxyOwner', () => {
         });
     });
 });
-// tslint:enable:no-unnecessary-type-assertion
+// tslint:disable-line max-file-line-count
