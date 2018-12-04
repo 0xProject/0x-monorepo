@@ -239,18 +239,18 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        bytes memory calldata = abi.encodeWithSelector(
+        bytes memory callData = abi.encodeWithSelector(
             IWallet(walletAddress).isValidSignature.selector,
             hash,
             signature
         );
         assembly {
-            let cdStart := add(calldata, 32)
+            let cdStart := add(callData, 32)
             let success := staticcall(
                 gas,              // forward all gas
                 walletAddress,    // address of Wallet contract
                 cdStart,          // pointer to start of input
-                mload(calldata),  // length of input
+                mload(callData),  // length of input
                 cdStart,          // write output over input
                 32                // output size is 32 bytes
             )
@@ -288,19 +288,19 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        bytes memory calldata = abi.encodeWithSelector(
+        bytes memory callData = abi.encodeWithSelector(
             IValidator(signerAddress).isValidSignature.selector,
             hash,
             signerAddress,
             signature
         );
         assembly {
-            let cdStart := add(calldata, 32)
+            let cdStart := add(callData, 32)
             let success := staticcall(
                 gas,               // forward all gas
                 validatorAddress,  // address of Validator contract
                 cdStart,           // pointer to start of input
-                mload(calldata),   // length of input
+                mload(callData),   // length of input
                 cdStart,           // write output over input
                 32                 // output size is 32 bytes
             )
