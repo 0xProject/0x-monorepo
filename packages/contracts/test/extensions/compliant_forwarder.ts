@@ -303,7 +303,7 @@ describe.only(ContractName.CompliantForwarder, () => {
                     compliantSignedFillOrderTx.data,
                     compliantSignedFillOrderTx.signature,
                 ),
-                RevertReason.AtLeastOneAddressHasZeroBalance
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
             );
         });
         it('should revert if maker address is not compliant (does not hold a Yes Token)', async () => {
@@ -331,7 +331,7 @@ describe.only(ContractName.CompliantForwarder, () => {
                     signedFillOrderTx.data,
                     signedFillOrderTx.signature,
                 ),
-                RevertReason.AtLeastOneAddressHasZeroBalance
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
             );
         });
     });

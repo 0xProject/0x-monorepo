@@ -229,8 +229,18 @@ contract CompliantForwarder is ExchangeSelectors{
             case 0x4ac1478200000000000000000000000000000000000000000000000000000000 {}                                          // batchCancelOrders
             case 0x4f9559b100000000000000000000000000000000000000000000000000000000 {}                                          // cancelOrdersUpTo
             default {
-                // @TODO Revert with `Error("INVALID_OR_UNHANDLED_EXCHANGE_SELECTOR")`
-                revert(0, 100)
+                // Revert with `Error("INVALID_OR_BLOCKED_EXCHANGE_SELECTOR")`
+                mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(0x20, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                mstore(0x40, 0x00000024494e56414c49445f4f525f424c4f434b45445f45584348414e47455f)
+                mstore(0x60, 0x53454c4543544f52000000000000000000000000000000000000000000000000)
+                mstore(0x80, 0x00000000)
+                // Revert length calculation:
+                // 4   -- error selector
+                // 32  -- offset to string
+                // 32  -- string length field
+                // 64  -- strlen(INVALID_OR_BLOCKED_EXCHANGE_SELECTOR) rounded up to nearest 32-byte word.
+                revert(0, 132)
             }
 
             ///// Validate Recorded Addresses /////
@@ -264,19 +274,34 @@ contract CompliantForwarder is ExchangeSelectors{
                     0x20                                    // reserve space for return balance (0x20 bytes)
                 )
                 if eq(success, 0) {
-                    // @TODO Revert with `Error("BALANCE_CHECK_FAILED")`
+                    // @TODO Revert with `Error("BALANCE_QUERY_FAILED")`
+                    mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(0x20, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(0x40, 0x0000001442414c414e43455f51554552595f4641494c45440000000000000000)
+                    mstore(0x60, 0x00000000)
+                    // Revert length calculation:
+                    // 4   -- error selector
+                    // 32  -- offset to string
+                    // 32  -- string length field
+                    // 32  -- strlen(BALANCE_QUERY_FAILED) rounded up to nearest 32-byte word.
                     revert(0, 100)
                 }
 
                 // Revert if balance not held
                 let addressBalance := mload(freeMemPtr)
                 if eq(addressBalance, 0) {
-                    // Revert with `Error("AT_LEAST_ONE_ADDRESS_HAS_ZERO_BALANCE")`
-                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    // Revert with `Error("AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD")`
+                    mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                     mstore(0x20, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                    mstore(0x40, 0x0000002541545f4c454153545f4f4e455f414444524553535f4841535f5a4552)
-                    mstore(0x60, 0x4f5f42414c414e43450000000000000000000000000000000000000000000000)
-                    revert(0, 109)
+                    mstore(0x40, 0x0000003441545f4c454153545f4f4e455f414444524553535f444f45535f4e4f)
+                    mstore(0x60, 0x545f4d4545545f42414c414e43455f5448524553484f4c440000000000000000)
+                    mstore(0x80, 0x00000000)
+                    // Revert length calculation:
+                    // 4   -- error selector
+                    // 32  -- offset to string
+                    // 32  -- string length field
+                    // 64  -- strlen(AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD) rounded up to nearest 32-byte word.
+                    revert(0, 132)
                 }
             }
 
