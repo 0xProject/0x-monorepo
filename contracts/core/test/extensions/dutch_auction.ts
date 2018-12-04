@@ -1,3 +1,15 @@
+import {
+    chaiSetup,
+    constants,
+    ContractName,
+    ERC20BalancesByOwner,
+    expectTransactionFailedAsync,
+    getLatestBlockTimestampAsync,
+    OrderFactory,
+    provider,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
@@ -14,16 +26,9 @@ import { DutchAuctionContract } from '../../generated-wrappers/dutch_auction';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { WETH9Contract } from '../../generated-wrappers/weth9';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync } from '../utils/assertions';
-import { getLatestBlockTimestampAsync } from '../utils/block_timestamp';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
-import { OrderFactory } from '../utils/order_factory';
-import { ContractName, ERC20BalancesByOwner } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
