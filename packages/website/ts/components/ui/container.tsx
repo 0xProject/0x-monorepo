@@ -77,15 +77,17 @@ export const PlainContainer: React.StatelessComponent<ContainerProps> = props =>
     );
 };
 
+const BOX_SHADOW = '0px 3px 10px rgba(0, 0, 0, 0.3)';
+
 export const Container = styled(PlainContainer)`
     box-sizing: border-box;
-    ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
+    ${props => (props.hasBoxShadow ? `box-shadow: ${BOX_SHADOW}` : '')};
     &:hover {
         ${props =>
             props.shouldDarkenOnHover
                 ? `background-color: ${props.backgroundColor ? darken(0.05, props.backgroundColor) : 'none'} !important`
                 : ''};
-        ${props => (props.shouldAddBoxShadowOnHover ? 'box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)' : '')};
+        ${props => (props.shouldAddBoxShadowOnHover ? `box-shadow: ${BOX_SHADOW}` : '')};
     }
 `;
 
