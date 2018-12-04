@@ -48,6 +48,7 @@ const ganacheConfigs = {
 const providerConfigs = testProvider === ProviderType.Ganache ? ganacheConfigs : gethConfigs;
 
 export const provider: Web3ProviderEngine = web3Factory.getRpcProvider(providerConfigs);
+provider.stop();
 const isCoverageEnabled = env.parseBoolean(EnvVars.SolidityCoverage);
 const isProfilerEnabled = env.parseBoolean(EnvVars.SolidityProfiler);
 const isRevertTraceEnabled = env.parseBoolean(EnvVars.SolidityRevertTrace);

@@ -1,9 +1,11 @@
 import { env, EnvVars } from '@0x/dev-utils';
 
 import { coverage, profiler, provider } from '@0x/contracts-test-utils';
-before('start web3 provider', () => {
+
+before('start web3 provider engine', () => {
     provider.start();
 });
+
 after('generate coverage report', async () => {
     if (env.parseBoolean(EnvVars.SolidityCoverage)) {
         const coverageSubprovider = coverage.getCoverageSubproviderSingleton();
