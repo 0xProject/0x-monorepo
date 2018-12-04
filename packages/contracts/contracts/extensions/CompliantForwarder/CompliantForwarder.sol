@@ -72,36 +72,46 @@ contract CompliantForwarder is ExchangeSelectors{
                 mstore(add(addressesToValidate_, offset), addressToValidate)
             }
 
+            function validateAddress(addressToValidate) {
+                
+            }
+
             function exchangeCalldataload(offset) -> value {
                 // exchangeTxPtr at global level
                 // 0x20 for length offset into exchange TX
                 // 0x4 for function selector in exhcange TX
                 let exchangeTxPtr := calldataload(0x44)
-                let exchangeOffset := add(0x4, add(exchangeTxPtr, add(0x24, offset)))
+                let exchangeOffset := add(exchangeTxPtr, add(0x24, offset))
                 value := calldataload(exchangeOffset)
             }
 
+            function loadExchangeData(offset) -> value {
+                value := exchangeCalldataload(add(offset, 0x4))
+            }
+
             function appendMakerAddressFromOrder(orderParamIndex) {
-                let orderPtr := exchangeCalldataload(0)
-                let makerAddress := exchangeCalldataload(orderPtr)
+                let orderPtr := loadExchangeData(0)
+                let makerAddress := loadExchangeData(orderPtr)
                 addAddressToValidate(makerAddress)
             }
 
             function appendMakerAddressesFromOrderSet(orderSetParamIndex) -> one {
-                let orderSetPtr := exchangeCalldataload(0)
-                let orderSetLength := exchangeCalldataload(orderSetPtr)
+                let orderSetPtr := loadExchangeData(0)
+                let orderSetLength := loadExchangeData(orderSetPtr)
                 let orderSetElementPtr := add(orderSetPtr, 0x20)
                 let orderSetElementEndPtr := add(orderSetElementPtr, mul(orderSetLength, 0x20))
                 for {let orderPtrOffset := orderSetElementPtr} lt(orderPtrOffset, orderSetElementEndPtr) {orderPtrOffset := add(orderPtrOffset, 0x20)} {
-                    let orderPtr := exchangeCalldataload(orderPtrOffset)
-                    let makerAddress := exchangeCalldataload(add(orderPtr, orderSetElementPtr))
+                    let orderPtr := loadExchangeData(orderPtrOffset)
+                    let makerAddress := loadExchangeData(add(orderPtr, orderSetElementPtr))
                     addAddressToValidate(makerAddress)
                 }
             }
 
             // Extract addresses to validate
-            let exchangeTxPtr1 := calldataload(0x44)
-            let selector := and(calldataload(add(0x4, add(0x20, exchangeTxPtr1))), 0xffffffff00000000000000000000000000000000000000000000000000000000)
+            let selector := and(
+                exchangeCalldataload(0),
+                0xffffffff00000000000000000000000000000000000000000000000000000000
+            )
             switch selector
             case 0x297bb70b00000000000000000000000000000000000000000000000000000000 /* batchFillOrders */
             {
