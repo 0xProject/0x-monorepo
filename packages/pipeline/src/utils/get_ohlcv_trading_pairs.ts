@@ -32,17 +32,17 @@ export async function fetchOHLCVTradingPairsAsync(
     source: string,
     earliestBackfillTime: number,
 ): Promise<TradingPair[]> {
-    const latestTradingPairsQuery: string = `SELECT
-  MAX(end_time) as latest,
-  from_symbol,
-  to_symbol
-  FROM raw.ohlcv_external
-  GROUP BY from_symbol, to_symbol;`;
-
-    const latestTradingPairs = await queryAsync<Array<{ from_symbol: string; to_symbol: string; latest: number }>>(
-        conn,
-        latestTradingPairsQuery,
-    );
+    // fetch existing ohlcv records
+    const latestTradingPairs: Array<{
+        from_symbol: string;
+        to_symbol: string;
+        latest: number;
+    }> = await conn.query(`SELECT
+    MAX(end_time) as latest,
+    from_symbol,
+    to_symbol
+    FROM raw.ohlcv_external
+    GROUP BY from_symbol, to_symbol;`);
 
     const latestTradingPairsIndex = new Map<string, Map<string, number>>();
     latestTradingPairs.forEach(pair => {
@@ -73,6 +73,7 @@ export async function fetchOHLCVTradingPairsAsync(
     );
     const tokenAddresses = R.pluck('tokenaddress', rawTokenAddresses);
 
+    // generate list of all tokens with backfill time
     const allTokenSymbols: string[] = tokenAddresses
         .map(tokenAddress => erc20CoinsIndex.get(tokenAddress) || '')
         .filter(x => x);
@@ -88,8 +89,4 @@ export async function fetchOHLCVTradingPairsAsync(
     }, allTokenSymbols);
 
     return allTradingPairCombinations;
-}
-
-async function queryAsync<T>(conn: Connection, query: string): Promise<T> {
-    return conn.query(query);
 }

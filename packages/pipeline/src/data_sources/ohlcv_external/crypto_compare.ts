@@ -82,7 +82,7 @@ export class CryptoCompareOHLCVSource {
         return Object.values(json.Data).filter(rec => rec.time * ONE_SECOND >= pair.latest);
     }
     public generateBackfillIntervals(pair: TradingPair): TradingPair[] {
-        const now = new Date().getTime() - ONE_HOUR; // Crypto Compare latest data points are often finalised over the course of 30 mins~
+        const now = new Date().getTime();
         const f = (p: TradingPair): false | [TradingPair, TradingPair] => {
             if (p.latest > now) {
                 return false;
@@ -90,7 +90,6 @@ export class CryptoCompareOHLCVSource {
                 return [p, R.merge(p, { latest: p.latest + this.interval })];
             }
         };
-        const pairs = R.unfold(f, pair);
-        return pairs;
+        return R.unfold(f, pair);
     }
 }

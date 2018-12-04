@@ -9,8 +9,10 @@ import { handleError } from '../utils';
 import { fetchOHLCVTradingPairsAsync, TradingPair } from '../utils/get_ohlcv_trading_pairs';
 
 const SOURCE_NAME = 'CryptoCompare';
+// tslint:disable:custom-no-magic-numbers
+const TWO_HOURS_AGO = new Date().getTime() - 2 * 60 * 60 * 1000;
+const ONE_HOUR_AGO = new Date().getTime() - 60 * 60 * 1000;
 
-// tslint:disable-next-line:custom-no-magic-numbers
 const MAX_CONCURRENT_REQUESTS = parseInt(process.env.CRYPTOCOMPARE_MAX_CONCURRENT_REQUESTS || '18', 10);
 const EARLIEST_BACKFILL_DATE = process.env.OHLCV_EARLIEST_BACKFILL_DATE || '2018-09-01'; // the time when BTC/USD info starts appearing on Crypto Compare
 const EARLIEST_BACKFILL_TIME = new Date(EARLIEST_BACKFILL_DATE).getTime();
@@ -54,8 +56,11 @@ async function fetchAndSaveAsync(
     let shouldContinue = true;
     while (i < pairs.length && shouldContinue) {
         const pair = pairs[i];
+        if (pair.latest > TWO_HOURS_AGO) {
+            break;
+        }
         const rawRecords = await source.getHourlyOHLCVAsync(pair);
-
+        const records = rawRecords.filter(rec => rec.time < ONE_HOUR_AGO); // Crypto Compare can take ~30mins to finalise records
         const metadata: OHLCVMetadata = {
             exchange: source.default_exchange,
             fromSymbol: pair.fromSymbol,
@@ -64,7 +69,7 @@ async function fetchAndSaveAsync(
             observedTimestamp: new Date().getTime(),
             interval: source.intervalBetweenRecords,
         };
-        const parsedRecords = parseRecords(rawRecords, metadata);
+        const parsedRecords = parseRecords(records, metadata);
         try {
             await saveRecordsAsync(repository, parsedRecords);
             i++;
