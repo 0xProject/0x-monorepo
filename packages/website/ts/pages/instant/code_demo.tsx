@@ -20,7 +20,7 @@ const CustomPre = styled.pre`
     code:first-of-type {
         background-color: #2a2a2a !important;
         color: #999;
-        min-height: 100%;
+        min-height: 98%;
         text-align: center;
         padding-right: 5px !important;
         padding-left: 5px;
