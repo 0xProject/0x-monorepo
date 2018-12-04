@@ -206,7 +206,7 @@ describe.only(ContractName.CompliantForwarder, () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('fillOrder', () => {
+    describe.only('fillOrder', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
@@ -336,7 +336,7 @@ describe.only(ContractName.CompliantForwarder, () => {
         });
     });
 
-    describe.only('batchFillOrders', () => {
+    describe('batchFillOrders', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });

@@ -60,93 +60,193 @@ contract CompliantForwarder is ExchangeSelectors{
 
         // Validate addresses
         assembly {
+            /**
+             * Emulates the `calldataload` opcode on the embedded Exchange calldata,
+             * which is accessed through `signedExchangeTransaction`.
+             * @param offset - Offset into the Exchange calldata.
+             * @return value - Corresponding 32 byte value stored at `offset`.
+             */
             function exchangeCalldataload(offset) -> value {
-                // exchangeTxPtr at global level
-                // 0x20 for length offset into exchange TX
-                // 0x4 for function selector in exhcange TX
+                // Pointer to exchange transaction
+                // 0x04 for calldata selector
+                // 0x40 to access `signedExchangeTransaction`, which is the third parameter
                 let exchangeTxPtr := calldataload(0x44)
-                let exchangeOffset := add(exchangeTxPtr, add(0x24, offset))
-                value := calldataload(exchangeOffset)
+
+                // Offset into Exchange calldata
+                // We compute this by adding 0x24 to the `exchangeTxPtr` computed above.
+                // 0x04 for calldata selector
+                // 0x20 for length field of `signedExchangeTransaction`
+                let exchangeCalldataOffset := add(exchangeTxPtr, add(0x24, offset))
+                value := calldataload(exchangeCalldataOffset)
             }
 
+            /** 
+             * Convenience function that skips the 4 byte selector when loading
+             * from the embedded Exchange calldata.
+             * @param offset - Offset into the Exchange calldata (minus the 4 byte selector)
+             * @return value - Corresponding 32 byte value stored at `offset` + 4.
+             */
             function loadExchangeData(offset) -> value {
                 value := exchangeCalldataload(add(offset, 0x4))
             }
 
-            // Adds address to validate
-            function addAddressToValidate(addressToValidate) {
-                // Compute `addressesToValidate` memory location
+            /** 
+             * A running list is maintained of addresses to validate. 
+             * This function records an address in this array.
+             * @param addressToValidate - Address to record for validation.
+             * @note - Variables are scoped but names are not, so we append
+             *         underscores to names that share the global namespace.
+             */
+            function recordAddressToValidate(addressToValidate) {
+                // Compute `addressesToValidate` memory offset
                 let addressesToValidate_ := mload(0x40)
                 let nAddressesToValidate_ := mload(addressesToValidate_)
 
                 // Increment length
-                nAddressesToValidate_ := add(mload(addressesToValidate_), 1)
+                nAddressesToValidate_ := add(mload(addressesToValidate_), 0x01)
                 mstore(addressesToValidate_, nAddressesToValidate_)
 
                 // Append address to validate
-                let offset := mul(32, nAddressesToValidate_)
+                let offset := mul(nAddressesToValidate_, 0x20)
                 mstore(add(addressesToValidate_, offset), addressToValidate)
             }
 
-            function appendMakerAddressFromOrder(orderParamIndex) {
-                let orderPtr := loadExchangeData(0)
+            /**
+             * Extracts the maker address from an order stored in the Exchange calldata
+             * (which is embedded in `signedExchangeTransaction`), and records it in
+             * the running list of addresses to validate.
+             * @param orderParamIndex - Index of the order in the Exchange function's signature
+             */
+            function recordMakerAddressFromOrder(orderParamIndex) {
+                let orderPtr := loadExchangeData(orderParamIndex)
                 let makerAddress := loadExchangeData(orderPtr)
-                addAddressToValidate(makerAddress)
+                recordAddressToValidate(makerAddress)
             }
 
-            function appendMakerAddressesFromOrderSet(orderSetParamIndex) {
-                let orderSetPtr := loadExchangeData(0)
-                let orderSetLength := loadExchangeData(orderSetPtr)
-                let orderSetElementPtr := add(orderSetPtr, 0x20)
-                let orderSetElementEndPtr := add(orderSetElementPtr, mul(orderSetLength, 0x20))
-                for {let orderPtrOffset := orderSetElementPtr} lt(orderPtrOffset, orderSetElementEndPtr) {orderPtrOffset := add(orderPtrOffset, 0x20)} {
+            /**
+             * Extracts the maker addresses from an array of orders stored in the Exchange calldata
+             * (which is embedded in `signedExchangeTransaction`), and records them in
+             * the running list of addresses to validate.
+             * @param orderArrayParamIndex - Index of the order array in the Exchange function's signature
+             */
+            function recordMakerAddressesFromOrderArray(orderArrayParamIndex) {
+                let orderArrayPtr := loadExchangeData(0x0)
+                let orderArrayLength := loadExchangeData(orderArrayPtr)
+                let orderArrayElementPtr := add(orderArrayPtr, 0x20)
+                let orderArrayElementEndPtr := add(orderArrayElementPtr, mul(orderArrayLength, 0x20))
+                for {let orderPtrOffset := orderArrayElementPtr} lt(orderPtrOffset, orderArrayElementEndPtr) {orderPtrOffset := add(orderPtrOffset, 0x20)} {
                     let orderPtr := loadExchangeData(orderPtrOffset)
-                    let makerAddress := loadExchangeData(add(orderPtr, orderSetElementPtr))
-                    addAddressToValidate(makerAddress)
+                    let makerAddress := loadExchangeData(add(orderPtr, orderArrayElementPtr))
+                    recordAddressToValidate(makerAddress)
                 }
             }
 
-            // Extract addresses to validate
-            let selector := and(
-                exchangeCalldataload(0),
+            /**
+             * Records address of signer in the running list of addresses to validate.
+             * @note: We cannot access `signerAddress` directly from within the asm function,
+             *        so it is loaded from the calldata.
+             */
+            function recordSignerAddress() {
+                // Load the signer address from calldata
+                // 0x04 for selector
+                // 0x20 to access `signerAddress`, which is the second parameter.
+                let signerAddress_ := calldataload(0x24)
+                recordAddressToValidate(signerAddress_)
+            }
+
+            /**
+             * Records addresses to be validated when Exchange transaction is a batch fill variant.
+             * This is one of: batchFillOrders, batchFillOrKillOrders, batchFillNoThrow
+             * Reference signature<T>: <batchFillVariant>(Order[],uint256[],bytes[])
+             */
+            function recordAddressesForBatchFillVariant() {
+                // Record maker addresses from order array (parameter index 0)
+                // The signer is the taker for these orders and must also be validated.
+                recordMakerAddressesFromOrderArray(0)
+                recordSignerAddress()
+            }
+
+            /**
+             * Records addresses to be validated when Exchange transaction is a fill order variant.
+             * This is one of: fillOrder, fillOrKillOrder, fillOrderNoThrow
+             * Reference signature<T>: <fillOrderVariant>(Order,uint256,bytes)
+             */
+            function recordAddressesForFillOrderVariant() {
+                // Record maker address from the order (param index 0)
+                // The signer is the taker for this order and must also be validated.
+                recordMakerAddressFromOrder(0)
+                recordSignerAddress()
+            }
+
+            /**
+             * Records addresses to be validated when Exchange transaction is a market fill variant.
+             * This is one of: marketBuyOrders, marketBuyOrdersNoThrow, marketSellOrders, marketSellOrdersNoThrow
+             * Reference signature<T>: <marketFillInvariant>(Order[],uint256,bytes[])
+             */
+            function recordAddressesForMarketFillVariant() {
+                // Record maker addresses from order array (parameter index 0)
+                // The signer is the taker for these orders and must also be validated.
+                recordMakerAddressesFromOrderArray(0)
+                recordSignerAddress()
+            }
+
+            /**
+             * Records addresses to be validated when Exchange transaction is matchOrders.
+             * Reference signature: matchOrders(Order,Order)
+             */
+            function recordAddressesForMatchOrders() {
+                // Record maker address from both orders (param indices 0 & 1).
+                // The signer is the taker and must also be validated.
+                recordMakerAddressFromOrder(0)
+                recordMakerAddressFromOrder(1)
+                recordSignerAddress()
+            }
+
+            ///// Record Addresses to Validate /////
+
+            // Addresses needing validation depends on which Exchange function is being called.
+            // Step 1/2 Read the exchange function selector.
+            let exchangeFunctionSelector := and(
+                exchangeCalldataload(0x0),
                 0xffffffff00000000000000000000000000000000000000000000000000000000
             )
-            switch selector
-            case 0x297bb70b00000000000000000000000000000000000000000000000000000000 /* batchFillOrders */
-            {
-                appendMakerAddressesFromOrderSet(0)
-                addAddressToValidate(signerAddress)
-            }
-            case 0x3c28d86100000000000000000000000000000000000000000000000000000000 /* matchOrders */
-            {
-               // appendMakerAddressFromOrder(0)
-               //// appendMakerAddressFromOrder(1)
-               // addAddressToValidate(signerAddress)
-            }
-            case 0xb4be83d500000000000000000000000000000000000000000000000000000000 /* fillOrder */
-            {
-                appendMakerAddressFromOrder(0)
-                addAddressToValidate(signerAddress)
-            }
-            case 0xd46b02c300000000000000000000000000000000000000000000000000000000 /* cancelOrder */ {}
+
+            // Step 2/2 Extract addresses to validate based on this selector.
+            //          See ../../utils/ExchangeSelectors/ExchangeSelectors.sol for selectors
+            switch exchangeFunctionSelector
+            case 0x297bb70b00000000000000000000000000000000000000000000000000000000 { recordAddressesForBatchFillVariant() }    // batchFillOrders
+            case 0x50dde19000000000000000000000000000000000000000000000000000000000 { recordAddressesForBatchFillVariant() }    // batchFillOrdersNoThrow
+            case 0x4d0ae54600000000000000000000000000000000000000000000000000000000 { recordAddressesForBatchFillVariant() }    // batchFillOrKillOrders
+            case 0xb4be83d500000000000000000000000000000000000000000000000000000000 { recordAddressesForFillOrderVariant() }    // fillOrder
+            case 0x3e228bae00000000000000000000000000000000000000000000000000000000 { recordAddressesForFillOrderVariant() }    // fillOrderNoThrow
+            case 0x64a3bc1500000000000000000000000000000000000000000000000000000000 { recordAddressesForFillOrderVariant() }    // fillOrKillOrder
+            case 0xe5fa431b00000000000000000000000000000000000000000000000000000000 { recordAddressesForMarketFillVariant() }   // marketBuyOrders
+            case 0xa3e2038000000000000000000000000000000000000000000000000000000000 { recordAddressesForMarketFillVariant() }   // marketBuyOrdersNoThrow
+            case 0x7e1d980800000000000000000000000000000000000000000000000000000000 { recordAddressesForMarketFillVariant() }   // marketSellOrders
+            case 0xdd1c7d1800000000000000000000000000000000000000000000000000000000 { recordAddressesForMarketFillVariant() }   // marketSellOrdersNoThrow
+            case 0x3c28d86100000000000000000000000000000000000000000000000000000000 { recordAddressesForMatchOrders() }         // matchOrders
+            case 0xd46b02c300000000000000000000000000000000000000000000000000000000 {}                                          // cancelOrder
+            case 0x4ac1478200000000000000000000000000000000000000000000000000000000 {}                                          // batchCancelOrders
+            case 0x4f9559b100000000000000000000000000000000000000000000000000000000 {}                                          // cancelOrdersUpTo
             default {
                 revert(0, 100)
             }
 
-            // Load addresses to validate from memory
+            ///// Validate Recorded Addresses /////
+
+            // Load from memory the addresses to validate
             let addressesToValidate := mload(0x40)
             let addressesToValidateLength := mload(addressesToValidate)
             let addressesToValidateElementPtr := add(addressesToValidate, 0x20)
             let addressesToValidateElementEndPtr := add(addressesToValidateElementPtr, mul(addressesToValidateLength, 0x20))
 
-            // Record new free memory pointer to after `addressesToValidate` array
+            // Set free memory pointer to after `addressesToValidate` array.
             // This is to avoid corruption when making calls in the loop below.
             let freeMemPtr := addressesToValidateElementEndPtr
             mstore(0x40, freeMemPtr)
 
             // Validate addresses
             let complianceTokenAddress := sload(COMPLIANCE_TOKEN_slot)
-            
             for {let addressToValidate := addressesToValidateElementPtr} lt(addressToValidate, addressesToValidateElementEndPtr) {addressToValidate := add(addressToValidate, 0x20)} {
                 // Construct calldata for `COMPLIANCE_TOKEN.balanceOf`
                 mstore(freeMemPtr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
@@ -171,11 +271,11 @@ contract CompliantForwarder is ExchangeSelectors{
                 let addressBalance := mload(freeMemPtr)
                 if eq(addressBalance, 0) {
                     // Revert with `Error("AT_LEAST_ONE_ADDRESS_HAS_ZERO_BALANCE")`
-                    /*mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                     mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
                     mstore(64, 0x0000002541545f4c454153545f4f4e455f414444524553535f4841535f5a4552)
                     mstore(96, 0x4f5f42414c414e43450000000000000000000000000000000000000000000000)
-                    revert(0, 109)*/
+                    revert(0, 109)
                 }
             }
 
@@ -183,14 +283,16 @@ contract CompliantForwarder is ExchangeSelectors{
             validatedAddresses := addressesToValidate
         }
 
+
+        ///// If we hit this point then all addresses are valid /////
         emit ValidatedAddresses(validatedAddresses);
         
-        // All entities are verified. Execute fillOrder.
-       /* EXCHANGE.executeTransaction(
+        // All addresses are valid. Execute fillOrder.
+        EXCHANGE.executeTransaction(
             salt,
             signerAddress,
             signedExchangeTransaction,
             signature
-        );*/
+        );
     }
 }
