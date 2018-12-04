@@ -32,7 +32,8 @@ export const asyncData = {
         const assetBuyer = providerState.assetBuyer;
         try {
             const assetDatas = await assetBuyer.getAvailableAssetDatasAsync();
-            const assets = assetUtils.createAssetsFromAssetDatas(assetDatas, assetMetaDataMap, network);
+            const deduplicatedAssetDatas = _.uniq(assetDatas);
+            const assets = assetUtils.createAssetsFromAssetDatas(deduplicatedAssetDatas, assetMetaDataMap, network);
             dispatch(actions.setAvailableAssets(assets));
         } catch (e) {
             const errorMessage = 'Could not find any assets';
