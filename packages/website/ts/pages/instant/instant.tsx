@@ -14,7 +14,7 @@ import { NeedMore } from 'ts/pages/instant/need_more';
 import { Screenshots } from 'ts/pages/instant/screenshots';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
-import { ScreenWidths } from 'ts/types';
+import { ScreenWidths, WebsitePaths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -67,7 +67,7 @@ export class Instant extends React.Component<InstantProps, InstantState> {
     }
     private readonly _onGetStartedClick = () => {
         if (this._isSmallScreen()) {
-            utils.openUrl(`${utils.getCurrentBaseUrl()}/wiki#Get-Started`);
+            utils.openUrl(`${WebsitePaths.Wiki}#Get-Started-With-Instant`);
         } else {
             this._scrollToConfigurator();
         }

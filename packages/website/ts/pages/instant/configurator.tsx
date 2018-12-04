@@ -7,6 +7,7 @@ import { ActionLink } from 'ts/pages/instant/action_link';
 import { CodeDemo } from 'ts/pages/instant/code_demo';
 import { ConfigGenerator } from 'ts/pages/instant/config_generator';
 import { colors } from 'ts/style/colors';
+import { WebsitePaths } from 'ts/types';
 
 import { ZeroExInstantBaseConfig } from '../../../../instant/src/types';
 
@@ -51,7 +52,11 @@ export class Configurator extends React.Component<ConfiguratorProps> {
                         <Text fontSize="20px" lineHeight="28px" fontColor={colors.white} fontWeight={500}>
                             Code Snippet
                         </Text>
-                        <ActionLink displayText="Explore the Docs" linkSrc="/wiki#Get-Started" color={colors.grey} />
+                        <ActionLink
+                            displayText="Explore the Docs"
+                            linkSrc={`${WebsitePaths.Wiki}#Get-Started-With-Instant`}
+                            color={colors.grey}
+                        />
                     </Container>
                     <CodeDemo key={codeToDisplay}>{codeToDisplay}</CodeDemo>
                 </Container>
