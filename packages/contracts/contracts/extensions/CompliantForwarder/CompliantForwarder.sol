@@ -72,21 +72,13 @@ contract CompliantForwarder is ExchangeSelectors{
                 mstore(add(addressesToValidate_, offset), addressToValidate)
             }
 
-            function toGlobalCalldataOffset(offset) -> globalOffset {
-                globalOffset := add(0x4, offset)
-            }
-
-            function toExchangeCalldataOffset(offset, orderParamIndex) -> exchangeOffset {
+            function exchangeCalldataload(offset) -> value {
                 // exchangeTxPtr at global level
                 // 0x20 for length offset into exchange TX
                 // 0x4 for function selector in exhcange TX
                 let exchangeTxPtr := calldataload(0x44)
-                exchangeOffset := add(0x4, add(exchangeTxPtr, add(0x24, offset)))
-            }
-
-            function exchangeCalldataload(offset) -> value {
-                
-                value := calldataload(toExchangeCalldataOffset(offset, 0))
+                let exchangeOffset := add(0x4, add(exchangeTxPtr, add(0x24, offset)))
+                value := calldataload(exchangeOffset)
             }
 
             function appendMakerAddressFromOrder(orderParamIndex) {
