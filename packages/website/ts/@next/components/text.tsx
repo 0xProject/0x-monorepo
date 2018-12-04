@@ -1,19 +1,22 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import { getCSSPadding, PaddingInterface } from 'ts/@next/constants/utilities';
 
-interface HeadingProps {
-    asElement?: 'h1'| 'h2'| 'h3'| 'h4';
+interface BaseTextInterface extends PaddingInterface {
     size?: 'default' | 'medium' | 'large' | 'small';
+    isCentered?: boolean;
+}
+
+interface HeadingProps extends BaseTextInterface {
+    asElement?: 'h1'| 'h2'| 'h3'| 'h4';
     isCentered?: boolean;
     isNoMargin?: boolean;
     color?: string;
 }
 
-interface ParagraphProps {
+interface ParagraphProps extends BaseTextInterface {
     isNoMargin?: boolean;
-    size?: 'default' | 'small' | 'medium' | 'large';
     isMuted?: boolean | number;
-    isCentered?: boolean;
 }
 
 interface HeadingSizes {
@@ -55,10 +58,11 @@ const PARAGRAPH_SIZES: ParagraphSizes = {
 const StyledHeading = styled.h1<HeadingProps>`
     color: ${props => props.color || props.theme.textColor};
     font-size: ${props => HEADING_SIZES[props.size || 'default']};
+    padding: ${props => props.padding && getCSSPadding(props.padding)};
     line-height: ${props => HEADING_LINE_HEIGHTS[props.size || 'default']};
-    font-weight: 300;
     margin-bottom: ${props => !props.isNoMargin && '30px'};
     text-align: ${props => props.isCentered && 'center'};
+    font-weight: 300;
 `;
 
 export const Heading: React.StatelessComponent<HeadingProps> = props => {
@@ -77,8 +81,9 @@ export const Heading: React.StatelessComponent<HeadingProps> = props => {
 export const Paragraph = styled.p<ParagraphProps>`
     font-size: ${props => PARAGRAPH_SIZES[props.size || 'default']};
     margin-bottom: ${props => !props.isNoMargin && '30px'};
-    line-height: 1.4;
+    padding: ${props => props.padding && getCSSPadding(props.padding)};
     color: ${props => props.color || props.theme.textColor};
     opacity: ${props => typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted};
     text-align: ${props => props.isCentered && 'center'};
+    line-height: 1.4;
 `;

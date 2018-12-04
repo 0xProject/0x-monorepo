@@ -67,8 +67,9 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                         Powering Decentralized Exchange
                     </Heading>
 
-                    <Paragraph size="medium">
-                        0x is the best solution for adding exchange functionality to your business.
+                    <Paragraph size="medium" isMuted={true}>
+                        0x is the best solution for adding<br />
+                        exchange functionality to your business.
                     </Paragraph>
 
                     <ButtonWrap>
@@ -83,7 +84,9 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                 </Column>
 
                 <Column colWidth="1/2">
-                    <LogoOutlined/>
+                    <WrapCentered>
+                        <LogoOutlined/>
+                    </WrapCentered>
                 </Column>
             </Wrap>
         </Section>
@@ -92,7 +95,11 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
             <WrapCentered width="narrow">
                 <ProtocolIcon/>
 
-                <Paragraph size="large" isCentered={true}>
+                <Paragraph
+                    size="large"
+                    isCentered={true}
+                    padding={['large', 0, 'default', 0]}
+                >
                     0x is an open protocol that enables the peer-to-peer exchange of Ethereum-based
                     tokens. Anyone in the world can use 0x to service a wide variety of markets
                     ranging from gaming items to financial instruments to assets that could have

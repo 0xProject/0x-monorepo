@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { getCSSPadding, PaddingInterface } from 'ts/@next/constants/utilities';
 
 interface WrapWidths {
     default: string;
@@ -12,10 +13,6 @@ interface ColumnWidths {
     [key: string]: string;
 }
 
-interface PaddingSizes {
-    [key: string]: string;
-}
-
 interface SectionProps {
     isNoPadding?: boolean;
     isPadLarge?: boolean;
@@ -24,12 +21,11 @@ interface SectionProps {
     isFullWidth?: boolean;
 }
 
-interface WrapProps {
+interface WrapProps extends PaddingInterface {
     width?: 'default' | 'full' | 'medium' | 'narrow';
     bgColor?: string;
     isWrapped?: boolean;
     isCentered?: boolean;
-    padding?: number | Array<'large' | 'default' | number>;
 }
 
 interface ColumnProps {
@@ -52,14 +48,6 @@ const _getColumnWidth = (args: GetColWidthArgs): string => {
     return `calc(${percentWidth}% - ${gutterDiff}px)`;
 };
 
-const _getPadding = (value: number | Array<string | number>): string => {
-    if (Array.isArray(value)) {
-        return value.map(val => PADDING_SIZES[val] || `${val}px`).join(' ');
-    } else {
-        return `${value}px`;
-    }
-};
-
 const GUTTER = 30 as number;
 const MAX_WIDTH = 1500;
 const BREAKPOINTS = {
@@ -76,10 +64,6 @@ const COLUMN_WIDTHS: ColumnWidths = {
     '1/3': _getColumnWidth({ columns: 3 }),
     '1/2': _getColumnWidth({ columns: 2 }),
     '2/3': _getColumnWidth({ span: 2, columns: 3 }),
-};
-const PADDING_SIZES: PaddingSizes = {
-    'default': '30px',
-    'large': '60px',
 };
 
 export const Main = styled.main`
@@ -113,7 +97,7 @@ export const Section = styled.section<SectionProps>`
 
 const WrapBase = styled.div<WrapProps>`
     max-width: ${props => WRAPPER_WIDTHS[props.width || 'default']};
-    padding: ${props => props.padding && _getPadding(props.padding)};
+    padding: ${props => props.padding && getCSSPadding(props.padding)};
     background-color: ${props => props.bgColor};
     margin: 0 auto;
 `;
