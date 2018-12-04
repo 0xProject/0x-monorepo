@@ -23,7 +23,7 @@ import "../../protocol/Exchange/interfaces/IExchange.sol";
 import "../../protocol/Exchange/libs/LibOrder.sol";
 import "../../tokens/ERC20Token/IERC20Token.sol";
 import "../../tokens/ERC721Token/IERC721Token.sol";
-import "../../utils/LibBytes/LibBytes.sol";
+import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
 
 
 contract OrderValidator {

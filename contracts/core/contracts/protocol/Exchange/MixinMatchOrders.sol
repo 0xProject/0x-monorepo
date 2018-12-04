@@ -14,7 +14,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../../utils/ReentrancyGuard/ReentrancyGuard.sol";
+import "@0x/contracts-utils/contracts/utils/ReentrancyGuard/ReentrancyGuard.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibMath.sol";
 import "./libs/LibOrder.sol";
