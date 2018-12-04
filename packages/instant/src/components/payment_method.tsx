@@ -26,7 +26,7 @@ export interface PaymentMethodProps {
 export class PaymentMethod extends React.Component<PaymentMethodProps> {
     public render(): React.ReactNode {
         return (
-            <Container padding="20px" width="100%" height="133px">
+            <Container width="100%" height="120px" padding="20px 20px 0px 20px">
                 <Container marginBottom="12px">
                     <Flex justify="space-between">
                         <Text
