@@ -19,17 +19,26 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../../protocol/Exchange/interfaces/IExchange.sol";
-import "./interfaces/IThresholdAsset.sol";
-import "./MixinBalanceThresholdFilterCore.sol";
+import "../../../protocol/Exchange/interfaces/IExchange.sol";
+import "../interfaces/IThresholdAsset.sol";
 
 
-contract BalanceThresholdFilter is MixinBalanceThresholdFilterCore {
+contract MBalanceThresholdFilterCore {
 
-    constructor(address exchange, address thresholdAsset)
-        public
-    {
-        EXCHANGE = IExchange(exchange);
-        THRESHOLD_ASSET = IThresholdAsset(thresholdAsset);
-    }
+    IExchange internal EXCHANGE;
+    IThresholdAsset internal THRESHOLD_ASSET;
+
+    event ValidatedAddresses (
+        address[] addresses
+    );
+
+    function executeTransaction(
+        uint256 salt,
+        address signerAddress,
+        bytes signedExchangeTransaction,
+        bytes signature
+    ) 
+        external;
+
+    function validateBalanceThresholdsOrRevert() internal;
 }
