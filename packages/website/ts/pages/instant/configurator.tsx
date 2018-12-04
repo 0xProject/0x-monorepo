@@ -71,7 +71,7 @@ export class Configurator extends React.Component<ConfiguratorProps> {
 <body>
     <script>
         zeroExInstant.render({
-            liquiditySource: '${instantConfig.orderSource}',${
+            orderSource: '${instantConfig.orderSource}',${
             !_.isUndefined(instantConfig.affiliateInfo) && instantConfig.affiliateInfo.feeRecipient
                 ? `\n            affiliateInfo: {
                 feeRecipient: '${instantConfig.affiliateInfo.feeRecipient.toLowerCase()}',
