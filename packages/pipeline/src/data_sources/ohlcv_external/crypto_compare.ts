@@ -1,14 +1,15 @@
 // tslint:disable:no-duplicate-imports
-import { AxiosResponse } from 'axios';
-import axios from 'axios';
+import { fetchAsync } from '@0x/utils';
 import promiseLimit = require('p-limit');
-
-import { merge, unfold } from 'ramda';
+import { stringify } from 'querystring';
+import * as R from 'ramda';
 
 import { TradingPair } from '../../utils/get_ohlcv_trading_pairs';
 
 export interface CryptoCompareOHLCVResponse {
-    Data: CryptoCompareOHLCVRecord[];
+    Data: Map<string, CryptoCompareOHLCVRecord[]>;
+    Response: string;
+    Message: string;
 }
 
 export interface CryptoCompareOHLCVRecord {
@@ -33,56 +34,63 @@ export interface CryptoCompareOHLCVParams {
 
 // tslint:disable:custom-no-magic-numbers
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+const ONE_HOUR = 60 * 60 * 1000;
 const ONE_SECOND = 1000;
-
-const HISTORICAL_HOURLY_OHLCV_URI = 'https://min-api.cryptocompare.com/data/histohour';
+const HTTP_OK_STATUS = 200;
 
 export class CryptoCompareOHLCVSource {
     public readonly interval = ONE_WEEK; // the hourly API returns data for one week at a time
     public readonly default_exchange = 'CCCAGG';
-    private readonly _url: string = HISTORICAL_HOURLY_OHLCV_URI;
-    private readonly _plimit: (
-        fetchFn: () => Promise<AxiosResponse<CryptoCompareOHLCVResponse>>,
-    ) => Promise<AxiosResponse<CryptoCompareOHLCVResponse>>;
+    public readonly intervalBetweenRecords = ONE_HOUR;
+    private readonly _url: string = 'https://min-api.cryptocompare.com/data/histohour?';
 
+    // rate-limit for all API calls through this class instance
+    private readonly _promiseLimit: (fetchFn: () => Promise<Response>) => Promise<Response>;
     constructor(maxConcurrentRequests: number = 50) {
-        this._plimit = promiseLimit(maxConcurrentRequests);
+        this._promiseLimit = promiseLimit(maxConcurrentRequests);
     }
 
     // gets OHLCV records starting from pair.latest
-    public async getAsync(pair: TradingPair): Promise<CryptoCompareOHLCVRecord[]> {
+    public async getHourlyOHLCVAsync(pair: TradingPair): Promise<CryptoCompareOHLCVRecord[]> {
         const params = {
             e: this.default_exchange,
             fsym: pair.fromSymbol,
             tsym: pair.toSymbol,
             toTs: Math.floor((pair.latest + this.interval) / ONE_SECOND), // CryptoCompare uses timestamp in seconds. not ms
         };
+        const url = this._url + stringify(params);
 
-        const fetchPromise = this._plimit(() => {
-            // tslint:disable:no-console
-            console.log(`Scraping Crypto Compare with ${JSON.stringify(params)}`);
-            return axios.get<CryptoCompareOHLCVResponse>(this._url, { params });
+        // go through the instance-wide rate-limit
+        const fetchPromise: Promise<Response> = this._promiseLimit(() => {
+            // tslint:disable-next-line:no-console
+            console.log(`Scraping Crypto Compare at ${url}`);
+            return fetchAsync(url);
         });
 
-        const resp = await Promise.resolve(fetchPromise);
-
-        if (Object.keys(resp.data.Data).length < 2) {
-            console.log(`No data found for ${JSON.stringify(params)}`);
+        const response = await Promise.resolve(fetchPromise);
+        if (response.status !== HTTP_OK_STATUS) {
+            // tslint:disable-next-line:no-console
+            console.log(`Error scraping ${url}`);
             return [];
         }
-        return resp.data.Data.filter(rec => rec.time * ONE_SECOND >= pair.latest);
+        const json: CryptoCompareOHLCVResponse = await response.json();
+        if (json.Response === 'Error' || Object.keys(json.Data).length === 0) {
+            // tslint:disable-next-line:no-console
+            console.log(`Error scraping ${url}: ${json.Message}`);
+            return [];
+        }
+        return Object.values(json.Data).filter(rec => rec.time * ONE_SECOND >= pair.latest);
     }
-
     public generateBackfillIntervals(pair: TradingPair): TradingPair[] {
-        const now = new Date().getTime();
+        const now = new Date().getTime() - ONE_HOUR; // Crypto Compare latest data points are often finalised over the course of 30 mins~
         const f = (p: TradingPair): false | [TradingPair, TradingPair] => {
             if (p.latest > now) {
                 return false;
             } else {
-                return [p, merge(p, { latest: p.latest + this.interval })];
+                return [p, R.merge(p, { latest: p.latest + this.interval })];
             }
         };
-        const pairs = unfold(f, pair);
+        const pairs = R.unfold(f, pair);
         return pairs;
     }
 }

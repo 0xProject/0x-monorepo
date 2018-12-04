@@ -6,13 +6,14 @@ import { OHLCVExternal } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { OHLCVMetadata, parseRecords } from '../parsers/ohlcv_external/crypto_compare';
 import { handleError } from '../utils';
-import { fetchOHLCVTradingPairs, TradingPair } from '../utils/get_ohlcv_trading_pairs';
+import { fetchOHLCVTradingPairsAsync, TradingPair } from '../utils/get_ohlcv_trading_pairs';
 
 const SOURCE_NAME = 'CryptoCompare';
 
-// convert these to env variables
-const MAX_CONCURRENT_REQUESTS = 18;
-const EARLIEST_BACKFILL_TIME = new Date('2010-09-01').getTime(); // the time when BTC/USD info starts appearing on Crypto Compare
+// tslint:disable-next-line:custom-no-magic-numbers
+const MAX_CONCURRENT_REQUESTS = parseInt(process.env.CRYPTOCOMPARE_MAX_CONCURRENT_REQUESTS || '18', 10);
+const EARLIEST_BACKFILL_DATE = process.env.OHLCV_EARLIEST_BACKFILL_DATE || '2018-09-01'; // the time when BTC/USD info starts appearing on Crypto Compare
+const EARLIEST_BACKFILL_TIME = new Date(EARLIEST_BACKFILL_DATE).getTime();
 
 let connection: Connection;
 
@@ -21,7 +22,7 @@ let connection: Connection;
     const repository = connection.getRepository(OHLCVExternal);
     const source = new CryptoCompareOHLCVSource(MAX_CONCURRENT_REQUESTS);
 
-    const tradingPairs = await fetchOHLCVTradingPairs(connection, SOURCE_NAME, EARLIEST_BACKFILL_TIME);
+    const tradingPairs = await fetchOHLCVTradingPairsAsync(connection, SOURCE_NAME, EARLIEST_BACKFILL_TIME);
     console.log(`Starting ${tradingPairs.length} job(s) to scrape Crypto Compare for OHLCV records...`);
 
     const fetchAndSavePromises = tradingPairs.map(async pair => {
@@ -52,27 +53,23 @@ async function fetchAndSaveAsync(
     let i = 0;
     let shouldContinue = true;
     while (i < pairs.length && shouldContinue) {
-        const p = pairs[i];
-        const rawRecords = await source.getAsync(p);
+        const pair = pairs[i];
+        const rawRecords = await source.getHourlyOHLCVAsync(pair);
 
-        // need minimum 2 records to calculate startTime and endTime for each record
-        if (rawRecords.length < 2) {
-            i++;
-            continue;
-        }
         const metadata: OHLCVMetadata = {
             exchange: source.default_exchange,
-            fromSymbol: p.fromSymbol,
-            toSymbol: p.toSymbol,
+            fromSymbol: pair.fromSymbol,
+            toSymbol: pair.toSymbol,
             source: SOURCE_NAME,
             observedTimestamp: new Date().getTime(),
+            interval: source.intervalBetweenRecords,
         };
         const parsedRecords = parseRecords(rawRecords, metadata);
         try {
             await saveRecordsAsync(repository, parsedRecords);
             i++;
-        } catch (e) {
-            console.log(`Error saving OHLCVRecords, stopping task for ${JSON.stringify(p)} [${e}]`);
+        } catch (err) {
+            console.log(`Error saving OHLCVRecords, stopping task for ${JSON.stringify(pair)} [${err}]`);
             shouldContinue = false;
         }
     }
@@ -88,5 +85,5 @@ async function saveRecordsAsync(repository: Repository<OHLCVExternal>, records: 
     ];
 
     console.log(`Saving ${records.length} records to ${repository.metadata.name}... ${JSON.stringify(metadata)}`);
-    await repository.insert(records);
+    await repository.save(records);
 }

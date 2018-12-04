@@ -1,10 +1,10 @@
 import * as chai from 'chai';
 import 'mocha';
-import { merge } from 'ramda';
+import * as R from 'ramda';
 
 import { CryptoCompareOHLCVRecord } from '../../../src/data_sources/ohlcv_external/crypto_compare';
 import { OHLCVExternal } from '../../../src/entities';
-import { parseRecords } from '../../../src/parsers/ohlcv_external/crypto_compare';
+import { OHLCVMetadata, parseRecords } from '../../../src/parsers/ohlcv_external/crypto_compare';
 import { chaiSetup } from '../../utils/chai_setup';
 
 chaiSetup.configure();
@@ -23,12 +23,13 @@ describe('ohlcv_external parser (Crypto Compare)', () => {
             volumeto: 4321,
         };
 
-        const metadata = {
+        const metadata: OHLCVMetadata = {
             fromSymbol: 'ETH',
             toSymbol: 'ZRX',
             exchange: 'CCCAGG',
             source: 'CryptoCompare',
             observedTimestamp: new Date().getTime(),
+            interval: 100000,
         };
 
         const entity = new OHLCVExternal();
@@ -47,20 +48,13 @@ describe('ohlcv_external parser (Crypto Compare)', () => {
         entity.observedTimestamp = metadata.observedTimestamp;
 
         it('converts Crypto Compare OHLCV records to OHLCVExternal entity', () => {
-            const input = [record, merge(record, { time: 300 }), merge(record, { time: 400 })];
+            const input = [record, R.merge(record, { time: 300 }), merge(record, { time: 400 })];
             const expected = [
                 entity,
-                merge(entity, { startTime: 200000, endTime: 300000 }),
-                merge(entity, { startTime: 300000, endTime: 400000 }),
+                R.merge(entity, { startTime: 200000, endTime: 300000 }),
+                R.merge(entity, { startTime: 300000, endTime: 400000 }),
             ];
 
-            const actual = parseRecords(input, metadata);
-            expect(actual).deep.equal(expected);
-        });
-
-        it('ignores records if there is only one record in the batch', () => {
-            const input = [record];
-            const expected: OHLCVExternal[] = [];
             const actual = parseRecords(input, metadata);
             expect(actual).deep.equal(expected);
         });

@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import 'mocha';
-import { merge } from 'ramda';
+import * as R from 'ramda';
 
 import { CryptoCompareOHLCVSource } from '../../../src/data_sources/ohlcv_external/crypto_compare';
 import { chaiSetup } from '../../utils/chai_setup';
@@ -21,8 +21,8 @@ describe('ohlcv_external data source (Crypto Compare)', () => {
 
             const expected = [
                 pair,
-                merge(pair, { latest: pair.latest + source.interval }),
-                merge(pair, { latest: pair.latest + source.interval * 2 }),
+                R.merge(pair, { latest: pair.latest + source.interval }),
+                R.merge(pair, { latest: pair.latest + source.interval * 2 }),
             ];
 
             const actual = source.generateBackfillIntervals(pair);
@@ -42,10 +42,5 @@ describe('ohlcv_external data source (Crypto Compare)', () => {
             const actual = source.generateBackfillIntervals(pair);
             expect(actual).deep.equal(expected);
         });
-    });
-
-    describe('getAsync', () => {
-        // tslint:disable:no-empty
-        // todo
     });
 });

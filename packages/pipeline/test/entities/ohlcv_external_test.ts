@@ -9,7 +9,7 @@ import { testSaveAndFindEntityAsync } from './util';
 
 chaiSetup.configure();
 
-const ohlcvExternal = {
+const ohlcvExternal: OHLCVExternal = {
     exchange: 'CCCAGG',
     fromSymbol: 'ETH',
     toSymbol: 'ZRX',

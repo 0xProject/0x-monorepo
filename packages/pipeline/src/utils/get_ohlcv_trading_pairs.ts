@@ -1,5 +1,6 @@
+import { fetchAsync } from '@0x/utils';
 import axios from 'axios';
-import { chain } from 'ramda';
+import * as R from 'ramda';
 import { Connection } from 'typeorm';
 
 export interface TradingPair {
@@ -25,76 +26,76 @@ interface CryptoCompareCoin {
     SmartContractAddress: string;
 }
 
-const TO_CURRENCIES = ['USD', 'EUR', 'ETH'];
-
+const TO_CURRENCIES = ['USD', 'EUR', 'ETH', 'USDT'];
+const ETHEREUM_IDENTIFIER = '7605';
+const HTTP_OK_STATUS = 200;
 /**
  * Get trading pairs with latest scraped time for OHLCV records
  * @param conn a typeorm Connection to postgres
  */
-export async function fetchOHLCVTradingPairs(
+export async function fetchOHLCVTradingPairsAsync(
     conn: Connection,
     source: string,
     earliestBackfillTime: number,
 ): Promise<TradingPair[]> {
-    const rawTokenAddresses: Array<{ tokenaddress: string }> = await conn.query(
-        `SELECT DISTINCT(maker_token_address) as tokenaddress FROM raw.exchange_fill_events UNION
-        SELECT DISTINCT(taker_token_address) as tokenaddress FROM raw.exchange_fill_events
-        LIMIT 1`,
+    const latestTradingPairsQuery: string = `SELECT
+  MAX(end_time) as latest,
+  from_symbol,
+  to_symbol
+  FROM raw.ohlcv_external
+  GROUP BY from_symbol, to_symbol;`;
+
+    const latestTradingPairs = await queryAsync<Array<{ from_symbol: string; to_symbol: string; latest: number }>>(
+        conn,
+        latestTradingPairsQuery,
     );
-    const tokenAddresses = rawTokenAddresses.map(obj => obj.tokenaddress);
+
+    const latestTradingPairsIndex = new Map<string, Map<string, number>>();
+    latestTradingPairs.forEach(pair => {
+        const latestIndex = latestTradingPairsIndex.get(pair.from_symbol) || new Map<string, number>();
+        latestIndex.set(pair.to_symbol, pair.latest);
+        latestTradingPairsIndex.set(pair.from_symbol, latestIndex);
+    });
 
     // get token symbols used by Crypto Compare
-    const allCoins = await axios.get<CryptoCompareCoinListResp>(COINLIST_API);
-    const erc20Coins: Map<string, string> = new Map();
-    Object.entries(allCoins.data.Data).forEach(pair => {
-        const [k, v] = pair;
-        if (v.BuiltOn === '7605' && v.SmartContractAddress !== 'N/A') {
-            erc20Coins.set(v.SmartContractAddress, k);
+    const allCoinsResp = await fetchAsync(COINLIST_API);
+    if (allCoinsResp.status !== HTTP_OK_STATUS) {
+        return [];
+    }
+    const allCoins: CryptoCompareCoinListResp = await allCoinsResp.json();
+    const erc20CoinsIndex: Map<string, string> = new Map();
+    Object.entries(allCoins.Data).forEach(pair => {
+        const [symbol, coinData] = pair;
+        if (coinData.BuiltOn === ETHEREUM_IDENTIFIER && coinData.SmartContractAddress !== 'N/A') {
+            erc20CoinsIndex.set(coinData.SmartContractAddress, symbol);
         }
     });
 
-    const mapFn = (tokenAddress: string): StaticPair[] => {
-        return chain(fiat => {
-            const fromSymbol = erc20Coins.get(tokenAddress);
-            if (!!fromSymbol) {
-                return [
-                    {
-                        toSymbol: fiat,
-                        fromSymbol,
-                    },
-                ];
-            } else {
-                return [];
-            }
-        }, TO_CURRENCIES);
-    };
-    const tradingPairs: StaticPair[] = chain(mapFn, tokenAddresses);
+    // fetch all tokens that are traded on 0x
+    const rawTokenAddresses: Array<{ tokenaddress: string }> = await conn.query(
+        `SELECT DISTINCT(maker_token_address) as tokenaddress FROM raw.exchange_fill_events UNION
+      SELECT DISTINCT(taker_token_address) as tokenaddress FROM raw.exchange_fill_events
+      LIMIT 1`,
+    );
+    const tokenAddresses = R.pluck('tokenaddress', rawTokenAddresses);
 
-    const tradingPairsLatestQuery: string = tradingPairs
-        .map(pair => {
-            return `SELECT
-              case COUNT(*) when 0 then ${earliestBackfillTime} else MAX(end_time) end AS latest,
-              '${pair.fromSymbol}' as from_symbol,
-              '${pair.toSymbol}' as to_symbol
-            FROM raw.ohlcv_external
-            WHERE
-              from_symbol = '${pair.fromSymbol}' AND
-              to_symbol = '${pair.toSymbol}' AND
-              source = '${source}'`;
-        })
-        .join('\nUNION\n');
+    const allTokenSymbols: string[] = tokenAddresses
+        .map(tokenAddress => erc20CoinsIndex.get(tokenAddress) || '')
+        .filter(x => x);
 
-    const latestTradingPairsResult: Array<{
-        from_symbol: string;
-        to_symbol: string;
-        latest: string;
-    }> = await conn.query(tradingPairsLatestQuery);
+    const allTradingPairCombinations: TradingPair[] = R.chain(sym => {
+        return TO_CURRENCIES.map(fiat => {
+            return {
+                fromSymbol: sym,
+                toSymbol: fiat,
+                latest: R.path<number>([sym, fiat], latestTradingPairsIndex) || earliestBackfillTime,
+            };
+        });
+    }, allTokenSymbols);
 
-    const latestTradingPairs = latestTradingPairsResult.map(p => ({
-        fromSymbol: p.from_symbol,
-        toSymbol: p.to_symbol,
-        // tslint:disable:custom-no-magic-numbers
-        latest: parseInt(p.latest, 10),
-    }));
-    return latestTradingPairs;
+    return allTradingPairCombinations;
+}
+
+async function queryAsync<T>(conn: Connection, query: string): Promise<T> {
+    return conn.query(query);
 }
