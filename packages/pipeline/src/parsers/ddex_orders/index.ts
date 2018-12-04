@@ -34,9 +34,9 @@ export function parseDdexOrders(
  * at each price point. Returns an array of <price, amount> tuples.
  * @param ddexOrders A list of Ddex orders awaiting aggregation.
  */
-export function aggregateOrders(ddexOrders: DdexOrder[]): Array<[string, number]> {
-    const sumAmount = (acc: number, order: DdexOrder): number => acc + Number(order.amount);
-    const aggregatedPricePoints = R.reduceBy(sumAmount, 0, R.prop('price'), ddexOrders);
+export function aggregateOrders(ddexOrders: DdexOrder[]): Array<[string, BigNumber]> {
+    const sumAmount = (acc: BigNumber, order: DdexOrder): BigNumber => acc.plus(order.amount);
+    const aggregatedPricePoints = R.reduceBy(sumAmount, new BigNumber(0), R.prop('price'), ddexOrders);
     return Object.entries(aggregatedPricePoints);
 }
 
@@ -55,13 +55,11 @@ export function parseDdexOrder(
     observedTimestamp: number,
     orderType: OrderType,
     source: string,
-    ddexOrder: [string, number],
+    ddexOrder: [string, BigNumber],
 ): TokenOrder {
     const tokenOrder = new TokenOrder();
     const price = new BigNumber(ddexOrder[0]);
-    const amount = new BigNumber(String(ddexOrder[1]));
-    // To avoid precision loss when converting from number with >15 sig fig
-    // to BigNumber, convert to string first.
+    const amount = ddexOrder[1];
 
     tokenOrder.source = source;
     tokenOrder.observedTimestamp = observedTimestamp;

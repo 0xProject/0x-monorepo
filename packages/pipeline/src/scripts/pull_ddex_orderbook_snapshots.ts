@@ -1,4 +1,5 @@
 import { logUtils } from '@0x/utils';
+import * as R from 'ramda';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import { DDEX_SOURCE, DdexMarket, DdexSource } from '../data_sources/ddex';
@@ -10,13 +11,24 @@ import { handleError } from '../utils';
 // Number of orders to save at once.
 const BATCH_SAVE_SIZE = 1000;
 
+// Number of markets to retrieve orderbooks for at once.
+const MARKET_ORDERBOOK_REQUEST_BATCH_SIZE = 50;
+
+// Delay between market orderbook requests.
+const MILLISEC_MARKET_ORDERBOOK_REQUEST_DELAY = 5000;
+
 let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
     const ddexSource = new DdexSource();
     const markets = await ddexSource.getActiveMarketsAsync();
-    await Promise.all(markets.map(async (market: DdexMarket) => getAndSaveMarketOrderbook(ddexSource, market)));
+    for (const marketsChunk of R.splitEvery(MARKET_ORDERBOOK_REQUEST_BATCH_SIZE, markets)) {
+        await Promise.all(
+            marketsChunk.map(async (market: DdexMarket) => getAndSaveMarketOrderbook(ddexSource, market)),
+        );
+        await new Promise(resolve => setTimeout(resolve, MILLISEC_MARKET_ORDERBOOK_REQUEST_DELAY));
+    }
     process.exit(0);
 })().catch(handleError);
 

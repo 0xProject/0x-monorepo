@@ -22,7 +22,6 @@ const tokenOrderbookSnapshot: TokenOrderbookSnapshot = {
     quoteVolume: new BigNumber(12.3234234),
 };
 
-// tslint:disable:custom-no-magic-numbers
 describe('TokenOrderbookSnapshot entity', () => {
     it('save/find', async () => {
         const connection = await createDbConnectionOnceAsync();

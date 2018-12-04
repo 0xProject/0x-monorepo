@@ -1,8 +1,9 @@
 import { fetchAsync, logUtils } from '@0x/utils';
 
 const DDEX_BASE_URL = 'https://api.ddex.io/v2';
-const ACTIVE_MARKETS_URL = DDEX_BASE_URL + '/markets';
-const ORDERBOOK_ENDPOINT = '/orderbook?level=3';
+const ACTIVE_MARKETS_URL = `${DDEX_BASE_URL}/markets`;
+const NO_AGGREGATION_LEVEL = 3; // See https://docs.ddex.io/#get-orderbook
+const ORDERBOOK_ENDPOINT = `/orderbook?level=${NO_AGGREGATION_LEVEL}`;
 export const DDEX_SOURCE = 'ddex';
 
 export interface DdexActiveMarketsResponse {
@@ -65,11 +66,11 @@ export class DdexSource {
 
     /**
      * Retrieve orderbook from Ddex API for a given market.
-     * @param marketId String identifying the market we want data for.
+     * @param marketId String identifying the market we want data for. Eg. 'REP/AUG'
      */
     public async getMarketOrderbookAsync(marketId: string): Promise<DdexOrderbook> {
         logUtils.log(`${marketId}: Retrieving orderbook.`);
-        const marketOrderbookUrl = ACTIVE_MARKETS_URL + '/' + marketId + ORDERBOOK_ENDPOINT;
+        const marketOrderbookUrl = `${ACTIVE_MARKETS_URL}/${marketId}${ORDERBOOK_ENDPOINT}`;
         const resp = await fetchAsync(marketOrderbookUrl);
         const respJson: DdexOrderbookResponse = await resp.json();
         return respJson.data.orderBook;

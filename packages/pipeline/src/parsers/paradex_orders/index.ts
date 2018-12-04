@@ -56,13 +56,11 @@ export function parseParadexOrder(
     tokenOrder.price = price;
 
     tokenOrder.baseAssetSymbol = paradexMarket.baseToken;
-    tokenOrder.baseAssetAddress =
-        typeof paradexMarket.baseTokenAddress === 'string' ? paradexMarket.baseTokenAddress : '';
+    tokenOrder.baseAssetAddress = paradexMarket.baseTokenAddress as string;
     tokenOrder.baseVolume = price.times(amount);
 
     tokenOrder.quoteAssetSymbol = paradexMarket.quoteToken;
-    tokenOrder.quoteAssetAddress =
-        typeof paradexMarket.quoteTokenAddress === 'string' ? paradexMarket.quoteTokenAddress : '';
+    tokenOrder.quoteAssetAddress = paradexMarket.quoteTokenAddress as string;
     tokenOrder.quoteVolume = amount;
     return tokenOrder;
 }

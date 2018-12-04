@@ -6,10 +6,10 @@ import { bigNumberTransformer, numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'token_orderbook_snapshots', schema: 'raw' })
 export class TokenOrderbookSnapshot {
-    @Column({ name: 'source' })
-    public source!: string;
     @PrimaryColumn({ name: 'observed_timestamp', type: 'bigint', transformer: numberToBigIntTransformer })
     public observedTimestamp!: number;
+    @PrimaryColumn({ name: 'source' })
+    public source!: string;
     @Column({ name: 'order_type' })
     public orderType!: OrderType;
     @PrimaryColumn({ name: 'price', type: 'numeric', transformer: bigNumberTransformer })

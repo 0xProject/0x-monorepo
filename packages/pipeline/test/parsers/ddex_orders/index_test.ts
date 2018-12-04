@@ -20,7 +20,7 @@ describe('ddex_orders', () => {
                 { price: '1', amount: '30', orderId: 'testone' },
                 { price: '2', amount: '100', orderId: 'testtwo' },
             ];
-            const expected = [['1', 50], ['2', 100]];
+            const expected = [['1', new BigNumber(50)], ['2', new BigNumber(100)]];
             const actual = aggregateOrders(input);
             expect(actual).deep.equal(expected);
         });
@@ -28,7 +28,7 @@ describe('ddex_orders', () => {
 
     describe('parseDdexOrder', () => {
         it('converts ddexOrder to TokenOrder entity', () => {
-            const ddexOrder: [string, number] = ['0.5', 10];
+            const ddexOrder: [string, BigNumber] = ['0.5', new BigNumber(10)];
             const ddexMarket: DdexMarket = {
                 id: 'ABC-DEF',
                 quoteToken: 'ABC',
@@ -64,3 +64,4 @@ describe('ddex_orders', () => {
         });
     });
 });
+// tslint:enable:custom-no-magic-numbers

@@ -1,9 +1,9 @@
 import { fetchAsync, logUtils } from '@0x/utils';
 
-const PARADEX_BASE_URL = 'https://api.paradex.io/consumer';
-const ACTIVE_MARKETS_URL = PARADEX_BASE_URL + '/v0/markets';
-const ORDERBOOK_ENDPOINT = PARADEX_BASE_URL + '/v0/orderbook';
-const TOKEN_INFO_ENDPOINT = PARADEX_BASE_URL + '/v0/tokens';
+const PARADEX_BASE_URL = 'https://api.paradex.io/consumer/v0';
+const ACTIVE_MARKETS_URL = PARADEX_BASE_URL + '/markets';
+const ORDERBOOK_ENDPOINT = PARADEX_BASE_URL + '/orderbook';
+const TOKEN_INFO_ENDPOINT = PARADEX_BASE_URL + '/tokens';
 export const PARADEX_SOURCE = 'paradex';
 
 export type ParadexActiveMarketsResponse = ParadexMarket[];
@@ -82,7 +82,7 @@ export class ParadexSource {
      */
     public async getMarketOrderbookAsync(marketSymbol: string): Promise<ParadexOrderbookResponse> {
         logUtils.log(`${marketSymbol}: Retrieving orderbook.`);
-        const marketOrderbookUrl = ORDERBOOK_ENDPOINT + `?market=${marketSymbol}`;
+        const marketOrderbookUrl = `${ORDERBOOK_ENDPOINT}?market=${marketSymbol}`;
         const resp = await fetchAsync(marketOrderbookUrl, {
             headers: { 'API-KEY': this._apiKey },
         });

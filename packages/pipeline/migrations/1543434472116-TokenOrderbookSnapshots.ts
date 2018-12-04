@@ -3,8 +3,8 @@ import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 const tokenOrderbookSnapshots = new Table({
     name: 'raw.token_orderbook_snapshots',
     columns: [
-        { name: 'source', type: 'varchar' },
         { name: 'observed_timestamp', type: 'bigint', isPrimary: true },
+        { name: 'source', type: 'varchar', isPrimary: true },
         { name: 'order_type', type: 'order_t' },
         { name: 'price', type: 'numeric', isPrimary: true },
 

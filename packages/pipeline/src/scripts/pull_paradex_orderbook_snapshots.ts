@@ -50,12 +50,14 @@ function addTokenAddresses(
         if (symbolAddressMapping.has(market.baseToken)) {
             market.baseTokenAddress = symbolAddressMapping.get(market.baseToken);
         } else {
+            market.quoteTokenAddress = '';
             logUtils.warn(`${market.baseToken}: No address found.`);
         }
 
         if (symbolAddressMapping.has(market.quoteToken)) {
             market.quoteTokenAddress = symbolAddressMapping.get(market.quoteToken);
         } else {
+            market.quoteTokenAddress = '';
             logUtils.warn(`${market.quoteToken}: No address found.`);
         }
     });
