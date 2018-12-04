@@ -1,6 +1,4 @@
-import { ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -13,8 +11,6 @@ import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
 import {
     AccountState,
-    AffiliateInfo,
-    AssetMetaData,
     Network,
     QuoteFetchOrigin,
     ZeroExInstantBaseConfig,
