@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link as ReactRouterLink, withRouter } from 'react-router-dom';
+import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
@@ -32,7 +32,7 @@ export const Button = styled.button<ButtonInterface>`
     text-decoration: none;
 `;
 
-export const Link = withRouter((props: ButtonInterface) => {
+export const Link = (props: ButtonInterface) => {
     const {
         children,
         href,
@@ -44,7 +44,7 @@ export const Link = withRouter((props: ButtonInterface) => {
             {children}
         </Component>
     );
-});
+};
 
 // Added this, & + & doesnt really work since we switch with element types...
 export const ButtonWrap = styled.div`
