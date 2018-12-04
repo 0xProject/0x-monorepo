@@ -9,6 +9,7 @@ export interface InputProps {
     fontSize?: string;
     fontColor?: string;
     border?: string;
+    padding?: string;
     placeholderColor?: string;
     placeholder?: string;
     backgroundColor?: string;
@@ -22,7 +23,7 @@ const PlainInput: React.StatelessComponent<InputProps> = ({ value, className, pl
 export const Input = styled(PlainInput)`
     font-size: ${props => props.fontSize};
     width: ${props => props.width};
-    padding: 0.8em 1.2em;
+    padding: ${props => props.padding};
     border-radius: 3px;
     box-sizing: border-box;
     font-family: 'Roboto Mono';
@@ -42,6 +43,7 @@ Input.defaultProps = {
     placeholderColor: colors.darkGrey,
     fontSize: '12px',
     border: 'none',
+    padding: '0.8em 1.2em',
 };
 
 Input.displayName = 'Input';

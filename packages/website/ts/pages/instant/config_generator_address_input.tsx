@@ -32,6 +32,7 @@ export class ConfigGeneratorAddressInput extends React.Component<
                 <Input
                     width="100%"
                     fontSize="16px"
+                    padding="0.7em 1em"
                     value={this.props.value}
                     onChange={this._handleChange}
                     placeholder="0xe99...aa8da4"
