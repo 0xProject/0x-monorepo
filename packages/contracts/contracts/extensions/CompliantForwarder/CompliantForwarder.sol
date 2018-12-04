@@ -115,6 +115,7 @@ contract CompliantForwarder is ExchangeSelectors{
             case 0x297bb70b00000000000000000000000000000000000000000000000000000000 /* batchFillOrders */
             {
                 appendMakerAddressesFromOrderSet(0)
+                addAddressToValidate(signerAddress)
             }
             case 0x3c28d86100000000000000000000000000000000000000000000000000000000 /* matchOrders */
             {
@@ -132,40 +133,42 @@ contract CompliantForwarder is ExchangeSelectors{
                 revert(0, 100)
             }
 
-            // 
+            // Load addresses to validate from memory
             let addressesToValidate := mload(0x40)
-            let nAddressesToValidate := mload(addressesToValidate)
-            let newMemFreePtr := add(addressesToValidate, add(0x20, mul(mload(addressesToValidate), 0x20)))
-            mstore(0x40, newMemFreePtr)
+            let addressesToValidateLength := mload(addressesToValidate)
+            let addressesToValidateElementPtr := add(addressesToValidate, 0x20)
+            let addressesToValidateElementEndPtr := add(addressesToValidateElementPtr, mul(addressesToValidateLength, 0x20))
+
+            // Record new free memory pointer to after `addressesToValidate` array
+            // This is to avoid corruption when making calls in the loop below.
+            let freeMemPtr := addressesToValidateElementEndPtr
+            mstore(0x40, freeMemPtr)
 
             // Validate addresses
             let complianceTokenAddress := sload(COMPLIANCE_TOKEN_slot)
-            for {let i := add(0x20, addressesToValidate)} lt(i, add(addressesToValidate, add(32, mul(nAddressesToValidate, 32)))) {i := add(i, 32)} {
+            
+            for {let addressToValidate := addressesToValidateElementPtr} lt(addressToValidate, addressesToValidateElementEndPtr) {addressToValidate := add(addressToValidate, 0x20)} {
                 // Construct calldata for `COMPLIANCE_TOKEN.balanceOf`
-                mstore(newMemFreePtr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
-                mstore(add(4, newMemFreePtr), mload(i))
+                mstore(freeMemPtr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
+                mstore(add(4, freeMemPtr), mload(addressToValidate))
                
                 // call `COMPLIANCE_TOKEN.balanceOf`
                 let success := call(
                     gas,                                    // forward all gas
                     complianceTokenAddress,                 // call address of asset proxy
                     0,                                      // don't send any ETH
-                    newMemFreePtr,                          // pointer to start of input
+                    freeMemPtr,                             // pointer to start of input
                     0x24,                                   // length of input (one padded address) 
-                    newMemFreePtr,                          // write output to next free memory offset
+                    freeMemPtr,                             // write output to next free memory offset
                     0x20                                    // reserve space for return balance (0x20 bytes)
                 )
                 if eq(success, 0) {
-                    // Revert with `Error("BALANCE_CHECK_FAILED")` @TODO
-                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                    mstore(64, 0x0000001453454e4445525f4e4f545f415554484f52495a454400000000000000)
-                    mstore(96, 0)
+                    // @TODO Revert with `Error("BALANCE_CHECK_FAILED")`
                     revert(0, 100)
                 }
 
                 // Revert if balance not held
-                let addressBalance := mload(newMemFreePtr)
+                let addressBalance := mload(freeMemPtr)
                 if eq(addressBalance, 0) {
                     // Revert with `Error("AT_LEAST_ONE_ADDRESS_HAS_ZERO_BALANCE")`
                     mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
