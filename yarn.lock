@@ -1515,6 +1515,10 @@
   dependencies:
     "@types/node" "*"
 
+"@types/p-limit@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/p-limit/-/p-limit-2.0.0.tgz#c076b7daa9163108a35899ea6a9d927526943ea2"
+
 "@types/prop-types@*":
   version "15.5.5"
   resolved "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.5.5.tgz#17038dd322c2325f5da650a94d5f9974943625e3"
@@ -11458,7 +11462,7 @@ p-limit@^1.1.0:
 
 p-limit@^2.0.0:
   version "2.0.0"
-  resolved "https://registry.npmjs.org/p-limit/-/p-limit-2.0.0.tgz#e624ed54ee8c460a778b3c9f3670496ff8a57aec"
+  resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-2.0.0.tgz#e624ed54ee8c460a778b3c9f3670496ff8a57aec"
   dependencies:
     p-try "^2.0.0"
 
@@ -12234,6 +12238,10 @@ prettier@^1.11.1:
 prettier@^1.14.2, prettier@^1.14.3:
   version "1.15.2"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.15.2.tgz#d31abe22afa4351efa14c7f8b94b58bb7452205e"
+
+prettier@^1.15.3:
+  version "1.15.3"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.15.3.tgz#1feaac5bdd181237b54dbe65d874e02a1472786a"
 
 pretty-bytes@^1.0.4:
   version "1.0.4"

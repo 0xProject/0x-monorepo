@@ -35,12 +35,3 @@ export function handleError(e: any): void {
     }
     process.exit(1);
 }
-
-/**
- * Returns the unix timestamp of the current hour
- */
-export function getHourInUnixTime(): number {
-    const currentTime: number = Date.now();
-    // tslint:disable-next-line
-    return currentTime - currentTime % (3600 * 1000);
-}
