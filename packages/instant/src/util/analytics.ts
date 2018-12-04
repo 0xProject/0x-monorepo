@@ -100,6 +100,8 @@ export interface AnalyticsUserOptions {
 export interface AnalyticsEventOptions {
     embeddedHost?: string;
     embeddedUrl?: string;
+    ethBalanceInUnitAmount?: string;
+    ethAddress?: string;
     networkId?: number;
     providerName?: string;
     gitSha?: string;
@@ -110,7 +112,9 @@ export interface AnalyticsEventOptions {
     affiliateFeePercent?: number;
     numberAvailableAssets?: number;
     selectedAssetName?: string;
+    selectedAssetSymbol?: string;
     selectedAssetData?: string;
+    selectedAssetDecimals?: number;
 }
 export enum TokenSelectorClosedVia {
     ClickedX = 'Clicked X',
