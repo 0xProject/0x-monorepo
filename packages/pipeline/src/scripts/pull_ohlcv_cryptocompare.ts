@@ -12,9 +12,10 @@ const SOURCE_NAME = 'CryptoCompare';
 // tslint:disable:custom-no-magic-numbers
 const TWO_HOURS_AGO = new Date().getTime() - 2 * 60 * 60 * 1000;
 const ONE_HOUR_AGO = new Date().getTime() - 60 * 60 * 1000;
+const ONE_SECOND = 1000;
 
 const MAX_CONCURRENT_REQUESTS = parseInt(process.env.CRYPTOCOMPARE_MAX_CONCURRENT_REQUESTS || '18', 10);
-const EARLIEST_BACKFILL_DATE = process.env.OHLCV_EARLIEST_BACKFILL_DATE || '2018-09-01'; // the time when BTC/USD info starts appearing on Crypto Compare
+const EARLIEST_BACKFILL_DATE = process.env.OHLCV_EARLIEST_BACKFILL_DATE || '2018-11-01'; // the time when BTC/USD info starts appearing on Crypto Compare
 const EARLIEST_BACKFILL_TIME = new Date(EARLIEST_BACKFILL_DATE).getTime();
 
 let connection: Connection;
@@ -53,14 +54,18 @@ async function fetchAndSaveAsync(
     pairs.sort(sortAscTimestamp);
 
     let i = 0;
-    let shouldContinue = true;
-    while (i < pairs.length && shouldContinue) {
+    while (i < pairs.length) {
         const pair = pairs[i];
         if (pair.latest > TWO_HOURS_AGO) {
             break;
         }
         const rawRecords = await source.getHourlyOHLCVAsync(pair);
-        const records = rawRecords.filter(rec => rec.time < ONE_HOUR_AGO); // Crypto Compare can take ~30mins to finalise records
+        const records = rawRecords.filter(rec => {
+            return rec.time * ONE_SECOND < ONE_HOUR_AGO && rec.time * ONE_SECOND > pair.latest;
+        }); // Crypto Compare can take ~30mins to finalise records
+        if (records.length === 0) {
+            break;
+        }
         const metadata: OHLCVMetadata = {
             exchange: source.default_exchange,
             fromSymbol: pair.fromSymbol,
@@ -75,7 +80,7 @@ async function fetchAndSaveAsync(
             i++;
         } catch (err) {
             console.log(`Error saving OHLCVRecords, stopping task for ${JSON.stringify(pair)} [${err}]`);
-            shouldContinue = false;
+            break;
         }
     }
     return Promise.resolve();

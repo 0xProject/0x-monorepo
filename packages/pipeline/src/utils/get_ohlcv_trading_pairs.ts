@@ -61,21 +61,20 @@ export async function fetchOHLCVTradingPairsAsync(
     Object.entries(allCoins.Data).forEach(pair => {
         const [symbol, coinData] = pair;
         if (coinData.BuiltOn === ETHEREUM_IDENTIFIER && coinData.SmartContractAddress !== 'N/A') {
-            erc20CoinsIndex.set(coinData.SmartContractAddress, symbol);
+            erc20CoinsIndex.set(coinData.SmartContractAddress.toLowerCase(), symbol);
         }
     });
 
     // fetch all tokens that are traded on 0x
     const rawTokenAddresses: Array<{ tokenaddress: string }> = await conn.query(
         `SELECT DISTINCT(maker_token_address) as tokenaddress FROM raw.exchange_fill_events UNION
-      SELECT DISTINCT(taker_token_address) as tokenaddress FROM raw.exchange_fill_events
-      LIMIT 1`,
+      SELECT DISTINCT(taker_token_address) as tokenaddress FROM raw.exchange_fill_events`,
     );
     const tokenAddresses = R.pluck('tokenaddress', rawTokenAddresses);
 
     // generate list of all tokens with backfill time
     const allTokenSymbols: string[] = tokenAddresses
-        .map(tokenAddress => erc20CoinsIndex.get(tokenAddress) || '')
+        .map(tokenAddress => erc20CoinsIndex.get(tokenAddress.toLowerCase()) || '')
         .filter(x => x);
 
     const allTradingPairCombinations: TradingPair[] = R.chain(sym => {
