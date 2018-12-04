@@ -42,6 +42,7 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-multisig
             - run: yarn wsrun test:circleci @0x/contracts-utils
+            - run: yarn wsrun test:circleci @0x/contracts-libs
             - run: yarn wsrun test:circleci @0x/contracts-core
     test-contracts-geth:
         docker:
@@ -56,6 +57,7 @@ jobs:
             # initialized
             - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test @0x/contracts-multisig
             - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-utils
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-libs
             - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-core
     test-publish:
         resource_class: medium+
