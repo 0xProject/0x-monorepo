@@ -5,7 +5,7 @@ import { Connection } from 'typeorm';
 export interface TradingPair {
     fromSymbol: string;
     toSymbol: string;
-    latest: number;
+    latestSavedTime: number;
 }
 
 const COINLIST_API = 'https://min-api.cryptocompare.com/data/all/coinlist?BuiltOn=7605';
@@ -36,7 +36,7 @@ export async function fetchOHLCVTradingPairsAsync(
     const latestTradingPairs: Array<{
         from_symbol: string;
         to_symbol: string;
-        latest: number;
+        latest: string;
     }> = await conn.query(`SELECT
     MAX(end_time) as latest,
     from_symbol,
@@ -44,11 +44,11 @@ export async function fetchOHLCVTradingPairsAsync(
     FROM raw.ohlcv_external
     GROUP BY from_symbol, to_symbol;`);
 
-    const latestTradingPairsIndex = new Map<string, Map<string, number>>();
+    const latestTradingPairsIndex: { [fromSym: string]: { [toSym: string]: number } } = {};
     latestTradingPairs.forEach(pair => {
-        const latestIndex = latestTradingPairsIndex.get(pair.from_symbol) || new Map<string, number>();
-        latestIndex.set(pair.to_symbol, pair.latest);
-        latestTradingPairsIndex.set(pair.from_symbol, latestIndex);
+        const latestIndex: { [toSym: string]: number } = latestTradingPairsIndex[pair.from_symbol] || {};
+        latestIndex[pair.to_symbol] = parseInt(pair.latest, 10); // tslint:disable-line:custom-no-magic-numbers
+        latestTradingPairsIndex[pair.from_symbol] = latestIndex;
     });
 
     // get token symbols used by Crypto Compare
@@ -72,17 +72,18 @@ export async function fetchOHLCVTradingPairsAsync(
     );
     const tokenAddresses = R.pluck('tokenaddress', rawTokenAddresses);
 
-    // generate list of all tokens with backfill time
+    // join token addresses with CC symbols
     const allTokenSymbols: string[] = tokenAddresses
         .map(tokenAddress => erc20CoinsIndex.get(tokenAddress.toLowerCase()) || '')
         .filter(x => x);
 
+    // generate list of all tokens with time of latest existing record OR default earliest time
     const allTradingPairCombinations: TradingPair[] = R.chain(sym => {
         return TO_CURRENCIES.map(fiat => {
             return {
                 fromSymbol: sym,
                 toSymbol: fiat,
-                latest: R.path<number>([sym, fiat], latestTradingPairsIndex) || earliestBackfillTime,
+                latestSavedTime: R.path<number>([sym, fiat], latestTradingPairsIndex) || earliestBackfillTime,
             };
         });
     }, allTokenSymbols);

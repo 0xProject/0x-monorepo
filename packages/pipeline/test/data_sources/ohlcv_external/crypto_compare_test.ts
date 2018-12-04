@@ -3,6 +3,7 @@ import 'mocha';
 import * as R from 'ramda';
 
 import { CryptoCompareOHLCVSource } from '../../../src/data_sources/ohlcv_external/crypto_compare';
+import { TradingPair } from '../../../src/utils/get_ohlcv_trading_pairs';
 import { chaiSetup } from '../../utils/chai_setup';
 
 chaiSetup.configure();
@@ -13,16 +14,16 @@ describe('ohlcv_external data source (Crypto Compare)', () => {
     describe('generateBackfillIntervals', () => {
         it('generates pairs with intervals to query', () => {
             const source = new CryptoCompareOHLCVSource();
-            const pair = {
+            const pair: TradingPair = {
                 fromSymbol: 'ETH',
                 toSymbol: 'ZRX',
-                latest: new Date().getTime() - source.interval * 2,
+                latestSavedTime: new Date().getTime() - source.interval * 2,
             };
 
             const expected = [
                 pair,
-                R.merge(pair, { latest: pair.latest + source.interval }),
-                R.merge(pair, { latest: pair.latest + source.interval * 2 }),
+                R.merge(pair, { latestSavedTime: pair.latestSavedTime + source.interval }),
+                R.merge(pair, { latestSavedTime: pair.latestSavedTime + source.interval * 2 }),
             ];
 
             const actual = source.generateBackfillIntervals(pair);
@@ -31,10 +32,10 @@ describe('ohlcv_external data source (Crypto Compare)', () => {
 
         it('returns single pair if no backfill is needed', () => {
             const source = new CryptoCompareOHLCVSource();
-            const pair = {
+            const pair: TradingPair = {
                 fromSymbol: 'ETH',
                 toSymbol: 'ZRX',
-                latest: new Date().getTime() - source.interval + 5000,
+                latestSavedTime: new Date().getTime() - source.interval + 5000,
             };
 
             const expected = [pair];

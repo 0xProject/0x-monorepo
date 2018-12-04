@@ -32,9 +32,8 @@ export interface CryptoCompareOHLCVParams {
     toTs?: number;
 }
 
-// tslint:disable:custom-no-magic-numbers
-const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
-const ONE_HOUR = 60 * 60 * 1000;
+const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
+const ONE_HOUR = 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_SECOND = 1000;
 const HTTP_OK_STATUS = 200;
 
@@ -56,7 +55,7 @@ export class CryptoCompareOHLCVSource {
             e: this.default_exchange,
             fsym: pair.fromSymbol,
             tsym: pair.toSymbol,
-            toTs: Math.floor((pair.latest + this.interval) / ONE_SECOND), // CryptoCompare uses timestamp in seconds. not ms
+            toTs: Math.floor((pair.latestSavedTime + this.interval) / ONE_SECOND), // CryptoCompare uses timestamp in seconds. not ms
         };
         const url = this._url + stringify(params);
 
@@ -79,15 +78,15 @@ export class CryptoCompareOHLCVSource {
             console.log(`Error scraping ${url}: ${json.Message}`);
             return [];
         }
-        return Object.values(json.Data).filter(rec => rec.time * ONE_SECOND >= pair.latest);
+        return Object.values(json.Data).filter(rec => rec.time * ONE_SECOND >= pair.latestSavedTime);
     }
     public generateBackfillIntervals(pair: TradingPair): TradingPair[] {
         const now = new Date().getTime();
         const f = (p: TradingPair): false | [TradingPair, TradingPair] => {
-            if (p.latest > now) {
+            if (p.latestSavedTime > now) {
                 return false;
             } else {
-                return [p, R.merge(p, { latest: p.latest + this.interval })];
+                return [p, R.merge(p, { latestSavedTime: p.latestSavedTime + this.interval })];
             }
         };
         return R.unfold(f, pair);
