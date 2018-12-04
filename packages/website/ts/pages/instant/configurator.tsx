@@ -51,7 +51,7 @@ export class Configurator extends React.Component<ConfiguratorProps> {
                         <Text fontSize="20px" lineHeight="28px" fontColor={colors.white} fontWeight={500}>
                             Code Snippet
                         </Text>
-                        <ActionLink displayText="Explore the Docs" linkSrc="/docs/instant" color={colors.grey} />
+                        <ActionLink displayText="Explore the Docs" linkSrc="/wiki#Get-Started" color={colors.grey} />
                     </Container>
                     <CodeDemo key={codeToDisplay}>{codeToDisplay}</CodeDemo>
                 </Container>
@@ -74,7 +74,7 @@ export class Configurator extends React.Component<ConfiguratorProps> {
             liquiditySource: '${instantConfig.orderSource}',${
             !_.isUndefined(instantConfig.affiliateInfo) && instantConfig.affiliateInfo.feeRecipient
                 ? `\n            affiliateInfo: {
-                feeRecipient: '${instantConfig.affiliateInfo.feeRecipient}',
+                feeRecipient: '${instantConfig.affiliateInfo.feeRecipient.toLowerCase()}',
                 feePercentage: ${instantConfig.affiliateInfo.feePercentage}
             }`
                 : ''
