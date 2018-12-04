@@ -33,7 +33,6 @@
         "./generated-artifacts/TestAssetProxyDispatcher.json",
         "./generated-artifacts/TestAssetProxyOwner.json",
         "./generated-artifacts/TestExchangeInternals.json",
-        "./generated-artifacts/TestLibs.json",
         "./generated-artifacts/TestSignatureValidator.json",
         "./generated-artifacts/TestStaticCallReceiver.json",
         "./generated-artifacts/Validator.json",

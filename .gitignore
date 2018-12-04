@@ -82,6 +82,7 @@ packages/testnet-faucets/server/
 contracts/core/generated-artifacts/
 contracts/multisig/generated-artifacts/
 contracts/utils/generated-artifacts/
+contracts/libs/generated-artifacts/
 packages/sol-cov/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 
@@ -90,6 +91,7 @@ packages/abi-gen-wrappers/wrappers
 contracts/core/generated-wrappers/
 contracts/multisig/generated-wrappers/
 contracts/utils/generated-wrappers/
+contracts/libs/generated-wrappers/
 packages/metacoin/src/contract_wrappers
 
 # solc-bin in sol-compiler

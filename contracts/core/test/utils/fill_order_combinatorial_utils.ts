@@ -1,3 +1,4 @@
+import { artifacts as libsArtifacts, TestLibsContract } from '@0x/contracts-libs';
 import {
     AllowanceAmountScenario,
     AssetDataScenario,
@@ -32,7 +33,6 @@ import * as _ from 'lodash';
 import 'make-promises-safe';
 
 import { ExchangeContract, ExchangeFillEventArgs } from '../../generated-wrappers/exchange';
-import { TestLibsContract } from '../../generated-wrappers/test_libs';
 import { artifacts } from '../../src/artifacts';
 
 import { AssetWrapper } from './asset_wrapper';
@@ -131,7 +131,11 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         exchangeContract.address,
     );
 
-    const testLibsContract = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults);
+    const testLibsContract = await TestLibsContract.deployFrom0xArtifactAsync(
+        libsArtifacts.TestLibs,
+        provider,
+        txDefaults,
+    );
 
     const fillOrderCombinatorialUtils = new FillOrderCombinatorialUtils(
         orderFactory,
