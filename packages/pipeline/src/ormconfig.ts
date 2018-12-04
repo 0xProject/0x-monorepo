@@ -10,6 +10,7 @@ import {
     SraOrder,
     SraOrdersObservedTimeStamp,
     TokenMetadata,
+    TokenOrderbookSnapshot,
     Transaction,
 } from './entities';
 
@@ -23,6 +24,7 @@ const entities = [
     SraOrder,
     SraOrdersObservedTimeStamp,
     TokenMetadata,
+    TokenOrderbookSnapshot,
     Transaction,
 ];
 

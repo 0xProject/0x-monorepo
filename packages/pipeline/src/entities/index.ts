@@ -12,6 +12,7 @@ export { Relayer } from './relayer';
 export { SraOrder } from './sra_order';
 export { SraOrdersObservedTimeStamp, createObservedTimestampForOrder } from './sra_order_observed_timestamp';
 export { TokenMetadata } from './token_metadata';
+export { TokenOrderbookSnapshot } from './token_order';
 export { Transaction } from './transaction';
 
 export type ExchangeEvent = ExchangeFillEvent | ExchangeCancelEvent | ExchangeCancelUpToEvent;
