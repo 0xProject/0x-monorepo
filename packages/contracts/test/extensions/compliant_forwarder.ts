@@ -206,11 +206,11 @@ describe.only(ContractName.CompliantForwarder, () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe.only('fillOrder', () => {
+    describe('fillOrder', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
-        it.only('should transfer the correct amounts when maker and taker are compliant', async () => {
+        it('should transfer the correct amounts when maker and taker are compliant', async () => {
             const txHash = await compliantForwarderInstance.executeTransaction.sendTransactionAsync(
                 compliantSignedFillOrderTx.salt,
                 compliantSignedFillOrderTx.signerAddress,
@@ -336,7 +336,7 @@ describe.only(ContractName.CompliantForwarder, () => {
         });
     });
 
-    describe('batchFillOrders', () => {
+    describe.only('batchFillOrders', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });

@@ -171,11 +171,11 @@ contract CompliantForwarder is ExchangeSelectors{
                 let addressBalance := mload(freeMemPtr)
                 if eq(addressBalance, 0) {
                     // Revert with `Error("AT_LEAST_ONE_ADDRESS_HAS_ZERO_BALANCE")`
-                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    /*mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                     mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
                     mstore(64, 0x0000002541545f4c454153545f4f4e455f414444524553535f4841535f5a4552)
                     mstore(96, 0x4f5f42414c414e43450000000000000000000000000000000000000000000000)
-                    revert(0, 109)
+                    revert(0, 109)*/
                 }
             }
 
@@ -186,11 +186,11 @@ contract CompliantForwarder is ExchangeSelectors{
         emit ValidatedAddresses(validatedAddresses);
         
         // All entities are verified. Execute fillOrder.
-        EXCHANGE.executeTransaction(
+       /* EXCHANGE.executeTransaction(
             salt,
             signerAddress,
             signedExchangeTransaction,
             signature
-        );
+        );*/
     }
 }
