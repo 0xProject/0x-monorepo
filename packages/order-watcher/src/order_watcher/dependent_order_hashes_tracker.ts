@@ -75,7 +75,6 @@ export class DependentOrderHashesTracker {
         }
         this._removeFromMakerDependentOrderhashes(signedOrder);
     }
-
     private _getDependentOrderHashesByERC20AssetData(makerAddress: string, erc20AssetData: string): string[] {
         const tokenAddress = assetDataUtils.decodeERC20AssetData(erc20AssetData).tokenAddress;
         let dependentOrderHashes: string[] = [];

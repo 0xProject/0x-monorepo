@@ -50,14 +50,14 @@ describe('assetDataUtils', () => {
         expect(decodedAssetData.assetProxyId).to.equal(AssetProxyId.ERC721);
         expect(decodedAssetData.tokenId).to.be.bignumber.equal(KNOWN_ERC721_ENCODING.tokenId);
     });
-    it('should encode ERC20 and ERC721', () => {
+    it('should encode ERC20 and ERC721 multiAssetData', () => {
         const assetData = assetDataUtils.encodeMultiAssetData(
             KNOWN_MULTI_ASSET_ENCODING.amounts,
             KNOWN_MULTI_ASSET_ENCODING.nestedAssetData,
         );
         expect(assetData).to.equal(KNOWN_MULTI_ASSET_ENCODING.assetData);
     });
-    it('should decode ERC20 and ERC21', () => {
+    it('should decode ERC20 and ERC721 multiAssetData', () => {
         const decodedAssetData = assetDataUtils.decodeMultiAssetData(KNOWN_MULTI_ASSET_ENCODING.assetData);
         expect(decodedAssetData.assetProxyId).to.equal(AssetProxyId.MultiAsset);
         expect(decodedAssetData.amounts).to.deep.equal(KNOWN_MULTI_ASSET_ENCODING.amounts);
