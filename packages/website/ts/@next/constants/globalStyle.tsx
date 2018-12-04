@@ -61,6 +61,11 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
         color: inherit;
         text-decoration: none;
     }
+
+    svg + p,
+    img + p {
+        padding-top: 30px;
+    }
 `);
 
 export { GlobalStyles };

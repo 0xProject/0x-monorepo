@@ -9,6 +9,7 @@ interface PaddingSizes {
 const PADDING_SIZES: PaddingSizes = {
     'default': '30px',
     'large': '60px',
+    'small': '15px',
 };
 
 export const getCSSPadding = (value: number | Array<string | number>): string => {

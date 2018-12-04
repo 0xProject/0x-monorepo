@@ -119,27 +119,45 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                         873,435
                     </Heading>
 
-                    <Paragraph isMuted={0.4} isCentered={true} isNoMargin={true}>
+                    <Paragraph
+                        isMuted={0.4}
+                        isCentered={true}
+                        isNoMargin={true}
+                    >
                         Number of transactions
                     </Paragraph>
                 </Column>
 
                 <Column colWidth="1/3" isNoPadding={true}>
-                    <Heading size="medium" isCentered={true}>
+                    <Heading
+                        size="medium"
+                        isCentered={true}
+                    >
                         $203M
                     </Heading>
 
-                    <Paragraph isMuted={0.4} isCentered={true} isNoMargin={true}>
+                    <Paragraph
+                        isMuted={0.4}
+                        isCentered={true}
+                        isNoMargin={true}
+                    >
                         Total volume
                     </Paragraph>
                 </Column>
 
                 <Column colWidth="1/3" isNoPadding={true}>
-                    <Heading size="medium" isCentered={true}>
+                    <Heading
+                        size="medium"
+                        isCentered={true}
+                    >
                         227,372
                     </Heading>
 
-                    <Paragraph isMuted={0.4} isCentered={true} isNoMargin={true}>
+                    <Paragraph
+                        isMuted={0.4}
+                        isCentered={true}
+                        isNoMargin={true}
+                    >
                         Number of relayers
                     </Paragraph>
                 </Column>
@@ -151,9 +169,13 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                 <Heading size="small">You're in good company</Heading>
             </WrapCentered>
 
-            <WrapGrid width="narrow">
+            <WrapGrid width="narrow" isWrapped={true}>
                 {_.map(projects, (item: ProjectLogo, index) => (
-                    <Project key={index} name={item.name} imageUrl={item.imageUrl} />
+                    <Project
+                        key={index}
+                        name={item.name}
+                        imageUrl={item.imageUrl}
+                    />
                 ))}
             </WrapGrid>
         </Section>
@@ -167,7 +189,14 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                 >
                     <WrapCentered>
                         <ReadyToBuildIcon width="150" />
-                        Ready to build on 0x?
+
+                        <Paragraph>
+                            Ready to build on 0x?
+                        </Paragraph>
+
+                        <Button isTransparent={true}>
+                            Get Started
+                        </Button>
                     </WrapCentered>
                 </Column>
 
@@ -178,7 +207,14 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                 >
                     <WrapCentered>
                         <SupportIcon width="150" />
-                        Want help from the 0x team?
+
+                        <Paragraph>
+                            Want help from the 0x team?
+                        </Paragraph>
+
+                        <Button isTransparent={true}>
+                            Get in Touch
+                        </Button>
                     </WrapCentered>
                 </Column>
             </Wrap>
@@ -193,10 +229,10 @@ const Project = ({ name, imageUrl }: ProjectLogo) => (
 );
 
 const StyledProject = styled.div`
-    width: 80px;
-    height: 116px;
-    border: 1px solid blue;
-    margin: 30px 60px;
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0;
+    margin: 30px;
 
     img {
         object-fit: contain;
