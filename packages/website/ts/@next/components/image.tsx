@@ -3,19 +3,17 @@ import styled from 'styled-components';
 
 interface Props {
     alt?: string;
-    src: any;
-    srcset: any;
-    center: any;
+    src?: any;
+    srcset?: any;
+    isCentered?: boolean;
 }
 
 const ImageClass: React.FunctionComponent<Props> = (props: Props) => {
-    const { src, srcset, alt } = props;
-
     return (
-        <img src={src} {...props} />
+        <img {...props} />
     );
 };
 
-export const Image = styled(ImageClass)`
-    margin: ${(props: Props) => props.center && `0 auto`};
+export const Image = styled(ImageClass)<Props>`
+    margin: ${props => props.isCentered && `0 auto`};
 `;

@@ -29,7 +29,7 @@ interface WrapProps {
     bgColor?: string;
     isWrapped?: boolean;
     isCentered?: boolean;
-    padding?: number | ('large' | 'default' | number)[];
+    padding?: number | Array<'large' | 'default' | number>;
 }
 
 interface ColumnProps {
@@ -52,7 +52,7 @@ const _getColumnWidth = (args: GetColWidthArgs): string => {
     return `calc(${percentWidth}% - ${gutterDiff}px)`;
 };
 
-const _getPadding = (value: number | (string | number)[]): string => {
+const _getPadding = (value: number | Array<string | number>): string => {
     if (Array.isArray(value)) {
         return value.map(val => PADDING_SIZES[val] || `${val}px`).join(' ');
     } else {
@@ -99,7 +99,7 @@ export const Section = styled.section<SectionProps>`
     margin-bottom: ${props => !props.isNoMargin && `${GUTTER}px`};
     margin-left: ${props => props.isFullWidth && `-${GUTTER}px`};
     background-color: ${props => props.bgColor};
-    border: 1px dotted rgba(0, 255, 0, 0.3);
+    border: 1px dotted rgba(0, 255, 0, 0.15);
 
     @media (min-width: 1560px) {
         width: ${props => props.isFullWidth && '100vw'};
@@ -141,7 +141,7 @@ export const WrapGrid = styled(WrapBase)`
 
 export const Column = styled.div<ColumnProps>`
     padding: ${props => !props.isNoPadding && (props.isPadLarge ? '60px 30px' : '30px')};
-    border: 1px dotted rgba(255, 0, 0, 0.3);
+    border: 1px dotted rgba(255, 0, 0, 0.15);
     background-color: ${props => props.bgColor};
     border-color: ${props => props.borderColor && `${props.borderColor}`};
 

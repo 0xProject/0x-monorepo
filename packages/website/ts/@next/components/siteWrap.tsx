@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled, { ThemeProvider } from 'styled-components';
+import { ThemeProvider } from 'styled-components';
 
 import { Footer } from 'ts/@next/components/footer';
 import { Header } from 'ts/@next/components/header';
@@ -18,7 +18,7 @@ export interface ThemeInterface {
     [key: string]: {
         bgColor: string;
         textColor: string;
-    }
+    };
 }
 
 const GLOBAL_THEMES: ThemeInterface = {
@@ -34,7 +34,7 @@ const GLOBAL_THEMES: ThemeInterface = {
         bgColor: '#e0e0e0',
         textColor: '#000000',
     },
-}
+};
 
 export const SiteWrap: React.StatelessComponent<Props> = props => {
     const {

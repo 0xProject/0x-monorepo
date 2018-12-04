@@ -2,13 +2,12 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { ThemeInterface } from 'ts/@next/components/siteWrap';
-import LogoIcon from '../icons/logo-with-type.svg';
+import LogoIcon from 'ts/@next/icons/logo-with-type.svg';
 
 interface LogoInterface {
-    light?: any;
+    isLight?: boolean;
     theme?: ThemeInterface;
 }
-
 
 // Note let's refactor this
 // is it absolutely necessary to have a stateless component
@@ -21,11 +20,11 @@ const Icon = styled(LogoIcon)`
     flex-shrink: 0;
 
     path {
-        fill: ${(props: LogoInterface) => props.light ? '#fff' : props.theme.textColor};
+        fill: ${(props: LogoInterface) => props.isLight ? '#fff' : props.theme.textColor};
     }
 `;
 
-export const Logo: React.StatelessComponent<LogoInterface> = (props) => (
+export const Logo: React.StatelessComponent<LogoInterface> = (props: LogoInterface) => (
     <StyledLogo>
         <Icon {...props} />
     </StyledLogo>

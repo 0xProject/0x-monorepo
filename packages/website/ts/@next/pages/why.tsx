@@ -9,7 +9,6 @@ import { Heading, Paragraph } from 'ts/@next/components/text';
 
 import CoinIcon from 'ts/@next/icons/illustrations/coin.svg';
 import CustomizeIcon from 'ts/@next/icons/illustrations/customize.svg';
-import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
 
 export const NextWhy = () => (

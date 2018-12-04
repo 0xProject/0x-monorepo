@@ -1,5 +1,4 @@
 import * as React from 'react';
-import styled from 'styled-components';
 
 import {colors} from 'ts/style/colors';
 
@@ -8,9 +7,9 @@ import {Column, Section, Wrap, WrapCentered} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 
-import TokensIcon from 'ts/@next/icons/illustrations/tokens.svg';
 import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
+import TokensIcon from 'ts/@next/icons/illustrations/tokens.svg';
 
 export const Next0xInstant = () => (
     <SiteWrap>
@@ -22,9 +21,7 @@ export const Next0xInstant = () => (
             </WrapCentered>
         </Section>
 
-        <Section
-            isFullWidth={true}
-            isNoPadding={true}>
+        <Section isFullWidth={true} isNoPadding={true}>
             <Wrap width="full">
                 <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
             </Wrap>
@@ -108,7 +105,7 @@ export const Next0xInstant = () => (
                     <WrapCentered>
                         <div>
                             <Button href="#">Explore the Docs</Button>
-                            <Button href="#" transparent>Get in Touch</Button>
+                            <Button href="#" isTransparent={true}>Get in Touch</Button>
                         </div>
                     </WrapCentered>
                 </Column>
@@ -125,18 +122,3 @@ export const Next0xInstant = () => (
         </Section>
     </SiteWrap>
 );
-
-const ChapterLink = styled.a `
-    font-size: 1.222222222rem;
-    display: block;
-    opacity: 0.8;
-    margin-bottom: 1.666666667rem;
-
-    &:first-child {
-        opacity: 1;
-    }
-
-    &:hover {
-        opacity: 1;
-    }
-`;

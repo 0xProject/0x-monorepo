@@ -5,8 +5,6 @@ import { colors } from 'ts/style/colors';
 
 import {Button} from 'ts/@next/components/button';
 
-import ArrowIcon from 'ts/@next/icons/form-arrow.svg';
-
 interface InputProps {
     name: string;
     label: string;
@@ -15,9 +13,9 @@ interface InputProps {
 interface Props {
 }
 
-const Input = ({ ...props }) => {
+const Input = (props: InputProps) => {
     const { name, label } = props;
-    const id = 'input-' + name;
+    const id = `input-${name}`;
 
     return (
         <>
@@ -31,7 +29,7 @@ export const NewsletterForm: React.StatelessComponent = (props: Props) => (
     <StyledForm>
         <InputWrapper>
             <Input name="email" type="email" label="Email Address" />
-            <SubmitButton hasIcon>
+            <SubmitButton hasIcon={true}>
                 Submit
             </SubmitButton>
         </InputWrapper>

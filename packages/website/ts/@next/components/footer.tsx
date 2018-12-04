@@ -1,11 +1,10 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import styled from 'styled-components';
 import { Link as ReactRouterLink } from 'react-router-dom';
+import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Button } from 'ts/@next/components/button';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
 import { Logo } from 'ts/@next/components/logo';
 import { NewsletterForm } from 'ts/@next/components/newsletterForm';
@@ -57,33 +56,28 @@ const linkRows: LinkRows[] = [
 ];
 
 export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
-  <FooterWrap
-    bgColor="#181818"
-    noMargin>
-    <Wrap>
-      <Column colWidth="1/2" isNoPadding={true}>
-        <Logo light />
-        <NewsletterForm />
-      </Column>
-
-      <Column colWidth="1/2" isNoPadding={true}>
+    <FooterWrap bgColor="#181818" isNoMargin={true}>
         <Wrap>
-          {_.map(linkRows, (row, index) => (
-            <Column
-              key={`fc-${index}`}
-              colWidth="1/3"
-              isNoPadding={true}>
-              <RowHeading>
-                { row.heading }
-              </RowHeading>
-
-              <LinkList links={row.links} />
+            <Column colWidth="1/2" isNoPadding={true}>
+                <Logo isLight={true} />
+                <NewsletterForm />
             </Column>
-          ))}
+
+            <Column colWidth="1/2" isNoPadding={true}>
+                <Wrap>
+                    {_.map(linkRows, (row, index) => (
+                        <Column key={`fc-${index}`} colWidth="1/3" isNoPadding={true}>
+                            <RowHeading>
+                                {row.heading}
+                            </RowHeading>
+
+                            <LinkList links={row.links} />
+                        </Column>
+                    ))}
+                </Wrap>
+            </Column>
         </Wrap>
-      </Column>
-    </Wrap>
-  </FooterWrap>
+    </FooterWrap>
 );
 
 const LinkList = (props: LinkListProps) => (

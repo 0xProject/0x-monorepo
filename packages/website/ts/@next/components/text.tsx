@@ -1,7 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-
 interface HeadingProps {
     asElement?: 'h1'| 'h2'| 'h3'| 'h4';
     size?: 'default' | 'medium' | 'large' | 'small';

@@ -1,18 +1,12 @@
 import * as React from 'react';
-import styled from 'styled-components';
 import { Link as ReactRouterLink } from 'react-router-dom';
+import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Column, Section, Wrap, WrapGrid, WrapCentered } from 'ts/@next/components/layout';
+import { Column, Section, Wrap } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
-import { Image } from 'ts/@next/components/image';
-
-import CoinIcon from 'ts/@next/icons/illustrations/coin.svg';
-import ConsistentlyShipIcon from 'ts/@next/icons/illustrations/consistently-ship.svg';
-import LongTermImpactIcon from 'ts/@next/icons/illustrations/long-term-impact.svg';
-import RightThingIcon from 'ts/@next/icons/illustrations/right-thing.svg';
 
 interface TeamMember {
     name: string;

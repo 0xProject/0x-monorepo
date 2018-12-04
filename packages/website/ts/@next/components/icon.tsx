@@ -7,8 +7,6 @@ interface Props {
 }
 
 export const IconClass: React.FunctionComponent<Props> = (props: Props) => {
-    const { icon, size } = props;
-
     return (
         <div />
     );

@@ -1,18 +1,10 @@
 import * as React from 'react';
-import styled from 'styled-components';
 import { Link as ReactRouterLink } from 'react-router-dom';
+import styled from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
-import { Column, Section, Wrap, WrapCentered } from 'ts/@next/components/layout';
+import { Column, Section, Wrap } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
-import { Image } from 'ts/@next/components/image';
-
-import CoinIcon from 'ts/@next/icons/illustrations/coin.svg';
-import ConsistentlyShipIcon from 'ts/@next/icons/illustrations/consistently-ship.svg';
-import LongTermImpactIcon from 'ts/@next/icons/illustrations/long-term-impact.svg';
-import RightThingIcon from 'ts/@next/icons/illustrations/right-thing.svg';
 
 export const NextAboutJobs = () => (
   <SiteWrap theme="light">
@@ -25,9 +17,12 @@ export const NextAboutJobs = () => (
             <ChapterLink to="/next/about/jobs">Jobs</ChapterLink>
         </Column>
         <Column colWidth="2/3">
-            <Heading size="medium">Join Us in Our Mission</Heading>
-            <Paragraph size="medium">To create a tokenized world where all value can flow freely.
-We are powering a growing ecosystem of decentralized applications and solving novel challenges to make our technology intuitive, flexible, and accessible to all. Read more about our mission, and join us in building financial infrastructure upon which the exchange of anything of value will take place.</Paragraph>
+            <Heading size="medium">
+                Join Us in Our Mission
+            </Heading>
+            <Paragraph size="medium">
+                To create a tokenized world where all value can flow freely.We are powering a growing ecosystem of decentralized applications and solving novel challenges to make our technology intuitive, flexible, and accessible to all. Read more about our mission, and join us in building financial infrastructure upon which the exchange of anything of value will take place.
+            </Paragraph>
         </Column>
       </Wrap>
     </Section>
@@ -35,8 +30,12 @@ We are powering a growing ecosystem of decentralized applications and solving no
     <Section bgColor="#F3F6F4">
       <Wrap>
         <Column colWidth="1/3">
-            <Heading size="medium">Powered by a Diverse Worldwide Community</Heading>
-            <Paragraph>We're a highly technical team with varied backgrounds in engineering, science, business, finance, and research. While the core team is headquartered in San Francisco, there are 30+ teams building on 0x and hundreds of thousands of participants behind our efforts globally. We're passionate about open-source software and decentralized technology's potential to act as an equalizing force in the world.</Paragraph>
+            <Heading size="medium">
+                Powered by a Diverse Worldwide Community
+            </Heading>
+            <Paragraph>
+                We're a highly technical team with varied backgrounds in engineering, science, business, finance, and research. While the core team is headquartered in San Francisco, there are 30+ teams building on 0x and hundreds of thousands of participants behind our efforts globally. We're passionate about open-source software and decentralized technology's potential to act as an equalizing force in the world.
+            </Paragraph>
         </Column>
 
         <Column colWidth="2/3">
@@ -95,7 +94,9 @@ We are powering a growing ecosystem of decentralized applications and solving no
                     <Heading size="small">Open Positition</Heading>
                 </Column>
                 <Column colWidth="1/3">
-                    <Paragraph isMuted={true}>We're always interested in talking to talented people. Send us an application if you think you're the right fit.</Paragraph>
+                    <Paragraph isMuted={true}>
+                        We're always interested in talking to talented people. Send us an application if you think you're the right fit.
+                    </Paragraph>
                 </Column>
                 <Column colWidth="1/3">
                     <Paragraph><a href="#">Apply</a></Paragraph>
@@ -118,6 +119,7 @@ const BenefitsList = styled.ul`
     }
 `;
 
+// Lets refactor these chapter links into button perhaps as a <Link type={xxx} />
 const ChapterLink = styled(ReactRouterLink)`
     font-size: 1.222222222rem;
     display: block;

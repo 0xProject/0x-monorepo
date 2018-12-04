@@ -1,12 +1,12 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
 import { Link as ReactRouterLink } from 'react-router-dom';
 
-import { Section, Wrap } from './layout';
-import { Button } from './button';
-import { Logo } from './logo';
+import { Button } from 'ts/@next/components/button';
+import { Section, Wrap } from 'ts/@next/components/layout';
+import { Logo } from 'ts/@next/components/logo';
 
 interface HeaderProps {
 }

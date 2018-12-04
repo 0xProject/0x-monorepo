@@ -1,13 +1,11 @@
-import { withTheme, createGlobalStyle } from 'styled-components';
+import { createGlobalStyle, withTheme } from 'styled-components';
 import {cssReset} from 'ts/@next/constants/cssReset';
-import {colors} from 'ts/style/colors';
-
 
 interface GlobalStyle {
     theme: {
         bgColor: string;
         textColor: string;
-    }
+    };
 }
 
 const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `

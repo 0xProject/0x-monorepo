@@ -5,9 +5,9 @@ import { colors } from 'ts/style/colors';
 
 interface ButtonInterface {
     children: Node | string;
-    transparent?: any;
-    hasIcon?: any;
-    inline?: any;
+    isTransparent?: boolean;
+    hasIcon?: boolean | string;
+    isInline?: boolean;
     href?: string;
     onClick?: () => void;
 }
@@ -31,9 +31,9 @@ export const ButtonWrap = styled.div`
 const StyledButton = styled.button<ButtonInterface>`
     appearance: none;
     border: 1px solid transparent;
-    display: ${props => props.inline && 'inline-block'};
-    background-color: ${props => !props.transparent && colors.brandLight};
-    border-color: ${props => props.transparent && '#6a6a6a'};
+    display: ${props => props.isInline && 'inline-block'};
+    background-color: ${props => !props.isTransparent && colors.brandLight};
+    border-color: ${props => props.isTransparent && '#6a6a6a'};
     color: ${props => props.color || props.theme.textColor};
     text-align: center;
     padding: 14px 22px;

@@ -1,5 +1,5 @@
-import * as React from 'react';
 import * as _ from 'lodash';
+import * as React from 'react';
 import styled from 'styled-components';
 
 import {colors} from 'ts/style/colors';
@@ -13,17 +13,6 @@ import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
 import ReadyToBuildIcon from 'ts/@next/icons/illustrations/ready-to-build.svg';
 import SupportIcon from 'ts/@next/icons/illustrations/support.svg';
-
-/**
-    Note(ez): Maybe when we're done at least with a basic structure,
-    we can take out each section into e.g. LandingSectionIntro.tsx in
-    @next/sections/landing ? so then our routes would only look like
-
-    <SiteWrap>
-        <LandingSectionIntro />
-        <LandingSectionWhatever />
-    </SiteWrap>
-*/
 
 interface ProjectLogo {
     name: string;
@@ -83,11 +72,11 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                     </Paragraph>
 
                     <ButtonWrap>
-                        <Button inline>
+                        <Button isInline={true}>
                             Get Started
                         </Button>
 
-                        <Button transparent inline>
+                        <Button isTransparent={true} isInline={true}>
                             Learn More
                         </Button>
                     </ButtonWrap>
@@ -99,22 +88,18 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
             </Wrap>
         </Section>
 
-        <Section
-            bgColor={colors.backgroundDark}
-            isPadLarge={true}>
+        <Section bgColor={colors.backgroundDark} isPadLarge={true}>
             <WrapCentered width="narrow">
                 <ProtocolIcon/>
 
-                <Paragraph
-                    size="large"
-                    isCentered={true}>
+                <Paragraph size="large" isCentered={true}>
                     0x is an open protocol that enables the peer-to-peer exchange of Ethereum-based
                     tokens. Anyone in the world can use 0x to service a wide variety of markets
                     ranging from gaming items to financial instruments to assets that could have
                     near existed before.
                 </Paragraph>
 
-                <Button href="#" transparent>
+                <Button href="#" isTransparent={true}>
                     Discover how developers use 0x
                 </Button>
             </WrapCentered>
@@ -122,61 +107,39 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
             {/* Note you can also pass in a string "large/default" or a number for custom margins */}
             <Wrap padding={['large', 0, 0, 0]}>
                 {/* NOTE: this probably should be withComponent as part of a <dl> */}
-                <Column
-                    colWidth="1/3"
-                    isNoPadding={true}>
-                    <Heading
-                        size="medium"
-                        isCentered={true}>
+                <Column colWidth="1/3" isNoPadding={true}>
+                    <Heading size="medium" isCentered={true}>
                         873,435
                     </Heading>
 
-                    <Paragraph
-                        isMuted={0.4}
-                        isCentered={true}
-                        isNoMargin={true}>
+                    <Paragraph isMuted={0.4} isCentered={true} isNoMargin={true}>
                         Number of transactions
                     </Paragraph>
                 </Column>
 
-                <Column
-                    colWidth="1/3"
-                    isNoPadding={true}>
-                    <Heading
-                        size="medium"
-                        isCentered={true}>
+                <Column colWidth="1/3" isNoPadding={true}>
+                    <Heading size="medium" isCentered={true}>
                         $203M
                     </Heading>
 
-                    <Paragraph
-                        isMuted={0.4}
-                        isCentered={true}
-                        isNoMargin={true}>
+                    <Paragraph isMuted={0.4} isCentered={true} isNoMargin={true}>
                         Total volume
                     </Paragraph>
                 </Column>
 
-                <Column
-                    colWidth="1/3"
-                    isNoPadding={true}>
-                    <Heading
-                        size="medium"
-                        isCentered={true}>
+                <Column colWidth="1/3" isNoPadding={true}>
+                    <Heading size="medium" isCentered={true}>
                         227,372
                     </Heading>
 
-                    <Paragraph
-                        isMuted={0.4}
-                        isCentered={true}
-                        isNoMargin={true}>
+                    <Paragraph isMuted={0.4} isCentered={true} isNoMargin={true}>
                         Number of relayers
                     </Paragraph>
                 </Column>
             </Wrap>
         </Section>
 
-        <Section
-            isPadLarge={true}>
+        <Section isPadLarge={true}>
             <WrapCentered>
                 <Heading size="small">You're in good company</Heading>
             </WrapCentered>
