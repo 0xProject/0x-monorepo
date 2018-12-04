@@ -19,11 +19,7 @@ describe('ohlcv_external data source (Crypto Compare)', () => {
                 latest: new Date().getTime() - source.interval * 2,
             };
 
-            const expected = [
-                pair,
-                R.merge(pair, { latest: pair.latest + source.interval }),
-                R.merge(pair, { latest: pair.latest + source.interval * 2 }),
-            ];
+            const expected = [pair, R.merge(pair, { latest: pair.latest + source.interval })];
 
             const actual = source.generateBackfillIntervals(pair);
             expect(actual).deep.equal(expected);
