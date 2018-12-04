@@ -65,7 +65,7 @@ export class Select extends React.Component<SelectProps, SelectState> {
                         hasBoxShadow={isOpen}
                         border={border}
                         backgroundColor={backgroundColor}
-                        padding="0.8em"
+                        padding="0.5em 0.8em"
                         width="100%"
                     >
                         <Container className="flex justify-between">
@@ -79,7 +79,7 @@ export class Select extends React.Component<SelectProps, SelectState> {
                                     </Text>
                                 )}
                                 {hasItems && (
-                                    <Container marginLeft="5px" display="inline-block" position="relative" bottom="2px">
+                                    <Container marginLeft="5px" display="inline-block">
                                         <i
                                             className="zmdi zmdi-chevron-down"
                                             style={{ fontSize: iconSize, color: colors.darkGrey }}
