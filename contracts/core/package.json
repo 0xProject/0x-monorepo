@@ -61,6 +61,7 @@
         "chai-bignumber": "^2.0.1",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
+        "ethereumjs-abi": "0.6.5",
         "mocha": "^4.1.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
