@@ -83,6 +83,11 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         );
     }
     private readonly _getTokenSelectorProps = (): ConfigGeneratorSectionProps => {
+        if (_.isEmpty(this.state.availableTokens)) {
+            return {
+                title: 'What tokens can users buy?',
+            };
+        }
         if (_.isUndefined(this.props.value.availableAssetDatas)) {
             return {
                 title: 'What tokens can users buy?',
