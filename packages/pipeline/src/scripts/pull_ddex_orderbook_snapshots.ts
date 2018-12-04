@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+import { logUtils } from '@0x/utils';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import { DDEX_SOURCE, DdexMarket, DdexSource } from '../data_sources/ddex';
@@ -28,16 +28,16 @@ let connection: Connection;
  */
 async function getAndSaveMarketOrderbook(ddexSource: DdexSource, market: DdexMarket): Promise<void> {
     const orderBook = await ddexSource.getMarketOrderbookAsync(market.id);
-    const retrievedTimestamp = Date.now();
+    const observedTimestamp = Date.now();
 
-    console.log(`${market.id}: Parsing orders.`);
-    const orders = parseDdexOrders(orderBook, market, retrievedTimestamp, DDEX_SOURCE);
+    logUtils.log(`${market.id}: Parsing orders.`);
+    const orders = parseDdexOrders(orderBook, market, observedTimestamp, DDEX_SOURCE);
 
     if (orders.length > 0) {
-        console.log(`${market.id}: Saving ${orders.length} orders.`);
+        logUtils.log(`${market.id}: Saving ${orders.length} orders.`);
         const TokenOrderRepository = connection.getRepository(TokenOrder);
         await TokenOrderRepository.save(orders, { chunk: Math.ceil(orders.length / BATCH_SAVE_SIZE) });
     } else {
-        console.log(`${market.id}: 0 orders to save.`);
+        logUtils.log(`${market.id}: 0 orders to save.`);
     }
 }

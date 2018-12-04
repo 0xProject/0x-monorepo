@@ -1,6 +1,4 @@
-// tslint:disable:no-console
-import { BigNumber } from '@0x/utils';
-import * as R from 'ramda';
+import { logUtils } from '@0x/utils';
 import { Connection, ConnectionOptions, createConnection } from 'typeorm';
 
 import {
@@ -8,7 +6,6 @@ import {
     ParadexActiveMarketsResponse,
     ParadexMarket,
     ParadexSource,
-    ParadexTokenInfo,
     ParadexTokenInfoResponse,
 } from '../data_sources/paradex';
 import { TokenOrderbookSnapshot as TokenOrder } from '../entities';
@@ -28,7 +25,6 @@ let connection: Connection;
         throw new Error('Missing required env var: PARADEX_DATA_PIPELINE_API_KEY');
     }
     const paradexSource = new ParadexSource(apiKey);
-    const tokenOrderRepository = connection.getRepository(TokenOrder);
     const markets = await paradexSource.getActiveMarketsAsync();
     const tokenInfoResponse = await paradexSource.getTokenInfoAsync();
     const extendedMarkets = addTokenAddresses(markets, tokenInfoResponse);
@@ -47,24 +43,20 @@ function addTokenAddresses(
     markets: ParadexActiveMarketsResponse,
     tokenInfoResponse: ParadexTokenInfoResponse,
 ): ParadexMarket[] {
-    const extractSymbolAddress = (acc: Map<string, string>, tokenInfo: ParadexTokenInfo): Map<string, string> => {
-        acc.set(tokenInfo.symbol, tokenInfo.address);
-        return acc;
-    };
-
-    const symbolAddressMapping = R.reduce(extractSymbolAddress, new Map(), tokenInfoResponse);
+    const symbolAddressMapping = new Map<string, string>();
+    tokenInfoResponse.forEach(tokenInfo => symbolAddressMapping.set(tokenInfo.symbol, tokenInfo.address));
 
     markets.forEach((market: ParadexMarket) => {
         if (symbolAddressMapping.has(market.baseToken)) {
             market.baseTokenAddress = symbolAddressMapping.get(market.baseToken);
         } else {
-            console.log(`${market.baseToken}: No address found.`);
+            logUtils.warn(`${market.baseToken}: No address found.`);
         }
 
         if (symbolAddressMapping.has(market.quoteToken)) {
             market.quoteTokenAddress = symbolAddressMapping.get(market.quoteToken);
         } else {
-            console.log(`${market.quoteToken}: No address found.`);
+            logUtils.warn(`${market.quoteToken}: No address found.`);
         }
     });
     return markets;
@@ -78,16 +70,16 @@ function addTokenAddresses(
  */
 async function getAndSaveMarketOrderbook(paradexSource: ParadexSource, market: ParadexMarket): Promise<void> {
     const paradexOrderbookResponse = await paradexSource.getMarketOrderbookAsync(market.symbol);
-    const retrievedTimestamp = Date.now();
+    const observedTimestamp = Date.now();
 
-    console.log(`${market.symbol}: Parsing orders.`);
-    const orders = parseParadexOrders(paradexOrderbookResponse, market, retrievedTimestamp, PARADEX_SOURCE);
+    logUtils.log(`${market.symbol}: Parsing orders.`);
+    const orders = parseParadexOrders(paradexOrderbookResponse, market, observedTimestamp, PARADEX_SOURCE);
 
     if (orders.length > 0) {
-        console.log(`${market.symbol}: Saving ${orders.length} orders.`);
-        const TokenOrderRepository = connection.getRepository(TokenOrder);
-        await TokenOrderRepository.save(orders, { chunk: Math.ceil(orders.length / BATCH_SAVE_SIZE) });
+        logUtils.log(`${market.symbol}: Saving ${orders.length} orders.`);
+        const tokenOrderRepository = connection.getRepository(TokenOrder);
+        await tokenOrderRepository.save(orders, { chunk: Math.ceil(orders.length / BATCH_SAVE_SIZE) });
     } else {
-        console.log(`${market.symbol}: 0 orders to save.`);
+        logUtils.log(`${market.symbol}: 0 orders to save.`);
     }
 }

@@ -11,8 +11,9 @@ chaiSetup.configure();
 
 const tokenOrderbookSnapshot: TokenOrderbookSnapshot = {
     source: 'ddextest',
-    retrievalTimestamp: Date.now(),
+    observedTimestamp: Date.now(),
     orderType: 'bid',
+    price: new BigNumber(10.1),
     baseAssetSymbol: 'ETH',
     baseAssetAddress: '0x818e6fecd516ecc3849daf6845e3ec868087b755',
     baseVolume: new BigNumber(143),

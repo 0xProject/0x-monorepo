@@ -31,14 +31,15 @@ describe('paradex_orders', () => {
                 baseTokenAddress: '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81',
                 quoteTokenAddress: '0x0000000000000000000000000000000000000000',
             };
-            const retrievalTimestamp: number = Date.now();
-            const orderType: string = 'bid';
+            const observedTimestamp: number = Date.now();
+            const orderType: OrderType = 'bid';
             const source: string = 'paradex';
 
             const expected = new TokenOrder();
             expected.source = 'paradex';
-            expected.retrievalTimestamp = retrievalTimestamp;
-            expected.orderType = 'bid' as OrderType;
+            expected.observedTimestamp = observedTimestamp;
+            expected.orderType = 'bid';
+            expected.price = new BigNumber(0.1245);
             expected.baseAssetSymbol = 'DEF';
             expected.baseAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';
             expected.baseVolume = new BigNumber(412 * 0.1245);
@@ -46,7 +47,7 @@ describe('paradex_orders', () => {
             expected.quoteAssetAddress = '0x0000000000000000000000000000000000000000';
             expected.quoteVolume = new BigNumber(412);
 
-            const actual = parseParadexOrder(paradexMarket, retrievalTimestamp, orderType, source, paradexOrder);
+            const actual = parseParadexOrder(paradexMarket, observedTimestamp, orderType, source, paradexOrder);
             expect(actual).deep.equal(expected);
         });
     });

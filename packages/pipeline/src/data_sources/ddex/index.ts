@@ -1,5 +1,4 @@
-// tslint:disable:no-console
-import axios from 'axios';
+import { fetchAsync, logUtils } from '@0x/utils';
 
 const DDEX_BASE_URL = 'https://api.ddex.io/v2';
 const ACTIVE_MARKETS_URL = DDEX_BASE_URL + '/markets';
@@ -56,10 +55,11 @@ export class DdexSource {
      * Call Ddex API to find out which markets they are maintaining orderbooks for.
      */
     public async getActiveMarketsAsync(): Promise<DdexMarket[]> {
-        console.log('Getting all active DDEX markets');
-        const resp = await axios.get<DdexActiveMarketsResponse>(ACTIVE_MARKETS_URL);
-        const markets = resp.data.data.markets;
-        console.log(`Got ${markets.length} markets.`);
+        logUtils.log('Getting all active DDEX markets');
+        const resp = await fetchAsync(ACTIVE_MARKETS_URL);
+        const respJson: DdexActiveMarketsResponse = await resp.json();
+        const markets = respJson.data.markets;
+        logUtils.log(`Got ${markets.length} markets.`);
         return markets;
     }
 
@@ -68,9 +68,10 @@ export class DdexSource {
      * @param marketId String identifying the market we want data for.
      */
     public async getMarketOrderbookAsync(marketId: string): Promise<DdexOrderbook> {
-        console.log(`${marketId}: Retrieving orderbook.`);
+        logUtils.log(`${marketId}: Retrieving orderbook.`);
         const marketOrderbookUrl = ACTIVE_MARKETS_URL + '/' + marketId + ORDERBOOK_ENDPOINT;
-        const resp = await axios.get<DdexOrderbookResponse>(marketOrderbookUrl);
-        return resp.data.data.orderBook;
+        const resp = await fetchAsync(marketOrderbookUrl);
+        const respJson: DdexOrderbookResponse = await resp.json();
+        return respJson.data.orderBook;
     }
 }

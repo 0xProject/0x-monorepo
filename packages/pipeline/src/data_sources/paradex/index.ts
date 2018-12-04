@@ -1,5 +1,4 @@
-// tslint:disable:no-console
-import axios from 'axios';
+import { fetchAsync, logUtils } from '@0x/utils';
 
 const PARADEX_BASE_URL = 'https://api.paradex.io/consumer';
 const ACTIVE_MARKETS_URL = PARADEX_BASE_URL + '/v0/markets';
@@ -7,7 +6,7 @@ const ORDERBOOK_ENDPOINT = PARADEX_BASE_URL + '/v0/orderbook';
 const TOKEN_INFO_ENDPOINT = PARADEX_BASE_URL + '/v0/tokens';
 export const PARADEX_SOURCE = 'paradex';
 
-export interface ParadexActiveMarketsResponse extends Array<ParadexMarket> {}
+export type ParadexActiveMarketsResponse = ParadexMarket[];
 
 export interface ParadexMarket {
     id: string;
@@ -36,7 +35,7 @@ export interface ParadexOrder {
     price: string;
 }
 
-export interface ParadexTokenInfoResponse extends Array<ParadexTokenInfo> {}
+export type ParadexTokenInfoResponse = ParadexTokenInfo[];
 
 export interface ParadexTokenInfo {
     name: string;
@@ -55,12 +54,12 @@ export class ParadexSource {
      * Call Paradex API to find out which markets they are maintaining orderbooks for.
      */
     public async getActiveMarketsAsync(): Promise<ParadexActiveMarketsResponse> {
-        console.log('Getting all active Paradex markets.');
-        const resp = await axios.get<ParadexActiveMarketsResponse>(ACTIVE_MARKETS_URL, {
+        logUtils.log('Getting all active Paradex markets.');
+        const resp = await fetchAsync(ACTIVE_MARKETS_URL, {
             headers: { 'API-KEY': this._apiKey },
         });
-        const markets = resp.data;
-        console.log(`Got ${markets.length} markets.`);
+        const markets: ParadexActiveMarketsResponse = await resp.json();
+        logUtils.log(`Got ${markets.length} markets.`);
         return markets;
     }
 
@@ -68,12 +67,12 @@ export class ParadexSource {
      * Call Paradex API to find out their token information.
      */
     public async getTokenInfoAsync(): Promise<ParadexTokenInfoResponse> {
-        console.log('Getting token information from Paradex.');
-        const resp = await axios.get<ParadexTokenInfoResponse>(TOKEN_INFO_ENDPOINT, {
+        logUtils.log('Getting token information from Paradex.');
+        const resp = await fetchAsync(TOKEN_INFO_ENDPOINT, {
             headers: { 'API-KEY': this._apiKey },
         });
-        const tokens = resp.data;
-        console.log(`Got information for ${tokens.length} tokens.`);
+        const tokens: ParadexTokenInfoResponse = await resp.json();
+        logUtils.log(`Got information for ${tokens.length} tokens.`);
         return tokens;
     }
 
@@ -82,11 +81,12 @@ export class ParadexSource {
      * @param marketSymbol String representing the market we want data for.
      */
     public async getMarketOrderbookAsync(marketSymbol: string): Promise<ParadexOrderbookResponse> {
-        console.log(`${marketSymbol}: Retrieving orderbook.`);
+        logUtils.log(`${marketSymbol}: Retrieving orderbook.`);
         const marketOrderbookUrl = ORDERBOOK_ENDPOINT + `?market=${marketSymbol}`;
-        const resp = await axios.get<ParadexOrderbookResponse>(marketOrderbookUrl, {
+        const resp = await fetchAsync(marketOrderbookUrl, {
             headers: { 'API-KEY': this._apiKey },
         });
-        return resp.data;
+        const orderbookResponse: ParadexOrderbookResponse = await resp.json();
+        return orderbookResponse;
     }
 }

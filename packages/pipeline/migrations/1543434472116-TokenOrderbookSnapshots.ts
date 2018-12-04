@@ -3,17 +3,18 @@ import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 const tokenOrderbookSnapshots = new Table({
     name: 'raw.token_orderbook_snapshots',
     columns: [
-        { name: 'source', type: 'varchar', isPrimary: true },
-        { name: 'retrieval_timestamp', type: 'bigint', isPrimary: true },
-        { name: 'order_type', type: 'order_t', isPrimary: true },
+        { name: 'source', type: 'varchar' },
+        { name: 'observed_timestamp', type: 'bigint', isPrimary: true },
+        { name: 'order_type', type: 'order_t' },
+        { name: 'price', type: 'numeric', isPrimary: true },
 
         { name: 'base_asset_symbol', type: 'varchar', isPrimary: true },
         { name: 'base_asset_address', type: 'char(42)' },
-        { name: 'base_volume', type: 'numeric', isPrimary: true },
+        { name: 'base_volume', type: 'numeric' },
 
         { name: 'quote_asset_symbol', type: 'varchar', isPrimary: true },
         { name: 'quote_asset_address', type: 'char(42)' },
-        { name: 'quote_volume', type: 'numeric', isPrimary: true },
+        { name: 'quote_volume', type: 'numeric' },
     ],
 });
 

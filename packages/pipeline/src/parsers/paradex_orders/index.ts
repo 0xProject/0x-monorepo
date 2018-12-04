@@ -11,21 +11,20 @@ import { OrderType } from '../../types';
  * other information attached.
  * @param paradexOrderbookResponse An orderbook response from the Paradex API.
  * @param paradexMarket An object containing market data also directly from the API.
- * @param retrievalTimestamp Time at which the orders for the market were pulled.
+ * @param observedTimestamp Time at which the orders for the market were pulled.
  * @param source The exchange where these orders are placed. In this case 'paradex'.
  */
 export function parseParadexOrders(
     paradexOrderbookResponse: ParadexOrderbookResponse,
     paradexMarket: ParadexMarket,
-    retrievalTimestamp: number,
+    observedTimestamp: number,
     source: string,
 ): TokenOrder[] {
-    // Might want to shift 'bid', 'ask' enums to 0x/types and retrieve from there.
     const parsedBids = paradexOrderbookResponse.bids.map(order =>
-        parseParadexOrder(paradexMarket, retrievalTimestamp, 'bid', source, order),
+        parseParadexOrder(paradexMarket, observedTimestamp, 'bid', source, order),
     );
     const parsedAsks = paradexOrderbookResponse.asks.map(order =>
-        parseParadexOrder(paradexMarket, retrievalTimestamp, 'ask', source, order),
+        parseParadexOrder(paradexMarket, observedTimestamp, 'ask', source, order),
     );
     return parsedBids.concat(parsedAsks);
 }
@@ -35,34 +34,35 @@ export function parseParadexOrders(
  * which can be saved into the database.
  * @param paradexMarket An object containing information about the market where these
  * orders have been placed.
- * @param retrievalTimestamp The time when the API response returned back to us.
- * @param orderType Eg. 'bid' or 'ask'. Will be converted into an enum.
+ * @param observedTimestamp The time when the API response returned back to us.
+ * @param orderType 'bid' or 'ask' enum.
  * @param source Exchange where these orders were placed.
  * @param paradexOrder A ParadexOrder object; basically price, amount tuple.
  */
 export function parseParadexOrder(
     paradexMarket: ParadexMarket,
-    retrievalTimestamp: number,
-    orderType: string,
+    observedTimestamp: number,
+    orderType: OrderType,
     source: string,
     paradexOrder: ParadexOrder,
 ): TokenOrder {
-    BigNumber.config({ ERRORS: false });
-
     const tokenOrder = new TokenOrder();
+    const price = new BigNumber(paradexOrder.price);
+    const amount = new BigNumber(paradexOrder.amount);
 
     tokenOrder.source = source;
-    tokenOrder.retrievalTimestamp = retrievalTimestamp;
-    tokenOrder.orderType = orderType as OrderType;
+    tokenOrder.observedTimestamp = observedTimestamp;
+    tokenOrder.orderType = orderType;
+    tokenOrder.price = price;
 
     tokenOrder.baseAssetSymbol = paradexMarket.baseToken;
     tokenOrder.baseAssetAddress =
         typeof paradexMarket.baseTokenAddress === 'string' ? paradexMarket.baseTokenAddress : '';
-    tokenOrder.baseVolume = new BigNumber(Number(paradexOrder.price) * Number(paradexOrder.amount));
+    tokenOrder.baseVolume = price.times(amount);
 
     tokenOrder.quoteAssetSymbol = paradexMarket.quoteToken;
     tokenOrder.quoteAssetAddress =
         typeof paradexMarket.quoteTokenAddress === 'string' ? paradexMarket.quoteTokenAddress : '';
-    tokenOrder.quoteVolume = new BigNumber(paradexOrder.amount);
+    tokenOrder.quoteVolume = amount;
     return tokenOrder;
 }
