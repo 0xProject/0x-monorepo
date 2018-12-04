@@ -32,7 +32,11 @@ export interface ConfigGeneratorState {
     availableTokens?: ObjectMap<ERC20AssetMetaData>;
 }
 
-const SRA_ENDPOINTS = ['https://api.radarrelay.com/0x/v2/', 'https://api.openrelay.xyz/v2/'];
+const SRA_ENDPOINTS = [
+    'https://api.radarrelay.com/0x/v2/',
+    'https://api.sharkrelay.com/sra/v2/',
+    'https://sra.bamboorelay.com/0x/v2/',
+];
 
 export class ConfigGenerator extends React.Component<ConfigGeneratorProps, ConfigGeneratorState> {
     public state: ConfigGeneratorState = {
@@ -209,6 +213,20 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                         <Spinner />
                     </Container>
                     <Text fontSize="16px">Loading...</Text>
+                </Container>
+            );
+        }
+        const availableAssetDatas = _.keys(availableTokens);
+        if (availableAssetDatas.length === 0) {
+            return (
+                <Container
+                    className="flex flex-column items-center justify-center"
+                    height={multiSelectHeight}
+                    backgroundColor={colors.white}
+                    borderRadius="4px"
+                    width="100%"
+                >
+                    <Text fontSize="16px">No tokens available. Try another endpoint?</Text>
                 </Container>
             );
         }
