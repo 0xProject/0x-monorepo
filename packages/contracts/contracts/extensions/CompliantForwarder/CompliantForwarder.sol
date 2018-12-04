@@ -229,6 +229,7 @@ contract CompliantForwarder is ExchangeSelectors{
             case 0x4ac1478200000000000000000000000000000000000000000000000000000000 {}                                          // batchCancelOrders
             case 0x4f9559b100000000000000000000000000000000000000000000000000000000 {}                                          // cancelOrdersUpTo
             default {
+                // @TODO Revert with `Error("INVALID_OR_UNHANDLED_EXCHANGE_SELECTOR")`
                 revert(0, 100)
             }
 
@@ -272,9 +273,9 @@ contract CompliantForwarder is ExchangeSelectors{
                 if eq(addressBalance, 0) {
                     // Revert with `Error("AT_LEAST_ONE_ADDRESS_HAS_ZERO_BALANCE")`
                     mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                    mstore(64, 0x0000002541545f4c454153545f4f4e455f414444524553535f4841535f5a4552)
-                    mstore(96, 0x4f5f42414c414e43450000000000000000000000000000000000000000000000)
+                    mstore(0x20, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(0x40, 0x0000002541545f4c454153545f4f4e455f414444524553535f4841535f5a4552)
+                    mstore(0x60, 0x4f5f42414c414e43450000000000000000000000000000000000000000000000)
                     revert(0, 109)
                 }
             }
@@ -282,7 +283,6 @@ contract CompliantForwarder is ExchangeSelectors{
             // Record validated addresses
             validatedAddresses := addressesToValidate
         }
-
 
         ///// If we hit this point then all addresses are valid /////
         emit ValidatedAddresses(validatedAddresses);
