@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
-import { injectGlobal, styled } from 'ts/style/theme';
+import { injectGlobal } from 'ts/style/theme';
 
 const SliderWithTooltip = (Slider as any).createSliderWithTooltip(Slider);
 // tslint:disable-next-line:no-unused-expression
