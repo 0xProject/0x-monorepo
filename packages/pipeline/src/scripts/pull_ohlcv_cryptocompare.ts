@@ -64,10 +64,6 @@ async function fetchAndSaveAsync(
         const records = rawRecords.filter(rec => {
             return rec.time * ONE_SECOND < ONE_HOUR_AGO && rec.time * ONE_SECOND > pair.latestSavedTime;
         }); // Crypto Compare can take ~30mins to finalise records
-        if (records.length === 0) {
-            console.log(`No more records, stopping task for ${JSON.stringify(pair)}`);
-            break;
-        }
         const metadata: OHLCVMetadata = {
             exchange: source.default_exchange,
             fromSymbol: pair.fromSymbol,
