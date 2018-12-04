@@ -21,17 +21,21 @@ export const ZeroExInstantOverlay: React.StatelessComponent<ZeroExInstantOverlay
         <ZeroExInstantProvider {...rest}>
             <Overlay zIndex={zIndex} className={OVERLAY_DIV_CLASS}>
                 <Flex height="100vh">
-                    <Container position="absolute" top="0px" right="0px" display={{ default: 'initial', sm: 'none' }}>
-                        <Container className={OVERLAY_CLOSE_BUTTON_DIV_CLASS}>
-                            <Icon
-                                height={18}
-                                width={18}
-                                color={ColorOption.white}
-                                icon="closeX"
-                                onClick={onClose}
-                                padding="2em 2em"
-                            />
-                        </Container>
+                    <Container
+                        className={OVERLAY_CLOSE_BUTTON_DIV_CLASS}
+                        position="absolute"
+                        top="0px"
+                        right="0px"
+                        display={{ default: 'initial', sm: 'none' }}
+                    >
+                        <Icon
+                            height={18}
+                            width={18}
+                            color={ColorOption.white}
+                            icon="closeX"
+                            onClick={onClose}
+                            padding="2em 2em"
+                        />
                     </Container>
                     <Container
                         width={{ default: 'auto', sm: '100%' }}
