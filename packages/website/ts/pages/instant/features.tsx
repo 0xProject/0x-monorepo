@@ -6,7 +6,7 @@ import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
 import { ActionLink, ActionLinkProps } from 'ts/pages/instant/action_link';
 import { colors } from 'ts/style/colors';
-import { ScreenWidths } from 'ts/types';
+import { ScreenWidths, WebsitePaths } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 export interface FeatureProps {
@@ -22,7 +22,7 @@ export const Features = (props: FeatureProps) => {
     };
     const exploreTheDocsLinkInfo = {
         displayText: 'Explore the docs',
-        linkSrc: `${utils.getCurrentBaseUrl()}/wiki#Get-Started`,
+        linkSrc: `${WebsitePaths.Wiki}#Get-Started-With-Instant`,
     };
     const tokenLinkInfos = isSmallScreen ? [getStartedLinkInfo] : [getStartedLinkInfo, exploreTheDocsLinkInfo];
     return (
@@ -41,7 +41,7 @@ export const Features = (props: FeatureProps) => {
                 linkInfos={[
                     {
                         displayText: 'Learn about affiliate fees',
-                        linkSrc: `${utils.getCurrentBaseUrl()}/wiki#Learn-About-Affiliate-Fees`,
+                        linkSrc: `${WebsitePaths.Wiki}#Learn-About-Affiliate-Fees`,
                     },
                 ]}
                 screenWidth={props.screenWidth}
@@ -53,7 +53,7 @@ export const Features = (props: FeatureProps) => {
                 linkInfos={[
                     {
                         displayText: 'Explore AssetBuyer',
-                        linkSrc: `${utils.getCurrentBaseUrl()}/docs/asset-buyer`,
+                        linkSrc: `${WebsitePaths.Docs}/asset-buyer`,
                     },
                 ]}
                 screenWidth={props.screenWidth}

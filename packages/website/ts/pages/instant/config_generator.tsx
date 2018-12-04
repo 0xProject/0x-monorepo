@@ -14,7 +14,7 @@ import { Text } from 'ts/components/ui/text';
 import { ConfigGeneratorAddressInput } from 'ts/pages/instant/config_generator_address_input';
 import { FeePercentageSlider } from 'ts/pages/instant/fee_percentage_slider';
 import { colors } from 'ts/style/colors';
-import { WebsiteBackendTokenInfo } from 'ts/types';
+import { WebsitePaths } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 import { constants } from 'ts/utils/constants';
 
@@ -113,7 +113,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         }));
     };
     private readonly _handleAffiliatePercentageLearnMoreClick = (): void => {
-        window.open('/wiki#Learn-About-Affiliate-Fees', '_blank');
+        window.open(`${WebsitePaths.Wiki}#Learn-About-Affiliate-Fees`, '_blank');
     };
     private readonly _handleSRASelection = (sraEndpoint: string) => {
         const newConfig: ZeroExInstantBaseConfig = {
