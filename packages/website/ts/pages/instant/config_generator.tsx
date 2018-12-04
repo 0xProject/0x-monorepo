@@ -3,7 +3,6 @@ import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { assetDataUtils } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
-import Slider from 'material-ui/Slider';
 import * as React from 'react';
 
 import { CheckMark } from 'ts/components/ui/check_mark';
@@ -13,6 +12,7 @@ import { Select, SelectItemConfig } from 'ts/components/ui/select';
 import { Spinner } from 'ts/components/ui/spinner';
 import { Text } from 'ts/components/ui/text';
 import { ConfigGeneratorAddressInput } from 'ts/pages/instant/config_generator_address_input';
+import { FeePercentageSlider } from 'ts/pages/instant/fee_percentage_slider';
 import { colors } from 'ts/style/colors';
 import { WebsiteBackendTokenInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
@@ -71,10 +71,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                     actionText="Learn more"
                     onActionTextClick={this._handleAffiliatePercentageLearnMoreClick}
                 >
-                    <Slider
-                        min={0}
-                        max={0.05}
-                        step={0.0025}
+                    <FeePercentageSlider
                         value={value.affiliateInfo.feePercentage}
                         onChange={this._handleAffiliatePercentageChange}
                     />
@@ -126,7 +123,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         };
         this.props.onConfigChange(newConfig);
     };
-    private readonly _handleAffiliatePercentageChange = (event: any, value: number) => {
+    private readonly _handleAffiliatePercentageChange = (value: number) => {
         const oldConfig: ZeroExInstantBaseConfig = this.props.value;
         const newConfig: ZeroExInstantBaseConfig = {
             ...oldConfig,
