@@ -221,9 +221,7 @@ describe.only(ContractName.CompliantForwarder, () => {
             const tx = await decoder.getTxWithDecodedLogsAsync(txHash);
             console.log(JSON.stringify(tx, null, 4));
             console.log('****** MAKER ADDRESS = ', compliantSignedOrder.makerAddress);
-            
-            
-            /*const newBalances = await erc20Wrapper.getBalancesAsync();
+            const newBalances = await erc20Wrapper.getBalancesAsync();
             const makerAssetFillAmount = takerAssetFillAmount
                 .times(compliantSignedOrder.makerAssetAmount)
                 .dividedToIntegerBy(compliantSignedOrder.takerAssetAmount);
@@ -253,7 +251,7 @@ describe.only(ContractName.CompliantForwarder, () => {
             );
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
-            );*/
+            );
         });
         it('should revert if the signed transaction is not intended for fillOrder', async () => {
             // Create signed order without the fillOrder function selector

@@ -32,8 +32,6 @@ contract CompliantForwarder is ExchangeSelectors{
     IERC721Token internal COMPLIANCE_TOKEN;
 
     event ValidatedAddresses (
-        bytes32 selector,
-        bytes32 one,
         address[] addresses
     );
 
@@ -52,11 +50,29 @@ contract CompliantForwarder is ExchangeSelectors{
     ) 
         external
     {
-        // Validate `signedFillOrderTransaction`
+        // Addresses that are validated below.
         address[] memory validatedAddresses;
-        bytes32 selectorS;
-        bytes32 one;
+
+        /**
+         * Do not add variables after this point.
+         * The assembly block may overwrite their values.
+         */
+
+        // Validate addresses
         assembly {
+            function exchangeCalldataload(offset) -> value {
+                // exchangeTxPtr at global level
+                // 0x20 for length offset into exchange TX
+                // 0x4 for function selector in exhcange TX
+                let exchangeTxPtr := calldataload(0x44)
+                let exchangeOffset := add(exchangeTxPtr, add(0x24, offset))
+                value := calldataload(exchangeOffset)
+            }
+
+            function loadExchangeData(offset) -> value {
+                value := exchangeCalldataload(add(offset, 0x4))
+            }
+
             // Adds address to validate
             function addAddressToValidate(addressToValidate) {
                 // Compute `addressesToValidate` memory location
@@ -72,30 +88,13 @@ contract CompliantForwarder is ExchangeSelectors{
                 mstore(add(addressesToValidate_, offset), addressToValidate)
             }
 
-            function validateAddress(addressToValidate) {
-                
-            }
-
-            function exchangeCalldataload(offset) -> value {
-                // exchangeTxPtr at global level
-                // 0x20 for length offset into exchange TX
-                // 0x4 for function selector in exhcange TX
-                let exchangeTxPtr := calldataload(0x44)
-                let exchangeOffset := add(exchangeTxPtr, add(0x24, offset))
-                value := calldataload(exchangeOffset)
-            }
-
-            function loadExchangeData(offset) -> value {
-                value := exchangeCalldataload(add(offset, 0x4))
-            }
-
             function appendMakerAddressFromOrder(orderParamIndex) {
                 let orderPtr := loadExchangeData(0)
                 let makerAddress := loadExchangeData(orderPtr)
                 addAddressToValidate(makerAddress)
             }
 
-            function appendMakerAddressesFromOrderSet(orderSetParamIndex) -> one {
+            function appendMakerAddressesFromOrderSet(orderSetParamIndex) {
                 let orderSetPtr := loadExchangeData(0)
                 let orderSetLength := loadExchangeData(orderSetPtr)
                 let orderSetElementPtr := add(orderSetPtr, 0x20)
@@ -115,7 +114,7 @@ contract CompliantForwarder is ExchangeSelectors{
             switch selector
             case 0x297bb70b00000000000000000000000000000000000000000000000000000000 /* batchFillOrders */
             {
-                one := appendMakerAddressesFromOrderSet(0)
+                appendMakerAddressesFromOrderSet(0)
             }
             case 0x3c28d86100000000000000000000000000000000000000000000000000000000 /* matchOrders */
             {
@@ -133,12 +132,12 @@ contract CompliantForwarder is ExchangeSelectors{
                 revert(0, 100)
             }
 
+            // 
             let addressesToValidate := mload(0x40)
             let nAddressesToValidate := mload(addressesToValidate)
             let newMemFreePtr := add(addressesToValidate, add(0x20, mul(mload(addressesToValidate), 0x20)))
             mstore(0x40, newMemFreePtr)
 
-            /*
             // Validate addresses
             let complianceTokenAddress := sload(COMPLIANCE_TOKEN_slot)
             for {let i := add(0x20, addressesToValidate)} lt(i, add(addressesToValidate, add(32, mul(nAddressesToValidate, 32)))) {i := add(i, 32)} {
@@ -175,21 +174,20 @@ contract CompliantForwarder is ExchangeSelectors{
                     mstore(96, 0x4f5f42414c414e43450000000000000000000000000000000000000000000000)
                     revert(0, 109)
                 }
-            }*/
+            }
 
+            // Record validated addresses
             validatedAddresses := addressesToValidate
-            selectorS := selector
         }
 
-        emit ValidatedAddresses(selectorS, one, validatedAddresses);
+        emit ValidatedAddresses(validatedAddresses);
         
         // All entities are verified. Execute fillOrder.
-        /*
         EXCHANGE.executeTransaction(
             salt,
             signerAddress,
             signedExchangeTransaction,
             signature
-        );*/
+        );
     }
 }
