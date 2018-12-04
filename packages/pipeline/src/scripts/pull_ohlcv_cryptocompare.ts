@@ -60,7 +60,13 @@ async function fetchAndSaveAsync(
         if (pair.latestSavedTime > TWO_HOURS_AGO) {
             break;
         }
-        const rawRecords = await source.getHourlyOHLCVAsync(pair);
+        let rawRecords;
+        try {
+            rawRecords = await source.getHourlyOHLCVAsync(pair);
+        } catch (err) {
+            console.log(`Error fetching OHLCVRecords, stopping task for ${JSON.stringify(pair)} [${err}]`);
+            break;
+        }
         const records = rawRecords.filter(rec => {
             return rec.time * ONE_SECOND < ONE_HOUR_AGO && rec.time * ONE_SECOND > pair.latestSavedTime;
         }); // Crypto Compare can take ~30mins to finalise records

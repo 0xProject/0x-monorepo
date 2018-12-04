@@ -10,6 +10,7 @@ export interface CryptoCompareOHLCVResponse {
     Data: Map<string, CryptoCompareOHLCVRecord[]>;
     Response: string;
     Message: string;
+    Type: number;
 }
 
 export interface CryptoCompareOHLCVRecord {
@@ -36,6 +37,7 @@ const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // tslint:disable-line:custom-no-magic
 const ONE_HOUR = 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_SECOND = 1000;
 const HTTP_OK_STATUS = 200;
+const CRYPTO_COMPARE_VALID_EMPTY_RESPONSE_TYPE = 96;
 
 export class CryptoCompareOHLCVSource {
     public readonly interval = ONE_WEEK; // the hourly API returns data for one week at a time
@@ -68,15 +70,14 @@ export class CryptoCompareOHLCVSource {
 
         const response = await Promise.resolve(fetchPromise);
         if (response.status !== HTTP_OK_STATUS) {
-            // tslint:disable-next-line:no-console
-            console.log(`Error scraping ${url}`);
-            return [];
+            throw new Error(`HTTP error while scraping Crypto Compare: [${response}]`);
         }
         const json: CryptoCompareOHLCVResponse = await response.json();
-        if (json.Response === 'Error' || Object.keys(json.Data).length === 0) {
-            // tslint:disable-next-line:no-console
-            console.log(`Error scraping ${url}: ${json.Message}`);
-            return [];
+        if (
+            (json.Response === 'Error' || Object.keys(json.Data).length === 0) &&
+            json.Type !== CRYPTO_COMPARE_VALID_EMPTY_RESPONSE_TYPE
+        ) {
+            throw new Error(`Error scraping ${url}: ${json.Message}`);
         }
         return Object.values(json.Data).filter(rec => rec.time * ONE_SECOND >= pair.latestSavedTime);
     }
