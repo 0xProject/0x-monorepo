@@ -10,7 +10,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 describe('ABI Encoder: Return Value Encoding/Decoding', () => {
-    const encodingRules: AbiEncoder.EncodingRules = { optimize: false }; // optimizer is tested separately.
+    const encodingRules: AbiEncoder.EncodingRules = { shouldOptimize: false }; // optimizer is tested separately.
     it('No Return Value', async () => {
         // Decode return value
         const method = new AbiEncoder.Method(ReturnValueAbis.noReturnValues);
