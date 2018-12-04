@@ -8,13 +8,14 @@ import {Button} from 'ts/@next/components/button';
 interface InputProps {
     name: string;
     label: string;
+    type: string;
 }
 
 interface Props {
 }
 
 const Input = (props: InputProps) => {
-    const { name, label } = props;
+    const { name, label, type } = props;
     const id = `input-${name}`;
 
     return (

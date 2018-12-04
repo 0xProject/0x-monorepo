@@ -1,3 +1,4 @@
+import { History } from 'history';
 import * as React from 'react';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
@@ -5,15 +6,19 @@ import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 interface ButtonInterface {
-    children: Node | string;
+    color?: string;
+    children?: Node | string;
     isTransparent?: boolean;
+    isNoBorder?: boolean;
+    isNoPadding?: boolean;
     hasIcon?: boolean | string;
     isInline?: boolean;
     href?: string;
-    history?: {
-        push: () => void;
+    onClick?: () => any;
+    history?: History;
+    theme?: {
+        textColor: string;
     };
-    onClick?: () => void;
 }
 
 export const Button = styled.button<ButtonInterface>`
@@ -21,24 +26,25 @@ export const Button = styled.button<ButtonInterface>`
     border: 1px solid transparent;
     display: ${props => props.isInline && 'inline-block'};
     background-color: ${props => !props.isTransparent ? colors.brandLight : 'transparent'};
-    border-color: ${props => props.isTransparent && '#6a6a6a'};
+    border-color: ${props => (props.isTransparent && !props.isNoBorder) && '#6a6a6a'};
     color: ${props => props.color || props.theme.textColor};
+    padding: ${props => !props.isNoPadding && '14px 22px'};
     text-align: center;
-    padding: 14px 22px;
     font-size: 18px;
     text-decoration: none;
 `;
 
 export const Link = withRouter((props: ButtonInterface) => {
     const {
+        children,
         history,
         href,
-        children,
     } = props;
-    const Component = StyledButton.withComponent('a');
+    const Component = Button.withComponent('a');
+    const handleClick = () => history.push(href);
 
     return (
-        <Component onClick={history.push(href)}>
+        <Component onClick={handleClick} {...props}>
             {children}
         </Component>
     );
