@@ -15,7 +15,7 @@ const ONE_HOUR_AGO = new Date().getTime() - 60 * 60 * 1000;
 const ONE_SECOND = 1000;
 
 const MAX_CONCURRENT_REQUESTS = parseInt(process.env.CRYPTOCOMPARE_MAX_CONCURRENT_REQUESTS || '18', 10);
-const EARLIEST_BACKFILL_DATE = process.env.OHLCV_EARLIEST_BACKFILL_DATE || '2018-11-01'; // the time when BTC/USD info starts appearing on Crypto Compare
+const EARLIEST_BACKFILL_DATE = process.env.OHLCV_EARLIEST_BACKFILL_DATE || '2010-09-01'; // the time when BTC/USD info starts appearing on Crypto Compare
 const EARLIEST_BACKFILL_TIME = new Date(EARLIEST_BACKFILL_DATE).getTime();
 
 let connection: Connection;
