@@ -6,6 +6,7 @@ import * as DummyERC721Receiver from '../../generated-artifacts/DummyERC721Recei
 import * as DummyERC721Token from '../../generated-artifacts/DummyERC721Token.json';
 import * as DummyMultipleReturnERC20Token from '../../generated-artifacts/DummyMultipleReturnERC20Token.json';
 import * as DummyNoReturnERC20Token from '../../generated-artifacts/DummyNoReturnERC20Token.json';
+import * as DutchAuction from '../../generated-artifacts/DutchAuction.json';
 import * as ERC20Proxy from '../../generated-artifacts/ERC20Proxy.json';
 import * as ERC20Token from '../../generated-artifacts/ERC20Token.json';
 import * as ERC721Proxy from '../../generated-artifacts/ERC721Proxy.json';
@@ -45,6 +46,7 @@ export const artifacts = {
     DummyERC721Token: DummyERC721Token as ContractArtifact,
     DummyMultipleReturnERC20Token: DummyMultipleReturnERC20Token as ContractArtifact,
     DummyNoReturnERC20Token: DummyNoReturnERC20Token as ContractArtifact,
+    DutchAuction: DutchAuction as ContractArtifact,
     ERC20Proxy: ERC20Proxy as ContractArtifact,
     ERC20Token: ERC20Token as ContractArtifact,
     ERC721Proxy: ERC721Proxy as ContractArtifact,

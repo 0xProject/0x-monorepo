@@ -86,6 +86,7 @@ export enum ContractName {
     ZRXToken = 'ZRXToken',
     DummyERC20Token = 'DummyERC20Token',
     EtherToken = 'WETH9',
+    DutchAuction = 'DutchAuction',
     AssetProxyOwner = 'AssetProxyOwner',
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
