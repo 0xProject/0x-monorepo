@@ -83,14 +83,14 @@ export const assetMetaDataMap: ObjectMap<AssetMetaData> = {
     '0xf47261b0000000000000000000000000e0b7927c4af23765cb51314a0e0521a9645f0e2a': {
         assetProxyId: AssetProxyId.ERC20,
         decimals: 9,
-        primaryColor: '#DEB564',
+        primaryColor: '#E1AA3E',
         symbol: 'dgd',
         name: 'DigixDao',
     },
     '0xf47261b00000000000000000000000004f3afec4e5a3f2a6a1a411def7d7dfe50ee057bf': {
         assetProxyId: AssetProxyId.ERC20,
         decimals: 9,
-        primaryColor: '#DEB564',
+        primaryColor: '#E1AA3E',
         symbol: 'dgx',
         name: 'Digix Gold Token',
     },
@@ -195,7 +195,7 @@ export const assetMetaDataMap: ObjectMap<AssetMetaData> = {
     '0xf47261b000000000000000000000000089d24a6b4ccb1b6faa2625fe562bdd9a23260359': {
         assetProxyId: AssetProxyId.ERC20,
         decimals: 18,
-        primaryColor: '#F2B350',
+        primaryColor: '#DEA349',
         symbol: 'dai',
         name: 'Dai Stablecoin',
     },

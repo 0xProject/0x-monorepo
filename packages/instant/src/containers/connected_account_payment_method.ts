@@ -20,6 +20,7 @@ export interface ConnectedAccountPaymentMethodProps {}
 interface ConnectedState {
     network: Network;
     providerState: ProviderState;
+    walletDisplayName?: string;
 }
 
 interface ConnectedDispatch {
@@ -34,6 +35,7 @@ type FinalProps = ConnectedProps & ConnectedAccountPaymentMethodProps;
 const mapStateToProps = (state: State, _ownProps: ConnectedAccountPaymentMethodProps): ConnectedState => ({
     network: state.network,
     providerState: state.providerState,
+    walletDisplayName: state.walletDisplayName,
 });
 
 const mapDispatchToProps = (
@@ -56,7 +58,7 @@ const mergeProps = (
     ...ownProps,
     network: connectedState.network,
     account: connectedState.providerState.account,
-    walletName: connectedState.providerState.name,
+    walletDisplayName: connectedState.walletDisplayName || connectedState.providerState.name,
     onUnlockWalletClick: () => connectedDispatch.unlockWalletAndDispatchToStore(connectedState.providerState),
     onInstallWalletClick: () => {
         const isMobile = envUtil.isMobileOperatingSystem();

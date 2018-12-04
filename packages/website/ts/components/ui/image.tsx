@@ -10,6 +10,7 @@ export interface ImageProps {
     height?: string | number;
     maxWidth?: string | number;
     maxHeight?: string | number;
+    additionalStyle?: React.CSSProperties;
 }
 interface ImageState {
     imageLoadFailed: boolean;
@@ -30,6 +31,7 @@ export class Image extends React.Component<ImageProps, ImageState> {
                 onError={this._onError.bind(this)}
                 src={src}
                 style={{
+                    ...this.props.additionalStyle,
                     borderRadius: this.props.borderRadius,
                     maxWidth: this.props.maxWidth,
                     maxHeight: this.props.maxHeight,

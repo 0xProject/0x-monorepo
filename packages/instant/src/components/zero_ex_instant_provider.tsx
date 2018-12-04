@@ -15,6 +15,7 @@ import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource, Quote
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
+import { setupRollbar } from '../util/error_reporter';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
@@ -29,6 +30,7 @@ export interface ZeroExInstantProviderRequiredProps {
 
 export interface ZeroExInstantProviderOptionalProps {
     provider: Provider;
+    walletDisplayName: string;
     availableAssetDatas: string[];
     defaultAssetBuyAmount: number;
     defaultSelectedAssetData: string;
@@ -66,6 +68,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             ...defaultState,
             providerState,
             network: networkId,
+            walletDisplayName: props.walletDisplayName,
             selectedAsset: _.isUndefined(props.defaultSelectedAssetData)
                 ? undefined
                 : assetUtils.createAssetFromAssetDataOrThrow(
@@ -86,6 +89,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
     }
     constructor(props: ZeroExInstantProviderProps) {
         super(props);
+        setupRollbar();
         fonts.include();
         const initialAppState = ZeroExInstantProvider._mergeDefaultStateWithProps(this.props);
         this._store = store.create(initialAppState);

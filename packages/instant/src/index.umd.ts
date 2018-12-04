@@ -39,6 +39,9 @@ const validateInstantRenderConfig = (config: ZeroExInstantConfig, selector: stri
     if (!_.isUndefined(config.provider)) {
         assert.isWeb3Provider('provider', config.provider);
     }
+    if (!_.isUndefined(config.walletDisplayName)) {
+        assert.isString('walletDisplayName', config.walletDisplayName);
+    }
     if (!_.isUndefined(config.shouldDisablePushToHistory)) {
         assert.isBoolean('shouldDisablePushToHistory', config.shouldDisablePushToHistory);
     }

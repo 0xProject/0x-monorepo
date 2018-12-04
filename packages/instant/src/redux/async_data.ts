@@ -10,6 +10,7 @@ import { assetUtils } from '../util/asset';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
 import { coinbaseApi } from '../util/coinbase_api';
 import { errorFlasher } from '../util/error_flasher';
+import { errorReporter } from '../util/error_reporter';
 
 import { actions } from './actions';
 import { State } from './reducer';
@@ -23,6 +24,7 @@ export const asyncData = {
             const errorMessage = 'Error fetching ETH/USD price';
             errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
             dispatch(actions.updateEthUsdPrice(BIG_NUMBER_ZERO));
+            errorReporter.report(e);
         }
     },
     fetchAvailableAssetDatasAndDispatchToStore: async (state: State, dispatch: Dispatch) => {
@@ -30,13 +32,15 @@ export const asyncData = {
         const assetBuyer = providerState.assetBuyer;
         try {
             const assetDatas = await assetBuyer.getAvailableAssetDatasAsync();
-            const assets = assetUtils.createAssetsFromAssetDatas(assetDatas, assetMetaDataMap, network);
+            const deduplicatedAssetDatas = _.uniq(assetDatas);
+            const assets = assetUtils.createAssetsFromAssetDatas(deduplicatedAssetDatas, assetMetaDataMap, network);
             dispatch(actions.setAvailableAssets(assets));
         } catch (e) {
             const errorMessage = 'Could not find any assets';
             errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
             // On error, just specify that none are available
             dispatch(actions.setAvailableAssets([]));
+            errorReporter.report(e);
         }
     },
     fetchAccountInfoAndDispatchToStore: async (
@@ -77,6 +81,7 @@ export const asyncData = {
             const ethBalanceInWei = await web3Wrapper.getBalanceInWeiAsync(address);
             dispatch(actions.updateAccountEthBalance({ address, ethBalanceInWei }));
         } catch (e) {
+            errorReporter.report(e);
             // leave balance as is
             return;
         }

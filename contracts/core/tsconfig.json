@@ -13,6 +13,7 @@
         "./generated-artifacts/DummyERC721Token.json",
         "./generated-artifacts/DummyMultipleReturnERC20Token.json",
         "./generated-artifacts/DummyNoReturnERC20Token.json",
+        "./generated-artifacts/DutchAuction.json",
         "./generated-artifacts/ERC20Proxy.json",
         "./generated-artifacts/ERC20Token.json",
         "./generated-artifacts/ERC721Proxy.json",

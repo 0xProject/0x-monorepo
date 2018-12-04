@@ -77,6 +77,7 @@ export const Container =
         ${props => cssRuleIfExists(props, 'opacity')}
         ${props => cssRuleIfExists(props, 'cursor')}
         ${props => cssRuleIfExists(props, 'overflow')}
+        ${props => (props.overflow === 'scroll' ? `-webkit-overflow-scrolling: touch` : '')};
         ${props => (props.hasBoxShadow ? `box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1)` : '')};
         ${props => props.display && stylesForMedia<string>('display', props.display)}
         ${props => props.width && stylesForMedia<string>('width', props.width)}
