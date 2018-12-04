@@ -33,7 +33,7 @@ contract CompliantForwarder is ExchangeSelectors{
 
     event ValidatedAddresses (
         bytes32 selector,
-        address one,
+        bytes32 one,
         address[] addresses
     );
 
@@ -55,7 +55,7 @@ contract CompliantForwarder is ExchangeSelectors{
         // Validate `signedFillOrderTransaction`
         address[] memory validatedAddresses;
         bytes32 selectorS;
-        address one;
+        bytes32 one;
         assembly {
             // Adds address to validate
             function addAddressToValidate(addressToValidate) {
@@ -106,6 +106,17 @@ contract CompliantForwarder is ExchangeSelectors{
                 addAddressToValidate(makerAddress)
             }
 
+            function appendMakerAddressesFromOrderSet(orderSetParamIndex) -> one {
+                let orderSetPtr := calldataload(toExchangeCalldataOffset(0, 0))
+                let orderSetPtrCalldata := toExchangeCalldataOffset(add(orderSetPtr, 0x20), 0)
+                let orderSetLength := calldataload(toExchangeCalldataOffset(orderSetPtr, 0))
+                for {let orderPtrOffset := add(0x20, orderSetPtr)} lt(orderPtrOffset, add(0x20, add(orderSetPtr, mul(0x20, orderSetLength)))) {orderPtrOffset := add(0x20, orderPtrOffset)} {
+                    let orderPtr := calldataload(toExchangeCalldataOffset(orderPtrOffset, 0))
+                    let makerAddress := calldataload(add(orderSetPtrCalldata, orderPtr))
+                    addAddressToValidate(makerAddress)
+                }
+            }
+
 /*
             function appendMakerAddressFromOrderSet(paramIndex) {
                 let exchangeTxPtr := calldataload(0x44)
@@ -118,13 +129,15 @@ contract CompliantForwarder is ExchangeSelectors{
 */
 
 
+
+
             // Extract addresses to validate
             let exchangeTxPtr1 := calldataload(0x44)
             let selector := and(calldataload(add(0x4, add(0x20, exchangeTxPtr1))), 0xffffffff00000000000000000000000000000000000000000000000000000000)
             switch selector
-            case 0x097bb70b00000000000000000000000000000000000000000000000000000000 /* batchFillOrders */
+            case 0x297bb70b00000000000000000000000000000000000000000000000000000000 /* batchFillOrders */
             {
-                //appendMakerAddressFromOrderSet()
+                one := appendMakerAddressesFromOrderSet(0)
             }
             case 0x3c28d86100000000000000000000000000000000000000000000000000000000 /* matchOrders */
             {
@@ -147,6 +160,7 @@ contract CompliantForwarder is ExchangeSelectors{
             let newMemFreePtr := add(addressesToValidate, add(0x20, mul(mload(addressesToValidate), 0x20)))
             mstore(0x40, newMemFreePtr)
 
+            /*
             // Validate addresses
             let complianceTokenAddress := sload(COMPLIANCE_TOKEN_slot)
             for {let i := add(0x20, addressesToValidate)} lt(i, add(addressesToValidate, add(32, mul(nAddressesToValidate, 32)))) {i := add(i, 32)} {
@@ -165,7 +179,7 @@ contract CompliantForwarder is ExchangeSelectors{
                     0x20                                    // reserve space for return balance (0x20 bytes)
                 )
                 if eq(success, 0) {
-                    // Revert with `Error("BALANCE_CHECK_FAILED")`
+                    // Revert with `Error("BALANCE_CHECK_FAILED")` @TODO
                     mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                     mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
                     mstore(64, 0x0000001453454e4445525f4e4f545f415554484f52495a454400000000000000)
@@ -183,7 +197,7 @@ contract CompliantForwarder is ExchangeSelectors{
                     mstore(96, 0x4f5f42414c414e43450000000000000000000000000000000000000000000000)
                     revert(0, 109)
                 }
-            }
+            }*/
 
             validatedAddresses := addressesToValidate
             selectorS := selector
@@ -192,11 +206,12 @@ contract CompliantForwarder is ExchangeSelectors{
         emit ValidatedAddresses(selectorS, one, validatedAddresses);
         
         // All entities are verified. Execute fillOrder.
+        /*
         EXCHANGE.executeTransaction(
             salt,
             signerAddress,
             signedExchangeTransaction,
             signature
-        );
+        );*/
     }
 }
