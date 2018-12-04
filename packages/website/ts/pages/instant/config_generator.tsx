@@ -48,6 +48,11 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
     public componentDidUpdate(prevProps: ConfigGeneratorProps): void {
         if (prevProps.value.orderSource !== this.props.value.orderSource) {
             this._setAvailableAssetsFromOrderProvider();
+            const newConfig: ZeroExInstantBaseConfig = {
+                ...this.props.value,
+                availableAssetDatas: undefined,
+            };
+            this.props.onConfigChange(newConfig);
         }
     }
     public render(): React.ReactNode {
@@ -117,7 +122,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         };
         this.props.onConfigChange(newConfig);
     };
-    private readonly _handleAffiliateAddressChange = (address: string) => {
+    private readonly _handleAffiliateAddressChange = (address: string, isValid: boolean) => {
         const oldConfig: ZeroExInstantBaseConfig = this.props.value;
         const newConfig: ZeroExInstantBaseConfig = {
             ...oldConfig,
