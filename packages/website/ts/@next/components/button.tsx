@@ -1,6 +1,5 @@
-import { History } from 'history';
 import * as React from 'react';
-import { withRouter } from 'react-router-dom';
+import { Link as ReactRouterLink, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
@@ -15,7 +14,6 @@ interface ButtonInterface {
     isInline?: boolean;
     href?: string;
     onClick?: () => any;
-    history?: History;
     theme?: {
         textColor: string;
     };
@@ -37,14 +35,12 @@ export const Button = styled.button<ButtonInterface>`
 export const Link = withRouter((props: ButtonInterface) => {
     const {
         children,
-        history,
         href,
     } = props;
-    const Component = Button.withComponent('a');
-    const handleClick = () => history.push(href);
+    const Component = Button.withComponent(ReactRouterLink);
 
     return (
-        <Component onClick={handleClick} {...props}>
+        <Component to={href} {...props}>
             {children}
         </Component>
     );
