@@ -44,6 +44,7 @@ export interface ContainerProps {
     right?: string;
     bottom?: string;
     zIndex?: number;
+    float?: 'right' | 'left';
     Tag?: ContainerTag;
     cursor?: string;
     id?: string;

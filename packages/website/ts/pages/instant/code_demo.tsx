@@ -1,5 +1,10 @@
 import * as React from 'react';
+import * as CopyToClipboard from 'react-copy-to-clipboard';
 import SyntaxHighlighter from 'react-syntax-highlighter';
+
+import { Button } from 'ts/components/ui/button';
+import { Container } from 'ts/components/ui/container';
+import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
 
@@ -142,7 +147,16 @@ export interface CodeDemoProps {
 }
 
 export const CodeDemo: React.StatelessComponent<CodeDemoProps> = props => (
-    <SyntaxHighlighter language="html" style={customStyle} showLineNumbers={true} PreTag={CustomPre}>
-        {props.children}
-    </SyntaxHighlighter>
+    <Container position="relative" height="100%">
+        <Container position="absolute" top="10px" right="10px">
+            <CopyToClipboard text={props.children}>
+                <Button fontSize="14px">
+                    <b>Copy</b>
+                </Button>
+            </CopyToClipboard>
+        </Container>
+        <SyntaxHighlighter language="html" style={customStyle} showLineNumbers={true} PreTag={CustomPre}>
+            {props.children}
+        </SyntaxHighlighter>
+    </Container>
 );
