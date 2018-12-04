@@ -1,5 +1,4 @@
 import { fetchAsync } from '@0x/utils';
-import axios from 'axios';
 import * as R from 'ramda';
 import { Connection } from 'typeorm';
 
@@ -7,11 +6,6 @@ export interface TradingPair {
     fromSymbol: string;
     toSymbol: string;
     latest: number;
-}
-
-interface StaticPair {
-    fromSymbol: string;
-    toSymbol: string;
 }
 
 const COINLIST_API = 'https://min-api.cryptocompare.com/data/all/coinlist?BuiltOn=7605';

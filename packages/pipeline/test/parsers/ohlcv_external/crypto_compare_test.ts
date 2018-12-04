@@ -48,7 +48,7 @@ describe('ohlcv_external parser (Crypto Compare)', () => {
         entity.observedTimestamp = metadata.observedTimestamp;
 
         it('converts Crypto Compare OHLCV records to OHLCVExternal entity', () => {
-            const input = [record, R.merge(record, { time: 300 }), merge(record, { time: 400 })];
+            const input = [record, R.merge(record, { time: 300 }), R.merge(record, { time: 400 })];
             const expected = [
                 entity,
                 R.merge(entity, { startTime: 200000, endTime: 300000 }),
