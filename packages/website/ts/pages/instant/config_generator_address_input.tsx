@@ -9,7 +9,7 @@ import { Text } from 'ts/components/ui/text';
 
 export interface ConfigGeneratorAddressInputProps {
     value?: string;
-    onChange?: (address: string) => void;
+    onChange?: (address: string, isValid: boolean) => void;
 }
 
 export interface ConfigGeneratorAddressInputState {
@@ -54,6 +54,6 @@ export class ConfigGeneratorAddressInput extends React.Component<
         this.setState({
             errMsg,
         });
-        this.props.onChange(address);
+        this.props.onChange(address, isValidAddress);
     };
 }
