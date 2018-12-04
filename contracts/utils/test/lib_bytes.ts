@@ -16,8 +16,8 @@ import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { TestLibBytesContract } from '../../generated-wrappers/test_lib_bytes';
-import { artifacts } from '../../src/artifacts';
+import { TestLibBytesContract } from '../generated-wrappers/test_lib_bytes';
+import { artifacts } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;

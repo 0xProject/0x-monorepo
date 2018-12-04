@@ -13,7 +13,6 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 
-import { TestConstantsContract } from '../../generated-wrappers/test_constants';
 import { TestLibsContract } from '../../generated-wrappers/test_libs';
 import { artifacts } from '../../src/artifacts';
 
@@ -26,7 +25,6 @@ describe('Exchange libs', () => {
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
     let libs: TestLibsContract;
-    let testConstants: TestConstantsContract;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -38,11 +36,6 @@ describe('Exchange libs', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
         libs = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults);
-        testConstants = await TestConstantsContract.deployFrom0xArtifactAsync(
-            artifacts.TestConstants,
-            provider,
-            txDefaults,
-        );
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
@@ -61,15 +54,6 @@ describe('Exchange libs', () => {
     });
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
-    });
-
-    describe('LibConstants', () => {
-        describe('ZRX_ASSET_DATA', () => {
-            it('should have the correct ZRX_ASSET_DATA', async () => {
-                const isValid = await testConstants.assertValidZrxAssetData.callAsync();
-                expect(isValid).to.be.equal(true);
-            });
-        });
     });
     // Note(albrow): These tests are designed to be supplemental to the
     // combinatorial tests in test/exchange/internal. They test specific edge

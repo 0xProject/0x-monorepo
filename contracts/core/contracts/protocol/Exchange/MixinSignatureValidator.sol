@@ -18,8 +18,8 @@
 
 pragma solidity 0.4.24;
 
-import "../../utils/LibBytes/LibBytes.sol";
-import "../../utils/ReentrancyGuard/ReentrancyGuard.sol";
+import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
+import "@0x/contracts-utils/contracts/utils/ReentrancyGuard/ReentrancyGuard.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
 import "./interfaces/IWallet.sol";

@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "../../protocol/Exchange/interfaces/IExchange.sol";
 import "../../protocol/Exchange/libs/LibOrder.sol";
-import "../../utils/Ownable/Ownable.sol";
+import "@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol";
 
 
 contract Whitelist is

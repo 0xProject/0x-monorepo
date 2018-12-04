@@ -19,7 +19,7 @@
 pragma solidity 0.4.24;
 
 import "../../protocol/Exchange/interfaces/IWallet.sol";
-import "../../utils/LibBytes/LibBytes.sol";
+import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
 
 
 contract Wallet is 
