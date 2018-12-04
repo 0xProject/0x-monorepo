@@ -15,7 +15,6 @@ import { ConfigGeneratorAddressInput } from 'ts/pages/instant/config_generator_a
 import { FeePercentageSlider } from 'ts/pages/instant/fee_percentage_slider';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
-import { backendClient } from 'ts/utils/backend_client';
 import { constants } from 'ts/utils/constants';
 
 import { assetMetaDataMap } from '../../../../instant/src/data/asset_meta_data_map';
@@ -39,10 +38,12 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         isLoadingAvailableTokens: true,
     };
     public componentDidMount(): void {
+        // tslint:disable-next-line:no-floating-promises
         this._setAvailableAssetsFromOrderProvider();
     }
     public componentDidUpdate(prevProps: ConfigGeneratorProps): void {
         if (prevProps.value.orderSource !== this.props.value.orderSource) {
+            // tslint:disable-next-line:no-floating-promises
             this._setAvailableAssetsFromOrderProvider();
             const newConfig: ZeroExInstantBaseConfig = {
                 ...this.props.value,

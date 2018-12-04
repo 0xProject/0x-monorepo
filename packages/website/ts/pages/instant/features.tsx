@@ -7,7 +7,6 @@ import { Text } from 'ts/components/ui/text';
 import { ActionLink, ActionLinkProps } from 'ts/pages/instant/action_link';
 import { colors } from 'ts/style/colors';
 import { ScreenWidths, WebsitePaths } from 'ts/types';
-import { utils } from 'ts/utils/utils';
 
 export interface FeatureProps {
     screenWidth: ScreenWidths;

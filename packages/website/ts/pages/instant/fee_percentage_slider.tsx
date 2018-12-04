@@ -7,7 +7,7 @@ import { colors } from 'ts/style/colors';
 import { injectGlobal, styled } from 'ts/style/theme';
 
 const SliderWithTooltip = (Slider as any).createSliderWithTooltip(Slider);
-
+// tslint:disable-next-line:no-unused-expression
 injectGlobal`
     .rc-slider-tooltip-inner {
         box-shadow: none !important;
@@ -24,21 +24,12 @@ injectGlobal`
             width: 0;
             position: absolute;
             pointer-events: none;
-            border-color: rgba(136, 183, 213, 0);
             border-width: 6px;
             bottom: 100%;
             left: 100%;
             border-bottom-color: ${colors.white};
             margin-left: -60%;
         }
-    }
-`;
-
-const StyledSlider = styled(SliderWithTooltip)`
-    .rc-slider-tooltip-inner {
-        background-color: ${colors.white};
-        box-shadow: none;
-        padding: 3px;
     }
 `;
 
