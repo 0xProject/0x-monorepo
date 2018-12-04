@@ -117,6 +117,22 @@ contract CompliantForwarder is ExchangeSelectors{
                 }
             }
 
+            function exchangeCalldataload(offset) -> value {
+                value := calldataload(toExchangeCalldataOffset(offset, 0))
+            }
+
+
+            function appendMakerAddressesFromOrderSet2(orderSetParamIndex) -> one {
+                let orderSetPtr := exchangeCalldataload(0)
+                let orderSetLength := exchangeCalldataload(orderSetPtr)
+                
+                for {let orderPtrOffset := add(0x20, orderSetPtr)} lt(orderPtrOffset, add(0x20, add(orderSetPtr, mul(0x20, orderSetLength)))) {orderPtrOffset := add(0x20, orderPtrOffset)} {
+                    let orderPtr := exchangeCalldataload(orderPtrOffset)
+                    let makerAddress := exchangeCalldataload(add(orderSetPtr, add(0x20, orderPtr)))
+                    addAddressToValidate(makerAddress)
+                }
+            }
+
 /*
             function appendMakerAddressFromOrderSet(paramIndex) {
                 let exchangeTxPtr := calldataload(0x44)
@@ -137,7 +153,7 @@ contract CompliantForwarder is ExchangeSelectors{
             switch selector
             case 0x297bb70b00000000000000000000000000000000000000000000000000000000 /* batchFillOrders */
             {
-                one := appendMakerAddressesFromOrderSet(0)
+                one := appendMakerAddressesFromOrderSet2(0)
             }
             case 0x3c28d86100000000000000000000000000000000000000000000000000000000 /* matchOrders */
             {
