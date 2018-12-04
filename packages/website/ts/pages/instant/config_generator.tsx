@@ -18,7 +18,8 @@ import { WebsiteBackendTokenInfo } from 'ts/types';
 import { backendClient } from 'ts/utils/backend_client';
 import { constants } from 'ts/utils/constants';
 
-import { ZeroExInstantBaseConfig } from '../../../../instant/src/types';
+import { assetMetaDataMap } from '../../../../instant/src/data/asset_meta_data_map';
+import { ERC20AssetMetaData, ZeroExInstantBaseConfig } from '../../../../instant/src/types';
 
 export interface ConfigGeneratorProps {
     value: ZeroExInstantBaseConfig;
@@ -28,8 +29,7 @@ export interface ConfigGeneratorProps {
 export interface ConfigGeneratorState {
     isLoadingAvailableTokens: boolean;
     // Address to token info
-    allKnownTokens: ObjectMap<WebsiteBackendTokenInfo>;
-    availableTokens?: WebsiteBackendTokenInfo[];
+    availableTokens?: ObjectMap<ERC20AssetMetaData>;
 }
 
 const SRA_ENDPOINTS = ['https://api.radarrelay.com/0x/v2/', 'https://api.openrelay.xyz/v2/'];
@@ -37,10 +37,9 @@ const SRA_ENDPOINTS = ['https://api.radarrelay.com/0x/v2/', 'https://api.openrel
 export class ConfigGenerator extends React.Component<ConfigGeneratorProps, ConfigGeneratorState> {
     public state: ConfigGeneratorState = {
         isLoadingAvailableTokens: true,
-        allKnownTokens: {},
     };
     public componentDidMount(): void {
-        this._setAllKnownTokens(this._setAvailableAssetsFromOrderProvider);
+        this._setAvailableAssetsFromOrderProvider();
     }
     public componentDidUpdate(prevProps: ConfigGeneratorProps): void {
         if (prevProps.value.orderSource !== this.props.value.orderSource) {
@@ -99,9 +98,6 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
             onClick: this._handleSRASelection.bind(this, endpoint),
         }));
     };
-    private readonly _getAllKnownAssetDatas = (): string[] => {
-        return _.map(this.state.allKnownTokens, token => assetDataUtils.encodeERC20AssetData(token.address));
-    };
     private readonly _handleAffiliatePercentageLearnMoreClick = (): void => {
         window.open('/wiki#Learn-About-Affiliate-Fees', '_blank');
     };
@@ -150,16 +146,19 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
     };
     private readonly _handleTokenClick = (assetData: string) => {
         const { value } = this.props;
-        const { allKnownTokens } = this.state;
         let newAvailableAssetDatas: string[] = [];
+        const allKnownAssetDatas = _.keys(this.state.availableTokens);
         const availableAssetDatas = value.availableAssetDatas;
         if (_.isUndefined(availableAssetDatas)) {
             // It being undefined means it's all tokens.
-            const allKnownAssetDatas = this._getAllKnownAssetDatas();
             newAvailableAssetDatas = _.pull(allKnownAssetDatas, assetData);
         } else if (!_.includes(availableAssetDatas, assetData)) {
             // Add it
             newAvailableAssetDatas = [...availableAssetDatas, assetData];
+            if (newAvailableAssetDatas.length === allKnownAssetDatas.length) {
+                // If all tokens are manually selected, just show none.
+                newAvailableAssetDatas = undefined;
+            }
         } else {
             // Remove it
             newAvailableAssetDatas = _.pull(availableAssetDatas, assetData);
@@ -170,18 +169,6 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         };
         this.props.onConfigChange(newConfig);
     };
-    private readonly _setAllKnownTokens = async (callback: () => void): Promise<void> => {
-        const tokenInfos = await backendClient.getTokenInfosAsync();
-        const allKnownTokens = _.reduce(
-            tokenInfos,
-            (acc, tokenInfo) => {
-                acc[tokenInfo.address] = tokenInfo;
-                return acc;
-            },
-            {} as ObjectMap<WebsiteBackendTokenInfo>,
-        );
-        this.setState({ allKnownTokens }, callback);
-    };
     private readonly _setAvailableAssetsFromOrderProvider = async (): Promise<void> => {
         const { value } = this.props;
         if (!_.isUndefined(value.orderSource) && _.isString(value.orderSource)) {
@@ -191,11 +178,16 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
             const etherTokenAddress = getContractAddressesForNetworkOrThrow(networkId).etherToken;
             const etherTokenAssetData = assetDataUtils.encodeERC20AssetData(etherTokenAddress);
             const assetDatas = await sraOrderProvider.getAvailableMakerAssetDatasAsync(etherTokenAssetData);
-            const availableTokens = _.compact(
-                _.map(assetDatas, assetData => {
-                    const address = assetDataUtils.decodeAssetDataOrThrow(assetData).tokenAddress;
-                    return this.state.allKnownTokens[address];
-                }),
+            const availableTokens = _.reduce(
+                assetDatas,
+                (acc, assetData) => {
+                    const metaDataIfExists = assetMetaDataMap[assetData] as ERC20AssetMetaData;
+                    if (metaDataIfExists) {
+                        acc[assetData] = metaDataIfExists;
+                    }
+                    return acc;
+                },
+                {} as ObjectMap<ERC20AssetMetaData>,
             );
             this.setState({ availableTokens, isLoadingAvailableTokens: false });
         }
@@ -220,10 +212,10 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                 </Container>
             );
         }
-        const items = _.map(availableTokens, token => {
-            const assetData = assetDataUtils.encodeERC20AssetData(token.address);
+        const items = _.map(_.keys(availableTokens), assetData => {
+            const metaData = availableTokens[assetData];
             return {
-                value: assetDataUtils.encodeERC20AssetData(token.address),
+                value: assetData,
                 renderItemContent: (isSelected: boolean) => (
                     <Container className="flex items-center">
                         <Container marginRight="10px">
@@ -234,7 +226,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                             fontColor={isSelected ? colors.mediumBlue : colors.darkerGrey}
                             fontWeight={300}
                         >
-                            <b>{token.symbol}</b> — {token.name}
+                            <b>{metaData.symbol.toUpperCase()}</b> — {metaData.name}
                         </Text>
                     </Container>
                 ),
