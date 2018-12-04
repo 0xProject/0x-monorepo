@@ -20,26 +20,26 @@ pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
 import "../../protocol/Exchange/interfaces/IExchange.sol";
-import "../../tokens/ERC721Token/IERC721Token.sol";
 import "../../utils/LibBytes/LibBytes.sol";
 import "../../utils/ExchangeSelectors/ExchangeSelectors.sol";
+import "./interfaces/IThresholdAsset.sol";
 
-contract CompliantForwarder is ExchangeSelectors{
+contract BalanceThresholdFilter is ExchangeSelectors {
 
     using LibBytes for bytes;
 
     IExchange internal EXCHANGE;
-    IERC721Token internal COMPLIANCE_TOKEN;
+    IThresholdAsset internal THRESHOLD_ASSET;
 
     event ValidatedAddresses (
         address[] addresses
     );
 
-    constructor(address exchange, address complianceToken)
+    constructor(address exchange, address thresholdAsset)
         public
     {
         EXCHANGE = IExchange(exchange);
-        COMPLIANCE_TOKEN = IERC721Token(complianceToken);
+        THRESHOLD_ASSET = IThresholdAsset(thresholdAsset);
     }
 
     function executeTransaction(
@@ -257,16 +257,16 @@ contract CompliantForwarder is ExchangeSelectors{
             mstore(0x40, freeMemPtr)
 
             // Validate addresses
-            let complianceTokenAddress := sload(COMPLIANCE_TOKEN_slot)
+            let thresholdAssetAddress := sload(THRESHOLD_ASSET_slot)
             for {let addressToValidate := addressesToValidateElementPtr} lt(addressToValidate, addressesToValidateElementEndPtr) {addressToValidate := add(addressToValidate, 0x20)} {
-                // Construct calldata for `COMPLIANCE_TOKEN.balanceOf`
+                // Construct calldata for `THRESHOLD_ASSET.balanceOf`
                 mstore(freeMemPtr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
                 mstore(add(4, freeMemPtr), mload(addressToValidate))
                
-                // call `COMPLIANCE_TOKEN.balanceOf`
+                // call `THRESHOLD_ASSET.balanceOf`
                 let success := call(
                     gas,                                    // forward all gas
-                    complianceTokenAddress,                 // call address of asset proxy
+                    thresholdAssetAddress,                 // call address of asset proxy
                     0,                                      // don't send any ETH
                     freeMemPtr,                             // pointer to start of input
                     0x24,                                   // length of input (one padded address) 

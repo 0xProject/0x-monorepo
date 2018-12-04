@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
-import { CompliantForwarderContract } from '../../generated-wrappers/compliant_forwarder';
+import { BalanceThresholdFilterContract } from '../../generated-wrappers/balance_threshold_filter';
 import { YesComplianceTokenContract } from '../../generated-wrappers/yes_compliance_token';
 
 import { artifacts } from '../../src/artifacts';
@@ -37,7 +37,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 
-describe.only(ContractName.CompliantForwarder, () => {
+describe.only(ContractName.BalanceThresholdFilter, () => {
     let compliantMakerAddress: string;
     let owner: string;
     let compliantTakerAddress: string;
@@ -63,7 +63,7 @@ describe.only(ContractName.CompliantForwarder, () => {
     const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), DECIMALS_DEFAULT);
     const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(250), DECIMALS_DEFAULT);
 
-    let compliantForwarderInstance: CompliantForwarderContract;
+    let compliantForwarderInstance: BalanceThresholdFilterContract;
 
     before(async () => {
         // Create accounts
@@ -126,15 +126,15 @@ describe.only(ContractName.CompliantForwarder, () => {
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(compliantMakerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
         // Deploy Compliant Forwarder
-        compliantForwarderInstance = await CompliantForwarderContract.deployFrom0xArtifactAsync(
-            artifacts.CompliantForwarder,
+        compliantForwarderInstance = await BalanceThresholdFilterContract.deployFrom0xArtifactAsync(
+            artifacts.BalanceThresholdFilter,
             provider,
             txDefaults,
             exchangeInstance.address,
             yesTokenInstance.address,
         );
         /*
-        const compliantForwarderContract = new CompliantForwarderContract(
+        const compliantForwarderContract = new BalanceThresholdFilterContract(
             compliantForwarderInstance.abi,
             compliantForwarderInstance.address,
             provider,
@@ -272,9 +272,9 @@ describe.only(ContractName.CompliantForwarder, () => {
         });
         it('should revert if senderAddress is not set to the compliant forwarding contract', async () => {
             // Create signed order with incorrect senderAddress
-            const notCompliantForwarderAddress = zrxToken.address;
+            const notBalanceThresholdFilterAddress = zrxToken.address;
             const signedOrderWithBadSenderAddress = await orderFactory.newSignedOrderAsync({
-                senderAddress: notCompliantForwarderAddress,
+                senderAddress: notBalanceThresholdFilterAddress,
             });
             const signedOrderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(
                 signedOrderWithBadSenderAddress,
