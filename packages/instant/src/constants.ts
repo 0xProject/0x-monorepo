@@ -17,6 +17,7 @@ export const ACCOUNT_UPDATE_INTERVAL_TIME_MS = ONE_SECOND_MS * 5;
 export const BUY_QUOTE_UPDATE_INTERVAL_TIME_MS = ONE_SECOND_MS * 15;
 export const DEFAULT_GAS_PRICE = GWEI_IN_WEI.mul(6);
 export const DEFAULT_ESTIMATED_TRANSACTION_TIME_MS = ONE_MINUTE_MS * 2;
+export const MAGIC_TRIGGER_ERROR_INPUT = '0`';
 export const ETH_GAS_STATION_API_BASE_URL = 'https://ethgasstation.info';
 export const HEAP_ANALYTICS_ID = process.env.HEAP_ANALYTICS_ID;
 export const HEAP_ENABLED = process.env.HEAP_ENABLED;
