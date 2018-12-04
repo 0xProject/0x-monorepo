@@ -19,7 +19,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "./libs/LibConstants.sol";
+import "@0x/contracts-libs/contracts/protocol/Exchange/libs/LibConstants.sol";
 import "./MixinExchangeCore.sol";
 import "./MixinSignatureValidator.sol";
 import "./MixinWrapperFunctions.sol";

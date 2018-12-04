@@ -1,11 +1,11 @@
 {
     "private": true,
-    "name": "@0x/contracts-core",
-    "version": "2.1.56",
+    "name": "@0x/contracts-libs",
+    "version": "1.0.0",
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Smart contract components of 0x protocol",
+    "description": "Smart contract libs of 0x protocol",
     "main": "lib/src/index.js",
     "directories": {
         "test": "test"
@@ -33,7 +33,7 @@
         "lint-contracts": "solhint contracts/**/**/**/**/*.sol"
     },
     "config": {
-        "abis": "generated-artifacts/@(AssetProxyOwner|DummyERC20Token|DummyERC721Receiver|DummyERC721Token|DummyMultipleReturnERC20Token|DummyNoReturnERC20Token|DutchAuction|ERC20Token|ERC20Proxy|ERC721Token|ERC721Proxy|Forwarder|Exchange|ExchangeWrapper|IAssetData|IAssetProxy|InvalidERC721Receiver|MixinAuthorizable|MultiAssetProxy|OrderValidator|ReentrantERC20Token|TestAssetProxyOwner|TestAssetProxyDispatcher|TestConstants|TestExchangeInternals|TestLibBytes|TestSignatureValidator|TestStaticCallReceiver|Validator|Wallet|Whitelist|WETH9|ZRXToken).json"
+        "abis": "generated-artifacts/@(LibMath|LibOrder|LibFillResults|LibAbiEncoder|TestLibs|LibEIP712).json"
     },
     "repository": {
         "type": "git",
@@ -43,7 +43,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/contracts/core/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/contracts/libs/README.md",
     "devDependencies": {
         "@0x/contracts-test-utils": "^1.0.0",
         "@0x/abi-gen": "^1.0.17",
@@ -76,7 +76,6 @@
         "@0x/order-utils": "^3.0.4",
         "@0x/contracts-multisig": "^1.0.0",
         "@0x/contracts-utils": "^1.0.0",
-        "@0x/contracts-libs": "^1.0.0",
         "@0x/types": "^1.3.0",
         "@0x/typescript-typings": "^3.0.4",
         "@0x/utils": "^2.0.6",

@@ -19,8 +19,8 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../libs/LibOrder.sol";
-import "../libs/LibFillResults.sol";
+import "@0x/contracts-libs/contracts/protocol/Exchange/libs/LibOrder.sol";
+import "@0x/contracts-libs/contracts/protocol/Exchange/libs/LibFillResults.sol";
 
 
 contract IExchangeCore {

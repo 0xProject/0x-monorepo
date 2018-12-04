@@ -22,7 +22,7 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
 import "../../tokens/ERC20Token/ERC20Token.sol";
 import "../../protocol/Exchange/interfaces/IExchange.sol";
-import "../../protocol/Exchange/libs/LibOrder.sol";
+import "@0x/contracts-libs/contracts/protocol/Exchange/libs/LibOrder.sol";
 
 
 // solhint-disable no-unused-vars

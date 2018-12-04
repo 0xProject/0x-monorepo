@@ -1,3 +1,4 @@
+import { artifacts as libsArtifacts } from '@0x/contracts-libs';
 import {
     AllowanceAmountScenario,
     AssetDataScenario,
@@ -131,7 +132,11 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         exchangeContract.address,
     );
 
-    const testLibsContract = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults);
+    const testLibsContract = await TestLibsContract.deployFrom0xArtifactAsync(
+        libsArtifacts.TestLibs,
+        provider,
+        txDefaults,
+    );
 
     const fillOrderCombinatorialUtils = new FillOrderCombinatorialUtils(
         orderFactory,
