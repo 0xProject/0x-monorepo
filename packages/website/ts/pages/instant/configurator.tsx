@@ -22,7 +22,7 @@ export class Configurator extends React.Component<ConfiguratorProps> {
     public state: ConfiguratorState = {
         instantConfig: {
             orderSource: 'https://api.radarrelay.com/0x/v2/',
-            availableAssetDatas: [],
+            availableAssetDatas: undefined,
             affiliateInfo: {
                 feeRecipient: '',
                 feePercentage: 0.01,
@@ -65,35 +65,41 @@ export class Configurator extends React.Component<ConfiguratorProps> {
     };
     private readonly _generateCodeDemoCode = (): string => {
         const { instantConfig } = this.state;
-        return `<head>
-    <script src="https://instant.0xproject.com/instant.js"></script>
-</head>
-<body>
-    <script>
-        zeroExInstant.render({
-            orderSource: '${instantConfig.orderSource}',${
+        return `<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script src="https://instant.0xproject.com/instant.js"></script>
+    </head>
+    <body>
+        <script>
+            zeroExInstant.render({
+                orderSource: '${instantConfig.orderSource}',${
             !_.isUndefined(instantConfig.affiliateInfo) && instantConfig.affiliateInfo.feeRecipient
-                ? `\n            affiliateInfo: {
-                feeRecipient: '${instantConfig.affiliateInfo.feeRecipient.toLowerCase()}',
-                feePercentage: ${instantConfig.affiliateInfo.feePercentage}
-            }`
+                ? `\n                affiliateInfo: {
+                    feeRecipient: '${instantConfig.affiliateInfo.feeRecipient.toLowerCase()}',
+                    feePercentage: ${instantConfig.affiliateInfo.feePercentage}
+                }`
                 : ''
         }${
             !_.isUndefined(instantConfig.availableAssetDatas)
-                ? `\n            availableAssetDatas: ${this._renderAvailableAssetDatasString(
+                ? `\n                availableAssetDatas: ${this._renderAvailableAssetDatasString(
                       instantConfig.availableAssetDatas,
                   )}`
                 : ''
         }
-        }, 'body');
-    </script>
-</body>`;
+            }, 'body');
+        </script>
+    </body>
+</html>`;
     };
     private readonly _renderAvailableAssetDatasString = (availableAssetDatas: string[]): string => {
         const stringAvailableAssetDatas = availableAssetDatas.map(assetData => `'${assetData}'`);
         if (availableAssetDatas.length < 2) {
             return `[${stringAvailableAssetDatas.join(', ')}]`;
         }
-        return `[\n\t\t${stringAvailableAssetDatas.join(', \n\t\t')}\n            ]`;
+        return `[\n                    ${stringAvailableAssetDatas.join(
+            ', \n                    ',
+        )}\n                ]`;
     };
 }
