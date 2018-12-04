@@ -52,4 +52,3 @@ describe('paradex_orders', () => {
         });
     });
 });
-// tslint:enable:custom-no-magic-numbers

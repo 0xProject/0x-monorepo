@@ -64,4 +64,3 @@ describe('ddex_orders', () => {
         });
     });
 });
-// tslint:enable:custom-no-magic-numbers
