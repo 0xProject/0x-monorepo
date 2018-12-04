@@ -43,7 +43,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/contracts/core/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/contracts/utils/README.md",
     "devDependencies": {
         "@0x/contracts-test-utils": "^1.0.0",
         "@0x/abi-gen": "^1.0.17",
