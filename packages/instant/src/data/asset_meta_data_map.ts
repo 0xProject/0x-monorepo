@@ -195,7 +195,7 @@ export const assetMetaDataMap: ObjectMap<AssetMetaData> = {
     '0xf47261b000000000000000000000000089d24a6b4ccb1b6faa2625fe562bdd9a23260359': {
         assetProxyId: AssetProxyId.ERC20,
         decimals: 18,
-        primaryColor: '#F2B350',
+        primaryColor: '#DEA349',
         symbol: 'dai',
         name: 'Dai Stablecoin',
     },

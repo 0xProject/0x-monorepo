@@ -2,7 +2,7 @@ import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { INSTANT_DISCHARGE_TARGET } from '../constants';
+import { HEAP_ENABLED, INSTANT_DISCHARGE_TARGET } from '../constants';
 import {
     AffiliateInfo,
     Asset,
@@ -16,15 +16,17 @@ import {
 
 import { EventProperties, heapUtil } from './heap';
 
-let isDisabled = false;
+let isDisabledViaConfig = false;
 export const disableAnalytics = (shouldDisableAnalytics: boolean) => {
-    isDisabled = shouldDisableAnalytics;
+    isDisabledViaConfig = shouldDisableAnalytics;
 };
 export const evaluateIfEnabled = (fnCall: () => void) => {
-    if (isDisabled) {
+    if (isDisabledViaConfig) {
         return;
     }
-    fnCall();
+    if (HEAP_ENABLED) {
+        fnCall();
+    }
 };
 
 enum EventNames {

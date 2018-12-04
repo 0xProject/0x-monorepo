@@ -25,6 +25,7 @@
         "DummyERC721Token",
         "DummyMultipleReturnERC20Token",
         "DummyNoReturnERC20Token",
+        "DutchAuction",
         "ERC20Proxy",
         "ERC20Token",
         "ERC721Token",
