@@ -25,9 +25,9 @@ import "./mixins/MAssets.sol";
 import "./mixins/MExchangeWrapper.sol";
 import "./interfaces/IForwarderCore.sol";
 import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
-import "../../protocol/Exchange/libs/LibOrder.sol";
-import "../../protocol/Exchange/libs/LibFillResults.sol";
-import "../../protocol/Exchange/libs/LibMath.sol";
+import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
+import "@0x/contracts-libs/contracts/libs/LibFillResults.sol";
+import "@0x/contracts-libs/contracts/libs/LibMath.sol";
 
 
 contract MixinForwarderCore is

@@ -26,7 +26,6 @@ import * as ReentrantERC20Token from '../../generated-artifacts/ReentrantERC20To
 import * as TestAssetProxyDispatcher from '../../generated-artifacts/TestAssetProxyDispatcher.json';
 import * as TestAssetProxyOwner from '../../generated-artifacts/TestAssetProxyOwner.json';
 import * as TestExchangeInternals from '../../generated-artifacts/TestExchangeInternals.json';
-import * as TestLibs from '../../generated-artifacts/TestLibs.json';
 import * as TestSignatureValidator from '../../generated-artifacts/TestSignatureValidator.json';
 import * as TestStaticCallReceiver from '../../generated-artifacts/TestStaticCallReceiver.json';
 import * as Validator from '../../generated-artifacts/Validator.json';
@@ -62,7 +61,6 @@ export const artifacts = {
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestAssetProxyOwner: TestAssetProxyOwner as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
-    TestLibs: TestLibs as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
     TestStaticCallReceiver: TestStaticCallReceiver as ContractArtifact,
     Validator: Validator as ContractArtifact,

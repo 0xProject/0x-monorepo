@@ -44,7 +44,6 @@
         "ReentrantERC20Token",
         "TestAssetProxyOwner",
         "TestAssetProxyDispatcher",
-        "TestLibs",
         "TestExchangeInternals",
         "TestSignatureValidator",
         "TestStaticCallReceiver",
