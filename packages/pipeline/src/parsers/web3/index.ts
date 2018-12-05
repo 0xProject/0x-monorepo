@@ -1,3 +1,4 @@
+import { BigNumber } from '@0x/utils';
 import { BlockWithoutTransactionData, Transaction as EthTransaction } from 'ethereum-types';
 
 import { Block, Transaction } from '../../entities';
@@ -41,8 +42,8 @@ export function parseTransaction(rawTransaction: EthTransaction): Transaction {
     tx.blockHash = rawTransaction.blockHash;
     tx.blockNumber = rawTransaction.blockNumber;
 
-    tx.gasUsed = rawTransaction.gas;
-    tx.gasPrice = rawTransaction.gasPrice.toNumber();
+    tx.gasUsed = new BigNumber(rawTransaction.gas);
+    tx.gasPrice = rawTransaction.gasPrice;
 
     return tx;
 }
