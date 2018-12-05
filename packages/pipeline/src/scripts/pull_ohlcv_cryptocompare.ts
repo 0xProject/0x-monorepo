@@ -1,7 +1,7 @@
 // tslint:disable:no-console
 import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
 
-import { CryptoCompareOHLCVSource } from '../data_sources/ohlcv_external/crypto_compare';
+import { CryptoCompareOHLCVRecord, CryptoCompareOHLCVSource } from '../data_sources/ohlcv_external/crypto_compare';
 import { OHLCVExternal } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { OHLCVMetadata, parseRecords } from '../parsers/ohlcv_external/crypto_compare';
@@ -14,7 +14,7 @@ const ONE_HOUR_AGO = new Date().getTime() - 60 * 60 * 1000; // tslint:disable-li
 const ONE_SECOND = 1000;
 
 const MAX_CONCURRENT_REQUESTS = parseInt(process.env.CRYPTOCOMPARE_MAX_CONCURRENT_REQUESTS || '14', 10); // tslint:disable-line:custom-no-magic-numbers
-const EARLIEST_BACKFILL_DATE = process.env.OHLCV_EARLIEST_BACKFILL_DATE || '2010-09-01'; // the time when BTC/USD info starts appearing on Crypto Compare
+const EARLIEST_BACKFILL_DATE = process.env.OHLCV_EARLIEST_BACKFILL_DATE || '2014-06-01';
 const EARLIEST_BACKFILL_TIME = new Date(EARLIEST_BACKFILL_DATE).getTime();
 
 let connection: Connection;
@@ -60,31 +60,28 @@ async function fetchAndSaveAsync(
         if (pair.latestSavedTime > TWO_HOURS_AGO) {
             break;
         }
-        let rawRecords;
         try {
-            rawRecords = await source.getHourlyOHLCVAsync(pair);
-        } catch (err) {
-            console.log(`Error fetching OHLCVRecords, stopping task for ${JSON.stringify(pair)} [${err}]`);
-            break;
-        }
-        const records = rawRecords.filter(rec => {
-            return rec.time * ONE_SECOND < ONE_HOUR_AGO && rec.time * ONE_SECOND > pair.latestSavedTime;
-        }); // Crypto Compare can take ~30mins to finalise records
-        const metadata: OHLCVMetadata = {
-            exchange: source.default_exchange,
-            fromSymbol: pair.fromSymbol,
-            toSymbol: pair.toSymbol,
-            source: SOURCE_NAME,
-            observedTimestamp: jobTime,
-            interval: source.intervalBetweenRecords,
-        };
-        const parsedRecords = parseRecords(records, metadata);
-        try {
-            await saveRecordsAsync(repository, parsedRecords);
+            const rawRecords = await source.getHourlyOHLCVAsync(pair); // might throw err
+            console.log(`Retrieved ${rawRecords.length} records for ${JSON.stringify(pair)}`);
+            if (rawRecords.length > 0) {
+                const records = rawRecords.filter(rec => {
+                    return rec.time * ONE_SECOND < ONE_HOUR_AGO && rec.time * ONE_SECOND > pair.latestSavedTime;
+                }); // Crypto Compare can take ~30mins to finalise records
+                const metadata: OHLCVMetadata = {
+                    exchange: source.default_exchange,
+                    fromSymbol: pair.fromSymbol,
+                    toSymbol: pair.toSymbol,
+                    source: SOURCE_NAME,
+                    observedTimestamp: jobTime,
+                    interval: source.intervalBetweenRecords,
+                };
+                const parsedRecords = parseRecords(records, metadata);
+                await saveRecordsAsync(repository, parsedRecords); // might throw err
+            }
             i++;
         } catch (err) {
-            console.log(`Error saving OHLCVRecords, stopping task for ${JSON.stringify(pair)} [${err}]`);
-            break;
+            console.log(`Error scraping OHLCVRecords, stopping task for ${JSON.stringify(pair)} [${err}]`);
+            i = pairs.length;
         }
     }
     return Promise.resolve();

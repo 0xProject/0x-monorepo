@@ -77,9 +77,9 @@ export class CryptoCompareOHLCVSource {
             (json.Response === 'Error' || Object.keys(json.Data).length === 0) &&
             json.Type !== CRYPTO_COMPARE_VALID_EMPTY_RESPONSE_TYPE
         ) {
-            throw new Error(`Error scraping ${url}: ${json.Message}`);
+            throw new Error(JSON.stringify(json));
         }
-        return Object.values(json.Data).filter(rec => rec.time * ONE_SECOND >= pair.latestSavedTime);
+        return Object.values(json.Data).filter(rec => rec.time * ONE_SECOND > pair.latestSavedTime && hasData(rec));
     }
     public generateBackfillIntervals(pair: TradingPair): TradingPair[] {
         const now = new Date().getTime();
@@ -92,4 +92,15 @@ export class CryptoCompareOHLCVSource {
         };
         return R.unfold(f, pair);
     }
+}
+
+function hasData(record: CryptoCompareOHLCVRecord): boolean {
+    return (
+        record.close !== 0 ||
+        record.open !== 0 ||
+        record.high !== 0 ||
+        record.low !== 0 ||
+        record.volumefrom !== 0 ||
+        record.volumeto !== 0
+    );
 }
