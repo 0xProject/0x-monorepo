@@ -8,9 +8,8 @@ import { ExchangeEventsSource } from '../data_sources/contract-wrappers/exchange
 import { ExchangeCancelEvent, ExchangeCancelUpToEvent, ExchangeEvent, ExchangeFillEvent } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseExchangeCancelEvents, parseExchangeCancelUpToEvents, parseExchangeFillEvents } from '../parsers/events';
-import { handleError } from '../utils';
+import { EXCHANGE_START_BLOCK, handleError, INFURA_ROOT_URL } from '../utils';
 
-const EXCHANGE_START_BLOCK = 6271590; // Block number when the Exchange contract was deployed to mainnet.
 const START_BLOCK_OFFSET = 100; // Number of blocks before the last known block to consider when updating fill events.
 const BATCH_SAVE_SIZE = 1000; // Number of events to save at once.
 
@@ -19,7 +18,7 @@ let connection: Connection;
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
     const provider = web3Factory.getRpcProvider({
-        rpcUrl: 'https://mainnet.infura.io',
+        rpcUrl: INFURA_ROOT_URL,
     });
     const eventsSource = new ExchangeEventsSource(provider, 1);
     await getFillEventsAsync(eventsSource);

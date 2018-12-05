@@ -1,6 +1,6 @@
 {
     "name": "@0x/pipeline",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "private": true,
     "description": "Data pipeline for offline analysis",
     "scripts": {
@@ -20,11 +20,6 @@
         "migrate:run": "yarn typeorm migration:run --config ./lib/src/ormconfig",
         "migrate:revert": "yarn typeorm migration:revert --config ./lib/src/ormconfig",
         "migrate:create": "yarn typeorm migration:create --config ./lib/src/ormconfig --dir migrations"
-    },
-    "config": {
-        "postpublish": {
-            "assets": []
-        }
     },
     "repository": {
         "type": "git",

@@ -3,13 +3,13 @@ import { ValueTransformer } from 'typeorm/decorator/options/ValueTransformer';
 
 export class BigNumberTransformer implements ValueTransformer {
     // tslint:disable-next-line:prefer-function-over-method
-    public to(value: BigNumber): string {
-        return value.toString();
+    public to(value: BigNumber | null): string | null {
+        return value === null ? null : value.toString();
     }
 
     // tslint:disable-next-line:prefer-function-over-method
-    public from(value: string): BigNumber {
-        return new BigNumber(value);
+    public from(value: string | null): BigNumber | null {
+        return value === null ? null : new BigNumber(value);
     }
 }
 

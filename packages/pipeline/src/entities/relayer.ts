@@ -14,9 +14,6 @@ export class Relayer {
     @Column({ name: 'app_url', type: 'varchar', nullable: true })
     public appUrl!: string | null;
 
-    // TODO(albrow): Add exchange contract or protocol version?
-    // TODO(albrow): Add network ids for addresses?
-
     @Column({ name: 'fee_recipient_addresses', type: 'varchar', array: true })
     public feeRecipientAddresses!: string[];
     @Column({ name: 'taker_addresses', type: 'varchar', array: true })
