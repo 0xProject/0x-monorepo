@@ -59,7 +59,7 @@ async function fetchAndSaveAsync(
             break;
         }
         try {
-            const records = await source.getHourlyOHLCVAsync(pair); // might throw err
+            const records = await source.getHourlyOHLCVAsync(pair);
             console.log(`Retrieved ${records.length} records for ${JSON.stringify(pair)}`);
             if (records.length > 0) {
                 const metadata: OHLCVMetadata = {
@@ -71,12 +71,12 @@ async function fetchAndSaveAsync(
                     interval: source.intervalBetweenRecords,
                 };
                 const parsedRecords = parseRecords(records, metadata);
-                await saveRecordsAsync(repository, parsedRecords); // might throw err
+                await saveRecordsAsync(repository, parsedRecords);
             }
             i++;
         } catch (err) {
             console.log(`Error scraping OHLCVRecords, stopping task for ${JSON.stringify(pair)} [${err}]`);
-            i = pairs.length;
+            break;
         }
     }
     return Promise.resolve();

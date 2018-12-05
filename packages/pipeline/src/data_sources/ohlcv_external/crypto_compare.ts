@@ -7,7 +7,7 @@ import * as R from 'ramda';
 import { TradingPair } from '../../utils/get_ohlcv_trading_pairs';
 
 export interface CryptoCompareOHLCVResponse {
-    Data: Map<string, CryptoCompareOHLCVRecord[]>;
+    Data: CryptoCompareOHLCVRecord[];
     Response: string;
     Message: string;
     Type: number;
@@ -75,16 +75,15 @@ export class CryptoCompareOHLCVSource {
         }
         const json: CryptoCompareOHLCVResponse = await response.json();
         if (
-            (json.Response === 'Error' || Object.keys(json.Data).length === 0) &&
+            (json.Response === 'Error' || json.Data.length === 0) &&
             json.Type !== CRYPTO_COMPARE_VALID_EMPTY_RESPONSE_TYPE
         ) {
             throw new Error(JSON.stringify(json));
         }
-        return Object.values(json.Data).filter(rec => {
+        return json.Data.filter(rec => {
             return (
-                rec.time * ONE_SECOND < ONE_HOUR_AGO && // Crypto Compare takes ~30 mins to finalise records
-                rec.time * ONE_SECOND > pair.latestSavedTime &&
-                hasData(rec)
+                // Crypto Compare takes ~30 mins to finalise records
+                rec.time * ONE_SECOND < ONE_HOUR_AGO && rec.time * ONE_SECOND > pair.latestSavedTime && hasData(rec)
             );
         });
     }
