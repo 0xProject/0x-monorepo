@@ -42,7 +42,6 @@ export function parseTransaction(rawTransaction: EthTransaction): Transaction {
     tx.blockNumber = rawTransaction.blockNumber;
 
     tx.gasUsed = rawTransaction.gas;
-    // TODO(albrow) figure out bignum solution.
     tx.gasPrice = rawTransaction.gasPrice.toNumber();
 
     return tx;

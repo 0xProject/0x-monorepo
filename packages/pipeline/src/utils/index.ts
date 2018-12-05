@@ -1,5 +1,6 @@
 import { BigNumber } from '@0x/utils';
 export * from './transformers';
+export * from './constants';
 
 /**
  * If the given BigNumber is not null, returns the string representation of that

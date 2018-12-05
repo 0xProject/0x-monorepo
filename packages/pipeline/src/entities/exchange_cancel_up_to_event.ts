@@ -12,7 +12,6 @@ export class ExchangeCancelUpToEvent {
     @PrimaryColumn({ name: 'block_number', transformer: numberToBigIntTransformer })
     public blockNumber!: number;
 
-    // TODO(albrow): Include transaction hash
     @Column({ name: 'raw_data' })
     public rawData!: string;
 
@@ -24,5 +23,4 @@ export class ExchangeCancelUpToEvent {
     public senderAddress!: string;
     @Column({ name: 'order_epoch', type: 'numeric', transformer: bigNumberTransformer })
     public orderEpoch!: BigNumber;
-    // TODO(albrow): Include topics?
 }

@@ -42,7 +42,8 @@ Revert the most recent migration (CAUTION: may result in data loss!): `yarn migr
 
 There are several test scripts in **package.json**. You can run all the tests
 with `yarn test:all` or run certain tests seprately by following the
-instructions below. Some tests may not work out of the box on certain platforms.
+instructions below. Some tests may not work out of the box on certain platforms
+or operating systems (see the "Database tests" section below).
 
 ### Unit tests
 
@@ -71,8 +72,8 @@ Postgres is via Docker. Depending on your platform, you may need to prepend
 docker run --rm -d -p 5432:5432 --name pipeline_postgres postgres:11-alpine
 ```
 
-This will start a Postgres server with the default username and database name.
-You should set the environment variable as follows:
+This will start a Postgres server with the default username and database name
+(`postgres` and `postgres`). You should set the environment variable as follows:
 
 ```
 export ZEROEX_DATA_PIPELINE_DB_URL=postgresql://postgres@localhost/postgres
@@ -149,17 +150,17 @@ set the`ZEROEX_DATA_PIPELINE_DB_URL` environment variable to a valid
 
 #### Additional guidelines and tips:
 
-*   Table names should be plural and separated by underscores (e.g.,
+-   Table names should be plural and separated by underscores (e.g.,
     `exchange_fill_events`).
-*   Any table which contains data which comes directly from a third-party source
+-   Any table which contains data which comes directly from a third-party source
     should be namespaced in the `raw` PostgreSQL schema.
-*   Column names in the database should be separated by underscores (e.g.,
+-   Column names in the database should be separated by underscores (e.g.,
     `maker_asset_type`).
-*   Field names in entity classes (like any other fields in TypeScript) should
+-   Field names in entity classes (like any other fields in TypeScript) should
     be camel-cased (e.g., `makerAssetType`).
-*   All timestamps should be stored as milliseconds since the Unix Epoch.
-*   Use the `BigNumber` type for TypeScript code which deals with 256-bit
+-   All timestamps should be stored as milliseconds since the Unix Epoch.
+-   Use the `BigNumber` type for TypeScript code which deals with 256-bit
     numbers from smart contracts or for any case where we are dealing with large
     floating point numbers.
-*   [TypeORM documentation](http://typeorm.io/#/) is pretty robust and can be a
+-   [TypeORM documentation](http://typeorm.io/#/) is pretty robust and can be a
     helpful resource.

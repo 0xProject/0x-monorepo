@@ -1,7 +1,9 @@
+import { BigNumber } from '@0x/utils';
 import * as R from 'ramda';
 
 import { MetamaskTrustedTokenMeta, ZeroExTrustedTokenMeta } from '../../data_sources/trusted_tokens';
 import { TokenMetadata } from '../../entities';
+import {} from '../../utils';
 
 /**
  * Parses Metamask's trusted tokens list.
@@ -24,7 +26,7 @@ function parseMetamaskTrustedToken(resp: MetamaskTrustedTokenMeta, address: stri
     const trustedToken = new TokenMetadata();
 
     trustedToken.address = address;
-    trustedToken.decimals = resp.decimals;
+    trustedToken.decimals = new BigNumber(resp.decimals);
     trustedToken.symbol = resp.symbol;
     trustedToken.name = resp.name;
     trustedToken.authority = 'metamask';
@@ -36,7 +38,7 @@ function parseZeroExTrustedToken(resp: ZeroExTrustedTokenMeta): TokenMetadata {
     const trustedToken = new TokenMetadata();
 
     trustedToken.address = resp.address;
-    trustedToken.decimals = resp.decimals;
+    trustedToken.decimals = new BigNumber(resp.decimals);
     trustedToken.symbol = resp.symbol;
     trustedToken.name = resp.name;
     trustedToken.authority = '0x';

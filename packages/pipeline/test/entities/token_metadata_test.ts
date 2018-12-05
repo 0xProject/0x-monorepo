@@ -1,3 +1,4 @@
+import { BigNumber } from '@0x/utils';
 import 'mocha';
 import 'reflect-metadata';
 
@@ -9,15 +10,15 @@ import { testSaveAndFindEntityAsync } from './util';
 
 chaiSetup.configure();
 
-const metadataWithoutNullFields = {
+const metadataWithoutNullFields: TokenMetadata = {
     address: '0xe41d2489571d322189246dafa5ebde1f4699f498',
     authority: 'https://website-api.0xproject.com/tokens',
-    decimals: 18,
+    decimals: new BigNumber(18),
     symbol: 'ZRX',
     name: '0x',
 };
 
-const metadataWithNullFields = {
+const metadataWithNullFields: TokenMetadata = {
     address: '0xe41d2489571d322189246dafa5ebde1f4699f499',
     authority: 'https://website-api.0xproject.com/tokens',
     decimals: null,
