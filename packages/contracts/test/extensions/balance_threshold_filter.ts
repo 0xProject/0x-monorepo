@@ -126,12 +126,14 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(compliantMakerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
         // Deploy Compliant Forwarder
+        const erc721BalanceThreshold = new BigNumber(1);
         compliantForwarderInstance = await BalanceThresholdFilterContract.deployFrom0xArtifactAsync(
             artifacts.BalanceThresholdFilter,
             provider,
             txDefaults,
             exchangeInstance.address,
             yesTokenInstance.address,
+            erc721BalanceThreshold
         );
         /*
         const compliantForwarderContract = new BalanceThresholdFilterContract(

@@ -26,10 +26,19 @@ import "./MixinBalanceThresholdFilterCore.sol";
 
 contract BalanceThresholdFilter is MixinBalanceThresholdFilterCore {
 
-    constructor(address exchange, address thresholdAsset)
+    /// @dev Constructs BalanceThresholdFilter.
+    /// @param exchange Address of 0x exchange.
+    /// @param thresholdAsset The asset that must be held by makers/takers.
+    /// @param thresholdBalance The minimum balance of `thresholdAsset` that must be held by makers/takers.
+    constructor(
+        address exchange,
+        address thresholdAsset,
+        uint256 thresholdBalance
+    )
         public
     {
         EXCHANGE = IExchange(exchange);
         THRESHOLD_ASSET = IThresholdAsset(thresholdAsset);
+        THRESHOLD_BALANCE = thresholdBalance;
     }
 }

@@ -25,9 +25,16 @@ import "../interfaces/IThresholdAsset.sol";
 
 contract MBalanceThresholdFilterCore {
 
+    // Points to 0x exchange contract
     IExchange internal EXCHANGE;
+
+    // The asset that must be held by makers/takers
     IThresholdAsset internal THRESHOLD_ASSET;
 
+    // The minimum balance of `THRESHOLD_ASSET` that must be held by makers/takers
+    uint256 internal THRESHOLD_BALANCE;
+
+    // Addresses that hold at least `THRESHOLD_BALANCE` of `THRESHOLD_ASSET`
     event ValidatedAddresses (
         address[] addresses
     );

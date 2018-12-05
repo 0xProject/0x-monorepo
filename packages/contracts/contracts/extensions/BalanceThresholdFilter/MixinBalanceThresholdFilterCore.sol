@@ -263,6 +263,7 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
 
             // Validate addresses
             let thresholdAssetAddress := sload(THRESHOLD_ASSET_slot)
+            let thresholdBalance := sload(THRESHOLD_BALANCE_slot)
             for {let addressToValidate := addressesToValidateElementPtr} lt(addressToValidate, addressesToValidateElementEndPtr) {addressToValidate := add(addressToValidate, 0x20)} {
                 // Construct calldata for `THRESHOLD_ASSET.balanceOf`
                 mstore(freeMemPtr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
@@ -294,7 +295,7 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
 
                 // Revert if balance not held
                 let addressBalance := mload(freeMemPtr)
-                if eq(addressBalance, 0) {
+                if lt(addressBalance, thresholdBalance) {
                     // Revert with `Error("AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD")`
                     mstore(0x00, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                     mstore(0x20, 0x0000002000000000000000000000000000000000000000000000000000000000)
