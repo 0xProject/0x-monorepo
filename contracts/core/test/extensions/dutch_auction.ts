@@ -62,16 +62,6 @@ describe(ContractName.DutchAuction, () => {
     let erc721MakerAssetIds: BigNumber[];
     const tenMinutesInSeconds = 10 * 60;
 
-    async function increaseTimeAsync(): Promise<void> {
-        const timestampBefore = await getLatestBlockTimestampAsync();
-        await web3Wrapper.increaseTimeAsync(5);
-        const timestampAfter = await getLatestBlockTimestampAsync();
-        // HACK send some transactions when a time increase isn't supported
-        if (timestampAfter === timestampBefore) {
-            await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
-        }
-    }
-
     function extendMakerAssetData(makerAssetData: string, beginTimeSeconds: BigNumber, beginAmount: BigNumber): string {
         return ethUtil.bufferToHex(
             Buffer.concat([
@@ -276,34 +266,6 @@ describe(ContractName.DutchAuction, () => {
                 erc20Balances[takerAddress][wethContract.address].minus(beforeAuctionDetails.currentAmount),
             );
         });
-        it('should have valid getAuctionDetails at some block in the future', async () => {
-            let auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
-            const beforeAmount = auctionDetails.currentAmount;
-            await increaseTimeAsync();
-            auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
-            const currentAmount = auctionDetails.currentAmount;
-            expect(beforeAmount).to.be.bignumber.greaterThan(currentAmount);
-
-            buyOrder = await buyerOrderFactory.newSignedOrderAsync({
-                makerAssetAmount: currentAmount,
-            });
-            const txHash = await dutchAuctionContract.matchOrders.sendTransactionAsync(
-                buyOrder,
-                sellOrder,
-                buyOrder.signature,
-                sellOrder.signature,
-                {
-                    from: takerAddress,
-                    // HACK geth seems to miscalculate the gas required intermittently
-                    gas: 400000,
-                },
-            );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            const newBalances = await erc20Wrapper.getBalancesAsync();
-            expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][wethContract.address].plus(currentAmount),
-            );
-        });
         it('maker fees on sellOrder are paid to the fee receipient', async () => {
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
                 makerFee: new BigNumber(1),
@@ -375,7 +337,6 @@ describe(ContractName.DutchAuction, () => {
             );
         });
         it('cannot be filled for less than the current price', async () => {
-            await increaseTimeAsync();
             buyOrder = await buyerOrderFactory.newSignedOrderAsync({
                 makerAssetAmount: sellOrder.takerAssetAmount,
             });
