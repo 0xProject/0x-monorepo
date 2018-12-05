@@ -24,6 +24,28 @@ import "./mixins/MBalanceThresholdFilterCore.sol";
 
 contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
 
+    /// @dev Executes an Exchange transaction iff the maker and taker meet 
+    ///      the hold at least `BALANCE_THRESHOLD` of the asset `THRESHOLD_ASSET` OR 
+    ///      the exchange function is a cancellation.
+    ///      Supported Exchange functions:
+    ///         - batchFillOrdersNoThrow
+    ///         - batchFillOrKillOrders
+    ///         - fillOrder
+    ///         - fillOrderNoThrow
+    ///         - fillOrKillOrder
+    ///         - marketBuyOrders
+    ///         - marketBuyOrdersNoThrow
+    ///         - marketSellOrders
+    ///         - marketSellOrdersNoThrow
+    ///         - matchOrders
+    ///         - cancelOrder
+    ///         - batchCancelOrders
+    ///         - cancelOrdersUpTo
+    ///     Trying to call any other exchange function will throw.
+    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
+    /// @param signerAddress Address of transaction signer.
+    /// @param signedExchangeTransaction AbiV2 encoded calldata.
+    /// @param signature Proof of signer transaction by signer.
     function executeTransaction(
         uint256 salt,
         address signerAddress,
@@ -44,25 +66,29 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
         );
     }
 
+    /// @dev Validates addresses meet the balance threshold specified by `BALANCE_THRESHOLD`
+    ///      for the asset `THRESHOLD_ASSET`. If one address does not meet the thresold
+    ///      then this function will revert. Which addresses are validated depends on
+    ///      which Exchange function is to be called (defined by `signedExchangeTransaction` above).
+    ///      No parameters are taken as this function reads arguments directly from calldata, to save gas.
+    ///      If all addresses are valid then this function emits a ValidatedAddresses event, listing all
+    ///      of the addresses whose balance thresholds it checked.
     function validateBalanceThresholdsOrRevert()
         internal
     {
         // Addresses that are validated below.
         address[] memory validatedAddresses;
 
-        /**
-         * Do not add variables after this point.
-         * The assembly block may overwrite their values.
-         */
+
+        ///// Do not add variables after this point.         /////
+        ///// The assembly block may overwrite their values. /////
 
         // Validate addresses
         assembly {
-            /**
-             * Emulates the `calldataload` opcode on the embedded Exchange calldata,
-             * which is accessed through `signedExchangeTransaction`.
-             * @param offset - Offset into the Exchange calldata.
-             * @return value - Corresponding 32 byte value stored at `offset`.
-             */
+             /// @dev Emulates the `calldataload` opcode on the embedded Exchange calldata,
+             ///      which is accessed through `signedExchangeTransaction`.
+             /// @param offset - Offset into the Exchange calldata.
+             /// @return value - Corresponding 32 byte value stored at `offset`.
             function exchangeCalldataload(offset) -> value {
                 // Pointer to exchange transaction
                 // 0x04 for calldata selector
@@ -77,23 +103,19 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
                 value := calldataload(exchangeCalldataOffset)
             }
 
-            /** 
-             * Convenience function that skips the 4 byte selector when loading
-             * from the embedded Exchange calldata.
-             * @param offset - Offset into the Exchange calldata (minus the 4 byte selector)
-             * @return value - Corresponding 32 byte value stored at `offset` + 4.
-             */
+            /// @dev Convenience function that skips the 4 byte selector when loading
+            ///      from the embedded Exchange calldata.
+            /// @param offset - Offset into the Exchange calldata (minus the 4 byte selector)
+            /// @return value - Corresponding 32 byte value stored at `offset` + 4.
             function loadExchangeData(offset) -> value {
                 value := exchangeCalldataload(add(offset, 0x4))
             }
 
-            /** 
-             * A running list is maintained of addresses to validate. 
-             * This function records an address in this array.
-             * @param addressToValidate - Address to record for validation.
-             * @note - Variables are scoped but names are not, so we append
-             *         underscores to names that share the global namespace.
-             */
+             /// @dev A running list is maintained of addresses to validate. 
+             ///     This function records an address in this array.
+             /// @param addressToValidate - Address to record for validation.
+             /// @note - Variables are scoped but names are not, so we append
+             ///         underscores to names that share the global namespace.
             function recordAddressToValidate(addressToValidate) {
                 // Compute `addressesToValidate` memory offset
                 let addressesToValidate_ := mload(0x40)
@@ -108,24 +130,20 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
                 mstore(add(addressesToValidate_, offset), addressToValidate)
             }
 
-            /**
-             * Extracts the maker address from an order stored in the Exchange calldata
-             * (which is embedded in `signedExchangeTransaction`), and records it in
-             * the running list of addresses to validate.
-             * @param orderParamIndex - Index of the order in the Exchange function's signature
-             */
+             /// @dev Extracts the maker address from an order stored in the Exchange calldata
+             ///      (which is embedded in `signedExchangeTransaction`), and records it in
+             ///      the running list of addresses to validate.
+             /// @param orderParamIndex - Index of the order in the Exchange function's signature
             function recordMakerAddressFromOrder(orderParamIndex) {
                 let orderPtr := loadExchangeData(orderParamIndex)
                 let makerAddress := loadExchangeData(orderPtr)
                 recordAddressToValidate(makerAddress)
             }
 
-            /**
-             * Extracts the maker addresses from an array of orders stored in the Exchange calldata
-             * (which is embedded in `signedExchangeTransaction`), and records them in
-             * the running list of addresses to validate.
-             * @param orderArrayParamIndex - Index of the order array in the Exchange function's signature
-             */
+            /// @dev Extracts the maker addresses from an array of orders stored in the Exchange calldata
+            ///      (which is embedded in `signedExchangeTransaction`), and records them in
+            ///      the running list of addresses to validate.
+            /// @param orderArrayParamIndex - Index of the order array in the Exchange function's signature
             function recordMakerAddressesFromOrderArray(orderArrayParamIndex) {
                 let orderArrayPtr := loadExchangeData(orderArrayParamIndex)
                 let orderArrayLength := loadExchangeData(orderArrayPtr)
@@ -138,11 +156,9 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
                 }
             }
 
-            /**
-             * Records address of signer in the running list of addresses to validate.
-             * @note: We cannot access `signerAddress` directly from within the asm function,
-             *        so it is loaded from the calldata.
-             */
+            /// @dev Records address of signer in the running list of addresses to validate.
+            /// @note: We cannot access `signerAddress` directly from within the asm function,
+            ///        so it is loaded from the calldata.
             function recordSignerAddress() {
                 // Load the signer address from calldata
                 // 0x04 for selector
@@ -151,11 +167,9 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
                 recordAddressToValidate(signerAddress_)
             }
 
-            /**
-             * Records addresses to be validated when Exchange transaction is a batch fill variant.
-             * This is one of: batchFillOrders, batchFillOrKillOrders, batchFillNoThrow
-             * Reference signature<T>: <batchFillVariant>(Order[],uint256[],bytes[])
-             */
+            /// @dev Records addresses to be validated when Exchange transaction is a batch fill variant.
+            ///      This is one of: batchFillOrders, batchFillOrKillOrders, batchFillNoThrow
+            ///      Reference signature<T>: <batchFillVariant>(Order[],uint256[],bytes[])
             function recordAddressesForBatchFillVariant() {
                 // Record maker addresses from order array (parameter index 0)
                 // The signer is the taker for these orders and must also be validated.
@@ -163,11 +177,9 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
                 recordSignerAddress()
             }
 
-            /**
-             * Records addresses to be validated when Exchange transaction is a fill order variant.
-             * This is one of: fillOrder, fillOrKillOrder, fillOrderNoThrow
-             * Reference signature<T>: <fillOrderVariant>(Order,uint256,bytes)
-             */
+            /// @dev Records addresses to be validated when Exchange transaction is a fill order variant.
+            ///      This is one of: fillOrder, fillOrKillOrder, fillOrderNoThrow
+            ///      Reference signature<T>: <fillOrderVariant>(Order,uint256,bytes)
             function recordAddressesForFillOrderVariant() {
                 // Record maker address from the order (param index 0)
                 // The signer is the taker for this order and must also be validated.
@@ -175,11 +187,9 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
                 recordSignerAddress()
             }
 
-            /**
-             * Records addresses to be validated when Exchange transaction is a market fill variant.
-             * This is one of: marketBuyOrders, marketBuyOrdersNoThrow, marketSellOrders, marketSellOrdersNoThrow
-             * Reference signature<T>: <marketFillInvariant>(Order[],uint256,bytes[])
-             */
+            /// @dev Records addresses to be validated when Exchange transaction is a market fill variant.
+            ///      This is one of: marketBuyOrders, marketBuyOrdersNoThrow, marketSellOrders, marketSellOrdersNoThrow
+            ///      Reference signature<T>: <marketFillInvariant>(Order[],uint256,bytes[])
             function recordAddressesForMarketFillVariant() {
                 // Record maker addresses from order array (parameter index 0)
                 // The signer is the taker for these orders and must also be validated.
@@ -187,10 +197,8 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
                 recordSignerAddress()
             }
 
-            /**
-             * Records addresses to be validated when Exchange transaction is matchOrders.
-             * Reference signature: matchOrders(Order,Order)
-             */
+            /// @dev Records addresses to be validated when Exchange transaction is matchOrders.
+            ///      Reference signature: matchOrders(Order,Order)
             function recordAddressesForMatchOrders() {
                 // Record maker address from both orders (param indices 0 & 1).
                 // The signer is the taker and must also be validated.

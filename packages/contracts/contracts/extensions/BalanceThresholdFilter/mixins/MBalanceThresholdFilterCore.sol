@@ -32,6 +32,28 @@ contract MBalanceThresholdFilterCore {
         address[] addresses
     );
 
+    /// @dev Executes an Exchange transaction iff the maker and taker meet 
+    ///      the hold at least `BALANCE_THRESHOLD` of the asset `THRESHOLD_ASSET` OR 
+    ///      the exchange function is a cancellation.
+    ///      Supported Exchange functions:
+    ///         - batchFillOrdersNoThrow
+    ///         - batchFillOrKillOrders
+    ///         - fillOrder
+    ///         - fillOrderNoThrow
+    ///         - fillOrKillOrder
+    ///         - marketBuyOrders
+    ///         - marketBuyOrdersNoThrow
+    ///         - marketSellOrders
+    ///         - marketSellOrdersNoThrow
+    ///         - matchOrders
+    ///         - cancelOrder
+    ///         - batchCancelOrders
+    ///         - cancelOrdersUpTo
+    ///     Trying to call any other exchange function will throw.
+    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
+    /// @param signerAddress Address of transaction signer.
+    /// @param signedExchangeTransaction AbiV2 encoded calldata.
+    /// @param signature Proof of signer transaction by signer.
     function executeTransaction(
         uint256 salt,
         address signerAddress,
@@ -40,5 +62,12 @@ contract MBalanceThresholdFilterCore {
     ) 
         external;
 
+    /// @dev Validates addresses meet the balance threshold specified by `BALANCE_THRESHOLD`
+    ///      for the asset `THRESHOLD_ASSET`. If one address does not meet the thresold
+    ///      then this function will revert. Which addresses are validated depends on
+    ///      which Exchange function is to be called (defined by `signedExchangeTransaction` above).
+    ///      No parameters are taken as this function reads arguments directly from calldata, to save gas.
+    ///      If all addresses are valid then this function emits a ValidatedAddresses event, listing all
+    ///      of the addresses whose balance thresholds it checked.
     function validateBalanceThresholdsOrRevert() internal;
 }
