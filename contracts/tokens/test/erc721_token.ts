@@ -15,15 +15,13 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import {
+    artifacts,
     DummyERC721ReceiverContract,
     DummyERC721ReceiverTokenReceivedEventArgs,
-} from '../../generated-wrappers/dummy_erc721_receiver';
-import {
     DummyERC721TokenContract,
     DummyERC721TokenTransferEventArgs,
-} from '../../generated-wrappers/dummy_erc721_token';
-import { InvalidERC721ReceiverContract } from '../../generated-wrappers/invalid_erc721_receiver';
-import { artifacts } from '../../src/artifacts';
+    InvalidERC721ReceiverContract,
+} from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;

@@ -12,6 +12,14 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
+import {
+    artifacts as tokensArtifacts,
+    DummyERC20TokenContract,
+    DummyERC20TokenTransferEventArgs,
+    DummyERC721TokenContract,
+    DummyNoReturnERC20TokenContract,
+    ReentrantERC20TokenContract,
+} from '@0x/contracts-tokens';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
@@ -22,14 +30,10 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract, DummyERC20TokenTransferEventArgs } from '../../generated-wrappers/dummy_erc20_token';
-import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
-import { DummyNoReturnERC20TokenContract } from '../../generated-wrappers/dummy_no_return_erc20_token';
 import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated-wrappers/exchange';
 import { MultiAssetProxyContract } from '../../generated-wrappers/multi_asset_proxy';
-import { ReentrantERC20TokenContract } from '../../generated-wrappers/reentrant_erc20_token';
 import { TestStaticCallReceiverContract } from '../../generated-wrappers/test_static_call_receiver';
 import { artifacts } from '../../src/artifacts';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
@@ -116,7 +120,7 @@ describe('Exchange core', () => {
             txDefaults,
         );
         reentrantErc20Token = await ReentrantERC20TokenContract.deployFrom0xArtifactAsync(
-            artifacts.ReentrantERC20Token,
+            tokensArtifacts.ReentrantERC20Token,
             provider,
             txDefaults,
             exchange.address,
@@ -341,7 +345,7 @@ describe('Exchange core', () => {
     describe('Testing exchange of ERC20 tokens with no return values', () => {
         before(async () => {
             noReturnErc20Token = await DummyNoReturnERC20TokenContract.deployFrom0xArtifactAsync(
-                artifacts.DummyNoReturnERC20Token,
+                tokensArtifacts.DummyNoReturnERC20Token,
                 provider,
                 txDefaults,
                 constants.DUMMY_TOKEN_NAME,

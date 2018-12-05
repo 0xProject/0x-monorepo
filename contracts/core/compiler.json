@@ -20,24 +20,15 @@
     },
     "contracts": [
         "AssetProxyOwner",
-        "DummyERC20Token",
-        "DummyERC721Receiver",
-        "DummyERC721Token",
-        "DummyMultipleReturnERC20Token",
-        "DummyNoReturnERC20Token",
         "DutchAuction",
         "ERC20Proxy",
-        "ERC20Token",
-        "ERC721Token",
         "ERC721Proxy",
         "Exchange",
         "ExchangeWrapper",
         "Forwarder",
-        "InvalidERC721Receiver",
         "MixinAuthorizable",
         "MultiAssetProxy",
         "OrderValidator",
-        "ReentrantERC20Token",
         "TestAssetProxyOwner",
         "TestAssetProxyDispatcher",
         "TestExchangeInternals",
@@ -45,8 +36,6 @@
         "TestStaticCallReceiver",
         "Validator",
         "Wallet",
-        "WETH9",
-        "Whitelist",
-        "ZRXToken"
+        "Whitelist"
     ]
 }

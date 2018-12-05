@@ -9,6 +9,14 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
+import {
+    artifacts as tokensArtifacts,
+    DummyERC20TokenContract,
+    DummyERC721ReceiverContract,
+    DummyERC721TokenContract,
+    DummyMultipleReturnERC20TokenContract,
+    DummyNoReturnERC20TokenContract,
+} from '@0x/contracts-tokens';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
@@ -16,11 +24,6 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
-import { DummyERC721ReceiverContract } from '../../generated-wrappers/dummy_erc721_receiver';
-import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
-import { DummyMultipleReturnERC20TokenContract } from '../../generated-wrappers/dummy_multiple_return_erc20_token';
-import { DummyNoReturnERC20TokenContract } from '../../generated-wrappers/dummy_no_return_erc20_token';
 import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { MultiAssetProxyContract } from '../../generated-wrappers/multi_asset_proxy';
@@ -143,7 +146,7 @@ describe('Asset Transfer Proxies', () => {
             constants.DUMMY_TOKEN_DECIMALS,
         );
         noReturnErc20Token = await DummyNoReturnERC20TokenContract.deployFrom0xArtifactAsync(
-            artifacts.DummyNoReturnERC20Token,
+            tokensArtifacts.DummyNoReturnERC20Token,
             provider,
             txDefaults,
             constants.DUMMY_TOKEN_NAME,
@@ -152,7 +155,7 @@ describe('Asset Transfer Proxies', () => {
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
         multipleReturnErc20Token = await DummyMultipleReturnERC20TokenContract.deployFrom0xArtifactAsync(
-            artifacts.DummyMultipleReturnERC20Token,
+            tokensArtifacts.DummyMultipleReturnERC20Token,
             provider,
             txDefaults,
             constants.DUMMY_TOKEN_NAME,
@@ -193,7 +196,7 @@ describe('Asset Transfer Proxies', () => {
         // Deploy and configure ERC721 tokens and receiver
         [erc721TokenA, erc721TokenB] = await erc721Wrapper.deployDummyTokensAsync();
         erc721Receiver = await DummyERC721ReceiverContract.deployFrom0xArtifactAsync(
-            artifacts.DummyERC721Receiver,
+            tokensArtifacts.DummyERC721Receiver,
             provider,
             txDefaults,
         );
@@ -557,7 +560,7 @@ describe('Asset Transfer Proxies', () => {
                     erc721Receiver.address,
                     amount,
                 );
-                const logDecoder = new LogDecoder(web3Wrapper, artifacts);
+                const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokensArtifacts });
                 const tx = await logDecoder.getTxWithDecodedLogsAsync(
                     await web3Wrapper.sendTransactionAsync({
                         to: erc721Proxy.address,

@@ -11,8 +11,7 @@ import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 
-import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
-import { artifacts } from '../../src/artifacts';
+import { artifacts, DummyERC20TokenContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
