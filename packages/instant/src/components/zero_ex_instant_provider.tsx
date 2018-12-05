@@ -60,7 +60,8 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
         );
         // merge the additional additionalAssetMetaDataMap with our default map
         const completeAssetMetaDataMap = {
-            ...props.additionalAssetMetaDataMap,
+            // Make sure the passed in assetDatas are lower case
+            ..._.mapKeys(props.additionalAssetMetaDataMap || {}, (value, key) => key.toLowerCase()),
             ...defaultState.assetMetaDataMap,
         };
         // construct the final state
