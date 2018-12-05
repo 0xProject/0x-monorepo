@@ -91,7 +91,7 @@ export class PaymentMethod extends React.Component<PaymentMethodProps> {
                         image={<Icon width={13} icon="lock" color={ColorOption.black} />}
                         {...colors}
                     >
-                        Please Unlock {this.props.walletDisplayName}
+                        Click to connect {this.props.walletDisplayName}
                     </WalletPrompt>
                 );
             case AccountState.None:
