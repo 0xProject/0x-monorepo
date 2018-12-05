@@ -22,7 +22,10 @@ export class SraOrdersObservedTimeStamp {
  * current time.
  * @param order The order to generate a timestamp for.
  */
-export function createObservedTimestampForOrder(order: SraOrder, observedTimestamp: number): SraOrdersObservedTimeStamp {
+export function createObservedTimestampForOrder(
+    order: SraOrder,
+    observedTimestamp: number,
+): SraOrdersObservedTimeStamp {
     const observed = new SraOrdersObservedTimeStamp();
     observed.exchangeAddress = order.exchangeAddress;
     observed.orderHashHex = order.orderHashHex;
