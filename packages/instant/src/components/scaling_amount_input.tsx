@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { Maybe } from '../types';
 
-import { MAGIC_TRIGGER_ERROR_INPUT } from '../constants';
+import { GIT_SHA, MAGIC_TRIGGER_ERROR_INPUT, MAGIC_TRIGGER_ERROR_MESSAGE, NPM_PACKAGE_VERSION } from '../constants';
 import { ColorOption } from '../style/theme';
 import { maybeBigNumberUtil } from '../util/maybe_big_number';
 import { util } from '../util/util';
@@ -73,7 +73,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
     }
     private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         if (event.target.value === MAGIC_TRIGGER_ERROR_INPUT) {
-            throw new Error('Triggered error');
+            throw new Error(`${MAGIC_TRIGGER_ERROR_MESSAGE} git: ${GIT_SHA}, npm: ${NPM_PACKAGE_VERSION}`);
         }
 
         const sanitizedValue = event.target.value.replace(/[^0-9.]/g, ''); // only allow numbers and "."

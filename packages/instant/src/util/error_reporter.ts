@@ -1,7 +1,7 @@
 import { logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { HOST_DOMAINS, INSTANT_DISCHARGE_TARGET, ROLLBAR_CLIENT_TOKEN, ROLLBAR_ENABLED } from '../constants';
+import { GIT_SHA, HOST_DOMAINS, INSTANT_DISCHARGE_TARGET, ROLLBAR_CLIENT_TOKEN, ROLLBAR_ENABLED } from '../constants';
 
 // Import version of Rollbar designed for embedded components
 // See https://docs.rollbar.com/docs/using-rollbarjs-inside-an-embedded-component
@@ -24,7 +24,7 @@ export const setupRollbar = (): any => {
                 client: {
                     javascript: {
                         source_map_enabled: true,
-                        code_version: process.env.GIT_SHA,
+                        code_version: GIT_SHA,
                         guess_uncaught_frames: true,
                     },
                 },
