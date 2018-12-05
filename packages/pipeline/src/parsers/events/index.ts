@@ -49,8 +49,8 @@ export function _convertToExchangeFillEvent(eventLog: LogWithDecodedArgs<Exchang
     exchangeFillEvent.logIndex = eventLog.logIndex as number;
     exchangeFillEvent.rawData = eventLog.data as string;
     exchangeFillEvent.transactionHash = eventLog.transactionHash;
-    exchangeFillEvent.makerAddress = eventLog.args.makerAddress.toString();
-    exchangeFillEvent.takerAddress = eventLog.args.takerAddress.toString();
+    exchangeFillEvent.makerAddress = eventLog.args.makerAddress;
+    exchangeFillEvent.takerAddress = eventLog.args.takerAddress;
     exchangeFillEvent.feeRecipientAddress = eventLog.args.feeRecipientAddress;
     exchangeFillEvent.senderAddress = eventLog.args.senderAddress;
     exchangeFillEvent.makerAssetFilledAmount = eventLog.args.makerAssetFilledAmount;
@@ -92,9 +92,8 @@ export function _convertToExchangeCancelEvent(
     exchangeCancelEvent.logIndex = eventLog.logIndex as number;
     exchangeCancelEvent.rawData = eventLog.data as string;
     exchangeCancelEvent.transactionHash = eventLog.transactionHash;
-    exchangeCancelEvent.makerAddress = eventLog.args.makerAddress.toString();
-    exchangeCancelEvent.takerAddress =
-        eventLog.args.takerAddress == null ? null : eventLog.args.takerAddress.toString();
+    exchangeCancelEvent.makerAddress = eventLog.args.makerAddress;
+    exchangeCancelEvent.takerAddress = eventLog.args.takerAddress;
     exchangeCancelEvent.feeRecipientAddress = eventLog.args.feeRecipientAddress;
     exchangeCancelEvent.senderAddress = eventLog.args.senderAddress;
     exchangeCancelEvent.orderHash = eventLog.args.orderHash;
@@ -127,8 +126,8 @@ export function _convertToExchangeCancelUpToEvent(
     exchangeCancelUpToEvent.logIndex = eventLog.logIndex as number;
     exchangeCancelUpToEvent.rawData = eventLog.data as string;
     exchangeCancelUpToEvent.transactionHash = eventLog.transactionHash;
-    exchangeCancelUpToEvent.makerAddress = eventLog.args.makerAddress.toString();
-    exchangeCancelUpToEvent.senderAddress = eventLog.args.senderAddress.toString();
+    exchangeCancelUpToEvent.makerAddress = eventLog.args.makerAddress;
+    exchangeCancelUpToEvent.senderAddress = eventLog.args.senderAddress;
     exchangeCancelUpToEvent.orderEpoch = eventLog.args.orderEpoch;
     return exchangeCancelUpToEvent;
 }

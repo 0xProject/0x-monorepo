@@ -150,17 +150,17 @@ set the`ZEROEX_DATA_PIPELINE_DB_URL` environment variable to a valid
 
 #### Additional guidelines and tips:
 
-*   Table names should be plural and separated by underscores (e.g.,
+-   Table names should be plural and separated by underscores (e.g.,
     `exchange_fill_events`).
-*   Any table which contains data which comes directly from a third-party source
+-   Any table which contains data which comes directly from a third-party source
     should be namespaced in the `raw` PostgreSQL schema.
-*   Column names in the database should be separated by underscores (e.g.,
+-   Column names in the database should be separated by underscores (e.g.,
     `maker_asset_type`).
-*   Field names in entity classes (like any other fields in TypeScript) should
+-   Field names in entity classes (like any other fields in TypeScript) should
     be camel-cased (e.g., `makerAssetType`).
-*   All timestamps should be stored as milliseconds since the Unix Epoch.
-*   Use the `BigNumber` type for TypeScript code which deals with 256-bit
+-   All timestamps should be stored as milliseconds since the Unix Epoch.
+-   Use the `BigNumber` type for TypeScript code which deals with 256-bit
     numbers from smart contracts or for any case where we are dealing with large
     floating point numbers.
-*   [TypeORM documentation](http://typeorm.io/#/) is pretty robust and can be a
+-   [TypeORM documentation](http://typeorm.io/#/) is pretty robust and can be a
     helpful resource.
