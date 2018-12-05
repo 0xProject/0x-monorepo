@@ -1,4 +1,4 @@
-import { createGlobalStyle, withTheme } from 'styled-components';
+import {createGlobalStyle, withTheme} from 'styled-components';
 import {cssReset} from 'ts/@next/constants/cssReset';
 
 interface GlobalStyle {
@@ -28,6 +28,32 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
     html {
         font-size: 18px;
         background-color: ${props => props.theme.bgColor};
+    }
+
+    @media (min-width: 768px) {
+        :root {
+            --smallHeading: 20px;
+            --defaultHeading: 28px;
+            --mediumHeading: 50px;
+            --largeHeading: 80px;
+            --smallHeadingHeight: 1.4em;
+            --defaultHeadingHeight: 1.357142857em;
+            --mediumHeadingHeight: 1.16em;
+            --largeHeadingHeight: 1em;
+        }
+    }
+
+    @media (max-width: 768px) {
+        :root {
+            --smallHeading: 16px;
+            --defaultHeading: 18px;
+            --mediumHeading: 32px;
+            --largeHeading: 46px;
+            --smallHeadingHeight: 1.4em; // TO DO
+            --defaultHeadingHeight: 1.357142857em; // TO DO
+            --mediumHeadingHeight: 1.16em; // TO DO
+            --largeHeadingHeight: 1em; // TO DO
+        }
     }
 
     body {

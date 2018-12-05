@@ -19,34 +19,12 @@ interface ParagraphProps extends BaseTextInterface {
     isMuted?: boolean | number;
 }
 
-interface HeadingSizes {
-    large: string;
-    medium: string;
-    default: string;
-    small: string;
-    [key: string]: string;
-}
-
 interface ParagraphSizes {
     default: string;
     medium: string;
     large: string;
     [key: string]: string;
 }
-
-const HEADING_SIZES: HeadingSizes = {
-    small: '20px',
-    default: '28px',
-    medium: '50px',
-    large: '80px',
-};
-
-const HEADING_LINE_HEIGHTS: HeadingSizes = {
-    small: '1.4em',
-    default: '1.357142857em',
-    medium: '1.16em',
-    large: '1em',
-};
 
 const PARAGRAPH_SIZES: ParagraphSizes = {
     default: '18px',
@@ -57,9 +35,9 @@ const PARAGRAPH_SIZES: ParagraphSizes = {
 
 const StyledHeading = styled.h1<HeadingProps>`
     color: ${props => props.color || props.theme.textColor};
-    font-size: ${props => HEADING_SIZES[props.size || 'default']};
+    font-size: ${props => `var(--${props.size}Heading)`};
     padding: ${props => props.padding && getCSSPadding(props.padding)};
-    line-height: ${props => HEADING_LINE_HEIGHTS[props.size || 'default']};
+    line-height: ${props => `var(--${props.size}HeadingHeight)`};
     margin-bottom: ${props => !props.isNoMargin && '30px'};
     text-align: ${props => props.isCentered && 'center'};
     font-weight: 300;
