@@ -1,17 +1,34 @@
 import { logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { GIT_SHA, HOST_DOMAINS, INSTANT_DISCHARGE_TARGET, ROLLBAR_CLIENT_TOKEN, ROLLBAR_ENABLED } from '../constants';
+import {
+    GIT_SHA,
+    HOST_DOMAINS_EXTERNAL,
+    HOST_DOMAINS_LOCAL,
+    INSTANT_DISCHARGE_TARGET,
+    NODE_ENV,
+    ROLLBAR_CLIENT_TOKEN,
+    ROLLBAR_ENABLED,
+} from '../constants';
 
 // Import version of Rollbar designed for embedded components
 // See https://docs.rollbar.com/docs/using-rollbarjs-inside-an-embedded-component
 // tslint:disable-next-line:no-var-requires
 const Rollbar = require('rollbar/dist/rollbar.noconflict.umd');
 
+const getRollbarHostDomains = (): string[] => {
+    if (NODE_ENV === 'development') {
+        return HOST_DOMAINS_EXTERNAL.concat(HOST_DOMAINS_LOCAL);
+    } else {
+        return HOST_DOMAINS_EXTERNAL;
+    }
+};
+
 let rollbar: any;
 // Configures rollbar and sets up error catching
 export const setupRollbar = (): any => {
     if (_.isUndefined(rollbar) && ROLLBAR_CLIENT_TOKEN && ROLLBAR_ENABLED) {
+        const hostDomains = getRollbarHostDomains();
         rollbar = new Rollbar({
             accessToken: ROLLBAR_CLIENT_TOKEN,
             captureUncaught: true,
@@ -20,7 +37,7 @@ export const setupRollbar = (): any => {
             itemsPerMinute: 10,
             maxItems: 500,
             payload: {
-                environment: INSTANT_DISCHARGE_TARGET || `Local ${process.env.NODE_ENV}`,
+                environment: INSTANT_DISCHARGE_TARGET || `Local ${NODE_ENV}`,
                 client: {
                     javascript: {
                         source_map_enabled: true,
@@ -29,7 +46,7 @@ export const setupRollbar = (): any => {
                     },
                 },
             },
-            hostWhiteList: HOST_DOMAINS,
+            hostWhiteList: hostDomains,
             uncaughtErrorLevel: 'error',
             ignoredMessages: [
                 // Errors from the third-party scripts

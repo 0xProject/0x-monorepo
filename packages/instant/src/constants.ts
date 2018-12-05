@@ -15,6 +15,7 @@ export const GWEI_IN_WEI = new BigNumber(1000000000);
 export const ONE_SECOND_MS = 1000;
 export const ONE_MINUTE_MS = ONE_SECOND_MS * 60;
 export const GIT_SHA = process.env.GIT_SHA;
+export const NODE_ENV = process.env.NODE_ENV;
 export const NPM_PACKAGE_VERSION = process.env.NPM_PACKAGE_VERSION;
 export const ACCOUNT_UPDATE_INTERVAL_TIME_MS = ONE_SECOND_MS * 5;
 export const BUY_QUOTE_UPDATE_INTERVAL_TIME_MS = ONE_SECOND_MS * 15;
@@ -28,14 +29,12 @@ export const HEAP_ENABLED = process.env.HEAP_ENABLED;
 export const COINBASE_API_BASE_URL = 'https://api.coinbase.com/v2';
 export const PROGRESS_STALL_AT_WIDTH = '95%';
 export const PROGRESS_FINISH_ANIMATION_TIME_MS = 200;
-export const HOST_DOMAINS = [
+export const HOST_DOMAINS_EXTERNAL = [
     '0x-instant-staging.s3-website-us-east-1.amazonaws.com',
     '0x-instant-dogfood.s3-website-us-east-1.amazonaws.com',
-    'localhost',
-    '127.0.0.1',
-    '0.0.0.0',
     'instant.0xproject.com',
 ];
+export const HOST_DOMAINS_LOCAL = ['localhost', '127.0.0.1', '0.0.0.0'];
 export const ROLLBAR_CLIENT_TOKEN = process.env.ROLLBAR_CLIENT_TOKEN;
 export const ROLLBAR_ENABLED = process.env.ROLLBAR_ENABLED;
 export const INSTANT_DISCHARGE_TARGET = process.env.INSTANT_DISCHARGE_TARGET as
