@@ -145,17 +145,32 @@ export interface CodeDemoProps {
     children: string;
 }
 
-export const CodeDemo: React.StatelessComponent<CodeDemoProps> = props => (
-    <Container position="relative" height="100%">
-        <Container position="absolute" top="10px" right="10px">
-            <CopyToClipboard text={props.children}>
-                <Button fontSize="14px">
-                    <b>Copy</b>
-                </Button>
-            </CopyToClipboard>
-        </Container>
-        <SyntaxHighlighter language="html" style={customStyle} showLineNumbers={true} PreTag={CustomPre}>
-            {props.children}
-        </SyntaxHighlighter>
-    </Container>
-);
+export interface CodeDemoState {
+    didCopyCode: boolean;
+}
+
+export class CodeDemo extends React.Component<CodeDemoProps, CodeDemoState> {
+    public state: CodeDemoState = {
+        didCopyCode: false,
+    };
+    public render(): React.ReactNode {
+        const copyButtonText = this.state.didCopyCode ? 'Copied!' : 'Copy';
+        return (
+            <Container position="relative" height="100%">
+                <Container position="absolute" top="10px" right="10px">
+                    <CopyToClipboard text={this.props.children} onCopy={this._handleCopyClick}>
+                        <Button fontSize="14px">
+                            <b>{copyButtonText}</b>
+                        </Button>
+                    </CopyToClipboard>
+                </Container>
+                <SyntaxHighlighter language="html" style={customStyle} showLineNumbers={true} PreTag={CustomPre}>
+                    {this.props.children}
+                </SyntaxHighlighter>
+            </Container>
+        );
+    }
+    private readonly _handleCopyClick = () => {
+        this.setState({ didCopyCode: true });
+    };
+}
