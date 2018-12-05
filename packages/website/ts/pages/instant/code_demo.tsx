@@ -6,6 +6,7 @@ import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
+import { zIndex } from 'ts/style/z_index';
 
 const CustomPre = styled.pre`
     margin: 0px;
@@ -157,7 +158,7 @@ export class CodeDemo extends React.Component<CodeDemoProps, CodeDemoState> {
         const copyButtonText = this.state.didCopyCode ? 'Copied!' : 'Copy';
         return (
             <Container position="relative" height="100%">
-                <Container position="absolute" top="10px" right="10px">
+                <Container position="absolute" top="10px" right="10px" zIndex={zIndex.overlay - 1}>
                     <CopyToClipboard text={this.props.children} onCopy={this._handleCopyClick}>
                         <Button fontSize="14px">
                             <b>{copyButtonText}</b>
