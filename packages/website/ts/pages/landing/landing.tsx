@@ -36,8 +36,8 @@ interface Project {
 }
 
 const THROTTLE_TIMEOUT = 100;
-const WHATS_NEW_TITLE = 'Introducing the 0x Launch Kit';
-const WHATS_NEW_URL = 'https://blog.0xproject.com/introducing-the-0x-launch-kit-4acdc3453585';
+const WHATS_NEW_TITLE = 'Introducing 0x Instant';
+const WHATS_NEW_URL = WebsitePaths.Instant;
 const TITLE_STYLE: React.CSSProperties = {
     fontFamily: 'Roboto Mono',
     color: colors.grey,
