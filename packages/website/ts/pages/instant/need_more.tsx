@@ -4,7 +4,7 @@ import { Button } from 'ts/components/ui/button';
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
-import { ScreenWidths } from 'ts/types';
+import { ScreenWidths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
 
@@ -58,5 +58,5 @@ const onGetInTouchClick = () => {
     utils.openUrl(constants.URL_ZEROEX_CHAT);
 };
 const onDocsClick = () => {
-    utils.openUrl(`${utils.getCurrentBaseUrl()}/wiki#Get-Started`);
+    utils.openUrl(`${WebsitePaths.Wiki}#Get-Started-With-Instant`);
 };
