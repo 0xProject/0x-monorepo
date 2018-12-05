@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-interfaces/contracts/protocol/Exchange/IExchange.sol";
 import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
-import "../../tokens/ERC20Token/IERC20Token.sol";
+import "@0x/contracts-tokens/contracts/tokens/ERC20Token/IERC20Token.sol";
 import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
 import "@0x/contracts-utils/contracts/utils/SafeMath/SafeMath.sol";
 

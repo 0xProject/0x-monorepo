@@ -1,4 +1,5 @@
 import { LogDecoder } from '@0x/contracts-test-utils';
+import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -14,7 +15,7 @@ export class AssetProxyOwnerWrapper {
     constructor(assetproxyOwnerContract: AssetProxyOwnerContract, provider: Provider) {
         this._assetProxyOwner = assetproxyOwnerContract;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, { ...artifacts, ...tokensArtifacts });
     }
     public async submitTransactionAsync(
         destination: string,

@@ -1,4 +1,5 @@
 import { constants, formatters, LogDecoder, MarketSellOrders } from '@0x/contracts-test-utils';
+import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -58,7 +59,7 @@ export class ForwarderWrapper {
     constructor(contractInstance: ForwarderContract, provider: Provider) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, { ...artifacts, ...tokensArtifacts });
     }
     public async marketSellOrdersWithEthAsync(
         orders: SignedOrder[],

@@ -1,11 +1,11 @@
 import { constants, ERC721TokenIdsByOwner, txDefaults } from '@0x/contracts-test-utils';
+import { artifacts as tokensArtifacts, DummyERC721TokenContract } from '@0x/contracts-tokens';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
 import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { artifacts } from '../../src/artifacts';
 
@@ -30,7 +30,7 @@ export class ERC721Wrapper {
         for (const i of _.times(constants.NUM_DUMMY_ERC721_TO_DEPLOY)) {
             this._dummyTokenContracts.push(
                 await DummyERC721TokenContract.deployFrom0xArtifactAsync(
-                    artifacts.DummyERC721Token,
+                    tokensArtifacts.DummyERC721Token,
                     this._provider,
                     txDefaults,
                     constants.DUMMY_TOKEN_NAME,
