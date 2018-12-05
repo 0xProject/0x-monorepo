@@ -2,7 +2,7 @@ import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { GIT_SHA, HEAP_ENABLED, INSTANT_DISCHARGE_TARGET, NPM_PACKAGE_VERSION } from '../constants';
+import { GIT_SHA, HEAP_ENABLED, INSTANT_DISCHARGE_TARGET, NODE_ENV, NPM_PACKAGE_VERSION } from '../constants';
 import {
     AffiliateInfo,
     Asset,
@@ -156,7 +156,7 @@ export const analytics = {
             affiliateFeePercent,
             selectedAssetName: selectedAsset ? selectedAsset.metaData.name : 'none',
             selectedAssetData: selectedAsset ? selectedAsset.assetData : 'none',
-            instantEnvironment: INSTANT_DISCHARGE_TARGET || `Local ${process.env.NODE_ENV}`,
+            instantEnvironment: INSTANT_DISCHARGE_TARGET || `Local ${NODE_ENV}`,
         };
         return eventOptions;
     },
