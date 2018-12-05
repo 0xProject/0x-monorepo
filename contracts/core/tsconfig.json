@@ -21,11 +21,6 @@
         "./generated-artifacts/Exchange.json",
         "./generated-artifacts/ExchangeWrapper.json",
         "./generated-artifacts/Forwarder.json",
-        "./generated-artifacts/IAssetData.json",
-        "./generated-artifacts/IAssetProxy.json",
-        "./generated-artifacts/IValidator.json",
-        "./generated-artifacts/IWallet.json",
-        "./generated-artifacts/InvalidERC721Receiver.json",
         "./generated-artifacts/MixinAuthorizable.json",
         "./generated-artifacts/MultiAssetProxy.json",
         "./generated-artifacts/OrderValidator.json",
@@ -39,6 +34,7 @@
         "./generated-artifacts/WETH9.json",
         "./generated-artifacts/Wallet.json",
         "./generated-artifacts/Whitelist.json",
+        "./generated-artifacts/InvalidERC721Receiver.json",
         "./generated-artifacts/ZRXToken.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "../interfaces/IAuthorizable.sol";
+import "@0x/contracts-interfaces/contracts/protocol/AssetProxy/IAuthorizable.sol";
 
 
 contract MAuthorizable is

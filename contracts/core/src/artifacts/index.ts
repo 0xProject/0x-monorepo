@@ -14,11 +14,7 @@ import * as ERC721Token from '../../generated-artifacts/ERC721Token.json';
 import * as Exchange from '../../generated-artifacts/Exchange.json';
 import * as ExchangeWrapper from '../../generated-artifacts/ExchangeWrapper.json';
 import * as Forwarder from '../../generated-artifacts/Forwarder.json';
-import * as IAssetData from '../../generated-artifacts/IAssetData.json';
-import * as IAssetProxy from '../../generated-artifacts/IAssetProxy.json';
 import * as InvalidERC721Receiver from '../../generated-artifacts/InvalidERC721Receiver.json';
-import * as IValidator from '../../generated-artifacts/IValidator.json';
-import * as IWallet from '../../generated-artifacts/IWallet.json';
 import * as MixinAuthorizable from '../../generated-artifacts/MixinAuthorizable.json';
 import * as MultiAssetProxy from '../../generated-artifacts/MultiAssetProxy.json';
 import * as OrderValidator from '../../generated-artifacts/OrderValidator.json';
@@ -49,10 +45,6 @@ export const artifacts = {
     Exchange: Exchange as ContractArtifact,
     ExchangeWrapper: ExchangeWrapper as ContractArtifact,
     Forwarder: Forwarder as ContractArtifact,
-    IAssetData: IAssetData as ContractArtifact,
-    IAssetProxy: IAssetProxy as ContractArtifact,
-    IValidator: IValidator as ContractArtifact,
-    IWallet: IWallet as ContractArtifact,
     InvalidERC721Receiver: InvalidERC721Receiver as ContractArtifact,
     MixinAuthorizable: MixinAuthorizable as ContractArtifact,
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,

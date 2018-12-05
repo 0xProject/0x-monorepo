@@ -8,6 +8,8 @@ lib
 /contracts/utils/generated-artifacts
 /contracts/libs/generated-wrappers
 /contracts/libs/generated-artifacts
+/contracts/interfaces/generated-wrappers
+/contracts/interfaces/generated-artifacts
 /packages/abi-gen-wrappers/src/generated-wrappers
 /packages/contract-artifacts/artifacts
 /python-packages/order_utils/src/zero_ex/contract_artifacts/artifacts

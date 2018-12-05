@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
 import "@0x/contracts-libs/contracts/libs/LibFillResults.sol";
-import "../interfaces/IWrapperFunctions.sol";
+import "@0x/contracts-interfaces/contracts/protocol/Exchange/IWrapperFunctions.sol";
 
 
 contract MWrapperFunctions is 
