@@ -40,6 +40,10 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
             --defaultHeadingHeight: 1.357142857em;
             --mediumHeadingHeight: 1.16em;
             --largeHeadingHeight: 1em;
+            --smallParagraph: 14px;
+            --defaultParagraph: 18px;
+            --mediumParagraph: 22px;
+            --largeParagraph: 28px;
         }
     }
 
@@ -53,6 +57,10 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
             --defaultHeadingHeight: 1.357142857em; // TO DO
             --mediumHeadingHeight: 1.16em; // TO DO
             --largeHeadingHeight: 1em; // TO DO
+            --smallParagraph: 14px; // TO DO
+            --defaultParagraph: 18px; // TO DO
+            --mediumParagraph: 22px; // TO DO
+            --largeParagraph: 28px; // TO DO
         }
     }
 
