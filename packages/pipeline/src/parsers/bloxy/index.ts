@@ -49,5 +49,5 @@ export function _parseBloxyTrade(rawTrade: BloxyTrade): DexTrade {
     return dexTrade;
 }
 
-// Works with any form of escaoed null character (e.g., '\0' and '\u0000').
+// Works with any form of escaped null character (e.g., '\0' and '\u0000').
 const filterNullCharacters = R.replace(/\0/g, '');
