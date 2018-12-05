@@ -9,12 +9,7 @@ import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import {
-    AccountState,
-    Network,
-    QuoteFetchOrigin,
-    ZeroExInstantBaseConfig,
-} from '../types';
+import { AccountState, Network, QuoteFetchOrigin, ZeroExInstantBaseConfig } from '../types';
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
