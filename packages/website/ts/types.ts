@@ -463,7 +463,7 @@ export enum Key {
     Website = 'WEBSITE',
     Developers = 'DEVELOPERS',
     Home = 'HOME',
-    RocketChat = 'ROCKETCHAT',
+    Discord = 'DISCORD',
     TradeCallToAction = 'TRADE_CALL_TO_ACTION',
     OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
     BuildARelayer = 'BUILD_A_RELAYER',
