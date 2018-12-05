@@ -74,7 +74,7 @@ async function getStartBlockAsync<T extends ExchangeEvent>(repository: Repositor
     }
     const tableName = repository.metadata.tableName;
     if (!tableNameRegex.test(tableName)) {
-        throw new Error('Unexpected special character in table name: ' + tableName);
+        throw new Error(`Unexpected special character in table name: ${tableName}`);
     }
     const queryResult = await connection.query(
         `SELECT block_number FROM raw.${tableName} ORDER BY block_number DESC LIMIT 1`,
