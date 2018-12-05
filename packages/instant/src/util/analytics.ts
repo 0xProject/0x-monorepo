@@ -95,7 +95,7 @@ const buyQuoteEventProperties = (buyQuote: BuyQuote) => {
 
 export interface AnalyticsUserOptions {
     lastKnownEthAddress?: string;
-    ethBalanceInUnitAmount?: string;
+    lastEthBalanceInUnitAmount?: string;
 }
 export interface AnalyticsEventOptions {
     embeddedHost?: string;

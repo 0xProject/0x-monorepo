@@ -54,7 +54,7 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                     curAccount.ethBalanceInWei,
                     ETH_DECIMALS,
                 ).toString();
-                analytics.addUserProperties({ ethBalanceInUnitAmount});
+                analytics.addUserProperties({ lastEthBalanceInUnitAmount: ethBalanceInUnitAmount });
                 analytics.addEventProperties({ ethBalanceInUnitAmount });
             }
             break;
