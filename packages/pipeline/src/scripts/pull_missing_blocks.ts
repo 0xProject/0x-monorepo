@@ -9,7 +9,7 @@ import { Web3Source } from '../data_sources/web3';
 import { Block } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { parseBlock } from '../parsers/web3';
-import { handleError } from '../utils';
+import { EXCHANGE_START_BLOCK, handleError, INFURA_ROOT_URL } from '../utils';
 
 // Number of blocks to save at once.
 const BATCH_SAVE_SIZE = 1000;
@@ -18,16 +18,13 @@ const MAX_CONCURRENCY = 10;
 // Maximum number of blocks to query for at once. This is also the maximum
 // number of blocks we will hold in memory prior to being saved to the database.
 const MAX_BLOCKS_PER_QUERY = 1000;
-// Block number when the Exchange contract was deployed to mainnet.
-// TODO(albrow): De-dupe this constant.
-const EXCHANGE_START_BLOCK = 6271590;
 
 let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
     const provider = web3Factory.getRpcProvider({
-        rpcUrl: `https://mainnet.infura.io/${process.env.INFURA_API_KEY}`,
+        rpcUrl: `${INFURA_ROOT_URL}/${process.env.INFURA_API_KEY}`,
     });
     const web3Source = new Web3Source(provider);
     await getAllMissingBlocks(web3Source);

@@ -2,16 +2,17 @@
 
 from doctest import testmod
 import pkgutil
+import importlib
 
 import zero_ex
 
 
 def test_all_doctests():
     """Gather zero_ex.* modules and doctest them."""
-    for (importer, modname, _) in pkgutil.walk_packages(
+    for (_, modname, _) in pkgutil.walk_packages(
         path=zero_ex.__path__, prefix="zero_ex."
     ):
-        module = importer.find_module(modname).load_module(modname)
+        module = importlib.import_module(modname)
         print(module)
         (failure_count, _) = testmod(module)
         assert failure_count == 0

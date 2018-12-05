@@ -13,6 +13,9 @@ const appColors = {
     jobsPageOpenPositionRow: sharedColors.grey100,
     metaMaskOrange: '#f68c24',
     metaMaskTransparentOrange: 'rgba(255, 248, 242, 0.8)',
+    instantPrimaryBackground: '#222222',
+    instantSecondaryBackground: '#333333',
+    instantTertiaryBackground: '#444444',
 };
 
 export const colors = {

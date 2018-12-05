@@ -30,7 +30,7 @@
         { "path": "./packages/contract-addresses" },
         { "path": "./packages/contract-artifacts" },
         { "path": "./packages/contract-wrappers" },
-        { "path": "./packages/contracts" },
+        { "path": "./contracts/core" },
         { "path": "./packages/dev-utils" },
         { "path": "./packages/ethereum-types" },
         { "path": "./packages/fill-scenarios" },
@@ -58,5 +58,8 @@
         // Skipping website because it requires allowJs: false and this is
         // incompatible with project references.
         // { "path": "./packages/website" }
+        // Skipping instant because it only produces a UMD bundle
+        // which it uses webpack to create
+        // { "path": "./packages/instant" },
     ]
 }

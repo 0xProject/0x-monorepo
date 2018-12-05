@@ -11,9 +11,10 @@ import { Web3ProviderEngine } from '@0x/subproviders';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
+import { EXCHANGE_START_BLOCK } from '../../utils';
+
 const BLOCK_FINALITY_THRESHOLD = 10; // When to consider blocks as final. Used to compute default toBlock.
 const NUM_BLOCKS_PER_QUERY = 20000; // Number of blocks to query for events at a time.
-const EXCHANGE_START_BLOCK = 6271590; // Block number when the Exchange contract was deployed to mainnet.
 
 export class ExchangeEventsSource {
     private readonly _exchangeWrapper: ExchangeWrapper;

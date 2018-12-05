@@ -283,6 +283,11 @@ export interface RawLogEntry {
 
 export enum SolidityTypes {
     Address = 'address',
+    Bool = 'bool',
+    Bytes = 'bytes',
+    Int = 'int',
+    String = 'string',
+    Tuple = 'tuple',
     Uint256 = 'uint256',
     Uint8 = 'uint8',
     Uint = 'uint',

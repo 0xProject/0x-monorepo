@@ -32,7 +32,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     public render(): React.ReactNode {
         const iconOrAmounts = this._renderIcon() || this._renderAmountsSection();
         return (
-            <Container backgroundColor={ColorOption.primaryColor} padding="20px" width="100%">
+            <Container backgroundColor={ColorOption.primaryColor} width="100%" padding="20px">
                 <Container marginBottom="5px">
                     <Text
                         letterSpacing="1px"
@@ -107,7 +107,14 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
 
     private readonly _renderEthAmount = (): React.ReactNode => {
         return (
-            <Text fontSize="16px" textAlign="right" width="100%" fontColor={ColorOption.white} fontWeight={500}>
+            <Text
+                fontSize="16px"
+                textAlign="right"
+                width="100%"
+                fontColor={ColorOption.white}
+                fontWeight={500}
+                noWrap={true}
+            >
                 {format.ethBaseUnitAmount(
                     this.props.totalEthBaseUnitAmount,
                     4,
@@ -119,7 +126,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
 
     private readonly _renderDollarAmount = (): React.ReactNode => {
         return (
-            <Text fontSize="16px" textAlign="right" width="100%" fontColor={ColorOption.white}>
+            <Text fontSize="16px" textAlign="right" width="100%" fontColor={ColorOption.white} noWrap={true}>
                 {format.ethBaseUnitAmountInUsd(
                     this.props.totalEthBaseUnitAmount,
                     this.props.ethUsdPrice,

@@ -16,11 +16,11 @@ let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
-    await getOrderbook();
+    await getOrderbookAsync();
     process.exit(0);
 })().catch(handleError);
 
-async function getOrderbook(): Promise<void> {
+async function getOrderbookAsync(): Promise<void> {
     console.log('Getting all orders...');
     const connectClient = new HttpClient(RADAR_RELAY_URL);
     const rawOrders = await connectClient.getOrdersAsync({

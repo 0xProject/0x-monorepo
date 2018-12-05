@@ -13,10 +13,10 @@ export interface SearchInputProps extends InputProps {
 }
 
 export const SearchInput: React.StatelessComponent<SearchInputProps> = props => (
-    <Container backgroundColor={props.backgroundColor} borderRadius="3px" padding=".5em .3em">
-        <Flex justify="flex-start" align="flex-end">
-            <Icon width={14} height={14} icon="search" color={ColorOption.lightGrey} padding="0px 12px" />
-            <Input {...props} fontSize="14px" fontColor={props.fontColor} />
+    <Container backgroundColor={props.backgroundColor} borderRadius="3px" padding=".5em .5em">
+        <Flex justify="flex-start" align="center">
+            <Icon width={14} height={14} icon="search" color={ColorOption.lightGrey} padding="2px 12px" />
+            <Input {...props} type="search" fontSize="16px" fontColor={props.fontColor} />
         </Flex>
     </Container>
 );

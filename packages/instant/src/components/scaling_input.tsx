@@ -98,6 +98,12 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
             inputWidthPx: this._getInputWidthInPx(),
         };
     }
+    public componentDidMount(): void {
+        // Trigger an initial notification of the calculated fontSize.
+        const currentPhase = ScalingInput.getPhaseFromProps(this.props);
+        const currentFontSize = ScalingInput.calculateFontSizeFromProps(this.props, currentPhase);
+        this.props.onFontSizeChange(currentFontSize);
+    }
     public componentDidUpdate(
         prevProps: ScalingInputProps,
         prevState: ScalingInputState,

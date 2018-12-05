@@ -83,13 +83,19 @@ packages/react-docs/example/public/bundle*
 packages/testnet-faucets/server/
 
 # generated contract artifacts/
-packages/contracts/generated-artifacts/
+contracts/core/generated-artifacts/
+contracts/multisig/generated-artifacts/
+contracts/utils/generated-artifacts/
+contracts/libs/generated-artifacts/
 packages/sol-cov/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 
 # generated contract wrappers
 packages/abi-gen-wrappers/wrappers
-packages/contracts/generated-wrappers/
+contracts/core/generated-wrappers/
+contracts/multisig/generated-wrappers/
+contracts/utils/generated-wrappers/
+contracts/libs/generated-wrappers/
 packages/metacoin/src/contract_wrappers
 
 # solc-bin in sol-compiler

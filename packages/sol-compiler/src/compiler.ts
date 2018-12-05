@@ -394,7 +394,14 @@ export class Compiler {
             //
             const lastPathSeparatorPos = contractPath.lastIndexOf('/');
             const contractFolder = lastPathSeparatorPos === -1 ? '' : contractPath.slice(0, lastPathSeparatorPos + 1);
-            importPath = path.resolve('/' + contractFolder, importPath).replace('/', '');
+            if (importPath.startsWith('.')) {
+                /**
+                 * Some imports path are relative ("../Token.sol", "./Wallet.sol")
+                 * while others are absolute ("Token.sol", "@0x/contracts/Wallet.sol")
+                 * And we need to append the base path for relative imports.
+                 */
+                importPath = path.resolve('/' + contractFolder, importPath).replace('/', '');
+            }
 
             if (_.isUndefined(sourcesToAppendTo[importPath])) {
                 sourcesToAppendTo[importPath] = { id: fullSources[importPath].id };

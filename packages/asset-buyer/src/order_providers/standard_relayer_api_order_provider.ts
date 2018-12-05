@@ -100,6 +100,12 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
         } catch (err) {
             throw new Error(AssetBuyerError.StandardRelayerApiError);
         }
-        return _.map(response.records, item => item.assetDataB.assetData);
+        return _.map(response.records, item => {
+            if (item.assetDataA.assetData === takerAssetData) {
+                return item.assetDataB.assetData;
+            } else {
+                return item.assetDataA.assetData;
+            }
+        });
     }
 }

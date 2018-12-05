@@ -57,6 +57,4 @@ export class ExchangeFillEvent {
     public takerTokenAddress!: string;
     @Column({ nullable: true, type: String, name: 'taker_token_id' })
     public takerTokenId!: string | null;
-
-    // TODO(albrow): Include topics?
 }

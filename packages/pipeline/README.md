@@ -42,7 +42,8 @@ Revert the most recent migration (CAUTION: may result in data loss!): `yarn migr
 
 There are several test scripts in **package.json**. You can run all the tests
 with `yarn test:all` or run certain tests seprately by following the
-instructions below. Some tests may not work out of the box on certain platforms.
+instructions below. Some tests may not work out of the box on certain platforms
+or operating systems (see the "Database tests" section below).
 
 ### Unit tests
 
@@ -71,8 +72,8 @@ Postgres is via Docker. Depending on your platform, you may need to prepend
 docker run --rm -d -p 5432:5432 --name pipeline_postgres postgres:11-alpine
 ```
 
-This will start a Postgres server with the default username and database name.
-You should set the environment variable as follows:
+This will start a Postgres server with the default username and database name
+(`postgres` and `postgres`). You should set the environment variable as follows:
 
 ```
 export ZEROEX_DATA_PIPELINE_DB_URL=postgresql://postgres@localhost/postgres
