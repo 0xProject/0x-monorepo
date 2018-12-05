@@ -1,7 +1,7 @@
 // tslint:disable:no-console
 import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
 
-import { CryptoCompareOHLCVRecord, CryptoCompareOHLCVSource } from '../data_sources/ohlcv_external/crypto_compare';
+import { CryptoCompareOHLCVSource } from '../data_sources/ohlcv_external/crypto_compare';
 import { OHLCVExternal } from '../entities';
 import * as ormConfig from '../ormconfig';
 import { OHLCVMetadata, parseRecords } from '../parsers/ohlcv_external/crypto_compare';
