@@ -10,8 +10,6 @@ import { fetchOHLCVTradingPairsAsync, TradingPair } from '../utils/get_ohlcv_tra
 
 const SOURCE_NAME = 'CryptoCompare';
 const TWO_HOURS_AGO = new Date().getTime() - 2 * 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
-const ONE_HOUR_AGO = new Date().getTime() - 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
-const ONE_SECOND = 1000;
 
 const MAX_CONCURRENT_REQUESTS = parseInt(process.env.CRYPTOCOMPARE_MAX_CONCURRENT_REQUESTS || '14', 10); // tslint:disable-line:custom-no-magic-numbers
 const EARLIEST_BACKFILL_DATE = process.env.OHLCV_EARLIEST_BACKFILL_DATE || '2014-06-01';
@@ -61,12 +59,9 @@ async function fetchAndSaveAsync(
             break;
         }
         try {
-            const rawRecords = await source.getHourlyOHLCVAsync(pair); // might throw err
-            console.log(`Retrieved ${rawRecords.length} records for ${JSON.stringify(pair)}`);
-            if (rawRecords.length > 0) {
-                const records = rawRecords.filter(rec => {
-                    return rec.time * ONE_SECOND < ONE_HOUR_AGO && rec.time * ONE_SECOND > pair.latestSavedTime;
-                }); // Crypto Compare can take ~30mins to finalise records
+            const records = await source.getHourlyOHLCVAsync(pair); // might throw err
+            console.log(`Retrieved ${records.length} records for ${JSON.stringify(pair)}`);
+            if (records.length > 0) {
                 const metadata: OHLCVMetadata = {
                     exchange: source.default_exchange,
                     fromSymbol: pair.fromSymbol,

@@ -36,6 +36,7 @@ export interface CryptoCompareOHLCVParams {
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_HOUR = 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_SECOND = 1000;
+const ONE_HOUR_AGO = new Date().getTime() - ONE_HOUR;
 const HTTP_OK_STATUS = 200;
 const CRYPTO_COMPARE_VALID_EMPTY_RESPONSE_TYPE = 96;
 
@@ -79,7 +80,13 @@ export class CryptoCompareOHLCVSource {
         ) {
             throw new Error(JSON.stringify(json));
         }
-        return Object.values(json.Data).filter(rec => rec.time * ONE_SECOND > pair.latestSavedTime && hasData(rec));
+        return Object.values(json.Data).filter(rec => {
+            return (
+                rec.time * ONE_SECOND < ONE_HOUR_AGO && // Crypto Compare takes ~30 mins to finalise records
+                rec.time * ONE_SECOND > pair.latestSavedTime &&
+                hasData(rec)
+            );
+        });
     }
     public generateBackfillIntervals(pair: TradingPair): TradingPair[] {
         const now = new Date().getTime();
