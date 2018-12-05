@@ -5,7 +5,7 @@ yarn-error.log
 test/
 /src/
 /_bundles/
-/contract_templates/
+/abi-gen-templates/
 /generated_docs/
 /scripts/
 /lib/src/monorepo_scripts/

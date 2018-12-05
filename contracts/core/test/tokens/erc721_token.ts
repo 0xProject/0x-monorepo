@@ -1,3 +1,13 @@
+import {
+    chaiSetup,
+    constants,
+    expectTransactionFailedAsync,
+    expectTransactionFailedWithoutReasonAsync,
+    LogDecoder,
+    provider,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -14,11 +24,6 @@ import {
 } from '../../generated-wrappers/dummy_erc721_token';
 import { InvalidERC721ReceiverContract } from '../../generated-wrappers/invalid_erc721_receiver';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync, expectTransactionFailedWithoutReasonAsync } from '../utils/assertions';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
-import { LogDecoder } from '../utils/log_decoder';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -53,7 +58,7 @@ describe('ERC721Token', () => {
             provider,
             txDefaults,
         );
-        logDecoder = new LogDecoder(web3Wrapper);
+        logDecoder = new LogDecoder(web3Wrapper, artifacts);
         await web3Wrapper.awaitTransactionSuccessAsync(
             await token.mint.sendTransactionAsync(owner, tokenId, { from: owner }),
             constants.AWAIT_TRANSACTION_MINED_MS,

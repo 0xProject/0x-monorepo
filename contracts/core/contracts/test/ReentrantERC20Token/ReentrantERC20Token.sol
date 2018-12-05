@@ -19,10 +19,10 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../../utils/LibBytes/LibBytes.sol";
+import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
 import "../../tokens/ERC20Token/ERC20Token.sol";
 import "../../protocol/Exchange/interfaces/IExchange.sol";
-import "../../protocol/Exchange/libs/LibOrder.sol";
+import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
 
 
 // solhint-disable no-unused-vars

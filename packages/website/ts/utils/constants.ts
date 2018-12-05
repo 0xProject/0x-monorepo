@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { Key, WebsitePaths } from 'ts/types';
 
 const URL_FORUM = 'https://forum.0xproject.com';
-const URL_ZEROEX_CHAT = 'https://chat.0xproject.com';
+const URL_ZEROEX_CHAT = 'https://discord.gg/d3FTX3M';
 
 export const constants = {
     DECIMAL_PLACES_ETH: 18,

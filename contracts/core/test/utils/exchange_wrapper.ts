@@ -1,14 +1,18 @@
+import {
+    FillResults,
+    formatters,
+    LogDecoder,
+    OrderInfo,
+    orderUtils,
+    SignedTransaction,
+} from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { ExchangeContract } from '../../generated-wrappers/exchange';
-
-import { formatters } from './formatters';
-import { LogDecoder } from './log_decoder';
-import { orderUtils } from './order_utils';
-import { FillResults, OrderInfo, SignedTransaction } from './types';
+import { artifacts } from '../../src/artifacts';
 
 export class ExchangeWrapper {
     private readonly _exchange: ExchangeContract;
@@ -17,7 +21,7 @@ export class ExchangeWrapper {
     constructor(exchangeContract: ExchangeContract, provider: Provider) {
         this._exchange = exchangeContract;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
     }
     public async fillOrderAsync(
         signedOrder: SignedOrder,

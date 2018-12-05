@@ -21,16 +21,11 @@ import * as IValidator from '../../generated-artifacts/IValidator.json';
 import * as IWallet from '../../generated-artifacts/IWallet.json';
 import * as MixinAuthorizable from '../../generated-artifacts/MixinAuthorizable.json';
 import * as MultiAssetProxy from '../../generated-artifacts/MultiAssetProxy.json';
-import * as MultiSigWallet from '../../generated-artifacts/MultiSigWallet.json';
-import * as MultiSigWalletWithTimeLock from '../../generated-artifacts/MultiSigWalletWithTimeLock.json';
 import * as OrderValidator from '../../generated-artifacts/OrderValidator.json';
 import * as ReentrantERC20Token from '../../generated-artifacts/ReentrantERC20Token.json';
 import * as TestAssetProxyDispatcher from '../../generated-artifacts/TestAssetProxyDispatcher.json';
 import * as TestAssetProxyOwner from '../../generated-artifacts/TestAssetProxyOwner.json';
-import * as TestConstants from '../../generated-artifacts/TestConstants.json';
 import * as TestExchangeInternals from '../../generated-artifacts/TestExchangeInternals.json';
-import * as TestLibBytes from '../../generated-artifacts/TestLibBytes.json';
-import * as TestLibs from '../../generated-artifacts/TestLibs.json';
 import * as TestSignatureValidator from '../../generated-artifacts/TestSignatureValidator.json';
 import * as TestStaticCallReceiver from '../../generated-artifacts/TestStaticCallReceiver.json';
 import * as Validator from '../../generated-artifacts/Validator.json';
@@ -61,16 +56,11 @@ export const artifacts = {
     InvalidERC721Receiver: InvalidERC721Receiver as ContractArtifact,
     MixinAuthorizable: MixinAuthorizable as ContractArtifact,
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
-    MultiSigWallet: MultiSigWallet as ContractArtifact,
-    MultiSigWalletWithTimeLock: MultiSigWalletWithTimeLock as ContractArtifact,
     OrderValidator: OrderValidator as ContractArtifact,
     ReentrantERC20Token: ReentrantERC20Token as ContractArtifact,
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestAssetProxyOwner: TestAssetProxyOwner as ContractArtifact,
-    TestConstants: TestConstants as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
-    TestLibBytes: TestLibBytes as ContractArtifact,
-    TestLibs: TestLibs as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
     TestStaticCallReceiver: TestStaticCallReceiver as ContractArtifact,
     Validator: Validator as ContractArtifact,

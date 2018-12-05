@@ -1,3 +1,16 @@
+import {
+    chaiSetup,
+    constants,
+    ERC20BalancesByOwner,
+    expectTransactionFailedAsync,
+    getLatestBlockTimestampAsync,
+    increaseTimeAndMineBlockAsync,
+    OrderFactory,
+    OrderStatus,
+    provider,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
@@ -13,16 +26,9 @@ import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { ReentrantERC20TokenContract } from '../../generated-wrappers/reentrant_erc20_token';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync } from '../utils/assertions';
-import { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from '../utils/block_timestamp';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
-import { OrderFactory } from '../utils/order_factory';
-import { ERC20BalancesByOwner, OrderStatus } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;

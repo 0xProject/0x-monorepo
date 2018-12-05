@@ -21,7 +21,7 @@ export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({
     primaryColor,
 }) => (
     <Container
-        padding="14.5px"
+        padding="10px"
         border={`1px solid ${primaryColor}`}
         backgroundColor={secondaryColor}
         width="100%"
@@ -33,7 +33,7 @@ export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({
         <Flex>
             {image}
             <Container marginLeft="10px">
-                <Text fontSize="16px" fontColor={primaryColor}>
+                <Text fontSize="16px" fontColor={primaryColor} fontWeight="500">
                     {children}
                 </Text>
             </Container>

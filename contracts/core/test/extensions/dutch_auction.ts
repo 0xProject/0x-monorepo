@@ -1,3 +1,15 @@
+import {
+    chaiSetup,
+    constants,
+    ContractName,
+    ERC20BalancesByOwner,
+    expectTransactionFailedAsync,
+    getLatestBlockTimestampAsync,
+    OrderFactory,
+    provider,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
@@ -14,16 +26,9 @@ import { DutchAuctionContract } from '../../generated-wrappers/dutch_auction';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { WETH9Contract } from '../../generated-wrappers/weth9';
 import { artifacts } from '../../src/artifacts';
-import { expectTransactionFailedAsync } from '../utils/assertions';
-import { getLatestBlockTimestampAsync } from '../utils/block_timestamp';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
-import { OrderFactory } from '../utils/order_factory';
-import { ContractName, ERC20BalancesByOwner } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -56,16 +61,6 @@ describe(ContractName.DutchAuction, () => {
     let buyOrder: SignedOrder;
     let erc721MakerAssetIds: BigNumber[];
     const tenMinutesInSeconds = 10 * 60;
-
-    async function increaseTimeAsync(): Promise<void> {
-        const timestampBefore = await getLatestBlockTimestampAsync();
-        await web3Wrapper.increaseTimeAsync(5);
-        const timestampAfter = await getLatestBlockTimestampAsync();
-        // HACK send some transactions when a time increase isn't supported
-        if (timestampAfter === timestampBefore) {
-            await web3Wrapper.sendTransactionAsync({ to: makerAddress, from: makerAddress, value: new BigNumber(1) });
-        }
-    }
 
     function extendMakerAssetData(makerAssetData: string, beginTimeSeconds: BigNumber, beginAmount: BigNumber): string {
         return ethUtil.bufferToHex(
@@ -271,34 +266,6 @@ describe(ContractName.DutchAuction, () => {
                 erc20Balances[takerAddress][wethContract.address].minus(beforeAuctionDetails.currentAmount),
             );
         });
-        it('should have valid getAuctionDetails at some block in the future', async () => {
-            let auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
-            const beforeAmount = auctionDetails.currentAmount;
-            await increaseTimeAsync();
-            auctionDetails = await dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
-            const currentAmount = auctionDetails.currentAmount;
-            expect(beforeAmount).to.be.bignumber.greaterThan(currentAmount);
-
-            buyOrder = await buyerOrderFactory.newSignedOrderAsync({
-                makerAssetAmount: currentAmount,
-            });
-            const txHash = await dutchAuctionContract.matchOrders.sendTransactionAsync(
-                buyOrder,
-                sellOrder,
-                buyOrder.signature,
-                sellOrder.signature,
-                {
-                    from: takerAddress,
-                    // HACK geth seems to miscalculate the gas required intermittently
-                    gas: 400000,
-                },
-            );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-            const newBalances = await erc20Wrapper.getBalancesAsync();
-            expect(newBalances[makerAddress][wethContract.address]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][wethContract.address].plus(currentAmount),
-            );
-        });
         it('maker fees on sellOrder are paid to the fee receipient', async () => {
             sellOrder = await sellerOrderFactory.newSignedOrderAsync({
                 makerFee: new BigNumber(1),
@@ -370,7 +337,6 @@ describe(ContractName.DutchAuction, () => {
             );
         });
         it('cannot be filled for less than the current price', async () => {
-            await increaseTimeAsync();
             buyOrder = await buyerOrderFactory.newSignedOrderAsync({
                 makerAssetAmount: sellOrder.takerAssetAmount,
             });

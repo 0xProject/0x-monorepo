@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "NPMResolver now supports scoped packages",
+                "pr": 1311
+            }
+        ]
+    },
+    {
         "timestamp": 1542821676,
         "version": "1.0.17",
         "changes": [

@@ -70,7 +70,7 @@ export class ZeroExInstantContainer extends React.Component<ZeroExInstantContain
                         marginTop="10px"
                         marginLeft="auto"
                         marginRight="auto"
-                        width="140px"
+                        width="108px"
                     >
                         <a href={ZERO_EX_SITE_URL} target="_blank">
                             <PoweredByLogo />

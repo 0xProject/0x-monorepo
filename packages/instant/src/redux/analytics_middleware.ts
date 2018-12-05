@@ -1,10 +1,11 @@
+import { AssetProxyId } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import { Middleware } from 'redux';
 
 import { ETH_DECIMALS } from '../constants';
 import { AccountState, StandardSlidingPanelContent } from '../types';
-import { analytics } from '../util/analytics';
+import { analytics, AnalyticsEventOptions } from '../util/analytics';
 
 import { Action, ActionTypes } from './actions';
 
@@ -29,9 +30,11 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                 if (didJustTurnReady) {
                     analytics.trackAccountReady(ethAddress);
                     analytics.addUserProperties({ lastKnownEthAddress: ethAddress });
+                    analytics.addEventProperties({ ethAddress });
                 } else if (didJustUpdateAddress) {
                     analytics.trackAccountAddressChanged(ethAddress);
                     analytics.addUserProperties({ lastKnownEthAddress: ethAddress });
+                    analytics.addEventProperties({ ethAddress });
                 }
             }
             break;
@@ -51,7 +54,8 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                     curAccount.ethBalanceInWei,
                     ETH_DECIMALS,
                 ).toString();
-                analytics.addUserProperties({ ethBalanceInUnitAmount });
+                analytics.addUserProperties({ lastEthBalanceInUnitAmount: ethBalanceInUnitAmount });
+                analytics.addEventProperties({ ethBalanceInUnitAmount });
             }
             break;
         case ActionTypes.UPDATE_SELECTED_ASSET:
@@ -63,10 +67,16 @@ export const analyticsMiddleware: Middleware = store => next => middlewareAction
                     assetName,
                     assetData,
                 });
-                analytics.addEventProperties({
+
+                const selectedAssetEventProperties: AnalyticsEventOptions = {
                     selectedAssetName: assetName,
                     selectedAssetData: assetData,
-                });
+                };
+                if (selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20) {
+                    selectedAssetEventProperties.selectedAssetDecimals = selectedAsset.metaData.decimals;
+                    selectedAssetEventProperties.selectedAssetSymbol = selectedAsset.metaData.symbol;
+                }
+                analytics.addEventProperties(selectedAssetEventProperties);
             }
             break;
         case ActionTypes.SET_AVAILABLE_ASSETS:
