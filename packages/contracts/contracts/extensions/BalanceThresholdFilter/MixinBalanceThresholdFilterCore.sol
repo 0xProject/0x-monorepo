@@ -79,7 +79,6 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
         // Addresses that are validated below.
         address[] memory validatedAddresses;
 
-
         ///// Do not add variables after this point.         /////
         ///// The assembly block may overwrite their values. /////
 
@@ -265,7 +264,7 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
             for {let addressToValidate := addressesToValidateElementPtr} lt(addressToValidate, addressesToValidateElementEndPtr) {addressToValidate := add(addressToValidate, 0x20)} {
                 // Construct calldata for `THRESHOLD_ASSET.balanceOf`
                 mstore(freeMemPtr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
-                mstore(add(4, freeMemPtr), mload(addressToValidate))
+                mstore(add(freeMemPtr, 0x04), mload(addressToValidate))
                
                 // call `THRESHOLD_ASSET.balanceOf`
                 let success := call(
