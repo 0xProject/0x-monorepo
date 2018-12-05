@@ -29,8 +29,8 @@ export const Input =
         outline: none;
         border: none;
         &::placeholder {
-            color: ${props => props.theme[props.fontColor || 'white']};
-            opacity: 0.5;
+            color: ${props => props.theme[props.fontColor || 'white']} !important;
+            opacity: 0.5 !important;
         }
     }
 `;
