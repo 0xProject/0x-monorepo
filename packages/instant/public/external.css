@@ -15,6 +15,10 @@ input {
     height: 100px;
 }
 
+input::-webkit-input-placeholder {
+    color: #b4b4b4 !important;
+}
+
 div {
     padding: 3px;
 }
