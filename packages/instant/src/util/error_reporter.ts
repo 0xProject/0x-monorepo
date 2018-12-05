@@ -29,7 +29,6 @@ let rollbar: any;
 export const setupRollbar = (): any => {
     if (_.isUndefined(rollbar) && ROLLBAR_CLIENT_TOKEN && ROLLBAR_ENABLED) {
         const hostDomains = getRollbarHostDomains();
-        console.log('hostDomains', hostDomains);
         rollbar = new Rollbar({
             accessToken: ROLLBAR_CLIENT_TOKEN,
             captureUncaught: true,
