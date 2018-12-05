@@ -379,7 +379,7 @@ const sections: FAQSection[] = [
                     <div>
                         Join our{' '}
                         <a href={constants.URL_ZEROEX_CHAT} target="_blank">
-                            Rocket.chat
+                            Discord
                         </a>! As an open source project, 0x will rely on a worldwide community of passionate developers
                         to contribute proposals, ideas and code.
                     </div>
