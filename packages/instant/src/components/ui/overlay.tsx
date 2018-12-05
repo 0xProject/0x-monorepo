@@ -33,7 +33,7 @@ export const Overlay =
 
 Overlay.defaultProps = {
     zIndex: zIndex.overlayDefault,
-    backgroundColor: generateOverlayBlack(0.9),
+    backgroundColor: generateOverlayBlack(0.7),
 };
 
 Overlay.displayName = 'Overlay';
