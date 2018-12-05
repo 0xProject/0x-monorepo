@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "../../protocol/Exchange/interfaces/IValidator.sol";
+import "@0x/contracts-interfaces/contracts/protocol/Exchange/IValidator.sol";
 
 
 contract Validator is 

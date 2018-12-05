@@ -17,7 +17,7 @@
 */
 pragma solidity 0.4.24;
 
-import "../interfaces/ITransactions.sol";
+import "@0x/contracts-interfaces/contracts/protocol/Exchange/ITransactions.sol";
 
 
 contract MTransactions is

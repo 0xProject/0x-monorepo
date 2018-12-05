@@ -1,3 +1,4 @@
+import { artifacts as interfacesArtifacts, IAssetDataContract } from '@0x/contracts-interfaces';
 import {
     chaiSetup,
     constants,
@@ -27,7 +28,6 @@ import { DummyNoReturnERC20TokenContract } from '../../generated-wrappers/dummy_
 import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { ExchangeCancelEventArgs, ExchangeContract } from '../../generated-wrappers/exchange';
-import { IAssetDataContract } from '../../generated-wrappers/i_asset_data';
 import { MultiAssetProxyContract } from '../../generated-wrappers/multi_asset_proxy';
 import { ReentrantERC20TokenContract } from '../../generated-wrappers/reentrant_erc20_token';
 import { TestStaticCallReceiverContract } from '../../generated-wrappers/test_static_call_receiver';
@@ -40,7 +40,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const assetDataInterface = new IAssetDataContract(
-    artifacts.IAssetData.compilerOutput.abi,
+    interfacesArtifacts.IAssetData.compilerOutput.abi,
     constants.NULL_ADDRESS,
     provider,
 );

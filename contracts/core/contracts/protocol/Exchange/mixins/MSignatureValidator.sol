@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "../interfaces/ISignatureValidator.sol";
+import "@0x/contracts-interfaces/contracts/protocol/Exchange/ISignatureValidator.sol";
 
 
 contract MSignatureValidator is
