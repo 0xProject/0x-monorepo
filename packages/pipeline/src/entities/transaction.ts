@@ -1,6 +1,7 @@
+import { BigNumber } from '@0x/utils';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-import { numberToBigIntTransformer } from '../utils';
+import { bigNumberTransformer, numberToBigIntTransformer } from '../utils';
 
 @Entity({ name: 'transactions', schema: 'raw' })
 export class Transaction {
@@ -11,8 +12,8 @@ export class Transaction {
     @PrimaryColumn({ name: 'block_number', transformer: numberToBigIntTransformer })
     public blockNumber!: number;
 
-    @Column({ type: 'bigint', name: 'gas_used', transformer: numberToBigIntTransformer })
-    public gasUsed!: number;
-    @Column({ type: 'bigint', name: 'gas_price', transformer: numberToBigIntTransformer })
-    public gasPrice!: number;
+    @Column({ type: 'numeric', name: 'gas_used', transformer: bigNumberTransformer })
+    public gasUsed!: BigNumber;
+    @Column({ type: 'numeric', name: 'gas_price', transformer: bigNumberTransformer })
+    public gasPrice!: BigNumber;
 }
