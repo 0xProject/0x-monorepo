@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.6 - _November 28, 2018_
+
+    * Unmarshall mined transaction receipts (#1308)
+
 ## v3.1.5 - _November 21, 2018_
 
     * Add unmarshalling of transaction receipts (#1291)

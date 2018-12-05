@@ -78,7 +78,7 @@ Visit our [developer portal](https://0xproject.com/docs/order-utils) for a compr
 
 | Package                                            | Description                                                      |
 | -------------------------------------------------- | ---------------------------------------------------------------- |
-| [`@0x/contracts`](/packages/contracts)             | 0x protocol solidity smart contracts & tests                     |
+| [`@0x/contracts`](/contracts/core)                 | 0x protocol solidity smart contracts & tests                     |
 | [`@0x/testnet-faucets`](/packages/testnet-faucets) | A faucet micro-service that dispenses test ERC20 tokens or Ether |
 | [`@0x/website`](/packages/website)                 | 0x website                                                       |
 

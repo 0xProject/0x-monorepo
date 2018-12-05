@@ -8,7 +8,9 @@ import {
 } from '../constants';
 import { ColorOption } from '../style/theme';
 import { Browser } from '../types';
+import { analytics } from '../util/analytics';
 import { envUtil } from '../util/env';
+import { util } from '../util/util';
 
 import { MetaMaskLogo } from './meta_mask_logo';
 import { StandardPanelContent, StandardPanelContentProps } from './standard_panel_content';
@@ -45,6 +47,10 @@ export class InstallWalletPanelContent extends React.Component<InstallWalletPane
             default:
                 break;
         }
+        const onActionClick = () => {
+            analytics.trackInstallWalletModalClickedGet();
+            util.createOpenUrlInNewWindow(actionUrl)();
+        };
         return {
             image: <MetaMaskLogo width={85} height={80} />,
             title: 'Install MetaMask',
@@ -52,10 +58,11 @@ export class InstallWalletPanelContent extends React.Component<InstallWalletPane
             moreInfoSettings: {
                 href: META_MASK_SITE_URL,
                 text: 'What is MetaMask?',
+                onClick: analytics.trackInstallWalletModalClickedExplanation,
             },
             action: (
                 <Button
-                    href={actionUrl}
+                    onClick={onActionClick}
                     width="100%"
                     fontColor={ColorOption.white}
                     backgroundColor={ColorOption.darkOrange}

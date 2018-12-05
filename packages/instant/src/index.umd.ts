@@ -2,8 +2,15 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { DEFAULT_ZERO_EX_CONTAINER_SELECTOR, INJECTED_DIV_CLASS, INJECTED_DIV_ID } from './constants';
+import {
+    DEFAULT_ZERO_EX_CONTAINER_SELECTOR,
+    GIT_SHA as GIT_SHA_FROM_CONSTANT,
+    INJECTED_DIV_CLASS,
+    INJECTED_DIV_ID,
+    NPM_PACKAGE_VERSION,
+} from './constants';
 import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
+import { analytics } from './util/analytics';
 import { assert } from './util/assert';
 import { util } from './util/util';
 
@@ -38,6 +45,9 @@ const validateInstantRenderConfig = (config: ZeroExInstantConfig, selector: stri
     if (!_.isUndefined(config.provider)) {
         assert.isWeb3Provider('provider', config.provider);
     }
+    if (!_.isUndefined(config.walletDisplayName)) {
+        assert.isString('walletDisplayName', config.walletDisplayName);
+    }
     if (!_.isUndefined(config.shouldDisablePushToHistory)) {
         assert.isBoolean('shouldDisablePushToHistory', config.shouldDisablePushToHistory);
     }
@@ -57,6 +67,7 @@ const renderInstant = (config: ZeroExInstantConfig, selector: string) => {
     injectedDiv.setAttribute('class', INJECTED_DIV_CLASS);
     appendTo.appendChild(injectedDiv);
     const closeInstant = () => {
+        analytics.trackInstantClosed();
         if (!_.isUndefined(config.onClose)) {
             config.onClose();
         }
@@ -89,12 +100,12 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
     // If the integrator defined a popstate handler, save it to __zeroExInstantIntegratorsPopStateHandler
     // unless we have already done so on a previous render.
     const anyWindow = window as any;
-    if (window.onpopstate && !anyWindow.__zeroExInstantIntegratorsPopStateHandler) {
-        anyWindow.__zeroExInstantIntegratorsPopStateHandler = window.onpopstate.bind(window);
-    }
-    const integratorsOnPopStateHandler = anyWindow.__zeroExInstantIntegratorsPopStateHandler || util.boundNoop;
+    const popStateExistsAndNotSetPreviously = window.onpopstate && !anyWindow.__zeroExInstantIntegratorsPopStateHandler;
+    anyWindow.__zeroExInstantIntegratorsPopStateHandler = popStateExistsAndNotSetPreviously
+        ? anyWindow.onpopstate.bind(window)
+        : util.boundNoop;
     const onPopStateHandler = (e: PopStateEvent) => {
-        integratorsOnPopStateHandler(e);
+        anyWindow.__zeroExInstantIntegratorsPopStateHandler(e);
         const newState = e.state;
         if (newState && newState.zeroExInstantShowing) {
             // We have returned to a history state that expects instant to be rendered.
@@ -110,3 +121,7 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
     };
     window.onpopstate = onPopStateHandler;
 };
+
+// Write version info to the exported object for debugging
+export const GIT_SHA = GIT_SHA_FROM_CONSTANT;
+export const NPM_VERSION = NPM_PACKAGE_VERSION;

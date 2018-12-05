@@ -40,7 +40,10 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn wsrun test:circleci contracts
+            - run: yarn wsrun test:circleci @0x/contracts-multisig
+            - run: yarn wsrun test:circleci @0x/contracts-utils
+            - run: yarn wsrun test:circleci @0x/contracts-libs
+            - run: yarn wsrun test:circleci @0x/contracts-core
     test-contracts-geth:
         docker:
             - image: circleci/node:9
@@ -52,7 +55,10 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             # HACK(albrow): we need to sleep 10 seconds to ensure the devnet is
             # initialized
-            - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test contracts
+            - run: sleep 10 && TEST_PROVIDER=geth yarn wsrun test @0x/contracts-multisig
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-utils
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-libs
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-core
     test-publish:
         resource_class: medium+
         docker:
@@ -81,6 +87,7 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: yarn wsrun test:circleci @0x/contracts-test-utils
             - run: yarn wsrun test:circleci @0x/abi-gen
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract

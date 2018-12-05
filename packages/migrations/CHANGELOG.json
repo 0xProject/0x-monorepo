@@ -14,7 +14,8 @@
                 "note": "Fund the Forwarder with ZRX for fees.",
                 "pr": 1309
             }
-        ]
+        ],
+        "timestamp": 1543401373
     },
     {
         "version": "2.1.0",

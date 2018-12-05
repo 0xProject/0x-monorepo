@@ -1,4 +1,5 @@
 import { AssetBuyer, AssetBuyerError, BuyQuote } from '@0x/asset-buyer';
+import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -7,7 +8,8 @@ import { oc } from 'ts-optchain';
 
 import { WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX } from '../constants';
 import { ColorOption } from '../style/theme';
-import { AffiliateInfo, ZeroExInstantError } from '../types';
+import { AffiliateInfo, Asset, ZeroExInstantError } from '../types';
+import { analytics } from '../util/analytics';
 import { gasPriceEstimator } from '../util/gas_price_estimator';
 import { util } from '../util/util';
 
@@ -20,6 +22,7 @@ export interface BuyButtonProps {
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;
     affiliateInfo?: AffiliateInfo;
+    selectedAsset?: Asset;
     onValidationPending: (buyQuote: BuyQuote) => void;
     onValidationFail: (buyQuote: BuyQuote, errorMessage: AssetBuyerError | ZeroExInstantError) => void;
     onSignatureDenied: (buyQuote: BuyQuote) => void;
@@ -35,8 +38,12 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         onBuyFailure: util.boundNoop,
     };
     public render(): React.ReactNode {
-        const { buyQuote, accountAddress } = this.props;
+        const { buyQuote, accountAddress, selectedAsset } = this.props;
         const shouldDisableButton = _.isUndefined(buyQuote) || _.isUndefined(accountAddress);
+        const buttonText =
+            !_.isUndefined(selectedAsset) && selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
+                ? `Buy ${selectedAsset.metaData.symbol.toUpperCase()}`
+                : 'Buy Now';
         return (
             <Button
                 width="100%"
@@ -44,7 +51,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
                 isDisabled={shouldDisableButton}
                 fontColor={ColorOption.white}
             >
-                Buy
+                {buttonText}
             </Button>
         );
     }
@@ -59,6 +66,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         // if we don't have a balance for the user, let the transaction through, it will be handled by the wallet
         const hasSufficientEth = _.isUndefined(accountEthBalanceInWei) || accountEthBalanceInWei.gte(ethNeededForBuy);
         if (!hasSufficientEth) {
+            analytics.trackBuyNotEnoughEth(buyQuote);
             this.props.onValidationFail(buyQuote, ZeroExInstantError.InsufficientETH);
             return;
         }
@@ -66,6 +74,7 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         const gasInfo = await gasPriceEstimator.getGasInfoAsync();
         const feeRecipient = oc(affiliateInfo).feeRecipient();
         try {
+            analytics.trackBuyStarted(buyQuote);
             txHash = await assetBuyer.executeBuyQuoteAsync(buyQuote, {
                 feeRecipient,
                 takerAddress: accountAddress,
@@ -74,9 +83,11 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         } catch (e) {
             if (e instanceof Error) {
                 if (e.message === AssetBuyerError.SignatureRequestDenied) {
+                    analytics.trackBuySignatureDenied(buyQuote);
                     this.props.onSignatureDenied(buyQuote);
                     return;
                 } else if (e.message === AssetBuyerError.TransactionValueTooLow) {
+                    analytics.trackBuySimulationFailed(buyQuote);
                     this.props.onValidationFail(buyQuote, AssetBuyerError.TransactionValueTooLow);
                     return;
                 }
@@ -87,14 +98,17 @@ export class BuyButton extends React.Component<BuyButtonProps> {
         const expectedEndTimeUnix = startTimeUnix + gasInfo.estimatedTimeMs;
         this.props.onBuyProcessing(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
         try {
+            analytics.trackBuyTxSubmitted(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
             await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         } catch (e) {
             if (e instanceof Error && e.message.startsWith(WEB_3_WRAPPER_TRANSACTION_FAILED_ERROR_MSG_PREFIX)) {
+                analytics.trackBuyTxFailed(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
                 this.props.onBuyFailure(buyQuote, txHash);
                 return;
             }
             throw e;
         }
+        analytics.trackBuyTxSucceeded(buyQuote, txHash, startTimeUnix, expectedEndTimeUnix);
         this.props.onBuySuccess(buyQuote, txHash);
     };
 }

@@ -21,7 +21,7 @@ export const BuyOrderProgress: React.StatelessComponent<BuyOrderProgressProps> =
         const hasEnded = buyOrderState.processState !== OrderProcessState.Processing;
         const expectedTimeMs = progress.expectedEndTimeUnix - progress.startTimeUnix;
         return (
-            <Container padding="20px 20px 0px 20px" width="100%">
+            <Container width="100%" padding="20px 20px 0px 20px">
                 <Container marginBottom="5px">
                     <TimeCounter estimatedTimeMs={expectedTimeMs} hasEnded={hasEnded} key={progress.startTimeUnix} />
                 </Container>

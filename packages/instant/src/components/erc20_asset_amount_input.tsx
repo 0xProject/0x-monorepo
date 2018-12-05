@@ -113,7 +113,7 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         );
     };
     private readonly _renderChevronIcon = (): React.ReactNode => {
-        if (!this._areMultipleAssetsAvailable()) {
+        if (!this._areAnyAssetsAvailable()) {
             return null;
         }
         return (
@@ -134,14 +134,14 @@ export class ERC20AssetAmountInput extends React.Component<ERC20AssetAmountInput
         // We don't want to allow opening the token selection panel if there are no assets.
         // Since styles are inferred from the presence of a click handler, we want to return undefined
         // instead of providing a noop.
-        if (!this._areMultipleAssetsAvailable() || _.isUndefined(this.props.onSelectAssetClick)) {
+        if (!this._areAnyAssetsAvailable() || _.isUndefined(this.props.onSelectAssetClick)) {
             return undefined;
         }
         return this._handleSelectAssetClick;
     };
-    private readonly _areMultipleAssetsAvailable = (): boolean => {
+    private readonly _areAnyAssetsAvailable = (): boolean => {
         const { numberOfAssetsAvailable } = this.props;
-        return !_.isUndefined(numberOfAssetsAvailable) && numberOfAssetsAvailable > 1;
+        return !_.isUndefined(numberOfAssetsAvailable) && numberOfAssetsAvailable > 0;
     };
     private readonly _handleSelectAssetClick = (): void => {
         if (this.props.onSelectAssetClick) {

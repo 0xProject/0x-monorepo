@@ -41,7 +41,7 @@ export async function publishReleaseNotesAsync(packagesToPublish: Package[], isD
     let assets: string[] = [];
     let aggregateNotes = '';
     _.each(packagesToPublish, pkg => {
-        aggregateNotes += getReleaseNotesForPackage(pkg.packageJson.name);
+        aggregateNotes += getReleaseNotesForPackage(pkg.location, pkg.packageJson.name);
 
         const packageAssets = _.get(pkg.packageJson, 'config.postpublish.assets');
         if (!_.isUndefined(packageAssets)) {
@@ -88,14 +88,8 @@ function adjustAssetPaths(assets: string[]): string[] {
     return finalAssets;
 }
 
-function getReleaseNotesForPackage(packageName: string): string {
-    const packageNameWithoutNamespace = packageName.replace('@0x/', '');
-    const changelogJSONPath = path.join(
-        constants.monorepoRootPath,
-        'packages',
-        packageNameWithoutNamespace,
-        'CHANGELOG.json',
-    );
+function getReleaseNotesForPackage(packageLocation: string, packageName: string): string {
+    const changelogJSONPath = path.join(packageLocation, 'CHANGELOG.json');
     const changelogJSON = readFileSync(changelogJSONPath, 'utf-8');
     const changelogs = JSON.parse(changelogJSON);
     const latestLog = changelogs[0];

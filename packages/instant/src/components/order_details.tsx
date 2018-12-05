@@ -34,7 +34,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                 ? assetEthBaseUnitAmount.div(selectedAssetUnitAmount).ceil()
                 : undefined;
         return (
-            <Container padding="20px" width="100%" flexGrow={1}>
+            <Container width="100%" flexGrow={1} padding="20px 20px 0px 20px">
                 <Container marginBottom="10px">
                     <Text
                         letterSpacing="1px"

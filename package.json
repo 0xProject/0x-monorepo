@@ -5,7 +5,8 @@
         "node": ">=6.12"
     },
     "workspaces": [
-        "packages/*"
+        "packages/*",
+        "contracts/*"
     ],
     "scripts": {
         "ganache": "ganache-cli -p 8545 --gasLimit 10000000 --networkId 50 -m \"${npm_package_config_mnemonic}\"",

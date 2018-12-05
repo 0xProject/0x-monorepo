@@ -1,3 +1,4 @@
+import { AssetBuyerError } from '@0x/asset-buyer';
 import { AssetProxyId, ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 
@@ -105,5 +106,21 @@ export const assetUtils = {
             asset => (asset.metaData.assetProxyId === AssetProxyId.ERC20 ? (asset as ERC20Asset) : undefined),
         );
         return _.compact(erc20sOrUndefined);
+    },
+    assetBuyerErrorMessage: (asset: ERC20Asset, error: Error): string | undefined => {
+        if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
+            const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
+            return `Not enough ${assetName} available`;
+        } else if (error.message === AssetBuyerError.InsufficientZrxLiquidity) {
+            return 'Not enough ZRX available';
+        } else if (
+            error.message === AssetBuyerError.StandardRelayerApiError ||
+            error.message.startsWith(AssetBuyerError.AssetUnavailable)
+        ) {
+            const assetName = assetUtils.bestNameForAsset(asset, 'This asset');
+            return `${assetName} is currently unavailable`;
+        }
+
+        return undefined;
     },
 };
