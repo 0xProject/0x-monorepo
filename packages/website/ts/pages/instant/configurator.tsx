@@ -26,7 +26,7 @@ export class Configurator extends React.Component<ConfiguratorProps> {
             availableAssetDatas: undefined,
             affiliateInfo: {
                 feeRecipient: '',
-                feePercentage: 0.01,
+                feePercentage: 0,
             },
         },
     };
