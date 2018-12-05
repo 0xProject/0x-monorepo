@@ -2,7 +2,7 @@ import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { HEAP_ENABLED, INSTANT_DISCHARGE_TARGET } from '../constants';
+import { GIT_SHA, HEAP_ENABLED, INSTANT_DISCHARGE_TARGET, NPM_PACKAGE_VERSION } from '../constants';
 import {
     AffiliateInfo,
     Asset,
@@ -149,8 +149,8 @@ export const analytics = {
             embeddedUrl: window.location.href,
             networkId: network,
             providerName: providerState.name,
-            gitSha: process.env.GIT_SHA,
-            npmVersion: process.env.NPM_PACKAGE_VERSION,
+            gitSha: GIT_SHA,
+            npmVersion: NPM_PACKAGE_VERSION,
             orderSource: orderSourceName,
             affiliateAddress,
             affiliateFeePercent,

@@ -2,7 +2,13 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { DEFAULT_ZERO_EX_CONTAINER_SELECTOR, INJECTED_DIV_CLASS, INJECTED_DIV_ID } from './constants';
+import {
+    DEFAULT_ZERO_EX_CONTAINER_SELECTOR,
+    GIT_SHA as GIT_SHA_FROM_CONSTANT,
+    INJECTED_DIV_CLASS,
+    INJECTED_DIV_ID,
+    NPM_PACKAGE_VERSION,
+} from './constants';
 import { ZeroExInstantOverlay, ZeroExInstantOverlayProps } from './index';
 import { analytics } from './util/analytics';
 import { assert } from './util/assert';
@@ -117,5 +123,5 @@ export const render = (config: ZeroExInstantConfig, selector: string = DEFAULT_Z
 };
 
 // Write version info to the exported object for debugging
-export const GIT_SHA = process.env.GIT_SHA;
-export const NPM_VERSION = process.env.NPM_PACKAGE_VERSION;
+export const GIT_SHA = GIT_SHA_FROM_CONSTANT;
+export const NPM_VERSION = NPM_PACKAGE_VERSION;
