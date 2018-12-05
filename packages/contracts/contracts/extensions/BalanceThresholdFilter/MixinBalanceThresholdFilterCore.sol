@@ -114,8 +114,6 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
              /// @dev A running list is maintained of addresses to validate. 
              ///     This function records an address in this array.
              /// @param addressToValidate - Address to record for validation.
-             /// @note - Variables are scoped but names are not, so we append
-             ///         underscores to names that share the global namespace.
             function recordAddressToValidate(addressToValidate) {
                 // Compute `addressesToValidate` memory offset
                 let addressesToValidate_ := mload(0x40)
