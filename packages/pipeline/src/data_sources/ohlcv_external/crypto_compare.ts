@@ -1,6 +1,6 @@
 // tslint:disable:no-duplicate-imports
 import { fetchAsync } from '@0x/utils';
-import promiseLimit = require('p-limit');
+import Bottleneck from 'bottleneck';
 import { stringify } from 'querystring';
 import * as R from 'ramda';
 
@@ -35,6 +35,7 @@ export interface CryptoCompareOHLCVParams {
 
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_HOUR = 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
+const ONE_MINUTE = 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_SECOND = 1000;
 const ONE_HOUR_AGO = new Date().getTime() - ONE_HOUR;
 const HTTP_OK_STATUS = 200;
@@ -47,9 +48,14 @@ export class CryptoCompareOHLCVSource {
     private readonly _url: string = 'https://min-api.cryptocompare.com/data/histohour?';
 
     // rate-limit for all API calls through this class instance
-    private readonly _promiseLimit: (fetchFn: () => Promise<Response>) => Promise<Response>;
-    constructor(maxConcurrentRequests: number = 50) {
-        this._promiseLimit = promiseLimit(maxConcurrentRequests);
+    private readonly _limiter: Bottleneck;
+    constructor(maxReqsPerSecond: number = 40) {
+        this._limiter = new Bottleneck({
+            minTime: Math.ceil(ONE_SECOND / maxReqsPerSecond),
+            reservoir: 2000,
+            reservoirRefreshAmount: 2000,
+            reservoirRefreshInterval: ONE_MINUTE,
+        });
     }
 
     // gets OHLCV records starting from pair.latest
@@ -61,15 +67,7 @@ export class CryptoCompareOHLCVSource {
             toTs: Math.floor((pair.latestSavedTime + this.interval) / ONE_SECOND), // CryptoCompare uses timestamp in seconds. not ms
         };
         const url = this._url + stringify(params);
-
-        // go through the instance-wide rate-limit
-        const fetchPromise: Promise<Response> = this._promiseLimit(() => {
-            // tslint:disable-next-line:no-console
-            console.log(`Scraping Crypto Compare at ${url}`);
-            return fetchAsync(url);
-        });
-
-        const response = await Promise.resolve(fetchPromise);
+        const response = await this._limiter.schedule(() => fetchAsync(url));
         if (response.status !== HTTP_OK_STATUS) {
             throw new Error(`HTTP error while scraping Crypto Compare: [${response}]`);
         }
