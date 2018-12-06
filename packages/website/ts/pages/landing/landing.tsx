@@ -237,7 +237,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     private _renderWhatsNew(): React.ReactNode {
         return (
             <div className="sm-center sm-px1">
-                <a href={WHATS_NEW_URL} target="_blank" className="inline-block text-decoration-none">
+                <a href={WHATS_NEW_URL} className="inline-block text-decoration-none">
                     <div className="flex items-center sm-pl0 md-pl2 lg-pl0">
                         <Container
                             paddingTop="3px"
