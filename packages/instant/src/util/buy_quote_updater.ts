@@ -38,14 +38,11 @@ export const buyQuoteUpdater = {
         } catch (error) {
             const errorMessage = assetUtils.assetBuyerErrorMessage(asset, error);
 
-            if (_.isUndefined(errorMessage)) {
-                // This is an unknown error, report it to rollbar
-                errorReporter.report(error);
-            }
+            errorReporter.report(error);
+            analytics.trackQuoteError(error.message ? error.message : 'other', baseUnitValue, fetchOrigin);
 
             if (options.dispatchErrors) {
                 dispatch(actions.setQuoteRequestStateFailure());
-                analytics.trackQuoteError(error.message ? error.message : 'other', baseUnitValue, fetchOrigin);
                 errorFlasher.flashNewErrorMessage(dispatch, errorMessage || 'Error fetching price, please try again');
             }
             return;
