@@ -496,6 +496,7 @@ export enum Key {
     GetInTouch = 'GET_IN_TOUCH',
     LearnMore = 'LEARN_MORE',
     GetStarted = 'GET_STARTED',
+    ProtocolSpecification = 'PROTOCOL_SPECIFICATION',
 }
 
 export enum SmartContractDocSections {
