@@ -31,10 +31,14 @@ injectGlobal`
             margin-left: -60%;
         }
     }
+    .rc-slider-disabled {
+        background-color: inherit !important;
+    }
 `;
 
 export interface FeePercentageSliderProps {
     value: number;
+    isDisabled: boolean;
     onChange: (value: number) => void;
 }
 
@@ -42,6 +46,7 @@ export class FeePercentageSlider extends React.Component<FeePercentageSliderProp
     public render(): React.ReactNode {
         return (
             <SliderWithTooltip
+                disabled={this.props.isDisabled}
                 min={0}
                 max={0.05}
                 step={0.0025}
