@@ -33,18 +33,18 @@ export interface CryptoCompareOHLCVParams {
     toTs?: number;
 }
 
-const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_HOUR = 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_MINUTE = 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_SECOND = 1000;
 const ONE_HOUR_AGO = new Date().getTime() - ONE_HOUR;
 const HTTP_OK_STATUS = 200;
 const CRYPTO_COMPARE_VALID_EMPTY_RESPONSE_TYPE = 96;
+const MAX_LIMIT = 2000;
 
 export class CryptoCompareOHLCVSource {
-    public readonly interval = ONE_WEEK; // the hourly API returns data for one week at a time
-    public readonly default_exchange = 'CCCAGG';
     public readonly intervalBetweenRecords = ONE_HOUR;
+    public readonly default_exchange = 'CCCAGG';
+    public readonly interval = ONE_HOUR * MAX_LIMIT; // the hourly API returns data for one interval at a time
     private readonly _url: string = 'https://min-api.cryptocompare.com/data/histohour?';
 
     // rate-limit for all API calls through this class instance
@@ -65,6 +65,7 @@ export class CryptoCompareOHLCVSource {
             e: this.default_exchange,
             fsym: pair.fromSymbol,
             tsym: pair.toSymbol,
+            limit: MAX_LIMIT,
             toTs: Math.floor((pair.latestSavedTime + this.interval) / ONE_SECOND), // CryptoCompare uses timestamp in seconds. not ms
         };
         const url = this._url + stringify(params);
