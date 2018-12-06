@@ -177,7 +177,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
     }
     private _renderMenuItem(link: ALink): React.ReactNode {
         const titleToIcon: { [title: string]: string } = {
-            [this.props.translate.get(Key.Discord, Deco.Cap)]: 'rocketchat.png',
+            [this.props.translate.get(Key.Discord, Deco.Cap)]: 'discord.png',
             [this.props.translate.get(Key.Blog, Deco.Cap)]: 'medium.png',
             Twitter: 'twitter.png',
             Reddit: 'reddit.png',
