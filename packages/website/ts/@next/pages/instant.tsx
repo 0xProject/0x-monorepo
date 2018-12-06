@@ -7,9 +7,13 @@ import {Column, Section, Wrap, WrapCentered} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 
+import { Configurator } from 'ts/pages/instant/configurator';
+
 import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
 import TokensIcon from 'ts/@next/icons/illustrations/tokens.svg';
+
+const CONFIGURATOR_HASH = 'configure';
 
 export const Next0xInstant = () => (
     <SiteWrap>
@@ -76,19 +80,7 @@ export const Next0xInstant = () => (
 
         <Section bgColor={colors.backgroundDark}>
             <Wrap>
-                <Column colWidth="1/2">
-                    <Heading>0x Instant Configurator</Heading>
-                    <Paragraph>Liquidity Source</Paragraph>
-                    <Paragraph>What tokens can users buy? (select all)</Paragraph>
-                    <Paragraph>Transaction fee ETH address</Paragraph>
-                    <Paragraph>Fee Percentage</Paragraph>
-                </Column>
-
-                <Column colWidth="1/2">
-                    <Paragraph>Code Snippet</Paragraph>
-                    <a href="#">Explore the Docs</a>
-                    <Paragraph>&lt;code snippet&gt;</Paragraph>
-                </Column>
+                <Configurator hash={CONFIGURATOR_HASH} />
             </Wrap>
         </Section>
 
