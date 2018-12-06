@@ -84,7 +84,7 @@ export class Configurator extends React.Component<ConfiguratorProps> {
                 ? `\n                affiliateInfo: {
                     feeRecipient: '${instantConfig.affiliateInfo.feeRecipient.toLowerCase()}',
                     feePercentage: ${instantConfig.affiliateInfo.feePercentage}
-                }`
+                },`
                 : ''
         }${
             !_.isUndefined(instantConfig.availableAssetDatas)
