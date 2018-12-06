@@ -11,7 +11,7 @@ import { fetchOHLCVTradingPairsAsync, TradingPair } from '../utils/get_ohlcv_tra
 const SOURCE_NAME = 'CryptoCompare';
 const TWO_HOURS_AGO = new Date().getTime() - 2 * 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 
-const MAX_CONCURRENT_REQUESTS = parseInt(process.env.CRYPTOCOMPARE_MAX_CONCURRENT_REQUESTS || '14', 10); // tslint:disable-line:custom-no-magic-numbers
+const MAX_REQS_PER_SECOND = parseInt(process.env.CRYPTOCOMPARE_MAX_REQS_PER_SECOND || '15', 10); // tslint:disable-line:custom-no-magic-numbers
 const EARLIEST_BACKFILL_DATE = process.env.OHLCV_EARLIEST_BACKFILL_DATE || '2014-06-01';
 const EARLIEST_BACKFILL_TIME = new Date(EARLIEST_BACKFILL_DATE).getTime();
 
@@ -20,7 +20,7 @@ let connection: Connection;
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
     const repository = connection.getRepository(OHLCVExternal);
-    const source = new CryptoCompareOHLCVSource(MAX_CONCURRENT_REQUESTS);
+    const source = new CryptoCompareOHLCVSource(MAX_REQS_PER_SECOND);
 
     const jobTime = new Date().getTime();
     const tradingPairs = await fetchOHLCVTradingPairsAsync(connection, SOURCE_NAME, EARLIEST_BACKFILL_TIME);

@@ -49,13 +49,14 @@ export class CryptoCompareOHLCVSource {
 
     // rate-limit for all API calls through this class instance
     private readonly _limiter: Bottleneck;
-    constructor(maxReqsPerSecond: number = 40) {
+    constructor(maxReqsPerSecond: number) {
         this._limiter = new Bottleneck({
-            minTime: Math.ceil(ONE_SECOND / maxReqsPerSecond),
+            minTime: ONE_SECOND / maxReqsPerSecond,
             reservoir: 2000,
             reservoirRefreshAmount: 2000,
             reservoirRefreshInterval: ONE_MINUTE,
         });
+        console.log('mintime', Math.ceil(ONE_SECOND / maxReqsPerSecond)); // tslint:disable-line:no-console
     }
 
     // gets OHLCV records starting from pair.latest
