@@ -77,7 +77,7 @@ const customStyle = {
         color: '#c994ff',
     },
     'hljs-meta': {
-        color: '#aa573c',
+        color: '#61f5ff',
     },
     'hljs-built_in': {
         color: '#aa573c',
