@@ -68,6 +68,7 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
         font-family: 'Formular', sans-serif !important;
         -webkit-font-smoothing: antialiased;
         color: ${props => props.theme.textColor};
+        font-feature-settings: "zero";
     }
 
     .visuallyHidden {
