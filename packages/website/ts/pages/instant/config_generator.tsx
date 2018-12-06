@@ -79,6 +79,11 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                     <FeePercentageSlider
                         value={value.affiliateInfo.feePercentage}
                         onChange={this._handleAffiliatePercentageChange}
+                        isDisabled={
+                            _.isUndefined(value.affiliateInfo) ||
+                            _.isUndefined(value.affiliateInfo.feeRecipient) ||
+                            _.isEmpty(value.affiliateInfo.feeRecipient)
+                        }
                     />
                 </ConfigGeneratorSection>
             </Container>
