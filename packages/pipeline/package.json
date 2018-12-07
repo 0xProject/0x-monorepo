@@ -57,7 +57,6 @@
         "ethereum-types": "^1.0.6",
         "pg": "^7.5.0",
         "prettier": "^1.15.3",
-        "pw-app-sdk": "^0.3.4",
         "ramda": "^0.25.0",
         "reflect-metadata": "^0.1.12",
         "sqlite3": "^4.0.2",
