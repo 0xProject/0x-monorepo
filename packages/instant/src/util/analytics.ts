@@ -106,6 +106,7 @@ export interface AnalyticsEventOptions {
     ethAddress?: string;
     networkId?: number;
     providerName?: string;
+    walletDisplayName?: string;
     gitSha?: string;
     npmVersion?: string;
     instantEnvironment?: string;
@@ -138,6 +139,7 @@ export const analytics = {
         orderSource: OrderSource,
         providerState: ProviderState,
         window: Window,
+        walletDisplayName?: string,
         selectedAsset?: Asset,
         affiliateInfo?: AffiliateInfo,
     ): AnalyticsEventOptions => {
@@ -149,6 +151,7 @@ export const analytics = {
             embeddedUrl: window.location.href,
             networkId: network,
             providerName: providerState.name,
+            walletDisplayName,
             gitSha: GIT_SHA,
             npmVersion: NPM_PACKAGE_VERSION,
             orderSource: orderSourceName,
