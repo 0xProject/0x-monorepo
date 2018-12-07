@@ -34,7 +34,6 @@ export interface CryptoCompareOHLCVParams {
 }
 
 const ONE_HOUR = 60 * 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
-const ONE_MINUTE = 60 * 1000; // tslint:disable-line:custom-no-magic-numbers
 const ONE_SECOND = 1000;
 const ONE_HOUR_AGO = new Date().getTime() - ONE_HOUR;
 const HTTP_OK_STATUS = 200;
