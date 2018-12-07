@@ -30,6 +30,10 @@ const Icon = styled(LogoIcon)`
 
     path {
         fill: ${(props: LogoInterface) => props.isLight ? '#fff' : props.theme.textColor};
+
+        @media (max-width: 768px) {
+            fill: #fff;
+        }
     }
 `;
 

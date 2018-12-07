@@ -68,9 +68,13 @@ const COLUMN_WIDTHS: ColumnWidths = {
 
 export const Main = styled.main`
     border: 1px dotted rgba(0, 0, 255, 0.3);
-    width: calc(100% - 60px);
+    width: calc(100% - 0);
     max-width: ${MAX_WIDTH}px;
     margin: 0 auto;
+
+    @media (min-width: ${BREAKPOINTS.mobile}) {
+        width: calc(100% - 60px);
+    }
 `;
 
 // We can also turn Section into a stateless comp,
@@ -91,7 +95,7 @@ export const Section = styled.section<SectionProps>`
     }
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
-        padding: 30px;
+        padding: 20px;
     }
 `;
 
@@ -100,6 +104,10 @@ const WrapBase = styled.div<WrapProps>`
     padding: ${props => props.padding && getCSSPadding(props.padding)};
     background-color: ${props => props.bgColor};
     margin: 0 auto;
+
+    @media (max-width: ${BREAKPOINTS.mobile}) {
+        padding: 20px 0;
+    }
 `;
 
 export const Wrap = styled(WrapBase)`
@@ -131,6 +139,12 @@ export const Column = styled.div<ColumnProps>`
 
     @media (min-width: ${BREAKPOINTS.mobile}) {
         width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};
+    }
+
+    @media (max-width: ${BREAKPOINTS.mobile}) {
+        padding-left: 0;
+        padding-right: 0;
+        margin-bottom: var(--gutterMobile, 20px);
     }
 `;
 
