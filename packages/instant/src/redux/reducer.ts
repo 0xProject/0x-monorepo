@@ -14,6 +14,7 @@ import {
     Asset,
     AssetMetaData,
     AsyncProcessState,
+    BaseCurrency,
     DisplayStatus,
     Network,
     OrderProcessState,
@@ -33,6 +34,7 @@ export interface DefaultState {
     latestErrorDisplayStatus: DisplayStatus;
     quoteRequestState: AsyncProcessState;
     standardSlidingPanelSettings: StandardSlidingPanelSettings;
+    baseCurrency: BaseCurrency;
 }
 
 // State that is required but needs to be derived from the props
@@ -64,6 +66,7 @@ export const DEFAULT_STATE: DefaultState = {
         animationState: 'none',
         content: StandardSlidingPanelContent.None,
     },
+    baseCurrency: BaseCurrency.ETH,
 };
 
 export const createReducer = (initialState: State) => {
@@ -242,6 +245,11 @@ export const createReducer = (initialState: State) => {
                         content: state.standardSlidingPanelSettings.content,
                         animationState: 'slidOut',
                     },
+                };
+            case ActionTypes.UPDATE_BASE_CURRENCY:
+                return {
+                    ...state,
+                    baseCurrency: action.data,
                 };
             default:
                 return state;
