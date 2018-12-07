@@ -52,9 +52,9 @@ export class CryptoCompareOHLCVSource {
     constructor(maxReqsPerSecond: number) {
         this._limiter = new Bottleneck({
             minTime: ONE_SECOND / maxReqsPerSecond,
-            reservoir: 2000,
-            reservoirRefreshAmount: 2000,
-            reservoirRefreshInterval: ONE_MINUTE,
+            reservoir: 30,
+            reservoirRefreshAmount: 30,
+            reservoirRefreshInterval: ONE_SECOND,
         });
     }
 
