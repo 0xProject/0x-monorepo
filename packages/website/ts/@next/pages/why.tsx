@@ -16,7 +16,7 @@ export const NextWhy = () => (
     <Section>
       <WrapCentered>
         <Column colWidth="2/3">
-          <Heading size="medium" isCentered={true}>The exchange layer for the crypto economy</Heading>
+          <Heading size="medium" isCentered={true} style={{ '--desktopMaxWidth': '570px' }}>The exchange layer for the crypto economy</Heading>
           <Paragraph size="medium" isCentered={true}>The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastructure that allows anyone in the world to build products that enable the purchasing and trading of crypto tokens.</Paragraph>
           <Paragraph isCentered={true}>Build on 0x (arrow)</Paragraph>
         </Column>
