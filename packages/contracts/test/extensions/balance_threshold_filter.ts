@@ -6,6 +6,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
@@ -24,6 +25,7 @@ import { ExchangeWrapper } from '../utils/exchange_wrapper';
 import { OrderFactory } from '../utils/order_factory';
 import { orderUtils } from '../utils/order_utils';
 import { TransactionFactory } from '../utils/transaction_factory';
+import { BalanceThresholdWrapper } from '../utils/balance_threshold_wrapper';
 import { ContractName, ERC20BalancesByOwner, SignedTransaction } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
 
@@ -36,6 +38,10 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
+
+interface ValidatedAddressesLog {
+    args: {addresses: string[]}
+}
 
 describe.only(ContractName.BalanceThresholdFilter, () => {
     let compliantMakerAddress: string;
@@ -53,17 +59,34 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
     let orderFactory: OrderFactory;
     let erc20Wrapper: ERC20Wrapper;
     let erc20Balances: ERC20BalancesByOwner;
+    let balanceThresholdWrapper: BalanceThresholdWrapper;
 
     let takerTransactionFactory: TransactionFactory;
     let compliantSignedOrder: SignedOrder;
     let compliantSignedFillOrderTx: SignedTransaction;
     let noncompliantSignedFillOrderTx: SignedTransaction;
 
+    let logDecoder: LogDecoder;
+
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(500), DECIMALS_DEFAULT);
     const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), DECIMALS_DEFAULT);
     const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(250), DECIMALS_DEFAULT);
 
     let compliantForwarderInstance: BalanceThresholdFilterContract;
+
+    const assertValidatedAddressesLog = async (txReceipt: TransactionReceiptWithDecodedLogs, expectedValidatedAddresses: string[]) => {
+        expect(txReceipt.logs.length).to.be.gte(1);
+        const validatedAddressesLog = (txReceipt.logs[0] as any) as ValidatedAddressesLog;
+        const validatedAddresses = validatedAddressesLog.args.addresses;
+        // @HACK-hysz: Nested addresses are not translated to lower-case but this will change once
+        //             the new ABI Encoder/Decoder is used by the contract templates.
+        let validatedAddressesNormalized: string[] = [];
+        _.each(validatedAddresses, (address) => {
+            const normalizedAddress = _.toLower(address);
+            validatedAddressesNormalized.push(normalizedAddress);
+        });
+        expect(validatedAddressesNormalized).to.be.deep.equal(expectedValidatedAddresses);
+    };
 
     before(async () => {
         // Create accounts
@@ -190,17 +213,30 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
             compliantSignedOrderWithoutExchangeAddressData,
         );
 
-        /* generate selectors for every exchange method
+        /*
         _.each(exchangeInstance.abi, (abiDefinition: AbiDefinition) => {
             try {
                 const method = new Method(abiDefinition as MethodAbi);
-                console.log('\n', `// ${method.getDataItem().name}`);
-                console.log(`bytes4 constant ${method.getDataItem().name}Selector = ${method.getSelector()};`);
-                console.log(`bytes4 constant ${method.getDataItem().name}SelectorGenerator = byes4(keccak256('${method.getSignature()}'));`);
+                console.log(method.getSignature());
+                if (!method.getSignature().startsWith('matchOrders')) {
+                    return;
+                }
+                console.log(`FOUND IT`);
+                const signedOrderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(
+                    compliantSignedOrder,
+                );
+                const args = [signedOrderWithoutExchangeAddress, signedOrderWithoutExchangeAddress, compliantSignedOrder.signature, compliantSignedOrder.signature];
+                console.log(method.encode(args, {annotate: true}));
+                //console.log('\n', `// ${method.getDataItem().name}`);
+                //console.log(`bytes4 constant ${method.getDataItem().name}Selector = ${method.getSelector()};`);
+                //console.log(`bytes4 constant ${method.getDataItem().name}SelectorGenerator = byes4(keccak256('${method.getSignature()}'));`);
             } catch(e) {
-                _.noop();
+                console.log(`encoding failed: ${e}`);
             }
-        });*/
+        });
+        throw new Error(`w`);*/
+        logDecoder = new LogDecoder(web3Wrapper);
+        balanceThresholdWrapper = new BalanceThresholdWrapper(compliantForwarderInstance, exchangeInstance, new TransactionFactory(takerPrivateKey, exchangeInstance.address), provider);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -208,54 +244,9 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe.only('fillOrder', () => {
-        beforeEach(async () => {
-            erc20Balances = await erc20Wrapper.getBalancesAsync();
-        });
-        it('should transfer the correct amounts when maker and taker are compliant', async () => {
-            const txHash = await compliantForwarderInstance.executeTransaction.sendTransactionAsync(
-                compliantSignedFillOrderTx.salt,
-                compliantSignedFillOrderTx.signerAddress,
-                compliantSignedFillOrderTx.data,
-                compliantSignedFillOrderTx.signature,
-            );
-            const decoder = new LogDecoder(web3Wrapper);
-            const tx = await decoder.getTxWithDecodedLogsAsync(txHash);
-            console.log(JSON.stringify(tx, null, 4));
-            console.log('****** MAKER ADDRESS = ', compliantSignedOrder.makerAddress);
-            const newBalances = await erc20Wrapper.getBalancesAsync();
-            const makerAssetFillAmount = takerAssetFillAmount
-                .times(compliantSignedOrder.makerAssetAmount)
-                .dividedToIntegerBy(compliantSignedOrder.takerAssetAmount);
-            const makerFeePaid = compliantSignedOrder.makerFee
-                .times(makerAssetFillAmount)
-                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
-            const takerFeePaid = compliantSignedOrder.takerFee
-                .times(makerAssetFillAmount)
-                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
-            expect(newBalances[compliantMakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[compliantMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
-            );
-            expect(newBalances[compliantMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[compliantMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
-            );
-            expect(newBalances[compliantMakerAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[compliantMakerAddress][zrxToken.address].minus(makerFeePaid),
-            );
-            expect(newBalances[compliantTakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[compliantTakerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
-            );
-            expect(newBalances[compliantTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[compliantTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
-            );
-            expect(newBalances[compliantTakerAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[compliantTakerAddress][zrxToken.address].minus(takerFeePaid),
-            );
-            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
-            );
-        });
-        it('should revert if the signed transaction is not intended for fillOrder', async () => {
+
+    describe('General Sanity Checks', () => {
+        it('should revert if the signed transaction is not intended for supported', async () => {
             // Create signed order without the fillOrder function selector
             const txDataBuf = ethUtil.toBuffer(compliantSignedFillOrderTx.data);
             const selectorLengthInBytes = 4;
@@ -297,18 +288,90 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
                 signedFillOrderTx.signature,
             ));
         });
-        it('should revert if taker address is not compliant (does not hold a Yes Token)', async () => {
-            return expectTransactionFailedAsync(
-                compliantForwarderInstance.executeTransaction.sendTransactionAsync(
-                    compliantSignedFillOrderTx.salt,
-                    nonCompliantAddress,
-                    compliantSignedFillOrderTx.data,
-                    compliantSignedFillOrderTx.signature,
-                ),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+        // @TODO - greater than 1 balance
+    });
+
+
+
+    describe('batchFillOrders', () => {
+        beforeEach(async () => {
+            erc20Balances = await erc20Wrapper.getBalancesAsync();
+        });
+        it('should transfer the correct amounts when maker and taker are compliant', async () => {
+            let order2 = _.cloneDeep(compliantSignedOrder);
+            order2.makerAddress = `0x${_.reverse(compliantSignedOrder.makerAddress.slice(2).split('')).join('')}`;
+            const orders = [compliantSignedOrder, order2];
+            const fillAmounts = [new BigNumber(4), new BigNumber(4)];
+            const signatures = ["0xabcd", "0xabcd"];
+            const exchangeCalldata = exchangeInstance.batchFillOrders.getABIEncodedTransactionData(orders, fillAmounts, signatures);
+            console.log('*'.repeat(40), exchangeCalldata, '*'.repeat(40));
+            console.log('****** MAKER ADDRESS = ', compliantSignedOrder.makerAddress);
+
+            const txHash = await compliantForwarderInstance.executeTransaction.sendTransactionAsync(
+                compliantSignedFillOrderTx.salt,
+                compliantSignedFillOrderTx.signerAddress,
+                exchangeCalldata,
+                compliantSignedFillOrderTx.signature,
+            );
+            const decoder = new LogDecoder(web3Wrapper);
+            const tx = await decoder.getTxWithDecodedLogsAsync(txHash);
+            console.log(JSON.stringify(tx, null, 4));
+        });
+    });
+
+    describe('batchFillOrdersNoThrow', () => {
+    });
+
+    describe('batchFillOrKillOrders', () => {
+    });
+
+    describe('batchFillOrKillOrders', () => {
+    });
+
+    describe.only('fillOrder', () => {
+        beforeEach(async () => {
+            erc20Balances = await erc20Wrapper.getBalancesAsync();
+        });
+        it('should transfer the correct amounts and validate both maker/taker when both maker and taker meet the balance threshold', async () => {
+            // Execute a valid fill
+            const txReceipt = await balanceThresholdWrapper.fillOrderAsync(compliantSignedOrder, compliantSignedFillOrderTx.signerAddress, {takerAssetFillAmount});
+            // Assert validated addresses
+            const expectedValidatedAddresseses = [compliantSignedOrder.makerAddress, compliantSignedFillOrderTx.signerAddress];
+            assertValidatedAddressesLog(txReceipt, expectedValidatedAddresseses);
+            // Check balances
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const makerAssetFillAmount = takerAssetFillAmount
+                .times(compliantSignedOrder.makerAssetAmount)
+                .dividedToIntegerBy(compliantSignedOrder.takerAssetAmount);
+            const makerFeePaid = compliantSignedOrder.makerFee
+                .times(makerAssetFillAmount)
+                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
+            const takerFeePaid = compliantSignedOrder.takerFee
+                .times(makerAssetFillAmount)
+                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
+            expect(newBalances[compliantMakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
+            );
+            expect(newBalances[compliantMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+            );
+            expect(newBalances[compliantMakerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][zrxToken.address].minus(makerFeePaid),
+            );
+            expect(newBalances[compliantTakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
+            );
+            expect(newBalances[compliantTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
+            );
+            expect(newBalances[compliantTakerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][zrxToken.address].minus(takerFeePaid),
+            );
+            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
             );
         });
-        it('should revert if maker address is not compliant (does not hold a Yes Token)', async () => {
+        it('should revert if maker does not meet the balance threshold', async () => {
             // Create signed order with non-compliant maker address
             const signedOrderWithBadMakerAddress = await orderFactory.newSignedOrderAsync({
                 senderAddress: compliantForwarderInstance.address,
@@ -336,32 +399,92 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
                 RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
             );
         });
+        it('should revert if taker does not meet the balance threshold', async () => {
+            return expectTransactionFailedAsync(
+                compliantForwarderInstance.executeTransaction.sendTransactionAsync(
+                    compliantSignedFillOrderTx.salt,
+                    nonCompliantAddress,
+                    compliantSignedFillOrderTx.data,
+                    compliantSignedFillOrderTx.signature,
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+            );
+        });
     });
 
-    describe('batchFillOrders', () => {
+    describe('fillOrderNoThrow', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
         });
-        it('should transfer the correct amounts when maker and taker are compliant', async () => {
-            let order2 = _.cloneDeep(compliantSignedOrder);
-            order2.makerAddress = `0x${_.reverse(compliantSignedOrder.makerAddress.slice(2).split('')).join('')}`;
-            const orders = [compliantSignedOrder, order2];
-            const fillAmounts = [new BigNumber(4), new BigNumber(4)];
-            const signatures = ["0xabcd", "0xabcd"];
-            const exchangeCalldata = exchangeInstance.batchFillOrders.getABIEncodedTransactionData(orders, fillAmounts, signatures);
-            console.log('*'.repeat(40), exchangeCalldata, '*'.repeat(40));
-            console.log('****** MAKER ADDRESS = ', compliantSignedOrder.makerAddress);
-
-            const txHash = await compliantForwarderInstance.executeTransaction.sendTransactionAsync(
-                compliantSignedFillOrderTx.salt,
-                compliantSignedFillOrderTx.signerAddress,
-                exchangeCalldata,
-                compliantSignedFillOrderTx.signature,
-            );
-            const decoder = new LogDecoder(web3Wrapper);
-            const tx = await decoder.getTxWithDecodedLogsAsync(txHash);
-            console.log(JSON.stringify(tx, null, 4));
+        it('should transfer the correct amounts and validate both maker/taker when both maker and taker meet the balance threshold', async () => {
+           
         });
+        it('should revert if maker does not meet the balance threshold', async () => {
+            // Create signed order with non-compliant maker address
+            const signedOrderWithBadMakerAddress = await orderFactory.newSignedOrderAsync({
+                senderAddress: compliantForwarderInstance.address,
+                makerAddress: nonCompliantAddress
+            });
+            const signedOrderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(
+                signedOrderWithBadMakerAddress,
+            );
+            const signedOrderWithoutExchangeAddressData = exchangeInstance.fillOrder.getABIEncodedTransactionData(
+                signedOrderWithoutExchangeAddress,
+                takerAssetFillAmount,
+                compliantSignedOrder.signature,
+            );
+            const signedFillOrderTx = takerTransactionFactory.newSignedTransaction(
+                signedOrderWithoutExchangeAddressData,
+            );
+            // Call compliant forwarder
+            return expectTransactionFailedAsync(
+                compliantForwarderInstance.executeTransaction.sendTransactionAsync(
+                    signedFillOrderTx.salt,
+                    signedFillOrderTx.signerAddress,
+                    signedFillOrderTx.data,
+                    signedFillOrderTx.signature,
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+            );
+        });
+        it('should revert if taker does not meet the balance threshold', async () => {
+            return expectTransactionFailedAsync(
+                compliantForwarderInstance.executeTransaction.sendTransactionAsync(
+                    compliantSignedFillOrderTx.salt,
+                    nonCompliantAddress,
+                    compliantSignedFillOrderTx.data,
+                    compliantSignedFillOrderTx.signature,
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+            );
+        });
+    });
+
+    describe('fillOrKillOrder', () => {
+    });
+
+    describe('marketBuyOrders', () => {
+    });
+
+    describe('marketBuyOrdersNoThrow', () => {
+    });
+
+    describe('marketSellOrders', () => {
+    });
+
+    describe('marketSellOrdersNoThrow', () => {
+    });
+
+    describe('matchOrders', () => {
+    });
+
+    describe('cancelOrder', () => {
+    });
+
+    describe('batchCancelOrders', () => {
+    });
+
+    describe('cancelOrdersUpTo', () => {
     });
 });
 // tslint:disable:max-file-line-count
