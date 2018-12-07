@@ -2,9 +2,9 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { IdexOrder, IdexOrderParam } from '../../../src/data_sources/idex';
+import { IdexOrderParam } from '../../../src/data_sources/idex';
 import { TokenOrderbookSnapshot as TokenOrder } from '../../../src/entities';
-import { aggregateOrders, parseIdexOrder } from '../../../src/parsers/idex_orders';
+import { parseIdexOrder } from '../../../src/parsers/idex_orders';
 import { OrderType } from '../../../src/types';
 import { chaiSetup } from '../../utils/chai_setup';
 
@@ -13,39 +13,6 @@ const expect = chai.expect;
 
 // tslint:disable:custom-no-magic-numbers
 describe('idex_orders', () => {
-    describe('aggregateOrders', () => {
-        it('aggregates orders by price point', () => {
-            const emptyOrderParam: IdexOrderParam = {
-                tokenBuy: '',
-                buySymbol: '',
-                buyPrecision: 2,
-                amountBuy: '',
-                tokenSell: '',
-                sellSymbol: '',
-                sellPrecision: 2,
-                amountSell: '',
-                expires: 100000,
-                nonce: 1,
-                user: '',
-            };
-            const input = [
-                { price: '1', amount: '20', orderHash: 'testtest', total: '20', params: emptyOrderParam },
-                { price: '1', amount: '30', orderHash: 'testone', total: '30', params: emptyOrderParam },
-                { price: '2', amount: '100', orderHash: 'testtwo', total: '200', params: emptyOrderParam },
-            ];
-            const expected = [['1', new BigNumber(50)], ['2', new BigNumber(100)]];
-            const actual = aggregateOrders(input);
-            expect(actual).deep.equal(expected);
-        });
-
-        it('handles empty orders gracefully', () => {
-            const input: IdexOrder[] = [];
-            const expected: Array<[string, BigNumber]> = [];
-            const actual = aggregateOrders(input);
-            expect(actual).deep.equal(expected);
-        });
-    });
-
     describe('parseIdexOrder', () => {
         // for market listed as 'DEF_ABC'.
         it('correctly converts bid type idexOrder to TokenOrder entity', () => {

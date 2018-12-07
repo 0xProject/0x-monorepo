@@ -22,7 +22,9 @@ let connection: Connection;
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
     const idexSource = new IdexSource();
+    logUtils.log('Getting all IDEX markets');
     const markets = await idexSource.getMarketsAsync();
+    logUtils.log(`Got ${markets.length} markets.`);
     for (const marketsChunk of R.splitEvery(MARKET_ORDERBOOK_REQUEST_BATCH_SIZE, markets)) {
         await Promise.all(
             marketsChunk.map(async (marketId: string) => getAndSaveMarketOrderbook(idexSource, marketId)),
@@ -39,6 +41,7 @@ let connection: Connection;
  * @param marketId String representing market of interest, eg. 'ETH_TIC'.
  */
 async function getAndSaveMarketOrderbook(idexSource: IdexSource, marketId: string): Promise<void> {
+    logUtils.log(`${marketId}: Retrieving orderbook.`);
     const orderBook = await idexSource.getMarketOrderbookAsync(marketId);
     const observedTimestamp = Date.now();
 

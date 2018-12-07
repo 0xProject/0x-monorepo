@@ -1,5 +1,6 @@
 import { BigNumber } from '@0x/utils';
-import * as R from 'ramda';
+
+import { aggregateOrders } from '../utils';
 
 import { IdexOrder, IdexOrderbook, IdexOrderParam } from '../../data_sources/idex';
 import { TokenOrderbookSnapshot as TokenOrder } from '../../entities';
@@ -31,19 +32,6 @@ export function parseIdexOrders(idexOrderbook: IdexOrderbook, observedTimestamp:
             ? aggregatedAsks.map(order => parseIdexOrder(idexAskOrder.params, observedTimestamp, 'ask', source, order))
             : [];
     return parsedBids.concat(parsedAsks);
-}
-
-/**
- * Aggregates orders by price point for consistency with other exchanges.
- * The Idex API returns a breakdown of individual orders at each price point.
- * Other exchanges only give total amount at each price point.
- * Returns an array of <price, amount> tuples.
- * @param idexOrders A list of Idex orders awaiting aggregation.
- */
-export function aggregateOrders(idexOrders: IdexOrder[]): Array<[string, BigNumber]> {
-    const sumAmount = (acc: BigNumber, order: IdexOrder): BigNumber => acc.plus(order.amount);
-    const aggregatedPricePoints = R.reduceBy(sumAmount, new BigNumber(0), R.prop('price'), idexOrders);
-    return Object.entries(aggregatedPricePoints);
 }
 
 /**

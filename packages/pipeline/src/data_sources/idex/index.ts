@@ -1,4 +1,4 @@
-import { fetchAsync, logUtils } from '@0x/utils';
+import { fetchAsync } from '@0x/utils';
 
 const IDEX_BASE_URL = 'https://api.idex.market';
 const MARKETS_URL = `${IDEX_BASE_URL}/returnTicker`;
@@ -55,12 +55,10 @@ export class IdexSource {
      * Call Idex API to find out which markets they are maintaining orderbooks for.
      */
     public async getMarketsAsync(): Promise<string[]> {
-        logUtils.log('Getting all IDEX markets');
         const params = { method: 'POST' };
         const resp = await fetchAsync(MARKETS_URL, params);
         const respJson: IdexMarketsResponse = await resp.json();
         const markets: string[] = Object.keys(respJson);
-        logUtils.log(`Got ${markets.length} markets.`);
         return markets;
     }
 
@@ -69,7 +67,6 @@ export class IdexSource {
      * @param marketId String identifying the market we want data for. Eg. 'REP_AUG'
      */
     public async getMarketOrderbookAsync(marketId: string): Promise<IdexOrderbook> {
-        logUtils.log(`${marketId}: Retrieving orderbook.`);
         const params = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
