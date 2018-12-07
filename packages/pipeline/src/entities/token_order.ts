@@ -10,7 +10,7 @@ export class TokenOrderbookSnapshot {
     public observedTimestamp!: number;
     @PrimaryColumn({ name: 'source' })
     public source!: string;
-    @Column({ name: 'order_type' })
+    @PrimaryColumn({ name: 'order_type' })
     public orderType!: OrderType;
     @PrimaryColumn({ name: 'price', type: 'numeric', transformer: bigNumberTransformer })
     public price!: BigNumber;
