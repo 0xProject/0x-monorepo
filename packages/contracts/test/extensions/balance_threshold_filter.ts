@@ -60,11 +60,11 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
     let erc20Wrapper: ERC20Wrapper;
     let erc20Balances: ERC20BalancesByOwner;
     let balanceThresholdWrapper: BalanceThresholdWrapper;
+    let nonCompliantBalanceThresholdWrapper: BalanceThresholdWrapper;
 
     let takerTransactionFactory: TransactionFactory;
     let compliantSignedOrder: SignedOrder;
     let compliantSignedFillOrderTx: SignedTransaction;
-    let noncompliantSignedFillOrderTx: SignedTransaction;
 
     let logDecoder: LogDecoder;
 
@@ -237,6 +237,8 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         throw new Error(`w`);*/
         logDecoder = new LogDecoder(web3Wrapper);
         balanceThresholdWrapper = new BalanceThresholdWrapper(compliantForwarderInstance, exchangeInstance, new TransactionFactory(takerPrivateKey, exchangeInstance.address), provider);
+        const nonCompliantPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(nonCompliantAddress)];
+        nonCompliantBalanceThresholdWrapper = new BalanceThresholdWrapper(compliantForwarderInstance, exchangeInstance, new TransactionFactory(nonCompliantPrivateKey, exchangeInstance.address), provider);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -334,7 +336,7 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         });
         it('should transfer the correct amounts and validate both maker/taker when both maker and taker meet the balance threshold', async () => {
             // Execute a valid fill
-            const txReceipt = await balanceThresholdWrapper.fillOrderAsync(compliantSignedOrder, compliantSignedFillOrderTx.signerAddress, {takerAssetFillAmount});
+            const txReceipt = await balanceThresholdWrapper.fillOrderAsync(compliantSignedOrder, compliantTakerAddress, {takerAssetFillAmount});
             // Assert validated addresses
             const expectedValidatedAddresseses = [compliantSignedOrder.makerAddress, compliantSignedFillOrderTx.signerAddress];
             assertValidatedAddressesLog(txReceipt, expectedValidatedAddresseses);
@@ -377,35 +379,22 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
                 senderAddress: compliantForwarderInstance.address,
                 makerAddress: nonCompliantAddress
             });
-            const signedOrderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(
-                signedOrderWithBadMakerAddress,
-            );
-            const signedOrderWithoutExchangeAddressData = exchangeInstance.fillOrder.getABIEncodedTransactionData(
-                signedOrderWithoutExchangeAddress,
-                takerAssetFillAmount,
-                compliantSignedOrder.signature,
-            );
-            const signedFillOrderTx = takerTransactionFactory.newSignedTransaction(
-                signedOrderWithoutExchangeAddressData,
-            );
-            // Call compliant forwarder
+            // Execute transaction
             return expectTransactionFailedAsync(
-                compliantForwarderInstance.executeTransaction.sendTransactionAsync(
-                    signedFillOrderTx.salt,
-                    signedFillOrderTx.signerAddress,
-                    signedFillOrderTx.data,
-                    signedFillOrderTx.signature,
+                balanceThresholdWrapper.fillOrderAsync(
+                    signedOrderWithBadMakerAddress,
+                    compliantTakerAddress, 
+                    {takerAssetFillAmount}
                 ),
                 RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
             );
         });
         it('should revert if taker does not meet the balance threshold', async () => {
             return expectTransactionFailedAsync(
-                compliantForwarderInstance.executeTransaction.sendTransactionAsync(
-                    compliantSignedFillOrderTx.salt,
-                    nonCompliantAddress,
-                    compliantSignedFillOrderTx.data,
-                    compliantSignedFillOrderTx.signature,
+                nonCompliantBalanceThresholdWrapper.fillOrderAsync(
+                    compliantSignedOrder,
+                    nonCompliantAddress, 
+                    {takerAssetFillAmount}
                 ),
                 RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
             );
