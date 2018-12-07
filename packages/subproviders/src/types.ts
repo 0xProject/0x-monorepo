@@ -136,3 +136,34 @@ export type NextCallback = (callback?: OnNextCompleted) => void;
 export interface JSONRPCRequestPayloadWithMethod extends JSONRPCRequestPayload {
     method: string;
 }
+
+export interface TrezorGetAddressResponsePayload {
+    address: string;
+    path: {
+        0: number;
+        1: number;
+        2: number;
+    };
+    serializedPath: string;
+}
+
+export interface TrezorSignTxResponsePayload {
+    v: string;
+    r: string;
+    s: string;
+}
+
+export interface TrezorSignMssgResponsePayload {
+    address: string;
+    signature: string;
+}
+
+export interface TrezorResponseErrorPayload {
+    error: string;
+}
+
+export interface TrezorConnectResponse {
+    payload: any;
+    id: number;
+    success: boolean;
+}
