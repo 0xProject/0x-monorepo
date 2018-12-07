@@ -30,6 +30,10 @@ export const Button = styled.button<ButtonInterface>`
     text-align: center;
     font-size: 18px;
     text-decoration: none;
+
+    @media (max-width: 768px) {
+        padding: ${props => !props.isNoPadding && '6% 10%'};
+    }
 `;
 
 export const Link = (props: ButtonInterface) => {

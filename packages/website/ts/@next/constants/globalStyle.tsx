@@ -56,11 +56,11 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
             --smallHeadingHeight: 1.4em; // TO DO
             --defaultHeadingHeight: 1.357142857em; // TO DO
             --mediumHeadingHeight: 1.16em; // TO DO
-            --largeHeadingHeight: 1em; // TO DO
+            --largeHeadingHeight: 1.108695652em; // TO DO
             --smallParagraph: 14px; // TO DO
-            --defaultParagraph: 18px; // TO DO
-            --mediumParagraph: 22px; // TO DO
-            --largeParagraph: 28px; // TO DO
+            --defaultParagraph: 16px; // TO DO
+            --mediumParagraph: 16px; // TO DO
+            --largeParagraph: 18px; // TO DO
         }
     }
 
@@ -82,7 +82,7 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
         overflow: hidden;
     }
 
-    img {
+    img, svg {
         max-width: 100%;
         object-fit: contain;
     }

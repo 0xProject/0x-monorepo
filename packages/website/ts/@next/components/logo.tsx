@@ -14,6 +14,15 @@ interface LogoInterface {
 // to pass props down into the styled icon?
 const StyledLogo = styled.div`
     text-align: left;
+    position: relative;
+
+    @media (max-width: 768px) {
+        z-index: 2;
+
+        svg {
+            width: 60px;
+        }
+    }
 `;
 
 const Icon = styled(LogoIcon)`
