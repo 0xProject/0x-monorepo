@@ -45,6 +45,7 @@ interface ValidatedAddressesLog {
 
 describe.only(ContractName.BalanceThresholdFilter, () => {
     let compliantMakerAddress: string;
+    let compliantMakerAddress2: string;
     let owner: string;
     let compliantTakerAddress: string;
     let feeRecipientAddress: string;
@@ -57,6 +58,7 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
     let exchangeWrapper: ExchangeWrapper;
 
     let orderFactory: OrderFactory;
+    let orderFactory2: OrderFactory;
     let erc20Wrapper: ERC20Wrapper;
     let erc20Balances: ERC20BalancesByOwner;
     let balanceThresholdWrapper: BalanceThresholdWrapper;
@@ -64,6 +66,7 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
 
     let takerTransactionFactory: TransactionFactory;
     let compliantSignedOrder: SignedOrder;
+    let compliantSignedOrder2: SignedOrder;
     let compliantSignedFillOrderTx: SignedTransaction;
 
     let logDecoder: LogDecoder;
@@ -95,6 +98,7 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         const usedAddresses = ([
             owner,
             compliantMakerAddress,
+            compliantMakerAddress2,
             compliantTakerAddress,
             feeRecipientAddress,
             nonCompliantAddress,
@@ -134,20 +138,6 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
             from: owner,
         });
-        // Default order parameters
-        const defaultOrderParams = {
-            exchangeAddress: exchangeInstance.address,
-            makerAddress: compliantMakerAddress,
-            feeRecipientAddress,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
-            makerAssetAmount,
-            takerAssetAmount,
-            makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), DECIMALS_DEFAULT),
-            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(150), DECIMALS_DEFAULT),
-        };
-        const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(compliantMakerAddress)];
-        orderFactory = new OrderFactory(privateKey, defaultOrderParams);
         // Deploy Compliant Forwarder
         const erc721BalanceThreshold = new BigNumber(1);
         compliantForwarderInstance = await BalanceThresholdFilterContract.deployFrom0xArtifactAsync(
@@ -158,6 +148,32 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
             yesTokenInstance.address,
             erc721BalanceThreshold
         );
+        // Default order parameters
+        const defaultOrderParams = {
+            exchangeAddress: exchangeInstance.address,
+            feeRecipientAddress,
+            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+            makerAssetAmount,
+            takerAssetAmount,
+            makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), DECIMALS_DEFAULT),
+            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(150), DECIMALS_DEFAULT),
+            senderAddress: compliantForwarderInstance.address,
+        };
+        const defaultOrderParams1 = {
+            makerAddress: compliantMakerAddress,
+            ...
+            defaultOrderParams,
+        }
+        const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(compliantMakerAddress)];
+        orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams1);
+        const defaultOrderParams2 = {
+            makerAddress: compliantMakerAddress2,
+            ...
+            defaultOrderParams,
+        }
+        const secondMakerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(compliantMakerAddress2)];
+        orderFactory2 = new OrderFactory(secondMakerPrivateKey, defaultOrderParams2);
         /*
         const compliantForwarderContract = new BalanceThresholdFilterContract(
             compliantForwarderInstance.abi,
@@ -189,6 +205,14 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         const compliantTakerEntityId = new BigNumber(2);
         await yesTokenInstance.mint2.sendTransactionAsync(
             compliantTakerAddress,
+            compliantTakerEntityId,
+            addressesCanControlTheirToken,
+            compliantTakerCountryCode,
+            [compliantTakerYesMark],
+            { from: owner },
+        );
+        await yesTokenInstance.mint2.sendTransactionAsync(
+            compliantMakerAddress2,
             compliantTakerEntityId,
             addressesCanControlTheirToken,
             compliantTakerCountryCode,
@@ -293,35 +317,6 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         // @TODO - greater than 1 balance
     });
 
-
-
-    describe('batchFillOrders', () => {
-        beforeEach(async () => {
-            erc20Balances = await erc20Wrapper.getBalancesAsync();
-            compliantSignedOrder = await orderFactory.newSignedOrderAsync();
-        });
-        it('should transfer the correct amounts when maker and taker are compliant', async () => {
-            let order2 = _.cloneDeep(compliantSignedOrder);
-            order2.makerAddress = `0x${_.reverse(compliantSignedOrder.makerAddress.slice(2).split('')).join('')}`;
-            const orders = [compliantSignedOrder, order2];
-            const fillAmounts = [new BigNumber(4), new BigNumber(4)];
-            const signatures = ["0xabcd", "0xabcd"];
-            const exchangeCalldata = exchangeInstance.batchFillOrders.getABIEncodedTransactionData(orders, fillAmounts, signatures);
-            console.log('*'.repeat(40), exchangeCalldata, '*'.repeat(40));
-            console.log('****** MAKER ADDRESS = ', compliantSignedOrder.makerAddress);
-
-            const txHash = await compliantForwarderInstance.executeTransaction.sendTransactionAsync(
-                compliantSignedFillOrderTx.salt,
-                compliantSignedFillOrderTx.signerAddress,
-                exchangeCalldata,
-                compliantSignedFillOrderTx.signature,
-            );
-            const decoder = new LogDecoder(web3Wrapper);
-            const tx = await decoder.getTxWithDecodedLogsAsync(txHash);
-            console.log(JSON.stringify(tx, null, 4));
-        });
-    });
-
     describe('batchFillOrdersNoThrow', () => {
     });
 
@@ -331,19 +326,23 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
     describe('batchFillOrKillOrders', () => {
     });
 
-    describe.only('fillOrder', () => {
+    describe.only('batchFillOrders', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             compliantSignedOrder = await orderFactory.newSignedOrderAsync();
+            compliantSignedOrder2 = await orderFactory2.newSignedOrderAsync();
         });
-        it('should transfer the correct amounts and validate both maker/taker when both maker and taker meet the balance threshold', async () => {
+        it('should transfer the correct amounts and validate both makers/taker when both maker and taker meet the balance threshold', async () => {
             // Execute a valid fill
-            const txReceipt = await balanceThresholdWrapper.fillOrderAsync(compliantSignedOrder, compliantTakerAddress, {takerAssetFillAmount});
+            const orders = [compliantSignedOrder, compliantSignedOrder2];
+            const takerAssetFillAmounts = [takerAssetFillAmount, takerAssetFillAmount];
+            const txReceipt = await balanceThresholdWrapper.batchFillOrdersAsync(orders, compliantTakerAddress, {takerAssetFillAmounts});
             // Assert validated addresses
-            const expectedValidatedAddresseses = [compliantSignedOrder.makerAddress, compliantSignedFillOrderTx.signerAddress];
+            const expectedValidatedAddresseses = [compliantSignedOrder.makerAddress, compliantSignedOrder2.makerAddress, compliantSignedFillOrderTx.signerAddress];
             assertValidatedAddressesLog(txReceipt, expectedValidatedAddresseses);
             // Check balances
             const newBalances = await erc20Wrapper.getBalancesAsync();
+            const cumulativeTakerAssetFillAmount = takerAssetFillAmount.times(2);
             const makerAssetFillAmount = takerAssetFillAmount
                 .times(compliantSignedOrder.makerAssetAmount)
                 .dividedToIntegerBy(compliantSignedOrder.takerAssetAmount);
@@ -352,7 +351,9 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
                 .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
             const takerFeePaid = compliantSignedOrder.takerFee
                 .times(makerAssetFillAmount)
-                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
+                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount)
+                .times(2);
+            // Maker #1
             expect(newBalances[compliantMakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
                 erc20Balances[compliantMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
@@ -362,47 +363,64 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
             expect(newBalances[compliantMakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[compliantMakerAddress][zrxToken.address].minus(makerFeePaid),
             );
-            expect(newBalances[compliantTakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[compliantTakerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
+            // Maker #2
+            expect(newBalances[compliantMakerAddress2][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress2][defaultMakerAssetAddress].minus(makerAssetFillAmount),
             );
+            expect(newBalances[compliantMakerAddress2][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress2][defaultTakerAssetAddress].add(takerAssetFillAmount),
+            );
+            expect(newBalances[compliantMakerAddress2][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress2][zrxToken.address].minus(makerFeePaid),
+            );
+            // Taker      
+            expect(newBalances[compliantTakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][defaultTakerAssetAddress].minus(cumulativeTakerAssetFillAmount),
+            );
+                        
             expect(newBalances[compliantTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                erc20Balances[compliantTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
+                erc20Balances[compliantTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount.times(2)),
             );
             expect(newBalances[compliantTakerAddress][zrxToken.address]).to.be.bignumber.equal(
                 erc20Balances[compliantTakerAddress][zrxToken.address].minus(takerFeePaid),
             );
+            // Fee recipient
             expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
+                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.times(2).add(takerFeePaid)),
             );
         });
-        it('should revert if maker does not meet the balance threshold', async () => {
-            // Create signed order with non-compliant maker address
+        it('should revert if one maker does not meet the balance threshold', async () => {
+            // Create order set with one non-compliant maker address
+            const takerAssetFillAmounts = [takerAssetFillAmount, takerAssetFillAmount];
             const signedOrderWithBadMakerAddress = await orderFactory.newSignedOrderAsync({
-                senderAddress: compliantForwarderInstance.address,
                 makerAddress: nonCompliantAddress
             });
+            const orders = [compliantSignedOrder, signedOrderWithBadMakerAddress];
             // Execute transaction
             return expectTransactionFailedAsync(
-                balanceThresholdWrapper.fillOrderAsync(
-                    signedOrderWithBadMakerAddress,
+                balanceThresholdWrapper.batchFillOrdersAsync(
+                    orders,
                     compliantTakerAddress, 
-                    {takerAssetFillAmount}
+                    {takerAssetFillAmounts}
                 ),
                 RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
             );
         });
         it('should revert if taker does not meet the balance threshold', async () => {
+            const orders = [compliantSignedOrder, compliantSignedOrder2];
+            const takerAssetFillAmounts = [takerAssetFillAmount, takerAssetFillAmount];
             return expectTransactionFailedAsync(
-                nonCompliantBalanceThresholdWrapper.fillOrderAsync(
-                    compliantSignedOrder,
+                nonCompliantBalanceThresholdWrapper.batchFillOrdersAsync(
+                    orders,
                     nonCompliantAddress, 
-                    {takerAssetFillAmount}
+                    {takerAssetFillAmounts}
                 ),
                 RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
             );
         });
     });
 
+    /*
     describe.only('fillOrderNoThrow', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
@@ -476,6 +494,236 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
     });
 
     describe.only('fillOrKillOrder', () => {
+        beforeEach(async () => {
+            erc20Balances = await erc20Wrapper.getBalancesAsync();
+            compliantSignedOrder = await orderFactory.newSignedOrderAsync();
+        });
+        it('should transfer the correct amounts and validate both maker/taker when both maker and taker meet the balance threshold', async () => {
+            // Execute a valid fill
+            const takerAssetFillAmount_ = compliantSignedOrder.takerAssetAmount;
+            const txReceipt = await balanceThresholdWrapper.fillOrKillOrderAsync(compliantSignedOrder, compliantTakerAddress, {takerAssetFillAmount: takerAssetFillAmount_});
+            // Assert validated addresses
+            const expectedValidatedAddresseses = [compliantSignedOrder.makerAddress, compliantSignedFillOrderTx.signerAddress];
+            assertValidatedAddressesLog(txReceipt, expectedValidatedAddresseses);
+            // Check balances
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const makerAssetFillAmount = takerAssetFillAmount_
+                .times(compliantSignedOrder.makerAssetAmount)
+                .dividedToIntegerBy(compliantSignedOrder.takerAssetAmount);
+            const makerFeePaid = compliantSignedOrder.makerFee
+                .times(makerAssetFillAmount)
+                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
+            const takerFeePaid = compliantSignedOrder.takerFee
+                .times(makerAssetFillAmount)
+                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
+            expect(newBalances[compliantMakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
+            );
+            expect(newBalances[compliantMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount_),
+            );
+            expect(newBalances[compliantMakerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][zrxToken.address].minus(makerFeePaid),
+            );
+            expect(newBalances[compliantTakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount_),
+            );
+            expect(newBalances[compliantTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
+            );
+            expect(newBalances[compliantTakerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][zrxToken.address].minus(takerFeePaid),
+            );
+            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
+            );
+        });
+        it('should revert if maker does not meet the balance threshold', async () => {
+            // Create signed order with non-compliant maker address
+            const signedOrderWithBadMakerAddress = await orderFactory.newSignedOrderAsync({
+                senderAddress: compliantForwarderInstance.address,
+                makerAddress: nonCompliantAddress
+            });
+            // Execute transaction
+            return expectTransactionFailedAsync(
+                balanceThresholdWrapper.fillOrKillOrderAsync(
+                    signedOrderWithBadMakerAddress,
+                    compliantTakerAddress, 
+                    {takerAssetFillAmount}
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+            );
+        });
+        it('should revert if taker does not meet the balance threshold', async () => {
+            return expectTransactionFailedAsync(
+                nonCompliantBalanceThresholdWrapper.fillOrKillOrderAsync(
+                    compliantSignedOrder,
+                    nonCompliantAddress, 
+                    {takerAssetFillAmount}
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+            );
+        });
+        it('should revert if order is not fully filled', async () => {
+            const tooBigTakerAssetFillAmount = compliantSignedOrder.takerAssetAmount.times(2);
+            return expectTransactionFailedAsync(
+                balanceThresholdWrapper.fillOrKillOrderAsync(
+                    compliantSignedOrder,
+                    compliantTakerAddress, 
+                    {takerAssetFillAmount: tooBigTakerAssetFillAmount}
+                ),
+                RevertReason.FailedExecution
+            );
+        });
+    });
+
+    */
+
+    describe('fillOrder', () => {
+        beforeEach(async () => {
+            erc20Balances = await erc20Wrapper.getBalancesAsync();
+            compliantSignedOrder = await orderFactory.newSignedOrderAsync();
+        });
+        it('should transfer the correct amounts and validate both maker/taker when both maker and taker meet the balance threshold', async () => {
+            // Execute a valid fill
+            const txReceipt = await balanceThresholdWrapper.fillOrderAsync(compliantSignedOrder, compliantTakerAddress, {takerAssetFillAmount});
+            // Assert validated addresses
+            const expectedValidatedAddresseses = [compliantSignedOrder.makerAddress, compliantSignedFillOrderTx.signerAddress];
+            assertValidatedAddressesLog(txReceipt, expectedValidatedAddresseses);
+            // Check balances
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const makerAssetFillAmount = takerAssetFillAmount
+                .times(compliantSignedOrder.makerAssetAmount)
+                .dividedToIntegerBy(compliantSignedOrder.takerAssetAmount);
+            const makerFeePaid = compliantSignedOrder.makerFee
+                .times(makerAssetFillAmount)
+                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
+            const takerFeePaid = compliantSignedOrder.takerFee
+                .times(makerAssetFillAmount)
+                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
+            expect(newBalances[compliantMakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
+            );
+            expect(newBalances[compliantMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+            );
+            expect(newBalances[compliantMakerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][zrxToken.address].minus(makerFeePaid),
+            );
+            expect(newBalances[compliantTakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
+            );
+            expect(newBalances[compliantTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
+            );
+            expect(newBalances[compliantTakerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][zrxToken.address].minus(takerFeePaid),
+            );
+            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
+            );
+        });
+        it('should revert if maker does not meet the balance threshold', async () => {
+            // Create signed order with non-compliant maker address
+            const signedOrderWithBadMakerAddress = await orderFactory.newSignedOrderAsync({
+                senderAddress: compliantForwarderInstance.address,
+                makerAddress: nonCompliantAddress
+            });
+            // Execute transaction
+            return expectTransactionFailedAsync(
+                balanceThresholdWrapper.fillOrderAsync(
+                    signedOrderWithBadMakerAddress,
+                    compliantTakerAddress, 
+                    {takerAssetFillAmount}
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+            );
+        });
+        it('should revert if taker does not meet the balance threshold', async () => {
+            return expectTransactionFailedAsync(
+                nonCompliantBalanceThresholdWrapper.fillOrderAsync(
+                    compliantSignedOrder,
+                    nonCompliantAddress, 
+                    {takerAssetFillAmount}
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+            );
+        });
+    });
+
+    describe('fillOrderNoThrow', () => {
+        beforeEach(async () => {
+            erc20Balances = await erc20Wrapper.getBalancesAsync();
+            compliantSignedOrder = await orderFactory.newSignedOrderAsync();
+        });
+        it('should transfer the correct amounts and validate both maker/taker when both maker and taker meet the balance threshold', async () => {
+            // Execute a valid fill
+            const txReceipt = await balanceThresholdWrapper.fillOrderNoThrowAsync(compliantSignedOrder, compliantTakerAddress, {takerAssetFillAmount});
+            // Assert validated addresses
+            const expectedValidatedAddresseses = [compliantSignedOrder.makerAddress, compliantSignedFillOrderTx.signerAddress];
+            assertValidatedAddressesLog(txReceipt, expectedValidatedAddresseses);
+            // Check balances
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            const makerAssetFillAmount = takerAssetFillAmount
+                .times(compliantSignedOrder.makerAssetAmount)
+                .dividedToIntegerBy(compliantSignedOrder.takerAssetAmount);
+            const makerFeePaid = compliantSignedOrder.makerFee
+                .times(makerAssetFillAmount)
+                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
+            const takerFeePaid = compliantSignedOrder.takerFee
+                .times(makerAssetFillAmount)
+                .dividedToIntegerBy(compliantSignedOrder.makerAssetAmount);
+            expect(newBalances[compliantMakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
+            );
+            expect(newBalances[compliantMakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][defaultTakerAssetAddress].add(takerAssetFillAmount),
+            );
+            expect(newBalances[compliantMakerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[compliantMakerAddress][zrxToken.address].minus(makerFeePaid),
+            );
+            expect(newBalances[compliantTakerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
+            );
+            expect(newBalances[compliantTakerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][defaultMakerAssetAddress].add(makerAssetFillAmount),
+            );
+            expect(newBalances[compliantTakerAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[compliantTakerAddress][zrxToken.address].minus(takerFeePaid),
+            );
+            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
+                erc20Balances[feeRecipientAddress][zrxToken.address].add(makerFeePaid.add(takerFeePaid)),
+            );
+        });
+        it('should revert if maker does not meet the balance threshold', async () => {
+            // Create signed order with non-compliant maker address
+            const signedOrderWithBadMakerAddress = await orderFactory.newSignedOrderAsync({
+                senderAddress: compliantForwarderInstance.address,
+                makerAddress: nonCompliantAddress
+            });
+            // Execute transaction
+            return expectTransactionFailedAsync(
+                balanceThresholdWrapper.fillOrderNoThrowAsync(
+                    signedOrderWithBadMakerAddress,
+                    compliantTakerAddress, 
+                    {takerAssetFillAmount}
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+            );
+        });
+        it('should revert if taker does not meet the balance threshold', async () => {
+            return expectTransactionFailedAsync(
+                nonCompliantBalanceThresholdWrapper.fillOrderNoThrowAsync(
+                    compliantSignedOrder,
+                    nonCompliantAddress, 
+                    {takerAssetFillAmount}
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+            );
+        });
+    });
+
+    describe('fillOrKillOrder', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             compliantSignedOrder = await orderFactory.newSignedOrderAsync();
