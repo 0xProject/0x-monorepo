@@ -1,4 +1,4 @@
-import { addressUtils } from '@0x/utils';
+import { addressUtils, BigNumber } from '@0x/utils';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -120,10 +120,10 @@ export const marshaller = {
         }
         const txData = {
             ...txDataRpc,
-            value: !_.isUndefined(txDataRpc.value) ? utils.convertHexToNumber(txDataRpc.value) : undefined,
+            value: !_.isUndefined(txDataRpc.value) ? utils.convertAmountToBigNumber(txDataRpc.value) : undefined,
             gas: !_.isUndefined(txDataRpc.gas) ? utils.convertHexToNumber(txDataRpc.gas) : undefined,
-            gasPrice: !_.isUndefined(txDataRpc.gasPrice) ? utils.convertHexToNumber(txDataRpc.gasPrice) : undefined,
-            nonce: !_.isUndefined(txDataRpc.nonce) ? utils.convertHexToNumber(txDataRpc.nonce) : undefined,
+            gasPrice: !_.isUndefined(txDataRpc.gasPrice) ? utils.convertAmountToBigNumber(txDataRpc.gasPrice) : undefined,
+            nonce: !_.isUndefined(txDataRpc.nonce) ? utils.convertHexToNumber(txDataRpc.nonce) : undefined, , , , , , , ,
         };
         return txData;
     },
