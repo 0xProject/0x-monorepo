@@ -5,7 +5,7 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import 'mocha';
 
 import { ExchangeFillEvent } from '../../../src/entities';
-import { _convertToExchangeFillEvent } from '../../../src/parsers/events';
+import { _convertToExchangeFillEvent } from '../../../src/parsers/events/exchange_events';
 import { chaiSetup } from '../../utils/chai_setup';
 
 chaiSetup.configure();
