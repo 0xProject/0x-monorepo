@@ -1,4 +1,4 @@
-## Contracts interfaces
+## Contract interfaces
 
 Smart contract interfaces of the 0x protocol.
 
