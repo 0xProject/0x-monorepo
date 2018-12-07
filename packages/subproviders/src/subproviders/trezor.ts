@@ -22,7 +22,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
     private readonly _publicKeyPath: string;
     private _cachedAccounts: string[];
     /**
-     * Instantiates a TrezorSubprovider. Defaults to derivationPath set to `44'/60'/0'`.
+     * Instantiates a TrezorSubprovider. Defaults to private key path set to `44'/60'/0'`.
      * @return TrezorSubprovider instance
      */
     constructor() {
@@ -31,7 +31,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         this._cachedAccounts = [];
     }
     /**
-     * Retrieve a users Trezor account. The accounts are derived private key path, This method
+     * Retrieve a users Trezor account. The accounts are private key path derived, This method
      * is automatically called when issuing a `eth_accounts` JSON RPC request via your providerEngine
      * instance.
      * @return An array of accounts
@@ -127,7 +127,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         assert.isHexString('data', data);
         assert.isETHAddressHex('address', address);
         const accountIndex = this._cachedAccounts.indexOf(address);
-        const response: TrezorConnectResponse = TrezorConnect.ethereumSignMessage({ path: this._publicKeyPath + `${accountIndex}`, message: data, hex: true });
+        const response: TrezorConnectResponse = TrezorConnect.ethereumSignMessage({ path: this._publicKeyPath + `${accountIndex}`, message: data, hex: false });
 
         if (response.success) {
             const payload: TrezorSignMssgResponsePayload = response.payload;
