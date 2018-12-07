@@ -123,7 +123,7 @@ export const marshaller = {
             value: !_.isUndefined(txDataRpc.value) ? utils.convertAmountToBigNumber(txDataRpc.value) : undefined,
             gas: !_.isUndefined(txDataRpc.gas) ? utils.convertHexToNumber(txDataRpc.gas) : undefined,
             gasPrice: !_.isUndefined(txDataRpc.gasPrice) ? utils.convertAmountToBigNumber(txDataRpc.gasPrice) : undefined,
-            nonce: !_.isUndefined(txDataRpc.nonce) ? utils.convertHexToNumber(txDataRpc.nonce) : undefined, , , , , , , ,
+            nonce: !_.isUndefined(txDataRpc.nonce) ? utils.convertHexToNumber(txDataRpc.nonce) : undefined,
         };
         return txData;
     },
