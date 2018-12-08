@@ -227,6 +227,10 @@ export class BalanceThresholdWrapper {
     public getExchangeAddress(): string {
         return this._exchange.address;
     }
+    // Exchange functions
+    //abiEncodeFillOrder
+    //getFillOrderResultsAsync
+    //
     private async _executeTransaction(abiEncodedExchangeTxData: string, from: string, gas?: number): Promise<TransactionReceiptWithDecodedLogs> {
         const signedExchangeTx = this._signerTransactionFactory.newSignedTransaction(abiEncodedExchangeTxData);
         const txOpts = _.isUndefined(gas) ? {from} : {from, gas};

@@ -22,17 +22,20 @@ import { chaiSetup } from '../utils/chai_setup';
 import { constants } from '../utils/constants';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ExchangeWrapper } from '../utils/exchange_wrapper';
+import { MatchOrderTester } from '../utils/match_order_tester';
 import { OrderFactory } from '../utils/order_factory';
 import { orderUtils } from '../utils/order_utils';
 import { TransactionFactory } from '../utils/transaction_factory';
 import { BalanceThresholdWrapper } from '../utils/balance_threshold_wrapper';
 import { ContractName, ERC20BalancesByOwner, SignedTransaction } from '../utils/types';
 import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
+import { TestExchangeInternalsContract } from '../../generated-wrappers/test_exchange_internals';
 
 import { MethodAbi, AbiDefinition } from 'ethereum-types';
 import { AbiEncoder } from '@0x/utils';
 import { Method } from '@0x/utils/lib/src/abi_encoder';
 import { LogDecoder } from '../utils/log_decoder';
+import { ERC721Wrapper } from '../utils/erc721_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -70,6 +73,7 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
     let compliantSignedFillOrderTx: SignedTransaction;
 
     let logDecoder: LogDecoder;
+    let exchangeInternals: TestExchangeInternalsContract;
 
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(500), DECIMALS_DEFAULT);
     const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), DECIMALS_DEFAULT);
@@ -263,6 +267,13 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         balanceThresholdWrapper = new BalanceThresholdWrapper(compliantForwarderInstance, exchangeInstance, new TransactionFactory(takerPrivateKey, exchangeInstance.address), provider);
         const nonCompliantPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(nonCompliantAddress)];
         nonCompliantBalanceThresholdWrapper = new BalanceThresholdWrapper(compliantForwarderInstance, exchangeInstance, new TransactionFactory(nonCompliantPrivateKey, exchangeInstance.address), provider);
+  
+        // Instantiate internal exchange contract
+        exchangeInternals = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
+            artifacts.TestExchangeInternals,
+            provider,
+            txDefaults,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -1022,7 +1033,7 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         });
     });
 
-    describe.only('marketBuyOrders', () => {
+    describe('marketBuyOrders', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             compliantSignedOrder = await orderFactory.newSignedOrderAsync();
@@ -1115,7 +1126,7 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         });
     });
 
-    describe.only('marketBuyOrdersNoThrowAsync', () => {
+    describe('marketBuyOrdersNoThrowAsync', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             compliantSignedOrder = await orderFactory.newSignedOrderAsync();
@@ -1208,7 +1219,96 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         });
     });
     
-    describe('matchOrders', () => {
+    describe.only('matchOrders', () => {
+        beforeEach(async () => {
+            erc20Balances = await erc20Wrapper.getBalancesAsync();
+            compliantSignedOrder = await orderFactory.newSignedOrderAsync();
+            compliantSignedOrder2 = await orderFactory2.newSignedOrderAsync();
+        });
+        it.only('Should transfer correct amounts when both makers and taker meet the balance threshold', async () => {
+            // Test values/results taken from Match Orders test:
+            // 'Should transfer correct amounts when right order is fully filled and values pass isRoundingErrorFloor but fail isRoundingErrorCeil'
+            // Create orders to match
+            const signedOrderLeft = await orderFactory.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(17), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(98), 0),
+                makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
+                feeRecipientAddress: feeRecipientAddress,
+            });
+            const signedOrderRight = await orderFactory2.newSignedOrderAsync({
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
+                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
+                feeRecipientAddress: feeRecipientAddress,
+            });
+            // Compute expected transfer amounts
+            const expectedTransferAmounts = {
+                // Left Maker
+                amountSoldByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                amountBoughtByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
+                feePaidByLeftMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16), // 76.47%
+                // Right Maker
+                amountSoldByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
+                amountBoughtByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
+                feePaidByRightMaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+                // Taker
+                amountReceivedByTaker: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), 0),
+                feePaidByTakerLeft: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16), // 76.53%
+                feePaidByTakerRight: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 16), // 100%
+            };
+            const txReceipt = await balanceThresholdWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, compliantTakerAddress);
+            // Assert validated addresses
+            const expectedValidatedAddresseses = [signedOrderLeft.makerAddress, signedOrderRight.makerAddress, compliantTakerAddress];
+            assertValidatedAddressesLog(txReceipt, expectedValidatedAddresseses);
+            // Check balances
+            const newBalances = await erc20Wrapper.getBalancesAsync();
+            expect(
+                newBalances[signedOrderLeft.makerAddress][defaultMakerAssetAddress],
+                'Checking left maker egress ERC20 account balance',
+            ).to.be.bignumber.equal(erc20Balances[signedOrderLeft.makerAddress][defaultMakerAssetAddress].sub(expectedTransferAmounts.amountSoldByLeftMaker));
+            expect(
+                newBalances[signedOrderRight.makerAddress][defaultTakerAssetAddress],
+                'Checking right maker ingress ERC20 account balance',
+            ).to.be.bignumber.equal(erc20Balances[signedOrderRight.makerAddress][defaultTakerAssetAddress].sub(expectedTransferAmounts.amountSoldByRightMaker));
+            expect(
+                newBalances[compliantTakerAddress][defaultMakerAssetAddress],
+                'Checking taker ingress ERC20 account balance',
+            ).to.be.bignumber.equal(erc20Balances[compliantTakerAddress][defaultMakerAssetAddress].add(expectedTransferAmounts.amountReceivedByTaker));
+            expect(
+                newBalances[signedOrderLeft.makerAddress][defaultTakerAssetAddress],
+                'Checking left maker ingress ERC20 account balance',
+            ).to.be.bignumber.equal(erc20Balances[signedOrderLeft.makerAddress][defaultTakerAssetAddress].add(expectedTransferAmounts.amountBoughtByLeftMaker));
+            expect(
+                newBalances[signedOrderRight.makerAddress][defaultMakerAssetAddress],
+                'Checking right maker egress ERC20 account balance',
+            ).to.be.bignumber.equal(
+                erc20Balances[signedOrderRight.makerAddress][defaultMakerAssetAddress].add(expectedTransferAmounts.amountBoughtByRightMaker),
+            );
+            // Paid fees
+            expect(
+                newBalances[signedOrderLeft.makerAddress][zrxToken.address],
+                'Checking left maker egress ERC20 account fees',
+            ).to.be.bignumber.equal(erc20Balances[signedOrderLeft.makerAddress][zrxToken.address].minus(expectedTransferAmounts.feePaidByLeftMaker));
+            expect(
+                newBalances[signedOrderRight.makerAddress][zrxToken.address],
+                'Checking right maker egress ERC20 account fees',
+            ).to.be.bignumber.equal(erc20Balances[signedOrderRight.makerAddress][zrxToken.address].minus(expectedTransferAmounts.feePaidByRightMaker));
+            expect(
+                newBalances[compliantTakerAddress][zrxToken.address],
+                'Checking taker egress ERC20 account fees',
+            ).to.be.bignumber.equal(erc20Balances[compliantTakerAddress][zrxToken.address].minus(expectedTransferAmounts.feePaidByTakerLeft).sub(expectedTransferAmounts.feePaidByTakerRight));
+            // Received fees
+            expect(
+                newBalances[signedOrderLeft.feeRecipientAddress][zrxToken.address],
+                'Checking left fee recipient ingress ERC20 account fees',
+            ).to.be.bignumber.equal(
+                erc20Balances[feeRecipientAddress][zrxToken.address].add(expectedTransferAmounts.feePaidByLeftMaker).add(expectedTransferAmounts.feePaidByRightMaker).add(expectedTransferAmounts.feePaidByTakerLeft).add(expectedTransferAmounts.feePaidByTakerRight),
+            );
+        });
     });
 
     describe('cancelOrder', () => {

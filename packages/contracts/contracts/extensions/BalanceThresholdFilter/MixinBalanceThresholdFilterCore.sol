@@ -133,7 +133,7 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
              ///      the running list of addresses to validate.
              /// @param orderParamIndex - Index of the order in the Exchange function's signature
             function recordMakerAddressFromOrder(orderParamIndex) {
-                let orderPtr := loadExchangeData(orderParamIndex)
+                let orderPtr := loadExchangeData(mul(orderParamIndex, 0x20))
                 let makerAddress := loadExchangeData(orderPtr)
                 recordAddressToValidate(makerAddress)
             }
@@ -143,7 +143,7 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
             ///      the running list of addresses to validate.
             /// @param orderArrayParamIndex - Index of the order array in the Exchange function's signature
             function recordMakerAddressesFromOrderArray(orderArrayParamIndex) {
-                let orderArrayPtr := loadExchangeData(orderArrayParamIndex)
+                let orderArrayPtr := loadExchangeData(mul(orderArrayParamIndex, 0x20))
                 let orderArrayLength := loadExchangeData(orderArrayPtr)
                 let orderArrayElementPtr := add(orderArrayPtr, 0x20)
                 let orderArrayElementEndPtr := add(orderArrayElementPtr, mul(orderArrayLength, 0x20))
@@ -258,7 +258,7 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
             // This is to avoid corruption when making calls in the loop below.
             let freeMemPtr := addressesToValidateElementEndPtr
             mstore(0x40, freeMemPtr)
-
+/*
             // Validate addresses
             let thresholdAssetAddress := sload(THRESHOLD_ASSET_slot)
             let thresholdBalance := sload(THRESHOLD_BALANCE_slot)
@@ -307,7 +307,7 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
                     // 64  -- strlen(AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD) rounded up to nearest 32-byte word.
                     revert(0, 132)
                 }
-            }
+            }*/
 
             // Record validated addresses
             validatedAddresses := addressesToValidate
