@@ -1225,7 +1225,7 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
             compliantSignedOrder = await orderFactory.newSignedOrderAsync();
             compliantSignedOrder2 = await orderFactory2.newSignedOrderAsync();
         });
-        it.only('Should transfer correct amounts when both makers and taker meet the balance threshold', async () => {
+        it('Should transfer correct amounts when both makers and taker meet the balance threshold', async () => {
             // Test values/results taken from Match Orders test:
             // 'Should transfer correct amounts when right order is fully filled and values pass isRoundingErrorFloor but fail isRoundingErrorCeil'
             // Create orders to match
@@ -1307,6 +1307,48 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
                 'Checking left fee recipient ingress ERC20 account fees',
             ).to.be.bignumber.equal(
                 erc20Balances[feeRecipientAddress][zrxToken.address].add(expectedTransferAmounts.feePaidByLeftMaker).add(expectedTransferAmounts.feePaidByRightMaker).add(expectedTransferAmounts.feePaidByTakerLeft).add(expectedTransferAmounts.feePaidByTakerRight),
+            );
+        });
+        it('should revert if left maker does not meet the balance threshold', async () => {
+            // Create signed order with non-compliant maker address
+            const signedOrderWithBadMakerAddress = await orderFactory.newSignedOrderAsync({
+                senderAddress: compliantForwarderInstance.address,
+                makerAddress: nonCompliantAddress
+            });
+            // Execute transaction
+            return expectTransactionFailedAsync(
+                balanceThresholdWrapper.matchOrdersAsync(
+                    compliantSignedOrder,
+                    signedOrderWithBadMakerAddress,
+                    compliantTakerAddress, 
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+            );
+        });
+        it('should revert if right maker does not meet the balance threshold', async () => {
+            // Create signed order with non-compliant maker address
+            const signedOrderWithBadMakerAddress = await orderFactory.newSignedOrderAsync({
+                senderAddress: compliantForwarderInstance.address,
+                makerAddress: nonCompliantAddress
+            });
+            // Execute transaction
+            return expectTransactionFailedAsync(
+                balanceThresholdWrapper.matchOrdersAsync(
+                    signedOrderWithBadMakerAddress,
+                    compliantSignedOrder,
+                    compliantTakerAddress, 
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
+            );
+        });
+        it('should revert if taker does not meet the balance threshold', async () => {
+            return expectTransactionFailedAsync(
+                nonCompliantBalanceThresholdWrapper.matchOrdersAsync(
+                    compliantSignedOrder,
+                    compliantSignedOrder,
+                    nonCompliantAddress, 
+                ),
+                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold
             );
         });
     });
