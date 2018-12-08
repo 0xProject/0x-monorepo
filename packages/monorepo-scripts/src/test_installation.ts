@@ -98,7 +98,7 @@ async function testInstallPackageAsync(
     const lastChangelogVersion = JSON.parse(fs.readFileSync(changelogPath).toString())[0].version;
     const packageName = installablePackage.packageJson.name;
     utils.log(`Testing ${packageName}@${lastChangelogVersion}`);
-    const packageDirName = path.join(...(packageName + '-test').split('/'));
+    const packageDirName = path.join(...`${packageName}-test`.split('/'));
     // NOTE(fabio): The `testDirectory` needs to be somewhere **outside** the monorepo root directory.
     // Otherwise, it will have access to the hoisted `node_modules` directory and the Typescript missing
     // type errors will not be caught.

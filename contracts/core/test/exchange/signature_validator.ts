@@ -136,7 +136,7 @@ describe('MixinSignatureValidator', () => {
 
         it('should revert when signature type is unsupported', async () => {
             const unsupportedSignatureType = SignatureType.NSignatureTypes;
-            const unsupportedSignatureHex = '0x' + Buffer.from([unsupportedSignatureType]).toString('hex');
+            const unsupportedSignatureHex = `0x${Buffer.from([unsupportedSignatureType]).toString('hex')}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             return expectContractCallFailedAsync(
                 signatureValidator.publicIsValidSignature.callAsync(
@@ -149,7 +149,7 @@ describe('MixinSignatureValidator', () => {
         });
 
         it('should revert when SignatureType=Illegal', async () => {
-            const unsupportedSignatureHex = '0x' + Buffer.from([SignatureType.Illegal]).toString('hex');
+            const unsupportedSignatureHex = `0x${Buffer.from([SignatureType.Illegal]).toString('hex')}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             return expectContractCallFailedAsync(
                 signatureValidator.publicIsValidSignature.callAsync(
@@ -162,7 +162,7 @@ describe('MixinSignatureValidator', () => {
         });
 
         it('should return false when SignatureType=Invalid and signature has a length of zero', async () => {
-            const signatureHex = '0x' + Buffer.from([SignatureType.Invalid]).toString('hex');
+            const signatureHex = `0x${Buffer.from([SignatureType.Invalid]).toString('hex')}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
                 orderHashHex,

@@ -70,7 +70,7 @@ describe('Order hashing', () => {
         });
         it('returns true if order hash is correct', () => {
             const orderHashLength = 65;
-            const isValid = orderHashUtils.isValidOrderHash('0x' + Array(orderHashLength).join('0'));
+            const isValid = orderHashUtils.isValidOrderHash(`0x${Array(orderHashLength).join('0')}`);
             expect(isValid).to.be.true();
         });
     });

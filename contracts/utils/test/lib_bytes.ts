@@ -25,7 +25,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // BUG: Ideally we would use Buffer.from(memory).toString('hex')
 // https://github.com/Microsoft/TypeScript/issues/23155
-const toHex = (buf: Uint8Array): string => buf.reduce((a, v) => a + ('00' + v.toString(16)).slice(-2), '0x');
+const toHex = (buf: Uint8Array): string => buf.reduce((a, v) => a + `00${v.toString(16)}`.slice(-2), '0x');
 
 const fromHex = (str: string): Uint8Array => Uint8Array.from(Buffer.from(str.slice(2), 'hex'));
 
