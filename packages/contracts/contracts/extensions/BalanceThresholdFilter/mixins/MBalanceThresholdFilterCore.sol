@@ -43,6 +43,7 @@ contract MBalanceThresholdFilterCore {
     ///      the hold at least `BALANCE_THRESHOLD` of the asset `THRESHOLD_ASSET` OR 
     ///      the exchange function is a cancellation.
     ///      Supported Exchange functions:
+    ///         - batchFillOrders
     ///         - batchFillOrdersNoThrow
     ///         - batchFillOrKillOrders
     ///         - fillOrder
