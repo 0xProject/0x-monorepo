@@ -61,12 +61,19 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
     }
 
     private _renderAmountsSection(): React.ReactNode {
-        return (
-            <Container>
-                <Container marginBottom="5px">{this._renderPlaceholderOrAmount(this._renderEthAmount)}</Container>
-                <Container opacity={0.7}>{this._renderPlaceholderOrAmount(this._renderDollarAmount)}</Container>
-            </Container>
-        );
+        if (
+            _.isUndefined(this.props.totalEthBaseUnitAmount) &&
+            this.props.quoteRequestState !== AsyncProcessState.Pending
+        ) {
+            return null;
+        } else {
+            return (
+                <Container>
+                    <Container marginBottom="5px">{this._renderPlaceholderOrAmount(this._renderEthAmount)}</Container>
+                    <Container opacity={0.7}>{this._renderPlaceholderOrAmount(this._renderDollarAmount)}</Container>
+                </Container>
+            );
+        }
     }
 
     private _renderIcon(): React.ReactNode {
