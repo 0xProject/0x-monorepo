@@ -400,7 +400,7 @@ export class Compiler {
                  * while others are absolute ("Token.sol", "@0x/contracts/Wallet.sol")
                  * And we need to append the base path for relative imports.
                  */
-                importPath = path.resolve('/' + contractFolder, importPath).replace('/', '');
+                importPath = path.resolve(`/${contractFolder}`, importPath).replace('/', '');
             }
 
             if (_.isUndefined(sourcesToAppendTo[importPath])) {

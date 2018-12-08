@@ -1,9 +1,9 @@
 import { fetchAsync, logUtils } from '@0x/utils';
 
 const PARADEX_BASE_URL = 'https://api.paradex.io/consumer/v0';
-const ACTIVE_MARKETS_URL = PARADEX_BASE_URL + '/markets';
-const ORDERBOOK_ENDPOINT = PARADEX_BASE_URL + '/orderbook';
-const TOKEN_INFO_ENDPOINT = PARADEX_BASE_URL + '/tokens';
+const ACTIVE_MARKETS_URL = `${PARADEX_BASE_URL}/markets`;
+const ORDERBOOK_ENDPOINT = `${PARADEX_BASE_URL}/orderbook`;
+const TOKEN_INFO_ENDPOINT = `${PARADEX_BASE_URL}/tokens`;
 export const PARADEX_SOURCE = 'paradex';
 
 export type ParadexActiveMarketsResponse = ParadexMarket[];

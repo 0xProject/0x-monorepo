@@ -116,7 +116,7 @@ export class BloxySource {
             },
         });
         if (isError(resp.data)) {
-            throw new Error('Error in Bloxy API response: ' + resp.data.error);
+            throw new Error(`Error in Bloxy API response: ${resp.data.error}`);
         }
         return resp.data;
     }
