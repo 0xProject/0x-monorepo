@@ -1,26 +1,25 @@
 # sra_client.DefaultApi
 
-All URIs are relative to *http://localhost*
+All URIs are relative to _http://localhost_
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**get_asset_pairs**](DefaultApi.md#get_asset_pairs) | **GET** /v2/asset_pairs | 
-[**get_fee_recipients**](DefaultApi.md#get_fee_recipients) | **GET** /v2/fee_recipients | 
-[**get_order**](DefaultApi.md#get_order) | **GET** /v2/order/{orderHash} | 
-[**get_order_config**](DefaultApi.md#get_order_config) | **POST** /v2/order_config | 
-[**get_orderbook**](DefaultApi.md#get_orderbook) | **GET** /v2/orderbook | 
-[**get_orders**](DefaultApi.md#get_orders) | **GET** /v2/orders | 
-[**post_order**](DefaultApi.md#post_order) | **POST** /v2/order | 
-
+| Method                                                     | HTTP request                  | Description |
+| ---------------------------------------------------------- | ----------------------------- | ----------- |
+| [**get_asset_pairs**](DefaultApi.md#get_asset_pairs)       | **GET** /v2/asset_pairs       |
+| [**get_fee_recipients**](DefaultApi.md#get_fee_recipients) | **GET** /v2/fee_recipients    |
+| [**get_order**](DefaultApi.md#get_order)                   | **GET** /v2/order/{orderHash} |
+| [**get_order_config**](DefaultApi.md#get_order_config)     | **POST** /v2/order_config     |
+| [**get_orderbook**](DefaultApi.md#get_orderbook)           | **GET** /v2/orderbook         |
+| [**get_orders**](DefaultApi.md#get_orders)                 | **GET** /v2/orders            |
+| [**post_order**](DefaultApi.md#post_order)                 | **POST** /v2/order            |
 
 # **get_asset_pairs**
+
 > RelayerApiAssetDataPairsResponseSchema get_asset_pairs(asset_data_a=asset_data_a, asset_data_b=asset_data_b, network_id=network_id, page=page, per_page=per_page)
-
-
 
 Retrieves a list of available asset pairs and the information required to trade them (in any order). Setting only `assetDataA` or `assetDataB` returns pairs filtered by that asset only.
 
 ### Example
+
 ```python
 from __future__ import print_function
 import time
@@ -45,13 +44,13 @@ except ApiException as e:
 
 ### Parameters
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **asset_data_a** | **str**| The assetData value for the first asset in the pair. | [optional] 
- **asset_data_b** | **str**| The assetData value for the second asset in the pair. | [optional] 
- **network_id** | **float**| The id of the Ethereum network | [optional] [default to 1]
- **page** | **float**| The number of the page to request in the collection. | [optional] [default to 1]
- **per_page** | **float**| The number of records to return per page. | [optional] [default to 100]
+| Name             | Type      | Description                                           | Notes                      |
+| ---------------- | --------- | ----------------------------------------------------- | -------------------------- |
+| **asset_data_a** | **str**   | The assetData value for the first asset in the pair.  | [optional]                 |
+| **asset_data_b** | **str**   | The assetData value for the second asset in the pair. | [optional]                 |
+| **network_id**   | **float** | The id of the Ethereum network                        | [optional][default to 1]   |
+| **page**         | **float** | The number of the page to request in the collection.  | [optional][default to 1]   |
+| **per_page**     | **float** | The number of records to return per page.             | [optional][default to 100] |
 
 ### Return type
 
@@ -63,19 +62,19 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+*   **Content-Type**: Not defined
+*   **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_fee_recipients**
+
 > RelayerApiFeeRecipientsResponseSchema get_fee_recipients(network_id=network_id, page=page, per_page=per_page)
-
-
 
 Retrieves a collection of all fee recipient addresses for a relayer. This endpoint should be [paginated](#section/Pagination).
 
 ### Example
+
 ```python
 from __future__ import print_function
 import time
@@ -98,11 +97,11 @@ except ApiException as e:
 
 ### Parameters
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **network_id** | **float**| The id of the Ethereum network | [optional] [default to 1]
- **page** | **float**| The number of the page to request in the collection. | [optional] [default to 1]
- **per_page** | **float**| The number of records to return per page. | [optional] [default to 100]
+| Name           | Type      | Description                                          | Notes                      |
+| -------------- | --------- | ---------------------------------------------------- | -------------------------- |
+| **network_id** | **float** | The id of the Ethereum network                       | [optional][default to 1]   |
+| **page**       | **float** | The number of the page to request in the collection. | [optional][default to 1]   |
+| **per_page**   | **float** | The number of records to return per page.            | [optional][default to 100] |
 
 ### Return type
 
@@ -114,19 +113,19 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+*   **Content-Type**: Not defined
+*   **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_order**
+
 > RelayerApiOrderSchema get_order(order_hash, network_id=network_id)
-
-
 
 Retrieves the 0x order with meta info that is associated with the hash.
 
 ### Example
+
 ```python
 from __future__ import print_function
 import time
@@ -148,10 +147,10 @@ except ApiException as e:
 
 ### Parameters
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **order_hash** | **str**| The hash of the desired 0x order. | 
- **network_id** | **float**| The id of the Ethereum network | [optional] [default to 1]
+| Name           | Type      | Description                       | Notes                    |
+| -------------- | --------- | --------------------------------- | ------------------------ |
+| **order_hash** | **str**   | The hash of the desired 0x order. |
+| **network_id** | **float** | The id of the Ethereum network    | [optional][default to 1] |
 
 ### Return type
 
@@ -163,19 +162,19 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+*   **Content-Type**: Not defined
+*   **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_order_config**
+
 > RelayerApiOrderConfigResponseSchema get_order_config(network_id=network_id, relayer_api_order_config_payload_schema=relayer_api_order_config_payload_schema)
 
-
-
-Relayers have full discretion over the orders that they are willing to host on their orderbooks (e.g what fees they charge, etc...). In order for traders to discover their requirements programmatically, they can send an incomplete order to this endpoint and receive the missing fields, specifc to that order. This gives relayers a large amount of flexibility to tailor fees to unique traders, trading pairs and volume amounts. Submit a partial order and receive information required to complete the order: `senderAddress`, `feeRecipientAddress`, `makerFee`, `takerFee`. 
+Relayers have full discretion over the orders that they are willing to host on their orderbooks (e.g what fees they charge, etc...). In order for traders to discover their requirements programmatically, they can send an incomplete order to this endpoint and receive the missing fields, specifc to that order. This gives relayers a large amount of flexibility to tailor fees to unique traders, trading pairs and volume amounts. Submit a partial order and receive information required to complete the order: `senderAddress`, `feeRecipientAddress`, `makerFee`, `takerFee`.
 
 ### Example
+
 ```python
 from __future__ import print_function
 import time
@@ -197,10 +196,10 @@ except ApiException as e:
 
 ### Parameters
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **network_id** | **float**| The id of the Ethereum network | [optional] [default to 1]
- **relayer_api_order_config_payload_schema** | [**RelayerApiOrderConfigPayloadSchema**](RelayerApiOrderConfigPayloadSchema.md)| The fields of a 0x order the relayer may want to decide what configuration to send back. | [optional] 
+| Name                                        | Type                                                                            | Description                                                                              | Notes                    |
+| ------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------ |
+| **network_id**                              | **float**                                                                       | The id of the Ethereum network                                                           | [optional][default to 1] |
+| **relayer_api_order_config_payload_schema** | [**RelayerApiOrderConfigPayloadSchema**](RelayerApiOrderConfigPayloadSchema.md) | The fields of a 0x order the relayer may want to decide what configuration to send back. | [optional]               |
 
 ### Return type
 
@@ -212,19 +211,19 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
+*   **Content-Type**: application/json
+*   **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_orderbook**
+
 > RelayerApiOrderbookResponseSchema get_orderbook(base_asset_data, quote_asset_data, network_id=network_id, page=page, per_page=per_page)
 
-
-
-Retrieves the orderbook for a given asset pair. This endpoint should be [paginated](#section/Pagination). Bids will be sorted in descending order by price, and asks will be sorted in ascending order by price. Within the price sorted orders, the orders are further sorted by _taker fee price_ which is defined as the **takerFee** divided by **takerTokenAmount**. After _taker fee price_, orders are to be sorted by expiration in ascending order. The way pagination works for this endpoint is that the **page** and **perPage** query params apply to both `bids` and `asks` collections, and if `page` * `perPage` > `total` for a certain collection, the `records` for that collection should just be empty. 
+Retrieves the orderbook for a given asset pair. This endpoint should be [paginated](#section/Pagination). Bids will be sorted in descending order by price, and asks will be sorted in ascending order by price. Within the price sorted orders, the orders are further sorted by _taker fee price_ which is defined as the **takerFee** divided by **takerTokenAmount**. After _taker fee price_, orders are to be sorted by expiration in ascending order. The way pagination works for this endpoint is that the **page** and **perPage** query params apply to both `bids` and `asks` collections, and if `page` \* `perPage` > `total` for a certain collection, the `records` for that collection should just be empty.
 
 ### Example
+
 ```python
 from __future__ import print_function
 import time
@@ -249,13 +248,13 @@ except ApiException as e:
 
 ### Parameters
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **base_asset_data** | **str**| assetData (makerAssetData or takerAssetData) designated as the base currency in the [currency pair calculation](https://en.wikipedia.org/wiki/Currency_pair) of price. | 
- **quote_asset_data** | **str**| assetData (makerAssetData or takerAssetData) designated as the quote currency in the currency pair calculation of price (required). | 
- **network_id** | **float**| The id of the Ethereum network | [optional] [default to 1]
- **page** | **float**| The number of the page to request in the collection. | [optional] [default to 1]
- **per_page** | **float**| The number of records to return per page. | [optional] [default to 100]
+| Name                 | Type      | Description                                                                                                                                                            | Notes                      |
+| -------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| **base_asset_data**  | **str**   | assetData (makerAssetData or takerAssetData) designated as the base currency in the [currency pair calculation](https://en.wikipedia.org/wiki/Currency_pair) of price. |
+| **quote_asset_data** | **str**   | assetData (makerAssetData or takerAssetData) designated as the quote currency in the currency pair calculation of price (required).                                    |
+| **network_id**       | **float** | The id of the Ethereum network                                                                                                                                         | [optional][default to 1]   |
+| **page**             | **float** | The number of the page to request in the collection.                                                                                                                   | [optional][default to 1]   |
+| **per_page**         | **float** | The number of records to return per page.                                                                                                                              | [optional][default to 100] |
 
 ### Return type
 
@@ -267,19 +266,19 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+*   **Content-Type**: Not defined
+*   **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_orders**
+
 > RelayerApiOrdersResponseSchema get_orders(maker_asset_proxy_id=maker_asset_proxy_id, taker_asset_proxy_id=taker_asset_proxy_id, maker_asset_address=maker_asset_address, taker_asset_address=taker_asset_address, exchange_address=exchange_address, sender_address=sender_address, maker_asset_data=maker_asset_data, taker_asset_data=taker_asset_data, trader_asset_data=trader_asset_data, maker_address=maker_address, taker_address=taker_address, trader_address=trader_address, fee_recipient_address=fee_recipient_address, network_id=network_id, page=page, per_page=per_page)
-
-
 
 Retrieves a list of orders given query parameters. This endpoint should be [paginated](#section/Pagination). For querying an entire orderbook snapshot, the [orderbook endpoint](#operation/getOrderbook) is recommended. If both makerAssetData and takerAssetData are specified, returned orders will be sorted by price determined by (takerTokenAmount/makerTokenAmount) in ascending order. By default, orders returned by this endpoint are unsorted.
 
 ### Example
+
 ```python
 from __future__ import print_function
 import time
@@ -315,24 +314,24 @@ except ApiException as e:
 
 ### Parameters
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **maker_asset_proxy_id** | **str**| The maker [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \&quot;0xf47261b0\&quot; for ERC20, \&quot;0x02571792\&quot; for ERC721). | [optional] 
- **taker_asset_proxy_id** | **str**| The taker asset [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \&quot;0xf47261b0\&quot; for ERC20, \&quot;0x02571792\&quot; for ERC721). | [optional] 
- **maker_asset_address** | **str**| The contract address for the maker asset. | [optional] 
- **taker_asset_address** | **str**| The contract address for the taker asset. | [optional] 
- **exchange_address** | **str**| Same as exchangeAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format) | [optional] 
- **sender_address** | **str**| Same as senderAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format) | [optional] 
- **maker_asset_data** | **str**| Same as makerAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format) | [optional] 
- **taker_asset_data** | **str**| Same as takerAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format) | [optional] 
- **trader_asset_data** | **str**| Same as traderAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format) | [optional] 
- **maker_address** | **str**| Same as makerAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format) | [optional] 
- **taker_address** | **str**| Same as takerAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format) | [optional] 
- **trader_address** | **str**| Same as traderAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format) | [optional] 
- **fee_recipient_address** | **str**| Same as feeRecipientAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format) | [optional] 
- **network_id** | **float**| The id of the Ethereum network | [optional] [default to 1]
- **page** | **float**| The number of the page to request in the collection. | [optional] [default to 1]
- **per_page** | **float**| The number of records to return per page. | [optional] [default to 100]
+| Name                      | Type      | Description                                                                                                                                                                       | Notes                      |
+| ------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| **maker_asset_proxy_id**  | **str**   | The maker [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \&quot;0xf47261b0\&quot; for ERC20, \&quot;0x02571792\&quot; for ERC721).               | [optional]                 |
+| **taker_asset_proxy_id**  | **str**   | The taker asset [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \&quot;0xf47261b0\&quot; for ERC20, \&quot;0x02571792\&quot; for ERC721).         | [optional]                 |
+| **maker_asset_address**   | **str**   | The contract address for the maker asset.                                                                                                                                         | [optional]                 |
+| **taker_asset_address**   | **str**   | The contract address for the taker asset.                                                                                                                                         | [optional]                 |
+| **exchange_address**      | **str**   | Same as exchangeAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)     | [optional]                 |
+| **sender_address**        | **str**   | Same as senderAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)       | [optional]                 |
+| **maker_asset_data**      | **str**   | Same as makerAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)      | [optional]                 |
+| **taker_asset_data**      | **str**   | Same as takerAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)      | [optional]                 |
+| **trader_asset_data**     | **str**   | Same as traderAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)     | [optional]                 |
+| **maker_address**         | **str**   | Same as makerAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)        | [optional]                 |
+| **taker_address**         | **str**   | Same as takerAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)        | [optional]                 |
+| **trader_address**        | **str**   | Same as traderAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)       | [optional]                 |
+| **fee_recipient_address** | **str**   | Same as feeRecipientAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format) | [optional]                 |
+| **network_id**            | **float** | The id of the Ethereum network                                                                                                                                                    | [optional][default to 1]   |
+| **page**                  | **float** | The number of the page to request in the collection.                                                                                                                              | [optional][default to 1]   |
+| **per_page**              | **float** | The number of records to return per page.                                                                                                                                         | [optional][default to 100] |
 
 ### Return type
 
@@ -344,19 +343,19 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
- - **Accept**: application/json
+*   **Content-Type**: Not defined
+*   **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **post_order**
+
 > post_order(network_id=network_id, signed_order_schema=signed_order_schema)
-
-
 
 Submit a signed order to the relayer.
 
 ### Example
+
 ```python
 from __future__ import print_function
 import time
@@ -377,10 +376,10 @@ except ApiException as e:
 
 ### Parameters
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **network_id** | **float**| The id of the Ethereum network | [optional] [default to 1]
- **signed_order_schema** | [**SignedOrderSchema**](SignedOrderSchema.md)| A valid signed 0x order based on the schema. | [optional] 
+| Name                    | Type                                          | Description                                  | Notes                    |
+| ----------------------- | --------------------------------------------- | -------------------------------------------- | ------------------------ |
+| **network_id**          | **float**                                     | The id of the Ethereum network               | [optional][default to 1] |
+| **signed_order_schema** | [**SignedOrderSchema**](SignedOrderSchema.md) | A valid signed 0x order based on the schema. | [optional]               |
 
 ### Return type
 
@@ -392,8 +391,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
+*   **Content-Type**: application/json
+*   **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
