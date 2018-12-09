@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "../../utils/Ownable/Ownable.sol";
+import "@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol";
 import "./libs/LibConstants.sol";
 import "./MixinMatchOrders.sol";
 import "./MixinAssets.sol";
