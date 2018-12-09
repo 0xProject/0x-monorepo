@@ -16,6 +16,9 @@ import unittest
 
 import sra_client
 from sra_client.api.default_api import DefaultApi  # noqa: E501
+from sra_client.models.relayer_api_asset_data_pairs_response_schema import (
+    RelayerApiAssetDataPairsResponseSchema
+)
 from sra_client.rest import ApiException
 
 
@@ -32,7 +35,9 @@ class TestDefaultApi(unittest.TestCase):
         """Test case for get_asset_pairs
 
         """
-        pass
+        expected = RelayerApiAssetDataPairsResponseSchema([])
+        actual = self.api.get_asset_pairs()
+        self.assertEqual(actual, expected)
 
     def test_get_fee_recipients(self):
         """Test case for get_fee_recipients
