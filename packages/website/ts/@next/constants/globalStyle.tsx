@@ -76,6 +76,7 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
         -webkit-font-smoothing: antialiased;
         color: ${props => props.theme.textColor};
         font-feature-settings: "zero";
+        scroll-behavior: smooth;
     }
 
     .visuallyHidden {

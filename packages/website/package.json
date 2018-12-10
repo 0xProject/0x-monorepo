@@ -51,6 +51,7 @@
         "query-string": "^6.0.0",
         "rc-slider": "^8.6.3",
         "react": "^16.4.2",
+        "react-anchor-link-smooth-scroll": "^1.0.11",
         "react-copy-to-clipboard": "^5.0.0",
         "react-document-title": "^2.0.3",
         "react-dom": "^16.4.2",
@@ -70,8 +71,7 @@
         "thenby": "^1.2.3",
         "truffle-contract": "2.0.1",
         "web3-provider-engine": "14.0.6",
-        "xml-js": "^1.6.4",
-        "zenscroll": "^4.0.2"
+        "xml-js": "^1.6.4"
     },
     "devDependencies": {
         "@types/accounting": "^0.4.1",

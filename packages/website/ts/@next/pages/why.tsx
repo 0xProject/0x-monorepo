@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import AnchorLink from 'react-anchor-link-smooth-scroll';
 import styled from 'styled-components';
-import zenscroll from 'zenscroll';
 
 import { colors } from 'ts/style/colors';
 
@@ -63,28 +63,6 @@ const functionalityData = [
 ];
 
 export class NextWhy extends React.PureComponent {
-    public benefitsRef = React.createRef();
-    public casesRef = React.createRef();
-    public functionalityRef = React.createRef();
-
-    public scrollToSection = (sectionName: 'benefits' | 'cases' | 'features') => {
-        zenscroll.to(this[`${sectionName}Ref`]);
-    }
-
-    public scrollToBenefits = () => {
-        // was going to onClick={() => this.scrollToSection('name')} but ts/linting
-        // doesnt like it, lets do this for now
-        this.scrollToSection('benefits');
-    }
-
-    public scrollToCases = () => {
-        this.scrollToSection('cases');
-    }
-
-    public scrollToFunctionality = () => {
-        this.scrollToSection('functionality');
-    }
-
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
@@ -138,25 +116,22 @@ export class NextWhy extends React.PureComponent {
               <Section>
                 <Wrap>
                   <Column colWidth="1/3">
-                      <WrapSticky>
-                          <ChapterLink href="#" onClick={this.scrollToBenefits}>Benefits</ChapterLink>
-                          <ChapterLink href="#" onClick={this.scrollToBenefits}>Use Cases</ChapterLink>
-                          <ChapterLink href="#" onClick={this.scrollToBenefits}>Features</ChapterLink>
-                      </WrapSticky>
+                      <NavStickyWrap>
+                          <ChapterLink offset="60" href="#benefits">Benefits</ChapterLink>
+                          <ChapterLink offset="60" href="#cases">Use Cases</ChapterLink>
+                          <ChapterLink offset="60" href="#functionality">Features</ChapterLink>
+                      </NavStickyWrap>
                   </Column>
 
                   <Column colWidth="2/3">
-                        <SectionWrap ref={this.benefitsRef}>
+                        <SectionWrap id="benefits">
                             <Heading size="medium">What 0x offers</Heading>
 
                             {_.map(offersData, (item, index) => (
                                 <ChapterItemWrap>
                                     <Icon name={item.icon} size="medium" margin={[0, 0, 22, 0]} />
 
-                                    <Heading
-                                        marginBottom="15px"
-                                        isNoPadding={true}
-                                    >
+                                    <Heading marginBottom="15px">
                                         {item.title}
                                     </Heading>
 
@@ -167,22 +142,19 @@ export class NextWhy extends React.PureComponent {
                             ))}
                         </SectionWrap>
 
-                        <SectionWrap ref={this.casesRef}>
+                        <SectionWrap id="cases">
                             <Heading size="medium">Use Cases</Heading>
                             <Paragraph isMuted={true}>slider</Paragraph>
                         </SectionWrap>
 
-                        <SectionWrap ref={this.functionalityRef}>
+                        <SectionWrap id="functionality">
                             <Heading size="medium">Exchange Functionality</Heading>
 
                             {_.map(functionalityData, (item, index) => (
                                 <ChapterItemWrap>
                                     <Icon name={item.icon} size="medium" margin={[0, 0, 22, 0]} />
 
-                                    <Heading
-                                        marginBottom="15px"
-                                        isNoPadding={true}
-                                    >
+                                    <Heading marginBottom="15px">
                                         {item.title}
                                     </Heading>
 
@@ -231,13 +203,21 @@ const SectionWrap = styled.div`
     }
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
+        text-align: left;
+
         & + &:before {
             width: 100%;
         }
     }
 `;
 
-const ChapterLink = styled.a`
+const NavStickyWrap = styled(WrapSticky)`
+    @media (max-width: ${BREAKPOINTS.mobile}) {
+        display: none;
+    }
+`;
+
+const ChapterLink = styled(AnchorLink)`
     color: ${props => props.theme.textColor};
     font-size: 22px;
     margin-bottom: 15px;
