@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import styled from 'styled-components';
 
 import {colors} from 'ts/style/colors';
 
@@ -66,14 +67,20 @@ export const Next0xInstant = () => (
         <Section>
             <WrapCentered>
                 <Heading size="medium" isCentered={true}>Introducing 0x Instant</Heading>
-                <Paragraph size="medium" isCentered={true}>A free and flexible way to offer simple crypto purchasing in any app or website</Paragraph>
+                <Paragraph size="medium" isCentered={true}>
+                    A free and flexible way to offer simple<br />
+                    crypto purchasing in any app or website
+                </Paragraph>
                 <Button href="#">Get Started</Button>
             </WrapCentered>
         </Section>
 
         <Section isFullWidth={true} isNoPadding={true}>
             <Wrap width="full">
-                <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
+                {/* Note: This should be another component, this is just for mocking */}
+                <ImageCarousel>
+                    <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
+                </ImageCarousel>
             </Wrap>
         </Section>
 
@@ -148,3 +155,9 @@ export const Next0xInstant = () => (
         </Section>
     </SiteWrap>
 );
+
+const ImageCarousel = styled.div`
+    width: 100vw;
+    height: 380px;
+    margin: 90px 0;
+`;
