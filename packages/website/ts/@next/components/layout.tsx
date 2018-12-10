@@ -19,6 +19,7 @@ interface SectionProps {
     isNoMargin?: boolean;
     bgColor?: string;
     isFullWidth?: boolean;
+    isRelative?: boolean;
 }
 
 interface WrapProps extends PaddingInterface {
@@ -85,6 +86,8 @@ export const Section = styled.section<SectionProps>`
     margin-bottom: ${props => !props.isNoMargin && `${GUTTER}px`};
     margin-left: ${props => props.isFullWidth && `-${GUTTER}px`};
     background-color: ${props => props.bgColor};
+    position: ${props => props.isRelative && 'relative'};
+    overflow: ${props => props.isRelative && 'hidden'};
 
     @media (min-width: 1560px) {
         width: ${props => props.isFullWidth && '100vw'};
