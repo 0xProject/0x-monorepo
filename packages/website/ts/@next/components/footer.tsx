@@ -97,7 +97,7 @@ export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
 );
 
 const LinkList = (props: LinkListProps) => (
-  <ul>
+  <List>
     {_.map(props.links, (link, index) => (
       <li key={`fl-${index}`}>
         <Link to={link.url}>
@@ -105,7 +105,7 @@ const LinkList = (props: LinkListProps) => (
         </Link>
       </li>
     ))}
-  </ul>
+  </List>
 );
 
 const FooterSection = Section.withComponent('footer');
@@ -136,10 +136,15 @@ const FooterSectionWrap = styled(FooterColumn)`
 
 const RowHeading = styled.h3`
     color: ${colors.white};
-    font-weight: 500;
+    font-weight: 700;
     font-size: 16px;
-    line-height: 20px;
     margin-bottom: 1.25em;
+`;
+
+const List = styled.ul`
+    li + li {
+        margin-top: 8px;
+    }
 `;
 
 const Link = styled(ReactRouterLink)`
