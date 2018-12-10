@@ -1,18 +1,19 @@
 import * as React from 'react';
+import Loadable from 'react-loadable';
 import styled from 'styled-components';
-import IconCoin from 'ts/@next/icons/illustrations/coin.svg';
+import {getCSSPadding} from 'ts/@next/constants/utilities';
 
-interface Props {
+interface IconProps {
     name: string;
+    margin?: Array<'small' | 'default' | 'large' | number> | number;
     size?: 'small' | 'medium' | 'large' | number;
 }
 
-const ICONS = {
-    coin: IconCoin,
-};
-
 export const Icon: React.FunctionComponent<Props> = (props: Props) => {
-    const IconSVG = ICONS[props.name];
+    const IconSVG = Loadable({
+        loader: () => import(`ts/@next/icons/illustrations/${props.name}.svg`),
+        loading: () => 'Loading',
+    });
 
     return (
         <StyledIcon {...props}>
@@ -20,6 +21,17 @@ export const Icon: React.FunctionComponent<Props> = (props: Props) => {
         </StyledIcon>
     );
 };
+
+export const InlineIconWrap = styled.div`
+    margin: ${props => getCSSPadding(props.margin)};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    > figure {
+        margin: 0 5px;
+    }
+`;
 
 const _getSize = (size: string | number = 'small'): string => {
     if (isNaN(size)) {

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import {colors} from 'ts/style/colors';
 
 import {Button, ButtonWrap} from 'ts/@next/components/button';
-import {Icon} from 'ts/@next/components/icon';
+import {Icon, InlineIconWrap} from 'ts/@next/components/icon';
 import {Column, Section, Wrap, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
@@ -94,7 +94,12 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
 
         <Section bgColor={colors.backgroundDark} isPadLarge={true}>
             <WrapCentered width="narrow">
-                <Icon name="coin" size="small" />
+                <InlineIconWrap>
+                    <Icon name="coin" size="small" />
+                    <Icon name="coin" size="small" />
+                    <Icon name="coin" size="small" />
+                    <Icon name="coin" size="small" />
+                </InlineIconWrap>
 
                 <Paragraph
                     size="large"
