@@ -8,7 +8,7 @@ interface IconProps extends PaddingInterface {
     size?: 'small' | 'medium' | 'large' | number;
 }
 
-export const Icon: React.FunctionComponent<Props> = (props: Props) => {
+export const Icon: React.FunctionComponent<IconProps> = (props: IconProps) => {
     const IconSVG = Loadable({
         loader: () => import(/* webpackChunkName: "icon" */`ts/@next/icons/illustrations/${props.name}.svg`),
         loading: () => 'Loading',
@@ -21,7 +21,7 @@ export const Icon: React.FunctionComponent<Props> = (props: Props) => {
     );
 };
 
-export const InlineIconWrap = styled.div`
+export const InlineIconWrap = styled.div<IconProps>`
     margin: ${props => getCSSPadding(props.margin)};
     display: flex;
     align-items: center;
@@ -40,7 +40,7 @@ const _getSize = (size: string | number = 'small'): string => {
     return `${size}px`;
 };
 
-const StyledIcon = styled.figure`
+const StyledIcon = styled.figure<IconProps>`
     width: ${props => _getSize(props.size)};
     height: ${props => _getSize(props.size)};
     margin: ${props => getCSSPadding(props.margin)};
