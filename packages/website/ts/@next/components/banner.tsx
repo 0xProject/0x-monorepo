@@ -38,8 +38,8 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
             <Wrap>
                 <CustomColumn colWidth="1/2" isPadLarge={true}>
                     <WrapCentered>
-                        <Heading isNoMargin={true}>{heading}</Heading>
-                        {subline && <Paragraph isMuted={true} isNoMargin={true}>{subline}</Paragraph>}
+                        <CustomHeading isNoMargin={true}>{heading}</CustomHeading>
+                        {subline && <Paragraph isMuted={0.5} isNoMargin={true}>{subline}</Paragraph>}
                     </WrapCentered>
                 </CustomColumn>
                 <CustomColumn colWidth="1/2" isPadLarge={true}>
@@ -60,16 +60,23 @@ const CustomColumn = styled(Column)`
     padding: 95px 30px;
 `;
 
+const CustomHeading = styled(Heading)`
+    --defaultHeading: 1.888888889rem;
+    font-weight: 400;
+    margin-bottom: 10px;
+`;
+
 // Note let's refactor this
 // is it absolutely necessary to have a stateless component
 // to pass props down into the styled icon?
 const Border = styled.div<BorderProps>`
     position: absolute;
-    background-image: url("data:image/svg+xml;utf8,<svg width='218' height='41' viewBox='0 0 218 41' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M109 39c59.094 0 107-47.906 107-107 0-59.095-47.906-107-107-107S2-127.095 2-68C2-8.907 49.906 39 109 39z' stroke='rgba(255, 255, 255, 0.1)' stroke-width='3' stroke-miterlimit='10'/><path d='M55 6.688L109-68l54 74.688-8.917 22.313H63.988L55 6.688zM109-68l22 97M109-68L87 29M164 6H55' stroke='rgba(255, 255, 255, 0.1)' stroke-width='3' stroke-miterlimit='10'/></svg>");
+    background-image: ${props => props.isBottom ? 'url(/images/@next/banner/bottomofcta.png);': 'url(/images/@next/banner/topofcta.png);' };
+    background-position: ${props => props.isBottom ? 'left top' : 'left bottom' };
     left: 0;
     width: calc(100% + 214px);
     height: 40px;
     top: ${props => !props.isBottom && 0 };
     bottom: ${props => props.isBottom && 0 };
-    transform: ${props => props.isBottom ? 'rotate(180deg) translate(112px)' : 'translate(-112px)' };
+    transform: translate(-112px);
 `;
