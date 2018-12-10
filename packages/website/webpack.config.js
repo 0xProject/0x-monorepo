@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
 const childProcess = require('child_process');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
@@ -115,6 +116,9 @@ module.exports = (_env, argv) => {
     let plugins = [];
     if (argv.mode === 'development') {
         config.mode = 'development';
+        plugins.concat([
+            new BundleAnalyzerPlugin(),
+        ]);
     } else {
         config.mode = 'production';
         plugins = plugins.concat([
