@@ -42,13 +42,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0x/contracts-core yarn build
+PKG=@0x/contracts-protocol yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0x/contracts-core yarn watch
+PKG=@0x/contracts-protocol yarn watch
 ```
 
 ### Clean

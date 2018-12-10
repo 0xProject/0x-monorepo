@@ -1,12 +1,12 @@
 import {
-    artifacts as coreArtifacts,
+    artifacts as protocolArtifacts,
     ERC20ProxyContract,
     ERC20Wrapper,
     ERC721ProxyContract,
     ERC721Wrapper,
     ExchangeContract,
     ExchangeWrapper,
-} from '@0x/contracts-core';
+} from '@0x/contracts-protocol';
 import {
     chaiSetup,
     constants,
@@ -81,7 +81,7 @@ describe('OrderValidator', () => {
 
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
-            coreArtifacts.Exchange,
+            protocolArtifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,

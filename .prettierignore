@@ -1,7 +1,7 @@
 lib
 .nyc_output
-/contracts/core/generated-wrappers
-/contracts/core/generated-artifacts
+/contracts/protocol/generated-wrappers
+/contracts/protocol/generated-artifacts
 /contracts/multisig/generated-wrappers
 /contracts/multisig/generated-artifacts
 /contracts/utils/generated-wrappers
@@ -14,6 +14,8 @@ lib
 /contracts/tokens/generated-artifacts
 /contracts/examples/generated-wrappers
 /contracts/examples/generated-artifacts
+/contracts/extensions/generated-wrappers
+/contracts/extensions/generated-artifacts
 /packages/abi-gen-wrappers/src/generated-wrappers
 /packages/contract-artifacts/artifacts
 /python-packages/order_utils/src/zero_ex/contract_artifacts/artifacts
