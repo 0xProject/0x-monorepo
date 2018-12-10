@@ -7,7 +7,7 @@ interface PaddingSizes {
     [key: string]: string;
 }
 
-const PADDING_SIZES: PaddingSizes = {
+export const PADDING_SIZES: PaddingSizes = {
     'default': '30px',
     'large': '60px',
     'small': '15px',

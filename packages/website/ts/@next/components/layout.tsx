@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { getCSSPadding, PaddingInterface } from 'ts/@next/constants/utilities';
+import {getCSSPadding, PADDING_SIZES, PaddingInterface} from 'ts/@next/constants/utilities';
 
 interface WrapWidths {
     default: string;
@@ -83,7 +83,7 @@ export const Main = styled.main`
 // just <Section asElement?="div/section/footer/header/whatever" /> ?
 export const Section = styled.section<SectionProps>`
     width: ${props => props.isFullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
-    padding: ${props => !props.isNoPadding && (props.isPadLarge ? '60px 30px' : '30px')};
+    padding: ${props => !props.isNoPadding && (props.isPadLarge ? `${PADDING_SIZES.large} ${PADDING_SIZES.default}` : PADDING_SIZES.default)};
     background-color: ${props => props.bgColor};
     position: ${props => props.isRelative && 'relative'};
     overflow: ${props => props.isRelative && 'hidden'};
@@ -132,7 +132,7 @@ export const Column = styled.div<ColumnProps>`
     background-color: ${props => props.bgColor};
 
     @media (min-width: ${BREAKPOINTS.mobile}) {
-        padding: ${props => !props.isNoPadding && (props.isPadLarge ? '60px 30px' : '30px')};
+        padding: ${props => !props.isNoPadding && (props.isPadLarge ? `${PADDING_SIZES.large} ${PADDING_SIZES.default}` : PADDING_SIZES.default)};
         width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};
     }
 

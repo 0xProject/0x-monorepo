@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { BREAKPOINTS } from 'ts/@next/components/layout';
 import { colors } from 'ts/style/colors';
 
 interface ButtonInterface {
@@ -71,6 +72,16 @@ export const ButtonWrap = styled.div`
     a + a,
     a + button,
     button + a {
-        margin-left: 10px;
+        @media (min-width: ${BREAKPOINTS.mobile}) {
+            margin-left: 10px;
+        }
+
+        @media (max-width: ${BREAKPOINTS.mobile}) {
+            margin: 0 10px;
+        }
+    }
+
+    @media (max-width: ${BREAKPOINTS.mobile}) {
+        white-space: nowrap;
     }
 `;

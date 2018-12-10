@@ -6,7 +6,7 @@ import {Heading, Paragraph} from 'ts/@next/components/text';
 import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 
 export const SectionLandingHero = () => (
-    <Section>
+    <Section isPadLarge={true}>
         <Wrap isReversed={true}>
             <Column colWidth="1/2">
                 <WrapCentered>
