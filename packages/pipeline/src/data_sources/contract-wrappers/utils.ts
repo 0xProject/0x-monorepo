@@ -26,25 +26,32 @@ export async function getEventsWithPaginationAsync<ArgsType extends DecodedLogAr
     let events: Array<LogWithDecodedArgs<ArgsType>> = [];
     for (let fromBlock = startBlock; fromBlock <= endBlock; fromBlock += NUM_BLOCKS_PER_QUERY) {
         const toBlock = Math.min(fromBlock + NUM_BLOCKS_PER_QUERY - 1, endBlock);
-        const eventsInRange = await getEventsWithRetriesAsync(getEventsAsync, fromBlock, toBlock);
+        const eventsInRange = await _getEventsWithRetriesAsync(getEventsAsync, NUM_RETRIES, fromBlock, toBlock);
         events = events.concat(eventsInRange);
     }
     return events;
 }
 
-// Calls the getEventsAsync function and retries up to NUM_RETRIES times if it
-// throws with an error that is considered retryable.
-async function getEventsWithRetriesAsync<ArgsType extends DecodedLogArgs>(
+/**
+ * Calls the getEventsAsync function and retries up to numRetries times if it
+ * throws with an error that is considered retryable.
+ * @param getEventsAsync a function that will be called on each iteration.
+ * @param numRetries the maximum number times to retry getEventsAsync if it fails with a retryable error.
+ * @param fromBlock the start of the sub-range of blocks we are getting events for.
+ * @param toBlock the end of the sub-range of blocks we are getting events for.
+ */
+export async function _getEventsWithRetriesAsync<ArgsType extends DecodedLogArgs>(
     getEventsAsync: GetEventsFunc<ArgsType>,
+    numRetries: number,
     fromBlock: number,
     toBlock: number,
 ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
     let eventsInRange: Array<LogWithDecodedArgs<ArgsType>> = [];
-    for (let i = 0; i <= NUM_RETRIES; i++) {
+    for (let i = 0; i <= numRetries; i++) {
         try {
             eventsInRange = await getEventsAsync(fromBlock, toBlock);
         } catch (err) {
-            if (isErrorRetryable(err) && i < NUM_RETRIES) {
+            if (isErrorRetryable(err) && i < numRetries) {
                 continue;
             } else {
                 throw err;
