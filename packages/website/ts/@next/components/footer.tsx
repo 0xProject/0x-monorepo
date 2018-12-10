@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Column, Section, Wrap } from 'ts/@next/components/layout';
+import { BREAKPOINTS, Column, Section, Wrap, WrapGrid } from 'ts/@next/components/layout';
 import { Logo } from 'ts/@next/components/logo';
 import { NewsletterForm } from 'ts/@next/components/newsletterForm';
 
@@ -30,13 +30,23 @@ interface LinkListProps {
 const linkRows: LinkRows[] = [
     {
         heading: 'Products',
+        isOnMobile: true,
         links: [
             { url: '/next/0x-instant', text: '0x Instant' },
             { url: '#', text: '0x Launch Kit' },
         ],
     },
     {
+        heading: 'Developers',
+        links: [
+            { url: '#', text: 'Documentation' },
+            { url: '#', text: 'GitHub' },
+            { url: '#', text: 'Whitepaper' },
+        ],
+    },
+    {
         heading: 'About',
+        isOnMobile: true,
         links: [
             { url: '#', text: 'Mission' },
             { url: '#', text: 'Team' },
@@ -46,6 +56,7 @@ const linkRows: LinkRows[] = [
     },
     {
         heading: 'Community',
+        isOnMobile: true,
         links: [
             { url: '#', text: 'Twitter' },
             { url: '#', text: 'Rocket Chat' },
@@ -58,24 +69,29 @@ const linkRows: LinkRows[] = [
 export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
     <FooterWrap bgColor="#181818" isNoMargin={true}>
         <Wrap>
-            <Column colWidth="1/2" isNoPadding={true}>
+            <FooterColumn width="35%" isNoPadding={true}>
                 <Logo isLight={true} />
                 <NewsletterForm />
-            </Column>
+            </FooterColumn>
 
-            <Column colWidth="1/2" isNoPadding={true}>
-                <Wrap>
+            <FooterColumn width="55%" isNoPadding={true}>
+                <WrapGrid isCentered={false} isWrapped={true}>
                     {_.map(linkRows, (row, index) => (
-                        <Column key={`fc-${index}`} colWidth="1/3" isNoPadding={true}>
+                        <FooterSectionWrap
+                            key={`fc-${index}`}
+                            colWidth="1/4"
+                            isNoPadding={true}
+                            isMobileHidden={!row.isOnMobile}
+                        >
                             <RowHeading>
                                 {row.heading}
                             </RowHeading>
 
                             <LinkList links={row.links} />
-                        </Column>
+                        </FooterSectionWrap>
                     ))}
-                </Wrap>
-            </Column>
+                </WrapGrid>
+            </FooterColumn>
         </Wrap>
     </FooterWrap>
 );
@@ -95,6 +111,27 @@ const LinkList = (props: LinkListProps) => (
 const FooterSection = Section.withComponent('footer');
 const FooterWrap = styled(FooterSection)`
     color: ${colors.white};
+
+    @media (min-width: ${BREAKPOINTS.mobile}) {
+        height: 350px;
+    }
+`;
+
+const FooterColumn = styled(Column)`
+    @media (min-width: ${BREAKPOINTS.mobile}) {
+        width: ${props => props.width};
+    }
+
+    @media (max-width: ${BREAKPOINTS.mobile}) {
+        display: ${props => props.isMobileHidden && 'none'};
+        text-align: left;
+    }
+`;
+
+const FooterSectionWrap = styled(FooterColumn)`
+    @media (max-width: ${BREAKPOINTS.mobile}) {
+        width: 50%;
+    }
 `;
 
 const RowHeading = styled.h3`
