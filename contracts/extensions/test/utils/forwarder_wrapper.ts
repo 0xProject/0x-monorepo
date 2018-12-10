@@ -1,3 +1,4 @@
+import { artifacts as coreArtifacts } from '@0x/contracts-core';
 import { constants, formatters, LogDecoder, MarketSellOrders } from '@0x/contracts-test-utils';
 import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { SignedOrder } from '@0x/types';
@@ -59,7 +60,7 @@ export class ForwarderWrapper {
     constructor(contractInstance: ForwarderContract, provider: Provider) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, { ...artifacts, ...tokensArtifacts });
+        this._logDecoder = new LogDecoder(this._web3Wrapper, { ...artifacts, ...tokensArtifacts, ...coreArtifacts });
     }
     public async marketSellOrdersWithEthAsync(
         orders: SignedOrder[],
