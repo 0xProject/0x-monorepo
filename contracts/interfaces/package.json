@@ -15,7 +15,7 @@
         "clean": "shx rm -rf lib generated-artifacts generated-wrappers",
         "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output generated-wrappers --backend ethers",
         "lint": "tslint --format stylish --project . --exclude ./generated-wrappers/**/* --exclude ./generated-artifacts/**/* --exclude **/lib/**/* && yarn lint-contracts",
-        "lint-contracts": "solhint contracts/**/**/**/**/*.sol"
+        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol"
     },
     "config": {
         "abis": "generated-artifacts/@(IAssetData|IAssetProxy|IAuthorizable|IAssetProxyDispatcher|IExchange|IExchangeCore|IMatchOrders|ISignatureValidator|ITransactions|IValidator|IWallet|IWrapperFunctions).json"
@@ -35,7 +35,7 @@
         "@0x/tslint-config": "^1.0.10",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
-        "solhint": "^1.2.1",
+        "solhint": "^1.4.1",
         "tslint": "5.11.0",
         "typescript": "3.0.1",
         "yargs": "^10.0.3"

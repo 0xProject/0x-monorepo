@@ -30,7 +30,7 @@
         "profiler:report:html": "istanbul report html && open coverage/index.html",
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test",
-        "lint-contracts": "solhint contracts/**/**/**/**/*.sol"
+        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol"
     },
     "config": {
         "abis": "generated-artifacts/@(AssetProxyOwner|ERC20Proxy|ERC721Proxy|Exchange|MixinAuthorizable|MultiAssetProxy|TestSignatureValidator|TestAssetProxyOwner|TestAssetProxyDispatcher|TestExchangeInternals|TestStaticCallReceiver).json"
@@ -66,7 +66,7 @@
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "solc": "^0.4.24",
-        "solhint": "^1.2.1",
+        "solhint": "^1.4.1",
         "tslint": "5.11.0",
         "typescript": "3.0.1",
         "yargs": "^10.0.3"
