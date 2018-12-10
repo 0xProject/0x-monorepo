@@ -43,7 +43,7 @@ const _getSize = (size: string | number = 'small'): string => {
 const StyledIcon = styled.figure`
     width: ${props => _getSize(props.size)};
     height: ${props => _getSize(props.size)};
-    margin: 0;
+    margin: ${props => getCSSPadding(props.margin)};
     flex-shrink: 0;
 
     svg {

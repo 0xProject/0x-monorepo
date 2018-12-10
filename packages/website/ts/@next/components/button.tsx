@@ -27,7 +27,7 @@ export const Button = styled.button<ButtonInterface>`
     background-color: ${props => !props.isTransparent ? colors.brandLight : 'transparent'};
     border-color: ${props => (props.isTransparent && !props.isNoBorder && !props.isWithArrow) && '#6a6a6a'};
     color: ${props => props.color || props.theme.textColor};
-    padding: ${props => !props.isNoPadding && '18px 30px'};
+    padding: ${props => (!props.isNoPadding && !props.isWithArrow) && '18px 30px'};
     text-align: center;
     font-size: ${props => props.isWithArrow ? '20px' : '18px'};
     text-decoration: none;

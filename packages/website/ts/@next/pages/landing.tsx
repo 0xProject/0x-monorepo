@@ -200,9 +200,13 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                     isPadLarge={true}
                 >
                     <WrapCentered>
-                        <ReadyToBuildIcon width="150" />
+                        <Icon
+                            name="ready-to-build"
+                            size="large"
+                            margin={[0, 0, 'default', 0]}
+                        />
 
-                        <Paragraph>
+                        <Paragraph size="medium" color="#00AE99">
                             Ready to build on 0x?
                         </Paragraph>
 
@@ -222,9 +226,13 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                     isPadLarge={true}
                 >
                     <WrapCentered>
-                        <SupportIcon width="150" />
+                        <Icon
+                            name="ready-to-build"
+                            size="large"
+                            margin={[0, 0, 'default', 0]}
+                        />
 
-                        <Paragraph>
+                        <Paragraph size="medium" color="#00AE99">
                             Want help from the 0x team?
                         </Paragraph>
 
