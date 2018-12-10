@@ -51,7 +51,7 @@ export const SectionLandingAbout = () => (
                 <Heading
                     size="medium"
                     isCentered={true}
-                    isNoMargin={true}
+                    marginBottom="20px"
                 >
                     873,435
                 </Heading>
@@ -69,7 +69,7 @@ export const SectionLandingAbout = () => (
                 <Heading
                     size="medium"
                     isCentered={true}
-                    isNoMargin={true}
+                    marginBottom="20px"
                 >
                     $203M
                 </Heading>
@@ -77,7 +77,7 @@ export const SectionLandingAbout = () => (
                 <Paragraph
                     isMuted={0.4}
                     isCentered={true}
-                    isNoMargin={true}
+                    marginBottom="20px"
                 >
                     Total volume
                 </Paragraph>
