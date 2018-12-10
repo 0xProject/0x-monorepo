@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.3 - _December 10, 2018_
+
+    * Update SRA order provider to include Dai
+
 ## v3.0.2 - _November 28, 2018_
 
     * Dependencies updated

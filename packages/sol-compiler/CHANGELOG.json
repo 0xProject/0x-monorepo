@@ -6,7 +6,8 @@
                 "note": "Fix bug where we were appending base path to absolute imports (e.g NPM imports)",
                 "pr": 1311
             }
-        ]
+        ],
+        "timestamp": 1544482891
     },
     {
         "timestamp": 1543401373,
