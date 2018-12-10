@@ -1,5 +1,4 @@
-import { ValidatorContract, WalletContract } from '@0x/contracts-examples';
-import { artifacts as examplesArtifacts } from '@0x/contracts-examples';
+import { artifacts as examplesArtifacts, ValidatorContract, WalletContract } from '@0x/contracts-examples';
 import {
     addressUtils,
     chaiSetup,
