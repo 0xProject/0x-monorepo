@@ -72,10 +72,26 @@ describe('data_sources/contract-wrappers/utils', () => {
             await _getEventsWithRetriesAsync(mockGetEventsAsync, numRetries, 100, 300);
             expect(callCount).equals(numRetries + 1, 'getEventsAsync function was called the wrong number of times');
         });
+        it('throws for non-retryable errors', async () => {
+            const numRetries = 5;
+            const expectedMessage = 'Non-retryable error';
+            // mockGetEventsAsync always throws a non-retryable error.
+            const mockGetEventsAsync = async (
+                _fromBlock: number,
+                _toBlock: number,
+            ): Promise<Array<LogWithDecodedArgs<any>>> => {
+                throw new Error(expectedMessage);
+            };
+            // Note(albrow): This does actually return a promise (or at least a
+            // "promise-like object" and is a false positive in TSLint.
+            // tslint:disable-next-line:await-promise
+            await expect(_getEventsWithRetriesAsync(mockGetEventsAsync, numRetries, 100, 300)).to.be.rejectedWith(
+                expectedMessage,
+            );
+        });
         it('throws after too many retries', async () => {
             const numRetries = 5;
-            // mockGetEventsAsync always throws, regardless of how many times it
-            // is called.
+            // mockGetEventsAsync always throws a retryable error.
             const mockGetEventsAsync = async (
                 _fromBlock: number,
                 _toBlock: number,
