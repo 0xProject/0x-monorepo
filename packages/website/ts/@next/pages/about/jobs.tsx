@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { ChapterLink } from 'ts/@next/components/chapter_link';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
+import { Link } from 'ts/@next/components/link';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
@@ -87,7 +88,7 @@ export const NextAboutJobs = () => (
                     <Paragraph isMuted={true}>San Francisco, Remote</Paragraph>
                 </Column>
                 <Column colWidth="1/3">
-                    <Paragraph><a href="#">Apply</a></Paragraph>
+                    <Paragraph><Link href="#">Apply</Link></Paragraph>
                 </Column>
             </Wrap>
             <Wrap>
@@ -100,7 +101,7 @@ export const NextAboutJobs = () => (
                     </Paragraph>
                 </Column>
                 <Column colWidth="1/3">
-                    <Paragraph><a href="#">Apply</a></Paragraph>
+                    <Paragraph><Link href="#">Apply</Link></Paragraph>
                 </Column>
             </Wrap>
         </Column>
