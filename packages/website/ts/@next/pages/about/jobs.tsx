@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { ChapterLink } from 'ts/@next/components/chapter_link';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
@@ -116,21 +117,5 @@ const BenefitsList = styled.ul`
 
     li {
         margin-bottom: 1em;
-    }
-`;
-
-// Lets refactor these chapter links into button perhaps as a <Link type={xxx} />
-const ChapterLink = styled(ReactRouterLink)`
-    font-size: 1.222222222rem;
-    display: block;
-    opacity: 0.8;
-    margin-bottom: 1.666666667rem;
-
-    &:first-child {
-        opacity: 1;
-    }
-
-    &:hover {
-        opacity: 1;
     }
 `;

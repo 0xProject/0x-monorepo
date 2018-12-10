@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
+import { ChapterLink } from 'ts/@next/components/chapter_link';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
@@ -195,21 +196,6 @@ export const NextAboutTeam = () => (
     </Section>
   </SiteWrap>
 );
-
-const ChapterLink = styled(ReactRouterLink)`
-    font-size: 1.222222222rem;
-    display: block;
-    opacity: 0.8;
-    margin-bottom: 1.666666667rem;
-
-    &:first-child {
-        opacity: 1;
-    }
-
-    &:hover {
-        opacity: 1;
-    }
-`;
 
 const StyledMember = styled.div`
     width: calc(25% - 10px);
