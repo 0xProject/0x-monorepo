@@ -1,5 +1,6 @@
 export interface PaddingInterface {
     padding?: number | Array<'large' | 'default', 'small' | number>;
+    margin?: number | Array<'large' | 'default', 'small' | number>;
 }
 
 interface PaddingSizes {

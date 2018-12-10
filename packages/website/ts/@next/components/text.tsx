@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { getCSSPadding, PaddingInterface } from 'ts/@next/constants/utilities';
+import {getCSSPadding, PaddingInterface} from 'ts/@next/constants/utilities';
 
 interface BaseTextInterface extends PaddingInterface {
     size?: 'default' | 'medium' | 'large' | 'small';
@@ -41,11 +41,19 @@ export const Heading: React.StatelessComponent<HeadingProps> = props => {
     const {
         asElement = 'h1',
         children,
-        ...style
+        ...style,
     } = props;
     const Component = StyledHeading.withComponent(asElement);
-    return <Component style={{...style}} {...props}>{children}</Component>;
-};
+
+    return (
+        <Component
+            style={{...style}}
+            {...props}
+        >
+            {children}
+        </Component>;
+    )
+}
 
 // No need to declare it twice as Styled then rewrap as a stateless comp
 // Note: this would be useful to be implemented the same way was "Heading"

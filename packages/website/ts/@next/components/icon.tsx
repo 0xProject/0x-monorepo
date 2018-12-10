@@ -1,11 +1,10 @@
 import * as React from 'react';
 import Loadable from 'react-loadable';
 import styled from 'styled-components';
-import {getCSSPadding} from 'ts/@next/constants/utilities';
+import {getCSSPadding, PaddingInterface} from 'ts/@next/constants/utilities';
 
-interface IconProps {
+interface IconProps extends PaddingInterface {
     name: string;
-    margin?: Array<'small' | 'default' | 'large' | number> | number;
     size?: 'small' | 'medium' | 'large' | number;
 }
 

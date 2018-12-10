@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import {colors} from 'ts/style/colors';
 
-import {Button, ButtonWrap} from 'ts/@next/components/button';
+import {Button, ButtonWrap, Link} from 'ts/@next/components/button';
 import {Icon, InlineIconWrap} from 'ts/@next/components/icon';
 import {Column, Section, Wrap, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
@@ -206,9 +206,13 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                             Ready to build on 0x?
                         </Paragraph>
 
-                        <Button isTransparent={true}>
+                        <Link
+                            href="#"
+                            isTransparent={true}
+                            isWithArrow={true}
+                        >
                             Get Started
-                        </Button>
+                        </Link>
                     </WrapCentered>
                 </Column>
 
@@ -224,9 +228,13 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                             Want help from the 0x team?
                         </Paragraph>
 
-                        <Button isTransparent={true}>
+                        <Link
+                            href="#"
+                            isTransparent={true}
+                            isWithArrow={true}
+                        >
                             Get in Touch
-                        </Button>
+                        </Link>
                     </WrapCentered>
                 </Column>
             </Wrap>
