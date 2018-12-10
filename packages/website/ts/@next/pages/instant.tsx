@@ -1,16 +1,18 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
+import LazyLoad from 'react-lazyload';
 
 import {colors} from 'ts/style/colors';
 
+import {Banner} from 'ts/@next/components/banner';
 import {Button, ButtonWrap, Link} from 'ts/@next/components/button';
 import {Icon} from 'ts/@next/components/Icon';
 import {Column, Section, Wrap, WrapCentered} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 
-import { Configurator } from 'ts/pages/instant/configurator';
+// import { Configurator } from 'ts/pages/instant/configurator';
 
 import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
@@ -121,29 +123,16 @@ export const Next0xInstant = () => (
 
         <Section bgColor={colors.backgroundDark}>
             <Wrap>
-                <Configurator hash={CONFIGURATOR_HASH} />
+                {/* <Configurator hash={CONFIGURATOR_HASH} /> */}
             </Wrap>
         </Section>
 
-        <Section bgColor={colors.brandDark}>
-            <Wrap>
-                <Column colWidth="1/2" isPadLarge={true}>
-                    <WrapCentered>
-                        <Heading>Need more flexibility?</Heading>
-                        <Paragraph>Dive into our docs, or contact us if needed</Paragraph>
-                    </WrapCentered>
-                </Column>
-
-                <Column colWidth="1/2" isPadLarge={true}>
-                    <WrapCentered>
-                        <div>
-                            <Button href="#">Explore the Docs</Button>
-                            <Button href="#" isTransparent={true}>Get in Touch</Button>
-                        </div>
-                    </WrapCentered>
-                </Column>
-            </Wrap>
-        </Section>
+        <Banner
+            heading="Need more flexibility?"
+            subline="Dive into our docs, or contact us if needed"
+            mainCta={{ text: 'Explore the Docs', href: '/docs' }}
+            secondaryCta={{ text: 'Get in Touch', href: '/contact' }}
+        />
 
         <Section>
             <Wrap width="full">
