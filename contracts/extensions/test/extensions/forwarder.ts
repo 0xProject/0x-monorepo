@@ -1,4 +1,11 @@
 import {
+    artifacts as coreArtifacts,
+    ERC20Wrapper,
+    ERC721Wrapper,
+    ExchangeContract,
+    ExchangeWrapper,
+} from '@0x/contracts-core';
+import {
     chaiSetup,
     constants,
     ContractName,
@@ -25,12 +32,9 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { ForwarderContract } from '../../generated-wrappers/forwarder';
 import { artifacts } from '../../src/artifacts';
-import { ERC20Wrapper } from '../utils/erc20_wrapper';
-import { ERC721Wrapper } from '../utils/erc721_wrapper';
-import { ExchangeWrapper } from '../utils/exchange_wrapper';
+
 import { ForwarderWrapper } from '../utils/forwarder_wrapper';
 
 chaiSetup.configure();
@@ -104,7 +108,7 @@ describe(ContractName.Forwarder, () => {
         wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
         zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-            artifacts.Exchange,
+            coreArtifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,
@@ -175,7 +179,7 @@ describe(ContractName.Forwarder, () => {
     describe('constructor', () => {
         it('should revert if assetProxy is unregistered', async () => {
             const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-                artifacts.Exchange,
+                coreArtifacts.Exchange,
                 provider,
                 txDefaults,
                 zrxAssetData,

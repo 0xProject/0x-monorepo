@@ -1,4 +1,11 @@
 import {
+    artifacts as coreArtifacts,
+    ERC20Wrapper,
+    ERC721Wrapper,
+    ExchangeContract,
+    ExchangeWrapper,
+} from '@0x/contracts-core';
+import {
     chaiSetup,
     constants,
     ContractName,
@@ -27,11 +34,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { DutchAuctionContract } from '../../generated-wrappers/dutch_auction';
-import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { artifacts } from '../../src/artifacts';
-import { ERC20Wrapper } from '../utils/erc20_wrapper';
-import { ERC721Wrapper } from '../utils/erc721_wrapper';
-import { ExchangeWrapper } from '../utils/exchange_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -106,7 +109,7 @@ describe(ContractName.DutchAuction, () => {
 
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-            artifacts.Exchange,
+            coreArtifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,
