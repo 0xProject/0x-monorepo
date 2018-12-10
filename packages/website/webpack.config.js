@@ -57,7 +57,18 @@ const config = {
             },
             {
                 test: /\.svg$/,
-                loaders: ['react-svg-loader'],
+                use: [
+                    {
+                        loader: "react-svg-loader",
+                        options: {
+                            svgo: {
+                                plugins: [
+                                    { removeViewBox: false }
+                                ],
+                            }
+                        }
+                    }
+                ]
             },
         ],
     },
