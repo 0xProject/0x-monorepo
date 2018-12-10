@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 import { Column, Section, Wrap, WrapCentered } from 'ts/@next/components/layout';
+import { Link } from 'ts/@next/components/link';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
@@ -18,7 +19,7 @@ export const NextWhy = () => (
         <Column colWidth="2/3">
           <Heading size="medium" isCentered={true} style={{ '--desktopMaxWidth': '570px' }}>The exchange layer for the crypto economy</Heading>
           <Paragraph size="medium" isCentered={true}>The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastructure that allows anyone in the world to build products that enable the purchasing and trading of crypto tokens.</Paragraph>
-          <Paragraph isCentered={true}>Build on 0x (arrow)</Paragraph>
+          <Link href="/docs" isCentered={true}>Build on 0x (arrow)</Link>
         </Column>
       </WrapCentered>
     </Section>

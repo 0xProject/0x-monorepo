@@ -5,6 +5,7 @@ interface GlobalStyle {
     theme: {
         bgColor: string;
         textColor: string;
+        linkColor: string;
     };
 }
 
@@ -80,6 +81,10 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
         height: 1px !important;
         width: 1px !important;
         overflow: hidden;
+    }
+
+    a {
+        color: ${props => props.theme.linkColor};
     }
 
     img, svg {

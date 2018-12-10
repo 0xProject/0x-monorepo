@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ThemeProvider } from 'styled-components';
 
+import { colors } from 'ts/style/colors';
 import { Footer } from 'ts/@next/components/footer';
 import { Header } from 'ts/@next/components/header';
 import { Main } from 'ts/@next/components/layout';
@@ -18,6 +19,7 @@ export interface ThemeInterface {
     [key: string]: {
         bgColor: string;
         textColor: string;
+        linkColor: string;
     };
 }
 
@@ -25,14 +27,17 @@ const GLOBAL_THEMES: ThemeInterface = {
     dark: {
         bgColor: '#000000',
         textColor: '#FFFFFF',
+        linkColor: colors.brandLight,
     },
     light: {
         bgColor: '#FFFFFF',
         textColor: '#000000',
+        linkColor: colors.brandDark,
     },
     gray: {
         bgColor: '#e0e0e0',
         textColor: '#000000',
+        linkColor: colors.brandDark,
     },
 };
 
