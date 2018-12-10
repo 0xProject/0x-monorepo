@@ -45,6 +45,9 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
             --defaultParagraph: 18px;
             --mediumParagraph: 22px;
             --largeParagraph: 28px;
+            --smallIcon: 75px;
+            --mediumIcon: 85px;
+            --largeIcon: 145px;
         }
     }
 
@@ -62,6 +65,9 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
             --defaultParagraph: 16px; // TO DO
             --mediumParagraph: 16px; // TO DO
             --largeParagraph: 18px; // TO DO
+            --smallIcon: 45px;
+            --mediumIcon: 55px;
+            --largeIcon: 115px;
         }
     }
 

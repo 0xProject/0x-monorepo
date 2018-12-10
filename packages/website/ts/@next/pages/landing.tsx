@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import {colors} from 'ts/style/colors';
 
 import {Button, ButtonWrap} from 'ts/@next/components/button';
+import {Icon} from 'ts/@next/components/icon';
 import {Column, Section, Wrap, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
@@ -93,7 +94,7 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
 
         <Section bgColor={colors.backgroundDark} isPadLarge={true}>
             <WrapCentered width="narrow">
-                <ProtocolIcon/>
+                <Icon name="coin" size="small" />
 
                 <Paragraph
                     size="large"
@@ -115,7 +116,11 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
             <Wrap padding={['large', 0, 0, 0]}>
                 {/* NOTE: this probably should be withComponent as part of a <dl> */}
                 <Column colWidth="1/3" isNoPadding={true}>
-                    <Heading size="medium" isCentered={true}>
+                    <Heading
+                        size="medium"
+                        isCentered={true}
+                        isNoMargin={true}
+                    >
                         873,435
                     </Heading>
 
@@ -132,6 +137,7 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                     <Heading
                         size="medium"
                         isCentered={true}
+                        isNoMargin={true}
                     >
                         $203M
                     </Heading>
@@ -149,6 +155,7 @@ export const NextLanding: React.StatelessComponent<{}> = () => (
                     <Heading
                         size="medium"
                         isCentered={true}
+                        isNoMargin={true}
                     >
                         227,372
                     </Heading>

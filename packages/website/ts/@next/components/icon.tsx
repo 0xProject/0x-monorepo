@@ -1,23 +1,43 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import IconCoin from 'ts/@next/icons/illustrations/coin.svg';
 
 interface Props {
-    icon: any;
+    name: string;
     size?: string;
 }
 
-export const IconClass: React.FunctionComponent<Props> = (props: Props) => {
+const ICONS = {
+    coin: IconCoin,
+};
+
+export const Icon: React.FunctionComponent<Props> = (props: Props) => {
+    const IconSVG = ICONS[props.name];
+
     return (
-        <div />
+        <StyledIcon {...props}>
+            <IconSVG />
+        </StyledIcon>
     );
 };
 
-export const Icon = styled(IconClass)`
-    margin: auto;
+const _getSize = (size: string | number = 'small'): string => {
+    if (isNaN(size)) {
+        return `var(--${size}Icon)`;
+    }
+
+    return `${size}px`;
+};
+
+const StyledIcon = styled.figure`
+    width: ${props => _getSize(props.size)};
+    height: ${props => _getSize(props.size)};
+    margin: 0;
     flex-shrink: 0;
 
-    ${(props: Props) => props.size && `
-        width: ${props.size};
-        height: auto;
-    `}
+    svg {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 `;

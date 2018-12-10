@@ -33,7 +33,6 @@ interface ColumnProps {
     isNoPadding?: boolean;
     isPadLarge?: boolean;
     bgColor?: string;
-    borderColor?: string;
 }
 
 interface GetColWidthArgs {
@@ -67,7 +66,6 @@ const COLUMN_WIDTHS: ColumnWidths = {
 };
 
 export const Main = styled.main`
-    border: 1px dotted rgba(0, 0, 255, 0.3);
     width: calc(100% - 0);
     max-width: ${MAX_WIDTH}px;
     margin: 0 auto;
@@ -87,7 +85,6 @@ export const Section = styled.section<SectionProps>`
     margin-bottom: ${props => !props.isNoMargin && `${GUTTER}px`};
     margin-left: ${props => props.isFullWidth && `-${GUTTER}px`};
     background-color: ${props => props.bgColor};
-    border: 1px dotted rgba(0, 255, 0, 0.15);
 
     @media (min-width: 1560px) {
         width: ${props => props.isFullWidth && '100vw'};
@@ -133,9 +130,7 @@ export const WrapGrid = styled(WrapBase)`
 
 export const Column = styled.div<ColumnProps>`
     padding: ${props => !props.isNoPadding && (props.isPadLarge ? '60px 30px' : '30px')};
-    border: 1px dotted rgba(255, 0, 0, 0.15);
     background-color: ${props => props.bgColor};
-    border-color: ${props => props.borderColor && `${props.borderColor}`};
 
     @media (min-width: ${BREAKPOINTS.mobile}) {
         width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};
