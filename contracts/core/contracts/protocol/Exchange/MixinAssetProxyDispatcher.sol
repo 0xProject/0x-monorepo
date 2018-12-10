@@ -20,7 +20,7 @@ pragma solidity 0.4.24;
 
 import "@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol";
 import "./mixins/MAssetProxyDispatcher.sol";
-import "../AssetProxy/interfaces/IAssetProxy.sol";
+import "@0x/contracts-interfaces/contracts/protocol/AssetProxy/IAssetProxy.sol";
 
 
 contract MixinAssetProxyDispatcher is

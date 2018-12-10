@@ -12,8 +12,6 @@ export * from '../../generated-wrappers/erc721_token';
 export * from '../../generated-wrappers/exchange';
 export * from '../../generated-wrappers/exchange_wrapper';
 export * from '../../generated-wrappers/forwarder';
-export * from '../../generated-wrappers/i_asset_data';
-export * from '../../generated-wrappers/i_asset_proxy';
 export * from '../../generated-wrappers/invalid_erc721_receiver';
 export * from '../../generated-wrappers/mixin_authorizable';
 export * from '../../generated-wrappers/order_validator';

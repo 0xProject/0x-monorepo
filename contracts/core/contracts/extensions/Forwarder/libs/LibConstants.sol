@@ -19,7 +19,7 @@
 pragma solidity 0.4.24;
 
 import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
-import "../../../protocol/Exchange/interfaces/IExchange.sol";
+import "@0x/contracts-interfaces/contracts/protocol/Exchange/IExchange.sol";
 import "../../../tokens/EtherToken/IEtherToken.sol";
 import "../../../tokens/ERC20Token/IERC20Token.sol";
 

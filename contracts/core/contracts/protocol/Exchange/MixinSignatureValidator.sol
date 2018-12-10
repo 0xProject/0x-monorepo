@@ -22,8 +22,8 @@ import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
 import "@0x/contracts-utils/contracts/utils/ReentrancyGuard/ReentrancyGuard.sol";
 import "./mixins/MSignatureValidator.sol";
 import "./mixins/MTransactions.sol";
-import "./interfaces/IWallet.sol";
-import "./interfaces/IValidator.sol";
+import "@0x/contracts-interfaces/contracts/protocol/Exchange/IWallet.sol";
+import "@0x/contracts-interfaces/contracts/protocol/Exchange/IValidator.sol";
 
 
 contract MixinSignatureValidator is
