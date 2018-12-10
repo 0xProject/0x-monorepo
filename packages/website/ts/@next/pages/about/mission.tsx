@@ -15,13 +15,13 @@ export const NextAboutMission = () => (
   <SiteWrap theme="light">
     <Section>
       <Wrap>
-         <Column colWidth="1/3" isPadLarge={true}>
+         <Column colWidth="1/3">
             <ChapterLink to="/next/about/mission">Our Mission</ChapterLink>
             <ChapterLink to="/next/about/team">Team</ChapterLink>
             <ChapterLink to="/next/about/press">Press</ChapterLink>
             <ChapterLink to="/next/about/jobs">Jobs</ChapterLink>
         </Column>
-        <Column colWidth="2/3" isPadLarge={true}>
+        <Column colWidth="2/3">
             <Heading size="medium">Creating a tokenized world where all value can flow freely.</Heading>
             <Paragraph size="medium">0x Protocol is an important infrastructure layer for the emerging crypto economy and enables markets to be created that couldn't have existed before. As more assets become tokenized, public blockchains provide the opportunity to establish a new financial stack that is more efficient, transparent, and equitable than any system in the past.</Paragraph>
             <Link href="/mission">Our missions and values</Link>
@@ -31,7 +31,7 @@ export const NextAboutMission = () => (
 
     <Section isFullWidth={true} isNoPadding={true}>
         <Wrap width="full">
-            <Image src="/images/@next/about/about-mission@2x.jpg" alt="" isCentered={true} />
+            <Image src="/images/@next/about/about-mission@2x.jpg" height="372" alt="" isCentered={true} />
         </Wrap>
     </Section>
 
