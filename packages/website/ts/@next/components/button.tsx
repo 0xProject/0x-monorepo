@@ -39,10 +39,6 @@ export const Button = styled.button<ButtonInterface>`
     path {
         fill: ${props => props.color || props.theme.textColor};
     }
-
-    @media (max-width: 768px) {
-        padding: ${props => !props.isNoPadding && '6% 10%'};
-    }
 `;
 
 export const Link = (props: ButtonInterface) => {
