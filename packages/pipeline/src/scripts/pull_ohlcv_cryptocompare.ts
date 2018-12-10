@@ -63,7 +63,7 @@ async function fetchAndSaveAsync(
             console.log(`Retrieved ${records.length} records for ${JSON.stringify(pair)}`);
             if (records.length > 0) {
                 const metadata: OHLCVMetadata = {
-                    exchange: source.default_exchange,
+                    exchange: source.defaultExchange,
                     fromSymbol: pair.fromSymbol,
                     toSymbol: pair.toSymbol,
                     source: SOURCE_NAME,
