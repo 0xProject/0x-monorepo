@@ -1,4 +1,13 @@
 import {
+    artifacts as coreArtifacts,
+    ERC20ProxyContract,
+    ERC20Wrapper,
+    ERC721ProxyContract,
+    ERC721Wrapper,
+    ExchangeContract,
+    ExchangeWrapper,
+} from '@0x/contracts-core';
+import {
     chaiSetup,
     constants,
     OrderFactory,
@@ -15,14 +24,8 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
-import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
-import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { OrderValidatorContract } from '../../generated-wrappers/order_validator';
 import { artifacts } from '../../src/artifacts';
-import { ERC20Wrapper } from '../utils/erc20_wrapper';
-import { ERC721Wrapper } from '../utils/erc721_wrapper';
-import { ExchangeWrapper } from '../utils/exchange_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -78,7 +81,7 @@ describe('OrderValidator', () => {
 
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
-            artifacts.Exchange,
+            coreArtifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,
