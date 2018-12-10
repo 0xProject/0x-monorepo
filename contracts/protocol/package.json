@@ -91,6 +91,6 @@
         "lodash": "^4.17.5"
     },
     "publishConfig": {
-        "access": "private"
+        "access": "public"
     }
 }

@@ -99,6 +99,6 @@
         "webpack-dev-server": "^3.1.9"
     },
     "publishConfig": {
-        "access": "private"
+        "access": "public"
     }
 }
