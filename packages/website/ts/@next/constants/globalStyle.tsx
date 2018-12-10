@@ -99,6 +99,10 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
         line-height: 1.444444444em; // 26px
     }
 
+    :root a {
+        text-decoration: none;
+    }
+
     svg + p,
     img + p {
         padding-top: 30px;
