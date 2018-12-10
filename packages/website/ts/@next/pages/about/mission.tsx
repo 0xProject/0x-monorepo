@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { Image } from 'ts/@next/components/image';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
+import { Link } from 'ts/@next/components/link';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
@@ -24,7 +25,7 @@ export const NextAboutMission = () => (
         <Column colWidth="2/3">
             <Heading size="medium">Creating a tokenized world where all value can flow freely.</Heading>
             <Paragraph size="medium">0x Protocol is an important infrastructure layer for the emerging crypto economy and enables markets to be created that couldn't have existed before. As more assets become tokenized, public blockchains provide the opportunity to establish a new financial stack that is more efficient, transparent, and equitable than any system in the past.</Paragraph>
-            <Paragraph>Our missions and values (arrow)</Paragraph>
+            <Link href="/mission">Our missions and values</Link>
         </Column>
       </Wrap>
     </Section>
