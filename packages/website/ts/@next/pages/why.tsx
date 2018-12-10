@@ -7,7 +7,7 @@ import { colors } from 'ts/style/colors';
 
 import { Banner } from 'ts/@next/components/banner';
 import { Icon } from 'ts/@next/components/icon';
-import { Column, Section, Wrap, WrapCentered, WrapSticky } from 'ts/@next/components/layout';
+import { BREAKPOINTS, Column, Section, Wrap, WrapCentered, WrapSticky } from 'ts/@next/components/layout';
 import { Link } from 'ts/@next/components/link';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
@@ -63,8 +63,12 @@ const functionalityData = [
 ];
 
 export class NextWhy extends React.PureComponent {
+    public benefitsRef = React.createRef();
+    public casesRef = React.createRef();
+    public functionalityRef = React.createRef();
+
     public scrollToSection = (sectionName: 'benefits' | 'cases' | 'features') => {
-        zenscroll.to(this[sectionName]);
+        zenscroll.to(this[`${sectionName}Ref`]);
     }
 
     public scrollToBenefits = () => {
@@ -142,7 +146,7 @@ export class NextWhy extends React.PureComponent {
                   </Column>
 
                   <Column colWidth="2/3">
-                        <SectionWrap ref={elem => this.benefits = elem}>
+                        <SectionWrap ref={this.benefitsRef}>
                             <Heading size="medium">What 0x offers</Heading>
 
                             {_.map(offersData, (item, index) => (
@@ -156,19 +160,19 @@ export class NextWhy extends React.PureComponent {
                                         {item.title}
                                     </Heading>
 
-                                    <Paragraph isMuted={true}>
+                                    <Paragraph isMuted={true} isNoMargin={true}>
                                         {item.description}
                                     </Paragraph>
                                 </ChapterItemWrap>
                             ))}
                         </SectionWrap>
 
-                        <SectionWrap ref={elem => this.cases = elem}>
+                        <SectionWrap ref={this.casesRef}>
                             <Heading size="medium">Use Cases</Heading>
                             <Paragraph isMuted={true}>slider</Paragraph>
                         </SectionWrap>
 
-                        <SectionWrap ref={elem => this.functionality = elem}>
+                        <SectionWrap ref={this.functionalityRef}>
                             <Heading size="medium">Exchange Functionality</Heading>
 
                             {_.map(functionalityData, (item, index) => (
@@ -182,7 +186,7 @@ export class NextWhy extends React.PureComponent {
                                         {item.title}
                                     </Heading>
 
-                                    <Paragraph isMuted={true}>
+                                    <Paragraph isMuted={true} isNoMargin={true}>
                                         {item.description}
                                     </Paragraph>
                                 </ChapterItemWrap>
@@ -208,6 +212,7 @@ const SectionWrap = styled.div`
 
     & + & {
         padding-top: 60px;
+        margin-top: 60px;
     }
 
     & + &:before {
@@ -215,9 +220,20 @@ const SectionWrap = styled.div`
         position: absolute;
         top: 0;
         left: 0;
-        width: 100vw;
         height: 1px;
         background-color: #3d3d3d;
+    }
+
+    @media (min-width: ${BREAKPOINTS.mobile}) {
+        & + &:before {
+            width: 100vw;
+        }
+    }
+
+    @media (max-width: ${BREAKPOINTS.mobile}) {
+        & + &:before {
+            width: 100%;
+        }
     }
 `;
 
