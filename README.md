@@ -76,13 +76,12 @@ Visit our [developer portal](https://0xproject.com/docs/order-utils) for a compr
 
 #### Private Packages
 
-| Package                                            | Description                                                      |
-| -------------------------------------------------- | ---------------------------------------------------------------- |
-| [`@0x/contracts`](/contracts/core)                 | 0x protocol solidity smart contracts & tests                     |
-| [`@0x/instant`](/packages/instant)                 | A free and flexible way to offer simple crypto
-purchasing in any app or website.                                                      |
-| [`@0x/testnet-faucets`](/packages/testnet-faucets) | A faucet micro-service that dispenses test ERC20 tokens or Ether |
-| [`@0x/website`](/packages/website)                 | 0x website                                                       |
+| Package                                            | Description                                                                      |
+| -------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [`@0x/contracts`](/contracts/core)                 | 0x protocol solidity smart contracts & tests                                     |
+| [`@0x/instant`](/packages/instant)                 | A free and flexible way to offer simple crypto purchasing in any app or website. |
+| [`@0x/testnet-faucets`](/packages/testnet-faucets) | A faucet micro-service that dispenses test ERC20 tokens or Ether                 |
+| [`@0x/website`](/packages/website)                 | 0x website                                                                       |
 
 ## Usage
 
