@@ -10,7 +10,7 @@ interface IconProps extends PaddingInterface {
 
 export const Icon: React.FunctionComponent<Props> = (props: Props) => {
     const IconSVG = Loadable({
-        loader: () => import(`ts/@next/icons/illustrations/${props.name}.svg`),
+        loader: () => import(/* webpackChunkName: "icon" */`ts/@next/icons/illustrations/${props.name}.svg`),
         loading: () => 'Loading',
     });
 

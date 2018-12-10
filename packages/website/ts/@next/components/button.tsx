@@ -11,6 +11,7 @@ interface ButtonInterface {
     isNoBorder?: boolean;
     isNoPadding?: boolean;
     isWithArrow?: boolean;
+    isAccentColor?: boolean;
     hasIcon?: boolean | string;
     isInline?: boolean;
     href?: string;
@@ -26,7 +27,7 @@ export const Button = styled.button<ButtonInterface>`
     display: ${props => props.isInline && 'inline-block'};
     background-color: ${props => !props.isTransparent ? colors.brandLight : 'transparent'};
     border-color: ${props => (props.isTransparent && !props.isNoBorder && !props.isWithArrow) && '#6a6a6a'};
-    color: ${props => props.color || props.theme.textColor};
+    color: ${props => props.isAccentColor ? props.theme.linkColor : (props.color || props.theme.textColor)};
     padding: ${props => (!props.isNoPadding && !props.isWithArrow) && '18px 30px'};
     text-align: center;
     font-size: ${props => props.isWithArrow ? '20px' : '18px'};
@@ -37,7 +38,7 @@ export const Button = styled.button<ButtonInterface>`
     }
 
     path {
-        fill: ${props => props.color || props.theme.textColor};
+        fill: ${props => props.isAccentColor ? props.theme.linkColor : (props.color || props.theme.textColor)};
     }
 `;
 

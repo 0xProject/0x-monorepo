@@ -89,10 +89,6 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
         overflow: hidden;
     }
 
-    a {
-        color: ${props => props.theme.linkColor};
-    }
-
     img, svg {
         max-width: 100%;
         object-fit: contain;
@@ -101,11 +97,6 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
     p, li {
         font-size: 1rem;
         line-height: 1.444444444em; // 26px
-    }
-
-    :root a {
-        color: inherit;
-        text-decoration: none;
     }
 
     svg + p,
