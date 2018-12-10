@@ -20,8 +20,8 @@ pragma solidity 0.4.24;
 
 import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
 import "@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol";
-import "../../tokens/ERC20Token/IERC20Token.sol";
-import "../../tokens/ERC721Token/IERC721Token.sol";
+import "@0x/contracts-tokens/contracts/tokens/ERC20Token/IERC20Token.sol";
+import "@0x/contracts-tokens/contracts/tokens/ERC721Token/IERC721Token.sol";
 import "./libs/LibConstants.sol";
 import "./mixins/MAssets.sol";
 

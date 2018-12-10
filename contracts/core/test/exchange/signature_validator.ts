@@ -9,6 +9,7 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
+import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
@@ -17,13 +18,13 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 
 import {
+    artifacts,
     TestSignatureValidatorContract,
     TestSignatureValidatorSignatureValidatorApprovalEventArgs,
-} from '../../generated-wrappers/test_signature_validator';
-import { TestStaticCallReceiverContract } from '../../generated-wrappers/test_static_call_receiver';
-import { ValidatorContract } from '../../generated-wrappers/validator';
-import { WalletContract } from '../../generated-wrappers/wallet';
-import { artifacts } from '../../src/artifacts';
+    TestStaticCallReceiverContract,
+    ValidatorContract,
+    WalletContract,
+} from '../../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -77,7 +78,7 @@ describe('MixinSignatureValidator', () => {
             provider,
             txDefaults,
         );
-        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
+        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokensArtifacts });
         await web3Wrapper.awaitTransactionSuccessAsync(
             await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
                 from: signerAddress,

@@ -11,6 +11,7 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
+import { DummyERC20TokenContract } from '@0x/contracts-tokens';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { OrderWithoutExchangeAddress, RevertReason, SignedOrder } from '@0x/types';
@@ -18,7 +19,6 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { ExchangeWrapperContract } from '../../generated-wrappers/exchange_wrapper';

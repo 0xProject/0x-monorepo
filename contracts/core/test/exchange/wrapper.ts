@@ -11,6 +11,12 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
+import {
+    artifacts as tokensArtifacts,
+    DummyERC20TokenContract,
+    DummyERC721TokenContract,
+    ReentrantERC20TokenContract,
+} from '@0x/contracts-tokens';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
@@ -19,12 +25,9 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
-import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
 import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
-import { ReentrantERC20TokenContract } from '../../generated-wrappers/reentrant_erc20_token';
 import { artifacts } from '../../src/artifacts';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
@@ -113,7 +116,7 @@ describe('Exchange wrappers', () => {
         );
 
         reentrantErc20Token = await ReentrantERC20TokenContract.deployFrom0xArtifactAsync(
-            artifacts.ReentrantERC20Token,
+            tokensArtifacts.ReentrantERC20Token,
             provider,
             txDefaults,
             exchange.address,

@@ -12,10 +12,6 @@ Contracts that make up and interact with version 2.0.0 of the protocol can be fo
     *   This directory contains contracts that interact with the 2.0.0 contracts and will be used in production, such as the [Forwarder](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md) contract.
 *   [examples](./contracts/examples)
     *   This directory contains example implementations of contracts that interact with the protocol but are _not_ intended for use in production. Examples include [filter](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#filter-contracts) contracts, a [Wallet](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#wallet) contract, and a [Validator](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#validator) contract, among others.
-*   [tokens](./contracts/tokens)
-    *   This directory contains implementations of different tokens and token standards, including [wETH](https://weth.io/), ZRX, [ERC20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md), and [ERC721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md).
-*   [utils](./contracts/utils)
-    *   This directory contains libraries and utils that are shared across all of the other directories.
 *   [test](./contracts/test)
     *   This directory contains mocks and other contracts that are used solely for testing contracts within the other directories.
 

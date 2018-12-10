@@ -10,6 +10,12 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
+import {
+    artifacts as tokensArtifacts,
+    DummyERC20TokenContract,
+    DummyERC721TokenContract,
+    WETH9Contract,
+} from '@0x/contracts-tokens';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
@@ -20,11 +26,8 @@ import ethAbi = require('ethereumjs-abi');
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
-import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
 import { DutchAuctionContract } from '../../generated-wrappers/dutch_auction';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
-import { WETH9Contract } from '../../generated-wrappers/weth9';
 import { artifacts } from '../../src/artifacts';
 import { ERC20Wrapper } from '../utils/erc20_wrapper';
 import { ERC721Wrapper } from '../utils/erc721_wrapper';
@@ -98,7 +101,7 @@ describe(ContractName.DutchAuction, () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
 
-        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults);
+        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(tokensArtifacts.WETH9, provider, txDefaults);
         erc20Wrapper.addDummyTokenContract(wethContract as any);
 
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
