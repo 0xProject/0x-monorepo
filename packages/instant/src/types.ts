@@ -102,6 +102,7 @@ export interface AffiliateInfo {
 
 export interface ProviderState {
     name: string;
+    displayName: string;
     provider: Provider;
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;

@@ -38,6 +38,7 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             props.orderSource,
             networkId,
             props.provider,
+            props.walletDisplayName,
         );
         // merge the additional additionalAssetMetaDataMap with our default map
         const completeAssetMetaDataMap = {
