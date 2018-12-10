@@ -28,7 +28,7 @@ const StyledHeading = styled.h1<HeadingProps>`
     line-height: ${props => `var(--${props.size || 'default'}HeadingHeight)`};
     margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
     text-align: ${props => props.isCentered && 'center'};
-    font-weight: 300;
+    font-weight: 400;
     margin-left: ${props => props.isCentered && 'auto'};
     margin-right: ${props => props.isCentered && 'auto'};
 `;

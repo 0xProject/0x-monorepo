@@ -3,16 +3,13 @@ import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ChapterLink } from 'ts/@next/components/chapter_link';
+import { Icon } from 'ts/@next/components/icon';
 import { Image } from 'ts/@next/components/image';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
 import { Link } from 'ts/@next/components/link';
 import { Separator } from 'ts/@next/components/separator';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
-
-import ConsistentlyShipIcon from 'ts/@next/icons/illustrations/consistently-ship.svg';
-import LongTermImpactIcon from 'ts/@next/icons/illustrations/long-term-impact.svg';
-import RightThingIcon from 'ts/@next/icons/illustrations/right-thing.svg';
 
 export const NextAboutMission = () => (
   <SiteWrap theme="light">
@@ -47,7 +44,7 @@ export const NextAboutMission = () => (
         <Column colWidth="2/3">
             <Wrap>
                 <Column colWidth="1/3">
-                    <RightThingIcon width="100" />
+                    <Icon name="right-thing" size={100} />
                 </Column>
                 <Column colWidth="2/3">
                     <Heading>Do The Right Thing</Heading>
@@ -57,7 +54,7 @@ export const NextAboutMission = () => (
             <Separator/>
             <Wrap>
                 <Column colWidth="1/3">
-                    <ConsistentlyShipIcon width="100" />
+                    <Icon name="consistently-ship" size={100} />
                 </Column>
                 <Column colWidth="2/3">
                     <Heading>Consistently Ship</Heading>
@@ -67,7 +64,7 @@ export const NextAboutMission = () => (
             <Separator/>
             <Wrap>
                 <Column colWidth="1/3">
-                    <LongTermImpactIcon width="100" />
+                    <Icon name="long-term-impact" size={100} />
                 </Column>
                 <Column colWidth="2/3">
                     <Heading>Focus on long-term Impact</Heading>
