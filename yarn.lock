@@ -14082,9 +14082,9 @@ solc@^0.4.24:
     semver "^5.3.0"
     yargs "^4.7.1"
 
-solhint@^1.2.1:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/solhint/-/solhint-1.4.0.tgz#59018cfc86e2fc268c8b520322ab1e0db1fdb94b"
+solhint@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/solhint/-/solhint-1.4.1.tgz#921ef9fed83dc945853079865140730d4d2140b2"
   dependencies:
     antlr4 "4.7.1"
     commander "2.18.0"
