@@ -38,7 +38,7 @@ function parseZeroExTrustedToken(resp: ZeroExTrustedTokenMeta): TokenMetadata {
     const trustedToken = new TokenMetadata();
 
     trustedToken.address = resp.address;
-    trustedToken.decimals = new BigNumber(resp.decimals);
+    trustedToken.decimals = resp.decimals ? new BigNumber(resp.decimals) : null;
     trustedToken.symbol = resp.symbol;
     trustedToken.name = resp.name;
     trustedToken.authority = '0x';
