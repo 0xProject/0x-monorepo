@@ -43,7 +43,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/contracts/core/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/contracts/extensions/README.md",
     "devDependencies": {
         "@0x/contracts-test-utils": "^1.0.0",
         "@0x/abi-gen": "^1.0.17",
@@ -75,7 +75,7 @@
         "@0x/base-contract": "^3.0.8",
         "@0x/order-utils": "^3.0.4",
         "@0x/contracts-utils": "^1.0.0",
-        "@0x/contracts-core": "^2.1.56",
+        "@0x/contracts-protocol": "^2.1.56",
         "@0x/contracts-tokens": "^1.0.0",
         "@0x/contracts-libs": "^1.0.0",
         "@0x/contracts-interfaces": "^1.0.0",

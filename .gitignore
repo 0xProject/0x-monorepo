@@ -79,7 +79,7 @@ packages/react-docs/example/public/bundle*
 packages/testnet-faucets/server/
 
 # generated contract artifacts/
-contracts/core/generated-artifacts/
+contracts/protocol/generated-artifacts/
 contracts/multisig/generated-artifacts/
 contracts/utils/generated-artifacts/
 contracts/libs/generated-artifacts/
@@ -92,7 +92,7 @@ packages/metacoin/artifacts/
 
 # generated contract wrappers
 packages/abi-gen-wrappers/wrappers
-contracts/core/generated-wrappers/
+contracts/protocol/generated-wrappers/
 contracts/multisig/generated-wrappers/
 contracts/utils/generated-wrappers/
 contracts/libs/generated-wrappers/

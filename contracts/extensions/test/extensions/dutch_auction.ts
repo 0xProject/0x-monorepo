@@ -1,10 +1,10 @@
 import {
-    artifacts as coreArtifacts,
+    artifacts as protocolArtifacts,
     ERC20Wrapper,
     ERC721Wrapper,
     ExchangeContract,
     ExchangeWrapper,
-} from '@0x/contracts-core';
+} from '@0x/contracts-protocol';
 import {
     chaiSetup,
     constants,
@@ -109,7 +109,7 @@ describe(ContractName.DutchAuction, () => {
 
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-            coreArtifacts.Exchange,
+            protocolArtifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,

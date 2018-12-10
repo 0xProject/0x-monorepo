@@ -45,7 +45,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/contracts-libs
             - run: yarn wsrun test:circleci @0x/contracts-tokens
             - run: yarn wsrun test:circleci @0x/contracts-extensions
-            - run: yarn wsrun test:circleci @0x/contracts-core
+            - run: yarn wsrun test:circleci @0x/contracts-protocol
     test-contracts-geth:
         docker:
             - image: circleci/node:9
@@ -62,7 +62,7 @@ jobs:
             - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-libs
             - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-tokens
             - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-extensions
-            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-core
+            - run: TEST_PROVIDER=geth yarn wsrun test @0x/contracts-protocol
     test-publish:
         resource_class: medium+
         docker:
