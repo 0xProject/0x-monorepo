@@ -120,6 +120,12 @@ export const WrapCentered = styled(WrapBase)`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-align: center;
+`;
+
+export const WrapSticky = styled.div`
+    position: sticky;
+    top: ${props => props.offsetTop || '60px'};
 `;
 
 export const WrapGrid = styled(WrapBase)`
