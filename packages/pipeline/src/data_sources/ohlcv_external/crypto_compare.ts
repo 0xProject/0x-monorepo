@@ -42,7 +42,7 @@ const MAX_PAGE_SIZE = 2000;
 
 export class CryptoCompareOHLCVSource {
     public readonly intervalBetweenRecords = ONE_HOUR;
-    public readonly default_exchange = 'CCCAGG';
+    public readonly defaultExchange = 'CCCAGG';
     public readonly interval = this.intervalBetweenRecords * MAX_PAGE_SIZE; // the hourly API returns data for one interval at a time
     private readonly _url: string = 'https://min-api.cryptocompare.com/data/histohour?';
 
@@ -60,7 +60,7 @@ export class CryptoCompareOHLCVSource {
     // gets OHLCV records starting from pair.latest
     public async getHourlyOHLCVAsync(pair: TradingPair): Promise<CryptoCompareOHLCVRecord[]> {
         const params = {
-            e: this.default_exchange,
+            e: this.defaultExchange,
             fsym: pair.fromSymbol,
             tsym: pair.toSymbol,
             limit: MAX_PAGE_SIZE,
