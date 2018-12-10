@@ -37,13 +37,13 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
             <Border/>
             <Wrap>
                 <CustomColumn colWidth="1/2" isPadLarge={true}>
-                    <WrapCentered>
+                    <WrapCentered padding={[30, 0]}>
                         <CustomHeading isNoMargin={true}>{heading}</CustomHeading>
                         {subline && <Paragraph isMuted={0.5} isNoMargin={true}>{subline}</Paragraph>}
                     </WrapCentered>
                 </CustomColumn>
                 <CustomColumn colWidth="1/2" isPadLarge={true}>
-                    <WrapCentered>
+                    <WrapCentered padding={[30, 0]}>
                         <ButtonWrap>
                             {mainCta && <Button href={mainCta.href}>{mainCta.text}</Button>}
                             {secondaryCta && <Button href={secondaryCta.href} isTransparent={true}>{secondaryCta.text}</Button>}
