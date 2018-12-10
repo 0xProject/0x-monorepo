@@ -11,6 +11,7 @@ interface HeadingProps extends BaseTextInterface {
     asElement?: 'h1'| 'h2'| 'h3'| 'h4';
     isCentered?: boolean;
     isNoMargin?: boolean;
+    marginBottom?: string;
     color?: string;
 }
 
@@ -24,7 +25,7 @@ const StyledHeading = styled.h1<HeadingProps>`
     font-size: ${props => `var(--${props.size || 'default'}Heading)`};
     padding: ${props => props.padding && getCSSPadding(props.padding)};
     line-height: ${props => `var(--${props.size || 'default'}HeadingHeight)`};
-    margin-bottom: ${props => !props.isNoMargin && '30px'};
+    margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
     text-align: ${props => props.isCentered && 'center'};
     font-weight: 300;
     margin-left: ${props => props.isCentered && 'auto'};

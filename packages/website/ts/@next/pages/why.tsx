@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 import zenscroll from 'zenscroll';
@@ -14,6 +15,52 @@ import { Heading, Paragraph } from 'ts/@next/components/text';
 import CoinIcon from 'ts/@next/icons/illustrations/coin.svg';
 import CustomizeIcon from 'ts/@next/icons/illustrations/customize.svg';
 import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
+
+const offersData = [
+    {
+        icon: 'coin',
+        title: 'A standard for Exchange',
+        description: '0x provides developers with a technical standard for trading Ethereum-based tokens such as ERC 20 and ERC 721.',
+    },
+    {
+        icon: 'coin',
+        title: 'Robust Smart Contracts',
+        description: `0x Protocol's smart contracts have been put through two rounds of rigorous security audits.`,
+    },
+    {
+        icon: 'coin',
+        title: 'Extensible Architecture',
+        description: `0x's modular pipeline enables you to plug in your own smart contracts through an extensible API.`,
+    },
+    {
+        icon: 'coin',
+        title: 'Efficient Design',
+        description: `0x’s off-chain order relay with on-chain settlement is a gas efficient approach to p2p exchange, reducing blockchain bloat.`,
+    },
+];
+
+const functionalityData = [
+    {
+        icon: 'coin',
+        title: 'Secure Non-custodial Trading',
+        description: 'Enable tokens to be traded wallet-to-wallet with no deposits or withdrawals.',
+    },
+    {
+        icon: 'coin',
+        title: 'Flexible Order Types',
+        description: 'Choose to sell assets at a specific “buy it now” price or allow potential buyers to submit bids.',
+    },
+    {
+        icon: 'coin',
+        title: 'Build a Business',
+        description: 'Monetize your product by taking fees on each transaction and join a growing number of relayers in the 0x ecosystem.',
+    },
+    {
+        icon: 'coin',
+        title: 'Networked Liquidity',
+        description: 'Allow your assets to appear on other 0x-based marketplaces by sharing your liquidity through an open order book.',
+    },
+];
 
 export class NextWhy extends React.PureComponent {
     public scrollToSection = (sectionName: 'benefits' | 'cases' | 'features') => {
@@ -39,7 +86,7 @@ export class NextWhy extends React.PureComponent {
             <SiteWrap theme="dark">
               <Section isPadLarge={true}>
                 <WrapCentered>
-                  <Column colWidth="2/3">
+                  <Column colWidth="2/3" isNoMargin={true}>
                       <Heading
                           size="medium"
                           isCentered={true}
@@ -95,50 +142,52 @@ export class NextWhy extends React.PureComponent {
                   </Column>
 
                   <Column colWidth="2/3">
-                        <div ref={elem => this.benefits = elem}>
+                        <SectionWrap ref={elem => this.benefits = elem}>
                             <Heading size="medium">What 0x offers</Heading>
 
-                            <Icon name="coin" size="medium" margin={[0, 0, 22, 0]} />
-                            <Heading size="small">A Standard for Exchange</Heading>
-                            <Paragraph isMuted={true}>0x provides developers with a technical standard for trading Ethereum-based tokens such as ERC 20 and ERC 721.</Paragraph>
+                            {_.map(offersData, (item, index) => (
+                                <ChapterItemWrap>
+                                    <Icon name={item.icon} size="medium" margin={[0, 0, 22, 0]} />
 
-                            <Icon name="coin" size="medium" margin={[0, 0, 22, 0]} />
-                            <Heading size="small">Robust Smart Contracts</Heading>
-                            <Paragraph isMuted={true}>0x Protocol's smart contracts have been put through two rounds of rigorous security audits.</Paragraph>
+                                    <Heading
+                                        marginBottom="15px"
+                                        isNoPadding={true}
+                                    >
+                                        {item.title}
+                                    </Heading>
 
-                            <Icon name="coin" size="medium" margin={[0, 0, 22, 0]} />
-                            <Heading size="small">Extensible Architecture</Heading>
-                            <Paragraph isMuted={true}>0x's modular pipeline enables you to plug in your own smart contracts through an extensible API.</Paragraph>
+                                    <Paragraph isMuted={true}>
+                                        {item.description}
+                                    </Paragraph>
+                                </ChapterItemWrap>
+                            ))}
+                        </SectionWrap>
 
-                            <Icon name="coin" size="medium" margin={[0, 0, 22, 0]} />
-                            <Heading size="small">Efficient Design</Heading>
-                            <Paragraph isMuted={true}>0x’s off-chain order relay with on-chain settlement is a gas efficient approach to p2p exchange, reducing blockchain bloat.</Paragraph>
-                        </div>
-
-                        <div ref={elem => this.cases = elem}>
-                            <Heading size="small">Use Cases</Heading>
+                        <SectionWrap ref={elem => this.cases = elem}>
+                            <Heading size="medium">Use Cases</Heading>
                             <Paragraph isMuted={true}>slider</Paragraph>
-                        </div>
+                        </SectionWrap>
 
-                        <div ref={elem => this.functionality = elem}>
-                            <Heading size="small">Exchange Functionality</Heading>
+                        <SectionWrap ref={elem => this.functionality = elem}>
+                            <Heading size="medium">Exchange Functionality</Heading>
 
-                            <Icon name="coin" size="medium" margin={[0, 0, 22, 0]} />
-                            <Heading size="small">Secure Non-custodial Trading</Heading>
-                            <Paragraph isMuted={true}>Enable tokens to be traded wallet-to-wallet with no deposits or withdrawals.</Paragraph>
+                            {_.map(functionalityData, (item, index) => (
+                                <ChapterItemWrap>
+                                    <Icon name={item.icon} size="medium" margin={[0, 0, 22, 0]} />
 
-                            <Icon name="coin" size="medium" margin={[0, 0, 22, 0]} />
-                            <Heading size="small">Flexible Order Types</Heading>
-                            <Paragraph isMuted={true}>Choose to sell assets at a specific “buy it now” price or allow potential buyers to submit bids.</Paragraph>
+                                    <Heading
+                                        marginBottom="15px"
+                                        isNoPadding={true}
+                                    >
+                                        {item.title}
+                                    </Heading>
 
-                            <Icon name="coin" size="medium" margin={[0, 0, 22, 0]} />
-                            <Heading size="small">Build a Business</Heading>
-                            <Paragraph isMuted={true}>Monetize your product by taking fees on each transaction and join a growing number of relayers in the 0x ecosystem.</Paragraph>
-
-                            <Icon name="coin" size="medium" margin={[0, 0, 22, 0]} />
-                            <Heading size="small">Networked Liquidity</Heading>
-                            <Paragraph isMuted={true}>Allow your assets to appear on other 0x-based marketplaces by sharing your liquidity through an open order book.</Paragraph>
-                        </div>
+                                    <Paragraph isMuted={true}>
+                                        {item.description}
+                                    </Paragraph>
+                                </ChapterItemWrap>
+                            ))}
+                        </SectionWrap>
                   </Column>
                 </Wrap>
               </Section>
@@ -154,8 +203,22 @@ export class NextWhy extends React.PureComponent {
     }
 }
 
-const StickyColumn = styled(Column)`
-    position: sticky;
+const SectionWrap = styled.div`
+    position: relative;
+
+    & + & {
+        padding-top: 60px;
+    }
+
+    & + &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 1px;
+        background-color: #3d3d3d;
+    }
 `;
 
 const ChapterLink = styled.a`
@@ -168,4 +231,9 @@ const ChapterLink = styled.a`
     &:hover {
         opacity: 1;
     }
+`;
+
+const ChapterItemWrap = styled.div`
+    max-width: 560px;
+    margin-top: 60px;
 `;

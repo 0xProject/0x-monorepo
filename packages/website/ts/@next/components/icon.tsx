@@ -44,6 +44,7 @@ const StyledIcon = styled.figure<IconProps>`
     width: ${props => _getSize(props.size)};
     height: ${props => _getSize(props.size)};
     margin: ${props => getCSSPadding(props.margin)};
+    display: inline-block;
     flex-shrink: 0;
 
     svg {
