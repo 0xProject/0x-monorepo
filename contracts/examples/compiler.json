@@ -18,20 +18,5 @@
             }
         }
     },
-    "contracts": [
-        "AssetProxyOwner",
-        "DutchAuction",
-        "ERC20Proxy",
-        "ERC721Proxy",
-        "Exchange",
-        "Forwarder",
-        "MixinAuthorizable",
-        "MultiAssetProxy",
-        "OrderValidator",
-        "TestAssetProxyOwner",
-        "TestAssetProxyDispatcher",
-        "TestExchangeInternals",
-        "TestSignatureValidator",
-        "TestStaticCallReceiver"
-    ]
+    "contracts": ["ExchangeWrapper", "Validator", "Wallet", "Whitelist"]
 }
