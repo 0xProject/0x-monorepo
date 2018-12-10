@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import * as React from 'react';
+import Headroom from 'react-headroom';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -7,6 +8,8 @@ import { colors } from 'ts/style/colors';
 
 import { Button, ButtonWrap, Link } from 'ts/@next/components/button';
 import { DevelopersDropDown } from 'ts/@next/components/dropdowns/developers_drop_down';
+import { DropdownDevelopers } from 'ts/@next/components/dropdowns/dropdown_developers';
+import { DropdownProducts } from 'ts/@next/components/dropdowns/dropdown_products';
 import { Dropdown } from 'ts/@next/components/dropdowns/mock';
 import { Hamburger } from 'ts/@next/components/hamburger';
 import { Section, Wrap } from 'ts/@next/components/layout';
@@ -43,56 +46,56 @@ const navItems: NavItem[] = [
         id: 'products',
         url: '/next/0x-instant',
         text: 'Products',
-        dropdownComponent: Dropdown,
+        dropdownComponent: DropdownProducts,
     },
     {
         id: 'developers',
         url: '#',
         text: 'Developers',
-        dropdownComponent: Dropdown,
+        dropdownComponent: DropdownDevelopers,
     },
     { id: 'about', url: '/next/about/mission', text: 'About' },
     { id: 'blog', url: '#', text: 'Blog' },
 ];
 
 export class Header extends React.Component<HeaderProps, HeaderState> {
-    constructor(props: HeaderProps) {
-        super(props);
-        this.state = {
-            isOpen: false,
-        };
-    }
+    public state = {
+        isOpen: false,
+    };
+
     public render(): React.ReactNode {
         return (
-            <StyledHeader isOpen={this.state.isOpen}>
-              <HeaderWrap>
-                <ReactRouterLink to="/next">
-                    <Logo/>
-                </ReactRouterLink>
+            <Headroom>
+                <StyledHeader isOpen={this.state.isOpen}>
+                  <HeaderWrap>
+                    <ReactRouterLink to="/next">
+                        <Logo/>
+                    </ReactRouterLink>
 
-                <Hamburger isOpen={this.state.isOpen} onClick={this._onMenuButtonClick.bind(this)}/>
+                    <Hamburger isOpen={this.state.isOpen} onClick={this._onMenuButtonClick.bind(this)}/>
 
-                <Nav>
-                    <MobileProductLinksWrap>
-                        {_.map(mobileProductLinks, (link, index) => (
-                            <StyledLink
-                                key={`productlink-${index}`}
-                                href={link.url}
-                                isTransparent={true}
-                                isNoBorder={true}
-                            >
-                            {link.text}
-                            </StyledLink>
-                        ))}
-                    </MobileProductLinksWrap>
+                    <Nav>
+                        <MobileProductLinksWrap>
+                            {_.map(mobileProductLinks, (link, index) => (
+                                <StyledLink
+                                    key={`productlink-${index}`}
+                                    href={link.url}
+                                    isTransparent={true}
+                                    isNoBorder={true}
+                                >
+                                {link.text}
+                                </StyledLink>
+                            ))}
+                        </MobileProductLinksWrap>
 
-                    <StyledButtonWrap>
-                      {_.map(navItems, (link, index) => this._getNavItem(link, index))}
-                    </StyledButtonWrap>
-                </Nav>
-                <TradeButton href="#">Trade on 0x</TradeButton>
-              </HeaderWrap>
-          </StyledHeader>
+                        <StyledButtonWrap>
+                          {_.map(navItems, (link, index) => this._getNavItem(link, index))}
+                        </StyledButtonWrap>
+                    </Nav>
+                    <TradeButton href="#">Trade on 0x</TradeButton>
+                  </HeaderWrap>
+              </StyledHeader>
+            </Headroom>
       );
     }
     private _onMenuButtonClick(): void {
@@ -134,6 +137,10 @@ const StyledHeader = styled(Section.withComponent('header'))<HeaderProps>`
         :root & {
             padding: 20px 20px 0 !important;
         }
+    }
+
+    @media (min-width: 768px) {
+        background-color: ${props => props.theme.bgColor};
     }
 `;
 
@@ -207,7 +214,7 @@ const LinkWrap = styled.div`
 
 const DropdownWrap = styled.div`
     width: 420px;
-    padding: 30px;
+    padding: 15px 0;
     background-color: #ffffff;
     color: #000000;
     position: absolute;
