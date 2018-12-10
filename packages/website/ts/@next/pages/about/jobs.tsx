@@ -1,12 +1,60 @@
 import * as React from 'react';
+import * as _ from 'lodash';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ChapterLink } from 'ts/@next/components/chapter_link';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
 import { Link } from 'ts/@next/components/link';
+import { Separator } from 'ts/@next/components/separator';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
+
+interface PositionInterface {
+    title: string;
+    location: string;
+    href: string;
+}
+
+const positions: PositionInterface[] = [
+    {
+        title: 'Product Designer',
+        location: 'San Francisco, Remote',
+        href: '#',
+    },
+    {
+        title: 'Product Designer',
+        location: 'San Francisco, Remote',
+        href: '#',
+    },
+    {
+        title: 'Product Designer',
+        location: 'San Francisco, Remote',
+        href: '#',
+    },
+    {
+        title: 'Open Positition',
+        location: "We're always interested in talking to talented people. Send us an application if you think you're the right fit.",
+        href: '#',
+    },
+];
+
+const Position = ({ position }) => (
+    <>
+        <Wrap>
+            <Column colWidth="1/3">
+                <Heading size="small">{position.title}</Heading>
+            </Column>
+            <Column colWidth="1/3">
+                <Paragraph isMuted={true}>{position.location}</Paragraph>
+            </Column>
+            <Column colWidth="1/3">
+                <Paragraph><Link href={position.href}>Apply</Link></Paragraph>
+            </Column>
+        </Wrap>
+        <Separator/>
+    </>
+);
 
 export const NextAboutJobs = () => (
   <SiteWrap theme="light">
@@ -73,6 +121,8 @@ export const NextAboutJobs = () => (
       </Wrap>
     </Section>
 
+    <Separator/>
+
     <Section>
       <Wrap>
         <Column colWidth="1/3">
@@ -80,30 +130,7 @@ export const NextAboutJobs = () => (
         </Column>
 
         <Column colWidth="2/3">
-            <Wrap>
-                <Column colWidth="1/3">
-                    <Heading size="small">Product Designer</Heading>
-                </Column>
-                <Column colWidth="1/3">
-                    <Paragraph isMuted={true}>San Francisco, Remote</Paragraph>
-                </Column>
-                <Column colWidth="1/3">
-                    <Paragraph><Link href="#">Apply</Link></Paragraph>
-                </Column>
-            </Wrap>
-            <Wrap>
-                <Column colWidth="1/3">
-                    <Heading size="small">Open Positition</Heading>
-                </Column>
-                <Column colWidth="1/3">
-                    <Paragraph isMuted={true}>
-                        We're always interested in talking to talented people. Send us an application if you think you're the right fit.
-                    </Paragraph>
-                </Column>
-                <Column colWidth="1/3">
-                    <Paragraph><Link href="#">Apply</Link></Paragraph>
-                </Column>
-            </Wrap>
+            {_.map(positions, (position, index) => <Position key={`position-${index}`} position={position} /> )}
         </Column>
       </Wrap>
     </Section>
