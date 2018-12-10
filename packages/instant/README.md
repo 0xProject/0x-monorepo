@@ -1,5 +1,10 @@
 ## @0x/instant
 
+## Integration
+
+Looking to integrate 0x Instant into your web application or site? Check out the dedicated [instant documentation](https://0xproject.com/wiki#Get-Started-With-Instant) to get started. 
+
+
 ## Installation
 
 The package is available as a UMD module named `zeroExInstant` at https://instant.0xproject.com/instant.js.
