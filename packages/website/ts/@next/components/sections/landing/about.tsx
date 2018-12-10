@@ -38,9 +38,8 @@ export const SectionLandingAbout = () => (
             <hr
                 style={{
                     width: '340px',
-                    margin: '0 auto',
                     borderColor: '#3C4746',
-                    marginTop: '60px auto 0 auto',
+                    margin: '60px auto 0 auto',
                 }}
             />
         </WrapCentered>

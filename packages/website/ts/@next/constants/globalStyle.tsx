@@ -55,7 +55,7 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
         :root {
             --smallHeading: 16px;
             --defaultHeading: 18px;
-            --mediumHeading: 32px;
+            --mediumHeading: 40px;
             --largeHeading: 46px;
             --smallHeadingHeight: 1.4em; // TO DO
             --defaultHeadingHeight: 1.357142857em; // TO DO

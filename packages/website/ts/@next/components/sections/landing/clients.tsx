@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
-import {Section, Wrap, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
+import {BREAKPOINTS, Section, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 
 interface ProjectLogo {
@@ -13,14 +13,17 @@ const projects: ProjectLogo[] = [
     {
         name: 'Radar Relay',
         imageUrl: '/images/@next/relayer-logos/logo_1.png',
+        persistOnMobile: true,
     },
     {
         name: 'Paradex',
         imageUrl: '/images/@next/relayer-logos/logo_5.png',
+        persistOnMobile: true,
     },
     {
         name: 'Amadeus',
         imageUrl: '/images/@next/relayer-logos/logo_3.png',
+        persistOnMobile: true,
     },
     {
         name: 'The Ocean X',
@@ -41,22 +44,29 @@ const projects: ProjectLogo[] = [
     {
         name: 'OpenRelay',
         imageUrl: '/images/@next/relayer-logos/logo_2.3.png',
+        persistOnMobile: true,
     },
     {
         name: 'DDEX',
         imageUrl: '/images/@next/relayer-logos/logo_2.png',
+        persistOnMobile: true,
     },
 ];
 
 export const SectionLandingClients = () => (
     <Section isPadLarge={true}>
         <WrapCentered>
-            <Heading size="small">You're in good company</Heading>
+            <Heading size="small">
+                Join the growing number of projects developing on 0x
+            </Heading>
         </WrapCentered>
 
         <WrapGrid width="narrow" isWrapped={true}>
             {_.map(projects, (item: ProjectLogo, index) => (
-                <StyledProject key={`client-${index}`}>
+                <StyledProject
+                    key={`client-${index}`}
+                    isOnMobile={item.persistOnMobile}
+                >
                     <img src={item.imageUrl} alt={item.name} />
                 </StyledProject>
             ))}
@@ -65,14 +75,24 @@ export const SectionLandingClients = () => (
 );
 
 const StyledProject = styled.div`
-    width: 90px;
-    height: 90px;
     flex-shrink: 0;
-    margin: 30px;
 
     img {
         object-fit: contain;
         width: 100%;
         height: 100%;
+    }
+
+    @media (min-width: ${BREAKPOINTS.mobile}) {
+        width: 120px;
+        height: 120px;
+        margin: 30px;
+    }
+
+    @media (max-width: ${BREAKPOINTS.mobile}) {
+        width: 100px;
+        height: 100px;
+        margin: 15px;
+        display: ${props => !props.isOnMobile && 'none'};
     }
 `;

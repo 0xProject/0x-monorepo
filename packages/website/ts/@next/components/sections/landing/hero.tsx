@@ -7,7 +7,13 @@ import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 
 export const SectionLandingHero = () => (
     <Section>
-        <Wrap>
+        <Wrap isReversed={true}>
+            <Column colWidth="1/2">
+                <WrapCentered>
+                    <LogoOutlined/>
+                </WrapCentered>
+            </Column>
+
             <Column colWidth="1/2">
                 <Heading size="large">
                     Powering Decentralized Exchange
@@ -27,12 +33,6 @@ export const SectionLandingHero = () => (
                         Learn More
                     </Button>
                 </ButtonWrap>
-            </Column>
-
-            <Column colWidth="1/2">
-                <WrapCentered>
-                    <LogoOutlined/>
-                </WrapCentered>
             </Column>
         </Wrap>
     </Section>

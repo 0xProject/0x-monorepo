@@ -27,14 +27,8 @@ const StyledHeading = styled.h1<HeadingProps>`
     margin-bottom: ${props => !props.isNoMargin && '30px'};
     text-align: ${props => props.isCentered && 'center'};
     font-weight: 300;
-    max-width: var(--desktopMaxWidth, none);
     margin-left: ${props => props.isCentered && 'auto'};
     margin-right: ${props => props.isCentered && 'auto'};
-
-    @media (max-width: 768px) {
-        text-align: center;
-        max-width: var(--mobileMaxWidth, none);
-    }
 `;
 
 export const Heading: React.StatelessComponent<HeadingProps> = props => {

@@ -27,6 +27,7 @@ interface WrapProps extends PaddingInterface {
     bgColor?: string;
     isWrapped?: boolean;
     isCentered?: boolean;
+    isReversed?: boolean;
 }
 
 interface ColumnProps {
@@ -50,7 +51,7 @@ const _getColumnWidth = (args: GetColWidthArgs): string => {
 
 const GUTTER = 30 as number;
 const MAX_WIDTH = 1500;
-const BREAKPOINTS = {
+export const BREAKPOINTS = {
     mobile: '768px',
 };
 const WRAPPER_WIDTHS: WrapWidths = {
@@ -83,19 +84,18 @@ export const Main = styled.main`
 export const Section = styled.section<SectionProps>`
     width: ${props => props.isFullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
     padding: ${props => !props.isNoPadding && (props.isPadLarge ? '60px 30px' : '30px')};
-    margin-bottom: ${props => !props.isNoMargin && `${GUTTER}px`};
-    margin-left: ${props => props.isFullWidth && `-${GUTTER}px`};
     background-color: ${props => props.bgColor};
     position: ${props => props.isRelative && 'relative'};
     overflow: ${props => props.isRelative && 'hidden'};
 
     @media (min-width: 1560px) {
         width: ${props => props.isFullWidth && '100vw'};
+        margin-bottom: ${props => !props.isNoMargin && `${GUTTER}px`};
         margin-left: ${props => props.isFullWidth && `calc(750px - 50vw)`};
     }
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
-        padding: 20px;
+        margin-bottom: ${props => !props.isNoMargin && `${GUTTER / 2}px`};
     }
 `;
 
@@ -104,10 +104,6 @@ const WrapBase = styled.div<WrapProps>`
     padding: ${props => props.padding && getCSSPadding(props.padding)};
     background-color: ${props => props.bgColor};
     margin: 0 auto;
-
-    @media (max-width: ${BREAKPOINTS.mobile}) {
-        padding: 20px 0;
-    }
 `;
 
 export const Wrap = styled(WrapBase)`
@@ -115,6 +111,7 @@ export const Wrap = styled(WrapBase)`
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
+        flex-direction: ${props => props.isReversed && 'row-reverse'};
     }
 `;
 
@@ -132,17 +129,17 @@ export const WrapGrid = styled(WrapBase)`
 `;
 
 export const Column = styled.div<ColumnProps>`
-    padding: ${props => !props.isNoPadding && (props.isPadLarge ? '60px 30px' : '30px')};
     background-color: ${props => props.bgColor};
 
     @media (min-width: ${BREAKPOINTS.mobile}) {
+        padding: ${props => !props.isNoPadding && (props.isPadLarge ? '60px 30px' : '30px')};
         width: ${props => props.colWidth ? COLUMN_WIDTHS[props.colWidth] : '100%'};
     }
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
-        padding-left: 0;
-        padding-right: 0;
-        margin-bottom: var(--gutterMobile, 20px);
+        padding: ${props => !props.isNoPadding && (props.isPadLarge ? '40px 30px' : '15px')};
+        text-align: center;
+        margin-bottom: 20px;
     }
 `;
 
