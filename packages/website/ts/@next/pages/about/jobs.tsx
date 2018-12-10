@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as _ from 'lodash';
-import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ChapterLink } from 'ts/@next/components/chapter_link';
