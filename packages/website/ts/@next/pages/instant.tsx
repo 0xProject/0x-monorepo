@@ -1,8 +1,10 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 
 import {colors} from 'ts/style/colors';
 
-import {Button} from 'ts/@next/components/button';
+import {Button, ButtonWrap, Link} from 'ts/@next/components/button';
+import {Icon} from 'ts/@next/components/Icon';
 import {Column, Section, Wrap, WrapCentered} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
@@ -14,6 +16,50 @@ import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
 import TokensIcon from 'ts/@next/icons/illustrations/tokens.svg';
 
 const CONFIGURATOR_HASH = 'configure';
+
+const featuresData = [
+    {
+        title: 'Support ERC-20 and ERC-721 tokens',
+        icon: 'coin',
+        description: 'Seamlessly integrate token purchasing into your product experience by offering digital assets ranging from in-game items to stablecoins.',
+        links: [
+            {
+                label: 'Get Started',
+                url: '#',
+            },
+            {
+                label: 'Explore the Docs',
+                url: '#',
+            },
+        ],
+    },
+    {
+        title: 'Generate revenue for your business',
+        icon: 'coin',
+        description: 'With just a few lines of code, you can earn up to 5% in affiliate fees on every transaction from your crypto wallet or dApp.',
+        links: [
+            {
+                label: 'Learn about affiliate fees',
+                url: '#',
+            },
+        ],
+    },
+    {
+        title: 'Easy and flexible integration',
+        icon: 'coin',
+        description: 'Use our out-of-the-box design or customize the user interface by integrating the AssetBuyer engine. You can also tap into 0x networked liquidity or choose your own liquidity pool.',
+        links: [
+            {
+                label: 'Explore AssetBuyer',
+                url: '#',
+            },
+            {
+                label: 'Learn about liquidity',
+                url: '#',
+            },
+        ],
+    },
+];
 
 export const Next0xInstant = () => (
     <SiteWrap>
@@ -32,49 +78,37 @@ export const Next0xInstant = () => (
         </Section>
 
         <Section>
-            <Wrap>
-                <Column colWidth="1/3">
-                    <TokensIcon width="248"/>
-                </Column>
+            <Wrap width="narrow">
+                {_.map(featuresData, (item, index) => (
+                    <Wrap padding={['large', 0, 'large', 0]}>
+                        <Column colWidth="1/3">
+                            <Icon name={item.icon} size={240} />
+                        </Column>
 
-                <Column colWidth="2/3">
-                    <Heading>Support ERC-20 and ERC-721 tokens</Heading>
-                    <Paragraph isMuted={true}>Seamlessly integrate token purchasing into your product experience by offering digital assets ranging from in-game items to stablecoins.</Paragraph>
-                    <div>
-                        <a href="#">Get Started</a><a href="#">Explore the Docs</a>
-                    </div>
-                </Column>
-            </Wrap>
-        </Section>
-        <Section>
-            <Wrap>
-                <Column colWidth="1/3">
-                    <ProtocolIcon width="248"/>
-                </Column>
+                        <Column colWidth="2/3">
+                            <Heading>
+                                {item.title}
+                            </Heading>
+                            <Paragraph size="medium" isMuted={true}>
+                                {item.description}
+                            </Paragraph>
 
-                <Column colWidth="2/3">
-                    <Heading>Generate revenue for your business</Heading>
-                    <Paragraph isMuted={true}>With just a few lines of code, you can earn up to 5% in affiliate fees on every transaction from your crypto wallet or dApp.</Paragraph>
-                    <div>
-                        <a href="#">Learn more about affiliate fees</a>
-                    </div>
-                </Column>
-            </Wrap>
-        </Section>
-        <Section>
-            <Wrap>
-                <Column colWidth="1/3">
-                    <LogoOutlined width="248"/>
-                </Column>
-
-                <Column colWidth="2/3">
-                    <Heading>Easy and flexible integration</Heading>
-                    <Paragraph isMuted={true}>Use our out-of-the-box design or customize the user interface by integrating the AssetBuyer engine. You can also tap into 0x networked liquidity or choose your own liquidity pool.</Paragraph>
-                    <div>
-                        <a href="#">Explore AssetBuyer</a>
-                        <a href="#">Learn about liquidity</a>
-                    </div>
-                </Column>
+                            <ButtonWrap>
+                                {_.map(item.links, (link, i) => (
+                                    <Link
+                                        href={link.url}
+                                        key={`link-${i}`}
+                                        isTransparent={true}
+                                        isAccentColor={true}
+                                        isWithArrow={true}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                ))}
+                            </ButtonWrap>
+                        </Column>
+                    </Wrap>
+                ))}
             </Wrap>
         </Section>
 
