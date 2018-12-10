@@ -58,7 +58,9 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
                 <ReactRouterLink to="/next">
                     <Logo/>
                 </ReactRouterLink>
+
                 <Hamburger isOpen={this.state.isOpen} onClick={this._onMenuButtonClick.bind(this)}/>
+
                 <Nav>
                     <MobileProductLinksWrap>
                         <Paragraph isNoMargin={true} isMuted={0.5} size="small">Products</Paragraph>
@@ -73,9 +75,10 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
                             </StyledLink>
                         ))}
                     </MobileProductLinksWrap>
-                  <StyledButtonWrap>
+
+                    <StyledButtonWrap>
                       {_.map(navItems, (link, index) => this._getNavItem(link, index))}
-                  </StyledButtonWrap>
+                    </StyledButtonWrap>
                 </Nav>
                 <TradeButton href="#">Trade on 0x</TradeButton>
               </HeaderWrap>

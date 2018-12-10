@@ -53,7 +53,7 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
 
     @media (max-width: 768px) {
         :root {
-            --smallHeading: 16px;
+            --smallHeading: 18px;
             --defaultHeading: 18px;
             --mediumHeading: 40px;
             --largeHeading: 46px;

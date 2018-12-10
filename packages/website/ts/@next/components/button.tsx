@@ -52,7 +52,7 @@ export const Link = (props: ButtonInterface) => {
     const Component = Button.withComponent(ReactRouterLink);
 
     return (
-        <Component to={href} {...props}>
+        <Component to={href} isTransparent={true} {...props}>
             {children}
 
             { isWithArrow &&

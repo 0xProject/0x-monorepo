@@ -17,6 +17,7 @@ interface HeadingProps extends BaseTextInterface {
 
 interface ParagraphProps extends BaseTextInterface {
     isNoMargin?: boolean;
+    marginBottom?: string; // maybe we should remove isNoMargin
     isMuted?: boolean | number;
 }
 
@@ -56,7 +57,7 @@ export const Heading: React.StatelessComponent<HeadingProps> = props => {
 // for literally anything =
 export const Paragraph = styled.p<ParagraphProps>`
     font-size: ${props => `var(--${props.size || 'default'}Paragraph)`};
-    margin-bottom: ${props => !props.isNoMargin && '30px'};
+    margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
     padding: ${props => props.padding && getCSSPadding(props.padding)};
     color: ${props => props.color || props.theme.textColor};
     opacity: ${props => typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted};
