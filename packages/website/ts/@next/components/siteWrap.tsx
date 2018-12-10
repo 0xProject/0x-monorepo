@@ -53,13 +53,10 @@ export const SiteWrap: React.StatelessComponent<Props> = props => {
             <ThemeProvider theme={currentTheme}>
                 <>
                     <GlobalStyles />
-
                     <Header />
-
                     <Main>
                         {children}
                     </Main>
-
                     <Footer/>
                 </>
             </ThemeProvider>
