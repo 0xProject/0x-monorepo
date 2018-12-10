@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
+import * as _ from 'lodash/core';
 
 import { colors } from 'ts/style/colors';
 
 import { ChapterLink } from 'ts/@next/components/chapter_link';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
+import { Link } from 'ts/@next/components/link';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
@@ -162,7 +164,7 @@ export const NextAboutTeam = () => (
         <Column colWidth="2/3">
             <Heading size="medium">We are a global, growing team</Heading>
             <Paragraph size="medium">We are a distributed team with backgrounds in engineering, academic research, business, and design. The 0x Core Team is passionate about accelerating the adoption decentralized technology and believe in its potential to be an equalizing force in the world. Join us and do the most impactful work of your life.</Paragraph>
-            <Paragraph>Join the Team (arrow)</Paragraph>
+            <Link href="#">Join the Team</Link>
         </Column>
       </Wrap>
     </Section>
@@ -175,7 +177,7 @@ export const NextAboutTeam = () => (
 
         <Column colWidth="2/3">
             <Wrap isWrapped={true} isCentered={false}>
-            {team.map((info, index) => <Member key={`team-${index}`} name={info.name} title={info.title} />)}
+            {_.map(team, (info, index) => <Member key={`team-${index}`} name={info.name} title={info.title} />)}
             </Wrap>
         </Column>
       </Wrap>
@@ -189,7 +191,7 @@ export const NextAboutTeam = () => (
 
         <Column colWidth="2/3">
         <Wrap isWrapped={true} isCentered={false}>
-            {advisors.map((info, index) => <Member key={`team-${index}`} name={info.name} title={info.title} />)}
+            {_.map(advisors, (info, index) => <Member key={`team-${index}`} name={info.name} title={info.title} />)}
         </Wrap>
         </Column>
       </Wrap>
