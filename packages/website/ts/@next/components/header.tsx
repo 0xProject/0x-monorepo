@@ -7,6 +7,7 @@ import { colors } from 'ts/style/colors';
 
 import { Button, ButtonWrap, Link } from 'ts/@next/components/button';
 import { DevelopersDropDown } from 'ts/@next/components/dropdowns/developers_drop_down';
+import { Dropdown } from 'ts/@next/components/dropdowns/mock';
 import { Hamburger } from 'ts/@next/components/hamburger';
 import { Section, Wrap } from 'ts/@next/components/layout';
 import { Logo } from 'ts/@next/components/logo';
@@ -38,8 +39,18 @@ const mobileProductLinks = [
 
 const navItems: NavItem[] = [
     { id: 'why', url: '/next/why', text: 'Why 0x' },
-    { id: 'products', url: '/next/0x-instant', text: 'Products' },
-    { id: 'developers', url: '#', text: 'Developers' },
+    {
+        id: 'products',
+        url: '/next/0x-instant',
+        text: 'Products',
+        dropdownComponent: Dropdown,
+    },
+    {
+        id: 'developers',
+        url: '#',
+        text: 'Developers',
+        dropdownComponent: Dropdown,
+    },
     { id: 'about', url: '/next/about/mission', text: 'About' },
     { id: 'blog', url: '#', text: 'Blog' },
 ];
@@ -63,7 +74,6 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
 
                 <Nav>
                     <MobileProductLinksWrap>
-                        <Paragraph isNoMargin={true} isMuted={0.5} size="small">Products</Paragraph>
                         {_.map(mobileProductLinks, (link, index) => (
                             <StyledLink
                                 key={`productlink-${index}`}
@@ -91,24 +101,27 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
         });
     }
     private _getNavItem(link: NavItem, index: number): React.ReactNode {
-        if (link.id === 'developers') {
-            return (
-                <DevelopersDropDown
-                    location={window.location}
-                />
-            );
-        }
+        const Wrapper = link.dropdownComponent ? LinkWrap : React.Fragment;
+        const Subnav = link.dropdownComponent;
 
         return (
-            <StyledLink
-                key={`header-nav-item-${index}`}
-                href={link.url}
-                isTransparent={true}
-                isNoBorder={true}
-            >
-                {link.text}
-            </StyledLink>
-        )
+            <Wrapper>
+                <StyledLink
+                    key={`nav-${index}`}
+                    href={link.url}
+                    isTransparent={true}
+                    isNoBorder={true}
+                >
+                    {link.text}
+                </StyledLink>
+
+                {link.dropdownComponent &&
+                    <DropdownWrap>
+                        <Subnav />
+                    </DropdownWrap>
+                }
+            </Wrapper>
+        );
     }
 }
 
@@ -176,16 +189,53 @@ const MobileProductLinksWrap = styled(StyledButtonWrap)`
     }
 `;
 
-const StyledLink = styled(Link)`
-    width: 50%;
-    text-align: left;
-    @media (max-width: 768px) {
+const LinkWrap = styled.div`
+    position: relative;
+
+    a {
+        display: block;
     }
 
-    @media (min-width: 768px) {
-        width: auto;
-        text-align: center;
+    &:hover > div {
+        display: block;
+        visibility: visible;
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        transition: opacity 0.35s, transform 0.35s, visibility 0s;
     }
+`;
+
+const DropdownWrap = styled.div`
+    width: 420px;
+    padding: 30px;
+    background-color: #ffffff;
+    color: #000000;
+    position: absolute;
+    top: 100%;
+    left: calc(50% - 210px);
+    visibility: hidden;
+    opacity: 0;
+    transform: translate3d(0, -10px, 0);
+    transition: opacity 0.35s, transform 0.35s, visibility 0s 0.35s;
+
+    &:after {
+    	bottom: 100%;
+    	left: 50%;
+    	border: solid transparent;
+    	content: " ";
+    	height: 0;
+    	width: 0;
+    	position: absolute;
+    	pointer-events: none;
+    	border-color: rgba(255, 255, 255, 0);
+    	border-bottom-color: #ffffff;
+    	border-width: 10px;
+    	margin-left: -10px;
+    }
+`;
+
+const StyledLink = styled(Link)`
+
 `;
 
 const Nav = styled.div`
@@ -197,14 +247,11 @@ const Nav = styled.div`
         right: 0;
         padding-top: 65px;
     }
-
-    @media (min-width: 768px) {
-        width: auto;
-        text-align: center;
-    }
 `;
 
 const TradeButton = styled(Button)`
+    padding: 14px 22px;
+
     @media (max-width: 768px) {
         display: none;
     }
