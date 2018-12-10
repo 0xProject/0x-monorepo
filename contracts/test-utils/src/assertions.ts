@@ -137,7 +137,7 @@ export async function expectTransactionFailedWithoutReasonAsync(p: sendTransacti
                 // directly.
                 txReceiptStatus = result.status;
             } else {
-                throw new Error('Unexpected result type: ' + typeof result);
+                throw new Error(`Unexpected result type: ${typeof result}`);
             }
             expect(_.toString(txReceiptStatus)).to.equal(
                 '0',

@@ -92,6 +92,7 @@
         "prefer-function-over-method": true,
         "prefer-object-spread": true,
         "prefer-readonly": true,
+        "prefer-template": true,
         "promise-function-async": true,
         "quotemark": [true, "single", "avoid-escape", "jsx-double"],
         "restrict-plus-operands": true,
