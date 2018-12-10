@@ -29,7 +29,6 @@ export const NextLaunchKit = () => (
         <Section>
             <Wrap>
                 <Column
-                    borderColor="#003831"
                     colWidth="1/3"
                     isPadLarge={true}
                 >
@@ -41,7 +40,6 @@ export const NextLaunchKit = () => (
                     </WrapCentered>
                 </Column>
                 <Column
-                    borderColor="#003831"
                     colWidth="1/3"
                     isPadLarge={true}
                 >
@@ -53,7 +51,6 @@ export const NextLaunchKit = () => (
                     </WrapCentered>
                 </Column>
                 <Column
-                    borderColor="#003831"
                     colWidth="1/3"
                     isPadLarge={true}
                 >
