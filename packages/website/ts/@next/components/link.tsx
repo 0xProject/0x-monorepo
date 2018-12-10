@@ -20,14 +20,12 @@ interface LinkInterface {
 const StyledLink = styled(ReactRouterLink)<LinkInterface>`
     display: ${props => !props.isBlock && 'inline-flex'};
     color: ${props => props.color || props.theme.linkColor};
-    //padding: ${props => !props.isNoPadding && '18px 30px'};
     text-align: center;
     font-size: 18px;
     text-decoration: none;
     align-items: center;
 
     @media (max-width: 768px) {
-        //padding: ${props => !props.isNoPadding && '6% 10%'};
     }
 
     svg {
