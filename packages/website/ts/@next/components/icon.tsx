@@ -4,7 +4,7 @@ import IconCoin from 'ts/@next/icons/illustrations/coin.svg';
 
 interface Props {
     name: string;
-    size?: string;
+    size?: 'small' | 'medium' | 'large' | number;
 }
 
 const ICONS = {
