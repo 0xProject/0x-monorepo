@@ -62,3 +62,7 @@ export const Paragraph = styled.p<ParagraphProps>`
     text-align: ${props => props.isCentered && 'center'};
     line-height: 1.4;
 `;
+
+Paragraph.defaultProps = {
+    isMuted: true,
+};
