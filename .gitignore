@@ -92,6 +92,7 @@ contracts/utils/generated-artifacts/
 contracts/libs/generated-artifacts/
 contracts/interfaces/generated-artifacts/
 contracts/tokens/generated-artifacts/
+contracts/examples/generated-artifacts/
 packages/sol-cov/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 
@@ -103,6 +104,7 @@ contracts/utils/generated-wrappers/
 contracts/libs/generated-wrappers/
 contracts/interfaces/generated-wrappers/
 contracts/tokens/generated-wrappers/
+contracts/examples/generated-wrappers/
 packages/metacoin/src/contract_wrappers
 
 # solc-bin in sol-compiler

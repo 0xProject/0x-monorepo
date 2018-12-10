@@ -12,7 +12,6 @@
         "./generated-artifacts/ERC20Proxy.json",
         "./generated-artifacts/ERC721Proxy.json",
         "./generated-artifacts/Exchange.json",
-        "./generated-artifacts/ExchangeWrapper.json",
         "./generated-artifacts/Forwarder.json",
         "./generated-artifacts/MixinAuthorizable.json",
         "./generated-artifacts/MultiAssetProxy.json",
@@ -21,10 +20,7 @@
         "./generated-artifacts/TestAssetProxyOwner.json",
         "./generated-artifacts/TestExchangeInternals.json",
         "./generated-artifacts/TestSignatureValidator.json",
-        "./generated-artifacts/TestStaticCallReceiver.json",
-        "./generated-artifacts/Validator.json",
-        "./generated-artifacts/Wallet.json",
-        "./generated-artifacts/Whitelist.json"
+        "./generated-artifacts/TestStaticCallReceiver.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }
