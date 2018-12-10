@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.1 - _December 10, 2018_
+
+    * Dependencies updated
+
 ## v2.2.0 - _November 28, 2018_
 
     * Add CLI `0x-migrate` for running the 0x migrations in a language-agnostic way (#1324)

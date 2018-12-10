@@ -6,7 +6,8 @@
                 "note": "NPMResolver now supports scoped packages",
                 "pr": 1311
             }
-        ]
+        ],
+        "timestamp": 1544482891
     },
     {
         "timestamp": 1542821676,
