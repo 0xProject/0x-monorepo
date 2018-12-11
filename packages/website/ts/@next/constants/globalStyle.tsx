@@ -29,6 +29,7 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
     html {
         font-size: 18px;
         background-color: ${props => props.theme.bgColor};
+        overflow-x: hidden;
     }
 
     @media (min-width: 768px) {
