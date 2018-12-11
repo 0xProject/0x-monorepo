@@ -1,6 +1,6 @@
 ## Contract examples
 
-Smart contract examples of the 0x protocol.
+Example smart contracts that interact with 0x protocol.
 
 ## Usage
 
