@@ -3,10 +3,10 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
+import { DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
 import { ColorOption } from '../style/theme';
 import { BaseCurrency } from '../types';
 import { buyQuoteUtil } from '../util/buy_quote';
-import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
 
@@ -171,7 +171,7 @@ export interface TokenAmountRowProps {
     numTokens?: BigNumber;
 }
 export class TokenAmountRow extends React.Component<TokenAmountRowProps> {
-    public static DEFAULT_TEXT: string = 'Token Price';
+    public static DEFAULT_TEXT: string = 'Token Amount';
     public render(): React.ReactNode {
         return (
             <OrderDetailsRow
@@ -182,11 +182,15 @@ export class TokenAmountRow extends React.Component<TokenAmountRowProps> {
         );
     }
     private _labelText(): string {
-        if (this.props.isLoading) {
-            return TokenAmountRow.DEFAULT_TEXT;
-        }
-        const { numTokens, displayPricePerToken, assetName } = this.props;
-        if (numTokens) {
+        const { displayPricePerToken, assetName } = this.props;
+
+        // Display as 0 if we have a selected asset
+        const numTokens =
+            assetName && assetName !== DEFAULT_UNKOWN_ASSET_NAME && _.isUndefined(this.props.numTokens)
+                ? 0
+                : this.props.numTokens;
+
+        if (!_.isUndefined(numTokens)) {
             let numTokensWithSymbol = numTokens.toString();
 
             if (assetName) {
