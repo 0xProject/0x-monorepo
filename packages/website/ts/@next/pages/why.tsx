@@ -135,7 +135,7 @@ export class NextWhy extends React.PureComponent {
                             <Heading size="medium">What 0x offers</Heading>
 
                             {_.map(offersData, (item, index) => (
-                                <ChapterItemWrap>
+                                <ChapterItemWrap key={`chapter-${index}`}>
                                     <Icon name={item.icon} size="medium" margin={[0, 0, 22, 0]} />
 
                                     <Heading marginBottom="15px">
