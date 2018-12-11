@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import Headroom from 'react-headroom';
 import { Link as ReactRouterLink } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { withTheme } from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
@@ -55,7 +55,7 @@ const navItems: NavItem[] = [
     { id: 'blog', url: '#', text: 'Blog' },
 ];
 
-export class Header extends React.Component<HeaderProps, HeaderState> {
+class HeaderBase extends React.Component<HeaderProps, HeaderState> {
     public state = {
         isOpen: false,
     };
@@ -91,6 +91,7 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
 
     public render(): React.ReactNode {
         const { isOpen } = this.state;
+        const { theme } = this.props;
 
         return (
             <Headroom>
@@ -120,13 +121,23 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
                           {_.map(navItems, (link, index) => this.getNavItem(link, index))}
                         </StyledButtonWrap>
                     </Nav>
-                    <TradeButton href="#">Trade on 0x</TradeButton>
+
+                    <TradeButton
+                        bgColor={theme.headerButtonBg}
+                        color="#ffffff"
+                        href="#"
+                    >
+                        Trade on 0x
+                    </TradeButton>
+
                   </HeaderWrap>
               </StyledHeader>
             </Headroom>
       );
     }
 }
+
+export const Header = withTheme(HeaderBase);
 
 const StyledHeader = styled(Section.withComponent('header'))<HeaderProps>`
     @media (max-width: ${BREAKPOINTS.mobile}) {

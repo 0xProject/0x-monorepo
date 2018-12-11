@@ -31,6 +31,7 @@ const GLOBAL_THEMES: ThemeInterface = {
         dropdownBg: '#111A19',
         dropdownButtonBg: '#003831',
         dropdownColor: '#FFFFFF',
+        headerButtonBg: '#00AE99',
     },
     light: {
         bgColor: '#FFFFFF',
@@ -40,6 +41,7 @@ const GLOBAL_THEMES: ThemeInterface = {
         dropdownButtonBg: '#F3F6F4',
         dropdownColor: '#003831',
         dropdownBorderColor: '#E4E4E4',
+        headerButtonBg: '#003831',
     },
     gray: {
         bgColor: '#e0e0e0',
@@ -48,6 +50,7 @@ const GLOBAL_THEMES: ThemeInterface = {
         dropdownBg: '#FFFFFF',
         dropdownButtonBg: '#F3F6F4',
         dropdownColor: '#003831',
+        headerButtonBg: '#003831',
     },
 };
 
