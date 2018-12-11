@@ -92,9 +92,11 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
     }
 
     public render(): React.ReactNode {
+        const { isOpen } = this.state;
+
         return (
             <Headroom>
-                <StyledHeader isOpen={this.state.isOpen}>
+                <StyledHeader isOpen={isOpen}>
                   <HeaderWrap>
                     <ReactRouterLink to="/next">
                         <Logo/>
@@ -131,6 +133,7 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
 const StyledHeader = styled(Section.withComponent('header'))<HeaderProps>`
     @media (max-width: 768px) {
         min-height: ${props => props.isOpen ? '385px' : '70px'};
+        overflow: ${props => !props.isOpen && 'hidden'};
         position: relative;
         transition: min-height 0.25s ease-in-out;
     }

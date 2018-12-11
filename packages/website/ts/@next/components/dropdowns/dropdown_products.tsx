@@ -1,34 +1,40 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 
+const navData = [
+        {
+            title: '0x Instant',
+            description: 'Simple crypto purchasing',
+            url: '#',
+        },
+        {
+            title: '0x Launch kit',
+            description: 'Build on the 0x protocol',
+            url: '#',
+        },
+        {
+            title: 'Extensions',
+            url: '#',
+        },
+];
+
 export const DropdownProducts = () => (
     <List>
-        <li>
-            <Heading color="#000000" isNoMargin={true}>
-                0x Instant
-            </Heading>
+        {_.map(navData, (item, index) => (
+            <li>
+                <Heading color="#000000" isNoMargin={true} size="small">
+                    {item.title}
+                </Heading>
 
-            <Paragraph color="#5d5d5d" isNoMargin={true}>
-                Simple crypto purchasing
-            </Paragraph>
-        </li>
-
-        <li>
-            <Heading color="#000000" isNoMargin={true}>
-                0x Launch Kit
-            </Heading>
-
-            <Paragraph color="#5d5d5d" isNoMargin={true}>
-                Build on the 0x protocol
-            </Paragraph>
-        </li>
-
-        <li>
-            <Heading color="#000000" isNoMargin={true}>
-                Extensions
-            </Heading>
-        </li>
+                {item.description &&
+                    <Paragraph color="#5d5d5d" isNoMargin={true} size="small">
+                        {item.description}
+                    </Paragraph>
+                }
+            </li>
+        ))}
     </List>
 );
 
