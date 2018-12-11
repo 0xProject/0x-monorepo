@@ -35,6 +35,7 @@ interface ColumnProps {
     isNoPadding?: boolean;
     isPadLarge?: boolean;
     isFlexGrow?: boolean;
+    isMobileCentered?: boolean;
     bgColor?: string;
 }
 
@@ -97,7 +98,7 @@ export const Section = styled.section<SectionProps>`
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
         margin-bottom: ${props => !props.isNoMargin && `${GUTTER / 2}px`};
-        padding: ${PADDING_SIZES.default};
+        padding: ${props => props.isPadLarge ? `${PADDING_SIZES.large} ${PADDING_SIZES.default}` : PADDING_SIZES.default};
     }
 `;
 
@@ -148,6 +149,7 @@ export const Column = styled.div<ColumnProps>`
     @media (max-width: ${BREAKPOINTS.mobile}) {
         padding: ${props => !props.isNoPadding && (props.isPadLarge ? '40px 30px' : '15px')};
         margin-bottom: 20px;
+        text-align: ${props => props.isMobileCentered && 'center'};
     }
 `;
 

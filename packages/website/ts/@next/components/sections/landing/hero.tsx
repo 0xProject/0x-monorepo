@@ -14,7 +14,7 @@ export const SectionLandingHero = () => (
                 </WrapCentered>
             </Column>
 
-            <Column colWidth="1/2">
+            <Column colWidth="1/2" isMobileCentered={true}>
                 <Heading size="large">
                     Powering Decentralized Exchange
                 </Heading>

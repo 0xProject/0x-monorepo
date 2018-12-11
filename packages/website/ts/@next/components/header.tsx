@@ -36,7 +36,11 @@ const mobileProductLinks = [
 ];
 
 const navItems: NavItem[] = [
-    { id: 'why', url: '/next/why', text: 'Why 0x' },
+    {
+        id: 'why',
+        url: '/next/why',
+        text: 'Why 0x',
+    },
     {
         id: 'products',
         url: '/next/0x-instant',
@@ -49,10 +53,18 @@ const navItems: NavItem[] = [
         url: '#',
         text: 'Developers',
         dropdownComponent: DropdownDevelopers,
-        dropdownWidth: 450,
+        dropdownWidth: 480,
     },
-    { id: 'about', url: '/next/about/mission', text: 'About' },
-    { id: 'blog', url: '#', text: 'Blog' },
+    {
+        id: 'about',
+        url: '/next/about/mission',
+        text: 'About',
+    },
+    {
+        id: 'blog',
+        url: '#',
+        text: 'Blog',
+    },
 ];
 
 class HeaderBase extends React.Component<HeaderProps, HeaderState> {
@@ -72,13 +84,13 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
 
         return (
             <Wrapper key={`nav-${index}`}>
-                <Link
+                <NavLink
                     href={link.url}
                     isTransparent={true}
                     isNoBorder={true}
                 >
                     {link.text}
-                </Link>
+                </NavLink>
 
                 {link.dropdownComponent &&
                     <DropdownWrap width={link.dropdownWidth}>
@@ -118,7 +130,9 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
                         </MobileProductLinksWrap>
 
                         <StyledButtonWrap>
-                          {_.map(navItems, (link, index) => this.getNavItem(link, index))}
+                          {_.map(navItems, (link, index) => (
+                              this.getNavItem(link, index)
+                          ))}
                         </StyledButtonWrap>
                     </Nav>
 
@@ -149,6 +163,17 @@ const StyledHeader = styled(Section.withComponent('header'))<HeaderProps>`
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
         background-color: ${props => props.theme.bgColor};
+    }
+`;
+
+const NavLink = styled(Link).attrs({
+    activeStyle: { opacity: 1 },
+})`
+    opacity: 0.5;
+    transition: opacity 0.35s;
+
+    &:hover {
+        opacity: 1;
     }
 `;
 

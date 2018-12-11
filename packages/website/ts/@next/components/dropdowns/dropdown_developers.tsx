@@ -65,22 +65,39 @@ export const DropdownDevelopers = withTheme((props: Props) => (
     <>
         <DropdownWrap>
             <div>
-                <Heading asElement="h4" size={14} color="inherit" isMuted={0.35}>
+                <Heading
+                    asElement="h4"
+                    size={14}
+                    color="inherit"
+                    marginBottom="15px"
+                    isMuted={0.35}
+                >
                     Getting Started
                 </Heading>
 
-                <WrapGrid isCentered={false} isWrapped={true}>
+                <StyledGrid isCentered={false} isWrapped={true}>
                     {_.map(introData, (item, index) => (
-                        <RouterLink key={`introLink-${index}`} to={item.url}>
-                            {item.label}
-                        </RouterLink>
+                        <li>
+                            <RouterLink
+                                key={`introLink-${index}`}
+                                to={item.url}
+                            >
+                                {item.label}
+                            </RouterLink>
+                        </li>
                     ))}
-                </WrapGrid>
+                </StyledGrid>
             </div>
 
             <StyledWrap>
                 <Column colWidth="1/2" isNoPadding={true}>
-                    <Heading asElement="h4" size={14} color="inherit" isMuted={0.35}>
+                    <Heading
+                        asElement="h4"
+                        size={14}
+                        color="inherit"
+                        marginBottom="15px"
+                        isMuted={0.35}
+                    >
                         Popular Docs
                     </Heading>
 
@@ -124,6 +141,17 @@ const DropdownWrap = styled.div`
 
     a {
         color: inherit;
+    }
+
+    li {
+        margin: 8px 0;
+    }
+`;
+
+const StyledGrid = styled(WrapGrid.withComponent('ul'))`
+    li {
+        width: 50%;
+        flex-shrink: 0;
     }
 `;
 

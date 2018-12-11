@@ -72,7 +72,7 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
             --defaultParagraph: 16px; // TO DO
             --mediumParagraph: 16px; // TO DO
             --largeParagraph: 18px; // TO DO
-            --smallIcon: 45px;
+            --smallIcon: 55px;
             --mediumIcon: 55px;
             --largeIcon: 115px;
         }
