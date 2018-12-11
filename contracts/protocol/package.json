@@ -33,7 +33,7 @@
         "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol"
     },
     "config": {
-        "abis": "generated-artifacts/@(AssetProxyOwner|ERC20Proxy|ERC721Proxy|Exchange|MixinAuthorizable|MultiAssetProxy|TestSignatureValidator|TestAssetProxyOwner|TestAssetProxyDispatcher|TestExchangeInternals|TestStaticCallReceiver).json"
+        "abis": "generated-artifacts/@(AssetProxyOwner|ERC20Proxy|ERC721Proxy|Exchange|MixinAuthorizable|MultiAssetProxy|OrderValidator|TestSignatureValidator|TestAssetProxyOwner|TestAssetProxyDispatcher|TestExchangeInternals|TestStaticCallReceiver).json"
     },
     "repository": {
         "type": "git",

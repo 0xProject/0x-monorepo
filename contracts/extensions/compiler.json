@@ -18,5 +18,5 @@
             }
         }
     },
-    "contracts": ["DutchAuction", "Forwarder", "OrderValidator"]
+    "contracts": ["DutchAuction", "Forwarder"]
 }
