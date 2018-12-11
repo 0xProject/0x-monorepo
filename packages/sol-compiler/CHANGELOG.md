@@ -5,7 +5,7 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.1.15 - _December 10, 2018_
+## v1.1.15 - _December 11, 2018_
 
     * Fix bug where we were appending base path to absolute imports (e.g NPM imports) (#1311)
 
