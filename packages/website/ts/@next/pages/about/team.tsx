@@ -16,127 +16,162 @@ interface TeamMember {
 
 const team: TeamMember[] = [
     {
+        imageUrl: '/images/@next/team/melo@2x.jpg',
         name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        title: 'co-founder & ceo',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Amir Bandeali',
+        title: 'co-founder & cto',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Fabio Berger',
+        title: 'senior engineer',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Alex Xu',
+        title: 'director of operations',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Leonid Logvinov',
+        title: 'engineer',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Ben Burns',
+        title: 'designer',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Brandon Millman',
+        title: 'senior engineer',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Tom Schmidt',
+        title: 'product manager',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Jacob Evans',
+        title: 'ecosystem engineer',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Blake Henderson',
+        title: 'operations associate',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Zack Skelly',
+        title: 'lead recruiter',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Greg Hysen',
+        title: 'blockchain engineer',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Remco Bloemen',
+        title: 'technical fellow',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Francesco Agosti',
+        title: 'engineer',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Mel Oberto',
+        title: 'office ops / executive assistant',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Alex Browne',
+        title: 'engineer in residence',
+    },
+    {
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Peter Zeitz',
+        title: 'research fellow',
+    },
+    {
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Chris Kalani',
+        title: 'director of design',
+    },
+    {
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Clay Robbins',
+        title: 'ecosystem development lead',
+    },
+    {
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Matt Taylor',
+        title: 'marketing lead',
+    },
+    {
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Eugene Aumson',
+        title: 'engineer',
+    },
+    {
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Weijie Wu',
+        title: 'research fellow',
+    },
+    {
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Rahul Singireddy',
+        title: 'relayer success manager',
+    },
+    {
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Jason Somensatto',
+        title: 'strategic legal counsel',
+    },
+    {
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Steve Klebanoff',
+        title: 'senior engineer',
+    },
+    {
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Xianny Ng',
+        title: 'engineer',
     },
 ];
 
 const advisors: TeamMember[] = [
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Fred Ehrsam',
+        title: 'Advisor',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Olaf Carlson-Wee',
+        title: 'Advisor',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Joey Krug',
+        title: 'Advisor',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'Linda Xie',
+        title: 'Advisor',
     },
     {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
-    },
-    {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
-    },
-    {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
-    },
-    {
-        name: 'Will Warren',
-        title: 'Co-Founder and CEO',
-        imageUrl: '#',
+        imageUrl: '/images/@next/team/melo@2x.jpg',
+        name: 'David Sacks',
+        title: 'Advisor',
     },
 ];
 
@@ -156,7 +191,7 @@ export const NextAboutTeam = () => (
                 <Column colWidth="2/3">
                     <Wrap isWrapped={true} isCentered={false}>
                         {_.map(team, (info: TeamMember, index) => (
-                            <Member key={`team-${index}`} name={info.name} title={info.title} />
+                            <Member key={`team-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
                         ))}
                     </Wrap>
                 </Column>
@@ -172,7 +207,7 @@ export const NextAboutTeam = () => (
                 <Column colWidth="2/3">
                     <Wrap isWrapped={true} isCentered={false}>
                         {_.map(advisors, (info: TeamMember, index) => (
-                            <Member key={`team-${index}`} name={info.name} title={info.title} />
+                            <Member key={`advisor-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
                         ))}
                     </Wrap>
                 </Column>
@@ -183,9 +218,9 @@ export const NextAboutTeam = () => (
 
 const Member = ({ name, title, imageUrl }: TeamMember) => (
     <StyledMember>
-        <svg width="184" height="184" viewBox="0 0 184 184" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="184" height="184" fill="#003831"/></svg>
+        <img src={imageUrl} alt={name}/>
         <Heading color={colors.textDarkPrimary} size="small" isNoMargin={true}>{name}</Heading>
-        <Paragraph isMuted={0.5}>{title}</Paragraph>
+        <Paragraph isMuted={0.5} style={{ textTransform: 'capitalize' }}>{title}</Paragraph>
     </StyledMember>
 );
 
