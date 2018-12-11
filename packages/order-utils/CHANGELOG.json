@@ -6,7 +6,8 @@
                 "note": "Fix bug in wallet signature type verification",
                 "pr": 1414
             }
-        ]
+        ],
+        "timestamp": 1544570656
     },
     {
         "timestamp": 1544482891,
