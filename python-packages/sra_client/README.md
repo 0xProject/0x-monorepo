@@ -319,5 +319,3 @@ All URIs are relative to _http://localhost_
 ## Documentation For Authorization
 
 All endpoints do not require authorization.
-
-## Author
