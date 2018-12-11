@@ -32,7 +32,7 @@ const StyledHeading = styled.h1<HeadingProps>`
     margin-right: ${props => props.isCentered && 'auto'};
     margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
     opacity: ${props => typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted};
-    font-weight: 400;
+    font-weight: 300;
 `;
 
 export const Heading: React.StatelessComponent<HeadingProps> = props => {
