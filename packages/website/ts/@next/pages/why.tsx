@@ -86,37 +86,37 @@ export class NextWhy extends React.PureComponent {
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
-              <Section isPadLarge={true}>
-                <WrapCentered>
-                  <Column colWidth="2/3" isNoMargin={true}>
-                      <Heading
-                          size="medium"
-                          isCentered={true}
-                      >
-                          The exchange layer for<br />
-                          the crypto economy
-                      </Heading>
+                <Section isPadLarge={true}>
+                    <WrapCentered>
+                        <Column colWidth="2/3" isNoMargin={true}>
+                            <Heading
+                                maxWidth="600px"
+                                size="medium"
+                                isCentered={true}
+                            >
+                              The exchange layer for the crypto economy
+                            </Heading>
 
-                      <Paragraph
-                          size="medium"
-                          isMuted={true}
-                          isCentered={true}
-                          marginBottom="60px"
-                      >
-                          The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastructure that allows anyone in the world to build products that enable the purchasing and trading of crypto tokens.
-                      </Paragraph>
+                            <Paragraph
+                                size="medium"
+                                isMuted={true}
+                                isCentered={true}
+                                marginBottom="60px"
+                            >
+                              The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastructure that allows anyone in the world to build products that enable the purchasing and trading of crypto tokens.
+                            </Paragraph>
 
-                        <Link
-                            href="/docs"
-                            isCentered={true}
-                            isWithArrow={true}
-                            isAccentColor={true}
-                        >
-                          Build on 0x
-                        </Link>
-                  </Column>
-                </WrapCentered>
-              </Section>
+                            <Link
+                                href="/docs"
+                                isCentered={true}
+                                isWithArrow={true}
+                                isAccentColor={true}
+                            >
+                              Build on 0x
+                            </Link>
+                        </Column>
+                    </WrapCentered>
+                </Section>
 
               <Section bgColor={colors.backgroundDark} isPadLarge={true}>
                 <Wrap>
@@ -173,7 +173,7 @@ export class NextWhy extends React.PureComponent {
                             <Heading size="medium">Use Cases</Heading>
                             <Slider>
                                 {_.map(useCaseSlides, (item, index) => (
-                                    <Slide 
+                                    <Slide
                                         key={`useCaseSlide-${index}`}
                                         heading={item.title}
                                         text={item.description}

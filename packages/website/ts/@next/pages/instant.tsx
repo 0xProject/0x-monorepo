@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import LazyLoad from 'react-lazyload';
 
 import {colors} from 'ts/style/colors';
@@ -67,7 +67,7 @@ const featuresData = [
 
 export const Next0xInstant = () => (
     <SiteWrap>
-        <Section>
+        <Section isPadLarge={true}>
             <WrapCentered>
                 <Heading size="medium" isCentered={true}>Introducing 0x Instant</Heading>
                 <Paragraph size="medium" isCentered={true}>
@@ -80,10 +80,13 @@ export const Next0xInstant = () => (
 
         <Section isFullWidth={true} isNoPadding={true}>
             <Wrap width="full">
-                {/* Note: This should be another component, this is just for mocking */}
-                <ImageLoop>
-                    <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
-                </ImageLoop>
+                <MarqueeWrap>
+                    <div>
+                        <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
+                        <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
+                        <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
+                    </div>
+                </MarqueeWrap>
             </Wrap>
         </Section>
 
@@ -146,8 +149,24 @@ export const Next0xInstant = () => (
     </SiteWrap>
 );
 
-const ImageCarousel = styled.div`
+const scroll = keyframes`
+    0% { transform: translate3d(0, 0, 0) }
+    100% { transform: translate3d(-1715.18px, 0, 0) }
+`;
+const MarqueeWrap = styled.div`
     width: 100vw;
     height: 380px;
-    margin: 90px 0;
+    padding-bottom: 60px;
+
+    > div {
+        width: 5145.54px;
+        height: 380px;
+        display: flex;
+        animation: ${scroll} 20s linear infinite;
+
+        img {
+            width: auto;
+            height: 380px;
+        }
+    }
 `;

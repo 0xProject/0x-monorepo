@@ -9,6 +9,7 @@ interface BaseTextInterface extends PaddingInterface {
 
 interface HeadingProps extends BaseTextInterface {
     asElement?: 'h1'| 'h2'| 'h3'| 'h4';
+    maxWidth?: string;
     isCentered?: boolean;
     isNoMargin?: boolean;
     isMuted?: boolean | number;
@@ -23,6 +24,7 @@ interface ParagraphProps extends BaseTextInterface {
 }
 
 const StyledHeading = styled.h1<HeadingProps>`
+    max-width: ${props => props.maxWidth};
     color: ${props => props.color || props.theme.textColor};
     font-size: ${props => isNaN(props.size) ? `var(--${props.size || 'default'}Heading)` : `${props.size}px`};
     line-height: ${props => `var(--${props.size || 'default'}HeadingHeight)`};
