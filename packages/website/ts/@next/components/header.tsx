@@ -211,8 +211,10 @@ const LinkWrap = styled.div`
 const DropdownWrap = styled.div`
     width: ${props => props.width || 280}px;
     padding: 15px 0;
-    background-color: #ffffff;
-    color: #000000;
+    border: 1px solid transparent;
+    border-color: ${props => props.theme.dropdownBorderColor};
+    background-color: ${props => props.theme.dropdownBg};
+    color: ${props => props.theme.dropdownColor};
     position: absolute;
     top: 100%;
     left: calc(50% - ${props => (props.width || 280) / 2}px);
@@ -221,7 +223,7 @@ const DropdownWrap = styled.div`
     transform: translate3d(0, -10px, 0);
     transition: opacity 0.35s, transform 0.35s, visibility 0s 0.35s;
 
-    &:after {
+    &:after, &:before {
     	bottom: 100%;
     	left: 50%;
     	border: solid transparent;
@@ -230,10 +232,18 @@ const DropdownWrap = styled.div`
     	width: 0;
     	position: absolute;
     	pointer-events: none;
+    }
+    &:after {
     	border-color: rgba(255, 255, 255, 0);
-    	border-bottom-color: #ffffff;
+    	border-bottom-color: ${props => props.theme.dropdownBg};
     	border-width: 10px;
     	margin-left: -10px;
+    }
+    &:before {
+    	border-color: rgba(255, 0, 0, 0);
+    	border-bottom-color: ${props => props.theme.dropdownBorderColor};
+    	border-width: 11px;
+    	margin-left: -11px;
     }
 
     @media (max-width: ${BREAKPOINTS.mobile}) {

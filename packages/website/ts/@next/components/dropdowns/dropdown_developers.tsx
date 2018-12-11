@@ -1,11 +1,16 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import styled from 'styled-components';
-
 import {Link as RouterLink} from 'react-router-dom';
+import styled, {withTheme} from 'styled-components';
+
 import {Link} from 'ts/@next/components/button';
 import {Column, Wrap, WrapGrid} from 'ts/@next/components/layout';
 import {Heading} from 'ts/@next/components/text';
+import {GlobalStyle} from 'ts/@next/constants/globalStyle';
+
+interface Props {
+    theme: GlobalStyle;
+}
 
 const introData = [
     {
@@ -56,11 +61,11 @@ const linksData = [
     },
 ];
 
-export const DropdownDevelopers = () => (
+export const DropdownDevelopers = withTheme((props: Props) => (
     <>
         <DropdownWrap>
             <div>
-                <Heading size={14} color="#5d5d5d">
+                <Heading asElement="h4" size={14} color="inherit" isMuted={0.35}>
                     Getting Started
                 </Heading>
 
@@ -75,7 +80,7 @@ export const DropdownDevelopers = () => (
 
             <StyledWrap>
                 <Column colWidth="1/2" isNoPadding={true}>
-                    <Heading size={14} color="#5d5d5d">
+                    <Heading asElement="h4" size={14} color="inherit" isMuted={0.35}>
                         Popular Docs
                     </Heading>
 
@@ -91,7 +96,7 @@ export const DropdownDevelopers = () => (
                 </Column>
 
                 <Column colWidth="1/2" isNoPadding={true}>
-                    <Heading size={14} color="#5d5d5d">
+                    <Heading asElement="h4" size={14} color="inherit" isMuted={0.35}>
                         Useful Links
                     </Heading>
 
@@ -107,21 +112,36 @@ export const DropdownDevelopers = () => (
                 </Column>
             </StyledWrap>
 
-            <StyledLink to="#" bgColor="#F3F6F4" isAccentColor={true} isNoBorder={true}>
+            <StyledLink to="#" bgColor={props.theme.dropdownButtonBg} isAccentColor={true} isNoBorder={true}>
                 View All Documentation
             </StyledLink>
         </DropdownWrap>
     </>
-);
+));
 
 const DropdownWrap = styled.div`
-    padding: 15px 30px 75px 15px;
+    padding: 15px 30px 75px 30px;
+
+    a {
+        color: inherit;
+    }
 `;
 
 const StyledWrap = styled(Wrap)`
-    border-top: 1px solid #dadada;
     padding-top: 20px;
     margin-top: 30px;
+    position: relative;
+
+    &:before {
+        content: '';
+        width: 100%;
+        height: 1px;
+        background-color: ${props => props.theme.dropdownColor};
+        opacity: 0.15;
+        position: absolute;
+        top: 0;
+        left:0;
+    }
 `;
 
 const StyledLink = styled(Link)`

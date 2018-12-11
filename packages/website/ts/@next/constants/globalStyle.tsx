@@ -1,7 +1,7 @@
 import {createGlobalStyle, withTheme} from 'styled-components';
 import {cssReset} from 'ts/@next/constants/cssReset';
 
-interface GlobalStyle {
+export interface GlobalStyle {
     theme: {
         bgColor: string;
         textColor: string;

@@ -28,16 +28,26 @@ const GLOBAL_THEMES: ThemeInterface = {
         bgColor: '#000000',
         textColor: '#FFFFFF',
         linkColor: colors.brandLight,
+        dropdownBg: '#111A19',
+        dropdownButtonBg: '#003831',
+        dropdownColor: '#FFFFFF',
     },
     light: {
         bgColor: '#FFFFFF',
         textColor: '#000000',
         linkColor: colors.brandDark,
+        dropdownBg: '#FBFBFB',
+        dropdownButtonBg: '#F3F6F4',
+        dropdownColor: '#003831',
+        dropdownBorderColor: '#E4E4E4',
     },
     gray: {
         bgColor: '#e0e0e0',
         textColor: '#000000',
         linkColor: colors.brandDark,
+        dropdownBg: '#FFFFFF',
+        dropdownButtonBg: '#F3F6F4',
+        dropdownColor: '#003831',
     },
 };
 

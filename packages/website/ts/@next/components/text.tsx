@@ -11,6 +11,7 @@ interface HeadingProps extends BaseTextInterface {
     asElement?: 'h1'| 'h2'| 'h3'| 'h4';
     isCentered?: boolean;
     isNoMargin?: boolean;
+    isMuted?: boolean | number;
     marginBottom?: string;
     color?: string;
 }
@@ -24,12 +25,13 @@ interface ParagraphProps extends BaseTextInterface {
 const StyledHeading = styled.h1<HeadingProps>`
     color: ${props => props.color || props.theme.textColor};
     font-size: ${props => isNaN(props.size) ? `var(--${props.size || 'default'}Heading)` : `${props.size}px`};
-    padding: ${props => props.padding && getCSSPadding(props.padding)};
     line-height: ${props => `var(--${props.size || 'default'}HeadingHeight)`};
-    margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
     text-align: ${props => props.isCentered && 'center'};
+    padding: ${props => props.padding && getCSSPadding(props.padding)};
     margin-left: ${props => props.isCentered && 'auto'};
     margin-right: ${props => props.isCentered && 'auto'};
+    margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
+    opacity: ${props => typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted};
     font-weight: 400;
 `;
 
