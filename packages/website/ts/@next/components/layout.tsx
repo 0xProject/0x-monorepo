@@ -110,6 +110,7 @@ export const Wrap = styled(WrapBase)`
     @media (min-width: ${BREAKPOINTS.mobile}) {
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
         flex-direction: ${props => props.isReversed && 'row-reverse'};
     }
 `;

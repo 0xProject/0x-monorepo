@@ -25,10 +25,10 @@ interface ButtonInterface {
 
 export const Button = styled.button<ButtonInterface>`
     appearance: none;
-    border: 1px solid transparent;
+    border: ${props => !props.isNoBorder && `1px solid transparent`};
     display: ${props => props.isInline && 'inline-block'};
     background-color: ${props => (!props.isTransparent || props.bgColor) ? (props.bgColor || colors.brandLight) : 'transparent'};
-    border-color: ${props => (props.isTransparent && !props.isNoBorder && !props.isWithArrow) && '#6a6a6a'};
+    border-color: ${props => (props.isTransparent && !props.isWithArrow) && '#6a6a6a'};
     color: ${props => props.isAccentColor ? props.theme.linkColor : (props.color || props.theme.textColor)};
     padding: ${props => (!props.isNoPadding && !props.isWithArrow) && '18px 30px'};
     text-align: center;
@@ -42,6 +42,11 @@ export const Button = styled.button<ButtonInterface>`
 
     path {
         fill: ${props => props.isAccentColor ? props.theme.linkColor : (props.color || props.theme.textColor)};
+    }
+
+    &:hover {
+        background-color: ${props => !props.isTransparent && '#04BEA8'};
+        border-color: ${props => (props.isTransparent && !props.isNoBorder && !props.isWithArrow) && '#00AE99'};
     }
 `;
 
