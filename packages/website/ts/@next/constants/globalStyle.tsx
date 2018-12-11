@@ -51,6 +51,12 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
         }
     }
 
+    @media (max-width: 1170px) {
+      :root {
+        --largeHeading: 60px;
+      }
+    }
+
     @media (max-width: 768px) {
         :root {
             --smallHeading: 18px;

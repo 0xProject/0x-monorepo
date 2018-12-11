@@ -87,10 +87,10 @@ export const Section = styled.section<SectionProps>`
     background-color: ${props => props.bgColor};
     position: ${props => props.isRelative && 'relative'};
     overflow: ${props => props.isRelative && 'hidden'};
+    margin-bottom: ${props => !props.isNoMargin && `${GUTTER}px`};
 
     @media (min-width: 1560px) {
         width: ${props => props.isFullWidth && '100vw'};
-        margin-bottom: ${props => !props.isNoMargin && `${GUTTER}px`};
         margin-left: ${props => props.isFullWidth && `calc(750px - 50vw)`};
     }
 
