@@ -10,11 +10,8 @@ import { Link } from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
 import { BREAKPOINTS, Column, Section, Wrap, WrapCentered, WrapSticky } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
+import { Slide, Slider } from 'ts/@next/components/slider/slider';
 import { Heading, Paragraph } from 'ts/@next/components/text';
-
-import CoinIcon from 'ts/@next/icons/illustrations/coin.svg';
-import CustomizeIcon from 'ts/@next/icons/illustrations/customize.svg';
-import ProtocolIcon from 'ts/@next/icons/illustrations/protocol.svg';
 
 const offersData = [
     {
@@ -59,6 +56,29 @@ const functionalityData = [
         icon: 'coin',
         title: 'Networked Liquidity',
         description: 'Allow your assets to appear on other 0x-based marketplaces by sharing your liquidity through an open order book.',
+    },
+];
+
+const useCaseSlides = [
+    {
+        icon: 'coin',
+        title: 'Games & Collectibles',
+        description: 'Artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality by providing the ability to build marketplaces for NFT trading.',
+    },
+    {
+        icon: 'coin',
+        title: 'Games & Collectibles',
+        description: 'Artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality by providing the ability to build marketplaces for NFT trading.',
+    },
+    {
+        icon: 'coin',
+        title: 'Games & Collectibles',
+        description: 'Artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality by providing the ability to build marketplaces for NFT trading.',
+    },
+    {
+        icon: 'coin',
+        title: 'Games & Collectibles',
+        description: 'Artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality by providing the ability to build marketplaces for NFT trading.',
     },
 ];
 
@@ -151,7 +171,16 @@ export class NextWhy extends React.PureComponent {
 
                         <SectionWrap id="cases">
                             <Heading size="medium">Use Cases</Heading>
-                            <Paragraph isMuted={true}>slider</Paragraph>
+                            <Slider>
+                                {_.map(useCaseSlides, (item, index) => (
+                                    <Slide 
+                                        key={`useCaseSlide-${index}`}
+                                        heading={item.title}
+                                        text={item.description}
+                                        icon={item.icon}
+                                    />
+                                ))}
+                            </Slider>
                         </SectionWrap>
 
                         <SectionWrap id="functionality">
