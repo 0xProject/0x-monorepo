@@ -246,7 +246,7 @@ export enum RevertReason {
     // Balance Threshold Filter
     InvalidOrBlockedExchangeSelector = 'INVALID_OR_BLOCKED_EXCHANGE_SELECTOR',
     BalanceQueryFailed = 'BALANCE_QUERY_FAILED',
-    AtLeastOneAddressDoesNotMeetBalanceThreshold= 'AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD',
+    AtLeastOneAddressDoesNotMeetBalanceThreshold = 'AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD',
 }
 
 export enum StatusCodes {

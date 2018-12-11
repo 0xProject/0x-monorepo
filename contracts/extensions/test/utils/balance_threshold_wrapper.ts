@@ -1,16 +1,21 @@
+import { artifacts as protocolArtifacts, ExchangeContract } from '@0x/contracts-protocol';
+import {
+    FillResults,
+    formatters,
+    LogDecoder,
+    OrderInfo,
+    orderUtils,
+    TransactionFactory,
+} from '@0x/contracts-test-utils';
+import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeContract } from '@0x/contracts-protocol';
 import { BalanceThresholdFilterContract } from '../../generated-wrappers/balance_threshold_filter';
-
-import { formatters, LogDecoder, orderUtils, OrderInfo, TransactionFactory } from '@0x/contracts-test-utils';
 import { artifacts } from '../../src/artifacts';
-import {artifacts as protocolArtifacts} from '@0x/contracts-protocol';
-import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 
 export class BalanceThresholdWrapper {
     private readonly _balanceThresholdFilter: BalanceThresholdFilterContract;
@@ -18,12 +23,21 @@ export class BalanceThresholdWrapper {
     private readonly _exchange: ExchangeContract;
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _logDecoder: LogDecoder;
-    constructor(balanceThresholdFilter: BalanceThresholdFilterContract, exchangeContract: ExchangeContract, signerTransactionFactory: TransactionFactory, provider: Provider) {
+    constructor(
+        balanceThresholdFilter: BalanceThresholdFilterContract,
+        exchangeContract: ExchangeContract,
+        signerTransactionFactory: TransactionFactory,
+        provider: Provider,
+    ) {
         this._balanceThresholdFilter = balanceThresholdFilter;
         this._exchange = exchangeContract;
         this._signerTransactionFactory = signerTransactionFactory;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper, {... artifacts, ... tokensArtifacts, ... protocolArtifacts} );
+        this._logDecoder = new LogDecoder(this._web3Wrapper, {
+            ...artifacts,
+            ...tokensArtifacts,
+            ...protocolArtifacts,
+        });
     }
     public async fillOrderAsync(
         signedOrder: SignedOrder,
@@ -36,7 +50,7 @@ export class BalanceThresholdWrapper {
             params.takerAssetFillAmount,
             params.signature,
         );
-        const txReceipt = this._executeTransaction(data, from);
+        const txReceipt = this._executeTransactionAsync(data, from);
         return txReceipt;
     }
     public async fillOrKillOrderAsync(
@@ -50,7 +64,7 @@ export class BalanceThresholdWrapper {
             params.takerAssetFillAmount,
             params.signature,
         );
-        const txReceipt = this._executeTransaction(data, from);
+        const txReceipt = this._executeTransactionAsync(data, from);
         return txReceipt;
     }
     public async fillOrderNoThrowAsync(
@@ -64,7 +78,7 @@ export class BalanceThresholdWrapper {
             params.takerAssetFillAmount,
             params.signature,
         );
-        const txReceipt = this._executeTransaction(data, from, opts.gas);
+        const txReceipt = this._executeTransactionAsync(data, from, opts.gas);
         return txReceipt;
     }
     public async batchFillOrdersAsync(
@@ -78,7 +92,7 @@ export class BalanceThresholdWrapper {
             params.takerAssetFillAmounts,
             params.signatures,
         );
-        const txReceipt = this._executeTransaction(data, from);
+        const txReceipt = this._executeTransactionAsync(data, from);
         return txReceipt;
     }
     public async batchFillOrKillOrdersAsync(
@@ -92,7 +106,7 @@ export class BalanceThresholdWrapper {
             params.takerAssetFillAmounts,
             params.signatures,
         );
-        const txReceipt = this._executeTransaction(data, from);
+        const txReceipt = this._executeTransactionAsync(data, from);
         return txReceipt;
     }
     public async batchFillOrdersNoThrowAsync(
@@ -106,7 +120,7 @@ export class BalanceThresholdWrapper {
             params.takerAssetFillAmounts,
             params.signatures,
         );
-        const txReceipt = this._executeTransaction(data, from, opts.gas);
+        const txReceipt = this._executeTransactionAsync(data, from, opts.gas);
         return txReceipt;
     }
     public async marketSellOrdersAsync(
@@ -120,7 +134,7 @@ export class BalanceThresholdWrapper {
             params.takerAssetFillAmount,
             params.signatures,
         );
-        const txReceipt = this._executeTransaction(data, from);
+        const txReceipt = this._executeTransactionAsync(data, from);
         return txReceipt;
     }
     public async marketSellOrdersNoThrowAsync(
@@ -134,7 +148,7 @@ export class BalanceThresholdWrapper {
             params.takerAssetFillAmount,
             params.signatures,
         );
-        const txReceipt = this._executeTransaction(data, from, opts.gas);
+        const txReceipt = this._executeTransactionAsync(data, from, opts.gas);
         return txReceipt;
     }
     public async marketBuyOrdersAsync(
@@ -148,7 +162,7 @@ export class BalanceThresholdWrapper {
             params.makerAssetFillAmount,
             params.signatures,
         );
-        const txReceipt = this._executeTransaction(data, from);
+        const txReceipt = this._executeTransactionAsync(data, from);
         return txReceipt;
     }
     public async marketBuyOrdersNoThrowAsync(
@@ -162,13 +176,13 @@ export class BalanceThresholdWrapper {
             params.makerAssetFillAmount,
             params.signatures,
         );
-        const txReceipt = this._executeTransaction(data, from, opts.gas);
+        const txReceipt = this._executeTransactionAsync(data, from, opts.gas);
         return txReceipt;
     }
     public async cancelOrderAsync(signedOrder: SignedOrder, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createCancel(signedOrder);
         const data = this._exchange.cancelOrder.getABIEncodedTransactionData(params.order);
-        const txReceipt = this._executeTransaction(data, from);
+        const txReceipt = this._executeTransactionAsync(data, from);
         return txReceipt;
     }
     public async batchCancelOrdersAsync(
@@ -177,12 +191,12 @@ export class BalanceThresholdWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = formatters.createBatchCancel(orders);
         const data = this._exchange.batchCancelOrders.getABIEncodedTransactionData(params.orders);
-        const txReceipt = this._executeTransaction(data, from);
+        const txReceipt = this._executeTransactionAsync(data, from);
         return txReceipt;
     }
     public async cancelOrdersUpToAsync(salt: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const data = this._exchange.cancelOrdersUpTo.getABIEncodedTransactionData(salt);
-        const txReceipt = this._executeTransaction(data, from);
+        const txReceipt = this._executeTransactionAsync(data, from);
         return txReceipt;
     }
     public async getTakerAssetFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
@@ -198,7 +212,7 @@ export class BalanceThresholdWrapper {
         return orderEpoch;
     }
     public async getOrderInfoAsync(signedOrder: SignedOrder): Promise<OrderInfo> {
-        const orderInfo = (await this._exchange.getOrderInfo.callAsync(signedOrder)) as OrderInfo;
+        const orderInfo = await this._exchange.getOrderInfo.callAsync(signedOrder);
         return orderInfo;
     }
     public async getOrdersInfoAsync(signedOrders: SignedOrder[]): Promise<OrderInfo[]> {
@@ -215,10 +229,33 @@ export class BalanceThresholdWrapper {
             params.left,
             params.right,
             params.leftSignature,
-            params.rightSignature
+            params.rightSignature,
         );
-        const txReceipt = this._executeTransaction(data, from);
+        const txReceipt = this._executeTransactionAsync(data, from);
         return txReceipt;
+    }
+    public async getFillOrderResultsAsync(
+        signedOrder: SignedOrder,
+        from: string,
+        opts: { takerAssetFillAmount?: BigNumber } = {},
+    ): Promise<FillResults> {
+        const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
+        const fillResults = await this._exchange.fillOrder.callAsync(
+            params.order,
+            params.takerAssetFillAmount,
+            params.signature,
+            { from },
+        );
+        return fillResults;
+    }
+    public abiEncodeFillOrder(signedOrder: SignedOrder, opts: { takerAssetFillAmount?: BigNumber } = {}): string {
+        const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
+        const data = this._exchange.fillOrder.getABIEncodedTransactionData(
+            params.order,
+            params.takerAssetFillAmount,
+            params.signature,
+        );
+        return data;
     }
     public getBalanceThresholdAddress(): string {
         return this._balanceThresholdFilter.address;
@@ -226,13 +263,13 @@ export class BalanceThresholdWrapper {
     public getExchangeAddress(): string {
         return this._exchange.address;
     }
-    // Exchange functions
-    //abiEncodeFillOrder
-    //getFillOrderResultsAsync
-    //
-    private async _executeTransaction(abiEncodedExchangeTxData: string, from: string, gas?: number): Promise<TransactionReceiptWithDecodedLogs> {
+    private async _executeTransactionAsync(
+        abiEncodedExchangeTxData: string,
+        from: string,
+        gas?: number,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const signedExchangeTx = this._signerTransactionFactory.newSignedTransaction(abiEncodedExchangeTxData);
-        const txOpts = _.isUndefined(gas) ? {from} : {from, gas};
+        const txOpts = _.isUndefined(gas) ? { from } : { from, gas };
         const txHash = await this._balanceThresholdFilter.executeTransaction.sendTransactionAsync(
             signedExchangeTx.salt,
             signedExchangeTx.signerAddress,
