@@ -15,7 +15,7 @@ const BATCH_SAVE_SIZE = 1000;
 const MARKET_ORDERBOOK_REQUEST_BATCH_SIZE = 50;
 
 // Delay between market orderbook requests.
-const MILLISEC_MARKET_ORDERBOOK_REQUEST_DELAY = 5000;
+const MILLISEC_MARKET_ORDERBOOK_REQUEST_DELAY = 1000;
 
 let connection: Connection;
 

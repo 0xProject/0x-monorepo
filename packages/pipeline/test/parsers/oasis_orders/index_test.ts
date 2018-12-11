@@ -14,7 +14,7 @@ const expect = chai.expect;
 // tslint:disable:custom-no-magic-numbers
 describe('oasis_orders', () => {
     describe('parseOasisOrder', () => {
-        it('converts ddexOrder to TokenOrder entity', () => {
+        it('converts oasisOrder to TokenOrder entity', () => {
             const oasisOrder: [string, BigNumber] = ['0.5', new BigNumber(10)];
             const oasisMarket: OasisMarket = {
                 id: 'ABCDEF',
@@ -36,10 +36,10 @@ describe('oasis_orders', () => {
             expected.orderType = 'bid';
             expected.price = new BigNumber(0.5);
             expected.baseAssetSymbol = 'DEF';
-            expected.baseAssetAddress = '';
+            expected.baseAssetAddress = null;
             expected.baseVolume = new BigNumber(5);
             expected.quoteAssetSymbol = 'ABC';
-            expected.quoteAssetAddress = '';
+            expected.quoteAssetAddress = null;
             expected.quoteVolume = new BigNumber(10);
 
             const actual = parseOasisOrder(oasisMarket, observedTimestamp, orderType, source, oasisOrder);

@@ -21,12 +21,8 @@ export function aggregateOrders(rawOrders: GenericRawOrder[]): Array<[string, Bi
         // representations of the same number. Eg. '0.0' and '0.00'.
         const price = new BigNumber(order.price).toString();
 
-        const existingAmount = aggregatedOrders.get(price);
-        if (existingAmount !== undefined) {
-            aggregatedOrders.set(price, amount.plus(existingAmount));
-        } else {
-            aggregatedOrders.set(price, amount);
-        }
+        const existingAmount = aggregatedOrders.get(price) || new BigNumber(0);
+        aggregatedOrders.set(price, amount.plus(existingAmount));
     });
     return Array.from(aggregatedOrders.entries());
 }

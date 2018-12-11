@@ -8,9 +8,21 @@ export class TokenOrderbookSnapshotAddOrderType1544131658904 implements Migratio
                 ADD PRIMARY KEY (observed_timestamp, source, order_type, price, base_asset_symbol, quote_asset_symbol);
             `,
         );
+        await queryRunner.query(
+            `ALTER TABLE raw.token_orderbook_snapshots
+                ALTER COLUMN quote_asset_address DROP NOT NULL,
+                ALTER COLUMN base_asset_address DROP NOT NULL;
+            `,
+        );
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
+        await queryRunner.query(
+            `ALTER TABLE raw.token_orderbook_snapshots
+                ALTER COLUMN quote_asset_address SET NOT NULL,
+                ALTER COLUMN base_asset_address SET NOT NULL;
+            `,
+        );
         await queryRunner.query(
             `ALTER TABLE raw.token_orderbook_snapshots
                 DROP CONSTRAINT token_orderbook_snapshots_pkey,

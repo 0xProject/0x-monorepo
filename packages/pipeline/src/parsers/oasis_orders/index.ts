@@ -61,11 +61,11 @@ export function parseOasisOrder(
     tokenOrder.price = price;
 
     tokenOrder.baseAssetSymbol = oasisMarket.base;
-    tokenOrder.baseAssetAddress = ''; // Oasis doesn't provide address information
+    tokenOrder.baseAssetAddress = null; // Oasis doesn't provide address information
     tokenOrder.baseVolume = price.times(amount);
 
     tokenOrder.quoteAssetSymbol = oasisMarket.quote;
-    tokenOrder.quoteAssetAddress = ''; // Oasis doesn't provide address information
+    tokenOrder.quoteAssetAddress = null; // Oasis doesn't provide address information
     tokenOrder.quoteVolume = amount;
     return tokenOrder;
 }
