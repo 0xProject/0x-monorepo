@@ -4,7 +4,7 @@ import 'mocha';
 
 import { DdexMarket } from '../../../src/data_sources/ddex';
 import { TokenOrderbookSnapshot as TokenOrder } from '../../../src/entities';
-import { aggregateOrders, parseDdexOrder } from '../../../src/parsers/ddex_orders';
+import { parseDdexOrder } from '../../../src/parsers/ddex_orders';
 import { OrderType } from '../../../src/types';
 import { chaiSetup } from '../../utils/chai_setup';
 
@@ -13,19 +13,6 @@ const expect = chai.expect;
 
 // tslint:disable:custom-no-magic-numbers
 describe('ddex_orders', () => {
-    describe('aggregateOrders', () => {
-        it('aggregates orders by price point', () => {
-            const input = [
-                { price: '1', amount: '20', orderId: 'testtest' },
-                { price: '1', amount: '30', orderId: 'testone' },
-                { price: '2', amount: '100', orderId: 'testtwo' },
-            ];
-            const expected = [['1', new BigNumber(50)], ['2', new BigNumber(100)]];
-            const actual = aggregateOrders(input);
-            expect(actual).deep.equal(expected);
-        });
-    });
-
     describe('parseDdexOrder', () => {
         it('converts ddexOrder to TokenOrder entity', () => {
             const ddexOrder: [string, BigNumber] = ['0.5', new BigNumber(10)];
