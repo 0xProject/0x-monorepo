@@ -25,10 +25,6 @@ interface HeaderState {
     isOpen: boolean;
 }
 
-interface HeaderState {
-    isOpen: boolean;
-}
-
 interface NavItem {
     url?: string;
     id?: string;
@@ -47,12 +43,14 @@ const navItems: NavItem[] = [
         url: '/next/0x-instant',
         text: 'Products',
         dropdownComponent: DropdownProducts,
+        dropdownWidth: 280,
     },
     {
         id: 'developers',
         url: '#',
         text: 'Developers',
         dropdownComponent: DropdownDevelopers,
+        dropdownWidth: 420,
     },
     { id: 'about', url: '/next/about/mission', text: 'About' },
     { id: 'blog', url: '#', text: 'Blog' },
@@ -63,6 +61,36 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
         isOpen: false,
     };
 
+    public onMenuButtonClick = (): void => {
+        this.setState({
+            isOpen: !this.state.isOpen,
+        });
+    }
+
+    public getNavItem = (link: NavItem, index: number): React.ReactNode => {
+        const Wrapper = link.dropdownComponent ? LinkWrap : React.Fragment;
+        const Subnav = link.dropdownComponent;
+
+        return (
+            <Wrapper>
+                <Link
+                    key={`nav-${index}`}
+                    href={link.url}
+                    isTransparent={true}
+                    isNoBorder={true}
+                >
+                    {link.text}
+                </Link>
+
+                {link.dropdownComponent &&
+                    <DropdownWrap width={link.dropdownWidth}>
+                        <Subnav />
+                    </DropdownWrap>
+                }
+            </Wrapper>
+        );
+    }
+
     public render(): React.ReactNode {
         return (
             <Headroom>
@@ -72,7 +100,7 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
                         <Logo/>
                     </ReactRouterLink>
 
-                    <Hamburger isOpen={this.state.isOpen} onClick={this._onMenuButtonClick.bind(this)}/>
+                    <Hamburger isOpen={this.state.isOpen} onClick={this.onMenuButtonClick}/>
 
                     <Nav>
                         <MobileProductLinksWrap>
@@ -89,7 +117,7 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
                         </MobileProductLinksWrap>
 
                         <StyledButtonWrap>
-                          {_.map(navItems, (link, index) => this._getNavItem(link, index))}
+                          {_.map(navItems, (link, index) => this.getNavItem(link, index))}
                         </StyledButtonWrap>
                     </Nav>
                     <TradeButton href="#">Trade on 0x</TradeButton>
@@ -98,45 +126,13 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
             </Headroom>
       );
     }
-    private _onMenuButtonClick(): void {
-        this.setState({
-            isOpen: !this.state.isOpen,
-        });
-    }
-    private _getNavItem(link: NavItem, index: number): React.ReactNode {
-        const Wrapper = link.dropdownComponent ? LinkWrap : React.Fragment;
-        const Subnav = link.dropdownComponent;
-
-        return (
-            <Wrapper>
-                <StyledLink
-                    key={`nav-${index}`}
-                    href={link.url}
-                    isTransparent={true}
-                    isNoBorder={true}
-                >
-                    {link.text}
-                </StyledLink>
-
-                {link.dropdownComponent &&
-                    <DropdownWrap>
-                        <Subnav />
-                    </DropdownWrap>
-                }
-            </Wrapper>
-        );
-    }
 }
 
 const StyledHeader = styled(Section.withComponent('header'))<HeaderProps>`
     @media (max-width: 768px) {
-        overflow: hidden;
         min-height: ${props => props.isOpen ? '385px' : '70px'};
         position: relative;
         transition: min-height 0.25s ease-in-out;
-        :root & {
-            padding: 20px 20px 0 !important;
-        }
     }
 
     @media (min-width: 768px) {
@@ -157,6 +153,7 @@ const HeaderWrap = styled(Wrap)`
 
 const StyledButtonWrap = styled(ButtonWrap)`
     display: flex;
+
     @media (max-width: 768px) {
         background-color: #022924;
         display: flex;
@@ -166,17 +163,7 @@ const StyledButtonWrap = styled(ButtonWrap)`
         a {
             text-align: left;
             padding-left: 0;
-        }
-    }
-
-    button + button,
-    a + a,
-    a + button,
-    button + a {
-        margin-left: 0;
-
-        @media (min-width: 768px) {
-            margin-left: 10px;
+            margin: 0 !important;
         }
     }
 `;
@@ -213,13 +200,13 @@ const LinkWrap = styled.div`
 `;
 
 const DropdownWrap = styled.div`
-    width: 420px;
+    width: ${props => props.width || 280}px;
     padding: 15px 0;
     background-color: #ffffff;
     color: #000000;
     position: absolute;
     top: 100%;
-    left: calc(50% - 210px);
+    left: calc(50% - ${props => (props.width || 280) / 2}px);
     visibility: hidden;
     opacity: 0;
     transform: translate3d(0, -10px, 0);
@@ -239,10 +226,6 @@ const DropdownWrap = styled.div`
     	border-width: 10px;
     	margin-left: -10px;
     }
-`;
-
-const StyledLink = styled(Link)`
-
 `;
 
 const Nav = styled.div`
