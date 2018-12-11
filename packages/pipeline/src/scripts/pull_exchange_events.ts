@@ -1,5 +1,7 @@
 // tslint:disable:no-console
 import { web3Factory } from '@0x/dev-utils';
+import { Web3ProviderEngine } from '@0x/subproviders';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import R = require('ramda');
 import 'reflect-metadata';
 import { Connection, ConnectionOptions, createConnection, Repository } from 'typeorm';
@@ -12,6 +14,7 @@ import { EXCHANGE_START_BLOCK, handleError, INFURA_ROOT_URL } from '../utils';
 
 const START_BLOCK_OFFSET = 100; // Number of blocks before the last known block to consider when updating fill events.
 const BATCH_SAVE_SIZE = 1000; // Number of events to save at once.
+const BLOCK_FINALITY_THRESHOLD = 10; // When to consider blocks as final. Used to compute default endBlock.
 
 let connection: Connection;
 
@@ -20,43 +23,44 @@ let connection: Connection;
     const provider = web3Factory.getRpcProvider({
         rpcUrl: INFURA_ROOT_URL,
     });
+    const endBlock = await calculateEndBlockAsync(provider);
     const eventsSource = new ExchangeEventsSource(provider, 1);
-    await getFillEventsAsync(eventsSource);
-    await getCancelEventsAsync(eventsSource);
-    await getCancelUpToEventsAsync(eventsSource);
+    await getFillEventsAsync(eventsSource, endBlock);
+    await getCancelEventsAsync(eventsSource, endBlock);
+    await getCancelUpToEventsAsync(eventsSource, endBlock);
     process.exit(0);
 })().catch(handleError);
 
-async function getFillEventsAsync(eventsSource: ExchangeEventsSource): Promise<void> {
+async function getFillEventsAsync(eventsSource: ExchangeEventsSource, endBlock: number): Promise<void> {
     console.log('Checking existing fill events...');
     const repository = connection.getRepository(ExchangeFillEvent);
     const startBlock = await getStartBlockAsync(repository);
     console.log(`Getting fill events starting at ${startBlock}...`);
-    const eventLogs = await eventsSource.getFillEventsAsync(startBlock);
+    const eventLogs = await eventsSource.getFillEventsAsync(startBlock, endBlock);
     console.log('Parsing fill events...');
     const events = parseExchangeFillEvents(eventLogs);
     console.log(`Retrieved and parsed ${events.length} total fill events.`);
     await saveEventsAsync(startBlock === EXCHANGE_START_BLOCK, repository, events);
 }
 
-async function getCancelEventsAsync(eventsSource: ExchangeEventsSource): Promise<void> {
+async function getCancelEventsAsync(eventsSource: ExchangeEventsSource, endBlock: number): Promise<void> {
     console.log('Checking existing cancel events...');
     const repository = connection.getRepository(ExchangeCancelEvent);
     const startBlock = await getStartBlockAsync(repository);
     console.log(`Getting cancel events starting at ${startBlock}...`);
-    const eventLogs = await eventsSource.getCancelEventsAsync(startBlock);
+    const eventLogs = await eventsSource.getCancelEventsAsync(startBlock, endBlock);
     console.log('Parsing cancel events...');
     const events = parseExchangeCancelEvents(eventLogs);
     console.log(`Retrieved and parsed ${events.length} total cancel events.`);
     await saveEventsAsync(startBlock === EXCHANGE_START_BLOCK, repository, events);
 }
 
-async function getCancelUpToEventsAsync(eventsSource: ExchangeEventsSource): Promise<void> {
+async function getCancelUpToEventsAsync(eventsSource: ExchangeEventsSource, endBlock: number): Promise<void> {
     console.log('Checking existing CancelUpTo events...');
     const repository = connection.getRepository(ExchangeCancelUpToEvent);
     const startBlock = await getStartBlockAsync(repository);
     console.log(`Getting CancelUpTo events starting at ${startBlock}...`);
-    const eventLogs = await eventsSource.getCancelUpToEventsAsync(startBlock);
+    const eventLogs = await eventsSource.getCancelUpToEventsAsync(startBlock, endBlock);
     console.log('Parsing CancelUpTo events...');
     const events = parseExchangeCancelUpToEvents(eventLogs);
     console.log(`Retrieved and parsed ${events.length} total CancelUpTo events.`);
@@ -133,4 +137,10 @@ async function saveIndividuallyWithFallbackAsync<T extends ExchangeEvent>(
             );
         }
     }
+}
+
+async function calculateEndBlockAsync(provider: Web3ProviderEngine): Promise<number> {
+    const web3Wrapper = new Web3Wrapper(provider);
+    const currentBlock = await web3Wrapper.getBlockNumberAsync();
+    return currentBlock - BLOCK_FINALITY_THRESHOLD;
 }

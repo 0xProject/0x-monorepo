@@ -40,6 +40,7 @@
     },
     "dependencies": {
         "@0x/connect": "^3.0.2",
+        "@0x/contract-addresses": "^2.0.0",
         "@0x/contract-artifacts": "^1.0.1",
         "@0x/contract-wrappers": "^3.0.0",
         "@0x/dev-utils": "^1.0.13",
