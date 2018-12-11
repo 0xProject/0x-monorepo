@@ -91,11 +91,15 @@ const StyledInput = styled.input`
     background-color: transparent;
     border: 0;
     border-bottom: 1px solid #393939;
-    color: #B1B1B1; // #9D9D9D on light theme
+    color: #fff;
     font-size: 1.294117647rem;
     padding: 15px 0;
     outline: none;
     width: 100%;
+
+    &::placeholder {
+        color: #B1B1B1; // #9D9D9D on light theme
+    }
 `;
 
 const InputWrapper = styled.div`
@@ -121,7 +125,7 @@ const SubmitButton = styled.button`
     outline: 0;
 
     &:focus-within {
-        background-color: #eee;
+        //background-color: #eee;
     }
 `;
 
@@ -142,7 +146,7 @@ const SuccessText = styled.p<ArrowProps>`
     position: absolute;
     left: 0;
     top: 0;
-    text-align: center;
+    text-align: left;
     right: 50px;
     opacity: ${props => props.isSubmitted ? 1 : 0};
     visibility: ${props => props.isSubmitted ? 'visible' : 'hidden'};

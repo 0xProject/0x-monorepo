@@ -7,7 +7,7 @@ import { colors } from 'ts/style/colors';
 
 import { BREAKPOINTS, Column, Section, Wrap, WrapGrid } from 'ts/@next/components/layout';
 import { Logo } from 'ts/@next/components/logo';
-import { NewsletterForm } from 'ts/@next/components/newsletterForm';
+import { NewsletterForm } from 'ts/@next/components/newsletter_form';
 
 interface FooterInterface {
 }
