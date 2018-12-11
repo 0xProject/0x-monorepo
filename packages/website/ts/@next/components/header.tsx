@@ -6,8 +6,7 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Button, ButtonWrap, Link } from 'ts/@next/components/button';
-import { DevelopersDropDown } from 'ts/@next/components/dropdowns/developers_drop_down';
+import { Button, Link } from 'ts/@next/components/button';
 import { DropdownDevelopers } from 'ts/@next/components/dropdowns/dropdown_developers';
 import { DropdownProducts } from 'ts/@next/components/dropdowns/dropdown_products';
 import { Dropdown } from 'ts/@next/components/dropdowns/mock';
@@ -50,7 +49,7 @@ const navItems: NavItem[] = [
         url: '#',
         text: 'Developers',
         dropdownComponent: DropdownDevelopers,
-        dropdownWidth: 420,
+        dropdownWidth: 450,
     },
     { id: 'about', url: '/next/about/mission', text: 'About' },
     { id: 'blog', url: '#', text: 'Blog' },
@@ -154,8 +153,10 @@ const HeaderWrap = styled(Wrap)`
   }
 `;
 
-const StyledButtonWrap = styled(ButtonWrap)`
+const StyledButtonWrap = styled.div`
     display: flex;
+    align-items: center;
+    justify-content: space-between;
 
     @media (max-width: 768px) {
         background-color: #022924;
@@ -166,7 +167,10 @@ const StyledButtonWrap = styled(ButtonWrap)`
         a {
             text-align: left;
             padding-left: 0;
-            margin: 0 !important;
+        }
+
+        a + a {
+            margin-left: 0;
         }
     }
 `;

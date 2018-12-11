@@ -123,7 +123,7 @@ export class NextWhy extends React.PureComponent {
               <Section>
                 <Wrap>
                   <Column colWidth="1/3">
-                      <NavStickyWrap>
+                      <NavStickyWrap offsetTop="130px">
                           <ChapterLink offset="60" href="#benefits">Benefits</ChapterLink>
                           <ChapterLink offset="60" href="#cases">Use Cases</ChapterLink>
                           <ChapterLink offset="60" href="#functionality">Features</ChapterLink>

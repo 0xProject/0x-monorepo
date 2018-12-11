@@ -6,6 +6,7 @@ import { BREAKPOINTS } from 'ts/@next/components/layout';
 import { colors } from 'ts/style/colors';
 
 interface ButtonInterface {
+    bgColor?: string;
     color?: string;
     children?: Node | string;
     isTransparent?: boolean;
@@ -26,13 +27,14 @@ export const Button = styled.button<ButtonInterface>`
     appearance: none;
     border: 1px solid transparent;
     display: ${props => props.isInline && 'inline-block'};
-    background-color: ${props => !props.isTransparent ? colors.brandLight : 'transparent'};
+    background-color: ${props => (!props.isTransparent || props.bgColor) ? (props.bgColor || colors.brandLight) : 'transparent'};
     border-color: ${props => (props.isTransparent && !props.isNoBorder && !props.isWithArrow) && '#6a6a6a'};
     color: ${props => props.isAccentColor ? props.theme.linkColor : (props.color || props.theme.textColor)};
     padding: ${props => (!props.isNoPadding && !props.isWithArrow) && '18px 30px'};
     text-align: center;
     font-size: ${props => props.isWithArrow ? '20px' : '18px'};
     text-decoration: none;
+    cursor: pointer;
 
     svg {
         margin-left: 12px;
@@ -52,7 +54,7 @@ export const Link = (props: ButtonInterface) => {
     const Component = Button.withComponent(ReactRouterLink);
 
     return (
-        <Component to={href} isTransparent={true} {...props}>
+        <Component to={href} {...props}>
             {children}
 
             { isWithArrow &&
@@ -64,6 +66,10 @@ export const Link = (props: ButtonInterface) => {
             }
         </Component>
     );
+};
+
+Link.defaultProps = {
+    isTransparent: true,
 };
 
 // Added this, & + & doesnt really work since we switch with element types...

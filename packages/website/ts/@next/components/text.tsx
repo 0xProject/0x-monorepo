@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import {getCSSPadding, PaddingInterface} from 'ts/@next/constants/utilities';
 
 interface BaseTextInterface extends PaddingInterface {
-    size?: 'default' | 'medium' | 'large' | 'small';
+    size?: 'default' | 'medium' | 'large' | 'small' | number;
     isCentered?: boolean;
 }
 
@@ -23,14 +23,14 @@ interface ParagraphProps extends BaseTextInterface {
 
 const StyledHeading = styled.h1<HeadingProps>`
     color: ${props => props.color || props.theme.textColor};
-    font-size: ${props => `var(--${props.size || 'default'}Heading)`};
+    font-size: ${props => isNaN(props.size) ? `var(--${props.size || 'default'}Heading)` : `${props.size}px`};
     padding: ${props => props.padding && getCSSPadding(props.padding)};
     line-height: ${props => `var(--${props.size || 'default'}HeadingHeight)`};
     margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
     text-align: ${props => props.isCentered && 'center'};
-    font-weight: 400;
     margin-left: ${props => props.isCentered && 'auto'};
     margin-right: ${props => props.isCentered && 'auto'};
+    font-weight: 400;
 `;
 
 export const Heading: React.StatelessComponent<HeadingProps> = props => {
