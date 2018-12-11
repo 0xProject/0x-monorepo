@@ -105,14 +105,14 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
                     <Nav>
                         <MobileProductLinksWrap>
                             {_.map(mobileProductLinks, (link, index) => (
-                                <StyledLink
+                                <Link
                                     key={`productlink-${index}`}
                                     href={link.url}
                                     isTransparent={true}
                                     isNoBorder={true}
                                 >
                                 {link.text}
-                                </StyledLink>
+                                </Link>
                             ))}
                         </MobileProductLinksWrap>
 
