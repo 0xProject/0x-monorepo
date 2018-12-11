@@ -20,10 +20,8 @@ export class ImageLoop extends React.Component<Props> {
     public componentDidMount(): void {
         const domImage = React.Children.only(this.props.children);
 
-        debugger;
-
         this._img = new Image(1446, 407);
-        this._img.src = domImage.src;
+        this._img.src = domImage.props.src;
         this._ctx = this._canvas.current.getContext('2d');
 
         this._img.onload = this.updateCanvas.bind(this);
