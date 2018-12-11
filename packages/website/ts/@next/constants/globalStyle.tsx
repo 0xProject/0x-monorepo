@@ -106,8 +106,9 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
         line-height: 1.444444444em; // 26px
     }
 
-    :root a {
+    a, button {
         text-decoration: none;
+        font-family: inherit;
     }
 
     svg + p,

@@ -11,7 +11,7 @@ import { DropdownDevelopers } from 'ts/@next/components/dropdowns/dropdown_devel
 import { DropdownProducts } from 'ts/@next/components/dropdowns/dropdown_products';
 import { Dropdown } from 'ts/@next/components/dropdowns/mock';
 import { Hamburger } from 'ts/@next/components/hamburger';
-import { Section, Wrap } from 'ts/@next/components/layout';
+import { BREAKPOINTS, Section, Wrap } from 'ts/@next/components/layout';
 import { Logo } from 'ts/@next/components/logo';
 import { Paragraph } from 'ts/@next/components/text';
 
@@ -130,14 +130,14 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
 }
 
 const StyledHeader = styled(Section.withComponent('header'))<HeaderProps>`
-    @media (max-width: 768px) {
+    @media (max-width: ${BREAKPOINTS.mobile}) {
         min-height: ${props => props.isOpen ? '385px' : '70px'};
-        overflow: ${props => !props.isOpen && 'hidden'};
+        overflow: hidden;
         position: relative;
         transition: min-height 0.25s ease-in-out;
     }
 
-    @media (min-width: 768px) {
+    @media (max-width: ${BREAKPOINTS.mobile}) {
         background-color: ${props => props.theme.bgColor};
     }
 `;
@@ -158,7 +158,7 @@ const StyledButtonWrap = styled.div`
     align-items: center;
     justify-content: space-between;
 
-    @media (max-width: 768px) {
+    @media (max-width: ${BREAKPOINTS.mobile}) {
         background-color: #022924;
         display: flex;
         flex-wrap: wrap;
@@ -178,7 +178,7 @@ const StyledButtonWrap = styled.div`
 const MobileProductLinksWrap = styled(StyledButtonWrap)`
     display: none;
 
-    @media (max-width: 768px) {
+    @media (max-width: ${BREAKPOINTS.mobile}) {
         display: block;
         background-color: transparent;
         flex-direction: column;
@@ -197,12 +197,14 @@ const LinkWrap = styled.div`
         display: block;
     }
 
-    &:hover > div {
-        display: block;
-        visibility: visible;
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-        transition: opacity 0.35s, transform 0.35s, visibility 0s;
+    @media (min-width: ${BREAKPOINTS.mobile}) {
+        &:hover > div {
+            display: block;
+            visibility: visible;
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            transition: opacity 0.35s, transform 0.35s, visibility 0s;
+        }
     }
 `;
 
@@ -233,10 +235,14 @@ const DropdownWrap = styled.div`
     	border-width: 10px;
     	margin-left: -10px;
     }
+
+    @media (max-width: ${BREAKPOINTS.mobile}) {
+        display: none;
+    }
 `;
 
 const Nav = styled.div`
-    @media (max-width: 768px) {
+    @media (max-width: ${BREAKPOINTS.mobile}) {
         background-color: ${colors.brandDark};
         position: absolute;
         top: 0;
@@ -249,7 +255,7 @@ const Nav = styled.div`
 const TradeButton = styled(Button)`
     padding: 14px 22px;
 
-    @media (max-width: 768px) {
+    @media (max-width: ${BREAKPOINTS.mobile}) {
         display: none;
     }
 `;
