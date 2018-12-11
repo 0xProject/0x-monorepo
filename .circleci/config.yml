@@ -17,7 +17,7 @@ jobs:
             - run:
                   name: yarn
                   command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
-            - run: yarn build:ci:no_website
+            - run: yarn build:ci:no_website_or_instant
             - save_cache:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -32,6 +32,16 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: cd packages/website && yarn build:prod
+    build-instant:
+        resource_class: medium+
+        docker:
+            - image: circleci/node:9
+        working_directory: ~/repo
+        steps:
+            - restore_cache:
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: cd packages/instant && yarn build
     test-contracts-ganache:
         docker:
             - image: circleci/node:9
@@ -83,6 +93,15 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn test:generate_docs:circleci
+    test-instant:
+        docker:
+            - image: circleci/node:9
+        working_directory: ~/repo
+        steps:
+            - restore_cache:
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: cd packages/instant && yarn test:circleci
     test-pipeline:
         docker:
             - image: circleci/node:9
@@ -122,7 +141,6 @@ jobs:
             - run: yarn wsrun test:circleci @0x/subproviders
             - run: yarn wsrun test:circleci @0x/web3-wrapper
             - run: yarn wsrun test:circleci @0x/utils
-            - run: yarn wsrun test:circleci @0x/instant
             - save_cache:
                   key: coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -347,6 +365,9 @@ workflows:
     main:
         jobs:
             - build
+            - build-instant:
+                  requires:
+                      - build
             - build-website:
                   requires:
                       - build
@@ -371,10 +392,14 @@ workflows:
             - test-doc-generation:
                   requires:
                       - build
+            - test-instant:
+                  requires:
+                      - build-instant
             - submit-coverage:
                   requires:
                       - test-rest
                       - test-python
+                      - test-instant
             - test-python
             - static-tests-python
             # skip python tox run for now, as we don't yet have multiple test environments to support.

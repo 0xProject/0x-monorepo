@@ -25,7 +25,7 @@
         "lerna": "lerna",
         "build": "wsrun build $PKG --fast-exit -r --stages --exclude-missing",
         "build:no_website": "wsrun build $PKG --fast-exit -r --stages --exclude @0x/website --exclude-missing",
-        "build:ci:no_website": "wsrun build:ci $PKG --fast-exit -r --stages --exclude @0x/website --exclude-missing",
+        "build:ci:no_website_or_instant": "wsrun build:ci $PKG --fast-exit -r --stages --exclude @0x/website --exclude @0x/instant --exclude-missing",
         "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
         "watch:ts": "tsc -b -w",
