@@ -54,7 +54,7 @@ const Highlight = ({ highlight }) => (
 
 export const NextAboutPress = () => (
   <SiteWrap theme="light">
-    <Section>
+    <Section isPadLarge={true}>
       <Wrap>
          <Column colWidth="1/3">
             <ChapterLink to="/next/about/mission">Our Mission</ChapterLink>
@@ -64,7 +64,7 @@ export const NextAboutPress = () => (
         </Column>
         <Column colWidth="2/3">
             <Heading size="medium">Press Highlights</Heading>
-            <Paragraph size="medium">Want to write about 0x? Get in touch, or download our press kit.</Paragraph>
+            <Paragraph size="medium" marginBottom="60px">Want to write about 0x? Get in touch, or download our press kit.</Paragraph>
 
             <Separator/>
 

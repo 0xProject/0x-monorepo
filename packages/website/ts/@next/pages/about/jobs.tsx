@@ -57,7 +57,7 @@ const Position = ({ position }) => (
 
 export const NextAboutJobs = () => (
   <SiteWrap theme="light">
-    <Section>
+    <Section isPadLarge={true}>
       <Wrap>
          <Column colWidth="1/3">
             <ChapterLink to="/next/about/mission">Our Mission</ChapterLink>
@@ -66,18 +66,20 @@ export const NextAboutJobs = () => (
             <ChapterLink to="/next/about/jobs">Jobs</ChapterLink>
         </Column>
         <Column colWidth="2/3">
-            <Heading size="medium">
-                Join Us in Our Mission
-            </Heading>
-            <Paragraph size="medium">
-                To create a tokenized world where all value can flow freely.We are powering a growing ecosystem of decentralized applications and solving novel challenges to make our technology intuitive, flexible, and accessible to all. Read more about our mission, and join us in building financial infrastructure upon which the exchange of anything of value will take place.
-            </Paragraph>
-            <Link href="#">Our misson and values</Link>
+          <div style={{ maxWidth: '680px' }}>
+              <Heading size="medium">
+                  Join Us in Our Mission
+              </Heading>
+              <Paragraph size="medium">
+                  To create a tokenized world where all value can flow freely. We are powering a growing ecosystem of decentralized applications and solving novel challenges to make our technology intuitive, flexible, and accessible to all. Read more about our mission, and join us in building financial infrastructure upon which the exchange of anything of value will take place.
+              </Paragraph>
+              <Link href="#">Our misson and values</Link>
+            </div>
         </Column>
       </Wrap>
     </Section>
 
-    <Section bgColor="#F3F6F4">
+    <Section bgColor="#F3F6F4" isPadLarge={true}>
         <Wrap>
             <Column colWidth="1/3">
                 <Heading size="medium" isNoMargin={true}>
@@ -98,7 +100,7 @@ export const NextAboutJobs = () => (
         </Wrap>
     </Section>
 
-    <Section>
+    <Section isPadLarge={true}>
       <Wrap>
         <Column colWidth="1/3">
             <Heading size="medium">Benefits</Heading>
@@ -125,9 +127,7 @@ export const NextAboutJobs = () => (
       </Wrap>
     </Section>
 
-    <Separator/>
-
-    <Section>
+    <Section isPadLarge={true}>
       <Wrap>
         <Column colWidth="1/3">
             <Heading size="medium">Current<br/>Openings</Heading>

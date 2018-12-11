@@ -34,6 +34,7 @@ interface ColumnProps {
     colWidth?: '1/4' | '1/3' | '1/2' | '2/3';
     isNoPadding?: boolean;
     isPadLarge?: boolean;
+    isFlexGrow?: boolean;
     bgColor?: string;
 }
 
@@ -83,7 +84,7 @@ export const Main = styled.main`
 // just <Section asElement?="div/section/footer/header/whatever" /> ?
 export const Section = styled.section<SectionProps>`
     width: ${props => props.isFullWidth ? `calc(100% + ${GUTTER * 2}px)` : '100%'};
-    padding: ${props => !props.isNoPadding && (props.isPadLarge ? `${PADDING_SIZES.large} ${PADDING_SIZES.default}` : PADDING_SIZES.default)};
+    padding: ${props => !props.isNoPadding && (props.isPadLarge ? `${PADDING_SIZES.large}` : PADDING_SIZES.default)};
     background-color: ${props => props.bgColor};
     position: ${props => props.isRelative && 'relative'};
     overflow: ${props => props.isRelative && 'hidden'};
@@ -136,6 +137,7 @@ export const WrapGrid = styled(WrapBase)`
 
 export const Column = styled.div<ColumnProps>`
     background-color: ${props => props.bgColor};
+    flex-grow: ${props => props.isFlexGrow && 1};
 
     @media (min-width: ${BREAKPOINTS.mobile}) {
         padding: ${props => !props.isNoPadding && (props.isPadLarge ? `${PADDING_SIZES.large} ${PADDING_SIZES.default}` : PADDING_SIZES.default)};
