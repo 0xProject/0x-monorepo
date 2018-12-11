@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import * as React from 'react';
-import Headroom from 'react-headroom';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled, { withTheme } from 'styled-components';
 
@@ -106,47 +105,45 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
         const { theme } = this.props;
 
         return (
-            <Headroom>
-                <StyledHeader isOpen={isOpen}>
-                  <HeaderWrap>
-                    <ReactRouterLink to="/next">
-                        <Logo/>
-                    </ReactRouterLink>
+            <StyledHeader isOpen={isOpen}>
+              <HeaderWrap>
+                <ReactRouterLink to="/next">
+                    <Logo/>
+                </ReactRouterLink>
 
-                    <Hamburger isOpen={this.state.isOpen} onClick={this.onMenuButtonClick}/>
+                <Hamburger isOpen={this.state.isOpen} onClick={this.onMenuButtonClick}/>
 
-                    <Nav>
-                        <MobileProductLinksWrap>
-                            {_.map(mobileProductLinks, (link, index) => (
-                                <Link
-                                    key={`productlink-${index}`}
-                                    href={link.url}
-                                    isTransparent={true}
-                                    isNoBorder={true}
-                                >
-                                {link.text}
-                                </Link>
-                            ))}
-                        </MobileProductLinksWrap>
+                <Nav>
+                    <MobileProductLinksWrap>
+                        {_.map(mobileProductLinks, (link, index) => (
+                            <Link
+                                key={`productlink-${index}`}
+                                href={link.url}
+                                isTransparent={true}
+                                isNoBorder={true}
+                            >
+                            {link.text}
+                            </Link>
+                        ))}
+                    </MobileProductLinksWrap>
 
-                        <StyledButtonWrap>
-                          {_.map(navItems, (link, index) => (
-                              this.getNavItem(link, index)
-                          ))}
-                        </StyledButtonWrap>
-                    </Nav>
+                    <StyledButtonWrap>
+                      {_.map(navItems, (link, index) => (
+                          this.getNavItem(link, index)
+                      ))}
+                    </StyledButtonWrap>
+                </Nav>
 
-                    <TradeButton
-                        bgColor={theme.headerButtonBg}
-                        color="#ffffff"
-                        href="#"
-                    >
-                        Trade on 0x
-                    </TradeButton>
+                <TradeButton
+                    bgColor={theme.headerButtonBg}
+                    color="#ffffff"
+                    href="#"
+                >
+                    Trade on 0x
+                </TradeButton>
 
-                  </HeaderWrap>
-              </StyledHeader>
-            </Headroom>
+              </HeaderWrap>
+          </StyledHeader>
       );
     }
 }
