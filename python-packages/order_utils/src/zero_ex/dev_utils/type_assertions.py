@@ -80,8 +80,6 @@ def assert_is_provider(value: Any, name: str) -> None:
 
     If `value` isn't a Web3 provider, raise a TypeError.
     """
-    # TODO: make this provider check more flexible.
-    # https://app.asana.com/0/684263176955174/901300863045491/f
     if not isinstance(value, BaseProvider):
         raise TypeError(
             f"Expected variable '{name}' to be an instance of a Web3 provider,"
