@@ -8,6 +8,7 @@ import {colors} from 'ts/style/colors';
 import {Banner} from 'ts/@next/components/banner';
 import {Button, ButtonWrap, Link} from 'ts/@next/components/button';
 import {Icon} from 'ts/@next/components/Icon';
+import {ImageLoop} from 'ts/@next/components/image_loop';
 import {Column, Section, Wrap, WrapCentered} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
@@ -80,9 +81,9 @@ export const Next0xInstant = () => (
         <Section isFullWidth={true} isNoPadding={true}>
             <Wrap width="full">
                 {/* Note: This should be another component, this is just for mocking */}
-                <ImageCarousel>
+                <ImageLoop>
                     <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
-                </ImageCarousel>
+                </ImageLoop>
             </Wrap>
         </Section>
 
