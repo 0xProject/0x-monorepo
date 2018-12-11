@@ -26,7 +26,7 @@ function parseEthersParams(params: DataItem[]): { names: ParamName[]; types: str
 
             const result = parseEthersParams(param.components);
             names.push({ name: param.name || null, names: result.names });
-            types.push('tuple(' + result.types.join(',') + ')' + suffix);
+            types.push(`tuple(${result.types.join(',')})${suffix}`);
         } else {
             names.push(param.name || null);
             types.push(param.type);
@@ -120,7 +120,7 @@ function splitTupleTypes(type: string): string[] {
     if (_.endsWith(type, '[]')) {
         throw new Error('Internal error: array types are not supported');
     } else if (!_.startsWith(type, 'tuple(')) {
-        throw new Error('Internal error: expected tuple type but got non-tuple type: ' + type);
+        throw new Error(`Internal error: expected tuple type but got non-tuple type: ${type}`);
     }
     // Trim the outtermost tuple().
     const trimmedType = type.substring('tuple('.length, type.length - 1);

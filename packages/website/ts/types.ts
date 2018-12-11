@@ -463,7 +463,7 @@ export enum Key {
     Website = 'WEBSITE',
     Developers = 'DEVELOPERS',
     Home = 'HOME',
-    RocketChat = 'ROCKETCHAT',
+    Discord = 'DISCORD',
     TradeCallToAction = 'TRADE_CALL_TO_ACTION',
     OurMissionAndValues = 'OUR_MISSION_AND_VALUES',
     BuildARelayer = 'BUILD_A_RELAYER',
@@ -496,6 +496,7 @@ export enum Key {
     GetInTouch = 'GET_IN_TOUCH',
     LearnMore = 'LEARN_MORE',
     GetStarted = 'GET_STARTED',
+    ProtocolSpecification = 'PROTOCOL_SPECIFICATION',
 }
 
 export enum SmartContractDocSections {

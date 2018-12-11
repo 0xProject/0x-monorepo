@@ -10,27 +10,40 @@ import { assetBuyerFactory } from './asset_buyer_factory';
 import { providerFactory } from './provider_factory';
 
 export const providerStateFactory = {
-    getInitialProviderState: (orderSource: OrderSource, network: Network, provider?: Provider): ProviderState => {
+    getInitialProviderState: (
+        orderSource: OrderSource,
+        network: Network,
+        provider?: Provider,
+        walletDisplayName?: string,
+    ): ProviderState => {
         if (!_.isUndefined(provider)) {
-            return providerStateFactory.getInitialProviderStateFromProvider(orderSource, network, provider);
+            return providerStateFactory.getInitialProviderStateFromProvider(
+                orderSource,
+                network,
+                provider,
+                walletDisplayName,
+            );
         }
         const providerStateFromWindowIfExits = providerStateFactory.getInitialProviderStateFromWindowIfExists(
             orderSource,
             network,
+            walletDisplayName,
         );
         if (providerStateFromWindowIfExits) {
             return providerStateFromWindowIfExits;
         } else {
-            return providerStateFactory.getInitialProviderStateFallback(orderSource, network);
+            return providerStateFactory.getInitialProviderStateFallback(orderSource, network, walletDisplayName);
         }
     },
     getInitialProviderStateFromProvider: (
         orderSource: OrderSource,
         network: Network,
         provider: Provider,
+        walletDisplayName?: string,
     ): ProviderState => {
         const providerState: ProviderState = {
             name: envUtil.getProviderName(provider),
+            displayName: walletDisplayName || envUtil.getProviderDisplayName(provider),
             provider,
             web3Wrapper: new Web3Wrapper(provider),
             assetBuyer: assetBuyerFactory.getAssetBuyer(provider, orderSource, network),
@@ -38,11 +51,16 @@ export const providerStateFactory = {
         };
         return providerState;
     },
-    getInitialProviderStateFromWindowIfExists: (orderSource: OrderSource, network: Network): Maybe<ProviderState> => {
+    getInitialProviderStateFromWindowIfExists: (
+        orderSource: OrderSource,
+        network: Network,
+        walletDisplayName?: string,
+    ): Maybe<ProviderState> => {
         const injectedProviderIfExists = providerFactory.getInjectedProviderIfExists();
         if (!_.isUndefined(injectedProviderIfExists)) {
             const providerState: ProviderState = {
                 name: envUtil.getProviderName(injectedProviderIfExists),
+                displayName: walletDisplayName || envUtil.getProviderDisplayName(injectedProviderIfExists),
                 provider: injectedProviderIfExists,
                 web3Wrapper: new Web3Wrapper(injectedProviderIfExists),
                 assetBuyer: assetBuyerFactory.getAssetBuyer(injectedProviderIfExists, orderSource, network),
@@ -53,10 +71,15 @@ export const providerStateFactory = {
             return undefined;
         }
     },
-    getInitialProviderStateFallback: (orderSource: OrderSource, network: Network): ProviderState => {
+    getInitialProviderStateFallback: (
+        orderSource: OrderSource,
+        network: Network,
+        walletDisplayName?: string,
+    ): ProviderState => {
         const provider = providerFactory.getFallbackNoSigningProvider(network);
         const providerState: ProviderState = {
             name: 'Fallback',
+            displayName: walletDisplayName || envUtil.getProviderDisplayName(provider),
             provider,
             web3Wrapper: new Web3Wrapper(provider),
             assetBuyer: assetBuyerFactory.getAssetBuyer(provider, orderSource, network),

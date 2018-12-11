@@ -102,6 +102,7 @@ export interface AffiliateInfo {
 
 export interface ProviderState {
     name: string;
+    displayName: string;
     provider: Provider;
     assetBuyer: AssetBuyer;
     web3Wrapper: Web3Wrapper;
@@ -177,3 +178,21 @@ export enum ProviderType {
     Cipher = 'CIPHER',
     Fallback = 'FALLBACK',
 }
+
+export interface ZeroExInstantRequiredBaseConfig {
+    orderSource: OrderSource;
+}
+
+export interface ZeroExInstantOptionalBaseConfig {
+    provider: Provider;
+    walletDisplayName: string;
+    availableAssetDatas: string[];
+    defaultAssetBuyAmount: number;
+    defaultSelectedAssetData: string;
+    additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
+    networkId: Network;
+    affiliateInfo: AffiliateInfo;
+    shouldDisableAnalyticsTracking: boolean;
+}
+
+export type ZeroExInstantBaseConfig = ZeroExInstantRequiredBaseConfig & Partial<ZeroExInstantOptionalBaseConfig>;

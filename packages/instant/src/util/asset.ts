@@ -26,7 +26,7 @@ export const assetUtils = {
             return;
         }
         return {
-            assetData,
+            assetData: assetData.toLowerCase(),
             metaData,
         };
     },
@@ -36,7 +36,7 @@ export const assetUtils = {
         network: Network,
     ): Asset => {
         return {
-            assetData,
+            assetData: assetData.toLowerCase(),
             metaData: assetUtils.getMetaDataOrThrow(assetData, assetMetaDataMap, network),
         };
     },

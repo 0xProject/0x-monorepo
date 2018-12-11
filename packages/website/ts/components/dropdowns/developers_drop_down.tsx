@@ -53,8 +53,8 @@ const usefulLinksToLinkInfo: ALink[] = [
         shouldOpenInNewTab: true,
     },
     {
-        title: Key.Whitepaper,
-        to: WebsitePaths.Whitepaper,
+        title: Key.ProtocolSpecification,
+        to: constants.URL_PROTOCOL_SPECIFICATION,
         shouldOpenInNewTab: true,
     },
 ];

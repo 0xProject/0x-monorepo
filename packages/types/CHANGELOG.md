@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.4.0 - _December 10, 2018_
+
+    * Add `LengthMismatch` and `LengthGreaterThan3Required` revert reasons (#1224)
+    * Add RevertReasons for DutchAuction contract (#1225)
+
 ## v1.3.0 - _November 21, 2018_
 
     * Add the `SimpleContractArtifact` type, which describes the artifact format published in the `@0x/contract-artifacts` package (#1298)

@@ -7,7 +7,6 @@ import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 
 import { SearchInput } from './search_input';
-
 import { Circle } from './ui/circle';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
@@ -123,10 +122,20 @@ interface TokenSelectorRowIconProps {
     token: ERC20Asset;
 }
 
+const getTokenIcon = (symbol: string): React.StatelessComponent | undefined => {
+    try {
+        return require(`../assets/icons/${symbol}.svg`) as React.StatelessComponent;
+    } catch (e) {
+        // Can't find icon
+        return undefined;
+    }
+};
+
 const TokenSelectorRowIcon: React.StatelessComponent<TokenSelectorRowIconProps> = props => {
     const { token } = props;
     const iconUrlIfExists = token.metaData.iconUrl;
-    const TokenIcon = require(`../assets/icons/${token.metaData.symbol}.svg`);
+
+    const TokenIcon = getTokenIcon(token.metaData.symbol);
     const displaySymbol = assetUtils.bestNameForAsset(token);
     if (!_.isUndefined(iconUrlIfExists)) {
         return <img src={iconUrlIfExists} />;

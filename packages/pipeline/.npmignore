@@ -1,0 +1,7 @@
+.*
+yarn-error.log
+/scripts/
+/generated_docs/
+/src/
+tsconfig.json
+/lib/monorepo_scripts/

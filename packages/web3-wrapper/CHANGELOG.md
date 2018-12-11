@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.0 - _December 10, 2018_
+
+    * Return `value` and `gasPrice` as BigNumbers to avoid loss of precision errors (#1402)
+
 ## v3.1.6 - _November 28, 2018_
 
     * Unmarshall mined transaction receipts (#1308)

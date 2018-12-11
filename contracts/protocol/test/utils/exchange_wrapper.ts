@@ -229,7 +229,7 @@ export class ExchangeWrapper {
         return orderEpoch;
     }
     public async getOrderInfoAsync(signedOrder: SignedOrder): Promise<OrderInfo> {
-        const orderInfo = (await this._exchange.getOrderInfo.callAsync(signedOrder)) as OrderInfo;
+        const orderInfo = await this._exchange.getOrderInfo.callAsync(signedOrder);
         return orderInfo;
     }
     public async getOrdersInfoAsync(signedOrders: SignedOrder[]): Promise<OrderInfo[]> {

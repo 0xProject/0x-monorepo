@@ -901,7 +901,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const bytesLength = 40;
-            const args = '0x' + '61'.repeat(bytesLength);
+            const args = `0x${'61'.repeat(bytesLength)}`;
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =
@@ -993,7 +993,7 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             // Construct args to be encoded
             // Note: There will be padding because this is a bytes32 but we are only passing in 4 bytes.
             const strLength = 40;
-            const args = '0x' + 'a'.repeat(strLength);
+            const args = `0x${'a'.repeat(strLength)}`;
             // Encode Args and validate result
             const encodedArgs = dataType.encode(args, encodingRules);
             const expectedEncodedArgs =

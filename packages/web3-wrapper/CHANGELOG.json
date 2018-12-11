@@ -1,5 +1,15 @@
 [
     {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Return `value` and `gasPrice` as BigNumbers to avoid loss of precision errors",
+                "pr": 1402
+            }
+        ],
+        "timestamp": 1544482891
+    },
+    {
         "version": "3.1.6",
         "changes": [
             {

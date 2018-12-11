@@ -36,8 +36,8 @@ interface Project {
 }
 
 const THROTTLE_TIMEOUT = 100;
-const WHATS_NEW_TITLE = 'Introducing the 0x Launch Kit';
-const WHATS_NEW_URL = 'https://blog.0xproject.com/introducing-the-0x-launch-kit-4acdc3453585';
+const WHATS_NEW_TITLE = 'Introducing 0x Instant';
+const WHATS_NEW_URL = WebsitePaths.Instant;
 const TITLE_STYLE: React.CSSProperties = {
     fontFamily: 'Roboto Mono',
     color: colors.grey,
@@ -237,7 +237,7 @@ export class Landing extends React.Component<LandingProps, LandingState> {
     private _renderWhatsNew(): React.ReactNode {
         return (
             <div className="sm-center sm-px1">
-                <a href={WHATS_NEW_URL} target="_blank" className="inline-block text-decoration-none">
+                <a href={WHATS_NEW_URL} className="inline-block text-decoration-none">
                     <div className="flex items-center sm-pl0 md-pl2 lg-pl0">
                         <Container
                             paddingTop="3px"

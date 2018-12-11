@@ -10,7 +10,7 @@
     "scripts": {
         "build": "webpack --mode production",
         "build:ci": "yarn build",
-        "dev": "webpack-dev-server --mode development",
+        "dev": "dotenv webpack-dev-server -- --mode development",
         "lint": "tslint --format stylish --project .",
         "test": "jest",
         "test:coverage": "jest --coverage",
@@ -24,10 +24,7 @@
     },
     "config": {
         "postpublish": {
-            "assets": [
-                "packages/instant/umd/instant.js",
-                "packages/instant/umd/instant.js.map"
-            ]
+            "assets": ["packages/instant/umd/instant.js", "packages/instant/umd/instant.js.map"]
         }
     },
     "repository": {

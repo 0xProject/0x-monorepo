@@ -3,7 +3,7 @@ import { BigNumber } from '@0x/utils';
 import { Key, WebsitePaths } from 'ts/types';
 
 const URL_FORUM = 'https://forum.0xproject.com';
-const URL_ZEROEX_CHAT = 'https://chat.0xproject.com';
+const URL_ZEROEX_CHAT = 'https://discord.gg/d3FTX3M';
 
 export const constants = {
     DECIMAL_PLACES_ETH: 18,
@@ -81,6 +81,8 @@ export const constants = {
     URL_GITHUB_ORG: 'https://github.com/0xProject',
     URL_GITHUB_WIKI: 'https://github.com/0xProject/wiki',
     URL_FORUM,
+    URL_PROTOCOL_SPECIFICATION:
+        'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md',
     URL_METAMASK_CHROME_STORE: 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn',
     URL_METAMASK_FIREFOX_STORE: 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/',
     URL_COINBASE_WALLET_IOS_APP_STORE: 'https://itunes.apple.com/us/app/coinbase-wallet/id1278383455?mt=8',

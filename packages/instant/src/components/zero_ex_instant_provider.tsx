@@ -1,6 +1,4 @@
-import { ObjectMap } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -11,7 +9,7 @@ import { asyncData } from '../redux/async_data';
 import { DEFAULT_STATE, DefaultState, State } from '../redux/reducer';
 import { store, Store } from '../redux/store';
 import { fonts } from '../style/fonts';
-import { AccountState, AffiliateInfo, AssetMetaData, Network, OrderSource, QuoteFetchOrigin } from '../types';
+import { AccountState, Network, QuoteFetchOrigin, ZeroExInstantBaseConfig } from '../types';
 import { analytics, disableAnalytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { errorFlasher } from '../util/error_flasher';
@@ -21,24 +19,7 @@ import { Heartbeater } from '../util/heartbeater';
 import { generateAccountHeartbeater, generateBuyQuoteHeartbeater } from '../util/heartbeater_factory';
 import { providerStateFactory } from '../util/provider_state_factory';
 
-export type ZeroExInstantProviderProps = ZeroExInstantProviderRequiredProps &
-    Partial<ZeroExInstantProviderOptionalProps>;
-
-export interface ZeroExInstantProviderRequiredProps {
-    orderSource: OrderSource;
-}
-
-export interface ZeroExInstantProviderOptionalProps {
-    provider: Provider;
-    walletDisplayName: string;
-    availableAssetDatas: string[];
-    defaultAssetBuyAmount: number;
-    defaultSelectedAssetData: string;
-    additionalAssetMetaDataMap: ObjectMap<AssetMetaData>;
-    networkId: Network;
-    affiliateInfo: AffiliateInfo;
-    shouldDisableAnalyticsTracking: boolean;
-}
+export type ZeroExInstantProviderProps = ZeroExInstantBaseConfig;
 
 export class ZeroExInstantProvider extends React.Component<ZeroExInstantProviderProps> {
     private readonly _store: Store;
@@ -57,10 +38,12 @@ export class ZeroExInstantProvider extends React.Component<ZeroExInstantProvider
             props.orderSource,
             networkId,
             props.provider,
+            props.walletDisplayName,
         );
         // merge the additional additionalAssetMetaDataMap with our default map
         const completeAssetMetaDataMap = {
-            ...props.additionalAssetMetaDataMap,
+            // Make sure the passed in assetDatas are lower case
+            ..._.mapKeys(props.additionalAssetMetaDataMap || {}, (value, key) => key.toLowerCase()),
             ...defaultState.assetMetaDataMap,
         };
         // construct the final state

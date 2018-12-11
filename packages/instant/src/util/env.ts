@@ -62,4 +62,11 @@ export const envUtil = {
         }
         return PROVIDER_TYPE_TO_NAME[providerTypeIfExists];
     },
+    getProviderDisplayName(provider: Provider): string {
+        const providerTypeIfExists = envUtil.getProviderType(provider);
+        if (_.isUndefined(providerTypeIfExists)) {
+            return 'Wallet';
+        }
+        return PROVIDER_TYPE_TO_NAME[providerTypeIfExists];
+    },
 };

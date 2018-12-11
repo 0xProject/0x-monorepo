@@ -4,9 +4,9 @@ import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
+import { ActionLink, ActionLinkProps } from 'ts/pages/instant/action_link';
 import { colors } from 'ts/style/colors';
-import { ScreenWidths } from 'ts/types';
-import { utils } from 'ts/utils/utils';
+import { ScreenWidths, WebsitePaths } from 'ts/types';
 
 export interface FeatureProps {
     screenWidth: ScreenWidths;
@@ -21,7 +21,7 @@ export const Features = (props: FeatureProps) => {
     };
     const exploreTheDocsLinkInfo = {
         displayText: 'Explore the docs',
-        linkSrc: `${utils.getCurrentBaseUrl()}/wiki#Get-Started`,
+        linkSrc: `${WebsitePaths.Wiki}#Get-Started-With-Instant`,
     };
     const tokenLinkInfos = isSmallScreen ? [getStartedLinkInfo] : [getStartedLinkInfo, exploreTheDocsLinkInfo];
     return (
@@ -40,7 +40,7 @@ export const Features = (props: FeatureProps) => {
                 linkInfos={[
                     {
                         displayText: 'Learn about affiliate fees',
-                        linkSrc: `${utils.getCurrentBaseUrl()}/wiki#Learn-About-Affiliate-Fees`,
+                        linkSrc: `${WebsitePaths.Wiki}#Learn-About-Affiliate-Fees`,
                     },
                 ]}
                 screenWidth={props.screenWidth}
@@ -52,7 +52,7 @@ export const Features = (props: FeatureProps) => {
                 linkInfos={[
                     {
                         displayText: 'Explore AssetBuyer',
-                        linkSrc: `${utils.getCurrentBaseUrl()}/docs/asset-buyer`,
+                        linkSrc: `${WebsitePaths.Docs}/asset-buyer`,
                     },
                 ]}
                 screenWidth={props.screenWidth}
@@ -61,17 +61,11 @@ export const Features = (props: FeatureProps) => {
     );
 };
 
-interface LinkInfo {
-    displayText: string;
-    linkSrc?: string;
-    onClick?: () => void;
-}
-
 interface FeatureItemProps {
     imgSrc: string;
     title: string;
     description: string;
-    linkInfos: LinkInfo[];
+    linkInfos: ActionLinkProps[];
     screenWidth: ScreenWidths;
 }
 
@@ -95,36 +89,11 @@ const FeatureItem = (props: FeatureItemProps) => {
                 </Text>
             </Container>
             <Container className="flex" marginTop="28px">
-                {_.map(linkInfos, linkInfo => {
-                    const onClick = (event: React.MouseEvent<HTMLElement>) => {
-                        if (!_.isUndefined(linkInfo.onClick)) {
-                            linkInfo.onClick();
-                        } else if (!_.isUndefined(linkInfo.linkSrc)) {
-                            utils.openUrl(linkInfo.linkSrc);
-                        }
-                    };
-                    return (
-                        <Container
-                            key={linkInfo.linkSrc}
-                            className="flex items-center"
-                            marginRight="32px"
-                            onClick={onClick}
-                            cursor="pointer"
-                        >
-                            <Container>
-                                <Text fontSize="16px" fontColor={colors.white}>
-                                    {linkInfo.displayText}
-                                </Text>
-                            </Container>
-                            <Container paddingTop="1px" paddingLeft="6px">
-                                <i
-                                    className="zmdi zmdi-chevron-right bold"
-                                    style={{ fontSize: 16, color: colors.white }}
-                                />
-                            </Container>
-                        </Container>
-                    );
-                })}
+                {_.map(linkInfos, linkInfo => (
+                    <Container key={linkInfo.displayText} marginRight="32px">
+                        <ActionLink {...linkInfo} />
+                    </Container>
+                ))}
             </Container>
         </Container>
     );
