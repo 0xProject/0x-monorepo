@@ -4,14 +4,13 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeContract } from '../../generated-wrappers/exchange';
+import { ExchangeContract } from '@0x/contracts-protocol';
 import { BalanceThresholdFilterContract } from '../../generated-wrappers/balance_threshold_filter';
 
-import { formatters } from './formatters';
-import { LogDecoder } from './log_decoder';
-import { orderUtils } from './order_utils';
-import { TransactionFactory } from '../utils/transaction_factory';
-import { OrderInfo } from './types';
+import { formatters, LogDecoder, orderUtils, OrderInfo, TransactionFactory } from '@0x/contracts-test-utils';
+import { artifacts } from '../../src/artifacts';
+import {artifacts as protocolArtifacts} from '@0x/contracts-protocol';
+import { artifacts as tokensArtifacts } from '@0x/contracts-tokens';
 
 export class BalanceThresholdWrapper {
     private readonly _balanceThresholdFilter: BalanceThresholdFilterContract;
@@ -24,7 +23,7 @@ export class BalanceThresholdWrapper {
         this._exchange = exchangeContract;
         this._signerTransactionFactory = signerTransactionFactory;
         this._web3Wrapper = new Web3Wrapper(provider);
-        this._logDecoder = new LogDecoder(this._web3Wrapper);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, {... artifacts, ... tokensArtifacts, ... protocolArtifacts} );
     }
     public async fillOrderAsync(
         signedOrder: SignedOrder,

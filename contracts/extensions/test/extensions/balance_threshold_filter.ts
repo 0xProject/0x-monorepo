@@ -8,33 +8,42 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
-import { ExchangeContract } from '../../generated-wrappers/exchange';
-import { BalanceThresholdFilterContract } from '../../generated-wrappers/balance_threshold_filter';
-
-import { artifacts } from '../../src/artifacts';
 import {
+    artifacts as protocolArtifacts,
+    ERC20Wrapper,
+    ERC721Wrapper,
+    ExchangeContract,
+    ExchangeWrapper,
+    TestExchangeInternalsContract,
+} from '@0x/contracts-protocol';
+import {
+    chaiSetup,
+    constants,
+    ContractName,
+    ERC20BalancesByOwner,
     expectTransactionFailedAsync,
     expectTransactionFailedWithoutReasonAsync,
-} from '../utils/assertions';
-import { chaiSetup } from '../utils/chai_setup';
-import { constants } from '../utils/constants';
-import { ERC20Wrapper } from '../utils/erc20_wrapper';
-import { ExchangeWrapper } from '../utils/exchange_wrapper';
-import { MatchOrderTester } from '../utils/match_order_tester';
-import { OrderFactory } from '../utils/order_factory';
-import { orderUtils } from '../utils/order_utils';
-import { TransactionFactory } from '../utils/transaction_factory';
-import { BalanceThresholdWrapper } from '../utils/balance_threshold_wrapper';
-import { ContractName, ERC20BalancesByOwner, SignedTransaction, OrderStatus } from '../utils/types';
-import { provider, txDefaults, web3Wrapper } from '../utils/web3_wrapper';
-import { TestExchangeInternalsContract } from '../../generated-wrappers/test_exchange_internals';
+    getLatestBlockTimestampAsync,
+    LogDecoder,
+    OrderFactory,
+    OrderStatus,
+    orderUtils,
+    provider,
+    SignedTransaction,
+    txDefaults,
+    TransactionFactory,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
+import {
+    artifacts as tokensArtifacts,
+    DummyERC20TokenContract,
+    DummyERC721TokenContract,
+    WETH9Contract,
+} from '@0x/contracts-tokens';
 
-import { MethodAbi, AbiDefinition } from 'ethereum-types';
-import { AbiEncoder } from '@0x/utils';
-import { Method } from '@0x/utils/lib/src/abi_encoder';
-import { LogDecoder } from '../utils/log_decoder';
-import { ERC721Wrapper } from '../utils/erc721_wrapper';
+import { artifacts } from '../../src/artifacts';
+import { BalanceThresholdFilterContract } from '../../generated-wrappers/balance_threshold_filter';
+import { BalanceThresholdWrapper } from '../utils/balance_threshold_wrapper';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -137,7 +146,7 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // Deploy Exchange congtract
         exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-            artifacts.Exchange,
+            protocolArtifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,
@@ -224,7 +233,7 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
             compliantSignedOrderWithoutExchangeAddressData,
         );
 
-        logDecoder = new LogDecoder(web3Wrapper);
+        logDecoder = new LogDecoder(web3Wrapper, {... artifacts, ... protocolArtifacts, ... tokensArtifacts});
         erc20TakerBalanceThresholdWrapper = new BalanceThresholdWrapper(erc20CompliantForwarderInstance, exchangeInstance, new TransactionFactory(takerPrivateKey, exchangeInstance.address), provider);
         erc721TakerBalanceThresholdWrapper = new BalanceThresholdWrapper(erc721CompliantForwarderInstance, exchangeInstance, new TransactionFactory(takerPrivateKey, exchangeInstance.address), provider);
         erc721MakerBalanceThresholdWrapper = new BalanceThresholdWrapper(erc721CompliantForwarderInstance, exchangeInstance, new TransactionFactory(makerPrivateKey, exchangeInstance.address), provider);
@@ -232,7 +241,7 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         
         // Instantiate internal exchange contract
         exchangeInternals = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
-            artifacts.TestExchangeInternals,
+            protocolArtifacts.TestExchangeInternals,
             provider,
             txDefaults,
         );
@@ -244,13 +253,13 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         await blockchainLifecycle.revertAsync();
     });
 
-    describe.only('General Sanity Checks', () => {
+    describe('General Sanity Checks', () => {
         beforeEach(async () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             compliantSignedOrder = await orderFactory.newSignedOrderAsync();
             compliantSignedOrder2 = await orderFactory2.newSignedOrderAsync();
         });
-        it.only('should transfer the correct amounts and validate both maker/taker when both maker and taker exceed the balance threshold of an ERC20 token', async () => {
+        it('should transfer the correct amounts and validate both maker/taker when both maker and taker exceed the balance threshold of an ERC20 token', async () => {
             const compliantSignedOrderERC20Sender = await orderFactory.newSignedOrderAsync({
                 ...
                 defaultOrderParams,

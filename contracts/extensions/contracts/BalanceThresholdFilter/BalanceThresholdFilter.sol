@@ -19,7 +19,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../../protocol/Exchange/interfaces/IExchange.sol";
+import "@0x/contracts-interfaces/contracts/protocol/Exchange/IExchange.sol";
 import "./interfaces/IThresholdAsset.sol";
 import "./MixinBalanceThresholdFilterCore.sol";
 
