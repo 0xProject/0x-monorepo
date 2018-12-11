@@ -1,12 +1,11 @@
-import * as React from 'react';
 import * as _ from 'lodash';
+import * as React from 'react';
 import styled from 'styled-components';
 
-import { ChapterLink } from 'ts/@next/components/chapter_link';
+import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
+import { Link } from 'ts/@next/components/button';
 import { Column, Section, Wrap } from 'ts/@next/components/layout';
-import { Link } from 'ts/@next/components/link';
 import { Separator } from 'ts/@next/components/separator';
-import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
 interface HighlightInterface {
@@ -37,6 +36,25 @@ const highlights: HighlightInterface[] = [
     },
 ];
 
+export const NextAboutPress = () => (
+    <AboutPageLayout
+        title="Press Highlights"
+        description={
+            <>
+                <Paragraph marginBottom="60px">
+                    Want to write about 0x? Get in touch, or download our press kit.
+                </Paragraph>
+
+                <Separator/>
+
+                {_.map(highlights, (highlight, index) => (
+                    <Highlight key={`highlight-${index}`} highlight={highlight} />
+                ))}
+            </>
+        }
+    />
+);
+
 const Highlight = ({ highlight }) => (
     <>
     <Wrap>
@@ -45,32 +63,9 @@ const Highlight = ({ highlight }) => (
         </Column>
         <Column colWidth="2/3">
             <Paragraph isMuted={false}>{highlight.text}</Paragraph>
-            <Link href={highlight.href}>Read Article</Link>
+            <Link href={highlight.href} isWithArrow={true} isNoBorder={true}>Read Article</Link>
         </Column>
     </Wrap>
     <Separator/>
     </>
-);
-
-export const NextAboutPress = () => (
-  <SiteWrap theme="light">
-    <Section isPadLarge={true}>
-      <Wrap>
-         <Column colWidth="1/3">
-            <ChapterLink to="/next/about/mission">Our Mission</ChapterLink>
-            <ChapterLink to="/next/about/team">Team</ChapterLink>
-            <ChapterLink to="/next/about/press">Press</ChapterLink>
-            <ChapterLink to="/next/about/jobs">Jobs</ChapterLink>
-        </Column>
-        <Column colWidth="2/3">
-            <Heading size="medium">Press Highlights</Heading>
-            <Paragraph size="medium" marginBottom="60px">Want to write about 0x? Get in touch, or download our press kit.</Paragraph>
-
-            <Separator/>
-
-            {_.map(highlights, (highlight, index) => <Highlight key={`highlight-${index}`} highlight={highlight} /> )}
-        </Column>
-      </Wrap>
-    </Section>
-  </SiteWrap>
 );
