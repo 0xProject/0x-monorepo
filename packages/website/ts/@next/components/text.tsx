@@ -51,9 +51,9 @@ export const Heading: React.StatelessComponent<HeadingProps> = props => {
             {...props}
         >
             {children}
-        </Component>;
-    )
-}
+        </Component>
+    );
+};
 
 // No need to declare it twice as Styled then rewrap as a stateless comp
 // Note: this would be useful to be implemented the same way was "Heading"
