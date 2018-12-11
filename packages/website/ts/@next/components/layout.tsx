@@ -97,6 +97,7 @@ export const Section = styled.section<SectionProps>`
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
         margin-bottom: ${props => !props.isNoMargin && `${GUTTER / 2}px`};
+        padding: ${PADDING_SIZES.default};
     }
 `;
 
@@ -146,7 +147,6 @@ export const Column = styled.div<ColumnProps>`
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
         padding: ${props => !props.isNoPadding && (props.isPadLarge ? '40px 30px' : '15px')};
-        text-align: center;
         margin-bottom: 20px;
     }
 `;
