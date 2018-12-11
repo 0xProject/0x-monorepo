@@ -39,42 +39,6 @@ class TestDefaultApi(unittest.TestCase):
         actual = self.api.get_asset_pairs()
         self.assertEqual(actual, expected)
 
-    def test_get_fee_recipients(self):
-        """Test case for get_fee_recipients
-
-        """
-        pass
-
-    def test_get_order(self):
-        """Test case for get_order
-
-        """
-        pass
-
-    def test_get_order_config(self):
-        """Test case for get_order_config
-
-        """
-        pass
-
-    def test_get_orderbook(self):
-        """Test case for get_orderbook
-
-        """
-        pass
-
-    def test_get_orders(self):
-        """Test case for get_orders
-
-        """
-        pass
-
-    def test_post_order(self):
-        """Test case for post_order
-
-        """
-        pass
-
 
 if __name__ == "__main__":
     unittest.main()
