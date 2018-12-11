@@ -71,7 +71,7 @@ export const DropdownDevelopers = withTheme((props: Props) => (
 
                 <WrapGrid isCentered={false} isWrapped={true}>
                     {_.map(introData, (item, index) => (
-                        <RouterLink to={item.url}>
+                        <RouterLink key={`introLink-${index}`} to={item.url}>
                             {item.label}
                         </RouterLink>
                     ))}
@@ -86,7 +86,7 @@ export const DropdownDevelopers = withTheme((props: Props) => (
 
                     <ul>
                         {_.map(docsData, (item, index) => (
-                            <li>
+                            <li key={`docsLink-${index}`}>
                                 <RouterLink to={item.url}>
                                     {item.label}
                                 </RouterLink>
@@ -102,7 +102,7 @@ export const DropdownDevelopers = withTheme((props: Props) => (
 
                     <ul>
                         {_.map(linksData, (item, index) => (
-                            <li>
+                            <li key={`usefulLink-${index}`}>
                                 <RouterLink to={item.url}>
                                     {item.label}
                                 </RouterLink>

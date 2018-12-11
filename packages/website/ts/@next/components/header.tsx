@@ -71,9 +71,8 @@ export class Header extends React.Component<HeaderProps, HeaderState> {
         const Subnav = link.dropdownComponent;
 
         return (
-            <Wrapper>
+            <Wrapper key={`nav-${index}`}>
                 <Link
-                    key={`nav-${index}`}
                     href={link.url}
                     isTransparent={true}
                     isNoBorder={true}

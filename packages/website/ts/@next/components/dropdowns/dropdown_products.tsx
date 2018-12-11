@@ -25,7 +25,7 @@ const navData = [
 export const DropdownProducts = () => (
     <List>
         {_.map(navData, (item, index) => (
-            <li>
+            <li key={`productLink-${index}`}>
                 <Link to={item.url}>
                     <Heading
                         asElement="h3"
