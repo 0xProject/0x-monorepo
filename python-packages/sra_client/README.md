@@ -4,25 +4,7 @@ A Python client for interacting with servers conforming to [the Standard Relayer
 
 # Schemas
 
-The [JSON schemas](http://json-schema.org/) for the API payloads and responses can be found in [@0xproject/json-schemas](https://github.com/0xProject/0x.js/tree/development/packages/json-schemas). Examples of each payload and response can be found in the library's [test suite](https://github.com/0xProject/0x.js/blob/development/packages/json-schemas/test/schema_test.ts#L1).
-
-```bash
-npm install @0xproject/json-schemas --save
-```
-
-You can easily validate your API's payloads and responses using the [@0xproject/json-schemas](https://github.com/0xProject/0x.js/tree/development/packages/json-schemas) package:
-
-```js
-import {SchemaValidator, ValidatorResult, schemas} from '@0xproject/json-schemas';
-
-const {relayerApiTokenPairsResponseSchema} = schemas;
-const validator = new SchemaValidator();
-
-const tokenPairsResponse = {
-    ...
-};
-const validatorResult: ValidatorResult = validator.validate(tokenPairsResponse, relayerApiTokenPairsResponseSchema);
-```
+The [JSON schemas](http://json-schema.org/) for the API payloads and responses can be found in [@0xproject/json-schemas](https://github.com/0xProject/0x.js/tree/development/packages/json-schemas). Examples of each payload and response can be found in the 0x.js library's [test suite](https://github.com/0xProject/0x.js/blob/development/packages/json-schemas/test/schema_test.ts#L1).
 
 # Pagination
 
