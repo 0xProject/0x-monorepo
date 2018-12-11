@@ -155,7 +155,9 @@ export const NextAboutTeam = () => (
 
                 <Column colWidth="2/3">
                     <Wrap isWrapped={true} isCentered={false}>
-                        {_.map(team, (info: TeamMember, index) => <Member key={`team-${index}`} name={info.name} title={info.title} />)}
+                        {_.map(team, (info: TeamMember, index) => (
+                            <Member key={`team-${index}`} name={info.name} title={info.title} />
+                        ))}
                     </Wrap>
                 </Column>
             </Wrap>
@@ -169,7 +171,9 @@ export const NextAboutTeam = () => (
 
                 <Column colWidth="2/3">
                     <Wrap isWrapped={true} isCentered={false}>
-                        {_.map(advisors, (info: TeamMember, index) => <Member key={`team-${index}`} name={info.name} title={info.title} />)}
+                        {_.map(advisors, (info: TeamMember, index) => (
+                            <Member key={`team-${index}`} name={info.name} title={info.title} />
+                        ))}
                     </Wrap>
                 </Column>
             </Wrap>

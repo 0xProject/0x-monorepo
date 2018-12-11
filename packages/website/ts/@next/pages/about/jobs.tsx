@@ -99,7 +99,9 @@ export const NextAboutJobs = () => (
                 </Column>
 
                 <Column colWidth="2/3">
-                    {_.map(positions, (position, index) => <Position key={`position-${index}`} position={position} /> )}
+                    {_.map(positions, (position, index) => (
+                        <Position key={`position-${index}`} position={position} />
+                    ))}
                 </Column>
             </Wrap>
         </Section>

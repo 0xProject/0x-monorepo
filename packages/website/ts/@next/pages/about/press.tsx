@@ -57,15 +57,16 @@ export const NextAboutPress = () => (
 
 const Highlight = ({ highlight }) => (
     <>
-    <Wrap>
-        <Column colWidth="1/3">
-            <img src={highlight.logo} alt={highlight.title} />
-        </Column>
-        <Column colWidth="2/3">
-            <Paragraph isMuted={false}>{highlight.text}</Paragraph>
-            <Link href={highlight.href} isWithArrow={true} isNoBorder={true}>Read Article</Link>
-        </Column>
-    </Wrap>
-    <Separator/>
+        <Wrap>
+            <Column colWidth="1/3">
+                <img src={highlight.logo} alt={highlight.title} />
+            </Column>
+            <Column colWidth="2/3">
+                <Paragraph isMuted={false}>{highlight.text}</Paragraph>
+                <Link href={highlight.href} isWithArrow={true} isNoBorder={true}>Read Article</Link>
+            </Column>
+        </Wrap>
+
+        <Separator/>
     </>
 );
