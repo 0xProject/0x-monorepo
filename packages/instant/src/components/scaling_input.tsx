@@ -135,6 +135,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         const phase = ScalingInput.getPhaseFromProps(this.props);
         return (
             <Input
+                type="number"
                 ref={this._inputRef as any}
                 fontColor={fontColor}
                 onChange={onChange}
