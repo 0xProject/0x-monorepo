@@ -3,6 +3,7 @@ import { ConnectionOptions } from 'typeorm';
 import {
     Block,
     DexTrade,
+    ERC20ApprovalEvent,
     ExchangeCancelEvent,
     ExchangeCancelUpToEvent,
     ExchangeFillEvent,
@@ -22,6 +23,7 @@ const entities = [
     ExchangeCancelEvent,
     ExchangeCancelUpToEvent,
     ExchangeFillEvent,
+    ERC20ApprovalEvent,
     OHLCVExternal,
     Relayer,
     SraOrder,

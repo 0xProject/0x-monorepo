@@ -14,5 +14,6 @@ export { SraOrdersObservedTimeStamp, createObservedTimestampForOrder } from './s
 export { TokenMetadata } from './token_metadata';
 export { TokenOrderbookSnapshot } from './token_order';
 export { Transaction } from './transaction';
+export { ERC20ApprovalEvent } from './erc20_approval_event';
 
 export type ExchangeEvent = ExchangeFillEvent | ExchangeCancelEvent | ExchangeCancelUpToEvent;

@@ -24,7 +24,7 @@ let connection: Connection;
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
     const provider = web3Factory.getRpcProvider({
-        rpcUrl: `${INFURA_ROOT_URL}/${process.env.INFURA_API_KEY}`,
+        rpcUrl: INFURA_ROOT_URL,
     });
     const web3Source = new Web3Source(provider);
     await getAllMissingBlocks(web3Source);
