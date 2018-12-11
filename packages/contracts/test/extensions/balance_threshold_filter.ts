@@ -11,7 +11,6 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
 import { ExchangeContract } from '../../generated-wrappers/exchange';
 import { BalanceThresholdFilterContract } from '../../generated-wrappers/balance_threshold_filter';
-import { YesComplianceTokenContract } from '../../generated-wrappers/yes_compliance_token';
 
 import { artifacts } from '../../src/artifacts';
 import {
@@ -112,6 +111,11 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         ] = accounts);
         // Create wrappers
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
+        let compliantAddresses = _.cloneDeepWith(usedAddresses);
+        _.remove(compliantAddresses, (address: string) => {
+            return address === nonCompliantAddress;
+        });
+        const erc721Wrapper = new ERC721Wrapper(provider, compliantAddresses, owner);
         // Deploy ERC20 tokens
         const numDummyErc20ToDeploy = 3;
         let erc20TokenA: DummyERC20TokenContract;
@@ -123,12 +127,6 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
         zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
-        // Deploy Yes Token
-        const yesTokenInstance = await YesComplianceTokenContract.deployFrom0xArtifactAsync(
-            artifacts.YesComplianceToken,
-            provider,
-            txDefaults,
-        );
         // Create proxies
         const erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
@@ -146,14 +144,18 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
             from: owner,
         });
         // Deploy Compliant Forwarder
-        const erc721BalanceThreshold = new BigNumber(1);
+        const balanceThreshold = new BigNumber(1);
+        await erc721Wrapper.deployProxyAsync();
+        const [balanceThresholdAsset] = await erc721Wrapper.deployDummyTokensAsync();
+        await erc721Wrapper.setBalancesAndAllowancesAsync();
+        const balance = await balanceThresholdAsset.balanceOf.callAsync(compliantTakerAddress);
         compliantForwarderInstance = await BalanceThresholdFilterContract.deployFrom0xArtifactAsync(
             artifacts.BalanceThresholdFilter,
             provider,
             txDefaults,
             exchangeInstance.address,
-            yesTokenInstance.address,
-            erc721BalanceThreshold
+            balanceThresholdAsset.address,
+            balanceThreshold
         );
         // Default order parameters
         const defaultOrderParams = {
@@ -199,43 +201,6 @@ describe.only(ContractName.BalanceThresholdFilter, () => {
         );
         forwarderWrapper = new ForwarderWrapper(compliantForwarderContract, provider);
         */
-        // Initialize Yes Token
-        await yesTokenInstance._upgradeable_initialize.sendTransactionAsync({ from: owner });
-        const yesTokenName = 'YesToken';
-        const yesTokenTicker = 'YEET';
-        await yesTokenInstance.initialize.sendTransactionAsync(yesTokenName, yesTokenTicker, { from: owner });
-        // Verify Maker / Taker
-        const addressesCanControlTheirToken = true;
-        const compliantMakerCountryCode = new BigNumber(519);
-        const compliantMakerYesMark = new BigNumber(1);
-        const compliantMakerEntityId = new BigNumber(2);
-        await yesTokenInstance.mint2.sendTransactionAsync(
-            compliantMakerAddress,
-            compliantMakerEntityId,
-            addressesCanControlTheirToken,
-            compliantMakerCountryCode,
-            [compliantMakerYesMark],
-            { from: owner },
-        );
-        const compliantTakerCountryCode = new BigNumber(519);
-        const compliantTakerYesMark = new BigNumber(1);
-        const compliantTakerEntityId = new BigNumber(2);
-        await yesTokenInstance.mint2.sendTransactionAsync(
-            compliantTakerAddress,
-            compliantTakerEntityId,
-            addressesCanControlTheirToken,
-            compliantTakerCountryCode,
-            [compliantTakerYesMark],
-            { from: owner },
-        );
-        await yesTokenInstance.mint2.sendTransactionAsync(
-            compliantMakerAddress2,
-            compliantTakerEntityId,
-            addressesCanControlTheirToken,
-            compliantTakerCountryCode,
-            [compliantTakerYesMark],
-            { from: owner },
-        );
         // Create Valid/Invalid orders
         const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(compliantTakerAddress)];
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchangeInstance.address);

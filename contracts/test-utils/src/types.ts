@@ -84,7 +84,6 @@ export enum ContractName {
     MultiSigWalletWithTimeLock = 'MultiSigWalletWithTimeLock',
     Exchange = 'Exchange',
     ZRXToken = 'ZRXToken',
-    YesComplianceToken = 'YesComplianceToken',
     DummyERC20Token = 'DummyERC20Token',
     EtherToken = 'WETH9',
     DutchAuction = 'DutchAuction',
