@@ -35,9 +35,12 @@ export const Button = styled.button<ButtonInterface>`
     font-size: ${props => props.isWithArrow ? '20px' : '18px'};
     text-decoration: none;
     cursor: pointer;
+    transition: background-color 0.35s, border-color 0.35s;
 
     svg {
-        margin-left: 12px;
+        margin-left: 9px;
+        transition: transform 0.5s;
+        transform: translate3d(-2px, 2px, 0);
     }
 
     path {
@@ -47,6 +50,10 @@ export const Button = styled.button<ButtonInterface>`
     &:hover {
         background-color: ${props => !props.isTransparent && '#04BEA8'};
         border-color: ${props => (props.isTransparent && !props.isNoBorder && !props.isWithArrow) && '#00AE99'};
+
+        svg {
+            transform: translate3d(2px, -2px, 0);
+        }
     }
 `;
 
