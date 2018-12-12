@@ -53,8 +53,21 @@ async function getAllMissingBlocks(web3Source: Web3Source): Promise<void> {
 
 async function getMissingBlockNumbers(fromBlock: number): Promise<number[]> {
     console.log(`Checking for missing blocks starting at ${fromBlock}...`);
+    // Note(albrow): The easiest way to get all the blocks we need is to
+    // consider all the events tables together in a single query. If this query
+    // gets too slow, we should consider re-architecting so that we can work on
+    // getting the blocks for one type of event at a time.
     const response = (await connection.query(
-        'SELECT DISTINCT(block_number) FROM raw.exchange_fill_events WHERE block_number NOT IN (SELECT number FROM raw.blocks) AND block_number >= $1 ORDER BY block_number ASC LIMIT $2',
+        `WITH all_events AS (
+            SELECT block_number FROM raw.exchange_fill_events
+                UNION SELECT block_number FROM raw.exchange_cancel_events
+                UNION SELECT block_number FROM raw.exchange_cancel_up_to_events
+                UNION SELECT block_number FROM raw.erc20_approval_events
+        )
+        SELECT DISTINCT(block_number) FROM all_events
+            WHERE block_number NOT IN (SELECT number FROM raw.blocks)
+                AND block_number >= $1
+            ORDER BY block_number ASC LIMIT $2`,
         [fromBlock, MAX_BLOCKS_PER_QUERY],
     )) as MissingBlocksResponse[];
     const blockNumberStrings = R.pluck('block_number', response);
