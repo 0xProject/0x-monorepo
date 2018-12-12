@@ -15,8 +15,8 @@ interface Props {
 export const SectionLandingCta = (props: Props) => (
     <Section
         isPadded={false}
-        isFullWidth={true}
         isFlex={true}
+        maxWidth="auto"
         flexBreakpoint="900px"
     >
         <BlockIconLink

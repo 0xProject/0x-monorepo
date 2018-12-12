@@ -125,7 +125,7 @@ export class NextWhy extends React.PureComponent {
                     />
                 </Section>
 
-              <Section maxWidth="1170px" isFlex={true}>
+              <Section maxWidth="1170px" isFlex={true} isFullWidth={true}>
                   <Column>
                       <NavStickyWrap offsetTop="130px">
                           <ChapterLink offset="60" href="#benefits">Benefits</ChapterLink>
@@ -135,7 +135,7 @@ export class NextWhy extends React.PureComponent {
                   </Column>
 
                     <Column width="55%" maxWidth="826px">
-                        <Column width="100%" maxWidth="560px">
+                        <Column width="100%" maxWidth="560px" padding="0 30px 0 0">
                             <SectionWrap id="benefits">
                                 <Heading size="medium">What 0x offers</Heading>
 
@@ -225,6 +225,9 @@ const SectionWrap = styled.div`
 `;
 
 const NavStickyWrap = styled(WrapSticky)`
+    padding-left: 60px;
+    z-index: 9999;
+
     @media (max-width: 768px) {
         display: none;
     }

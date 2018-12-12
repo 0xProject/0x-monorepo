@@ -80,6 +80,8 @@ export const WrapSticky = styled.div<WrapProps>`
 `;
 
 const SectionBase = styled.section<SectionProps>`
+    width: ${props => !props.isFullWidth && 'calc(100% - 60px)'};
+    max-width: 1500px;
     margin: 0 auto;
     padding: ${props => props.isPadded && '120px 0'};
     background-color: ${props => props.theme[`${props.bgColor}BgColor`] || props.bgColor};
@@ -92,7 +94,6 @@ const SectionBase = styled.section<SectionProps>`
 `;
 
 const Wrap = styled(FlexWrap)<WrapProps>`
-    width: calc(100% - 60px);
     max-width: ${props => !props.isFullWidth && (props.maxWidth || '895px')};
     text-align: ${props => props.isTextCentered && 'center'};
     margin: 0 auto;

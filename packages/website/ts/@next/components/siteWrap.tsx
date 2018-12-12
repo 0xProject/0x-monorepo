@@ -69,21 +69,12 @@ export const SiteWrap: React.StatelessComponent<Props> = props => {
                 <>
                     <GlobalStyles />
                     <Header />
-                    <Main>
+                    <main>
                         {children}
-                    </Main>
+                    </main>
                     <Footer/>
                 </>
             </ThemeProvider>
         </>
     );
 };
-
-export const Main = styled.main`
-    max-width: 1500px;
-    margin: 0 auto;
-
-    @media (min-width: 768px) {
-        width: calc(100% - 60px);
-    }
-`;
