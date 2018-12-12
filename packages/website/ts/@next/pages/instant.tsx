@@ -137,7 +137,8 @@ const MarqueeWrap = styled.div`
         width: 5485px;
         height: 380px;
         display: flex;
-        animation: ${scroll} 20s linear infinite;
+        animation: ${scroll} 30s linear infinite;
+        will-change: transform;
 
         img {
             width: auto;
@@ -154,7 +155,8 @@ const Card = styled.div`
   display: inline-block;
   opacity: 0;
   transform: translateY(10px);
-  animation: ${fadeUp} 0.5s ${props => `${props.index * 0.05}s`} forwards;
+  will-change: opacity, transform;
+  animation: ${fadeUp} 0.75s ${props => `${props.index * 0.05}s`} forwards;
 
   & + & {
     margin-left: 15px;
