@@ -1,10 +1,12 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
+import { Definition } from 'ts/@next/components/definition';
 import { Icon } from 'ts/@next/components/icon';
 import { Image } from 'ts/@next/components/image';
-import { Column, Section, Wrap } from 'ts/@next/components/layout';
+import { Column, Section } from 'ts/@next/components/newLayout';
 import { Separator } from 'ts/@next/components/separator';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
@@ -30,47 +32,45 @@ export const NextAboutMission = () => (
     <AboutPageLayout
         title="Creating a tokenized world where all value can flow freely."
         description="0x Protocol is an important infrastructure layer for the emerging crypto economy and enables markets to be created that couldn't have existed before. As more assets become tokenized, public blockchains provide the opportunity to establish a new financial stack that is more efficient, transparent, and equitable than any system in the past."
+        linkLabel="Our mission and values"
+        linkUrl="#"
     >
-        <Section isFullWidth={true} isNoPadding={true}>
-            <Wrap width="full">
-                <Image
-                    src="/images/@next/about/about-mission@2x.jpg"
-                    height="372"
-                    alt=""
-                    isCentered={true}
-                />
-            </Wrap>
+        <Section isFullWidth={true}>
+            <Image
+                src="/images/@next/about/about-mission@2x.jpg"
+                height="372"
+                alt=""
+                isCentered={true}
+            />
         </Section>
 
-        <Section isPadLarge={true}>
-            <Wrap>
-                <Column colWidth="1/3">
-                    <Heading size="medium">Core Values</Heading>
-                </Column>
+        <Section isFlex={true} maxWidth="1170px">
+            <Column colWidth="1/3">
+                <Heading size="medium">
+                    Core Values
+                </Heading>
+            </Column>
 
-                <Column colWidth="2/3" isNoPadding={true}>
+            <Column width="70%" maxWidth="826px">
+                <Column width="100%" maxWidth="800px">
                     {_.map(values, (item, index) => (
-                        <>
-                            <Wrap>
-                                <Column colWidth="1/4">
-                                    <Icon name={item.icon} size={120} />
-                                </Column>
-
-                                <Column colWidth="2/3">
-                                    <Heading>
-                                        {item.title}
-                                    </Heading>
-                                    <Paragraph isMuted={true}>
-                                        {item.description}
-                                    </Paragraph>
-                                </Column>
-                            </Wrap>
-
-                            {(index < values.length - 1) && <Separator/>}
-                        </>
+                        <StyledDefinition
+                            icon={item.icon}
+                            title={item.title}
+                            description={item.description}
+                            isInlineIcon={true}
+                            iconSize="large"
+                        />
                     ))}
                 </Column>
-            </Wrap>
+            </Column>
         </Section>
     </AboutPageLayout>
 );
+
+const StyledDefinition = styled(Definition)`
+    & + & {
+        padding-top: 30px;
+        border-top: 1px solid #eaeaea;
+    }
+`;
