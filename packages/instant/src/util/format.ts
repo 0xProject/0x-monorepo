@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { ETH_DECIMALS } from '../constants';
+import { BIG_NUMBER_ZERO, ETH_DECIMALS } from '../constants';
 
 export const format = {
     ethBaseUnitAmount: (
@@ -25,7 +25,10 @@ export const format = {
             return defaultText;
         }
         const roundedAmount = ethUnitAmount.round(decimalPlaces).toDigits(decimalPlaces);
-        return `${roundedAmount} ETH`;
+        // Sometimes for small ETH amounts (i.e. 0.000045) the amount rounded to 4 decimalPlaces is 0
+        // If that is the case, show to 1 significant digit
+        const displayAmount = roundedAmount.eq(BIG_NUMBER_ZERO) ? ethUnitAmount.toPrecision(1) : roundedAmount;
+        return `${displayAmount} ETH`;
     },
     ethBaseUnitAmountInUsd: (
         ethBaseUnitAmount?: BigNumber,
@@ -48,7 +51,13 @@ export const format = {
         if (_.isUndefined(ethUnitAmount) || _.isUndefined(ethUsdPrice)) {
             return defaultText;
         }
-        return `$${ethUnitAmount.mul(ethUsdPrice).toFixed(decimalPlaces)}`;
+        const rawUsdPrice = ethUnitAmount.mul(ethUsdPrice);
+        const roundedUsdPrice = rawUsdPrice.toFixed(decimalPlaces);
+        if (roundedUsdPrice === '0.00' && rawUsdPrice.gt(BIG_NUMBER_ZERO)) {
+            return '<$0.01';
+        } else {
+            return `$${roundedUsdPrice}`;
+        }
     },
     ethAddress: (address: string): string => {
         return `0x${address.slice(2, 7)}…${address.slice(-5)}`;
