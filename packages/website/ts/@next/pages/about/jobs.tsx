@@ -3,7 +3,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
-import { Column, Section, Wrap } from 'ts/@next/components/layout';
+import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
 import { Link } from 'ts/@next/components/link';
 import { Separator } from 'ts/@next/components/separator';
 import { Heading, Paragraph } from 'ts/@next/components/text';
@@ -44,85 +44,74 @@ export const NextAboutJobs = () => (
         linkLabel="Our mission and values"
         linkUrl="/mission"
     >
-        <Section bgColor="#F3F6F4" isPadLarge={true}>
-            <Wrap>
-                <Column colWidth="1/3">
-                    <Heading size="medium" isNoMargin={true}>
+        <Section bgColor="#F3F6F4" isFlex={true} maxWidth="1170px">
+                <Column maxWidth="442px">
+                    <Heading size="medium" marginBottom="30px">
                         Powered by a Diverse Worldwide Community
                     </Heading>
-                </Column>
-            </Wrap>
-            <Wrap>
-                <Column colWidth="1/3">
+
                     <Paragraph>
                         We're a highly technical team with varied backgrounds in engineering, science, business, finance, and research. While the core team is headquartered in San Francisco, there are 30+ teams building on 0x and hundreds of thousands of participants behind our efforts globally. We're passionate about open-source software and decentralized technology's potential to act as an equalizing force in the world.
                     </Paragraph>
                 </Column>
 
-                <Column colWidth="2/3">
-                    <img src="/images/@next/jobs/map@2x.png" height="365" alt="Map of community"/>
+                <Column maxWidth="600px">
+                    <ImageWrap>
+                        <img src="/images/@next/jobs/map@2x.png" height="365" alt="Map of community"/>
+                    </ImageWrap>
                 </Column>
-            </Wrap>
         </Section>
 
-        <Section isPadLarge={true}>
-            <Wrap>
+        <Section isFlex={true} maxWidth="1170px">
                 <Column colWidth="1/3">
                     <Heading size="medium">Benefits</Heading>
                 </Column>
 
-                <Column colWidth="2/3">
-                    <Wrap>
-                        <Column>
-                            <BenefitsList>
-                                <li>Comprehensive Insurance</li>
-                                <li>Unlimited Vacation</li>
-                                <li>Meals and snacks provided daily</li>
-                                <li>Flexible hours and liberal  work-from-home-policy</li>
-                                <li>Supportive of remote working</li>
-                                <li>Transportation, phone, and wellness expense</li>
-                                <li>Relocation assistance</li>
-                                <li>Optional team excursions</li>
-                                <li>Competitive salary</li>
-                                <li>Cryptocurrency based compensation</li>
-                            </BenefitsList>
-                        </Column>
-                    </Wrap>
+                <Column maxWidth="826px">
+                    <BenefitsList>
+                        <li>Comprehensive Insurance</li>
+                        <li>Unlimited Vacation</li>
+                        <li>Meals and snacks provided daily</li>
+                        <li>Flexible hours and liberal  work-from-home-policy</li>
+                        <li>Supportive of remote working</li>
+                        <li>Transportation, phone, and wellness expense</li>
+                        <li>Relocation assistance</li>
+                        <li>Optional team excursions</li>
+                        <li>Competitive salary</li>
+                        <li>Cryptocurrency based compensation</li>
+                    </BenefitsList>
                 </Column>
-            </Wrap>
         </Section>
 
-        <Section isPadLarge={true}>
-            <Wrap>
-                <Column colWidth="1/3">
-                    <Heading size="medium">Current<br/>Openings</Heading>
-                </Column>
+        <Section isFlex={true} maxWidth="1170px">
+            <Column>
+                <Heading size="medium">Current<br/>Openings</Heading>
+            </Column>
 
-                <Column colWidth="2/3">
+            <Column maxWidth="826px">
+
                     {_.map(positions, (position, index) => (
                         <Position key={`position-${index}`} position={position} />
                     ))}
-                </Column>
-            </Wrap>
+            </Column>
         </Section>
     </AboutPageLayout>
 );
 
 const Position = ({ position }) => (
-    <>
-        <Wrap>
-            <Column colWidth="1/3">
-                <Heading size="small">{position.title}</Heading>
-            </Column>
-            <Column colWidth="1/3">
-                <Paragraph isMuted={true}>{position.location}</Paragraph>
-            </Column>
-            <Column colWidth="1/3">
-                <Paragraph><Link href={position.href}>Apply</Link></Paragraph>
-            </Column>
-        </Wrap>
-        <Separator/>
-    </>
+    <FlexWrap>
+        <Column width="30%">
+            <Heading size="small">{position.title}</Heading>
+        </Column>
+
+        <StyledColumn width="50%">
+            <Paragraph isMuted={true}>{position.location}</Paragraph>
+        </Column>
+
+        <Column colWidth="1/3">
+            <Paragraph><Link href={position.href}>Apply</Link></Paragraph>
+        </Column>
+    </FlexWrap>
 );
 
 const BenefitsList = styled.ul`
@@ -134,4 +123,17 @@ const BenefitsList = styled.ul`
     li {
         margin-bottom: 1em;
     }
+`;
+
+const ImageWrap = styled.figure`
+    @media (min-width: 768px) {
+        height: 600px;
+        padding-left: 60px;
+        display: flex;
+        align-items: flex-end;
+    }
+`;
+
+const StyledColumn = styled(Column)`
+    flex-shrink: 0;
 `;

@@ -53,7 +53,10 @@ export const Column = styled.div<ColumnProps>`
 
     @media (max-width: 768px) {
         width: 100%;
-        margin-bottom: 60px;
+
+        & + & {
+            margin-top: 60px;
+        }
     }
 `;
 
