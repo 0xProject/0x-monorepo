@@ -1,13 +1,18 @@
 import * as React from 'react';
-import {Button, ButtonWrap, Link} from 'ts/@next/components/button';
-import {Icon, InlineIconWrap} from 'ts/@next/components/icon';
-import {Heading, Paragraph} from 'ts/@next/components/text';
-import {colors} from 'ts/style/colors';
+import styled from 'styled-components';
 
-import {Section} from 'ts/@next/components/newLayout';
+import {Link} from 'ts/@next/components/button';
+import {Icon, InlineIconWrap} from 'ts/@next/components/icon';
+import {Column, FlexWrap, Section} from 'ts/@next/components/newLayout';
+import {Heading, Paragraph} from 'ts/@next/components/text';
+
+interface FigureProps {
+    value: string;
+    description: string;
+}
 
 export const SectionLandingAbout = () => (
-    <Section bgColor="dark">
+    <Section bgColor="dark" isTextCentered={true}>
         <InlineIconWrap>
             <Icon name="coin" size="small" />
             <Icon name="coin" size="small" />
@@ -39,8 +44,48 @@ export const SectionLandingAbout = () => (
             style={{
                 width: '340px',
                 borderColor: '#3C4746',
-                margin: '60px auto 0 auto',
+                margin: '60px auto',
             }}
         />
+
+        <FlexWrap as="dl">
+            <Figure
+                value="873,435"
+                description="Number of Transactions"
+            />
+
+            <Figure
+                value="$203M"
+                description="Total Volume"
+            />
+
+            <Figure
+                value="227,372"
+                description="Number of Relayers"
+            />
+        </FlexWrap>
     </Section>
 );
+
+const Figure = (props: FigureProps) => (
+    <Column padding="0 30px">
+        <FigureValue>
+            {props.value}
+        </FigureValue>
+        <FigureDescription>
+            {props.description}
+        </FigureDescription>
+    </Column>
+);
+
+const FigureValue = styled.dt`
+    font-size: 50px;
+    font-size: 40px;
+    font-weight: 300;
+    margin-bottom: 15px;
+`;
+
+const FigureDescription = styled.dd`
+    font-size: 18px;
+    color: #999999;
+`;

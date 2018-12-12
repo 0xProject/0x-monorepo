@@ -1,10 +1,9 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
-import {BREAKPOINTS, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 
-import {Section} from 'ts/@next/components/newLayout';
+import {Section, WrapGrid} from 'ts/@next/components/newLayout';
 
 interface ProjectLogo {
     name: string;
@@ -61,12 +60,10 @@ const projects: ProjectLogo[] = [
 ];
 
 export const SectionLandingClients = () => (
-    <Section>
-        <WrapCentered>
-            <Heading size="small">
-                Join the growing number of projects developing on 0x
-            </Heading>
-        </WrapCentered>
+    <Section isTextCentered={true}>
+        <Heading size="small">
+            Join the growing number of projects developing on 0x
+        </Heading>
 
         <WrapGrid width="narrow" isWrapped={true}>
             {_.map(projects, (item: ProjectLogo, index) => (
@@ -90,13 +87,13 @@ const StyledProject = styled.div<StyledProjectInterface>`
         height: 100%;
     }
 
-    @media (min-width: ${BREAKPOINTS.mobile}) {
+    @media (min-width: 768px) {
         width: 120px;
         height: 120px;
         margin: 30px;
     }
 
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 768px) {
         width: 100px;
         height: 100px;
         margin: 15px;

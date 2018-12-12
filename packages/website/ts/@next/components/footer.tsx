@@ -108,7 +108,12 @@ const LinkList = (props: LinkListProps) => (
   </List>
 );
 
-const FooterSection = Section.withComponent('footer');
+const FooterSection = styled.section`
+    padding: 30px;
+    margin-top: 30px;
+    background-color: #181818;
+`;
+
 const FooterWrap = styled(FooterSection)`
     color: ${colors.white};
 

@@ -10,12 +10,12 @@ import {Hero} from 'ts/@next/components/hero';
 import { Banner } from 'ts/@next/components/banner';
 import { Link } from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
-import { BREAKPOINTS, Column, Section, Wrap, WrapCentered, WrapSticky } from 'ts/@next/components/layout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Slide, Slider } from 'ts/@next/components/slider/slider';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
 import {Definition} from 'ts/@next/components/definition';
+import {Column, Section, WrapSticky} from 'ts/@next/components/newLayout';
 
 const offersData = [
     {
@@ -95,8 +95,11 @@ export class NextWhy extends React.PureComponent {
                     }
                 />
 
-              <Section bgColor={colors.backgroundDark} isPadLarge={true}>
-                <Wrap>
+                <Section
+                    bgColor="dark"
+                    isFlex={true}
+                    maxWidth="1170px"
+                >
                     <Definition
                         title="Support for all Ethereum Standards"
                         description="0x Protocol facilitates the decentralized exchange of a growing number of Ethereum-based tokens, including all ERC-20 and ERC-721 assets. Additional ERC standards can be added to the protocol..."
@@ -117,12 +120,10 @@ export class NextWhy extends React.PureComponent {
                         iconSize="large"
                         isInline={true}
                     />
-                </Wrap>
-              </Section>
+                </Section>
 
-              <Section>
-                <Wrap>
-                  <Column colWidth="1/3">
+              <Section maxWidth="1170px" isFlex={true}>
+                  <Column>
                       <NavStickyWrap offsetTop="130px">
                           <ChapterLink offset="60" href="#benefits">Benefits</ChapterLink>
                           <ChapterLink offset="60" href="#cases">Use Cases</ChapterLink>
@@ -130,52 +131,49 @@ export class NextWhy extends React.PureComponent {
                       </NavStickyWrap>
                   </Column>
 
-                  <Column colWidth="2/3">
-                        <SectionWrap id="benefits">
-                            <Heading size="medium">What 0x offers</Heading>
+                    <Column width="55%" maxWidth="826px">
+                        <Column width="100%" maxWidth="560px">
+                            <SectionWrap id="benefits">
+                                <Heading size="medium">What 0x offers</Heading>
 
-                            {_.map(offersData, (item, index) => (
-                                <Definition
-                                    title={item.title}
-                                    description={item.description}
-                                    isWithMargin={true}
-                                />
-                            ))}
-                        </SectionWrap>
-
-                        <SectionWrap id="cases">
-                            <Heading size="medium">Use Cases</Heading>
-                            <Slider>
-                                {_.map(useCaseSlides, (item, index) => (
-                                    <Slide
-                                        key={`useCaseSlide-${index}`}
-                                        heading={item.title}
-                                        text={item.description}
-                                        icon={item.icon}
+                                {_.map(offersData, (item, index) => (
+                                    <Definition
+                                        key={`offers-${index}`}
+                                        title={item.title}
+                                        description={item.description}
+                                        isWithMargin={true}
                                     />
                                 ))}
-                            </Slider>
-                        </SectionWrap>
+                            </SectionWrap>
 
-                        <SectionWrap id="functionality">
-                            <Heading size="medium">Exchange Functionality</Heading>
+                            <SectionWrap id="cases">
+                                <Heading size="medium">Use Cases</Heading>
+                                <Slider>
+                                    {_.map(useCaseSlides, (item, index) => (
+                                        <Slide
+                                            key={`useCaseSlide-${index}`}
+                                            heading={item.title}
+                                            text={item.description}
+                                            icon={item.icon}
+                                        />
+                                    ))}
+                                </Slider>
+                            </SectionWrap>
 
-                            {_.map(functionalityData, (item, index) => (
-                                <ChapterItemWrap key={`functionality-${index}`}>
-                                    <Icon name={item.icon} size="medium" margin={[0, 0, 22, 0]} />
+                            <SectionWrap id="functionality">
+                                <Heading size="medium">Exchange Functionality</Heading>
 
-                                    <Heading marginBottom="15px">
-                                        {item.title}
-                                    </Heading>
-
-                                    <Paragraph isMuted={true} isNoMargin={true}>
-                                        {item.description}
-                                    </Paragraph>
-                                </ChapterItemWrap>
-                            ))}
-                        </SectionWrap>
-                  </Column>
-                </Wrap>
+                                {_.map(functionalityData, (item, index) => (
+                                    <Definition
+                                        key={`functionality-${index}`}
+                                        title={item.title}
+                                        description={item.description}
+                                        isWithMargin={true}
+                                    />
+                                ))}
+                            </SectionWrap>
+                        </Column>
+                    </Column>
               </Section>
 
               <Banner
@@ -206,13 +204,13 @@ const SectionWrap = styled.div`
         background-color: #3d3d3d;
     }
 
-    @media (min-width: ${BREAKPOINTS.mobile}) {
+    @media (min-width: 768px) {
         & + &:before {
             width: 100vw;
         }
     }
 
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 768px) {
         text-align: left;
 
         & + &:before {
@@ -222,7 +220,7 @@ const SectionWrap = styled.div`
 `;
 
 const NavStickyWrap = styled(WrapSticky)`
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 768px) {
         display: none;
     }
 `;

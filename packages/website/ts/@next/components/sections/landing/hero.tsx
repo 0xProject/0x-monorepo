@@ -1,10 +1,8 @@
 import * as React from 'react';
-import {Button, ButtonWrap} from 'ts/@next/components/button';
-import {LandingAnimation} from 'ts/@next/components/heroImage';
-import {Column, Section, Wrap, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
-import {Heading, Paragraph} from 'ts/@next/components/text';
 
+import {Button} from 'ts/@next/components/button';
 import {Hero} from 'ts/@next/components/hero';
+import {LandingAnimation} from 'ts/@next/components/heroImage';
 
 import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 
@@ -13,11 +11,11 @@ export const SectionLandingHero = () => (
         title="Powering Decentralized Exchange"
         description="0x is the best solution for adding exchange functionality to your business."
         figure={<LandingAnimation image={<LogoOutlined />} />}
-        actions={<Actions />}
+        actions={<HeroActions />}
     />
 );
 
-const Actions = () => (
+const HeroActions = () => (
     <>
         <Button isInline={true}>
             Get Started

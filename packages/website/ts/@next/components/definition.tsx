@@ -21,7 +21,7 @@ interface Props {
 }
 
 export const Definition = (props: Props) => (
-    <Wrap isWithMargin={props.isWithMargin} isInline={props.isInline} isInlineIcon={props.isInlineIcon}>
+    <Wrap {...props}>
         <Icon
             name="ready-to-build"
             size={props.iconSize || 'medium'}
@@ -60,7 +60,8 @@ const Wrap = styled.div`
     max-width: ${props => props.isInline && '354px'};
 
     & + & {
-        margin-top: ${props => (props.isWithMargin && !props.isInlineIcon) ? '60px' : '120px'};
+        margin-top: ${props => props.isInlineIcon && '120px'};
+        margin-top: ${props => props.isWithMargin && '60px'};
     }
 
     @media (min-width: 768px) {
@@ -68,7 +69,7 @@ const Wrap = styled.div`
         display: ${props => props.isInlineIcon && 'flex'};
         justify-content: ${props => props.isInlineIcon && 'space-between'};
         align-items: ${props => props.isInlineIcon && 'center'};
-        text-align: ${props => props.isInlineIcon && 'left'};
+        text-align: ${props => (props.isInlineIcon || !props.isCentered) && 'left'};
     }
 
     @media (max-width: 768px) {

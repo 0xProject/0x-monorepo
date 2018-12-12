@@ -28,5 +28,8 @@
         ]
 
     },
-    "include": ["./ts/**/*"]
+    "include": ["./ts/**/*"],
+    "reportFiles": [
+        "./ts/@next/**/*"
+    ],
 }
