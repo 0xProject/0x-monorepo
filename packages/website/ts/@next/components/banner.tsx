@@ -3,10 +3,12 @@ import styled from 'styled-components';
 
 import {colors} from 'ts/style/colors';
 
-import {Button, ButtonWrap} from 'ts/@next/components/button';
-import { Column, Section, Wrap, WrapCentered } from 'ts/@next/components/layout';
+import {Button, Link} from 'ts/@next/components/button';
+import {Wrap, WrapCentered } from 'ts/@next/components/layout';
 import {Paragraph, Heading} from 'ts/@next/components/text';
 import { ThemeInterface } from 'ts/@next/components/siteWrap';
+
+import {Column, Section} from 'ts/@next/components/newLayout';
 
 interface Props {
     heading?: string;
@@ -33,37 +35,82 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
         secondaryCta,
     } = props;
     return (
-        <Section bgColor={colors.brandDark} isRelative={true}>
+        <CustomSection
+            bgColor="light"
+            isFlex={true}
+            flexBreakpoint="900px"
+            paddingMobile="120px 0"
+        >
             <Border/>
-            <Wrap>
-                <CustomColumn colWidth="1/2" isPadLarge={true}>
-                    <WrapCentered padding={[30, 0]}>
-                        <CustomHeading isNoMargin={true}>{heading}</CustomHeading>
-                        {subline && <Paragraph isMuted={0.5} isNoMargin={true}>{subline}</Paragraph>}
-                    </WrapCentered>
-                </CustomColumn>
-                <CustomColumn colWidth="1/2" isPadLarge={true}>
-                    <WrapCentered padding={[30, 0]}>
-                        <ButtonWrap>
-                            {mainCta && <Button href={mainCta.href}>{mainCta.text}</Button>}
-                            {secondaryCta && <Button href={secondaryCta.href} isTransparent={true}>{secondaryCta.text}</Button>}
-                        </ButtonWrap>
-                    </WrapCentered>
-                </CustomColumn>
-            </Wrap>
             <Border isBottom={true} />
-        </Section>
+
+            <Column colWidth="1/2" isPadLarge={true}>
+                <CustomHeading isNoMargin={true}>{heading}</CustomHeading>
+
+                {subline &&
+                    <Paragraph isMuted={0.5} isNoMargin={true}>
+                        {subline}
+                    </Paragraph>
+                }
+            </Column>
+            <Column colWidth="1/2" isPadLarge={true}>
+                <ButtonWrap>
+                    {mainCta &&
+                        <Link href={mainCta.href}>{mainCta.text}</Link>
+                    }
+
+                    {secondaryCta &&
+                        <Button href={secondaryCta.href} isTransparent={true}>{secondaryCta.text}</Button>
+                    }
+                </ButtonWrap>
+            </Column>
+        </CustomSection>
     );
 };
 
-const CustomColumn = styled(Column)`
-    padding: 95px 30px;
+const CustomSection = styled(Section)`
+    @media (max-width: 900px) {
+        text-align: center;
+
+        p {
+            margin-bottom: 30px;
+        }
+
+        div:last-child {
+            margin-bottom: 0;
+        }
+    }
 `;
 
-const CustomHeading = styled(Heading)`
-    --defaultHeading: 1.888888889rem;
+const CustomHeading = styled.h2`
+    font-size: 34px;
     font-weight: 400;
-    margin-bottom: 10px;
+    margin-bottom: 10px
+
+    @media (max-width: 768px) {
+        font-size: 30px;
+    }
+`;
+
+const ButtonWrap = styled.div`
+    display: inline-block;
+
+    @media (min-width: 768px) {
+        * + * {
+            margin-left: 15px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        a, button {
+            display: block;
+            width: 220px;
+        }
+
+        * + * {
+            margin-top: 15px;
+        }
+    }
 `;
 
 // Note let's refactor this

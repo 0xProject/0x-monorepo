@@ -24,6 +24,7 @@ interface SectionProps extends WrapProps {
     isPadded?: boolean;
     isFullWidth?: boolean;
     isFlex?: boolean;
+    paddingMobile?: string;
     flexBreakpoint?: string;
     maxWidth?: string;
     bgColor?: 'dark' | 'light' | string;
@@ -74,17 +75,24 @@ const SectionBase = styled.section<SectionProps>`
     margin: 0 auto;
     padding: ${props => props.isPadded && '120px 0'};
     background-color: ${props => props.theme[`${props.bgColor}BgColor`] || props.bgColor};
+    position: relative;
+    overflow: hidden;
 
     @media (max-width: 768px) {
-        padding: ${props => props.isPadded && '40px 0'};
+        padding: ${props => props.isPadded && (props.paddingMobile || '40px 0')};
     }
 `;
 
 const Wrap = styled(FlexWrap)<WrapProps>`
     width: ${props => !props.isFullWidth && 'calc(100% - 60px)'};
     max-width: ${props => !props.isFullWidth && (props.maxWidth || '895px')};
-    margin: 0 auto;
     text-align: ${props => props.isTextCentered && 'center'};
+    margin: 0 auto;
+    overflow: hidden;
+
+    @media (max-width: 768px) {
+        width: calc(100% - 60px);
+    }
 `;
 
 export const WrapGrid = styled(Wrap)<WrapGridProps>`
