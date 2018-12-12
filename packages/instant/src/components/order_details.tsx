@@ -14,12 +14,12 @@ import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 import { Text, TextProps } from './ui/text';
 
-interface BaseCurrenySwitchProps {
+interface BaseCurryChoiceProps {
     currencyName: string;
     onClick: () => void;
     isSelected: boolean;
 }
-const BaseCurrencySelector: React.StatelessComponent<BaseCurrenySwitchProps> = props => {
+const BaseCurrencyChoice: React.StatelessComponent<BaseCurryChoiceProps> = props => {
     const textStyle: TextProps = { onClick: props.onClick, fontSize: '12px' };
     if (props.isSelected) {
         textStyle.fontColor = ColorOption.primaryColor;
@@ -106,7 +106,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                         </Text>
 
                         <Container>
-                            <BaseCurrencySelector
+                            <BaseCurrencyChoice
                                 onClick={this.props.onBaseCurrencySwitchEth}
                                 currencyName="ETH"
                                 isSelected={this.props.baseCurrency === BaseCurrency.ETH}
@@ -114,7 +114,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                             <Container marginLeft="3px" marginRight="3px" display="inline">
                                 <Text fontSize="12px">/</Text>
                             </Container>
-                            <BaseCurrencySelector
+                            <BaseCurrencyChoice
                                 onClick={this.props.onBaseCurrencySwitchUsd}
                                 currencyName="USD"
                                 isSelected={this.props.baseCurrency === BaseCurrency.USD}
@@ -141,15 +141,6 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
             </Container>
         );
     }
-}
-
-export interface EthAmountRowProps {
-    rowLabel: string;
-    ethAmount?: BigNumber;
-    isEthAmountInBaseUnits?: boolean;
-    ethUsdPrice?: BigNumber;
-    shouldEmphasize?: boolean;
-    isLoading: boolean;
 }
 
 export interface OrderDetailsRowProps {
