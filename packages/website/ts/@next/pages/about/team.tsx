@@ -21,9 +21,9 @@ const team: TeamMember[] = [
         title: 'co-founder & ceo',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/amirb.jpg',
         name: 'Amir Bandeali',
-        title: 'co-founder & cto',
+        title: 'Co-founder & CTO',
     },
     {
         imageUrl: '/images/@next/team/melo@2x.jpg',
@@ -41,7 +41,7 @@ const team: TeamMember[] = [
         title: 'engineer',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/benb.jpg',
         name: 'Ben Burns',
         title: 'designer',
     },
@@ -51,7 +51,7 @@ const team: TeamMember[] = [
         title: 'senior engineer',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/toms.jpg',
         name: 'Tom Schmidt',
         title: 'product manager',
     },
@@ -71,12 +71,12 @@ const team: TeamMember[] = [
         title: 'lead recruiter',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/greg.jpg',
         name: 'Greg Hysen',
         title: 'blockchain engineer',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/remco.jpg',
         name: 'Remco Bloemen',
         title: 'technical fellow',
     },
@@ -86,7 +86,7 @@ const team: TeamMember[] = [
         title: 'engineer',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/melo.jpg',
         name: 'Mel Oberto',
         title: 'office ops / executive assistant',
     },
@@ -96,37 +96,37 @@ const team: TeamMember[] = [
         title: 'engineer in residence',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/peterz.jpg',
         name: 'Peter Zeitz',
         title: 'research fellow',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/chrisk.jpg',
         name: 'Chris Kalani',
         title: 'director of design',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/clayr.jpg',
         name: 'Clay Robbins',
         title: 'ecosystem development lead',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/mattt.jpg',
         name: 'Matt Taylor',
         title: 'marketing lead',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/eugenea.jpg',
         name: 'Eugene Aumson',
         title: 'engineer',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/weijiew.jpg',
         name: 'Weijie Wu',
         title: 'research fellow',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/rahuls.jpg',
         name: 'Rahul Singireddy',
         title: 'relayer success manager',
     },
@@ -180,7 +180,7 @@ export const NextAboutTeam = () => (
         title="We are a global, growing team"
         description="We are a distributed team with backgrounds in engineering, academic research, business, and design. The 0x Core Team is passionate about accelerating the adoption decentralized technology and believe in its potential to be an equalizing force in the world. Join us and do the most impactful work of your life."
         linkLabel="Join the team"
-        linkUrl="/jobs"
+        linkUrl="/next/jobs"
     >
         <Section
             maxWidth="1170px"
