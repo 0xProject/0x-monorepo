@@ -11,6 +11,7 @@ interface ButtonInterface {
     children?: Node | string;
     isTransparent?: boolean;
     isNoBorder?: boolean;
+    isCentered?: boolean;
     isNoPadding?: boolean;
     isWithArrow?: boolean;
     isAccentColor?: boolean;

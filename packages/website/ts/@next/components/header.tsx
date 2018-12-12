@@ -27,6 +27,12 @@ interface NavItem {
     url?: string;
     id?: string;
     text?: string;
+    dropdownWidth?: number;
+    dropdownComponent?: React.ReactNode;
+}
+
+interface DropdownWrapInterface {
+    width?: number;
 }
 
 const mobileProductLinks = [
@@ -240,7 +246,7 @@ const LinkWrap = styled.div`
     }
 `;
 
-const DropdownWrap = styled.div`
+const DropdownWrap = styled.div<DropdownWrapInterface>`
     width: ${props => props.width || 280}px;
     padding: 15px 0;
     border: 1px solid transparent;

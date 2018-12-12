@@ -33,6 +33,7 @@ interface WrapProps extends PaddingInterface {
 interface ColumnProps {
     colWidth?: '1/4' | '1/3' | '1/2' | '2/3';
     isNoPadding?: boolean;
+    isNoMargin?: boolean;
     isPadLarge?: boolean;
     isFlexGrow?: boolean;
     isMobileCentered?: boolean;
@@ -42,6 +43,10 @@ interface ColumnProps {
 interface GetColWidthArgs {
     span?: number;
     columns: number;
+}
+
+export interface WrapStickyInterface {
+    offsetTop?: string;
 }
 
 const _getColumnWidth = (args: GetColWidthArgs): string => {
@@ -126,7 +131,7 @@ export const WrapCentered = styled(WrapBase)`
     text-align: center;
 `;
 
-export const WrapSticky = styled.div`
+export const WrapSticky = styled.div<WrapStickyInterface>`
     position: sticky;
     top: ${props => props.offsetTop || '60px'};
 `;

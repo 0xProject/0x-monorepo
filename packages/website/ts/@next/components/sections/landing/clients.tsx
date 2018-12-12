@@ -7,6 +7,11 @@ import {Heading, Paragraph} from 'ts/@next/components/text';
 interface ProjectLogo {
     name: string;
     imageUrl?: string;
+    persistOnMobile?: boolean;
+}
+
+interface StyledProjectInterface {
+    isOnMobile?: boolean;
 }
 
 const projects: ProjectLogo[] = [
@@ -74,7 +79,7 @@ export const SectionLandingClients = () => (
     </Section>
 );
 
-const StyledProject = styled.div`
+const StyledProject = styled.div<StyledProjectInterface>`
     flex-shrink: 0;
 
     img {
