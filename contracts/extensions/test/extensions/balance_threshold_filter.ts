@@ -46,7 +46,7 @@ interface ValidatedAddressesLog {
     args: { addresses: string[] };
 }
 
-describe.only(ContractName.BalanceThresholdFilter, () => {
+describe(ContractName.BalanceThresholdFilter, () => {
     const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(500), DECIMALS_DEFAULT);
     const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), DECIMALS_DEFAULT);
     const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(250), DECIMALS_DEFAULT);
