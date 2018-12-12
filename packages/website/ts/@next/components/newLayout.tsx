@@ -98,6 +98,10 @@ export const WrapGrid = styled(Wrap)<WrapGridProps>`
     display: flex;
     flex-wrap: ${props => props.isWrapped && `wrap`};
     justify-content: ${props => props.isCentered ? `center` : 'space-between'};
+
+    @media (max-width: 768px) {
+        width: 100%;
+    }
 `;
 
 Section.defaultProps = {

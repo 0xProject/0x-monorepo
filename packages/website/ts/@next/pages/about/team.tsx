@@ -240,4 +240,12 @@ const StyledMember = styled.div`
         object-fit: contain;
         margin-bottom: 10px;
     }
+
+    @media (max-width: 900px) {
+        width: calc(33.3333% - 30px);
+    }
+
+    @media (max-width: 600px) {
+        width: calc(50% - 15px);
+    }
 `;
