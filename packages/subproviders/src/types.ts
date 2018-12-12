@@ -2,6 +2,8 @@ import { ECSignature } from '@0x/types';
 import { JSONRPCRequestPayload } from 'ethereum-types';
 import HDNode = require('hdkey');
 
+import TrezorConnect from 'trezor-connect';
+
 export interface LedgerCommunicationClient {
     close: () => Promise<void>;
 }
@@ -111,7 +113,6 @@ export enum WalletSubproviderErrors {
     SenderInvalidOrNotSupplied = 'SENDER_INVALID_OR_NOT_SUPPLIED',
     FromAddressMissingOrInvalid = 'FROM_ADDRESS_MISSING_OR_INVALID',
     MethodNotSupported = 'METHOD_NOT_SUPPORTED',
-    MustRunInBrowser = 'METHOD_CAN_ONLY_RUN_IN_BROWSER',
 }
 export enum LedgerSubproviderErrors {
     TooOldLedgerFirmware = 'TOO_OLD_LEDGER_FIRMWARE',
@@ -136,6 +137,10 @@ export type NextCallback = (callback?: OnNextCompleted) => void;
 
 export interface JSONRPCRequestPayloadWithMethod extends JSONRPCRequestPayload {
     method: string;
+}
+
+export interface TrezorSubproviderConfig {
+    trezorConnectClientApi: typeof TrezorConnect;
 }
 
 export interface TrezorGetAddressResponsePayload {
