@@ -8,7 +8,11 @@ import {Column, Section} from 'ts/@next/components/newLayout';
 
 import {BlockIconLink} from 'ts/@next/components/blockIconLink';
 
-export const SectionLandingCta = () => (
+interface Props {
+    onContactClick?: () => void;
+}
+
+export const SectionLandingCta = (props: Props) => (
     <Section
         isPadded={false}
         isFullWidth={true}
@@ -25,7 +29,7 @@ export const SectionLandingCta = () => (
             icon="coin"
             title="Wat help from the 0x team?"
             linkLabel="Get in Touch"
-            linkUrl="#"
+            onClick={props.onContactClick}
         />
     </Section>
 );

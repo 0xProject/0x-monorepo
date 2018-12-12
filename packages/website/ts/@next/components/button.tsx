@@ -16,6 +16,8 @@ interface ButtonInterface {
     isWithArrow?: boolean;
     isAccentColor?: boolean;
     hasIcon?: boolean | string;
+    isInline?: boolean;
+    type?: string;
     href?: string;
     onClick?: () => any;
     theme?: {
@@ -57,7 +59,7 @@ export const Button = styled.button<ButtonInterface>`
     }
 `;
 
-export const Link = (props: ButtonInterface) => {
+export const Link: React.ReactNode = (props: ButtonInterface) => {
     const {
         children,
         href,

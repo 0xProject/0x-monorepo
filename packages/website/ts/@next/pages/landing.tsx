@@ -7,9 +7,7 @@ import {SectionLandingClients} from 'ts/@next/components/sections/landing/client
 import {SectionLandingCta} from 'ts/@next/components/sections/landing/cta';
 import {SectionLandingHero} from 'ts/@next/components/sections/landing/hero';
 
-import {Button} from 'ts/@next/components/button';
-import {Hero} from 'ts/@next/components/hero';
-import {LandingAnimation} from 'ts/@next/components/heroImage';
+import { ModalContact } from 'ts/@next/components/modals/modal_contact';
 
 import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 
@@ -21,11 +19,29 @@ interface Props {
     };
 }
 
-export const NextLanding: React.StatelessComponent<{}> = (props: Props) => (
-    <SiteWrap theme="dark">
-        <SectionLandingHero />
-        <SectionLandingAbout />
-        <SectionLandingClients />
-        <SectionLandingCta />
-    </SiteWrap>
-);
+export class NextLanding extends React.Component<Props> {
+    public state = {
+        isContactModalOpen: false,
+    };
+    public render(): React.ReactNode {
+        return  (
+            <SiteWrap theme="dark">
+                <SectionLandingHero />
+                <SectionLandingAbout />
+                <SectionLandingClients />
+                <SectionLandingCta onContactClick={this._onOpenContactModal.bind(this)} />
+                <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal.bind(this)} />
+            </SiteWrap>
+        );
+    }
+
+    private _onOpenContactModal(e): void {
+        e.preventDefault();
+        
+        this.setState({ isContactModalOpen: true });
+    }
+
+    private _onDismissContactModal(): void {
+        this.setState({ isContactModalOpen: false });
+    }
+}

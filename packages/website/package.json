@@ -32,6 +32,7 @@
         "@0x/typescript-typings": "^3.0.4",
         "@0x/utils": "^2.0.6",
         "@0x/web3-wrapper": "^3.1.6",
+        "@reach/dialog": "^0.1.2",
         "@types/react-lazyload": "^2.3.1",
         "@types/react-loadable": "^5.4.2",
         "@types/react-syntax-highlighter": "^0.0.8",

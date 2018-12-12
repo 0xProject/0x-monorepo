@@ -1,14 +1,15 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import {Link} from 'ts/@next/components/button';
+import {Button, Link} from 'ts/@next/components/button';
 import {Icon} from 'ts/@next/components/icon';
 
 interface Props {
     icon: string;
     title: string;
     linkLabel: string;
-    linkUrl: string;
+    linkUrl?: string;
+    onClick?: () => void;
 }
 
 export const BlockIconLink = (props: Props) => (
@@ -24,14 +25,29 @@ export const BlockIconLink = (props: Props) => (
                 {props.title}
             </Title>
 
-            <Link
-                isWithArrow={true}
-                isTransparent={true}
-                isNoBorder={true}
-                href={props.linkUrl}
-            >
-                {props.linkLabel}
-            </Link>
+            {props.linkUrl &&
+                <Link
+                    isWithArrow={true}
+                    isTransparent={true}
+                    isNoBorder={true}
+                    href={props.linkUrl}
+                    onClick={props.onClick}
+                >
+                    {props.linkLabel}
+                </Link>
+            }
+
+            {props.onClick &&
+                <Button
+                    isWithArrow={true}
+                    isTransparent={true}
+                    isNoBorder={true}
+                    href={props.linkUrl}
+                    onClick={props.onClick}
+                >
+                    {props.linkLabel}
+                </Button>
+            }
         </div>
     </Wrap>
 );
