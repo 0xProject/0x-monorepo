@@ -137,7 +137,7 @@ export class NextWhy extends React.PureComponent {
                     <Column width="55%" maxWidth="826px">
                         <Column width="100%" maxWidth="560px" padding="0 30px 0 0">
                             <SectionWrap id="benefits">
-                                <Heading size="medium">What 0x offers</Heading>
+                                <Heading size="medium" marginBottom="60px">What 0x offers</Heading>
 
                                 {_.map(offersData, (item, index) => (
                                     <Definition
@@ -151,7 +151,7 @@ export class NextWhy extends React.PureComponent {
                             </SectionWrap>
 
                             <SectionWrap id="cases" isNotRelative={true}>
-                                <Heading size="medium">Use Cases</Heading>
+                                <Heading size="medium" marginBottom="60px">Use Cases</Heading>
                                 <Slider>
                                     {_.map(useCaseSlides, (item, index) => (
                                         <Slide
@@ -165,7 +165,7 @@ export class NextWhy extends React.PureComponent {
                             </SectionWrap>
 
                             <SectionWrap id="functionality">
-                                <Heading size="medium">Exchange Functionality</Heading>
+                                <Heading size="medium" marginBottom="60px">Exchange Functionality</Heading>
 
                                 {_.map(functionalityData, (item, index) => (
                                     <Definition

@@ -29,6 +29,7 @@ const GLOBAL_THEMES: ThemeInterface = {
         darkBgColor: '#111A19',
         lightBgColor: '#003831',
         textColor: '#FFFFFF',
+        paragraphColor: '#777777',
         linkColor: colors.brandLight,
         dropdownBg: '#111A19',
         dropdownButtonBg: '#003831',
@@ -40,6 +41,7 @@ const GLOBAL_THEMES: ThemeInterface = {
     light: {
         bgColor: '#FFFFFF',
         textColor: '#000000',
+        paragraphColor: '#474747',
         linkColor: colors.brandDark,
         dropdownBg: '#FBFBFB',
         dropdownButtonBg: '#F3F6F4',
@@ -52,6 +54,7 @@ const GLOBAL_THEMES: ThemeInterface = {
     gray: {
         bgColor: '#e0e0e0',
         textColor: '#000000',
+        paragraphColor: '#777777',
         linkColor: colors.brandDark,
         dropdownBg: '#FFFFFF',
         dropdownButtonBg: '#F3F6F4',

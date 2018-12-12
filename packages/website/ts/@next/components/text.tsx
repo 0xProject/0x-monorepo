@@ -63,7 +63,7 @@ export const Paragraph = styled.p<ParagraphProps>`
     font-size: ${props => `var(--${props.size || 'default'}Paragraph)`};
     margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
     padding: ${props => props.padding && getCSSPadding(props.padding)};
-    color: ${props => props.color || props.theme.textColor};
+    color: ${props => props.color || props.theme.paragraphColor};
     opacity: ${props => typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted};
     text-align: ${props => props.isCentered && 'center'};
     line-height: 1.4;

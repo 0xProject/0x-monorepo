@@ -7,6 +7,8 @@ import { Column, Section } from 'ts/@next/components/newLayout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
+import { addFadeInAnimation } from 'ts/@next/constants/animations';
+
 interface Props {
     title: string;
     description: React.Node;
@@ -26,18 +28,18 @@ export const AboutPageLayout = (props: Props) => (
 
            <Column width="70%" maxWidth="800px">
                <Column width="100%" maxWidth="680px">
-                   <Heading size="medium">
+                   <AnimatedHeading size="medium">
                      {props.title}
-                   </Heading>
+                   </AnimatedHeading>
 
-                   <Paragraph size="medium" marginBottom="60px" isMuted={0.65}>
+                   <AnimatedParagraph size="medium" marginBottom="60px" isMuted={0.65}>
                      {props.description}
-                   </Paragraph>
+                   </AnimatedParagraph>
 
                    {(props.linkLabel && props.linkUrl) &&
-                       <Link href={props.linkUrl} isNoBorder={true} isWithArrow={true}>
+                       <AnimatedLink href={props.linkUrl} isNoBorder={true} isWithArrow={true}>
                              {props.linkLabel}
-                       </Link>
+                       </AnimatedLink>
                    }
                </Column>
            </Column>
@@ -46,3 +48,15 @@ export const AboutPageLayout = (props: Props) => (
         {props.children}
     </SiteWrap>
 );
+
+const AnimatedHeading = styled(Heading)`
+  ${addFadeInAnimation('0.5s')}
+`;
+
+const AnimatedParagraph = styled(Paragraph)`
+  ${addFadeInAnimation('0.5s', '0.15s')}
+`;
+
+const AnimatedLink = styled(Link)`
+  ${addFadeInAnimation('0.6s', '0.3s')}
+`;
