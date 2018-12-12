@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 
 import { BIG_NUMBER_ZERO } from '../constants';
-import { AccountState, ERC20Asset, OrderProcessState, ProviderState, QuoteFetchOrigin } from '../types';
+import { AccountState, BaseCurrency, ERC20Asset, OrderProcessState, ProviderState, QuoteFetchOrigin } from '../types';
 import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
@@ -24,6 +24,7 @@ export const asyncData = {
             const errorMessage = 'Error fetching ETH/USD price';
             errorFlasher.flashNewErrorMessage(dispatch, errorMessage);
             dispatch(actions.updateEthUsdPrice(BIG_NUMBER_ZERO));
+            dispatch(actions.updateBaseCurrency(BaseCurrency.ETH));
             errorReporter.report(e);
         }
     },
