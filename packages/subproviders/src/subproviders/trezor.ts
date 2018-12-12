@@ -45,10 +45,13 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
             return this._cachedAccounts;
         }
         const accounts: string[] = [];
-        const response: TrezorConnectResponse =  await this._trezorConnectClientApi.ethereumGetAddress({ path: this._publicKeyPath, showOnTrezor: true  });
+        const response: TrezorConnectResponse = await this._trezorConnectClientApi.ethereumGetAddress({
+            path: this._publicKeyPath,
+            showOnTrezor: true,
+        });
 
         if (response.success) {
-            const payload: TrezorGetAddressResponsePayload  = response.payload;
+            const payload: TrezorGetAddressResponsePayload = response.payload;
             accounts.push(payload.address);
             this._cachedAccounts = accounts;
         } else {
@@ -108,7 +111,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
             tx.s = Buffer.from(payload.s.slice(2), 'hex');
 
             return `0x${tx.serialize().toString('hex')}`;
-        }  else {
+        } else {
             const payload: TrezorResponseErrorPayload = response.payload;
             throw new Error(payload.error);
         }
@@ -130,7 +133,11 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         assert.isHexString('data', data);
         assert.isETHAddressHex('address', address);
         const accountIndex = this._cachedAccounts.indexOf(address);
-        const response: TrezorConnectResponse = await this._trezorConnectClientApi.ethereumSignMessage({ path: this._publicKeyPath + `${accountIndex}`, message: data, hex: false });
+        const response: TrezorConnectResponse = await this._trezorConnectClientApi.ethereumSignMessage({
+            path: this._publicKeyPath + `${accountIndex}`,
+            message: data,
+            hex: false,
+        });
 
         if (response.success) {
             const payload: TrezorSignMssgResponsePayload = response.payload;
