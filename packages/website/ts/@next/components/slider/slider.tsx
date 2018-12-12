@@ -59,6 +59,11 @@ const StyledSlider = styled.div`
     //overflow: hidden;
     width: 100%;
     height: 520px;
+
+    @media (max-width: 500px) {
+        height: 450px;
+    }
+
     .carousel {
         position: relative;
         display: block;
@@ -123,6 +128,7 @@ const StyledSlide = styled.div`
 
     @media (max-width: 500px) {
         width: calc(100vw - 10px - 32px);
+        height: 450px;
     }
 
     &.is-selected {
@@ -140,8 +146,16 @@ const SlideHead = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+
+    @media (max-width: 500px) {
+        height: 240px;
+    }
 `;
 
 const SlideContent = styled.div`
     padding: 30px;
+
+    @media (max-width: 500px) {
+        padding: 20px;
+    }
 `;
