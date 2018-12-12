@@ -14,6 +14,7 @@ interface Props {
     isInlineIcon?: boolean;
     isCentered?: boolean;
     isWithMargin?: boolean;
+    icon: string;
     iconSize?: 'medium' | 'large' | number;
     title: string;
     description: React.Node;
@@ -23,7 +24,7 @@ interface Props {
 export const Definition = (props: Props) => (
     <Wrap {...props}>
         <Icon
-            name="ready-to-build"
+            name={props.icon}
             size={props.iconSize || 'medium'}
             margin={[0, 0, 'default', 0]}
         />

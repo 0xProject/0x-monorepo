@@ -103,6 +103,7 @@ export class NextWhy extends React.PureComponent {
                     <Definition
                         title="Support for all Ethereum Standards"
                         description="0x Protocol facilitates the decentralized exchange of a growing number of Ethereum-based tokens, including all ERC-20 and ERC-721 assets. Additional ERC standards can be added to the protocol..."
+                        icon="supportForAllEthereumStandards"
                         iconSize="large"
                         isInline={true}
                     />
@@ -110,6 +111,7 @@ export class NextWhy extends React.PureComponent {
                     <Definition
                         title="Shared Networked Liquidity"
                         description="0x is building a layer of networked liquidity that will lower the barriers to entry. By enabling businesses to tap into a shared pool of digital assets, it will create a more stable financial system."
+                        icon="networkedLiquidity"
                         iconSize="large"
                         isInline={true}
                     />
@@ -117,6 +119,7 @@ export class NextWhy extends React.PureComponent {
                     <Definition
                         title="Support for all Ethereum Standards"
                         description="Relayers are businesses around the world that utilize 0x to integrate exchange functionality into a wide variety of products including order books, games, and digital art marketplaces."
+                        icon="flexibleIntegration"
                         iconSize="large"
                         isInline={true}
                     />
@@ -139,6 +142,7 @@ export class NextWhy extends React.PureComponent {
                                 {_.map(offersData, (item, index) => (
                                     <Definition
                                         key={`offers-${index}`}
+                                        icon={item.icon}
                                         title={item.title}
                                         description={item.description}
                                         isWithMargin={true}
@@ -166,6 +170,7 @@ export class NextWhy extends React.PureComponent {
                                 {_.map(functionalityData, (item, index) => (
                                     <Definition
                                         key={`functionality-${index}`}
+                                        icon={item.icon}
                                         title={item.title}
                                         description={item.description}
                                         isWithMargin={true}
