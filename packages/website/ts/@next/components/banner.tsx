@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import {colors} from 'ts/style/colors';
 
 import {Button, Link} from 'ts/@next/components/button';
-import {Wrap, WrapCentered } from 'ts/@next/components/layout';
-import {Paragraph, Heading} from 'ts/@next/components/text';
-import { ThemeInterface } from 'ts/@next/components/siteWrap';
+import {Wrap, WrapCentered} from 'ts/@next/components/layout';
+import {ThemeInterface} from 'ts/@next/components/siteWrap';
+import {Heading, Paragraph} from 'ts/@next/components/text';
 
 import {Column, Section} from 'ts/@next/components/newLayout';
 
@@ -118,7 +118,7 @@ const ButtonWrap = styled.div`
 // to pass props down into the styled icon?
 const Border = styled.div<BorderProps>`
     position: absolute;
-    background-image: ${props => props.isBottom ? 'url(/images/@next/banner/bottomofcta.png);': 'url(/images/@next/banner/topofcta.png);' };
+    background-image: ${props => props.isBottom ? 'url(/images/@next/banner/bottomofcta.png);' : 'url(/images/@next/banner/topofcta.png);' };
     background-position: ${props => props.isBottom ? 'left top' : 'left bottom' };
     left: 0;
     width: calc(100% + 214px);
