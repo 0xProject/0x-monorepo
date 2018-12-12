@@ -7,6 +7,7 @@ import { DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
 import { ColorOption } from '../style/theme';
 import { BaseCurrency } from '../types';
 import { buyQuoteUtil } from '../util/buy_quote';
+import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
 
@@ -71,6 +72,19 @@ const tokenAmountLabel = (displayPricePerToken?: React.ReactNode, assetName?: st
     return 'Token Amount';
 };
 
+const getDisplayAmount = (
+    baseCurrency: BaseCurrency,
+    weiAmount?: BigNumber,
+    ethUsdPrice?: BigNumber,
+): React.ReactNode => {
+    switch (baseCurrency) {
+        case BaseCurrency.USD:
+            return format.ethBaseUnitAmountInUsd(weiAmount, ethUsdPrice, 2, '');
+        case BaseCurrency.ETH:
+            return format.ethBaseUnitAmount(weiAmount, 4, '');
+    }
+};
+
 export interface OrderDetailsProps {
     buyQuoteInfo?: BuyQuoteInfo;
     selectedAssetUnitAmount?: BigNumber;
@@ -83,13 +97,14 @@ export interface OrderDetailsProps {
 }
 export class OrderDetails extends React.Component<OrderDetailsProps> {
     public render(): React.ReactNode {
-        const { buyQuoteInfo, ethUsdPrice, selectedAssetUnitAmount } = this.props;
-        const weiAmounts = buyQuoteUtil.getWeiAmounts(selectedAssetUnitAmount, buyQuoteInfo);
+        const { baseCurrency, buyQuoteInfo, ethUsdPrice, selectedAssetUnitAmount } = this.props;
 
-        const displayAmounts =
-            this.props.baseCurrency === BaseCurrency.USD
-                ? buyQuoteUtil.displayAmountsUsd(weiAmounts, ethUsdPrice)
-                : buyQuoteUtil.displayAmountsEth(weiAmounts, ethUsdPrice);
+        const weiAmounts = buyQuoteUtil.getWeiAmounts(selectedAssetUnitAmount, buyQuoteInfo);
+        const secondaryCurrency = baseCurrency === BaseCurrency.USD ? BaseCurrency.ETH : BaseCurrency.USD;
+        const grandTotalValue = grandTotalDisplayValue(
+            getDisplayAmount(baseCurrency, weiAmounts.grandTotalInWei, ethUsdPrice),
+            getDisplayAmount(secondaryCurrency, weiAmounts.grandTotalInWei, ethUsdPrice),
+        );
 
         return (
             <Container width="100%" flexGrow={1} padding="20px 20px 0px 20px">
@@ -125,18 +140,22 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                 <OrderDetailsRow
                     isLoading={this.props.isLoading}
                     labelText={tokenAmountLabel(
-                        displayAmounts.pricePerToken,
+                        getDisplayAmount(baseCurrency, weiAmounts.pricePerTokenInWei, ethUsdPrice),
                         this.props.assetName,
                         this.props.selectedAssetUnitAmount,
                     )}
-                    value={displayAmounts.assetTotal}
+                    value={getDisplayAmount(baseCurrency, weiAmounts.assetTotalInWei, ethUsdPrice)}
                 />
-                <OrderDetailsRow isLoading={this.props.isLoading} labelText="Fee" value={displayAmounts.feeTotal} />
+                <OrderDetailsRow
+                    isLoading={this.props.isLoading}
+                    labelText="Fee"
+                    value={getDisplayAmount(baseCurrency, weiAmounts.feeTotalInWei, ethUsdPrice)}
+                />
                 <OrderDetailsRow
                     isLoading={this.props.isLoading}
                     isLabelBold={true}
                     labelText={'Total Cost'}
-                    value={grandTotalDisplayValue(displayAmounts.primaryGrandTotal, displayAmounts.secondaryGrandTotal)}
+                    value={grandTotalValue}
                 />
             </Container>
         );
