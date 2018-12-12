@@ -121,6 +121,10 @@ const StyledSlide = styled.div`
     flex: 0 0 auto;
     opacity: 0.3;
 
+    @media (max-width: 500px) {
+        width: calc(100vw - 10px - 32px);
+    }
+
     &.is-selected {
         opacity: 1;
     }
