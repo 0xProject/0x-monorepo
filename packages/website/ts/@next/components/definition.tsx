@@ -29,7 +29,7 @@ export const Definition = (props: Props) => (
             margin={[0, 0, 'default', 0]}
         />
 
-        <TextWrap>
+        <TextWrap {...props}>
             <Title>
                 {props.title}
             </Title>
@@ -85,6 +85,10 @@ const Wrap = styled.div`
 const TextWrap = styled.div`
     width: 100%;
     max-width: 560px;
+
+    @media (min-width: 768px) {
+        margin-left: ${props => props.isInlineIcon && '60px'};
+    }
 `;
 
 const Title = styled.h2`
