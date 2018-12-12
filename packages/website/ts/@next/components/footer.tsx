@@ -109,7 +109,7 @@ const LinkList = (props: LinkListProps) => (
 );
 
 const FooterSection = styled.footer`
-    padding: 30px;
+    padding: 40px 30px 30px 30px;
     margin-top: 30px;
     background-color: #181818;
 `;
