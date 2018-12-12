@@ -65,7 +65,7 @@ export const SectionLandingClients = () => (
             Join the growing number of projects developing on 0x
         </Heading>
 
-        <WrapGrid width="narrow" isWrapped={true}>
+        <WrapGrid isWrapped={true}>
             {_.map(projects, (item: ProjectLogo, index) => (
                 <StyledProject
                     key={`client-${index}`}

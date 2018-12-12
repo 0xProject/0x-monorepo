@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
-import { Column, Section, Wrap } from 'ts/@next/components/layout';
+import { Column, Section, WrapGrid } from 'ts/@next/components/newLayout';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
 interface TeamMember {
@@ -182,36 +182,42 @@ export const NextAboutTeam = () => (
         linkLabel="Join the team"
         linkUrl="/jobs"
     >
-        <Section>
-            <Wrap>
-                <Column colWidth="1/3">
-                    <Heading size="medium">0x Team</Heading>
-                </Column>
+        <Section
+            maxWidth="1170px"
+            isFlex={true}
+        >
+            <Column>
+                <Heading size="medium">0x Team</Heading>
+            </Column>
 
-                <Column colWidth="2/3">
-                    <Wrap isWrapped={true} isCentered={false}>
-                        {_.map(team, (info: TeamMember, index) => (
-                            <Member key={`team-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
-                        ))}
-                    </Wrap>
-                </Column>
-            </Wrap>
+            <Column
+                width="70%"
+                maxWidth="800px"
+            >
+                <WrapGrid isWrapped={true} isCentered={false}>
+                    {_.map(team, (info: TeamMember, index) => (
+                        <Member key={`team-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
+                    ))}
+                </Wrap>
+            </Column>
         </Section>
 
-        <Section bgColor="#F3F6F4">
-            <Wrap>
-                <Column colWidth="1/3">
-                    <Heading size="medium">Advisors</Heading>
-                </Column>
+        <Section
+            bgColor="#F3F6F4"
+            maxWidth="1170px"
+            isFlex={true}
+        >
+            <Column>
+                <Heading size="medium">Advisors</Heading>
+            </Column>
 
-                <Column colWidth="2/3">
-                    <Wrap isWrapped={true} isCentered={false}>
-                        {_.map(advisors, (info: TeamMember, index) => (
-                            <Member key={`advisor-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
-                        ))}
-                    </Wrap>
-                </Column>
-            </Wrap>
+            <Column width="70%" maxWidth="800px">
+                <WrapGrid isWrapped={true} isCentered={false}>
+                    {_.map(advisors, (info: TeamMember, index) => (
+                        <Member key={`advisor-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
+                    ))}
+                </WrapGrid>
+            </Column>
         </Section>
     </AboutPageLayout>
 );

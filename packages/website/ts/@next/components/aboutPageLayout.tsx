@@ -17,14 +17,14 @@ interface Props {
 export const AboutPageLayout = (props: Props) => (
     <SiteWrap theme="light">
         <Section isFlex={true} maxWidth="1170px">
-            <Nav colWidth="1/3">
+            <Column>
                <ChapterLink to="/next/about/mission">Our Mission</ChapterLink>
                <ChapterLink to="/next/about/team">Team</ChapterLink>
                <ChapterLink to="/next/about/press">Press</ChapterLink>
                <ChapterLink to="/next/about/jobs">Jobs</ChapterLink>
-           </Nav>
+           </Column>
 
-           <Column width="70%" maxWidth="826px">
+           <Column width="70%" maxWidth="800px">
                <Column width="100%" maxWidth="680px">
                    <Heading size="medium">
                      {props.title}
@@ -46,9 +46,3 @@ export const AboutPageLayout = (props: Props) => (
         {props.children}
     </SiteWrap>
 );
-
-const Nav = styled(Column)`
-    @media (max-width: 768px) {
-        // display: none;
-    }
-`;

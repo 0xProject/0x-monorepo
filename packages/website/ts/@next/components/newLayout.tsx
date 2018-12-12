@@ -110,6 +110,7 @@ FlexWrap.defaultProps = {
 
 WrapGrid.defaultProps = {
     isCentered: true,
+    isFullWidth: true,
 };
 
 Wrap.defaultProps = {
