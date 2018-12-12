@@ -4,8 +4,8 @@ import styled from 'styled-components';
 interface Props {
     title: string;
     description: string;
-    figure?: React.Node;
-    actions?: React.Node;
+    figure?: React.ReactNode;
+    actions?: React.ReactNode;
 }
 
 export const Hero = (props: Props) => (

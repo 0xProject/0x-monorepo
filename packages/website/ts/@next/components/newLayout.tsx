@@ -1,14 +1,13 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-interface FlexProps {
-    padding?: string;
-    isFlex?: boolean;
-}
-
-interface WrapProps extends FlexProps {
+interface WrapProps {
+    offsetTop?: string;
+    maxWidth?: string;
     isFullWidth?: boolean;
     isTextCentered?: boolean;
+    isCentered?: boolean;
+    isWrapped?: boolean;
 }
 
 interface WrapGridProps {
@@ -30,10 +29,16 @@ interface SectionProps extends WrapProps {
     bgColor?: 'dark' | 'light' | string;
 }
 
+interface FlexProps {
+    padding?: string;
+    isFlex?: boolean;
+    flexBreakpoint?: string;
+}
+
 interface ColumnProps {
+    padding?: string;
     width?: string;
     maxWidth?: string;
-    padding?: string;
 }
 
 export const Section = (props: SectionProps) => {
@@ -60,7 +65,7 @@ export const Column = styled.div<ColumnProps>`
     }
 `;
 
-export const FlexWrap = styled.div<SectionProps>`
+export const FlexWrap = styled.div<FlexProps>`
     padding: ${props => props.padding};
 
     @media (min-width: ${props => props.flexBreakpoint || '768px'}) {
@@ -69,7 +74,7 @@ export const FlexWrap = styled.div<SectionProps>`
     }
 `;
 
-export const WrapSticky = styled.div<WrapStickyProps>`
+export const WrapSticky = styled.div<WrapProps>`
     position: sticky;
     top: ${props => props.offsetTop || '60px'};
 `;
@@ -87,7 +92,7 @@ const SectionBase = styled.section<SectionProps>`
 `;
 
 const Wrap = styled(FlexWrap)<WrapProps>`
-    width: ${props => !props.isFullWidth && 'calc(100% - 60px)'};
+    width: calc(100% - 60px);
     max-width: ${props => !props.isFullWidth && (props.maxWidth || '895px')};
     text-align: ${props => props.isTextCentered && 'center'};
     margin: 0 auto;
@@ -97,7 +102,7 @@ const Wrap = styled(FlexWrap)<WrapProps>`
     }
 `;
 
-export const WrapGrid = styled(Wrap)<WrapGridProps>`
+export const WrapGrid = styled(Wrap)<WrapProps>`
     display: flex;
     flex-wrap: ${props => props.isWrapped && `wrap`};
     justify-content: ${props => props.isCentered ? `center` : 'space-between'};
