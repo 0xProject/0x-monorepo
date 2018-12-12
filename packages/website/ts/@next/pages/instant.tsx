@@ -11,8 +11,8 @@ import {Button} from 'ts/@next/components/button';
 import {Definition} from 'ts/@next/components/definition';
 import {Section} from 'ts/@next/components/newLayout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
-import {Paragraph} from 'ts/@next/components/text';
-// import { Configurator } from 'ts/pages/instant/configurator';
+import {Heading, Paragraph} from 'ts/@next/components/text';
+import { Configurator } from 'ts/@next/pages/instant/configurator';
 
 const CONFIGURATOR_HASH = 'configure';
 
@@ -91,9 +91,9 @@ export const Next0xInstant = () => (
             ))}
         </Section>
 
-        <Section bgColor={colors.backgroundDark}>
-          Configurator goes here
-          {/* <Configurator hash={CONFIGURATOR_HASH} /> */}
+        <Section maxWidth="1386px" padding="0 58px 70px" bgColor={colors.backgroundDark}>
+          <Heading>0x Instant Configurator</Heading>
+          <Configurator hash={CONFIGURATOR_HASH} />
         </Section>
 
         <Banner
