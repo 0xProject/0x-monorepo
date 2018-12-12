@@ -135,7 +135,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
         // Create proxies
         const erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
-        // Deploy Exchange congtract
+        // Deploy Exchange contract
         exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             protocolArtifacts.Exchange,
             provider,
@@ -356,7 +356,6 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 ),
             );
         });
-        // @TODO - greater than 1 balance
     });
 
     describe('batchFillOrders', () => {
