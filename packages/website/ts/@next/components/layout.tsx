@@ -75,7 +75,6 @@ const COLUMN_WIDTHS: ColumnWidths = {
 };
 
 export const Main = styled.main`
-    width: calc(100% - 0);
     max-width: ${MAX_WIDTH}px;
     margin: 0 auto;
 

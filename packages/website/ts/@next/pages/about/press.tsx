@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
 import { Link } from 'ts/@next/components/button';
-import { Column, Section, Wrap } from 'ts/@next/components/layout';
+import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
 import { Separator } from 'ts/@next/components/separator';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
@@ -45,8 +45,6 @@ export const NextAboutPress = () => (
                     Want to write about 0x? Get in touch, or download our press kit.
                 </Paragraph>
 
-                <Separator/>
-
                 {_.map(highlights, (highlight, index) => (
                     <Highlight key={`highlight-${index}`} highlight={highlight} />
                 ))}
@@ -56,17 +54,19 @@ export const NextAboutPress = () => (
 );
 
 const Highlight = ({ highlight }) => (
-    <>
-        <Wrap>
-            <Column colWidth="1/3">
-                <img src={highlight.logo} alt={highlight.title} />
-            </Column>
-            <Column colWidth="2/3">
-                <Paragraph isMuted={false}>{highlight.text}</Paragraph>
-                <Link href={highlight.href} isWithArrow={true} isNoBorder={true}>Read Article</Link>
-            </Column>
-        </Wrap>
+    <HighlightWrap>
+        <Column>
+            <img src={highlight.logo} alt={highlight.title} />
+        </Column>
 
-        <Separator/>
-    </>
+        <Column width="60%" maxWidth="560px">
+            <Paragraph isMuted={false}>{highlight.text}</Paragraph>
+            <Link href={highlight.href} isWithArrow={true} isNoBorder={true}>Read Article</Link>
+        </Column>
+    </HighlightWrap>
 );
+
+const HighlightWrap = styled(FlexWrap)`
+    border-top: 1px solid #eaeaea;
+    padding: 30px 0;
+`;

@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { ThemeProvider } from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 
 import { colors } from 'ts/style/colors';
+
 import { Footer } from 'ts/@next/components/footer';
 import { Header } from 'ts/@next/components/header';
-import { Main } from 'ts/@next/components/layout';
 import { GlobalStyles } from 'ts/@next/constants/globalStyle';
 
 // Note(ez): We'll define the theme and provide it via a prop
@@ -78,3 +78,12 @@ export const SiteWrap: React.StatelessComponent<Props> = props => {
         </>
     );
 };
+
+export const Main = styled.main`
+    max-width: 1500px;
+    margin: 0 auto;
+
+    @media (min-width: 768px) {
+        width: calc(100% - 60px);
+    }
+`;
