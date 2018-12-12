@@ -97,10 +97,6 @@ const Wrap = styled(FlexWrap)<WrapProps>`
     max-width: ${props => !props.isFullWidth && (props.maxWidth || '895px')};
     text-align: ${props => props.isTextCentered && 'center'};
     margin: 0 auto;
-
-    @media (max-width: 768px) {
-        width: calc(100% - 60px);
-    }
 `;
 
 export const WrapGrid = styled(Wrap)<WrapProps>`
