@@ -76,7 +76,7 @@ const SectionBase = styled.section<SectionProps>`
     padding: ${props => props.isPadded && '120px 0'};
     background-color: ${props => props.theme[`${props.bgColor}BgColor`] || props.bgColor};
     position: relative;
-    overflow: hidden;
+    overflow: ${props => !props.isFullWidth && 'hidden'};
 
     @media (max-width: 768px) {
         padding: ${props => props.isPadded && (props.paddingMobile || '40px 0')};
@@ -88,7 +88,6 @@ const Wrap = styled(FlexWrap)<WrapProps>`
     max-width: ${props => !props.isFullWidth && (props.maxWidth || '895px')};
     text-align: ${props => props.isTextCentered && 'center'};
     margin: 0 auto;
-    overflow: hidden;
 
     @media (max-width: 768px) {
         width: calc(100% - 60px);
