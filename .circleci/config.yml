@@ -18,6 +18,7 @@ jobs:
                   name: yarn
                   command: yarn --frozen-lockfile install || yarn --frozen-lockfile install
             - run: yarn build:ci:no_website
+            - run: yarn build:ts
             - save_cache:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
