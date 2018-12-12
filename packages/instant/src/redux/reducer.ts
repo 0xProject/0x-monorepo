@@ -66,7 +66,7 @@ export const DEFAULT_STATE: DefaultState = {
         animationState: 'none',
         content: StandardSlidingPanelContent.None,
     },
-    baseCurrency: BaseCurrency.ETH,
+    baseCurrency: BaseCurrency.USD,
 };
 
 export const createReducer = (initialState: State) => {
