@@ -35,6 +35,7 @@ export const Button = styled.button<ButtonInterface>`
     padding: ${props => (!props.isNoPadding && !props.isWithArrow) && '18px 30px'};
     text-align: center;
     font-size: ${props => props.isWithArrow ? '20px' : '18px'};
+    line-height: normal;
     text-decoration: none;
     cursor: pointer;
     transition: background-color 0.35s, border-color 0.35s;
