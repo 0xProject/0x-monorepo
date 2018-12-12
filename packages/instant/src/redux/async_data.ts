@@ -26,6 +26,7 @@ export const asyncData = {
             dispatch(actions.updateEthUsdPrice(BIG_NUMBER_ZERO));
             dispatch(actions.updateBaseCurrency(BaseCurrency.ETH));
             errorReporter.report(e);
+            analytics.trackUsdPriceFailed();
         }
     },
     fetchAvailableAssetDatasAndDispatchToStore: async (state: State, dispatch: Dispatch) => {
