@@ -82,6 +82,10 @@ export class Compiler {
     private readonly _artifactsDir: string;
     private readonly _solcVersionIfExists: string | undefined;
     private readonly _specifiedContracts: string[] | TYPE_ALL_FILES_IDENTIFIER;
+    public static async getSolcAsync(solcVersion: string): Promise<solc.SolcInstance> {
+        const solcInstance = (await this._getSolcAsync(solcVersion)).solcInstance;
+        return solcInstance;
+    }
     private static async _getSolcAsync(
         solcVersion: string,
     ): Promise<{ solcInstance: solc.SolcInstance; fullSolcVersion: string }> {
@@ -109,10 +113,6 @@ export class Compiler {
         }
         const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
         return { solcInstance, fullSolcVersion };
-    }
-    public static async getSolcAsync(solcVersion: string): Promise<solc.SolcInstance> {
-        const solcInstance = (await this._getSolcAsync(solcVersion)).solcInstance;
-        return solcInstance;
     }
     private static _addHexPrefixToContractBytecode(compiledContract: solc.StandardContractOutput): void {
         if (!_.isUndefined(compiledContract.evm)) {
