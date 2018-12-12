@@ -27,7 +27,7 @@ Visit our [developer portal](https://0xproject.com/docs/order-utils) for a compr
 | Package                                          | Version                                                                                               | Description                                                                                       |
 | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | [`0x-order-utils`](/python-packages/order_utils) | [![PyPI](https://img.shields.io/pypi/v/0x-order-utils.svg)](https://pypi.org/project/0x-order-utils/) | A set of utilities for generating, parsing, signing and validating 0x orders                      |
-| [`0x-sra-client`](/python-packages/sra_client)   | [![PyPI](https://img.shields.io/pypi/v/0x-sra-client.svg)](https://pypi.org/project/0x-sra-client/)  | A Python client for interacting with servers conforming to the Standard Relayer API specification |
+| [`0x-sra-client`](/python-packages/sra_client)   | [![PyPI](https://img.shields.io/pypi/v/0x-sra-client.svg)](https://pypi.org/project/0x-sra-client/)   | A Python client for interacting with servers conforming to the Standard Relayer API specification |
 
 ### Typescript/Javascript Packages
 
