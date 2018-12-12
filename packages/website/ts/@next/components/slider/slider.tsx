@@ -65,7 +65,6 @@ const StyledSlider = styled.div`
     }
 
     .carousel {
-        position: relative;
         display: block;
         user-select: none;
         touch-action: pan-y;

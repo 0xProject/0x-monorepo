@@ -150,7 +150,7 @@ export class NextWhy extends React.PureComponent {
                                 ))}
                             </SectionWrap>
 
-                            <SectionWrap id="cases">
+                            <SectionWrap id="cases" isNotRelative={true}>
                                 <Heading size="medium">Use Cases</Heading>
                                 <Slider>
                                     {_.map(useCaseSlides, (item, index) => (
@@ -192,8 +192,12 @@ export class NextWhy extends React.PureComponent {
     }
 }
 
-const SectionWrap = styled.div`
-    position: relative;
+interface SectionProps {
+    isNotRelative?: boolean;
+}
+
+const SectionWrap = styled.div<SectionProps>`
+    position: ${props => !props.isNotRelative && 'relative'};
 
     & + & {
         padding-top: 60px;
@@ -236,11 +240,12 @@ const NavStickyWrap = styled(WrapSticky)`
 const ChapterLink = styled(AnchorLink)`
     color: ${props => props.theme.textColor};
     font-size: 22px;
-    margin-bottom: 15px;
+    margin-bottom: 25px;
     display: block;
     opacity: 0.8;
 
-    &:hover {
+    &:hover,
+    &:active {
         opacity: 1;
     }
 `;
