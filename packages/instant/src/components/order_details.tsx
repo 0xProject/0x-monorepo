@@ -45,6 +45,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                     labelText="Total Cost"
                     isLabelBold={true}
                     primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.totalEthAmount)}
+                    isPrimaryValueBold={true}
                     secondaryValue={this._totalCostSecondaryValue()}
                 />
             </Container>
