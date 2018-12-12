@@ -108,35 +108,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
 
         return (
             <Container width="100%" flexGrow={1} padding="20px 20px 0px 20px">
-                <Container marginBottom="10px">
-                    <Flex justify="space-between">
-                        <Text
-                            letterSpacing="1px"
-                            fontColor={ColorOption.primaryColor}
-                            fontWeight={600}
-                            textTransform="uppercase"
-                            fontSize="14px"
-                        >
-                            Order Details
-                        </Text>
-
-                        <Container>
-                            <BaseCurrencyChoice
-                                onClick={this.props.onBaseCurrencySwitchEth}
-                                currencyName="ETH"
-                                isSelected={this.props.baseCurrency === BaseCurrency.ETH}
-                            />
-                            <Container marginLeft="3px" marginRight="3px" display="inline">
-                                <Text fontSize="12px">/</Text>
-                            </Container>
-                            <BaseCurrencyChoice
-                                onClick={this.props.onBaseCurrencySwitchUsd}
-                                currencyName="USD"
-                                isSelected={this.props.baseCurrency === BaseCurrency.USD}
-                            />
-                        </Container>
-                    </Flex>
-                </Container>
+                <Container marginBottom="10px">{this._renderHeader()}</Container>
                 <OrderDetailsRow
                     isLoading={this.props.isLoading}
                     labelText={tokenAmountLabel(
@@ -158,6 +130,38 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                     value={grandTotalValue}
                 />
             </Container>
+        );
+    }
+
+    private _renderHeader(): React.ReactNode {
+        return (
+            <Flex justify="space-between">
+                <Text
+                    letterSpacing="1px"
+                    fontColor={ColorOption.primaryColor}
+                    fontWeight={600}
+                    textTransform="uppercase"
+                    fontSize="14px"
+                >
+                    Order Details
+                </Text>
+
+                <Container>
+                    <BaseCurrencyChoice
+                        onClick={this.props.onBaseCurrencySwitchEth}
+                        currencyName="ETH"
+                        isSelected={this.props.baseCurrency === BaseCurrency.ETH}
+                    />
+                    <Container marginLeft="3px" marginRight="3px" display="inline">
+                        <Text fontSize="12px">/</Text>
+                    </Container>
+                    <BaseCurrencyChoice
+                        onClick={this.props.onBaseCurrencySwitchUsd}
+                        currencyName="USD"
+                        isSelected={this.props.baseCurrency === BaseCurrency.USD}
+                    />
+                </Container>
+            </Flex>
         );
     }
 }
