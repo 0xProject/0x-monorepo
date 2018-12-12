@@ -34,7 +34,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                 <Container marginBottom="10px">{this._renderHeader()}</Container>
 
                 <OrderDetailsRow
-                    labelText={this._assetLabelText()}
+                    labelText={this._assetAmountLabel()}
                     primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.assetEthAmount)}
                 />
                 <OrderDetailsRow
@@ -90,7 +90,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
         }
     }
 
-    private _assetLabelText(): string {
+    private _assetAmountLabel(): string {
         const { assetName, baseCurrency } = this.props;
         const numTokens = this.props.selectedAssetUnitAmount;
 
@@ -99,21 +99,17 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
             assetName && assetName !== DEFAULT_UNKOWN_ASSET_NAME && _.isUndefined(numTokens)
                 ? new BigNumber(0)
                 : numTokens;
-
         if (!_.isUndefined(displayNumTokens)) {
             let numTokensWithSymbol = displayNumTokens.toString();
-
             if (assetName) {
                 numTokensWithSymbol += ` ${assetName}`;
             }
-
             const pricePerTokenWei = this._pricePerTokenWei();
             if (pricePerTokenWei) {
                 numTokensWithSymbol += ` @ ${this._displayAmount(baseCurrency, pricePerTokenWei)}`;
             }
             return numTokensWithSymbol;
         }
-
         return 'Token Amount';
     }
 
@@ -138,7 +134,6 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
             textStyle.fontColor = ColorOption.primaryColor;
             textStyle.fontWeight = 700;
         }
-
         return <Text {...textStyle}>{choice}</Text>;
     }
 
@@ -154,7 +149,6 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                 >
                     Order Details
                 </Text>
-
                 <Container>
                     {this._baseCurrencyChoice(BaseCurrency.ETH)}
                     <Container marginLeft="3px" marginRight="3px" display="inline">
@@ -179,18 +173,12 @@ export class OrderDetailsRow extends React.Component<OrderDetailsRowProps, {}> {
         return (
             <Container padding="10px 0px" borderTop="1px dashed" borderColor={ColorOption.feintGrey}>
                 <Flex justify="space-between">
-                    {this._renderLabel()}
+                    <Text fontWeight={this.props.isLabelBold ? 700 : 400} fontColor={ColorOption.grey}>
+                        {this.props.labelText}
+                    </Text>
                     <Container>{this._renderValues()}</Container>
                 </Flex>
             </Container>
-        );
-    }
-
-    private _renderLabel(): React.ReactNode {
-        return (
-            <Text fontWeight={this.props.isLabelBold ? 700 : 400} fontColor={ColorOption.grey}>
-                {this.props.labelText}
-            </Text>
         );
     }
 
@@ -200,7 +188,6 @@ export class OrderDetailsRow extends React.Component<OrderDetailsRowProps, {}> {
                 <Text fontColor={ColorOption.lightGrey}>({this.props.secondaryValue})</Text>
             </Container>
         );
-
         return (
             <React.Fragment>
                 {secondaryValueNode}
