@@ -8,7 +8,6 @@ import {colors} from 'ts/style/colors';
 import {Banner} from 'ts/@next/components/banner';
 import {Button, ButtonWrap, Link} from 'ts/@next/components/button';
 import {Icon} from 'ts/@next/components/Icon';
-import {ImageLoop} from 'ts/@next/components/image_loop';
 import {Column, Section, Wrap, WrapCentered} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
