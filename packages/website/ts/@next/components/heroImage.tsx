@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
 
 interface Props {
-    image: React.ReactNode;
+    image: React.Node;
 }
 
 export const LandingAnimation = (props: Props) => (
@@ -14,7 +14,6 @@ export const LandingAnimation = (props: Props) => (
 );
 
 const Wrap = styled.figure`
-    border: 1px solid red;
     display: inline-block;
 
     svg {

@@ -185,6 +185,7 @@ export const NextAboutTeam = () => (
         <Section
             maxWidth="1170px"
             isFlex={true}
+            flexBreakpoint="900px"
         >
             <Column>
                 <Heading size="medium">0x Team</Heading>
@@ -205,13 +206,14 @@ export const NextAboutTeam = () => (
         <Section
             bgColor="#F3F6F4"
             maxWidth="1170px"
+            flexBreakpoint="900px"
             isFlex={true}
         >
             <Column>
                 <Heading size="medium">Advisors</Heading>
             </Column>
 
-            <Column width="70%" maxWidth="800px">
+            <Column>
                 <WrapGrid isWrapped={true} isCentered={false}>
                     {_.map(advisors, (info: TeamMember, index) => (
                         <Member key={`advisor-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
