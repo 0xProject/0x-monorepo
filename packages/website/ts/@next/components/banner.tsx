@@ -56,7 +56,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
             <Column colWidth="1/2" isPadLarge={true}>
                 <ButtonWrap>
                     {mainCta &&
-                        <Link href={mainCta.href}>{mainCta.text}</Link>
+                        <Link isTransparent={false} href={mainCta.href}>{mainCta.text}</Link>
                     }
 
                     {secondaryCta &&
