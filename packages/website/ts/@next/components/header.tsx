@@ -5,7 +5,7 @@ import styled, { withTheme } from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Button, Link } from 'ts/@next/components/button';
+import { Button, Link, NavLink } from 'ts/@next/components/button';
 import { DropdownDevelopers } from 'ts/@next/components/dropdowns/dropdown_developers';
 import { DropdownProducts } from 'ts/@next/components/dropdowns/dropdown_products';
 import { Dropdown } from 'ts/@next/components/dropdowns/mock';
@@ -89,13 +89,13 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
 
         return (
             <Wrapper key={`nav-${index}`}>
-                <NavLink
+                <StyledNavLink
                     href={link.url}
                     isTransparent={true}
                     isNoBorder={true}
                 >
                     {link.text}
-                </NavLink>
+                </StyledNavLink>
 
                 {link.dropdownComponent &&
                     <DropdownWrap width={link.dropdownWidth}>
@@ -169,7 +169,7 @@ const StyledHeader = styled(Section.withComponent('header'))<HeaderProps>`
     }
 `;
 
-const NavLink = styled(Link).attrs({
+const StyledNavLink = styled(NavLink).attrs({
     activeStyle: { opacity: 1 },
 })`
     opacity: 0.5;

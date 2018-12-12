@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link as ReactRouterLink } from 'react-router-dom';
+import { Link as ReactRouterLink, NavLink as ReactRouterNavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { BREAKPOINTS } from 'ts/@next/components/layout';
@@ -83,6 +83,33 @@ export const Link: React.ReactNode = (props: ButtonInterface) => {
 };
 
 Link.defaultProps = {
+    isTransparent: true,
+};
+
+export const NavLink: React.ReactNode = (props: ButtonInterface) => {
+    const {
+        children,
+        href,
+        isWithArrow,
+    } = props;
+    const Component = Button.withComponent(ReactRouterNavLink);
+
+    return (
+        <Component to={href} {...props}>
+            {children}
+
+            { isWithArrow &&
+                <svg width="16" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M4.484.246l.024 1.411 8.146.053L.817 13.547l.996.996L13.65 2.706l.052 8.146 1.412.024L15.045.315 4.484.246z"
+                    />
+                </svg>
+            }
+        </Component>
+    );
+};
+
+NavLink.defaultProps = {
     isTransparent: true,
 };
 
