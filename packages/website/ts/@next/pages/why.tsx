@@ -15,22 +15,17 @@ import { Heading, Paragraph } from 'ts/@next/components/text';
 
 const offersData = [
     {
-        icon: 'coin',
-        title: 'A standard for Exchange',
-        description: '0x provides developers with a technical standard for trading Ethereum-based tokens such as ERC 20 and ERC 721.',
-    },
-    {
-        icon: 'coin',
+        icon: 'robustSmartContracts',
         title: 'Robust Smart Contracts',
         description: `0x Protocol's smart contracts have been put through two rounds of rigorous security audits.`,
     },
     {
-        icon: 'coin',
+        icon: 'extensibleArchitecture',
         title: 'Extensible Architecture',
         description: `0x's modular pipeline enables you to plug in your own smart contracts through an extensible API.`,
     },
     {
-        icon: 'coin',
+        icon: 'eficientDesign',
         title: 'Efficient Design',
         description: `0x’s off-chain order relay with on-chain settlement is a gas efficient approach to p2p exchange, reducing blockchain bloat.`,
     },
@@ -38,47 +33,42 @@ const offersData = [
 
 const functionalityData = [
     {
-        icon: 'coin',
+        icon: 'secureTrading',
         title: 'Secure Non-custodial Trading',
         description: 'Enable tokens to be traded wallet-to-wallet with no deposits or withdrawals.',
     },
     {
-        icon: 'coin',
+        icon: 'flexibleOrders',
         title: 'Flexible Order Types',
         description: 'Choose to sell assets at a specific “buy it now” price or allow potential buyers to submit bids.',
     },
     {
-        icon: 'coin',
+        icon: 'buildBusiness',
         title: 'Build a Business',
         description: 'Monetize your product by taking fees on each transaction and join a growing number of relayers in the 0x ecosystem.',
-    },
-    {
-        icon: 'coin',
-        title: 'Networked Liquidity',
-        description: 'Allow your assets to appear on other 0x-based marketplaces by sharing your liquidity through an open order book.',
     },
 ];
 
 const useCaseSlides = [
     {
-        icon: 'coin',
+        icon: 'gamingAndCollectibles',
         title: 'Games & Collectibles',
         description: 'Artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality by providing the ability to build marketplaces for NFT trading.',
     },
     {
-        icon: 'coin',
-        title: 'Games & Collectibles',
-        description: 'Artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality by providing the ability to build marketplaces for NFT trading.',
+        icon: 'predictionMarkets',
+        title: 'Prediction Markets',
+        description: 'Decentralized prediction markets and cryptodervivative platforms generate sets of tokens that represent a financial stake in the outcomes of events. 0x allows these tokens to be instantly tradable in liquid markets.',
     },
     {
-        icon: 'coin',
-        title: 'Games & Collectibles',
-        description: 'Artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality by providing the ability to build marketplaces for NFT trading.',
+        icon: 'orderBooks',
+        title: 'Order Books',
+        description: 'There are thousands of decentralized apps and protocols that have native utility tokens. 0x provides professional exchanges with the ability to host order books and facilitates the exchange of these assets.',
     },
     {
-        icon: 'coin',
-        title: 'Games & Collectibles',
-        description: 'Artists and game makers are tokenizing digital art and in-game items known as non-fungible tokens (NFTs). 0x enables these creators to add exchange functionality by providing the ability to build marketplaces for NFT trading.',
+        icon: 'decentralisedLoans',
+        title: 'Decentralized Loans',
+        description: 'Efficient lending requires liquid markets where investors can buy and re-sell loans. 0x enables an ecosystem of lenders to self-organize and efficiently determine market prices for all outstanding loans.',
     },
 ];
 
@@ -121,19 +111,19 @@ export class NextWhy extends React.PureComponent {
               <Section bgColor={colors.backgroundDark} isPadLarge={true}>
                 <Wrap>
                   <Column colWidth="1/3">
-                      <Icon name="coin" size="large" margin={[0, 0, 32, 0]} />
+                      <Icon name="supportForAllEthereumStandards" size="large" margin={[0, 0, 32, 0]} />
                       <Heading size="small" marginBottom="15px">Support for all Ethereum Standards</Heading>
                       <Paragraph isMuted={true}>0x Protocol facilitates the decentralized exchange of a growing number of Ethereum-based tokens, including all ERC-20 and ERC-721 assets. Additional ERC standards can be added to the protocol...</Paragraph>
                   </Column>
 
                   <Column colWidth="1/3">
-                      <Icon name="coin" size="large" margin={[0, 0, 32, 0]} />
+                      <Icon name="networkedLiquidity" size="large" margin={[0, 0, 32, 0]} />
                       <Heading size="small" marginBottom="15px">Shared Networked Liquidity</Heading>
                       <Paragraph isMuted={true}>0x is building a layer of networked liquidity that will lower the barriers to entry. By enabling businesses to tap into a shared pool of digital assets, it will create a more stable financial system.</Paragraph>
                   </Column>
 
                   <Column colWidth="1/3">
-                      <Icon name="coin" size="large" margin={[0, 0, 32, 0]} />
+                      <Icon name="flexibleIntegration" size="large" margin={[0, 0, 32, 0]} />
                       <Heading size="small" marginBottom="15px">Customize the User Experience</Heading>
                       <Paragraph isMuted={true}>Relayers are businesses around the world that utilize 0x to integrate exchange functionality into a wide variety of products including order books, games, and digital art marketplaces.</Paragraph>
                   </Column>
