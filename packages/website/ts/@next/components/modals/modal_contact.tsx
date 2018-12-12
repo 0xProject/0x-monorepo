@@ -47,6 +47,7 @@ export class ModalContact extends React.Component<Props> {
                 <DialogOverlay
                     style={{ background: 'rgba(0, 0, 0, 0.75)' }}
                     isOpen={isOpen}
+                    onDismiss={onDismiss}
                 >
                     <StyledDialogContent>
                         <Form onSubmit={this._onSubmit.bind(this)} isSuccessful={isSuccessful}>
@@ -101,7 +102,7 @@ export class ModalContact extends React.Component<Props> {
                             </InputRow>
                         </Form>
                         <Confirmation isSuccessful={isSuccessful}>
-                        <Icon name="checkmark" size="large" />
+                            <Icon name="checkmark" size="large" />
                             <Heading color={colors.textDarkPrimary} size={34} asElement="h2">Thanks for contacting us.</Heading>
                             <Paragraph isMuted={true} color={colors.textDarkPrimary}>We'll get back to you soon. If you need quick support in the meantime, reach out to the 0x team on Discord.</Paragraph>
                             <Button onClick={this.props.onDismiss}>Done</Button>
