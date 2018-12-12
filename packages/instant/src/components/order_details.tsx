@@ -2,11 +2,11 @@ import { BuyQuoteInfo } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { oc } from 'ts-optchain';
 
-import { DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
+import { BIG_NUMBER_ZERO, DEFAULT_UNKOWN_ASSET_NAME } from '../constants';
 import { ColorOption } from '../style/theme';
 import { BaseCurrency } from '../types';
-import { buyQuoteUtil } from '../util/buy_quote';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
@@ -29,62 +29,6 @@ const BaseCurrencyChoice: React.StatelessComponent<BaseCurryChoiceProps> = props
     return <Text {...textStyle}>{props.currencyName}</Text>;
 };
 
-const grandTotalDisplayValue = (
-    displayPrimaryTotalCost?: React.ReactNode,
-    displaySecondaryTotalCost?: React.ReactNode,
-): React.ReactNode => {
-    if (!displayPrimaryTotalCost) {
-        return undefined;
-    }
-    const secondaryText = displaySecondaryTotalCost && (
-        <Container marginRight="3px" display="inline-block">
-            <Text fontColor={ColorOption.lightGrey}>({displaySecondaryTotalCost})</Text>
-        </Container>
-    );
-    return (
-        <React.Fragment>
-            {secondaryText}
-            <Text fontWeight={700} fontColor={ColorOption.grey}>
-                {displayPrimaryTotalCost}
-            </Text>
-        </React.Fragment>
-    );
-};
-
-const tokenAmountLabel = (displayPricePerToken?: React.ReactNode, assetName?: string, numTokens?: BigNumber) => {
-    // Display as 0 if we have a selected asset
-    const displayNumTokens =
-        assetName && assetName !== DEFAULT_UNKOWN_ASSET_NAME && _.isUndefined(numTokens) ? new BigNumber(0) : numTokens;
-
-    if (!_.isUndefined(displayNumTokens)) {
-        let numTokensWithSymbol = displayNumTokens.toString();
-
-        if (assetName) {
-            numTokensWithSymbol += ` ${assetName}`;
-        }
-
-        if (displayPricePerToken) {
-            numTokensWithSymbol += ` @ ${displayPricePerToken}`;
-        }
-        return numTokensWithSymbol;
-    }
-
-    return 'Token Amount';
-};
-
-const getDisplayAmount = (
-    baseCurrency: BaseCurrency,
-    weiAmount?: BigNumber,
-    ethUsdPrice?: BigNumber,
-): React.ReactNode => {
-    switch (baseCurrency) {
-        case BaseCurrency.USD:
-            return format.ethBaseUnitAmountInUsd(weiAmount, ethUsdPrice, 2, '');
-        case BaseCurrency.ETH:
-            return format.ethBaseUnitAmount(weiAmount, 4, '');
-    }
-};
-
 export interface OrderDetailsProps {
     buyQuoteInfo?: BuyQuoteInfo;
     selectedAssetUnitAmount?: BigNumber;
@@ -97,40 +41,105 @@ export interface OrderDetailsProps {
 }
 export class OrderDetails extends React.Component<OrderDetailsProps> {
     public render(): React.ReactNode {
-        const { baseCurrency, buyQuoteInfo, ethUsdPrice, selectedAssetUnitAmount } = this.props;
-
-        const weiAmounts = buyQuoteUtil.getWeiAmounts(selectedAssetUnitAmount, buyQuoteInfo);
-        const secondaryCurrency = baseCurrency === BaseCurrency.USD ? BaseCurrency.ETH : BaseCurrency.USD;
-        const grandTotalValue = grandTotalDisplayValue(
-            getDisplayAmount(baseCurrency, weiAmounts.grandTotalInWei, ethUsdPrice),
-            getDisplayAmount(secondaryCurrency, weiAmounts.grandTotalInWei, ethUsdPrice),
-        );
+        const { baseCurrency, buyQuoteInfo } = this.props;
 
         return (
             <Container width="100%" flexGrow={1} padding="20px 20px 0px 20px">
                 <Container marginBottom="10px">{this._renderHeader()}</Container>
+
                 <OrderDetailsRow
-                    isLoading={this.props.isLoading}
-                    labelText={tokenAmountLabel(
-                        getDisplayAmount(baseCurrency, weiAmounts.pricePerTokenInWei, ethUsdPrice),
-                        this.props.assetName,
-                        this.props.selectedAssetUnitAmount,
-                    )}
-                    value={getDisplayAmount(baseCurrency, weiAmounts.assetTotalInWei, ethUsdPrice)}
+                    labelText={this._assetLabelText()}
+                    primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.assetEthAmount)}
                 />
                 <OrderDetailsRow
-                    isLoading={this.props.isLoading}
                     labelText="Fee"
-                    value={getDisplayAmount(baseCurrency, weiAmounts.feeTotalInWei, ethUsdPrice)}
+                    primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.feeEthAmount)}
                 />
                 <OrderDetailsRow
-                    isLoading={this.props.isLoading}
+                    labelText="Total Cost"
                     isLabelBold={true}
-                    labelText={'Total Cost'}
-                    value={grandTotalValue}
+                    primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.totalEthAmount)}
+                    secondaryValue={this._totalCostSecondaryValue()}
                 />
             </Container>
         );
+    }
+
+    private _totalCostSecondaryValue(): React.ReactNode {
+        const secondaryCurrency = this.props.baseCurrency === BaseCurrency.USD ? BaseCurrency.ETH : BaseCurrency.USD;
+
+        const canDisplayCurrency =
+            secondaryCurrency === BaseCurrency.ETH ||
+            (secondaryCurrency === BaseCurrency.USD &&
+                this.props.ethUsdPrice &&
+                this.props.ethUsdPrice.greaterThan(BIG_NUMBER_ZERO));
+
+        if (this.props.buyQuoteInfo && canDisplayCurrency) {
+            return this._displayAmount(secondaryCurrency, this.props.buyQuoteInfo.totalEthAmount);
+        } else {
+            return undefined;
+        }
+    }
+
+    private _displayAmountOrPlaceholder(weiAmount?: BigNumber): React.ReactNode {
+        const { baseCurrency, ethUsdPrice, isLoading } = this.props;
+
+        if (_.isUndefined(weiAmount)) {
+            return (
+                <Container opacity={0.5}>
+                    <AmountPlaceholder color={ColorOption.lightGrey} isPulsating={isLoading} />
+                </Container>
+            );
+        }
+
+        return this._displayAmount(baseCurrency, weiAmount);
+    }
+
+    private _displayAmount(currency: BaseCurrency, weiAmount: BigNumber): React.ReactNode {
+        switch (currency) {
+            case BaseCurrency.USD:
+                return format.ethBaseUnitAmountInUsd(weiAmount, this.props.ethUsdPrice, 2, '');
+            case BaseCurrency.ETH:
+                return format.ethBaseUnitAmount(weiAmount, 4, '');
+        }
+    }
+
+    private _assetLabelText(): string {
+        const { assetName, baseCurrency, ethUsdPrice } = this.props;
+        const numTokens = this.props.selectedAssetUnitAmount;
+
+        // Display as 0 if we have a selected asset
+        const displayNumTokens =
+            assetName && assetName !== DEFAULT_UNKOWN_ASSET_NAME && _.isUndefined(numTokens)
+                ? new BigNumber(0)
+                : numTokens;
+
+        if (!_.isUndefined(displayNumTokens)) {
+            let numTokensWithSymbol = displayNumTokens.toString();
+
+            if (assetName) {
+                numTokensWithSymbol += ` ${assetName}`;
+            }
+
+            const pricePerTokenWei = this._pricePerTokenWei();
+            if (pricePerTokenWei) {
+                numTokensWithSymbol += ` @ ${this._displayAmount(baseCurrency, pricePerTokenWei)}`;
+            }
+            return numTokensWithSymbol;
+        }
+
+        return 'Token Amount';
+    }
+
+    private _pricePerTokenWei(): BigNumber | undefined {
+        const buyQuoteAccessor = oc(this.props.buyQuoteInfo);
+        const assetTotalInWei = buyQuoteAccessor.assetEthAmount();
+        const selectedAssetUnitAmount = this.props.selectedAssetUnitAmount;
+        return !_.isUndefined(assetTotalInWei) &&
+            !_.isUndefined(selectedAssetUnitAmount) &&
+            !selectedAssetUnitAmount.eq(BIG_NUMBER_ZERO)
+            ? assetTotalInWei.div(selectedAssetUnitAmount).ceil()
+            : undefined;
     }
 
     private _renderHeader(): React.ReactNode {
@@ -169,27 +178,42 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
 export interface OrderDetailsRowProps {
     labelText: string;
     isLabelBold?: boolean;
-    isLoading: boolean;
-    value?: React.ReactNode;
+    isPrimaryValueBold?: boolean;
+    primaryValue: React.ReactNode;
+    secondaryValue?: React.ReactNode;
 }
 export class OrderDetailsRow extends React.Component<OrderDetailsRowProps, {}> {
     public render(): React.ReactNode {
-        const { labelText, value, isLabelBold, isLoading } = this.props;
         return (
             <Container padding="10px 0px" borderTop="1px dashed" borderColor={ColorOption.feintGrey}>
                 <Flex justify="space-between">
-                    <Text fontWeight={isLabelBold ? 700 : 400} fontColor={ColorOption.grey}>
-                        {labelText}
-                    </Text>
-                    <Container>
-                        {value || (
-                            <Container opacity={0.5}>
-                                <AmountPlaceholder color={ColorOption.lightGrey} isPulsating={isLoading} />
-                            </Container>
-                        )}
-                    </Container>
+                    {this._renderLabel()}
+                    <Container>{this._renderValues()}</Container>
                 </Flex>
             </Container>
+        );
+    }
+
+    private _renderLabel(): React.ReactNode {
+        return (
+            <Text fontWeight={this.props.isLabelBold ? 700 : 400} fontColor={ColorOption.grey}>
+                {this.props.labelText}
+            </Text>
+        );
+    }
+
+    private _renderValues(): React.ReactNode {
+        const secondaryValueNode: React.ReactNode = this.props.secondaryValue && (
+            <Container marginRight="3px" display="inline-block">
+                <Text fontColor={ColorOption.lightGrey}>({this.props.secondaryValue})</Text>
+            </Container>
+        );
+
+        return (
+            <React.Fragment>
+                {secondaryValueNode}
+                <Text fontWeight={this.props.isPrimaryValueBold ? 700 : 400}>{this.props.primaryValue}</Text>
+            </React.Fragment>
         );
     }
 }
