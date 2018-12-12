@@ -10,6 +10,7 @@ import { BaseCurrency } from '../types';
 import { format } from '../util/format';
 
 import { AmountPlaceholder } from './amount_placeholder';
+import { SectionHeader } from './section_header';
 
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
@@ -157,10 +158,12 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
             choice === BaseCurrency.ETH ? this.props.onBaseCurrencySwitchEth : this.props.onBaseCurrencySwitchUsd;
         const isSelected = this.props.baseCurrency === choice;
 
-        const textStyle: TextProps = { onClick, fontSize: '12px ' };
+        const textStyle: TextProps = { onClick, fontSize: '12px' };
         if (isSelected) {
             textStyle.fontColor = ColorOption.primaryColor;
             textStyle.fontWeight = 700;
+        } else {
+            textStyle.fontColor = ColorOption.lightGrey;
         }
         return <Text {...textStyle}>{choice}</Text>;
     }
@@ -168,19 +171,13 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
     private _renderHeader(): React.ReactNode {
         return (
             <Flex justify="space-between">
-                <Text
-                    letterSpacing="1px"
-                    fontColor={ColorOption.primaryColor}
-                    fontWeight={600}
-                    textTransform="uppercase"
-                    fontSize="14px"
-                >
-                    Order Details
-                </Text>
+                <SectionHeader>Order Details</SectionHeader>
                 <Container>
                     {this._baseCurrencyChoice(BaseCurrency.ETH)}
-                    <Container marginLeft="3px" marginRight="3px" display="inline">
-                        <Text fontSize="12px">/</Text>
+                    <Container marginLeft="5px" marginRight="5px" display="inline">
+                        <Text fontSize="12px" fontColor={ColorOption.feintGrey}>
+                            /
+                        </Text>
                     </Container>
                     {this._baseCurrencyChoice(BaseCurrency.USD)}
                 </Container>
