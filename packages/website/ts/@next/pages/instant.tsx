@@ -71,9 +71,9 @@ export const Next0xInstant = () => (
         <Section isFullWidth={true} isPadded={false} padding="30px 0">
           <MarqueeWrap>
               <div>
-                  <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
-                  <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
-                  <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
+                  {[...Array(20)].map((item, index) => (
+                    <Card index={index} />
+                  ))}
               </div>
           </MarqueeWrap>
         </Section>
@@ -110,17 +110,31 @@ export const Next0xInstant = () => (
     </SiteWrap>
 );
 
+// scroll calc for infinite is (width * total / 2) + padding
 const scroll = keyframes`
     0% { transform: translate3d(0, 0, 0) }
-    100% { transform: translate3d(-1715.18px, 0, 0) }
+    100% { transform: translate3d(-2615px, 0, 0) }
 `;
+
+const fadeUp = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+`;
+
+// width = (260 * 20) - (15 * 19)
 const MarqueeWrap = styled.div`
     width: 100vw;
     height: 380px;
     padding-bottom: 60px;
 
     > div {
-        width: 5145.54px;
+        width: 5485px;
         height: 380px;
         display: flex;
         animation: ${scroll} 20s linear infinite;
@@ -130,4 +144,19 @@ const MarqueeWrap = styled.div`
             height: 380px;
         }
     }
+`;
+
+const Card = styled.div`
+  width: 260px;
+  height: 370px;
+  background: #555;
+  border-radius: 5px;
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: ${fadeUp} 0.5s ${props => `${props.index * 0.05}s`} forwards;
+
+  & + & {
+    margin-left: 15px;
+  }
 `;
