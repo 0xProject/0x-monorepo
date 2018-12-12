@@ -24,7 +24,7 @@ const CONFIGURATOR_HASH = 'configure';
 const featuresData = [
     {
         title: 'Support ERC-20 and ERC-721 tokens',
-        icon: 'coin',
+        icon: 'supportForAllEthereumStandards-large',
         description: 'Seamlessly integrate token purchasing into your product experience by offering digital assets ranging from in-game items to stablecoins.',
         links: [
             {
@@ -39,7 +39,7 @@ const featuresData = [
     },
     {
         title: 'Generate revenue for your business',
-        icon: 'coin',
+        icon: 'generateRevenueForYourBusiness-large',
         description: 'With just a few lines of code, you can earn up to 5% in affiliate fees on every transaction from your crypto wallet or dApp.',
         links: [
             {
@@ -50,7 +50,7 @@ const featuresData = [
     },
     {
         title: 'Easy and flexible integration',
-        icon: 'coin',
+        icon: 'flexibleIntegration0xInstant',
         description: 'Use our out-of-the-box design or customize the user interface by integrating the AssetBuyer engine. You can also tap into 0x networked liquidity or choose your own liquidity pool.',
         links: [
             {
