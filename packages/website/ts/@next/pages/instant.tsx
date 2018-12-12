@@ -68,7 +68,7 @@ export const Next0xInstant = () => (
             actions={<Button href="#">Get Started</Button>}
         />
 
-        <Section isFullWidth={true} isPadded={false}>
+        <Section isFullWidth={true} isPadded={false} padding="30px 0">
           <MarqueeWrap>
               <div>
                   <img src="/images/@next/0x-instant/0x-instant-widgets@2x.png" alt="Preview of payment widgets"/>
