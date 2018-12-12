@@ -70,7 +70,7 @@ const SectionBase = styled.section`
 `;
 
 const Wrap = styled(FlexWrap)`
-    width: calc(100% - 60px);
+    width: ${props => !props.isFullWidth && 'calc(100% - 60px)'};
     max-width: ${props => !props.isFullWidth && (props.maxWidth || '895px')};
     margin: 0 auto;
     text-align: ${props => props.isTextCentered && 'center'};

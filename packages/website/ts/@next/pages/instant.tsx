@@ -10,13 +10,13 @@ import {Hero} from 'ts/@next/components/hero';
 import {Banner} from 'ts/@next/components/banner';
 import {Button, ButtonWrap, Link} from 'ts/@next/components/button';
 import {Icon} from 'ts/@next/components/Icon';
-import {Column, Section, Wrap, WrapCentered} from 'ts/@next/components/layout';
+import {Column, Wrap, WrapCentered} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 
 import {Definition} from 'ts/@next/components/Definition';
 
-import {Section as NewSection} from 'ts/@next/components/newLayout';
+import {Section} from 'ts/@next/components/newLayout';
 // import { Configurator } from 'ts/pages/instant/configurator';
 
 import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
@@ -77,7 +77,7 @@ export const Next0xInstant = () => (
             actions={<Button href="#">Get Started</Button>}
         />
 
-        <Section isFullWidth={true} isNoPadding={true}>
+        <Section>
             <Wrap width="full">
                 <MarqueeWrap>
                     <div>
@@ -89,7 +89,7 @@ export const Next0xInstant = () => (
             </Wrap>
         </Section>
 
-        <NewSection>
+        <Section>
             {_.map(featuresData, (item, index) => (
                 <Definition
                     icon={item.icon}
@@ -100,10 +100,11 @@ export const Next0xInstant = () => (
                     actions={item.links}
                 />
             ))}
-        </NewSection>
+        </Section>
 
         <Section bgColor={colors.backgroundDark}>
             <Wrap>
+                Configurator goes here
                 {/* <Configurator hash={CONFIGURATOR_HASH} /> */}
             </Wrap>
         </Section>
