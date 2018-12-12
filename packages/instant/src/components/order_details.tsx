@@ -85,9 +85,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
 
         const canDisplayCurrency =
             secondaryCurrency === BaseCurrency.ETH ||
-            (secondaryCurrency === BaseCurrency.USD &&
-                this.props.ethUsdPrice &&
-                this.props.ethUsdPrice.greaterThan(BIG_NUMBER_ZERO));
+            (secondaryCurrency === BaseCurrency.USD && this.props.ethUsdPrice && !this._hadErrorFetchingUsdPrice);
 
         if (this.props.buyQuoteInfo && canDisplayCurrency) {
             return this._displayAmount(secondaryCurrency, this.props.buyQuoteInfo.totalEthAmount);
