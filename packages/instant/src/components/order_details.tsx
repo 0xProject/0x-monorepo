@@ -15,20 +15,6 @@ import { Container } from './ui/container';
 import { Flex } from './ui/flex';
 import { Text, TextProps } from './ui/text';
 
-interface BaseCurryChoiceProps {
-    currencyName: string;
-    onClick: () => void;
-    isSelected: boolean;
-}
-const BaseCurrencyChoice: React.StatelessComponent<BaseCurryChoiceProps> = props => {
-    const textStyle: TextProps = { onClick: props.onClick, fontSize: '12px' };
-    if (props.isSelected) {
-        textStyle.fontColor = ColorOption.primaryColor;
-        textStyle.fontWeight = 700;
-    }
-    return <Text {...textStyle}>{props.currencyName}</Text>;
-};
-
 export interface OrderDetailsProps {
     buyQuoteInfo?: BuyQuoteInfo;
     selectedAssetUnitAmount?: BigNumber;
@@ -41,7 +27,7 @@ export interface OrderDetailsProps {
 }
 export class OrderDetails extends React.Component<OrderDetailsProps> {
     public render(): React.ReactNode {
-        const { baseCurrency, buyQuoteInfo } = this.props;
+        const { buyQuoteInfo } = this.props;
 
         return (
             <Container width="100%" flexGrow={1} padding="20px 20px 0px 20px">
@@ -82,7 +68,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
     }
 
     private _displayAmountOrPlaceholder(weiAmount?: BigNumber): React.ReactNode {
-        const { baseCurrency, ethUsdPrice, isLoading } = this.props;
+        const { baseCurrency, isLoading } = this.props;
 
         if (_.isUndefined(weiAmount)) {
             return (
@@ -105,7 +91,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
     }
 
     private _assetLabelText(): string {
-        const { assetName, baseCurrency, ethUsdPrice } = this.props;
+        const { assetName, baseCurrency } = this.props;
         const numTokens = this.props.selectedAssetUnitAmount;
 
         // Display as 0 if we have a selected asset
@@ -142,6 +128,20 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
             : undefined;
     }
 
+    private _baseCurrencyChoice(choice: BaseCurrency): React.ReactNode {
+        const onClick =
+            choice === BaseCurrency.ETH ? this.props.onBaseCurrencySwitchEth : this.props.onBaseCurrencySwitchUsd;
+        const isSelected = this.props.baseCurrency === choice;
+
+        const textStyle: TextProps = { onClick, fontSize: '12px ' };
+        if (isSelected) {
+            textStyle.fontColor = ColorOption.primaryColor;
+            textStyle.fontWeight = 700;
+        }
+
+        return <Text {...textStyle}>{choice}</Text>;
+    }
+
     private _renderHeader(): React.ReactNode {
         return (
             <Flex justify="space-between">
@@ -156,19 +156,11 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                 </Text>
 
                 <Container>
-                    <BaseCurrencyChoice
-                        onClick={this.props.onBaseCurrencySwitchEth}
-                        currencyName="ETH"
-                        isSelected={this.props.baseCurrency === BaseCurrency.ETH}
-                    />
+                    {this._baseCurrencyChoice(BaseCurrency.ETH)}
                     <Container marginLeft="3px" marginRight="3px" display="inline">
                         <Text fontSize="12px">/</Text>
                     </Container>
-                    <BaseCurrencyChoice
-                        onClick={this.props.onBaseCurrencySwitchUsd}
-                        currencyName="USD"
-                        isSelected={this.props.baseCurrency === BaseCurrency.USD}
-                    />
+                    {this._baseCurrencyChoice(BaseCurrency.USD)}
                 </Container>
             </Flex>
         );
