@@ -75,7 +75,7 @@ const useCaseSlides = [
         description: 'Efficient lending requires liquid markets where investors can buy and re-sell loans. 0x enables an ecosystem of lenders to self-organize and efficiently determine market prices for all outstanding loans.',
     },
 ];
-//
+
 export class NextWhy extends React.PureComponent {
     public render(): React.ReactNode {
         return (
