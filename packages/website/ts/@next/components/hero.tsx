@@ -1,6 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import {fadeIn} from 'ts/@next/constants/animations';
+
 interface Props {
     title: string;
     description: string;
@@ -67,6 +69,9 @@ const Title = styled.h1`
     font-weight: 300;
     line-height: 1.1;
     margin-bottom: 30px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: ${fadeIn} 0.5s forwards;
 
     @media (max-width: 1024px) {
         font-size: 60px;
@@ -83,6 +88,9 @@ const Description = styled.p`
     padding: 0;
     margin-bottom: 30px;
     opacity: 0.75;
+    opacity: 0;
+    transform: translateY(0);
+    animation: ${fadeIn} 0.5s 0.15s forwards;
 `;
 
 const Content = styled.div`
@@ -97,7 +105,19 @@ const ButtonWrap = styled.div`
     display: inline-flex;
     align-items: center;
 
+    > * {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
     * + * {
         margin-left: 12px;
+    }
+
+    > *:nth-child(1) {
+        animation: ${fadeIn} 0.6s 0.3s forwards;
+    }
+    > *:nth-child(2) {
+        animation: ${fadeIn} 0.6s 0.4s forwards;
     }
 `;
