@@ -27,7 +27,7 @@ let connection: Connection;
     logUtils.log(`Got ${markets.length} markets.`);
     for (const marketsChunk of R.splitEvery(MARKET_ORDERBOOK_REQUEST_BATCH_SIZE, markets)) {
         await Promise.all(
-            marketsChunk.map(async (market: OasisMarket) => getAndSaveMarketOrderbook(oasisSource, market)),
+            marketsChunk.map(async (market: OasisMarket) => getAndSaveMarketOrderbookAsync(oasisSource, market)),
         );
         await new Promise<void>(resolve => setTimeout(resolve, MILLISEC_MARKET_ORDERBOOK_REQUEST_DELAY));
     }
@@ -40,7 +40,7 @@ let connection: Connection;
  * @param oasisSource Data source which can query Oasis API.
  * @param marketId String identifying market we want data for. eg. 'REPAUG'.
  */
-async function getAndSaveMarketOrderbook(oasisSource: OasisSource, market: OasisMarket): Promise<void> {
+async function getAndSaveMarketOrderbookAsync(oasisSource: OasisSource, market: OasisMarket): Promise<void> {
     logUtils.log(`${market.id}: Retrieving orderbook.`);
     const orderBook = await oasisSource.getMarketOrderbookAsync(market.id);
     const observedTimestamp = Date.now();

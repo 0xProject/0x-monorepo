@@ -29,7 +29,7 @@ let connection: Connection;
     const tokenInfoResponse = await paradexSource.getTokenInfoAsync();
     const extendedMarkets = addTokenAddresses(markets, tokenInfoResponse);
     await Promise.all(
-        extendedMarkets.map(async (market: ParadexMarket) => getAndSaveMarketOrderbook(paradexSource, market)),
+        extendedMarkets.map(async (market: ParadexMarket) => getAndSaveMarketOrderbookAsync(paradexSource, market)),
     );
     process.exit(0);
 })().catch(handleError);
@@ -70,7 +70,7 @@ function addTokenAddresses(
  * @param paradexSource Data source which can query the Paradex API.
  * @param market Object from the Paradex API with information about the market in question.
  */
-async function getAndSaveMarketOrderbook(paradexSource: ParadexSource, market: ParadexMarket): Promise<void> {
+async function getAndSaveMarketOrderbookAsync(paradexSource: ParadexSource, market: ParadexMarket): Promise<void> {
     const paradexOrderbookResponse = await paradexSource.getMarketOrderbookAsync(market.symbol);
     const observedTimestamp = Date.now();
 
