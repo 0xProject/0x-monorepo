@@ -111,11 +111,15 @@ const LinkList = (props: LinkListProps) => (
 const FooterSection = styled.footer`
     padding: 40px 30px 30px 30px;
     margin-top: 30px;
-    background-color: #181818;
+    background-color: ${props => props.theme.footerBg};
 `;
 
 const FooterWrap = styled(FooterSection)`
-    color: ${colors.white};
+    color: ${props => props.theme.footerColor};
+
+    path {
+        fill: ${props => props.theme.footerColor};
+    }
 
     @media (min-width: ${BREAKPOINTS.mobile}) {
         height: 350px;
@@ -140,10 +144,11 @@ const FooterSectionWrap = styled(FooterColumn)`
 `;
 
 const RowHeading = styled.h3`
-    color: ${colors.white};
+    color: inherit;
     font-weight: 700;
     font-size: 16px;
     margin-bottom: 1.25em;
+    opacity: 0.75;
 `;
 
 const List = styled.ul`
@@ -153,7 +158,8 @@ const List = styled.ul`
 `;
 
 const Link = styled(ReactRouterLink)`
-    color: rgba(255, 255, 255, 0.5);
+    color: inherit;
+    opacity: 0.5;
     display: block;
     font-size: 16px;
     line-height: 20px;
