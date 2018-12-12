@@ -1,23 +1,23 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-interface WrapProps {
+interface FlexProps {
+    padding?: string;
+    isFlex?: boolean;
+}
+
+interface WrapProps extends FlexProps {
     isFullWidth?: boolean;
     isTextCentered?: boolean;
 }
 
-interface SectionProps {
+interface SectionProps extends WrapProps {
     isPadded?: boolean;
     isFullWidth?: boolean;
     isFlex?: boolean;
     flexBreakpoint?: string;
     maxWidth?: string;
     bgColor?: 'dark' | 'light' | string;
-}
-
-interface FlexProps {
-    padding?: string;
-    isFlex?: boolean;
 }
 
 interface ColumnProps {
