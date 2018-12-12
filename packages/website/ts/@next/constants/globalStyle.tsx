@@ -70,10 +70,10 @@ const GlobalStyles = withTheme(createGlobalStyle<GlobalStyle> `
             --largeHeadingHeight: 1.108695652em; // TO DO
             --smallParagraph: 14px; // TO DO
             --defaultParagraph: 16px; // TO DO
-            --mediumParagraph: 16px; // TO DO
-            --largeParagraph: 18px; // TO DO
+            --mediumParagraph: 20px; // TO DO
+            --largeParagraph: 20px; // TO DO
             --smallIcon: 55px;
-            --mediumIcon: 55px;
+            --mediumIcon: 85px;
             --largeIcon: 115px;
         }
     }

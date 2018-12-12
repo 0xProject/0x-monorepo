@@ -152,7 +152,7 @@ export const Column = styled.div<ColumnProps>`
     }
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
-        padding: ${props => !props.isNoPadding && (props.isPadLarge ? '40px 30px' : '15px')};
+        padding: ${props => !props.isNoPadding && (props.isPadLarge ? '40px 30px' : 0)};
         margin-bottom: 20px;
         text-align: ${props => props.isMobileCentered && 'center'};
     }

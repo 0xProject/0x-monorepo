@@ -5,6 +5,8 @@ import LazyLoad from 'react-lazyload';
 
 import {colors} from 'ts/style/colors';
 
+import {Hero} from 'ts/@next/components/hero';
+
 import {Banner} from 'ts/@next/components/banner';
 import {Button, ButtonWrap, Link} from 'ts/@next/components/button';
 import {Icon} from 'ts/@next/components/Icon';
@@ -12,6 +14,9 @@ import {Column, Section, Wrap, WrapCentered} from 'ts/@next/components/layout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 
+import {Definition} from 'ts/@next/components/Definition';
+
+import {Section as NewSection} from 'ts/@next/components/newLayout';
 // import { Configurator } from 'ts/pages/instant/configurator';
 
 import LogoOutlined from 'ts/@next/icons/illustrations/logo-outlined.svg';
@@ -66,16 +71,11 @@ const featuresData = [
 
 export const Next0xInstant = () => (
     <SiteWrap>
-        <Section isPadLarge={true}>
-            <WrapCentered>
-                <Heading size="medium" isCentered={true}>Introducing 0x Instant</Heading>
-                <Paragraph size="medium" isCentered={true}>
-                    A free and flexible way to offer simple<br />
-                    crypto purchasing in any app or website
-                </Paragraph>
-                <Button href="#">Get Started</Button>
-            </WrapCentered>
-        </Section>
+        <Hero
+            title="Introducing 0x Instant"
+            description="A free and flexible way to offer simple crypto purchasing in any app or website"
+            actions={<Button href="#">Get Started</Button>}
+        />
 
         <Section isFullWidth={true} isNoPadding={true}>
             <Wrap width="full">
@@ -89,40 +89,17 @@ export const Next0xInstant = () => (
             </Wrap>
         </Section>
 
-        <Section>
-            <Wrap width="narrow">
-                {_.map(featuresData, (item, index) => (
-                    <Wrap padding={['large', 0, 'large', 0]}>
-                        <Column colWidth="1/3">
-                            <Icon name={item.icon} size={240} />
-                        </Column>
-
-                        <Column colWidth="2/3">
-                            <Heading>
-                                {item.title}
-                            </Heading>
-                            <Paragraph size="medium" isMuted={true}>
-                                {item.description}
-                            </Paragraph>
-
-                            <ButtonWrap>
-                                {_.map(item.links, (link, i) => (
-                                    <Link
-                                        href={link.url}
-                                        key={`link-${i}`}
-                                        isTransparent={true}
-                                        isAccentColor={true}
-                                        isWithArrow={true}
-                                    >
-                                        {link.label}
-                                    </Link>
-                                ))}
-                            </ButtonWrap>
-                        </Column>
-                    </Wrap>
-                ))}
-            </Wrap>
-        </Section>
+        <NewSection>
+            {_.map(featuresData, (item, index) => (
+                <Definition
+                    title={item.title}
+                    description={item.description}
+                    isInlineIcon={true}
+                    iconSize={240}
+                    actions={item.links}
+                />
+            ))}
+        </NewSection>
 
         <Section bgColor={colors.backgroundDark}>
             <Wrap>

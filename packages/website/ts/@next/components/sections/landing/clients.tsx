@@ -1,8 +1,10 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
-import {BREAKPOINTS, Section, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
+import {BREAKPOINTS, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
 import {Heading, Paragraph} from 'ts/@next/components/text';
+
+import {Section} from 'ts/@next/components/newLayout';
 
 interface ProjectLogo {
     name: string;
@@ -59,7 +61,7 @@ const projects: ProjectLogo[] = [
 ];
 
 export const SectionLandingClients = () => (
-    <Section isPadLarge={true}>
+    <Section>
         <WrapCentered>
             <Heading size="small">
                 Join the growing number of projects developing on 0x

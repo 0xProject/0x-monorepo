@@ -19,7 +19,7 @@ export const SectionLandingCta = () => (
                         margin={[0, 0, 'default', 0]}
                     />
 
-                    <Paragraph size="medium" color="#00AE99">
+                    <Paragraph size="medium" color="#00AE99" marginBottom="15px">
                         Ready to build on 0x?
                     </Paragraph>
 
@@ -45,7 +45,7 @@ export const SectionLandingCta = () => (
                         margin={[0, 0, 'default', 0]}
                     />
 
-                    <Paragraph size="medium" color="#00AE99">
+                    <Paragraph size="medium" color="#00AE99" marginBottom="15px">
                         Want help from the 0x team?
                     </Paragraph>
 

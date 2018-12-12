@@ -26,6 +26,8 @@ export interface ThemeInterface {
 const GLOBAL_THEMES: ThemeInterface = {
     dark: {
         bgColor: '#000000',
+        darkBgColor: '#111A19',
+        lightBgColor: '#003831',
         textColor: '#FFFFFF',
         linkColor: colors.brandLight,
         dropdownBg: '#111A19',
