@@ -11,6 +11,15 @@ interface WrapProps extends FlexProps {
     isTextCentered?: boolean;
 }
 
+interface WrapGridProps {
+    isWrapped?: boolean;
+    isCentered?: boolean;
+}
+
+export interface WrapStickyProps {
+    offsetTop?: string;
+}
+
 interface SectionProps extends WrapProps {
     isPadded?: boolean;
     isFullWidth?: boolean;
@@ -21,6 +30,8 @@ interface SectionProps extends WrapProps {
 }
 
 interface ColumnProps {
+    width?: string;
+    maxWidth?: string;
     padding?: string;
 }
 
@@ -34,7 +45,7 @@ export const Section = (props: SectionProps) => {
     );
 };
 
-export const Column = styled.div`
+export const Column = styled.div<ColumnProps>`
     width: ${props => props.width};
     max-width: ${props => props.maxWidth};
     padding: ${props => props.padding};
@@ -45,7 +56,7 @@ export const Column = styled.div`
     }
 `;
 
-export const FlexWrap = styled.div`
+export const FlexWrap = styled.div<SectionProps>`
     padding: ${props => props.padding};
 
     @media (min-width: ${props => props.flexBreakpoint || '768px'}) {
@@ -54,12 +65,12 @@ export const FlexWrap = styled.div`
     }
 `;
 
-export const WrapSticky = styled.div`
+export const WrapSticky = styled.div<WrapStickyProps>`
     position: sticky;
     top: ${props => props.offsetTop || '60px'};
 `;
 
-const SectionBase = styled.section`
+const SectionBase = styled.section<SectionProps>`
     margin: 0 auto;
     padding: ${props => props.isPadded && '120px 0'};
     background-color: ${props => props.theme[`${props.bgColor}BgColor`] || props.bgColor};
@@ -69,14 +80,14 @@ const SectionBase = styled.section`
     }
 `;
 
-const Wrap = styled(FlexWrap)`
+const Wrap = styled(FlexWrap)<WrapProps>`
     width: ${props => !props.isFullWidth && 'calc(100% - 60px)'};
     max-width: ${props => !props.isFullWidth && (props.maxWidth || '895px')};
     margin: 0 auto;
     text-align: ${props => props.isTextCentered && 'center'};
 `;
 
-export const WrapGrid = styled(Wrap)`
+export const WrapGrid = styled(Wrap)<WrapGridProps>`
     display: flex;
     flex-wrap: ${props => props.isWrapped && `wrap`};
     justify-content: ${props => props.isCentered ? `center` : 'space-between'};
