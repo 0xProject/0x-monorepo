@@ -27,11 +27,11 @@ export interface OrderDetailsProps {
 }
 export class OrderDetails extends React.Component<OrderDetailsProps> {
     public render(): React.ReactNode {
-        const showUsdError = this.props.baseCurrency === BaseCurrency.USD && this._hadErrorFetchingUsdPrice();
+        const shouldShowUsdError = this.props.baseCurrency === BaseCurrency.USD && this._hadErrorFetchingUsdPrice();
         return (
             <Container width="100%" flexGrow={1} padding="20px 20px 0px 20px">
                 <Container marginBottom="10px">{this._renderHeader()}</Container>
-                {showUsdError ? this._renderErrorFetchingUsdPrice() : this._renderRows()}
+                {shouldShowUsdError ? this._renderErrorFetchingUsdPrice() : this._renderRows()}
             </Container>
         );
     }
@@ -119,8 +119,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
     }
 
     private _assetAmountLabel(): string {
-        const { assetName, baseCurrency, ethUsdPrice } = this.props;
-
+        const { assetName, baseCurrency } = this.props;
         const numTokens = this.props.selectedAssetUnitAmount;
 
         // Display as 0 if we have a selected asset
