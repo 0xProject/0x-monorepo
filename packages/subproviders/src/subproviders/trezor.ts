@@ -1,3 +1,10 @@
+/**
+ * NOTE:: trezor-connect module currently runs in browser only https://github.com/trezor/connect/issues/248
+ * which breaks mocha/chai unit tests. Importing jsdom-global here injects DOM API into testing environment.
+ * https://github.com/rstacruz/jsdom-global
+ */
+import 'jsdom-global/register';
+
 import { assert } from '@0x/assert';
 import { addressUtils } from '@0x/utils';
 import EthereumTx = require('ethereumjs-tx');
@@ -21,6 +28,8 @@ const PRIVATE_KEY_PATH = `m/44'/60'/0'`;
 export class TrezorSubprovider extends BaseWalletSubprovider {
     private readonly _publicKeyPath: string;
     private _cachedAccounts: string[];
+    // NOTE:: trezor-connect module currently runs in browser only https://github.com/trezor/connect/issues/248
+    private _runningInBrowser: boolean;
     /**
      * Instantiates a TrezorSubprovider. Defaults to private key path set to `44'/60'/0'`.
      * @return TrezorSubprovider instance
@@ -29,6 +38,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         super();
         this._publicKeyPath = PRIVATE_KEY_PATH;
         this._cachedAccounts = [];
+        this._runningInBrowser = typeof window === 'undefined' ? false : true;
     }
     /**
      * Retrieve a users Trezor account. The accounts are private key path derived, This method
@@ -37,12 +47,14 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
      * @return An array of accounts
      */
     public async getAccountsAsync(): Promise<string[]> {
+        if (!this._runningInBrowser) {
+            throw new Error(WalletSubproviderErrors.MustRunInBrowser);
+        }
         if (this._cachedAccounts.length) {
             return this._cachedAccounts;
         }
-
         const accounts: string[] = [];
-        const response: TrezorConnectResponse = TrezorConnect.ethereumGetAddress({ path: this._publicKeyPath, showOnTrezor: true  });
+        const response: TrezorConnectResponse =  TrezorConnect.ethereumGetAddress({ path: this._publicKeyPath, showOnTrezor: true  });
 
         if (response.success) {
             const payload: TrezorGetAddressResponsePayload  = response.payload;
@@ -66,6 +78,9 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
     public async signTransactionAsync(txData: PartialTxParams): Promise<string> {
         if (_.isUndefined(txData.from) || !addressUtils.isAddress(txData.from)) {
             throw new Error(WalletSubproviderErrors.FromAddressMissingOrInvalid);
+        }
+        if (!this._runningInBrowser) {
+            throw new Error(WalletSubproviderErrors.MustRunInBrowser);
         }
         txData.value = txData.value ? txData.value : '0x0';
         txData.data = txData.data ? txData.data : '0x';
@@ -123,6 +138,9 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
         if (_.isUndefined(data)) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
+        }
+        if (!this._runningInBrowser) {
+            throw new Error(WalletSubproviderErrors.MustRunInBrowser);
         }
         assert.isHexString('data', data);
         assert.isETHAddressHex('address', address);
