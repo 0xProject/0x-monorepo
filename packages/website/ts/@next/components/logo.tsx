@@ -16,7 +16,7 @@ const StyledLogo = styled.div`
     text-align: left;
     position: relative;
 
-    @media (max-width: 768px) {
+    @media (max-width: 800px) {
         z-index: 2;
 
         svg {

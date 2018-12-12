@@ -157,14 +157,14 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
 export const Header = withTheme(HeaderBase);
 
 const StyledHeader = styled(Section.withComponent('header'))<HeaderProps>`
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 800px) {
         min-height: ${props => props.isOpen ? '385px' : '70px'};
         overflow: hidden;
         position: relative;
         transition: min-height 0.25s ease-in-out;
     }
 
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 800px) {
         background-color: ${props => props.theme.bgColor};
     }
 `;
@@ -184,7 +184,7 @@ const HeaderWrap = styled(Wrap)`
   justify-content: space-between;
   align-items: center;
 
-  @media (max-width: 768px) {
+  @media (max-width: 800px) {
       padding-top: 0;
       display: flex;
       padding-bottom: 0;
@@ -196,7 +196,7 @@ const StyledButtonWrap = styled.div`
     align-items: center;
     justify-content: space-between;
 
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 800px) {
         background-color: #022924;
         display: flex;
         flex-wrap: wrap;
@@ -216,7 +216,7 @@ const StyledButtonWrap = styled.div`
 const MobileProductLinksWrap = styled(StyledButtonWrap)`
     display: none;
 
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 800px) {
         display: block;
         background-color: transparent;
         flex-direction: column;
@@ -235,7 +235,7 @@ const LinkWrap = styled.div`
         display: block;
     }
 
-    @media (min-width: ${BREAKPOINTS.mobile}) {
+    @media (min-width: 800px) {
         &:hover > div {
             display: block;
             visibility: visible;
@@ -291,7 +291,7 @@ const DropdownWrap = styled.div<DropdownWrapInterface>`
 `;
 
 const Nav = styled.div`
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 800px) {
         background-color: ${colors.brandDark};
         position: absolute;
         top: 0;
@@ -304,7 +304,7 @@ const Nav = styled.div`
 const TradeButton = styled(Button)`
     padding: 14px 22px;
 
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 928px) {
         display: none;
     }
 `;

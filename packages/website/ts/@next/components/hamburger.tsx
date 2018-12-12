@@ -27,7 +27,7 @@ const StyledHamburger = styled.button<Props>`
     outline: none;
     user-select: none;
 
-    @media (min-width: 768px) {
+    @media (min-width: 800px) {
         display: none;
     }
 
