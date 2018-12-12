@@ -4,6 +4,7 @@ import styled from 'styled-components';
 interface WrapProps {
     offsetTop?: string;
     maxWidth?: string;
+    wrapWidth?: string;
     isFullWidth?: boolean;
     isTextCentered?: boolean;
     isCentered?: boolean;
@@ -94,6 +95,7 @@ const SectionBase = styled.section<SectionProps>`
 `;
 
 const Wrap = styled(FlexWrap)<WrapProps>`
+    width: ${props => props.wrapWidth || 'calc(100% - 60px)'};
     max-width: ${props => !props.isFullWidth && (props.maxWidth || '895px')};
     text-align: ${props => props.isTextCentered && 'center'};
     margin: 0 auto;
