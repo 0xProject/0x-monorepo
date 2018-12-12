@@ -92,6 +92,7 @@ export const Next0xInstant = () => (
         <NewSection>
             {_.map(featuresData, (item, index) => (
                 <Definition
+                    icon={item.icon}
                     title={item.title}
                     description={item.description}
                     isInlineIcon={true}
