@@ -28,6 +28,49 @@ const BaseCurrencySelector: React.StatelessComponent<BaseCurrenySwitchProps> = p
     return <Text {...textStyle}>{props.currencyName}</Text>;
 };
 
+const grandTotalDisplayValue = (
+    displayPrimaryTotalCost?: React.ReactNode,
+    displaySecondaryTotalCost?: React.ReactNode,
+): React.ReactNode => {
+    if (!displayPrimaryTotalCost) {
+        return undefined;
+    }
+    const secondaryText = displaySecondaryTotalCost && (
+        <Container marginRight="3px" display="inline-block">
+            <Text fontColor={ColorOption.lightGrey}>({displaySecondaryTotalCost})</Text>
+        </Container>
+    );
+    return (
+        <React.Fragment>
+            {secondaryText}
+            <Text fontWeight={700} fontColor={ColorOption.grey}>
+                {displayPrimaryTotalCost}
+            </Text>
+        </React.Fragment>
+    );
+};
+
+const tokenAmountLabel = (displayPricePerToken?: React.ReactNode, assetName?: string, numTokens?: BigNumber) => {
+    // Display as 0 if we have a selected asset
+    const displayNumTokens =
+        assetName && assetName !== DEFAULT_UNKOWN_ASSET_NAME && _.isUndefined(numTokens) ? new BigNumber(0) : numTokens;
+
+    if (!_.isUndefined(displayNumTokens)) {
+        let numTokensWithSymbol = displayNumTokens.toString();
+
+        if (assetName) {
+            numTokensWithSymbol += ` ${assetName}`;
+        }
+
+        if (displayPricePerToken) {
+            numTokensWithSymbol += ` @ ${displayPricePerToken}`;
+        }
+        return numTokensWithSymbol;
+    }
+
+    return 'Token Amount';
+};
+
 export interface OrderDetailsProps {
     buyQuoteInfo?: BuyQuoteInfo;
     selectedAssetUnitAmount?: BigNumber;
@@ -79,18 +122,21 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                         </Container>
                     </Flex>
                 </Container>
-                <TokenAmountRow
-                    numTokens={selectedAssetUnitAmount}
-                    assetName={this.props.assetName}
-                    displayPricePerToken={displayAmounts.pricePerToken}
-                    displayTotalPrice={displayAmounts.assetTotal}
+                <OrderDetailsRow
                     isLoading={this.props.isLoading}
+                    labelText={tokenAmountLabel(
+                        displayAmounts.pricePerToken,
+                        this.props.assetName,
+                        this.props.selectedAssetUnitAmount,
+                    )}
+                    value={displayAmounts.assetTotal}
                 />
-                <OrderDetailsRow labelText="Fee" value={displayAmounts.feeTotal} isLoading={this.props.isLoading} />
-                <TotalCostRow
-                    displaySecondaryTotalCost={displayAmounts.secondaryGrandTotal}
-                    displayPrimaryTotalCost={displayAmounts.primaryGrandTotal}
+                <OrderDetailsRow isLoading={this.props.isLoading} labelText="Fee" value={displayAmounts.feeTotal} />
+                <OrderDetailsRow
                     isLoading={this.props.isLoading}
+                    isLabelBold={true}
+                    labelText={'Total Cost'}
+                    value={grandTotalDisplayValue(displayAmounts.primaryGrandTotal, displayAmounts.secondaryGrandTotal)}
                 />
             </Container>
         );
@@ -131,78 +177,5 @@ export class OrderDetailsRow extends React.Component<OrderDetailsRowProps, {}> {
                 </Flex>
             </Container>
         );
-    }
-}
-export interface TotalCostRowProps {
-    displayPrimaryTotalCost?: React.ReactNode;
-    displaySecondaryTotalCost?: React.ReactNode;
-    isLoading: boolean;
-}
-export class TotalCostRow extends React.Component<TotalCostRowProps, {}> {
-    public render(): React.ReactNode {
-        let value: React.ReactNode;
-        if (this.props.displayPrimaryTotalCost) {
-            const secondaryText = this.props.displaySecondaryTotalCost && (
-                <Container marginRight="3px" display="inline-block">
-                    <Text fontColor={ColorOption.lightGrey}>({this.props.displaySecondaryTotalCost})</Text>
-                </Container>
-            );
-            value = (
-                <React.Fragment>
-                    {secondaryText}
-                    <Text fontWeight={700} fontColor={ColorOption.grey}>
-                        {this.props.displayPrimaryTotalCost}
-                    </Text>
-                </React.Fragment>
-            );
-        }
-
-        return (
-            <OrderDetailsRow isLoading={this.props.isLoading} isLabelBold={true} labelText="Total Cost" value={value} />
-        );
-    }
-}
-
-export interface TokenAmountRowProps {
-    assetName?: string;
-    displayPricePerToken?: React.ReactNode;
-    displayTotalPrice?: React.ReactNode;
-    isLoading: boolean;
-    numTokens?: BigNumber;
-}
-export class TokenAmountRow extends React.Component<TokenAmountRowProps> {
-    public static DEFAULT_TEXT: string = 'Token Amount';
-    public render(): React.ReactNode {
-        return (
-            <OrderDetailsRow
-                isLoading={this.props.isLoading}
-                labelText={this._labelText()}
-                value={this.props.displayTotalPrice}
-            />
-        );
-    }
-    private _labelText(): string {
-        const { displayPricePerToken, assetName } = this.props;
-
-        // Display as 0 if we have a selected asset
-        const numTokens =
-            assetName && assetName !== DEFAULT_UNKOWN_ASSET_NAME && _.isUndefined(this.props.numTokens)
-                ? 0
-                : this.props.numTokens;
-
-        if (!_.isUndefined(numTokens)) {
-            let numTokensWithSymbol = numTokens.toString();
-
-            if (assetName) {
-                numTokensWithSymbol += ` ${assetName}`;
-            }
-
-            if (displayPricePerToken) {
-                numTokensWithSymbol += ` @ ${displayPricePerToken}`;
-            }
-            return numTokensWithSymbol;
-        }
-
-        return TokenAmountRow.DEFAULT_TEXT;
     }
 }
