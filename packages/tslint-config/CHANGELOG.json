@@ -1,5 +1,13 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Improve async-suffix rule to check functions too, not just methods"
+            }
+        ]
+    },
+    {
         "version": "1.0.10",
         "changes": [
             {
