@@ -64,19 +64,19 @@ const Image = styled.svg`
 `;
 
 const TopCircle = styled.circle`
-    animation: ${moveUp} 3s infinite;
+    animation: ${moveUp} 3s -1.5s infinite;
 `;
 const LeftCircle = styled.circle`
-    animation: ${moveLeft} 3s infinite;
+    animation: ${moveLeft} 3s -1.5s infinite;
 `;
 const Oblong = styled.path`
-    animation: ${moveLeft} 3s infinite;
+    animation: ${moveLeft} 3s -1.5s infinite;
 `;
 const Square = styled.path`
-    animation: ${moveDiag} 3s infinite;
+    animation: ${moveDiag} 3s -1.5s infinite;
 `;
 const Rectangle = styled.path`
-    animation: ${moveRight} 3s infinite;
+    animation: ${moveRight} 3s -1.5s infinite;
 `;
 
 const Logo = styled.path`
