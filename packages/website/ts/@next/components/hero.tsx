@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import {fadeIn} from 'ts/@next/constants/animations';
+import {addFadeInAnimation, fadeIn} from 'ts/@next/constants/animations';
 
 interface Props {
     title: string;
@@ -69,9 +69,7 @@ const Title = styled.h1`
     font-weight: 300;
     line-height: 1.1;
     margin-bottom: 30px;
-    opacity: 0;
-    transform: translateY(10px);
-    animation: ${fadeIn} 0.5s forwards;
+    ${addFadeInAnimation('0.5s')}
 
     @media (max-width: 1024px) {
         font-size: 60px;
@@ -87,10 +85,8 @@ const Description = styled.p`
     line-height: 31px;
     padding: 0;
     margin-bottom: 30px;
-    opacity: 0.75;
-    opacity: 0;
-    transform: translateY(0);
-    animation: ${fadeIn} 0.5s 0.15s forwards;
+    color: rgba(255, 255, 255, 0.75);
+    ${addFadeInAnimation('0.5s', '0.15s')}
 `;
 
 const Content = styled.div`
@@ -105,19 +101,14 @@ const ButtonWrap = styled.div`
     display: inline-flex;
     align-items: center;
 
-    > * {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
     * + * {
         margin-left: 12px;
     }
 
     > *:nth-child(1) {
-        animation: ${fadeIn} 0.6s 0.3s forwards;
+        ${addFadeInAnimation('0.6s', '0.3s')}
     }
     > *:nth-child(2) {
-        animation: ${fadeIn} 0.6s 0.4s forwards;
+        ${addFadeInAnimation('0.6s', '0.4s')}
     }
 `;
