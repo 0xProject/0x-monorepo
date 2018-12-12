@@ -77,7 +77,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
     }
 
     private _hadErrorFetchingUsdPrice(): boolean {
-        return this.props.ethUsdPrice === BIG_NUMBER_ZERO;
+        return this.props.ethUsdPrice ? this.props.ethUsdPrice.equals(BIG_NUMBER_ZERO) : false;
     }
 
     private _totalCostSecondaryValue(): React.ReactNode {
@@ -85,7 +85,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
 
         const canDisplayCurrency =
             secondaryCurrency === BaseCurrency.ETH ||
-            (secondaryCurrency === BaseCurrency.USD && this.props.ethUsdPrice && !this._hadErrorFetchingUsdPrice);
+            (secondaryCurrency === BaseCurrency.USD && this.props.ethUsdPrice && !this._hadErrorFetchingUsdPrice());
 
         if (this.props.buyQuoteInfo && canDisplayCurrency) {
             return this._displayAmount(secondaryCurrency, this.props.buyQuoteInfo.totalEthAmount);
