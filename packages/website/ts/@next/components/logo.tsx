@@ -25,7 +25,7 @@ const StyledLogo = styled.div`
     }
 `;
 
-const Icon = styled(LogoIcon)`
+const Icon = styled(LogoIcon)<LogoInterface>`
     flex-shrink: 0;
 
     path {
