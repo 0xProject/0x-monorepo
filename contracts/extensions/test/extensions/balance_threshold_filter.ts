@@ -46,7 +46,7 @@ interface ValidatedAddressesLog {
     args: { addresses: string[] };
 }
 
-describe.only(ContractName.BalanceThresholdFilter, () => {
+describe(ContractName.BalanceThresholdFilter, () => {
     let compliantMakerAddress: string;
     let compliantMakerAddress2: string;
     let owner: string;
