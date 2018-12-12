@@ -16,7 +16,7 @@ interface TeamMember {
 
 const team: TeamMember[] = [
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/willw.jpg',
         name: 'Will Warren',
         title: 'co-founder & ceo',
     },
@@ -31,9 +31,9 @@ const team: TeamMember[] = [
         title: 'senior engineer',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/alexv.jpg',
         name: 'Alex Xu',
-        title: 'director of operations',
+        title: 'Director of operations',
     },
     {
         imageUrl: '/images/@next/team/melo@2x.jpg',
@@ -61,12 +61,12 @@ const team: TeamMember[] = [
         title: 'ecosystem engineer',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/blake.jpg',
         name: 'Blake Henderson',
         title: 'operations associate',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/zack.jpg',
         name: 'Zack Skelly',
         title: 'lead recruiter',
     },
@@ -81,7 +81,7 @@ const team: TeamMember[] = [
         title: 'technical fellow',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/francesco.jpg',
         name: 'Francesco Agosti',
         title: 'engineer',
     },
