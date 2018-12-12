@@ -53,7 +53,7 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
         bytes signedExchangeTransaction,
         bytes signature
     ) 
-         external
+        external
     {
         // Validate addresses.
         validateBalanceThresholdsOrRevert();
@@ -216,6 +216,7 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
 
             // Step 2/2 Extract addresses to validate based on this selector.
             //          See ../../utils/ExchangeSelectors/ExchangeSelectors.sol for selectors
+            // solhint-disable no-empty-blocks
             switch exchangeFunctionSelector
             case 0x297bb70b00000000000000000000000000000000000000000000000000000000 { recordAddressesForBatchFillVariant() }    // batchFillOrders
             case 0x50dde19000000000000000000000000000000000000000000000000000000000 { recordAddressesForBatchFillVariant() }    // batchFillOrdersNoThrow
@@ -245,6 +246,7 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
                 // 64  -- strlen(INVALID_OR_BLOCKED_EXCHANGE_SELECTOR) rounded up to nearest 32-byte word.
                 revert(0, 132)
             }
+            // solhint-enable no-empty-blocks
 
             ///// Validate Recorded Addresses /////
 
@@ -262,7 +264,9 @@ contract MixinBalanceThresholdFilterCore is MBalanceThresholdFilterCore {
             // Validate addresses
             let thresholdAssetAddress := sload(THRESHOLD_ASSET_slot)
             let thresholdBalance := sload(THRESHOLD_BALANCE_slot)
+            // solhint-disable max-line-length 
             for {let addressToValidate := addressesToValidateElementPtr} lt(addressToValidate, addressesToValidateElementEndPtr) {addressToValidate := add(addressToValidate, 0x20)} {
+                // solhint-enable max-line-length 
                 // Construct calldata for `THRESHOLD_ASSET.balanceOf`
                 mstore(freeMemPtr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
                 mstore(add(freeMemPtr, 0x04), mload(addressToValidate))

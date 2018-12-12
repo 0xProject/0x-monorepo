@@ -26,6 +26,7 @@ import "../interfaces/IThresholdAsset.sol";
 contract MBalanceThresholdFilterCore {
 
     // Points to 0x exchange contract
+    // solhint-disable var-name-mixedcase
     IExchange internal EXCHANGE;
 
     // The asset that must be held by makers/takers
@@ -33,6 +34,7 @@ contract MBalanceThresholdFilterCore {
 
     // The minimum balance of `THRESHOLD_ASSET` that must be held by makers/takers
     uint256 internal THRESHOLD_BALANCE;
+    // solhint-enable var-name-mixedcase
 
     // Addresses that hold at least `THRESHOLD_BALANCE` of `THRESHOLD_ASSET`
     event ValidatedAddresses (

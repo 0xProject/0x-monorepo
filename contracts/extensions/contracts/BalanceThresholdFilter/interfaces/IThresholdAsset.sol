@@ -18,6 +18,7 @@
 
 pragma solidity 0.4.24;
 
+
 contract IThresholdAsset {
 
     /// @param _owner The address from which the balance will be retrieved
