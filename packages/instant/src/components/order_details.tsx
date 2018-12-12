@@ -27,12 +27,19 @@ export interface OrderDetailsProps {
 }
 export class OrderDetails extends React.Component<OrderDetailsProps> {
     public render(): React.ReactNode {
-        const { buyQuoteInfo } = this.props;
-
+        const showUsdError = this.props.baseCurrency === BaseCurrency.USD && this._hadErrorFetchingUsdPrice();
         return (
             <Container width="100%" flexGrow={1} padding="20px 20px 0px 20px">
                 <Container marginBottom="10px">{this._renderHeader()}</Container>
+                {showUsdError ? this._renderErrorFetchingUsdPrice() : this._renderRows()}
+            </Container>
+        );
+    }
 
+    private _renderRows(): React.ReactNode {
+        const { buyQuoteInfo } = this.props;
+        return (
+            <React.Fragment>
                 <OrderDetailsRow
                     labelText={this._assetAmountLabel()}
                     primaryValue={this._displayAmountOrPlaceholder(buyQuoteInfo && buyQuoteInfo.assetEthAmount)}
@@ -48,8 +55,28 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                     isPrimaryValueBold={true}
                     secondaryValue={this._totalCostSecondaryValue()}
                 />
-            </Container>
+            </React.Fragment>
         );
+    }
+
+    private _renderErrorFetchingUsdPrice(): React.ReactNode {
+        return (
+            <Text>
+                There was an error fetching the USD price.
+                <Text
+                    onClick={this.props.onBaseCurrencySwitchEth}
+                    fontWeight={700}
+                    fontColor={ColorOption.primaryColor}
+                >
+                    Click here
+                </Text>
+                {' to view ETH prices'}
+            </Text>
+        );
+    }
+
+    private _hadErrorFetchingUsdPrice(): boolean {
+        return this.props.ethUsdPrice === BIG_NUMBER_ZERO;
     }
 
     private _totalCostSecondaryValue(): React.ReactNode {
@@ -92,7 +119,8 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
     }
 
     private _assetAmountLabel(): string {
-        const { assetName, baseCurrency } = this.props;
+        const { assetName, baseCurrency, ethUsdPrice } = this.props;
+
         const numTokens = this.props.selectedAssetUnitAmount;
 
         // Display as 0 if we have a selected asset
