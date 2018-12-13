@@ -1,5 +1,4 @@
 {
-    "private": true,
     "name": "@0x/contracts-interfaces",
     "version": "1.0.1",
     "engines": {
