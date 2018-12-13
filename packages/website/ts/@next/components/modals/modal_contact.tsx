@@ -34,6 +34,7 @@ export class ModalContact extends React.Component<Props> {
     public state = {
         isSubmitting: false,
         isSuccessful: false,
+        errors: {},
     };
     public constructor(props: Props) {
         super(props);
@@ -45,7 +46,7 @@ export class ModalContact extends React.Component<Props> {
         return (
             <>
                 <DialogOverlay
-                    style={{ background: 'rgba(0, 0, 0, 0.75)' }}
+                    style={{ background: 'rgba(0, 0, 0, 0.75)', zIndex: 2 }}
                     isOpen={isOpen}
                     onDismiss={onDismiss}
                 >
@@ -85,10 +86,10 @@ export class ModalContact extends React.Component<Props> {
                                 <Input
                                     name="comments"
                                     label="Anything else?"
-                                    type="text"
+                                    type="textarea"
                                 />
                             </InputRow>
-                            <InputRow>
+                            <ButtonRow>
                                 <Button
                                     color="#5C5C5C"
                                     isNoBorder={true}
@@ -99,7 +100,7 @@ export class ModalContact extends React.Component<Props> {
                                     Back
                                 </Button>
                                 <Button>Submit</Button>
-                            </InputRow>
+                            </ButtonRow>
                         </Form>
                         <Confirmation isSuccessful={isSuccessful}>
                             <Icon name="checkmark" size="large" />
@@ -116,33 +117,41 @@ export class ModalContact extends React.Component<Props> {
         e.preventDefault();
 
         // const email = this.emailInput.current.value;
-        const email = 'fred@sjelfull.no';
+        const email = '';
+        const name = '';
+        const projectOrCompany = '';
+        const link = '';
+        const comments = '';
 
         this.setState({ ...this.state, isSubmitting: true });
 
         try {
-            const response = await fetch('/email', {
+            const response = await fetch('https://website-api.0xproject.com/leads', {
                 method: 'post',
+                mode: 'cors',
+                credentials: 'same-origin',
                 headers: {
                     'content-type': 'application/json; charset=utf-8',
                 },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email, projectOrCompany, link, comments }),
             });
             const json = await response.json();
 
-            console.log(response.json());
+            this.setState({ ...this.state, isSuccessful: true });
+
+            console.log(response);
         } catch (e) {
+            this.setState({ ...this.state, errors: [] });
             console.log(e);
         }
-
-        this.setState({ ...this.state, isSuccessful: true });
     }
     private async _onDone(e): void {
         e.preventDefault();
 
         this.props.onDismiss();
     }
-};
+}
+// Handle errors: {"errors":[{"location":"body","param":"name","msg":"Invalid value"},{"location":"body","param":"email","msg":"Invalid value"}]}
 
 const StyledWrap = styled(Wrap)`
     padding-top: 20px;
@@ -162,11 +171,30 @@ const StyledWrap = styled(Wrap)`
 `;
 
 const InputRow = styled.div`
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 30px;
     width: 100%;
     flex: 0 0 auto;
+
+    @media (min-width: 768px) {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+`;
+
+const ButtonRow = styled(InputRow)`
+    @media (max-width: 768px) {
+        display: flex;
+        flex-direction: column;
+
+        button:nth-child(1) {
+            order: 2;
+        }
+
+        button:nth-child(2) {
+            order: 1;
+            margin-bottom: 10px;
+        }
+    }
 `;
 
 const StyledDialogContent = styled(DialogContent)`
@@ -174,6 +202,12 @@ const StyledDialogContent = styled(DialogContent)`
     max-width: 800px;
     background-color: #F6F6F6 !important;
     padding: 60px 60px !important;
+
+    @media (max-width: 768px) {
+        width: calc(100vw - 40px) !important;
+        margin: 40px auto !important;
+        padding: 30px 30px !important;
+    }
 `;
 
 const Form = styled.form<FormProps>`
