@@ -23,6 +23,18 @@ interface CryptoCompareCoin {
 const TO_CURRENCIES = ['USD', 'EUR', 'ETH', 'USDT'];
 const ETHEREUM_IDENTIFIER = '7605';
 const HTTP_OK_STATUS = 200;
+
+interface StaticPair {
+    fromSymbol: string;
+    toSymbol: string;
+}
+const SPECIAL_CASES: StaticPair[] = [
+    {
+        fromSymbol: 'ETH',
+        toSymbol: 'USD',
+    },
+];
+
 /**
  * Get trading pairs with latest scraped time for OHLCV records
  * @param conn a typeorm Connection to postgres
@@ -66,27 +78,35 @@ export async function fetchOHLCVTradingPairsAsync(
     });
 
     // fetch all tokens that are traded on 0x
-    const rawTokenAddresses: Array<{ tokenaddress: string }> = await conn.query(
+    const rawEventTokenAddresses: Array<{ tokenaddress: string }> = await conn.query(
         `SELECT DISTINCT(maker_token_address) as tokenaddress FROM raw.exchange_fill_events UNION
       SELECT DISTINCT(taker_token_address) as tokenaddress FROM raw.exchange_fill_events`,
     );
-    const tokenAddresses = R.pluck('tokenaddress', rawTokenAddresses);
+    const eventTokenAddresses = R.pluck('tokenaddress', rawEventTokenAddresses);
 
     // join token addresses with CC symbols
-    const allTokenSymbols: string[] = tokenAddresses
+    const eventTokenSymbols: string[] = eventTokenAddresses
         .map(tokenAddress => erc20CoinsIndex.get(tokenAddress.toLowerCase()) || '')
         .filter(x => x);
 
-    // generate list of all tokens with time of latest existing record OR default earliest time
-    const allTradingPairCombinations: TradingPair[] = R.chain(sym => {
+    // join traded tokens with fiat and latest backfill time
+    const eventTradingPairs: TradingPair[] = R.chain(sym => {
         return TO_CURRENCIES.map(fiat => {
-            return {
+            const pair = {
                 fromSymbol: sym,
                 toSymbol: fiat,
                 latestSavedTime: R.path<number>([sym, fiat], latestTradingPairsIndex) || earliestBackfillTime,
             };
+            return pair;
         });
-    }, allTokenSymbols);
+    }, eventTokenSymbols);
 
-    return allTradingPairCombinations;
+    const specialCases: TradingPair[] = SPECIAL_CASES.map(pair => {
+        const latestSavedTime = R.path<number>([pair.fromSymbol, pair.toSymbol], latestTradingPairsIndex) || earliestBackfillTime;
+        return R.assoc('latestSavedTime', latestSavedTime, pair);
+    });
+
+    // join with special cases
+
+    return R.concat(eventTradingPairs, specialCases);
 }
