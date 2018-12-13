@@ -45,7 +45,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/multisig/README.md",
     "devDependencies": {
         "@0x/abi-gen": "^1.0.18",
-        "@0x/contracts-test-utils": "^1.0.0",
+        "@0x/contracts-test-utils": "^1.0.1",
         "@0x/dev-utils": "^1.0.20",
         "@0x/sol-compiler": "^1.1.15",
         "@0x/sol-cov": "^2.1.15",
