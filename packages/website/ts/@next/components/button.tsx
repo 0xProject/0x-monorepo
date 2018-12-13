@@ -30,7 +30,7 @@ export const Button = styled.button<ButtonInterface>`
     border: ${props => !props.isNoBorder && `1px solid ${(!props.isTransparent || props.bgColor) ? (props.bgColor || colors.brandLight) : 'transparent'}`};
     display: inline-block;
     background-color: ${props => (!props.isTransparent || props.bgColor) ? (props.bgColor || colors.brandLight) : 'transparent'};
-    border-color: ${props => (props.isTransparent && !props.isWithArrow) && '#6a6a6a'};
+    border-color: ${props => (props.isTransparent && !props.isWithArrow) && 'rgba(255, 255, 255, .4)'};
     color: ${props => props.isAccentColor ? props.theme.linkColor : (props.color || props.theme.textColor)};
     padding: ${props => (!props.isNoPadding && !props.isWithArrow) && '18px 30px'};
     text-align: center;

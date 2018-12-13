@@ -29,7 +29,7 @@ const GLOBAL_THEMES: ThemeInterface = {
         darkBgColor: '#111A19',
         lightBgColor: '#003831',
         textColor: '#FFFFFF',
-        paragraphColor: '#777777',
+        paragraphColor: '#FFFFFF',
         linkColor: colors.brandLight,
         mobileNavBgUpper: '#003831',
         mobileNavBgLower: '#022924',

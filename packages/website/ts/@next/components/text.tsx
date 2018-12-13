@@ -41,7 +41,7 @@ export const Heading: React.StatelessComponent<HeadingProps> = props => {
     const {
         asElement = 'h1',
         children,
-        ...style,
+        ...style
     } = props;
     const Component = StyledHeading.withComponent(asElement);
 

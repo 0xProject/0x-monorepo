@@ -84,9 +84,13 @@ const Description = styled.p`
     font-size: 22px;
     line-height: 31px;
     padding: 0;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
     color: rgba(255, 255, 255, 0.75);
     ${addFadeInAnimation('0.5s', '0.15s')}
+
+    @media (max-width: 1024px) {
+        margin-bottom: 30px;
+    }
 `;
 
 const Content = styled.div`

@@ -23,6 +23,7 @@ export const SectionLandingAbout = () => (
         <Paragraph
             size="large"
             isCentered={true}
+            isMuted={1}
             padding={['large', 0, 'default', 0]}
         >
             0x is an open protocol that enables the peer-to-peer exchange of Ethereum-based

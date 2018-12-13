@@ -77,6 +77,7 @@ const StyledSlider = styled.div`
     }
 
     .flickity-button {
+        cursor: pointer;
         position: absolute;
         width: 74px;
         height: 74px;
@@ -86,10 +87,15 @@ const StyledSlider = styled.div`
         top: calc(50% - 37px);
         border: 0;
         padding: 0;
+        transition: background-color .30s ease-in-out;
 
         &:disabled {
             opacity: 0;
             visibility: hidden;
+        }
+
+        &:hover {
+            background-color: hsla(0, 0%, 10%, 1);
         }
 
         &.previous {

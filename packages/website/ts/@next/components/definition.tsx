@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import {Link} from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
+import { Paragraph } from 'ts/@next/components/text';
 
 interface Action {
     label: string;
@@ -34,7 +35,7 @@ export const Definition = (props: Props) => (
                 {props.title}
             </Title>
 
-            <Paragraph>
+            <Paragraph isMuted={true}>
                 {props.description}
             </Paragraph>
 
@@ -95,11 +96,6 @@ const Title = styled.h2`
     font-size: 20px;
     line-height: 1.3;
     margin-bottom: 15px;
-`;
-
-const Paragraph = styled.p`
-    font-size: 17px;
-    opacity: 0.75;
 `;
 
 const LinkWrap = styled.div`
