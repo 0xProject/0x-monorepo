@@ -14,10 +14,10 @@ interface FigureProps {
 export const SectionLandingAbout = () => (
     <Section bgColor="dark" isTextCentered={true}>
         <InlineIconWrap>
-            <Icon name="coin" size="small" />
-            <Icon name="coin" size="small" />
-            <Icon name="coin" size="small" />
-            <Icon name="coin" size="small" />
+            <Icon name="descriptionCoin" size="small" />
+            <Icon name="descriptionCopy" size="small" />
+            <Icon name="descriptionFlask" size="small" />
+            <Icon name="descriptionBolt" size="small" />
         </InlineIconWrap>
 
         <Paragraph
