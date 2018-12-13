@@ -1,9 +1,6 @@
 import { ECSignature } from '@0x/types';
 import { JSONRPCRequestPayload } from 'ethereum-types';
 import HDNode = require('hdkey');
-
-import TrezorConnect from 'trezor-connect';
-
 export interface LedgerCommunicationClient {
     close: () => Promise<void>;
 }
@@ -140,7 +137,7 @@ export interface JSONRPCRequestPayloadWithMethod extends JSONRPCRequestPayload {
 }
 
 export interface TrezorSubproviderConfig {
-    trezorConnectClientApi: typeof TrezorConnect;
+    trezorConnectClientApi: any;
 }
 
 export interface TrezorGetAddressResponsePayload {

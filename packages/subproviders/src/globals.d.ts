@@ -22,5 +22,3 @@ declare module 'web3-provider-engine/subproviders/fixture' {
     }
     export = FixtureSubprovider;
 }
-
-declare module 'trezor-connect';
