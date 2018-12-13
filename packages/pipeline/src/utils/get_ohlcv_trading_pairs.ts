@@ -56,11 +56,18 @@ export async function fetchOHLCVTradingPairsAsync(
     FROM raw.ohlcv_external
     GROUP BY from_symbol, to_symbol;`);
 
+    // build addressable index: { fromsym: { tosym: time }}
     const latestTradingPairsIndex: { [fromSym: string]: { [toSym: string]: number } } = {};
     latestTradingPairs.forEach(pair => {
         const latestIndex: { [toSym: string]: number } = latestTradingPairsIndex[pair.from_symbol] || {};
         latestIndex[pair.to_symbol] = parseInt(pair.latest, 10); // tslint:disable-line:custom-no-magic-numbers
         latestTradingPairsIndex[pair.from_symbol] = latestIndex;
+    });
+
+    // match time to special cases
+    const specialCases: TradingPair[] = SPECIAL_CASES.map(pair => {
+        const latestSavedTime = R.path<number>([pair.fromSymbol, pair.toSymbol], latestTradingPairsIndex) || earliestBackfillTime;
+        return R.assoc('latestSavedTime', latestSavedTime, pair);
     });
 
     // get token symbols used by Crypto Compare
@@ -101,12 +108,6 @@ export async function fetchOHLCVTradingPairsAsync(
         });
     }, eventTokenSymbols);
 
-    const specialCases: TradingPair[] = SPECIAL_CASES.map(pair => {
-        const latestSavedTime = R.path<number>([pair.fromSymbol, pair.toSymbol], latestTradingPairsIndex) || earliestBackfillTime;
-        return R.assoc('latestSavedTime', latestSavedTime, pair);
-    });
-
     // join with special cases
-
     return R.concat(eventTradingPairs, specialCases);
 }
