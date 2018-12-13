@@ -204,17 +204,17 @@ jobs:
                   command: |
                       cd python-packages/json_schemas
                       python -m ensurepip
-                      python -m pip install .
+                      python -m pip install .[dev]
             - run:
                   command: |
                       cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
+                      python -m pip install .[dev]
             - run:
                   command: |
                       cd python-packages/sra_client
                       python -m ensurepip
-                      python -m pip install -e .
+                      python -m pip install .[dev]
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -262,7 +262,7 @@ jobs:
                   command: |
                       cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
+                      python -m pip install .
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -290,12 +290,12 @@ jobs:
                   command: |
                       cd python-packages/json_schemas
                       python -m ensurepip
-                      python -m pip install .
+                      python -m pip install .[dev]
             - run:
                   command: |
                       cd python-packages/order_utils
                       python -m ensurepip
-                      python -m pip install -e .[dev]
+                      python -m pip install .[dev]
             - save_cache:
                   key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
