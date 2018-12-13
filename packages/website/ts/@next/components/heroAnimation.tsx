@@ -32,7 +32,7 @@ const moveRight = keyframes`
 const spin = keyframes`
     0% { transform: rotate(0deg) }
     50% { transform: rotate(0deg) }
-    100% { transform: rotate(359deg) }
+    100% { transform: rotate(90deg) }
 `;
 
 const moveIn = keyframes`
@@ -81,5 +81,5 @@ const Rectangle = styled.path`
 
 const Logo = styled.path`
     animation: ${spin} 3s infinite;
-    transform-origin: 202px 202px;
+    transform-origin: 202px 202.7px;
 `;
