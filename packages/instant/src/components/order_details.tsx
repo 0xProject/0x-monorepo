@@ -117,7 +117,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
         }
     }
 
-    private _assetAmountLabel(): string {
+    private _assetAmountLabel(): React.ReactNode {
         const { assetName, baseCurrency } = this.props;
         const numTokens = this.props.selectedAssetUnitAmount;
 
@@ -127,13 +127,14 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
                 ? new BigNumber(0)
                 : numTokens;
         if (!_.isUndefined(displayNumTokens)) {
-            let numTokensWithSymbol = displayNumTokens.toString();
+            let numTokensWithSymbol: React.ReactNode = displayNumTokens.toString();
             if (assetName) {
                 numTokensWithSymbol += ` ${assetName}`;
             }
             const pricePerTokenWei = this._pricePerTokenWei();
             if (pricePerTokenWei) {
-                numTokensWithSymbol += ` @ ${this._displayAmount(baseCurrency, pricePerTokenWei)}`;
+                const atPriceDisplay = <Text fontColor={ColorOption.lightGrey}>@ {this._displayAmount(baseCurrency, pricePerTokenWei)}</Text>;
+                numTokensWithSymbol = <React.Fragment>{numTokensWithSymbol} {atPriceDisplay}</React.Fragment>
             }
             return numTokensWithSymbol;
         }
@@ -185,7 +186,7 @@ export class OrderDetails extends React.Component<OrderDetailsProps> {
 }
 
 export interface OrderDetailsRowProps {
-    labelText: string;
+    labelText: React.ReactNode;
     isLabelBold?: boolean;
     isPrimaryValueBold?: boolean;
     primaryValue: React.ReactNode;
