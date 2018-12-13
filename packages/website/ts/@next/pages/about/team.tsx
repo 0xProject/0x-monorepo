@@ -1,4 +1,4 @@
-import * as _ from 'lodash/core';
+import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
@@ -149,27 +149,27 @@ const team: TeamMember[] = [
 
 const advisors: TeamMember[] = [
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/advisors/frede.jpg',
         name: 'Fred Ehrsam',
         title: 'Advisor',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/advisors/olafc.jpg',
         name: 'Olaf Carlson-Wee',
         title: 'Advisor',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/advisors/joeyk.jpg',
         name: 'Joey Krug',
         title: 'Advisor',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/advisors/lindax.jpg',
         name: 'Linda Xie',
         title: 'Advisor',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/advisors/davids.jpg',
         name: 'David Sacks',
         title: 'Advisor',
     },
