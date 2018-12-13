@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _December 13, 2018_
+
+    * Improve async-suffix rule to check functions too, not just methods (#1425)
+
 ## v1.0.10 - _November 9, 2018_
 
     * Dependencies updated
