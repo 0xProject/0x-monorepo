@@ -11,7 +11,7 @@
     },
     {
         "name": "OrderValidator",
-        "version": "1.0.1",
+        "version": "1.0.0",
         "changes": [
             {
                 "note": "remove `getApproved` check from ERC721 approval query",
