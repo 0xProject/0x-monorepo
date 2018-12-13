@@ -94,10 +94,10 @@ export const Next0xInstant = () => (
             ))}
         </Section>
 
-        <Section maxWidth="1386px" padding="0 58px 70px" bgColor={colors.backgroundDark}>
+        <ConfiguratorSection maxWidth="1386px" padding="0 58px 70px" bgColor={colors.backgroundDark}>
           <Heading>0x Instant Configurator</Heading>
           <Configurator hash={CONFIGURATOR_HASH} />
-        </Section>
+        </ConfiguratorSection>
 
         <Banner
             heading="Need more flexibility?"
@@ -132,6 +132,12 @@ const fadeUp = keyframes`
   100% {
     opacity: 1;
     transform: translateY(0px);
+  }
+`;
+
+const ConfiguratorSection = styled(Section)`
+  @media (max-width: 1050px) {
+      display: none;
   }
 `;
 
