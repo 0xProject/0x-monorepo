@@ -117,6 +117,16 @@ export enum AssetBuyerError {
     TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
 }
 
+export class InsufficientAssetLiquidityError extends Error {
+    public numAssetsAvailable: BigNumber;
+    constructor(numAssetsAvailable: BigNumber) {
+        super(AssetBuyerError.InsufficientAssetLiquidity);
+        this.numAssetsAvailable = numAssetsAvailable;
+        // Setting prototype so instanceof works.  See https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
+        Object.setPrototypeOf(this, InsufficientAssetLiquidityError.prototype);
+    }
+}
+
 export interface OrdersAndFillableAmounts {
     orders: SignedOrder[];
     remainingFillableMakerAssetAmounts: BigNumber[];

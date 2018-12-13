@@ -3,7 +3,13 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { AssetBuyerError, BuyQuote, BuyQuoteInfo, OrdersAndFillableAmounts } from '../types';
+import {
+    AssetBuyerError,
+    BuyQuote,
+    BuyQuoteInfo,
+    InsufficientAssetLiquidityError,
+    OrdersAndFillableAmounts,
+} from '../types';
 
 import { orderUtils } from './order_utils';
 
@@ -33,7 +39,8 @@ export const buyQuoteCalculator = {
         });
         // if we do not have enough orders to cover the desired assetBuyAmount, throw
         if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
-            throw new Error(AssetBuyerError.InsufficientAssetLiquidity);
+            const amountRemaining = assetBuyAmount.minus(remainingFillAmount);
+            throw new InsufficientAssetLiquidityError(amountRemaining);
         }
         // if we are not buying ZRX:
         // given the orders calculated above, find the fee-orders that cover the desired assetBuyAmount (with slippage)

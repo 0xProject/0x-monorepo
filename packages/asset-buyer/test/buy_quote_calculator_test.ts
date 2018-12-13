@@ -1,4 +1,5 @@
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -8,6 +9,7 @@ import { AssetBuyerError, OrdersAndFillableAmounts } from '../src/types';
 import { buyQuoteCalculator } from '../src/utils/buy_quote_calculator';
 
 import { chaiSetup } from './utils/chai_setup';
+import { testHelpers } from './utils/test_helpers';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -15,6 +17,10 @@ const expect = chai.expect;
 // tslint:disable:custom-no-magic-numbers
 describe('buyQuoteCalculator', () => {
     describe('#calculate', () => {
+        let firstOrder: SignedOrder;
+        let firstRemainingFillAmount: BigNumber;
+        let secondOrder: SignedOrder;
+        let secondRemainingFillAmount: BigNumber;
         let ordersAndFillableAmounts: OrdersAndFillableAmounts;
         let smallFeeOrderAndFillableAmount: OrdersAndFillableAmounts;
         let allFeeOrdersAndFillableAmounts: OrdersAndFillableAmounts;
@@ -24,18 +30,18 @@ describe('buyQuoteCalculator', () => {
             // the second order has a rate of 2 makerAsset / WETH with a takerFee of 100 ZRX and has 200 / 200 makerAsset units left to fill (completely fillable)
             // generate one order for fees
             // the fee order has a rate of 1 ZRX / WETH with no taker fee and has 100 ZRX left to fill (completely fillable)
-            const firstOrder = orderFactory.createSignedOrderFromPartial({
+            firstOrder = orderFactory.createSignedOrderFromPartial({
                 makerAssetAmount: new BigNumber(400),
                 takerAssetAmount: new BigNumber(100),
                 takerFee: new BigNumber(200),
             });
-            const firstRemainingFillAmount = new BigNumber(200);
-            const secondOrder = orderFactory.createSignedOrderFromPartial({
+            firstRemainingFillAmount = new BigNumber(200);
+            secondOrder = orderFactory.createSignedOrderFromPartial({
                 makerAssetAmount: new BigNumber(200),
                 takerAssetAmount: new BigNumber(100),
                 takerFee: new BigNumber(100),
             });
-            const secondRemainingFillAmount = secondOrder.makerAssetAmount;
+            secondRemainingFillAmount = secondOrder.makerAssetAmount;
             ordersAndFillableAmounts = {
                 orders: [firstOrder, secondOrder],
                 remainingFillableMakerAssetAmounts: [firstRemainingFillAmount, secondRemainingFillAmount],
@@ -61,9 +67,9 @@ describe('buyQuoteCalculator', () => {
                 ],
             };
         });
-        it('should throw if not enough maker asset liquidity', () => {
+        it('should throw if not enough maker asset liquidity (multiple orders)', () => {
             // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
-            expect(() =>
+            const errorFunction = () => {
                 buyQuoteCalculator.calculate(
                     ordersAndFillableAmounts,
                     smallFeeOrderAndFillableAmount,
@@ -71,8 +77,61 @@ describe('buyQuoteCalculator', () => {
                     0,
                     0,
                     false,
+                );
+            };
+            testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(400));
+        });
+        it('should throw if not enough maker asset liquidity (partially filled order)', () => {
+            const firstOrderAndFillableAmount: OrdersAndFillableAmounts = {
+                orders: [firstOrder],
+                remainingFillableMakerAssetAmounts: [firstRemainingFillAmount],
+            };
+
+            const errorFunction = () => {
+                buyQuoteCalculator.calculate(
+                    firstOrderAndFillableAmount,
+                    smallFeeOrderAndFillableAmount,
+                    new BigNumber(201),
+                    0,
+                    0,
+                    false,
+                );
+            };
+            testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(200));
+        });
+        it('should throw if not enough maker asset liquidity (completely fillable order)', () => {
+            const completelyFillableOrder = orderFactory.createSignedOrderFromPartial({
+                makerAssetAmount: new BigNumber(123),
+                takerAssetAmount: new BigNumber(100),
+                takerFee: new BigNumber(200),
+            });
+            const completelyFillableOrdersAndFillableAmount: OrdersAndFillableAmounts = {
+                orders: [completelyFillableOrder],
+                remainingFillableMakerAssetAmounts: [completelyFillableOrder.makerAssetAmount],
+            };
+            const errorFunction = () => {
+                buyQuoteCalculator.calculate(
+                    completelyFillableOrdersAndFillableAmount,
+                    smallFeeOrderAndFillableAmount,
+                    new BigNumber(124),
+                    0,
+                    0,
+                    false,
+                );
+            };
+            testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(123));
+        });
+        it('should not throw if order is fillable', () => {
+            expect(() =>
+                buyQuoteCalculator.calculate(
+                    ordersAndFillableAmounts,
+                    allFeeOrdersAndFillableAmounts,
+                    new BigNumber(300),
+                    0,
+                    0,
+                    false,
                 ),
-            ).to.throw(AssetBuyerError.InsufficientAssetLiquidity);
+            ).to.not.throw();
         });
         it('should throw if not enough ZRX liquidity', () => {
             // we request 300 makerAsset units but the ZRX order is only enough to fill the first order, which only has 200 makerAssetUnits available
