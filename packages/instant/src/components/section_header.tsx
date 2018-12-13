@@ -4,10 +4,8 @@ import { ColorOption } from '../style/theme';
 
 import { Text } from './ui/text';
 
-export interface SectionHeaderProps {
-    children?: React.ReactNode;
-}
-export const SectionHeader: React.StatelessComponent<{}> = props => {
+export interface SectionHeaderProps {}
+export const SectionHeader: React.StatelessComponent<SectionHeaderProps> = props => {
     return (
         <Text
             letterSpacing="1px"
