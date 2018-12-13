@@ -1,9 +1,8 @@
 import Slider from 'rc-slider';
-//import 'rc-slider/assets/index.css';
 import * as React from 'react';
 import styled from 'styled-components';
+import 'ts/@next/pages/instant/rc-slider.css';
 
-import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
 
 const SliderWithTooltip = (Slider as any).createSliderWithTooltip(Slider);
@@ -24,12 +23,12 @@ export class FeePercentageSlider extends React.Component<FeePercentageSliderProp
                 value={this.props.value}
                 onChange={this.props.onChange}
                 tipFormatter={this._feePercentageSliderFormatter}
-                tipProps={{ placement: 'bottom' }}
+                tipProps={{ placement: 'bottom', overlayStyle: { backgroundColor: '#fff', borderRadius: '4px' } }}
                 trackStyle={{
-                    backgroundColor: '#b4b4b4',
+                    backgroundColor: colors.brandLight,
                 }}
                 railStyle={{
-                    backgroundColor: '#696969',
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
                 }}
                 handleStyle={{
                     border: 'none',
@@ -43,12 +42,12 @@ export class FeePercentageSlider extends React.Component<FeePercentageSliderProp
         );
     }
     private readonly _feePercentageSliderFormatter = (value: number): React.ReactNode => {
-        return <Text fontColor={colors.black} fontSize="14px" fontWeight={700}>{`${(value * 100).toFixed(2)}%`}</Text>;
+        return <Text>{`${(value * 100).toFixed(2)}%`}</Text>;
     };
 }
 
 const StyledSlider = styled(SliderWithTooltip)`
-    .rc-slider-tooltip-inner {
+    .rc-slider-tooltip__inner {
         box-shadow: none !important;
         background-color: ${colors.white} !important;
         border-radius: 4px !important;
@@ -70,4 +69,10 @@ const StyledSlider = styled(SliderWithTooltip)`
             margin-left: -60%;
         }
     }
+`;
+
+const Text = styled.span`
+    color: #000000;
+    font-size: 12px;
+    line-height: 18px;
 `;

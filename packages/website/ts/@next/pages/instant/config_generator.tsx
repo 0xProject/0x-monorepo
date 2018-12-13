@@ -12,7 +12,7 @@ import { MultiSelect } from 'ts/components/ui/multi_select';
 import { Spinner } from 'ts/components/ui/spinner';
 import { Text } from 'ts/components/ui/text';
 import { ConfigGeneratorAddressInput } from 'ts/@next/pages/instant/config_generator_address_input';
-import { FeePercentageSlider } from 'ts/pages/instant/fee_percentage_slider';
+import { FeePercentageSlider } from 'ts/@next/pages/instant/fee_percentage_slider';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
@@ -302,21 +302,6 @@ export const ConfigGeneratorSection: React.StatelessComponent<ConfigGeneratorSec
         {children}
     </Container>
 );
-
-const Mark = ({ checked }) => (
-    <StyledMark checked={checked}>
-        {checked && ''}
-    </StyledMark>
-);
-
-const StyledMark = styled.div`
-    border: 1px solid #ccc;
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    border-color: ${props => props.checked && colors.brandLight};
-    background-color: ${props => props.checked && colors.brandLight};
-`;
 
 ConfigGeneratorSection.defaultProps = {
     marginBottom: '30px',
