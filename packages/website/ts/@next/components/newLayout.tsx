@@ -95,7 +95,7 @@ const SectionBase = styled.section<SectionProps>`
 `;
 
 const Wrap = styled(FlexWrap)<WrapProps>`
-    width: ${props => props.wrapWidth || 'calc(100% - 60px)'};
+    width: ${props => props.bgColor ? 'calc(100% - 60px)' : props.wrapWidth};
     max-width: ${props => !props.isFullWidth && (props.maxWidth || '895px')};
     text-align: ${props => props.isTextCentered && 'center'};
     margin: 0 auto;

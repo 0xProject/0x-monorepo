@@ -17,11 +17,11 @@ export const SectionLandingHero = () => (
 
 const HeroActions = () => (
     <>
-        <Button isInline={true}>
+        <Button href="https://0xproject.com/docs" isInline={true}>
             Get Started
         </Button>
 
-        <Button isTransparent={true} isInline={true}>
+        <Button href="/why" isTransparent={true} isInline={true}>
             Learn More
         </Button>
     </>

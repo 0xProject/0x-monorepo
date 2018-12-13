@@ -71,8 +71,10 @@ export const Next0xInstant = () => (
         <Section isFullWidth={true} isPadded={false} padding="30px 0">
           <MarqueeWrap>
               <div>
-                  {[...Array(20)].map((item, index) => (
-                    <Card index={index} />
+                  {[...Array(12)].map((item, index) => (
+                    <Card index={index}>
+                      <img src={`/images/@next/0x-instant/widget-${(index % 6) + 1}.png`} />
+                    </Card>
                   ))}
               </div>
           </MarqueeWrap>
@@ -110,10 +112,15 @@ export const Next0xInstant = () => (
     </SiteWrap>
 );
 
-// scroll calc for infinite is (width * total / 2) + padding
+// scroll animation calc is simply (imageWidth * totalRepetitions) / 2
 const scroll = keyframes`
     0% { transform: translate3d(0, 0, 0) }
-    100% { transform: translate3d(-2615px, 0, 0) }
+    100% { transform: translate3d(-2220px, 0, 0) }
+`;
+
+const scrollMobile = keyframes`
+    0% { transform: translate3d(0, 0, 0) }
+    100% { transform: translate3d(-1800px, 0, 0) }
 `;
 
 const fadeUp = keyframes`
@@ -127,38 +134,53 @@ const fadeUp = keyframes`
   }
 `;
 
-// width = (260 * 20) - (15 * 19)
+// width = 370 * 12
 const MarqueeWrap = styled.div`
     width: 100vw;
-    height: 380px;
+    height: 514px;
     padding-bottom: 60px;
 
     > div {
-        width: 5485px;
-        height: 380px;
+        height: auto;
         display: flex;
-        animation: ${scroll} 30s linear infinite;
         will-change: transform;
+    }
 
-        img {
-            width: auto;
-            height: 380px;
-        }
+    @media (min-width: 768px) {
+      > div {
+          width: 4440px;
+          animation: ${scroll} 30s linear infinite;
+      }
+    }
+
+    @media (max-width: 768px) {
+      > div {
+          width: 3600px;
+          animation: ${scrollMobile} 30s linear infinite;
+      }
     }
 `;
 
 const Card = styled.div`
-  width: 260px;
-  height: 370px;
-  background: #555;
-  border-radius: 5px;
-  display: inline-block;
   opacity: 0;
+  flex-shrink: 0;
   transform: translateY(10px);
   will-change: opacity, transform;
   animation: ${fadeUp} 0.75s ${props => `${props.index * 0.05}s`} forwards;
 
-  & + & {
-    margin-left: 15px;
+  img {
+    height: auto;
+  }
+
+  @media (min-width: 768px) {
+    img {
+      width: 370px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    img {
+      width: 300px;
+    }
   }
 `;

@@ -36,7 +36,7 @@ const spin = keyframes`
 `;
 
 const moveIn = keyframes`
-    0% { opacity: 0; transform: scale(1.5) rotate(-30deg) }
+    0% { opacity: 0; transform: scale(1.7) rotate(-30deg) }
     100% { opacity: 1; transform: scale(1)  rotate(0deg) }
 `;
 

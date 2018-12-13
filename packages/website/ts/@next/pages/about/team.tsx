@@ -195,11 +195,11 @@ export const NextAboutTeam = () => (
                 width="70%"
                 maxWidth="800px"
             >
-                <WrapGrid isWrapped={true} isCentered={false}>
+                <StyledGrid isWrapped={true} isCentered={false}>
                     {_.map(team, (info: TeamMember, index) => (
                         <Member key={`team-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
                     ))}
-                </Wrap>
+                </StyledGrid>
             </Column>
         </Section>
 
@@ -213,16 +213,26 @@ export const NextAboutTeam = () => (
                 <Heading size="medium">Advisors</Heading>
             </Column>
 
-            <Column>
-                <WrapGrid isWrapped={true} isCentered={false}>
+            <Column
+                width="70%"
+                maxWidth="800px"
+            >
+                <StyledGrid isWrapped={true} isCentered={false}>
                     {_.map(advisors, (info: TeamMember, index) => (
                         <Member key={`advisor-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
                     ))}
-                </WrapGrid>
+                </StyledGrid>
             </Column>
         </Section>
     </AboutPageLayout>
 );
+
+const StyledGrid = styled.div`
+    &:after {
+        content: '';
+        clear: both;
+    }
+`;
 
 const Member = ({ name, title, imageUrl }: TeamMember) => (
     <StyledMember>
@@ -233,8 +243,10 @@ const Member = ({ name, title, imageUrl }: TeamMember) => (
 );
 
 const StyledMember = styled.div`
-    width: calc(25% - 10px);
+    width: calc(25% - 15px);
     margin-bottom: 10px;
+    float: left;
+    margin-right: 10px;
 
     img, svg {
         width: 100%;
