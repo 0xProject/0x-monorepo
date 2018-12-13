@@ -94,7 +94,7 @@ export async function fetchOHLCVTradingPairsAsync(
     // join token addresses with CC symbols
     const eventTokenSymbols: string[] = eventTokenAddresses
         .map(tokenAddress => erc20CoinsIndex.get(tokenAddress.toLowerCase()) || '')
-        .filter(x => x);
+        .filter(x => x !== '');
 
     // join traded tokens with fiat and latest backfill time
     const eventTradingPairs: TradingPair[] = R.chain(sym => {
