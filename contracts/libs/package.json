@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-libs",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -71,8 +71,8 @@
     },
     "dependencies": {
         "@0x/base-contract": "^3.0.10",
-        "@0x/contracts-multisig": "^1.0.1",
-        "@0x/contracts-utils": "^1.0.1",
+        "@0x/contracts-multisig": "^1.0.2",
+        "@0x/contracts-utils": "^1.0.2",
         "@0x/order-utils": "^3.0.7",
         "@0x/types": "^1.4.1",
         "@0x/typescript-typings": "^3.0.6",
