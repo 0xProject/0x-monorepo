@@ -230,7 +230,7 @@ const SectionWrap = styled.div<SectionProps>`
 
 const NavStickyWrap = styled(WrapSticky)`
     padding-left: 60px;
-    z-index: 9999;
+    z-index: 15;
 
     @media (max-width: 768px) {
         display: none;

@@ -14,7 +14,7 @@ interface LogoInterface {
 const StyledLogo = styled.div`
     text-align: left;
     position: relative;
-    z-index: 9999;
+    z-index: 25;
 
     @media (max-width: 800px) {
         svg {

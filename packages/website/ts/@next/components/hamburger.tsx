@@ -22,7 +22,7 @@ const StyledHamburger = styled.button<Props>`
     width: 22px;
     height: 16px;
     position: relative;
-    z-index: 9999;
+    z-index: 25;
     padding: 0;
     outline: none;
     user-select: none;

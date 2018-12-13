@@ -72,7 +72,7 @@ const Wrap = styled.nav`
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    z-index: 999;
+    z-index: 20;
     top: 0;
     left: 0;
     font-size: 20px;

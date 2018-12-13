@@ -252,7 +252,7 @@ const DropdownWrap = styled.div<DropdownWrapInterface>`
     opacity: 0;
     transform: translate3d(0, -10px, 0);
     transition: opacity 0.35s, transform 0.35s, visibility 0s 0.35s;
-    z-index: 9999;
+    z-index: 20;
 
     &:after, &:before {
     	bottom: 100%;

@@ -46,7 +46,7 @@ export class ModalContact extends React.Component<Props> {
         return (
             <>
                 <DialogOverlay
-                    style={{ background: 'rgba(0, 0, 0, 0.75)', zIndex: 2 }}
+                    style={{ background: 'rgba(0, 0, 0, 0.75)', zIndex: 30 }}
                     isOpen={isOpen}
                     onDismiss={onDismiss}
                 >
