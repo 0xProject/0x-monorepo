@@ -78,6 +78,8 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
 };
 
 const CustomSection = styled(Section)`
+    margin-top: 30px;
+
     @media (max-width: 900px) {
         text-align: center;
 
