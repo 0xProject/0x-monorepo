@@ -3,18 +3,14 @@ import * as React from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled, { withTheme } from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
 import { Button } from 'ts/@next/components/button';
 import { DropdownDevelopers } from 'ts/@next/components/dropdowns/dropdown_developers';
 import { DropdownProducts } from 'ts/@next/components/dropdowns/dropdown_products';
-import { Dropdown } from 'ts/@next/components/dropdowns/mock';
 import { Hamburger } from 'ts/@next/components/hamburger';
-import { BREAKPOINTS, Section, Wrap } from 'ts/@next/components/layout';
 import { Logo } from 'ts/@next/components/logo';
-import { Paragraph } from 'ts/@next/components/text';
-
 import { MobileNav } from 'ts/@next/components/mobileNav';
+import { FlexWrap } from 'ts/@next/components/newLayout';
+import { Paragraph } from 'ts/@next/components/text';
 
 interface HeaderProps {
     isOpen: boolean;
@@ -96,11 +92,15 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
                         <Logo/>
                     </ReactRouterLink>
 
-                    <StyledButtonWrap>
+                    <NavLinks>
                         {_.map(navItems, (link, index) => (
-                            <NavItem link={link} index={index} />
+                            <NavItem
+                                key={`navlink-${index}`}
+                                link={link}
+                                index={index}
+                            />
                         ))}
-                    </StyledButtonWrap>
+                    </NavLinks>
 
                     <TradeButton
                         bgColor={theme.headerButtonBg}
@@ -113,8 +113,8 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
                     <Hamburger onClick={toggleMobileNav}/>
                     <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
                 </HeaderWrap>
-          </StyledHeader>
-      );
+            </StyledHeader>
+        );
     }
 }
 
@@ -122,11 +122,10 @@ export const Header = withTheme(HeaderBase);
 
 const NavItem = (props): React.ReactNode => {
     const { link, index } = props;
-    const Wrapper = link.dropdownComponent ? LinkWrap : React.Fragment;
     const Subnav = link.dropdownComponent;
 
     return (
-        <Wrapper key={`nav-${index}`}>
+        <LinkWrap key={`nav-${index}`}>
             <StyledNavLink
                 to={link.url}
                 isTransparent={true}
@@ -140,24 +139,22 @@ const NavItem = (props): React.ReactNode => {
                     <Subnav />
                 </DropdownWrap>
             }
-        </Wrapper>
+        </LinkWrap>
     );
 };
 
-const StyledHeader = styled(Section.withComponent('header'))<HeaderProps>`
+const StyledHeader = styled.header<HeaderProps>`
+    padding: 30px;
+
     @media (max-width: 800px) {
         min-height: ${props => props.isOpen ? '385px' : '70px'};
         overflow: hidden;
         position: relative;
         transition: min-height 0.25s ease-in-out;
     }
-
-    @media (max-width: 800px) {
-        background-color: ${props => props.theme.bgColor};
-    }
 `;
 
-const LinkWrap = styled.div`
+const LinkWrap = styled.li`
     position: relative;
 
     a {
@@ -189,7 +186,7 @@ const StyledNavLink = styled(ReactRouterLink).attrs({
     }
 `;
 
-const HeaderWrap = styled(Wrap)`
+const HeaderWrap = styled(FlexWrap)`
   justify-content: space-between;
   align-items: center;
 
@@ -200,7 +197,7 @@ const HeaderWrap = styled(Wrap)`
   }
 `;
 
-const StyledButtonWrap = styled.div`
+const NavLinks = styled.ul`
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -249,7 +246,7 @@ const DropdownWrap = styled.div<DropdownWrapInterface>`
     	margin-left: -11px;
     }
 
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 768px) {
         display: none;
     }
 `;

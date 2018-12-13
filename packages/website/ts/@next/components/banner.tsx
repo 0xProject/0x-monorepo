@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import {colors} from 'ts/style/colors';
 
 import {Button} from 'ts/@next/components/button';
-import {Wrap, WrapCentered} from 'ts/@next/components/layout';
 import {ThemeInterface} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 

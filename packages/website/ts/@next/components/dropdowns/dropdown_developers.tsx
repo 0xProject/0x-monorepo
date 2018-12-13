@@ -4,7 +4,7 @@ import {Link as RouterLink} from 'react-router-dom';
 import styled, {withTheme} from 'styled-components';
 
 import {Button} from 'ts/@next/components/button';
-import {Column, Wrap, WrapGrid} from 'ts/@next/components/layout';
+import {Column, FlexWrap, WrapGrid} from 'ts/@next/components/newLayout';
 import {Heading} from 'ts/@next/components/text';
 import {GlobalStyle} from 'ts/@next/constants/globalStyle';
 
@@ -90,7 +90,7 @@ export const DropdownDevelopers = withTheme((props: Props) => (
             </div>
 
             <StyledWrap>
-                <Column colWidth="1/2" isNoPadding={true}>
+                <Column width="calc(100% - 15px)">
                     <Heading
                         asElement="h4"
                         size={14}
@@ -112,7 +112,7 @@ export const DropdownDevelopers = withTheme((props: Props) => (
                     </ul>
                 </Column>
 
-                <Column colWidth="1/2" isNoPadding={true}>
+                <Column width="calc(100% - 15px)">
                     <Heading asElement="h4" size={14} color="inherit" isMuted={0.35}>
                         Useful Links
                     </Heading>
@@ -155,7 +155,7 @@ const StyledGrid = styled(WrapGrid.withComponent('ul'))`
     }
 `;
 
-const StyledWrap = styled(Wrap)`
+const StyledWrap = styled(FlexWrap)`
     padding-top: 20px;
     margin-top: 30px;
     position: relative;

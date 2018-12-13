@@ -1,12 +1,7 @@
 import * as React from 'react';
-import {Button, ButtonWrap, Link} from 'ts/@next/components/button';
-import {Icon, InlineIconWrap} from 'ts/@next/components/icon';
-import {Wrap, WrapCentered, WrapGrid} from 'ts/@next/components/layout';
-import {Heading, Paragraph} from 'ts/@next/components/text';
-
-import {Column, Section} from 'ts/@next/components/newLayout';
 
 import {BlockIconLink} from 'ts/@next/components/blockIconLink';
+import {Section} from 'ts/@next/components/newLayout';
 
 interface Props {
     onContactClick?: () => void;

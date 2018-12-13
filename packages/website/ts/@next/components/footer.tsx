@@ -3,14 +3,9 @@ import * as React from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
-import { BREAKPOINTS, Column, Section, Wrap, WrapGrid } from 'ts/@next/components/layout';
 import { Logo } from 'ts/@next/components/logo';
+import { Column, FlexWrap, WrapGrid } from 'ts/@next/components/newLayout';
 import { NewsletterForm } from 'ts/@next/components/newsletter_form';
-
-interface FooterInterface {
-}
 
 interface LinkInterface {
     text: string;
@@ -66,15 +61,15 @@ const linkRows: LinkRows[] = [
     },
 ];
 
-export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
-    <FooterWrap bgColor="#181818" isNoMargin={true} padding={40}>
-        <Wrap>
-            <FooterColumn width="35%" isNoPadding={true}>
+export const Footer: React.StatelessComponent = () => (
+    <FooterWrap>
+        <FlexWrap>
+            <FooterColumn width="35%">
                 <Logo isLight={true} />
                 <NewsletterForm />
             </FooterColumn>
 
-            <FooterColumn width="55%" isNoPadding={true}>
+            <FooterColumn width="55%">
                 <WrapGrid isCentered={false} isWrapped={true}>
                     {_.map(linkRows, (row, index) => (
                         <FooterSectionWrap
@@ -92,7 +87,7 @@ export const Footer: React.StatelessComponent<FooterInterface> = ({}) => (
                     ))}
                 </WrapGrid>
             </FooterColumn>
-        </Wrap>
+        </FlexWrap>
     </FooterWrap>
 );
 
@@ -108,38 +103,40 @@ const LinkList = (props: LinkListProps) => (
   </List>
 );
 
-const FooterSection = styled.footer`
+const FooterWrap = styled.footer`
     padding: 40px 30px 30px 30px;
     margin-top: 30px;
     background-color: ${props => props.theme.footerBg};
-`;
-
-const FooterWrap = styled(FooterSection)`
     color: ${props => props.theme.footerColor};
 
     path {
         fill: ${props => props.theme.footerColor};
     }
 
-    @media (min-width: ${BREAKPOINTS.mobile}) {
+    @media (min-width: 768px) {
         height: 350px;
     }
 `;
 
 const FooterColumn = styled(Column)`
-    @media (min-width: ${BREAKPOINTS.mobile}) {
+    @media (min-width: 768px) {
         width: ${props => props.width};
     }
 
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 768px) {
         display: ${props => props.isMobileHidden && 'none'};
         text-align: left;
     }
 `;
 
 const FooterSectionWrap = styled(FooterColumn)`
-    @media (max-width: ${BREAKPOINTS.mobile}) {
+    @media (max-width: 768px) {
         width: 50%;
+
+        & + & {
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
     }
 `;
 
