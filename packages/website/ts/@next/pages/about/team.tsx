@@ -26,7 +26,7 @@ const team: TeamMember[] = [
         title: 'Co-founder & CTO',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/fabiob.jpg',
         name: 'Fabio Berger',
         title: 'senior engineer',
     },
@@ -36,7 +36,7 @@ const team: TeamMember[] = [
         title: 'Director of operations',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/leonidL.jpg',
         name: 'Leonid Logvinov',
         title: 'engineer',
     },
@@ -46,7 +46,7 @@ const team: TeamMember[] = [
         title: 'designer',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/brandonm.jpg',
         name: 'Brandon Millman',
         title: 'senior engineer',
     },
@@ -56,7 +56,7 @@ const team: TeamMember[] = [
         title: 'product manager',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/jacobe.jpg',
         name: 'Jacob Evans',
         title: 'ecosystem engineer',
     },
@@ -76,7 +76,7 @@ const team: TeamMember[] = [
         title: 'blockchain engineer',
     },
     {
-        imageUrl: '/images/@next/team/remco.jpg',
+        imageUrl: '/images/@next/team/remcoB.jpg',
         name: 'Remco Bloemen',
         title: 'technical fellow',
     },
@@ -91,7 +91,7 @@ const team: TeamMember[] = [
         title: 'office ops / executive assistant',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/alexb.jpg',
         name: 'Alex Browne',
         title: 'engineer in residence',
     },
@@ -121,7 +121,7 @@ const team: TeamMember[] = [
         title: 'engineer',
     },
     {
-        imageUrl: '/images/@next/team/weijiew.jpg',
+        imageUrl: '/images/@next/team/weijew.jpg',
         name: 'Weijie Wu',
         title: 'research fellow',
     },
@@ -131,17 +131,17 @@ const team: TeamMember[] = [
         title: 'relayer success manager',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/jasons.jpg',
         name: 'Jason Somensatto',
         title: 'strategic legal counsel',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/steveK.jpg',
         name: 'Steve Klebanoff',
         title: 'senior engineer',
     },
     {
-        imageUrl: '/images/@next/team/melo@2x.jpg',
+        imageUrl: '/images/@next/team/xiannyN.jpg',
         name: 'Xianny Ng',
         title: 'engineer',
     },
