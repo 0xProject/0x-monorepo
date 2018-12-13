@@ -1,6 +1,10 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import {Link} from 'react-router-dom';
+
+import {WrapGrid} from 'ts/@next/components/newLayout';
+
 export class MobileNav extends React.PureComponent {
     public render(): React.Node {
         const { isToggled, toggleMobileNav } = this.props;
@@ -8,14 +12,45 @@ export class MobileNav extends React.PureComponent {
         return (
             <Wrap isToggled={isToggled}>
                 <Section>
-                    <ul>
-                        <li>0x instant</li>
-                        <li>0x Launch Kit</li>
-                    </ul>
+                    <h4>Products</h4>
+
+                    <List>
+                        <li>
+                            <Link to="#">
+                                0x instant
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="#">
+                                0x Launch Kit
+                            </Link>
+                        </li>
+                    </List>
                 </Section>
 
                 <Section isDark={true}>
-                    a
+                    <Grid as="ul" isWrapped={true}>
+                        <li>
+                            <Link to="#">
+                                Why 0x
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="#">
+                                About
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="#">
+                                Products
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="#">
+                                Blog
+                            </Link>
+                        </li>
+                    </Grid>
                 </Section>
 
                 {isToggled &&
@@ -40,6 +75,18 @@ const Wrap = styled.nav`
     z-index: 999;
     top: 0;
     left: 0;
+    font-size: 20px;
+
+    a {
+        padding: 15px 0;
+        display: block;
+        color: inherit;
+    }
+
+    h4 {
+        font-size: 14px;
+        opacity: 0.5;
+    }
 `;
 
 const Overlay = styled.div`
@@ -53,6 +100,19 @@ const Overlay = styled.div`
 
 const Section = styled.div`
     width: 100%;
-    padding: 30px;
+    padding: 15px 30px;
     background-color: ${props => props.isDark && props.theme.mobileNavBgLower};
+`;
+
+const List = styled.ul`
+    li {
+        float: ${props => props.inline && 'left'}''
+    }
+`;
+
+const Grid = styled(WrapGrid)`
+    li {
+        width: 50%;
+        flex-shrink: 0;
+    }
 `;

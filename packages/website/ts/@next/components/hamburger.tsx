@@ -33,7 +33,7 @@ const StyledHamburger = styled.button<Props>`
 
     span {
         display: block;
-        background-color: #fff;
+        background-color: ${props => props.theme.textColor};
         width: 100%;
         height: 2px;
         margin-bottom: 5px;

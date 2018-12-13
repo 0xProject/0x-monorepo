@@ -5,7 +5,6 @@ import { ThemeInterface } from 'ts/@next/components/siteWrap';
 import LogoIcon from 'ts/@next/icons/logo-with-type.svg';
 
 interface LogoInterface {
-    isLight?: boolean;
     theme?: ThemeInterface;
 }
 
@@ -28,11 +27,7 @@ const Icon = styled(LogoIcon)<LogoInterface>`
     flex-shrink: 0;
 
     path {
-        fill: ${(props: LogoInterface) => props.isLight ? '#fff' : props.theme.textColor};
-
-        @media (max-width: 768px) {
-            fill: #fff;
-        }
+        fill: ${(props => props.theme.textColor};
     }
 `;
 
