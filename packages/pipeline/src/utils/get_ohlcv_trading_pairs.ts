@@ -66,7 +66,8 @@ export async function fetchOHLCVTradingPairsAsync(
 
     // match time to special cases
     const specialCases: TradingPair[] = SPECIAL_CASES.map(pair => {
-        const latestSavedTime = R.path<number>([pair.fromSymbol, pair.toSymbol], latestTradingPairsIndex) || earliestBackfillTime;
+        const latestSavedTime =
+            R.path<number>([pair.fromSymbol, pair.toSymbol], latestTradingPairsIndex) || earliestBackfillTime;
         return R.assoc('latestSavedTime', latestSavedTime, pair);
     });
 
@@ -89,12 +90,12 @@ export async function fetchOHLCVTradingPairsAsync(
         `SELECT DISTINCT(maker_token_address) as tokenaddress FROM raw.exchange_fill_events UNION
       SELECT DISTINCT(taker_token_address) as tokenaddress FROM raw.exchange_fill_events`,
     );
-    const eventTokenAddresses = R.pluck('tokenaddress', rawEventTokenAddresses);
+    const eventTokenAddresses = R.pluck('tokenaddress', rawEventTokenAddresses).map(R.toLower);
 
     // join token addresses with CC symbols
     const eventTokenSymbols: string[] = eventTokenAddresses
-        .map(tokenAddress => erc20CoinsIndex.get(tokenAddress.toLowerCase()) || '')
-        .filter(x => x !== '');
+        .filter(tokenAddress => erc20CoinsIndex.has(tokenAddress))
+        .map(tokenAddress => erc20CoinsIndex.get(tokenAddress) as string);
 
     // join traded tokens with fiat and latest backfill time
     const eventTradingPairs: TradingPair[] = R.chain(sym => {
