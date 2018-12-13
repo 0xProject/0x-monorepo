@@ -4,14 +4,14 @@ import { assetDataUtils } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
+import styled from 'styled-components';
 
 import { CheckMark } from 'ts/components/ui/check_mark';
 import { Container } from 'ts/components/ui/container';
 import { MultiSelect } from 'ts/components/ui/multi_select';
-import { Select, SelectItemConfig } from 'ts/components/ui/select';
 import { Spinner } from 'ts/components/ui/spinner';
 import { Text } from 'ts/components/ui/text';
-import { ConfigGeneratorAddressInput } from 'ts/pages/instant/config_generator_address_input';
+import { ConfigGeneratorAddressInput } from 'ts/@next/pages/instant/config_generator_address_input';
 import { FeePercentageSlider } from 'ts/pages/instant/fee_percentage_slider';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
@@ -19,6 +19,7 @@ import { constants } from 'ts/utils/constants';
 
 // New components
 import { Heading, Paragraph } from 'ts/@next/components/text';
+import { Select, SelectItemConfig } from 'ts/@next/pages/instant/select';
 
 import { assetMetaDataMap } from '../../../../../instant/src/data/asset_meta_data_map';
 import { ERC20AssetMetaData, ZeroExInstantBaseConfig } from '../../../../../instant/src/types';
@@ -62,8 +63,8 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         }
         return (
             <Container minWidth="350px">
-                <ConfigGeneratorSection title="Standard relayer API endpoint">
-                    <Select value={value.orderSource} items={this._generateItems()} />
+                <ConfigGeneratorSection title="Liquidity Source">
+                    <Select id="" value={value.orderSource} items={this._generateItems()} />
                 </ConfigGeneratorSection>
                 <ConfigGeneratorSection {...this._getTokenSelectorProps()}>
                     {this._renderTokenMultiSelectOrSpinner()}
@@ -113,7 +114,8 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
     };
     private readonly _generateItems = (): SelectItemConfig[] => {
         return _.map(SRA_ENDPOINTS, endpoint => ({
-            text: endpoint,
+            label: endpoint,
+            value: endpoint,
             onClick: this._handleSRASelection.bind(this, endpoint),
         }));
     };
@@ -252,15 +254,9 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
                 renderItemContent: (isSelected: boolean) => (
                     <Container className="flex items-center">
                         <Container marginRight="10px">
-                            <CheckMark isChecked={isSelected} />
+                            <CheckMark isChecked={isSelected} color={colors.brandLight} />
                         </Container>
-                        <Text
-                            fontSize="16px"
-                            fontColor={isSelected ? colors.mediumBlue : colors.darkerGrey}
-                            fontWeight={300}
-                        >
-                            <b>{metaData.symbol.toUpperCase()}</b> — {metaData.name}
-                        </Text>
+                        <CheckboxText isSelected={isSelected}>{metaData.symbol.toUpperCase()} — {metaData.name}</CheckboxText>
                     </Container>
                 ),
                 onClick: this._handleTokenClick.bind(this, assetData),
@@ -288,27 +284,57 @@ export const ConfigGeneratorSection: React.StatelessComponent<ConfigGeneratorSec
 }) => (
     <Container marginBottom={marginBottom}>
         <Container marginBottom="10px" className="flex justify-between items-center">
-            <Container>
-                <Heading size="small" isNoMargin={true}>
-                    {title}
-                </Heading>
+            <Heading size="small" marginBottom="0" isFlex={true}>
+                <span>{title}</span>
                 {isOptional && (
-                    <Text fontColor={colors.grey} fontSize="16px" lineHeight="18px" display="inline">
-                        {' '}
-                        (optional)
-                    </Text>
+                    <OptionalText>
+                    {' '}
+                    Optional
+                    </OptionalText>
                 )}
-            </Container>
+            </Heading>
             {actionText && (
-                <Text fontSize="12px" fontColor={colors.grey} onClick={onActionTextClick}>
+                <OptionalAction onClick={onActionTextClick}>
                     {actionText}
-                </Text>
+                </OptionalAction>
             )}
         </Container>
         {children}
     </Container>
 );
 
+const Mark = ({ checked }) => (
+    <StyledMark checked={checked}>
+        {checked && ''}
+    </StyledMark>
+);
+
+const StyledMark = styled.div`
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    border-color: ${props => props.checked && colors.brandLight};
+    background-color: ${props => props.checked && colors.brandLight};
+`;
+
 ConfigGeneratorSection.defaultProps = {
     marginBottom: '30px',
 };
+
+const OptionalText = styled.span`
+    display: inline;
+    font-size: 14px;
+    color: #999999;
+    flex-shrink: 0;
+`;
+
+const CheckboxText = styled.span`
+    font-size: 14px;
+    line-height: 18px;
+    color: ${props => props.isSelected ? colors.brandDark : '#666666'}
+`;
+
+const OptionalAction = styled(OptionalText)`
+    cursor: pointer;
+`;

@@ -10,7 +10,9 @@ interface BaseTextInterface extends PaddingInterface {
 interface HeadingProps extends BaseTextInterface {
     asElement?: 'h1'| 'h2'| 'h3'| 'h4';
     maxWidth?: string;
+    fontWeight?: string;
     isCentered?: boolean;
+    isFlex?: boolean;
     isNoMargin?: boolean;
     isMuted?: boolean | number;
     marginBottom?: string;
@@ -26,6 +28,9 @@ interface ParagraphProps extends BaseTextInterface {
 const StyledHeading = styled.h1<HeadingProps>`
     max-width: ${props => props.maxWidth};
     color: ${props => props.color || props.theme.textColor};
+    display: ${props => props.isFlex && `inline-flex`};
+    align-items: center;
+    justify-content: ${props => props.isFlex && `space-between`};
     font-size: ${props => isNaN(props.size) ? `var(--${props.size || 'default'}Heading)` : `${props.size}px`};
     line-height: ${props => `var(--${props.size || 'default'}HeadingHeight)`};
     text-align: ${props => props.isCentered && 'center'};
@@ -34,7 +39,8 @@ const StyledHeading = styled.h1<HeadingProps>`
     margin-right: ${props => props.isCentered && 'auto'};
     margin-bottom: ${props => !props.isNoMargin && (props.marginBottom || '30px')};
     opacity: ${props => typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted};
-    font-weight: ${props => ['h4'].includes(props.asElement) ? 400 : 300};
+    font-weight: ${props => props.fontWeight ? props.fontWeight : (['h4'].includes(props.asElement) ? 400 : 300)};
+    width: ${props => props.isFlex && `100%`};
 `;
 
 export const Heading: React.StatelessComponent<HeadingProps> = props => {

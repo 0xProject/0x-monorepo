@@ -4,8 +4,8 @@ import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
+import { CodeDemo } from 'ts/@next/pages/instant/code_demo';
 import { ConfigGenerator } from 'ts/@next/pages/instant/config_generator';
-import { CodeDemo } from 'ts/pages/instant/code_demo';
 import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 import { WebsitePaths } from 'ts/types';
@@ -44,7 +44,7 @@ export class Configurator extends React.Component<ConfiguratorProps> {
                 </Column>
                 <Column width="560px">
                     <HeadingWrapper>
-                        <Heading size="small">Code Snippet</Heading>
+                        <Heading size="small" marginBottom="15px">Code Snippet</Heading>
                         <Link
                             href={`${WebsitePaths.Wiki}#Get-Started-With-Instant`}
                             isBlock={true}
@@ -87,10 +87,10 @@ export class Configurator extends React.Component<ConfiguratorProps> {
                   )}`
                 : ''
         }
-            }, 'body');
-        </script>
-    </body>
-</html>`;
+                }, 'body');
+            </script>
+        </body>
+    </html>`;
     };
     private readonly _renderAvailableAssetDatasString = (availableAssetDatas: string[]): string => {
         const stringAvailableAssetDatas = availableAssetDatas.map(assetData => `'${assetData}'`);
