@@ -18,43 +18,39 @@ interface StyledProjectInterface {
 const projects: ProjectLogo[] = [
     {
         name: 'Radar Relay',
-        imageUrl: '/images/@next/relayer-logos/logo_1.png',
+        imageUrl: 'images/@next/clients/client-radar.png',
         persistOnMobile: true,
     },
     {
         name: 'Paradex',
-        imageUrl: '/images/@next/relayer-logos/logo_5.png',
-        persistOnMobile: true,
-    },
-    {
-        name: 'Amadeus',
-        imageUrl: '/images/@next/relayer-logos/logo_3.png',
+        imageUrl: 'images/@next/clients/client-paradex.png',
         persistOnMobile: true,
     },
     {
         name: 'The Ocean X',
-        imageUrl: '/images/@next/relayer-logos/logo_4.png',
-    },
-    {
-        name: 'Paradex',
-        imageUrl: '/images/@next/relayer-logos/logo_5.png',
+        imageUrl: 'images/@next/clients/client-oceanx.png',
     },
     {
         name: 'Decent EX',
-        imageUrl: '/images/@next/relayer-logos/logo_2.1.png',
+        imageUrl: 'images/@next/clients/client-decent.png',
     },
     {
         name: 'dEX',
-        imageUrl: '/images/@next/relayer-logos/logo_2.2.png',
+        imageUrl: 'images/@next/clients/client-dex.png',
     },
     {
         name: 'OpenRelay',
-        imageUrl: '/images/@next/relayer-logos/logo_2.3.png',
+        imageUrl: 'images/@next/clients/client-openrelay.png',
+        persistOnMobile: true,
+    },
+    {
+        name: 'Amadeus',
+        imageUrl: 'images/@next/clients/client-amadeus.png',
         persistOnMobile: true,
     },
     {
         name: 'DDEX',
-        imageUrl: '/images/@next/relayer-logos/logo_2.png',
+        imageUrl: 'images/@next/clients/client-ddex.png',
         persistOnMobile: true,
     },
 ];
@@ -88,14 +84,14 @@ const StyledProject = styled.div<StyledProjectInterface>`
     }
 
     @media (min-width: 768px) {
-        width: 120px;
-        height: 120px;
+        width:  auto;
+        height: 50px;
         margin: 30px;
     }
 
     @media (max-width: 768px) {
-        width: 100px;
-        height: 100px;
+        width: auto;
+        height: 42px;
         margin: 15px;
         display: ${props => !props.isOnMobile && 'none'};
     }
