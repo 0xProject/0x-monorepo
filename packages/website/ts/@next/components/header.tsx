@@ -5,7 +5,7 @@ import styled, { withTheme } from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-import { Button, Link, NavLink } from 'ts/@next/components/button';
+import { Button } from 'ts/@next/components/button';
 import { DropdownDevelopers } from 'ts/@next/components/dropdowns/dropdown_developers';
 import { DropdownProducts } from 'ts/@next/components/dropdowns/dropdown_products';
 import { Dropdown } from 'ts/@next/components/dropdowns/mock';
@@ -85,29 +85,6 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
         });
     }
 
-    public getNavItem = (link: NavItem, index: number): React.ReactNode => {
-        const Wrapper = link.dropdownComponent ? LinkWrap : React.Fragment;
-        const Subnav = link.dropdownComponent;
-
-        return (
-            <Wrapper key={`nav-${index}`}>
-                <StyledNavLink
-                    href={link.url}
-                    isTransparent={true}
-                    isNoBorder={true}
-                >
-                    {link.text}
-                </StyledNavLink>
-
-                {link.dropdownComponent &&
-                    <DropdownWrap width={link.dropdownWidth}>
-                        <Subnav />
-                    </DropdownWrap>
-                }
-            </Wrapper>
-        );
-    }
-
     public render(): React.ReactNode {
         const { isOpen } = this.state;
         const { isNavToggled, toggleMobileNav, theme } = this.props;
@@ -121,7 +98,7 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
 
                     <StyledButtonWrap>
                         {_.map(navItems, (link, index) => (
-                          this.getNavItem(link, index)
+                            <NavItem link={link} index={index} />
                         ))}
                     </StyledButtonWrap>
 
@@ -143,6 +120,30 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
 
 export const Header = withTheme(HeaderBase);
 
+const NavItem = (props): React.ReactNode => {
+    const { link, index } = props;
+    const Wrapper = link.dropdownComponent ? LinkWrap : React.Fragment;
+    const Subnav = link.dropdownComponent;
+
+    return (
+        <Wrapper key={`nav-${index}`}>
+            <StyledNavLink
+                to={link.url}
+                isTransparent={true}
+                isNoBorder={true}
+            >
+                {link.text}
+            </StyledNavLink>
+
+            {link.dropdownComponent &&
+                <DropdownWrap width={link.dropdownWidth}>
+                    <Subnav />
+                </DropdownWrap>
+            }
+        </Wrapper>
+    );
+};
+
 const StyledHeader = styled(Section.withComponent('header'))<HeaderProps>`
     @media (max-width: 800px) {
         min-height: ${props => props.isOpen ? '385px' : '70px'};
@@ -156,11 +157,32 @@ const StyledHeader = styled(Section.withComponent('header'))<HeaderProps>`
     }
 `;
 
-const StyledNavLink = styled(NavLink).attrs({
+const LinkWrap = styled.div`
+    position: relative;
+
+    a {
+        display: block;
+    }
+
+    @media (min-width: 800px) {
+        &:hover > div {
+            display: block;
+            visibility: visible;
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            transition: opacity 0.35s, transform 0.35s, visibility 0s;
+        }
+    }
+`;
+
+const StyledNavLink = styled(ReactRouterLink).attrs({
     activeStyle: { opacity: 1 },
 })`
+    color: ${props => props.theme.textColor};
     opacity: 0.5;
     transition: opacity 0.35s;
+    padding: 15px 0;
+    margin: 0 30px;
 
     &:hover {
         opacity: 1;
@@ -185,56 +207,6 @@ const StyledButtonWrap = styled.div`
 
     @media (max-width: 800px) {
         display: none;
-    }
-
-/*
-    @media (max-width: 800px) {
-        background-color: #022924;
-        display: flex;
-        flex-wrap: wrap;
-        padding: 20px 20px;
-
-        a {
-            text-align: left;
-            padding-left: 0;
-        }
-
-        a + a {
-            margin-left: 0;
-        }
-    } */
-`;
-
-const MobileProductLinksWrap = styled(StyledButtonWrap)`
-    display: none;
-
-    @media (max-width: 800px) {
-        display: block;
-        background-color: transparent;
-        flex-direction: column;
-
-        a {
-            display: block;
-            width: 100%;
-        }
-    }
-`;
-
-const LinkWrap = styled.div`
-    position: relative;
-
-    a {
-        display: block;
-    }
-
-    @media (min-width: 800px) {
-        &:hover > div {
-            display: block;
-            visibility: visible;
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-            transition: opacity 0.35s, transform 0.35s, visibility 0s;
-        }
     }
 `;
 
@@ -279,17 +251,6 @@ const DropdownWrap = styled.div<DropdownWrapInterface>`
 
     @media (max-width: ${BREAKPOINTS.mobile}) {
         display: none;
-    }
-`;
-
-const Nav = styled.div`
-    @media (max-width: 800px) {
-        background-color: ${props => props.theme.bgColor};
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        padding-top: 65px;
     }
 `;
 

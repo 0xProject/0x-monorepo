@@ -8,7 +8,7 @@ import { colors } from 'ts/style/colors';
 import {Hero} from 'ts/@next/components/hero';
 
 import { Banner } from 'ts/@next/components/banner';
-import { Link } from 'ts/@next/components/button';
+import { Button } from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Slide, Slider } from 'ts/@next/components/slider/slider';
@@ -84,14 +84,13 @@ export class NextWhy extends React.PureComponent {
                     title="The exchange layer for the crypto economy"
                     description="The world's assets are becoming tokenized on public blockchains. 0x Protocol is free, open-source infrastructure that allows anyone in the world to build products that enable the purchasing and trading of crypto tokens."
                     actions={
-                        <Link
+                        <Button
                             href="/docs"
-                            isCentered={true}
                             isWithArrow={true}
                             isAccentColor={true}
                         >
                           Build on 0x
-                        </Link>
+                        </Button>
                     }
                 />
 

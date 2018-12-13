@@ -21,7 +21,7 @@ const HeroActions = () => (
             Get Started
         </Button>
 
-        <Button href="/why" isTransparent={true} isInline={true}>
+        <Button to="/next/why" isTransparent={true} isInline={true}>
             Learn More
         </Button>
     </>

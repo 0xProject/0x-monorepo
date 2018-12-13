@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import {colors} from 'ts/style/colors';
 
-import {Button, Link} from 'ts/@next/components/button';
+import {Button} from 'ts/@next/components/button';
 import {Wrap, WrapCentered} from 'ts/@next/components/layout';
 import {ThemeInterface} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
@@ -56,11 +56,21 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
             <Column colWidth="1/2" isPadLarge={true}>
                 <ButtonWrap>
                     {mainCta &&
-                        <Link isTransparent={false} href={mainCta.href}>{mainCta.text}</Link>
+                        <Button
+                            isTransparent={false}
+                            href={mainCta.href}
+                        >
+                            {mainCta.text}
+                        </Button>
                     }
 
                     {secondaryCta &&
-                        <Button href={secondaryCta.href} isTransparent={true}>{secondaryCta.text}</Button>
+                        <Button
+                            href={secondaryCta.href}
+                            isTransparent={true}
+                        >
+                            {secondaryCta.text}
+                        </Button>
                     }
                 </ButtonWrap>
             </Column>

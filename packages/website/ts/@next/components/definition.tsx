@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import {Link} from 'ts/@next/components/button';
+import { Button } from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
 import { Paragraph } from 'ts/@next/components/text';
 
@@ -42,15 +42,13 @@ export const Definition = (props: Props) => (
             {props.actions &&
                 <LinkWrap>
                     {props.actions.map((item, index) => (
-                        <Link
+                        <Button
                             href={item.url}
                             isWithArrow={true}
-                            isTransparent={true}
-                            isNoBorder={true}
                             isAccentColor={true}
                         >
                             {item.label}
-                        </Link>
+                        </Button>
                     ))}
                 </LinkWrap>
             }

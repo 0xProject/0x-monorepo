@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { Link } from 'ts/@next/components/button';
+import { Button } from 'ts/@next/components/button';
 import { ChapterLink } from 'ts/@next/components/chapter_link';
 import { Column, Section } from 'ts/@next/components/newLayout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
@@ -37,9 +37,12 @@ export const AboutPageLayout = (props: Props) => (
                    </AnimatedParagraph>
 
                    {(props.linkLabel && props.linkUrl) &&
-                       <AnimatedLink href={props.linkUrl} isNoBorder={true} isWithArrow={true}>
+                        <AnimatedLink
+                          to={props.linkUrl}
+                          isWithArrow={true}
+                        >
                              {props.linkLabel}
-                       </AnimatedLink>
+                        </AnimatedLink>
                    }
                </Column>
            </Column>
@@ -57,6 +60,6 @@ const AnimatedParagraph = styled(Paragraph)`
   ${addFadeInAnimation('0.5s', '0.15s')}
 `;
 
-const AnimatedLink = styled(Link)`
+const AnimatedLink = styled(Button)`
   ${addFadeInAnimation('0.6s', '0.3s')}
 `;

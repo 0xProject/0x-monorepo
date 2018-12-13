@@ -3,7 +3,7 @@ import * as React from 'react';
 import {Link as RouterLink} from 'react-router-dom';
 import styled, {withTheme} from 'styled-components';
 
-import {Link} from 'ts/@next/components/button';
+import {Button} from 'ts/@next/components/button';
 import {Column, Wrap, WrapGrid} from 'ts/@next/components/layout';
 import {Heading} from 'ts/@next/components/text';
 import {GlobalStyle} from 'ts/@next/constants/globalStyle';
@@ -172,7 +172,7 @@ const StyledWrap = styled(Wrap)`
     }
 `;
 
-const StyledLink = styled(Link)`
+const StyledLink = styled(Button)`
     width: 100%;
     position: absolute;
     bottom: 0;

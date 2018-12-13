@@ -24,13 +24,13 @@ export const SectionLandingCta = (props: Props) => (
             icon="getStarted"
             title="Ready to build on 0x?"
             linkLabel="Get Started"
-            linkUrl="#"
+            linkUrl="https://0xproject.com/docs"
         />
         <BlockIconLink
             icon="getInTouch"
             title="Want help from the 0x team?"
             linkLabel="Get in Touch"
-            onClick={props.onContactClick}
+            linkAction={props.onContactClick}
         />
     </Section>
 );

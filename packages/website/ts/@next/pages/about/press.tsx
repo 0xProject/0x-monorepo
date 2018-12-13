@@ -3,7 +3,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { AboutPageLayout } from 'ts/@next/components/aboutPageLayout';
-import { Link } from 'ts/@next/components/button';
+import { Button } from 'ts/@next/components/button';
 import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
 import { Separator } from 'ts/@next/components/separator';
 import { Heading, Paragraph } from 'ts/@next/components/text';
@@ -61,7 +61,7 @@ const Highlight = ({ highlight }) => (
 
         <Column width="60%" maxWidth="560px">
             <Paragraph isMuted={false}>{highlight.text}</Paragraph>
-            <Link href={highlight.href} isWithArrow={true} isNoBorder={true}>Read Article</Link>
+            <Button href={highlight.href} isWithArrow={true} isNoBorder={true}>Read Article</Button>
         </Column>
     </HighlightWrap>
 );
