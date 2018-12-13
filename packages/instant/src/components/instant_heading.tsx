@@ -119,7 +119,7 @@ export class InstantHeading extends React.Component<InstantHeadingProps, {}> {
             <AmountPlaceholder isPulsating={false} color={PLACEHOLDER_COLOR} />,
         );
 
-        const fontSize = typeof ethAmount === 'string' && ethAmount.length >= 13 ? '14px' : '16px';
+        const fontSize = _.isString(ethAmount) && ethAmount.length >= 13 ? '14px' : '16px';
         return (
             <Text
                 fontSize={fontSize}
