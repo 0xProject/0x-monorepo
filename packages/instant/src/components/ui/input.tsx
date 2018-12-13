@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
 
-export interface InputProps {
+export interface InputProps extends React.HTMLAttributes<HTMLInputElement> {
     tabIndex?: number;
     className?: string;
     value?: string;

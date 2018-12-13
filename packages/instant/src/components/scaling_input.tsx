@@ -13,10 +13,10 @@ export enum ScalingInputPhase {
 
 export interface ScalingSettings {
     percentageToReduceFontSizePerCharacter: number;
-    constantPxToIncreaseWidthPerCharacter: number;
 }
 
 export interface ScalingInputProps {
+    type?: string;
     textLengthThreshold: number;
     maxFontSizePx: number;
     value: string;
@@ -31,21 +31,16 @@ export interface ScalingInputProps {
     hasAutofocus: boolean;
 }
 
-export interface ScalingInputState {
-    inputWidthPxAtPhaseChange?: number;
-}
-
 export interface ScalingInputSnapshot {
     inputWidthPx: number;
 }
 
 // These are magic numbers that were determined experimentally.
 const defaultScalingSettings: ScalingSettings = {
-    percentageToReduceFontSizePerCharacter: 0.125,
-    constantPxToIncreaseWidthPerCharacter: 4,
+    percentageToReduceFontSizePerCharacter: 0.1,
 };
 
-export class ScalingInput extends React.Component<ScalingInputProps, ScalingInputState> {
+export class ScalingInput extends React.Component<ScalingInputProps> {
     public static defaultProps = {
         onChange: util.boundNoop,
         onFontSizeChange: util.boundNoop,
@@ -53,9 +48,6 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         scalingSettings: defaultScalingSettings,
         isDisabled: false,
         hasAutofocus: false,
-    };
-    public state: ScalingInputState = {
-        inputWidthPxAtPhaseChange: undefined,
     };
     private readonly _inputRef = React.createRef<HTMLInputElement>();
     public static getPhase(textLengthThreshold: number, value: string): ScalingInputPhase {
@@ -93,36 +85,15 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
             scalingSettings.percentageToReduceFontSizePerCharacter,
         );
     }
-    public getSnapshotBeforeUpdate(): ScalingInputSnapshot {
-        return {
-            inputWidthPx: this._getInputWidthInPx(),
-        };
-    }
     public componentDidMount(): void {
         // Trigger an initial notification of the calculated fontSize.
         const currentPhase = ScalingInput.getPhaseFromProps(this.props);
         const currentFontSize = ScalingInput.calculateFontSizeFromProps(this.props, currentPhase);
         this.props.onFontSizeChange(currentFontSize);
     }
-    public componentDidUpdate(
-        prevProps: ScalingInputProps,
-        prevState: ScalingInputState,
-        snapshot: ScalingInputSnapshot,
-    ): void {
+    public componentDidUpdate(prevProps: ScalingInputProps): void {
         const prevPhase = ScalingInput.getPhaseFromProps(prevProps);
         const curPhase = ScalingInput.getPhaseFromProps(this.props);
-        // if we went from fixed to scaling, save the width from the transition
-        if (prevPhase !== ScalingInputPhase.ScalingFontSize && curPhase === ScalingInputPhase.ScalingFontSize) {
-            this.setState({
-                inputWidthPxAtPhaseChange: snapshot.inputWidthPx,
-            });
-        }
-        // if we went from scaling to fixed, revert back to scaling using `ch`
-        if (prevPhase === ScalingInputPhase.ScalingFontSize && curPhase !== ScalingInputPhase.ScalingFontSize) {
-            this.setState({
-                inputWidthPxAtPhaseChange: undefined,
-            });
-        }
         const prevFontSize = ScalingInput.calculateFontSizeFromProps(prevProps, prevPhase);
         const curFontSize = ScalingInput.calculateFontSizeFromProps(this.props, curPhase);
         // If font size has changed, notify.
@@ -131,14 +102,14 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         }
     }
     public render(): React.ReactNode {
-        const { hasAutofocus, isDisabled, fontColor, onChange, placeholder, value, maxLength } = this.props;
+        const { type, hasAutofocus, isDisabled, fontColor, onChange, placeholder, value, maxLength } = this.props;
         const phase = ScalingInput.getPhaseFromProps(this.props);
         return (
             <Input
-                type="number"
+                type={type}
                 ref={this._inputRef as any}
                 fontColor={fontColor}
-                onChange={onChange}
+                onChange={this._handleChange}
                 value={value}
                 placeholder={placeholder}
                 fontSize={`${this._calculateFontSize(phase)}px`}
@@ -154,19 +125,7 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
         if (_.isEmpty(value)) {
             return `${this.props.emptyInputWidthCh}ch`;
         }
-        switch (phase) {
-            case ScalingInputPhase.FixedFontSize:
-                return `${value.length}ch`;
-            case ScalingInputPhase.ScalingFontSize:
-                const { inputWidthPxAtPhaseChange } = this.state;
-                if (!_.isUndefined(inputWidthPxAtPhaseChange)) {
-                    const charactersOverMax = value.length - textLengthThreshold;
-                    const scalingAmount = scalingSettings.constantPxToIncreaseWidthPerCharacter * charactersOverMax;
-                    const width = inputWidthPxAtPhaseChange + scalingAmount;
-                    return `${width}px`;
-                }
-                return `${textLengthThreshold}ch`;
-        }
+        return `${value.length}ch`;
     };
     private readonly _calculateFontSize = (phase: ScalingInputPhase): number => {
         return ScalingInput.calculateFontSizeFromProps(this.props, phase);
@@ -177,5 +136,13 @@ export class ScalingInput extends React.Component<ScalingInputProps, ScalingInpu
             return 0;
         }
         return ref.getBoundingClientRect().width;
+    };
+    private readonly _handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = event.target.value;
+        const { maxLength } = this.props;
+        if (!_.isUndefined(value) && !_.isUndefined(maxLength) && value.length > maxLength) {
+            return;
+        }
+        this.props.onChange(event);
     };
 }
