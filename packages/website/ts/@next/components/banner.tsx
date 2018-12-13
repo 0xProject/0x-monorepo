@@ -43,8 +43,8 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
             <Border/>
             <Border isBottom={true} />
 
-            <Column colWidth="1/2" isPadLarge={true}>
-                <CustomHeading isNoMargin={true}>{heading}</CustomHeading>
+            <Column>
+                <CustomHeading>{heading}</CustomHeading>
 
                 {subline &&
                     <Paragraph isMuted={0.5} isNoMargin={true}>
@@ -52,7 +52,7 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
                     </Paragraph>
                 }
             </Column>
-            <Column colWidth="1/2" isPadLarge={true}>
+            <Column>
                 <ButtonWrap>
                     {mainCta &&
                         <Button

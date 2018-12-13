@@ -18,7 +18,7 @@ interface Props {
     icon: string;
     iconSize?: 'medium' | 'large' | number;
     title: string;
-    description: React.Node;
+    description: Node;
     actions?: Action[];
 }
 
@@ -43,6 +43,7 @@ export const Definition = (props: Props) => (
                 <LinkWrap>
                     {props.actions.map((item, index) => (
                         <Button
+                            key={`dlink-${index}`}
                             href={item.url}
                             isWithArrow={true}
                             isAccentColor={true}
@@ -56,7 +57,7 @@ export const Definition = (props: Props) => (
     </Wrap>
 );
 
-const Wrap = styled.div`
+const Wrap = styled.div<Props>`
     max-width: ${props => props.isInline && '354px'};
 
     & + & {
@@ -81,7 +82,7 @@ const Wrap = styled.div`
     }
 `;
 
-const TextWrap = styled.div`
+const TextWrap = styled.div<Props>`
     width: 100%;
     max-width: 560px;
 

@@ -15,8 +15,8 @@ interface ButtonInterface {
     isAccentColor?: boolean;
     hasIcon?: boolean | string;
     isInline?: boolean;
-    type?: string;
     href?: string;
+    to?: string;
     onClick?: () => any;
     theme?: {
         textColor: string;

@@ -66,6 +66,7 @@
         "react-loadable": "^5.5.0",
         "react-popper": "^1.0.0-beta.6",
         "react-redux": "^5.0.3",
+        "react-responsive": "^6.0.1",
         "react-scroll": "0xproject/react-scroll#pr-330-and-replace-state",
         "react-syntax-highlighter": "^10.1.1",
         "react-tooltip": "^3.2.7",

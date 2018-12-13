@@ -1,10 +1,11 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import MediaQuery from 'react-responsive';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Logo } from 'ts/@next/components/logo';
-import { Column, FlexWrap, WrapGrid } from 'ts/@next/components/newLayout';
+import { Column, ColumnProps, FlexWrap, WrapGrid } from 'ts/@next/components/newLayout';
 import { NewsletterForm } from 'ts/@next/components/newsletter_form';
 
 interface LinkInterface {
@@ -15,6 +16,7 @@ interface LinkInterface {
 
 interface LinkRows {
     heading: string;
+    isOnMobile?: boolean;
     links: LinkInterface[];
 }
 
@@ -65,25 +67,22 @@ export const Footer: React.StatelessComponent = () => (
     <FooterWrap>
         <FlexWrap>
             <FooterColumn width="35%">
-                <Logo isLight={true} />
+                <Logo />
                 <NewsletterForm />
             </FooterColumn>
 
             <FooterColumn width="55%">
                 <WrapGrid isCentered={false} isWrapped={true}>
-                    {_.map(linkRows, (row, index) => (
-                        <FooterSectionWrap
-                            key={`fc-${index}`}
-                            colWidth="1/4"
-                            isNoPadding={true}
-                            isMobileHidden={!row.isOnMobile}
-                        >
-                            <RowHeading>
-                                {row.heading}
-                            </RowHeading>
+                    {_.map(linkRows, (row: LinkRows, index) => (
+                        <MediaQuery minWidth={row.isOnMobile ? 0 : 768}>
+                            <FooterSectionWrap key={`fc-${index}`}>
+                                <RowHeading>
+                                    {row.heading}
+                                </RowHeading>
 
-                            <LinkList links={row.links} />
-                        </FooterSectionWrap>
+                                <LinkList links={row.links} />
+                            </FooterSectionWrap>
+                        </MediaQuery>
                     ))}
                 </WrapGrid>
             </FooterColumn>
@@ -124,7 +123,6 @@ const FooterColumn = styled(Column)`
     }
 
     @media (max-width: 768px) {
-        display: ${props => props.isMobileHidden && 'none'};
         text-align: left;
     }
 `;

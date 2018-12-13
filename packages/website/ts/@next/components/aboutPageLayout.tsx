@@ -11,9 +11,10 @@ import { addFadeInAnimation } from 'ts/@next/constants/animations';
 
 interface Props {
     title: string;
-    description: React.Node;
+    description: Node;
     linkLabel?: string;
     linkUrl?: string;
+    children?: Node;
 }
 
 export const AboutPageLayout = (props: Props) => (
@@ -28,9 +29,9 @@ export const AboutPageLayout = (props: Props) => (
 
            <Column width="70%" maxWidth="800px">
                <Column width="100%" maxWidth="680px">
-                   <AnimatedHeading size="medium">
-                     {props.title}
-                   </AnimatedHeading>
+                    <AnimatedHeading size="medium">
+                        {props.title}
+                    </AnimatedHeading>
 
                    <AnimatedParagraph size="medium" marginBottom="60px" isMuted={0.65}>
                      {props.description}
@@ -38,14 +39,14 @@ export const AboutPageLayout = (props: Props) => (
 
                    {(props.linkLabel && props.linkUrl) &&
                         <AnimatedLink
-                          to={props.linkUrl}
-                          isWithArrow={true}
+                            to={props.linkUrl}
+                            isWithArrow={true}
                         >
-                             {props.linkLabel}
+                            {props.linkLabel}
                         </AnimatedLink>
                    }
-               </Column>
-           </Column>
+                </Column>
+            </Column>
         </Section>
 
         {props.children}

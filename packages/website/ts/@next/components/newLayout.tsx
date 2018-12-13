@@ -1,7 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-interface WrapProps {
+export interface WrapProps {
+    bgColor?: string;
     offsetTop?: string;
     maxWidth?: string;
     wrapWidth?: string;
@@ -11,7 +12,7 @@ interface WrapProps {
     isWrapped?: boolean;
 }
 
-interface WrapGridProps {
+export interface WrapGridProps {
     isWrapped?: boolean;
     isCentered?: boolean;
 }
@@ -20,7 +21,7 @@ export interface WrapStickyProps {
     offsetTop?: string;
 }
 
-interface SectionProps extends WrapProps {
+export interface SectionProps extends WrapProps {
     isPadded?: boolean;
     isFullWidth?: boolean;
     isFlex?: boolean;
@@ -28,15 +29,16 @@ interface SectionProps extends WrapProps {
     flexBreakpoint?: string;
     maxWidth?: string;
     bgColor?: 'dark' | 'light' | string;
+    children: any;
 }
 
-interface FlexProps {
+export interface FlexProps {
     padding?: string;
     isFlex?: boolean;
     flexBreakpoint?: string;
 }
 
-interface ColumnProps {
+export interface ColumnProps {
     padding?: string;
     width?: string;
     maxWidth?: string;

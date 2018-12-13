@@ -72,7 +72,7 @@ export const Next0xInstant = () => (
           <MarqueeWrap>
               <div>
                   {[...Array(12)].map((item, index) => (
-                    <Card index={index}>
+                    <Card key={`card-${index}`} index={index}>
                       <img src={`/images/@next/0x-instant/widget-${(index % 6) + 1}.png`} />
                     </Card>
                   ))}
@@ -83,6 +83,7 @@ export const Next0xInstant = () => (
         <Section>
             {_.map(featuresData, (item, index) => (
                 <Definition
+                    key={`definition-${index}`}
                     icon={item.icon}
                     title={item.title}
                     description={item.description}

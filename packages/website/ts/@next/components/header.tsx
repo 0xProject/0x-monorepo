@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import * as React from 'react';
+import MediaQuery from 'react-responsive';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled, { withTheme } from 'styled-components';
 
@@ -10,11 +11,15 @@ import { Hamburger } from 'ts/@next/components/hamburger';
 import { Logo } from 'ts/@next/components/logo';
 import { MobileNav } from 'ts/@next/components/mobileNav';
 import { FlexWrap } from 'ts/@next/components/newLayout';
+import { ThemeInteface } from 'ts/@next/components/siteWrap';
 import { Paragraph } from 'ts/@next/components/text';
 
 interface HeaderProps {
-    isOpen: boolean;
+    isOpen?: boolean;
     location?: Location;
+    isNavToggled?: boolean;
+    toggleMobileNav: () => void;
+    theme: ThemeInterface;
 }
 
 interface HeaderState {
@@ -89,7 +94,7 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
             <StyledHeader isOpen={isOpen}>
                 <HeaderWrap>
                     <ReactRouterLink to="/next">
-                        <Logo/>
+                        <Logo />
                     </ReactRouterLink>
 
                     <NavLinks>
@@ -102,13 +107,15 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
                         ))}
                     </NavLinks>
 
-                    <TradeButton
-                        bgColor={theme.headerButtonBg}
-                        color="#ffffff"
-                        href="https://0xproject.com/portal"
-                    >
-                        Trade on 0x
-                    </TradeButton>
+                    <MediaQuery minWidth={990}>
+                        <TradeButton
+                            bgColor={theme.headerButtonBg}
+                            color="#ffffff"
+                            href="https://0xproject.com/portal"
+                        >
+                            Trade on 0x
+                        </TradeButton>
+                    </MediaQuery>
 
                     <Hamburger onClick={toggleMobileNav}/>
                     <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
@@ -120,12 +127,12 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
 
 export const Header = withTheme(HeaderBase);
 
-const NavItem = (props): React.ReactNode => {
-    const { link, index } = props;
+const NavItem = (props: NavItem): React.ReactNode => {
+    const { link } = props;
     const Subnav = link.dropdownComponent;
 
     return (
-        <LinkWrap key={`nav-${index}`}>
+        <LinkWrap>
             <StyledNavLink
                 to={link.url}
                 isTransparent={true}
@@ -253,8 +260,4 @@ const DropdownWrap = styled.div<DropdownWrapInterface>`
 
 const TradeButton = styled(Button)`
     padding: 14px 22px !important;
-
-    @media (max-width: 990px) {
-        display: none !important;
-    }
 `;

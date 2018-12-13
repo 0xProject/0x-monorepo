@@ -71,7 +71,7 @@ const GLOBAL_THEMES: ThemeInterface = {
     },
 };
 
-export class SiteWrap extends React.Component {
+export class SiteWrap extends React.Component<Props> {
     public state = {
         isMobileNavOpen: false,
     };
