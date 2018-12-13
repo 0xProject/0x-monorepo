@@ -25,6 +25,7 @@ packages/monorepo-scripts/ @fabioberger
 packages/order-utils/ @fabioberger @LogvinovLeon 
 packages/sol-compiler/ @LogvinovLeon
 packages/sol-cov/ @LogvinovLeon
+packages/sol-meta/ @recmo
 packages/sol-resolver/ @LogvinovLeon
 packages/subproviders/ @fabioberger @dekz
 packages/verdaccio/ @albrow
