@@ -31,22 +31,22 @@ export class MobileNav extends React.PureComponent {
                 <Section isDark={true}>
                     <Grid as="ul" isWrapped={true}>
                         <li>
-                            <Link to="#">
+                            <Link to="/next/why">
                                 Why 0x
                             </Link>
                         </li>
                         <li>
-                            <Link to="#">
+                            <Link to="/next/about/mission">
                                 About
                             </Link>
                         </li>
                         <li>
-                            <Link to="#">
+                            <Link to="/next">
                                 Products
                             </Link>
                         </li>
                         <li>
-                            <Link to="#">
+                            <Link to="https://blog.0xproject.com/latest">
                                 Blog
                             </Link>
                         </li>
