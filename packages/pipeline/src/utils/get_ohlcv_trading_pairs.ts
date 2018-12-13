@@ -90,6 +90,8 @@ export async function fetchOHLCVTradingPairsAsync(
         `SELECT DISTINCT(maker_token_address) as tokenaddress FROM raw.exchange_fill_events UNION
       SELECT DISTINCT(taker_token_address) as tokenaddress FROM raw.exchange_fill_events`,
     );
+
+    // tslint:disable-next-line:no-unbound-method
     const eventTokenAddresses = R.pluck('tokenaddress', rawEventTokenAddresses).map(R.toLower);
 
     // join token addresses with CC symbols
