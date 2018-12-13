@@ -87,7 +87,7 @@ const StyledSlider = styled.div`
         top: calc(50% - 37px);
         border: 0;
         padding: 0;
-        transition: background-color .30s ease-in-out;
+        transition: background-color .40s ease-in-out, visibility .40s ease-in-out, opacity .40s ease-in-out;
 
         &:disabled {
             opacity: 0;
@@ -130,6 +130,7 @@ const StyledSlide = styled.div`
     height: 520px;
     flex: 0 0 auto;
     opacity: 0.3;
+    transition: opacity .40s ease-in-out;
 
     @media (max-width: 500px) {
         width: calc(100vw - 10px - 32px);
