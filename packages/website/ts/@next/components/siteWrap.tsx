@@ -31,6 +31,9 @@ const GLOBAL_THEMES: ThemeInterface = {
         textColor: '#FFFFFF',
         paragraphColor: '#777777',
         linkColor: colors.brandLight,
+        mobileNavBgUpper: '#003831',
+        mobileNavBgLower: '#022924',
+        mobileNavColor: '#FFFFFF',
         dropdownBg: '#111A19',
         dropdownButtonBg: '#003831',
         dropdownColor: '#FFFFFF',
@@ -65,25 +68,47 @@ const GLOBAL_THEMES: ThemeInterface = {
     },
 };
 
-export const SiteWrap: React.StatelessComponent<Props> = props => {
-    const {
-        children,
-        theme = 'dark',
-    } = props;
-    const currentTheme = GLOBAL_THEMES[theme];
+export class SiteWrap extends React.Component {
+    public state = {
+        isMobileNavOpen: false,
+    };
 
-    return (
-        <>
-            <ThemeProvider theme={currentTheme}>
-                <>
-                    <GlobalStyles />
-                    <Header />
-                    <main>
-                        {children}
-                    </main>
-                    <Footer/>
-                </>
-            </ThemeProvider>
-        </>
-    );
-};
+    public toggleMobileNav = () => {
+        this.setState({
+            isMobileNavOpen: !this.state.isMobileNavOpen,
+        }, () => {
+            const overflow = this.state.isMobileNavOpen ? 'hidden' : 'auto';
+            document.documentElement.style.overflowY = overflow;
+        });
+    }
+
+    public render(): React.Node {
+        const {
+            children,
+            theme = 'dark',
+        } = this.props;
+        const { isMobileNavOpen } = this.state;
+        const currentTheme = GLOBAL_THEMES[theme];
+
+        return (
+            <>
+                <ThemeProvider theme={currentTheme}>
+                    <>
+                        <GlobalStyles />
+                        <Header isNavToggled={isMobileNavOpen} toggleMobileNav={this.toggleMobileNav} />
+                        <Main isNavToggled={isMobileNavOpen}>
+                            {children}
+                        </Main>
+                        <Footer/>
+                    </>
+                </ThemeProvider>
+            </>
+        );
+    }
+}
+
+const Main = styled.main`
+    transition: transform 0.5s, opacity 0.5s;
+    transform: translate3d(0, ${props => props.isNavToggled ? '357px' : 0}, 0);
+    opacity: ${props => props.isNavToggled && '0.5'};
+`;

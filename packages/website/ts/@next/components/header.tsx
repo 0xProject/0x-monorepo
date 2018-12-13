@@ -14,6 +14,8 @@ import { BREAKPOINTS, Section, Wrap } from 'ts/@next/components/layout';
 import { Logo } from 'ts/@next/components/logo';
 import { Paragraph } from 'ts/@next/components/text';
 
+import { MobileNav } from 'ts/@next/components/mobileNav';
+
 interface HeaderProps {
     isOpen: boolean;
     location?: Location;
@@ -108,47 +110,32 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
 
     public render(): React.ReactNode {
         const { isOpen } = this.state;
-        const { theme } = this.props;
+        const { isNavToggled, toggleMobileNav, theme } = this.props;
 
         return (
             <StyledHeader isOpen={isOpen}>
-              <HeaderWrap>
-                <ReactRouterLink to="/next">
-                    <Logo/>
-                </ReactRouterLink>
-
-                <Hamburger isOpen={this.state.isOpen} onClick={this.onMenuButtonClick}/>
-
-                <Nav>
-                    <MobileProductLinksWrap>
-                        {_.map(mobileProductLinks, (link, index) => (
-                            <Link
-                                key={`productlink-${index}`}
-                                href={link.url}
-                                isTransparent={true}
-                                isNoBorder={true}
-                            >
-                            {link.text}
-                            </Link>
-                        ))}
-                    </MobileProductLinksWrap>
+                <HeaderWrap>
+                    <ReactRouterLink to="/next">
+                        <Logo/>
+                    </ReactRouterLink>
 
                     <StyledButtonWrap>
-                      {_.map(navItems, (link, index) => (
+                        {_.map(navItems, (link, index) => (
                           this.getNavItem(link, index)
-                      ))}
+                        ))}
                     </StyledButtonWrap>
-                </Nav>
 
-                <TradeButton
-                    bgColor={theme.headerButtonBg}
-                    color="#ffffff"
-                    href="https://0xproject.com/portal"
-                >
-                    Trade on 0x
-                </TradeButton>
+                    <TradeButton
+                        bgColor={theme.headerButtonBg}
+                        color="#ffffff"
+                        href="https://0xproject.com/portal"
+                    >
+                        Trade on 0x
+                    </TradeButton>
 
-              </HeaderWrap>
+                    <Hamburger onClick={toggleMobileNav}/>
+                    <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
+                </HeaderWrap>
           </StyledHeader>
       );
     }
@@ -197,6 +184,11 @@ const StyledButtonWrap = styled.div`
     justify-content: space-between;
 
     @media (max-width: 800px) {
+        display: none;
+    }
+
+/*
+    @media (max-width: 800px) {
         background-color: #022924;
         display: flex;
         flex-wrap: wrap;
@@ -210,7 +202,7 @@ const StyledButtonWrap = styled.div`
         a + a {
             margin-left: 0;
         }
-    }
+    } */
 `;
 
 const MobileProductLinksWrap = styled(StyledButtonWrap)`
@@ -292,7 +284,7 @@ const DropdownWrap = styled.div<DropdownWrapInterface>`
 
 const Nav = styled.div`
     @media (max-width: 800px) {
-        background-color: ${colors.brandDark};
+        background-color: ${props => props.theme.bgColor};
         position: absolute;
         top: 0;
         left: 0;
