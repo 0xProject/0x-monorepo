@@ -184,6 +184,7 @@ export const NextAboutTeam = () => (
     >
         <Section
             maxWidth="1170px"
+            wrapWidth="100%"
             isFlex={true}
             flexBreakpoint="900px"
         >
@@ -206,6 +207,7 @@ export const NextAboutTeam = () => (
         <Section
             bgColor="#F3F6F4"
             maxWidth="1170px"
+            wrapWidth="100%"
             flexBreakpoint="900px"
             isFlex={true}
         >

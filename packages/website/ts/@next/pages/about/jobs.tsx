@@ -44,7 +44,7 @@ export const NextAboutJobs = () => (
         linkLabel="Our mission and values"
         linkUrl="/mission"
     >
-        <Section bgColor="#F3F6F4" isFlex={true} maxWidth="1170px">
+        <Section bgColor="#F3F6F4" isFlex={true} maxWidth="1170px" wrapWidth="100%">
                 <Column maxWidth="442px">
                     <Heading size="medium" marginBottom="30px">
                         Powered by a Diverse Worldwide Community
@@ -62,7 +62,7 @@ export const NextAboutJobs = () => (
                 </Column>
         </Section>
 
-        <Section isFlex={true} maxWidth="1170px">
+        <Section isFlex={true} maxWidth="1170px" wrapWidth="100%">
                 <Column colWidth="1/3">
                     <Heading size="medium">Benefits</Heading>
                 </Column>
@@ -83,7 +83,7 @@ export const NextAboutJobs = () => (
                 </Column>
         </Section>
 
-        <Section isFlex={true} maxWidth="1170px">
+        <Section isFlex={true} maxWidth="1170px" wrapWidth="100%">
             <Column>
                 <Heading size="medium">Current<br/>Openings</Heading>
             </Column>

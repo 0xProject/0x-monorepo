@@ -44,7 +44,7 @@ export const NextAboutMission = () => (
             />
         </Section>
 
-        <Section isFlex={true} maxWidth="1170px">
+        <Section isFlex={true} maxWidth="1170px" wrapWidth="100%">
             <Column>
                 <Heading size="medium">
                     Core Values
