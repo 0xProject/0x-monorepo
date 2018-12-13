@@ -62,8 +62,19 @@ contract MixinBalanceThresholdFilterCore is
     ) 
         external
     {
-        // Validate addresses.
-        validateBalanceThresholdsOrRevert(signerAddress);
+        // Get accounts whose balances must be validated
+        address[] memory addressesToValidate = getAddressesToValidate(signerAddress);
+
+        // Validate account balances
+        uint256 balanceThreshold = BALANCE_THRESHOLD;
+        IThresholdAsset thresholdAsset = THRESHOLD_ASSET;
+        for(uint256 i = 0; i < addressesToValidate.length; ++i) {
+            uint256 addressBalance = thresholdAsset.balanceOf(addressesToValidate[i]);
+            if (addressBalance < balanceThreshold) {
+                revert("AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD");
+            }
+        }
+        emit ValidatedAddresses(addressesToValidate);
         
         // All addresses are valid. Execute fillOrder.
         EXCHANGE.executeTransaction(
@@ -74,20 +85,15 @@ contract MixinBalanceThresholdFilterCore is
         );
     }
 
-    
-
-    /// @dev Validates addresses meet the balance threshold specified by `BALANCE_THRESHOLD`
-    ///      for the asset `THRESHOLD_ASSET`. If one address does not meet the thresold
-    ///      then this function will revert. Which addresses are validated depends on
-    ///      which Exchange function is to be called (defined by `signedExchangeTransaction` above).
-    ///      No parameters are taken as this function reads arguments directly from calldata, to save gas.
-    ///      If all addresses are valid then this function emits a ValidatedAddresses event, listing all
-    ///      of the addresses whose balance thresholds it checked.
-    function validateBalanceThresholdsOrRevert(address signerAddress)
-        internal
+    /// @dev Constructs an array of addresses to be validated.
+    ///      Addresses depend on which Exchange function is to be called
+    ///      (defined by `signedExchangeTransaction` above).
+    /// @param signerAddress Address of transaction signer.
+    /// @return addressesToValidate Array of addresses to validate.
+    function getAddressesToValidate(address signerAddress)
+        internal pure
+        returns (address[] memory addressesToValidate)
     {
-        // Extract addresses to validate from Exchange calldata
-        address[] memory addressesToValidate = new address[](0);
         bytes4 exchangeFunctionSelector = bytes4(exchangeCalldataload(0));
         if(
             exchangeFunctionSelector == batchFillOrdersSelector         || 
@@ -99,21 +105,21 @@ contract MixinBalanceThresholdFilterCore is
             exchangeFunctionSelector == marketSellOrdersNoThrowSelector
         ) {
             addressesToValidate = loadMakerAddressesFromOrderArray(0);
-            recordAddressToValidate(signerAddress, addressesToValidate);
+            addressesToValidate = addressesToValidate.append(signerAddress);
         } else if(
             exchangeFunctionSelector == fillOrderSelector           ||
             exchangeFunctionSelector == fillOrderNoThrowSelector    ||
             exchangeFunctionSelector == fillOrKillOrderSelector
         ) {
             address makerAddress = loadMakerAddressFromOrder(0);
-            recordAddressToValidate(makerAddress, addressesToValidate);
-            recordAddressToValidate(signerAddress, addressesToValidate);
+            addressesToValidate = addressesToValidate.append(makerAddress);
+            addressesToValidate = addressesToValidate.append(signerAddress);
         } else if(exchangeFunctionSelector == matchOrdersSelector) {
-            address leftOrderAddress = loadMakerAddressFromOrder(0);
-            recordAddressToValidate(leftOrderAddress, addressesToValidate);
-            address rightOrderAddress = loadMakerAddressFromOrder(1);
-            recordAddressToValidate(rightOrderAddress, addressesToValidate);
-            recordAddressToValidate(signerAddress, addressesToValidate);
+            address leftMakerAddress = loadMakerAddressFromOrder(0);
+            addressesToValidate = addressesToValidate.append(leftMakerAddress);
+            address rightMakerAddress = loadMakerAddressFromOrder(1);
+            addressesToValidate = addressesToValidate.append(rightMakerAddress);
+            addressesToValidate = addressesToValidate.append(signerAddress);
         } else if(
             exchangeFunctionSelector != cancelOrderSelector         && 
             exchangeFunctionSelector != batchCancelOrdersSelector   &&
@@ -121,16 +127,5 @@ contract MixinBalanceThresholdFilterCore is
         ) {
             revert("INVALID_OR_BLOCKED_EXCHANGE_SELECTOR");
         }
-
-        // Validate account balances
-        uint256 balanceThreshold = BALANCE_THRESHOLD;
-        IThresholdAsset thresholdAsset = THRESHOLD_ASSET;
-        for(uint i = 0; i < addressesToValidate.length; ++i) {
-            uint256 addressBalance = thresholdAsset.balanceOf(addressesToValidate[i]);
-            if (addressBalance < balanceThreshold) {
-                revert("AT_LEAST_ONE_ADDRESS_DOES_NOT_MEET_BALANCE_THRESHOLD");
-            }
-        }
-        emit ValidatedAddresses(addressesToValidate);
     }
 }
