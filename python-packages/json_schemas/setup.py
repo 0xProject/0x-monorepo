@@ -136,7 +136,7 @@ setup(
         "publish": PublishCommand,
         "publish_docs": PublishDocsCommand,
     },
-    install_requires=["jsonschema", "mypy_extensions"],
+    install_requires=["jsonschema", "mypy_extensions", "stringcase"],
     extras_require={
         "dev": [
             "bandit",

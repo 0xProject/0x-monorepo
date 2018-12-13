@@ -6,6 +6,7 @@ from typing import Mapping
 
 from pkg_resources import resource_string
 import jsonschema
+from stringcase import snakecase
 
 
 class _LocalRefResolver(jsonschema.RefResolver):
@@ -13,18 +14,22 @@ class _LocalRefResolver(jsonschema.RefResolver):
 
     def __init__(self):
         """Initialize a new instance."""
-        self.ref_to_file = {
-            "/addressSchema": "address_schema.json",
-            "/hexSchema": "hex_schema.json",
-            "/orderSchema": "order_schema.json",
-            "/wholeNumberSchema": "whole_number_schema.json",
-            "/ECSignature": "ec_signature_schema.json",
-            "/signedOrderSchema": "signed_order_schema.json",
-            "/ecSignatureParameterSchema": (
-                "ec_signature_parameter_schema.json" + ""
-            ),
-        }
         jsonschema.RefResolver.__init__(self, "", "")
+
+    @staticmethod
+    def _ref_to_file(ref: str) -> str:
+        """Translate a JSON schema ref to its corresponding file name.
+
+        >>> _LocalRefResolver._ref_to_file("/addressSchema")
+        'address_schema.json'
+        """
+        _ref = ref.lstrip("/")
+
+        # handle weird special cases
+        _ref = _ref.replace("ECSignature", "EcSignature")
+        _ref = _ref.replace("Schema", "")
+
+        return f"{snakecase(_ref)}_schema.json"
 
     def resolve_from_url(self, url: str) -> str:
         """Resolve the given URL.
@@ -35,15 +40,11 @@ class _LocalRefResolver(jsonschema.RefResolver):
                    `url` does not exist.
         """
         ref = url.replace("file://", "")
-        if ref in self.ref_to_file:
-            return json.loads(
-                resource_string(
-                    "zero_ex.json_schemas", f"schemas/{self.ref_to_file[ref]}"
-                )
+        return json.loads(
+            resource_string(
+                "zero_ex.json_schemas",
+                f"schemas/{_LocalRefResolver._ref_to_file(ref)}",
             )
-        raise jsonschema.ValidationError(
-            f"Unknown ref '{ref}'. "
-            + f"Known refs: {list(self.ref_to_file.keys())}."
         )
 
 
