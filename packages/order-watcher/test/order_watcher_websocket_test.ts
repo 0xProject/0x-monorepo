@@ -41,11 +41,11 @@ describe.only('OrderWatcherWebSocket', async () => {
     let zrxTokenAddress: string;
     let signedOrder: SignedOrder;
     let orderHash: string;
-    let addOrderPayload: { action: string; params: { signedOrder: SignedOrder } };
-    let removeOrderPayload: { action: string; params: { orderHash: string } };
+    let addOrderPayload: { action: string; signedOrder: SignedOrder };
+    let removeOrderPayload: { action: string; orderHash: string };
     const decimals = constants.ZRX_DECIMALS;
     const fillableAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5), decimals);
-    // createFillableSignedOrderAsync is Promise-based, which forces us
+    // HACK: createFillableSignedOrderAsync is Promise-based, which forces us
     // to use Promises instead of the done() callbacks for tests.
     // onmessage callback must thus be wrapped as a Promise.
     const _onMessageAsync = async (client: WebSocket.w3cwebsocket) =>
@@ -88,12 +88,12 @@ describe.only('OrderWatcherWebSocket', async () => {
         );
         orderHash = orderHashUtils.getOrderHashHex(signedOrder);
         addOrderPayload = {
-            action: 'addOrderAsync',
-            params: { signedOrder },
+            action: 'ADD_ORDER',
+            signedOrder,
         };
         removeOrderPayload = {
-            action: 'removeOrder',
-            params: { orderHash },
+            action: 'REMOVE_ORDER',
+            orderHash,
         };
 
         // Prepare OrderWatcher WebSocket server
@@ -118,14 +118,13 @@ describe.only('OrderWatcherWebSocket', async () => {
 
     it('responds to getStats requests correctly', (done: any) => {
         const payload = {
-            action: 'getStats',
-            params: {},
+            action: 'GET_STATS',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(payload));
         wsClient.onmessage = (msg: any) => {
             const responseData = JSON.parse(msg.data);
-            expect(responseData.action).to.be.eq('getStats');
-            expect(responseData.success).to.be.eq(1);
+            expect(responseData.action).to.be.eq('GET_STATS');
+            expect(responseData.success).to.be.true();
             expect(responseData.result.orderCount).to.be.eq(0);
             done();
         };
@@ -133,23 +132,53 @@ describe.only('OrderWatcherWebSocket', async () => {
 
     it('throws an error when an invalid action is attempted', async () => {
         const invalidActionPayload = {
-            action: 'badAction',
-            params: {},
+            action: 'BAD_ACTION',
         };
         wsClient.onopen = () => wsClient.send(JSON.stringify(invalidActionPayload));
         const errorMsg = await _onMessageAsync(wsClient);
         const errorData = JSON.parse(errorMsg.data);
-        expect(errorData.action).to.be.eq('badAction');
-        expect(errorData.success).to.be.eq(0);
-        expect(errorData.result.error).to.be.eq('Error: [Server] Invalid request action: badAction');
+        // tslint:disable-next-line:no-unused-expression
+        expect(errorData.action).to.be.null;
+        expect(errorData.success).to.be.false();
+        expect(errorData.result).to.match(/^Error: Expected request to conform to schema/);
     });
 
-    it('executes addOrderAsync and removeOrder requests correctly', async () => {
+    it('throws an error when we try to add an order without a signedOrder', async () => {
+        const noSignedOrderAddOrderPayload = {
+            action: 'ADD_ORDER',
+            orderHash: '0x0',
+        };
+        wsClient.onopen = () => wsClient.send(JSON.stringify(noSignedOrderAddOrderPayload));
+        const errorMsg = await _onMessageAsync(wsClient);
+        const errorData = JSON.parse(errorMsg.data);
+        // tslint:disable-next-line:no-unused-expression
+        expect(errorData.action).to.be.null;
+        expect(errorData.success).to.be.false();
+        expect(errorData.result).to.match(/^Error: Expected request to conform to schema/);
+    });
+
+    it('throws an error when we try to add a bad signedOrder', async () => {
+        const invalidAddOrderPayload = {
+            action: 'ADD_ORDER',
+            signedOrder: {
+                makerAddress: '0x0',
+            },
+        };
+        wsClient.onopen = () => wsClient.send(JSON.stringify(invalidAddOrderPayload));
+        const errorMsg = await _onMessageAsync(wsClient);
+        const errorData = JSON.parse(errorMsg.data);
+        // tslint:disable-next-line:no-unused-expression
+        expect(errorData.action).to.be.null;
+        expect(errorData.success).to.be.false();
+        expect(errorData.result).to.match(/^Error: Expected request to conform to schema/);
+    });
+
+    it('executes addOrder and removeOrder requests correctly', async () => {
         wsClient.onopen = () => wsClient.send(JSON.stringify(addOrderPayload));
         const addOrderMsg = await _onMessageAsync(wsClient);
         const addOrderData = JSON.parse(addOrderMsg.data);
-        expect(addOrderData.action).to.be.eq('addOrderAsync');
-        expect(addOrderData.success).to.be.eq(1);
+        expect(addOrderData.action).to.be.eq('ADD_ORDER');
+        expect(addOrderData.success).to.be.true();
         expect((wsServer._orderWatcher as any)._orderByOrderHash).to.deep.include({
             [orderHash]: signedOrder,
         });
@@ -157,8 +186,8 @@ describe.only('OrderWatcherWebSocket', async () => {
         wsClient.send(JSON.stringify(removeOrderPayload));
         const removeOrderMsg = await _onMessageAsync(wsClient);
         const removeOrderData = JSON.parse(removeOrderMsg.data);
-        expect(removeOrderData.action).to.be.eq('removeOrder');
-        expect(removeOrderData.success).to.be.eq(1);
+        expect(removeOrderData.action).to.be.eq('REMOVE_ORDER');
+        expect(removeOrderData.success).to.be.true();
         expect((wsServer._orderWatcher as any)._orderByOrderHash).to.not.deep.include({
             [orderHash]: signedOrder,
         });
@@ -175,8 +204,8 @@ describe.only('OrderWatcherWebSocket', async () => {
         // Ensure that orderStateInvalid message is received.
         const orderWatcherUpdateMsg = await _onMessageAsync(wsClient);
         const orderWatcherUpdateData = JSON.parse(orderWatcherUpdateMsg.data);
-        expect(orderWatcherUpdateData.action).to.be.eq('orderWatcherUpdate');
-        expect(orderWatcherUpdateData.success).to.be.eq(1);
+        expect(orderWatcherUpdateData.action).to.be.eq('UPDATE');
+        expect(orderWatcherUpdateData.success).to.be.true();
         const invalidOrderState = orderWatcherUpdateData.result as OrderStateInvalid;
         expect(invalidOrderState.isValid).to.be.false();
         expect(invalidOrderState.orderHash).to.be.eq(orderHash);
@@ -198,8 +227,8 @@ describe.only('OrderWatcherWebSocket', async () => {
             takerAddress,
         );
         const nonZeroMakerFeeOrderPayload = {
-            action: 'addOrderAsync',
-            params: { nonZeroMakerFeeSignedOrder },
+            action: 'ADD_ORDER',
+            signedOrder: nonZeroMakerFeeSignedOrder,
         };
 
         // Set up a second client and have it add the order
