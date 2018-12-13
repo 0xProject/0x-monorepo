@@ -32,9 +32,9 @@ export const Input =
             color: ${props => props.theme[props.fontColor || 'white']} !important;
             opacity: 0.5 !important;
         }
-        &::-webkit-outer-spin-button, &::-webkit-inner-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
+        &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
           }
     }
 `;
