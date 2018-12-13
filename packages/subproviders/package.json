@@ -51,7 +51,6 @@
         "json-rpc-error": "2.0.0",
         "lodash": "^4.17.5",
         "semaphore-async-await": "^1.5.1",
-        "trezor-connect": "^6.0.2",
         "web3-provider-engine": "14.0.6"
     },
     "devDependencies": {
