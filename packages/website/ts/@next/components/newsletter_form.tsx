@@ -58,16 +58,18 @@ export class NewsletterForm extends React.Component {
         e.preventDefault();
 
         const email = this.emailInput.current.value;
+        const referrer = "https://0xproject.com/";
 
         this.setState({ isSubmitted: true });
 
         try {
-            const response = await fetch('/email', {
+            const response = await fetch('https://website-api.0xproject.com/newsletter_subscriber/substack', {
                 method: 'post',
+                mode: 'cors',
                 headers: {
                     'content-type': 'application/json; charset=utf-8',
                 },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email, referrer }),
             });
             const json = await response.json();
 
