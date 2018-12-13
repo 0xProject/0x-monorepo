@@ -11,14 +11,14 @@ import { Hamburger } from 'ts/@next/components/hamburger';
 import { Logo } from 'ts/@next/components/logo';
 import { MobileNav } from 'ts/@next/components/mobileNav';
 import { FlexWrap } from 'ts/@next/components/newLayout';
-import { ThemeInteface } from 'ts/@next/components/siteWrap';
+import { ThemeInterface } from 'ts/@next/components/siteWrap';
 import { Paragraph } from 'ts/@next/components/text';
 
 interface HeaderProps {
     isOpen?: boolean;
     location?: Location;
     isNavToggled?: boolean;
-    toggleMobileNav: () => void;
+    toggleMobileNav?: () => void;
     theme: ThemeInterface;
 }
 
@@ -117,7 +117,7 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
                         </TradeButton>
                     </MediaQuery>
 
-                    <Hamburger onClick={toggleMobileNav}/>
+                    <Hamburger isOpen={isOpen} onClick={toggleMobileNav}/>
                     <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
                 </HeaderWrap>
             </StyledHeader>
@@ -127,17 +127,13 @@ class HeaderBase extends React.Component<HeaderProps, HeaderState> {
 
 export const Header = withTheme(HeaderBase);
 
-const NavItem = (props: NavItem): React.ReactNode => {
+const NavItem = (props: { link: NavItem }): React.ReactNode => {
     const { link } = props;
     const Subnav = link.dropdownComponent;
 
     return (
         <LinkWrap>
-            <StyledNavLink
-                to={link.url}
-                isTransparent={true}
-                isNoBorder={true}
-            >
+            <StyledNavLink to={link.url}>
                 {link.text}
             </StyledNavLink>
 

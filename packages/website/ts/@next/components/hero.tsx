@@ -46,7 +46,7 @@ const Section = styled.section`
     }
 `;
 
-const Wrap = styled.div`
+const Wrap = styled.div<{ isCentered?: boolean }>`
     width: calc(100% - 60px);
     margin: 0 auto;
 
@@ -64,7 +64,7 @@ const Wrap = styled.div`
     }
 `;
 
-const Title = styled.h1`
+const Title = styled.h1<{ isLarge?: any }>`
     font-size: ${props => props.isLarge ? '80px' : '58px'};
     font-weight: 300;
     line-height: 1.1;
@@ -93,7 +93,7 @@ const Description = styled.p`
     }
 `;
 
-const Content = styled.div`
+const Content = styled.div<{ width: string }>`
     width: 100%;
 
     @media (min-width: 768px) {

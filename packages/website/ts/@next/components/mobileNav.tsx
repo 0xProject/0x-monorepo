@@ -5,8 +5,13 @@ import {Link} from 'react-router-dom';
 
 import {WrapGrid} from 'ts/@next/components/newLayout';
 
-export class MobileNav extends React.PureComponent {
-    public render(): React.Node {
+interface Props {
+    isToggled: boolean;
+    toggleMobileNav: () => void;
+}
+
+export class MobileNav extends React.PureComponent<Props> {
+    public render(): React.ReactNode {
         const { isToggled, toggleMobileNav } = this.props;
 
         return (
@@ -14,7 +19,7 @@ export class MobileNav extends React.PureComponent {
                 <Section>
                     <h4>Products</h4>
 
-                    <List>
+                    <ul>
                         <li>
                             <Link to="#">
                                 0x instant
@@ -25,7 +30,7 @@ export class MobileNav extends React.PureComponent {
                                 0x Launch Kit
                             </Link>
                         </li>
-                    </List>
+                    </ul>
                 </Section>
 
                 <Section isDark={true}>
@@ -61,7 +66,7 @@ export class MobileNav extends React.PureComponent {
     }
 }
 
-const Wrap = styled.nav`
+const Wrap = styled.nav<{ isToggled: boolean }>`
     width: 100%;
     height: 357px;
     background-color: ${props => props.theme.mobileNavBgUpper};
@@ -98,16 +103,10 @@ const Overlay = styled.div`
     cursor: pointer;
 `;
 
-const Section = styled.div`
+const Section = styled.div<{ isDark?: boolean }>`
     width: 100%;
     padding: 15px 30px;
     background-color: ${props => props.isDark && props.theme.mobileNavBgLower};
-`;
-
-const List = styled.ul`
-    li {
-        float: ${props => props.inline && 'left'}''
-    }
 `;
 
 const Grid = styled(WrapGrid)`

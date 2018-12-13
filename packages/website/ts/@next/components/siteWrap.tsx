@@ -14,12 +14,28 @@ interface Props {
     children: any;
 }
 
+interface State {
+    isMobileNavOpen: boolean;
+}
+
 // we proabbly want to put this somewhere else (themes)
 export interface ThemeInterface {
     [key: string]: {
         bgColor: string;
+        darkBgColor: string;
+        lightBgColor: string;
         textColor: string;
+        paragraphColor: string;
         linkColor: string;
+        mobileNavBgUpper: string;
+        mobileNavBgLower: string;
+        mobileNavColor: string;
+        dropdownBg: string;
+        dropdownButtonBg: string;
+        dropdownColor: string;
+        headerButtonBg: string;
+        footerBg: string;
+        footerColor: string;
     };
 }
 
@@ -71,7 +87,7 @@ const GLOBAL_THEMES: ThemeInterface = {
     },
 };
 
-export class SiteWrap extends React.Component<Props> {
+export class SiteWrap extends React.Component<Props, State> {
     public state = {
         isMobileNavOpen: false,
     };
@@ -85,7 +101,7 @@ export class SiteWrap extends React.Component<Props> {
         });
     }
 
-    public render(): React.Node {
+    public render(): React.ReactNode {
         const {
             children,
             theme = 'dark',
@@ -110,7 +126,7 @@ export class SiteWrap extends React.Component<Props> {
     }
 }
 
-const Main = styled.main`
+const Main = styled.main<{ isNavtoggled: boolean }>`
     transition: transform 0.5s, opacity 0.5s;
     transform: translate3d(0, ${props => props.isNavToggled ? '357px' : 0}, 0);
     opacity: ${props => props.isNavToggled && '0.5'};
