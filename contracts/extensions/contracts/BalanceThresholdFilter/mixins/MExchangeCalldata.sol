@@ -47,8 +47,7 @@ contract MExchangeCalldata {
         returns (address makerAddress);
 
     /// @dev Extracts the maker addresses from an array of orders stored in the Exchange calldata
-    ///      (which is embedded in `signedExchangeTransaction`), and records them in
-    ///      the running list of addresses to validate.
+    ///      (which is embedded in `signedExchangeTransaction`).
     /// @param orderArrayParamIndex  Index of the order array in the Exchange function's signature
     /// @return makerAddresses The extracted maker addresses.
     function loadMakerAddressesFromOrderArray(uint256 orderArrayParamIndex)

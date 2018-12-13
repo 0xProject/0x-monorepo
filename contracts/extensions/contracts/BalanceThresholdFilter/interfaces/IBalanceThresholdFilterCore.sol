@@ -20,7 +20,6 @@
 pragma solidity 0.4.24;
 
 
-
 contract IBalanceThresholdFilterCore {
     
     /// @dev Executes an Exchange transaction iff the maker and taker meet 

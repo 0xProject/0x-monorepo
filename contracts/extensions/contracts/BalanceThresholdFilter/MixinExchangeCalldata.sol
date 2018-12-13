@@ -78,8 +78,7 @@ contract MixinExchangeCalldata is
     }
 
     /// @dev Extracts the maker addresses from an array of orders stored in the Exchange calldata
-    ///      (which is embedded in `signedExchangeTransaction`), and records them in
-    ///      the running list of addresses to validate.
+    ///      (which is embedded in `signedExchangeTransaction`).
     /// @param orderArrayParamIndex  Index of the order array in the Exchange function's signature
     /// @return makerAddresses The extracted maker addresses.
     function loadMakerAddressesFromOrderArray(uint256 orderArrayParamIndex)
@@ -92,7 +91,7 @@ contract MixinExchangeCalldata is
         uint256 orderArrayLengthInBytes = orderArrayLength * 32;
         uint256 orderArrayElementPtr = orderArrayPtr + 32;
         uint256 orderArrayElementEndPtr = orderArrayElementPtr + orderArrayLengthInBytes;
-        for(uint orderPtrOffset = orderArrayElementPtr; orderPtrOffset < orderArrayElementEndPtr; orderPtrOffset += 32) {
+        for (uint orderPtrOffset = orderArrayElementPtr; orderPtrOffset < orderArrayElementEndPtr; orderPtrOffset += 32) {
             uint256 orderPtr = uint256(loadExchangeData(orderPtrOffset));
             address makerAddress = address(loadExchangeData(orderPtr + orderArrayElementPtr));
             makerAddresses = makerAddresses.append(makerAddress);
