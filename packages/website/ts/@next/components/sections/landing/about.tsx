@@ -80,9 +80,12 @@ const Figure = (props: FigureProps) => (
 
 const FigureValue = styled.dt`
     font-size: 50px;
-    font-size: 40px;
     font-weight: 300;
     margin-bottom: 15px;
+
+    @media (max-width: 768px) {
+        font-size: 40px;
+    }
 `;
 
 const FigureDescription = styled.dd`
