@@ -1,4 +1,13 @@
 import {
+    artifacts as protocolArtifacts,
+    ERC20ProxyContract,
+    ERC20Wrapper,
+    ERC721ProxyContract,
+    ExchangeContract,
+    ExchangeFillEventArgs,
+    ExchangeWrapper,
+} from '@0x/contracts-protocol';
+import {
     chaiSetup,
     constants,
     ERC20BalancesByOwner,
@@ -21,13 +30,8 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
-import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
-import { ExchangeContract, ExchangeFillEventArgs } from '../../generated-wrappers/exchange';
 import { OrderMatcherContract } from '../../generated-wrappers/order_matcher';
 import { artifacts } from '../../src/artifacts';
-import { ERC20Wrapper } from '../utils/erc20_wrapper';
-import { ExchangeWrapper } from '../utils/exchange_wrapper';
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
@@ -97,10 +101,14 @@ describe('OrderMatcher', () => {
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // Deploy ERC721 proxy
-        erc721Proxy = await ERC721ProxyContract.deployFrom0xArtifactAsync(artifacts.ERC721Proxy, provider, txDefaults);
+        erc721Proxy = await ERC721ProxyContract.deployFrom0xArtifactAsync(
+            protocolArtifacts.ERC721Proxy,
+            provider,
+            txDefaults,
+        );
         // Depoy exchange
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
-            artifacts.Exchange,
+            protocolArtifacts.Exchange,
             provider,
             txDefaults,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
@@ -189,7 +197,7 @@ describe('OrderMatcher', () => {
     describe('constructor', () => {
         it('should revert if assetProxy is unregistered', async () => {
             const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-                artifacts.Exchange,
+                protocolArtifacts.Exchange,
                 provider,
                 txDefaults,
                 constants.NULL_BYTES,

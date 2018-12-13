@@ -13,7 +13,6 @@
         "./generated-artifacts/Exchange.json",
         "./generated-artifacts/MixinAuthorizable.json",
         "./generated-artifacts/MultiAssetProxy.json",
-        "./generated-artifacts/OrderMatcher.json",
         "./generated-artifacts/OrderValidator.json",
         "./generated-artifacts/TestAssetProxyDispatcher.json",
         "./generated-artifacts/TestAssetProxyOwner.json",
