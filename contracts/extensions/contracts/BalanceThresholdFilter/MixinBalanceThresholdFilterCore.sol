@@ -18,15 +18,17 @@
 
 pragma solidity 0.4.24;
 
-import "./mixins/MBalanceThresholdFilterCore.sol";
-import "@0x/contracts-utils/contracts/utils/ExchangeSelectors/ExchangeSelectors.sol";
+import "@0x/contracts-libs/contracts/libs/LibExchangeSelectors.sol";
 import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
+import "./mixins/MBalanceThresholdFilterCore.sol";
+import "./MixinExchangeCalldata.sol";
 
 
 contract MixinBalanceThresholdFilterCore is
     MBalanceThresholdFilterCore,
+    MixinExchangeCalldata,
     LibOrder,
-    ExchangeSelectors
+    LibExchangeSelectors
 {
 
     /// @dev Executes an Exchange transaction iff the maker and taker meet 
@@ -72,82 +74,7 @@ contract MixinBalanceThresholdFilterCore is
         );
     }
 
-    /// @dev Emulates the `calldataload` opcode on the embedded Exchange calldata,
-    ///      which is accessed through `signedExchangeTransaction`.
-    /// @param offset  Offset into the Exchange calldata.
-    /// @return value  Corresponding 32 byte value stored at `offset`.
-    function exchangeCalldataload(uint256 offset)
-        internal
-        returns (bytes32 value)
-    {
-        assembly {
-            // Pointer to exchange transaction
-            // 0x04 for calldata selector
-            // 0x40 to access `signedExchangeTransaction`, which is the third parameter
-            let exchangeTxPtr := calldataload(0x44)
-
-            // Offset into Exchange calldata
-            // We compute this by adding 0x24 to the `exchangeTxPtr` computed above.
-            // 0x04 for calldata selector
-            // 0x20 for length field of `signedExchangeTransaction`
-            let exchangeCalldataOffset := add(exchangeTxPtr, add(0x24, offset))
-            value := calldataload(exchangeCalldataOffset)
-        }
-    }
-
-    /// @dev Convenience function that skips the 4 byte selector when loading
-    ///      from the embedded Exchange calldata.
-    /// @param offset  Offset into the Exchange calldata (minus the 4 byte selector)
-    /// @return value  Corresponding 32 byte value stored at `offset` + 4.
-    function loadExchangeData(uint256 offset)
-        internal
-        returns (bytes32 value)
-    {
-        value = exchangeCalldataload(offset + 4);
-    }
-
-    /// @dev A running list is maintained of addresses to validate. 
-    ///     This function records an address in this array.
-    /// @param addressToValidate  Address to record for validation.
-    function recordAddressToValidate(address addressToValidate, address[] memory addressList) 
-        internal
-    {
-        uint256 newAddressListLength = addressList.length + 1;
-        assembly {
-            // Store new array length
-            mstore(addressList, newAddressListLength)
-            mstore(0x40, add(addressList, add(0x20, mul(0x20, newAddressListLength))))
-        }
-        addressList[newAddressListLength - 1] = addressToValidate;
-    }
-
-    /// @dev Extracts the maker address from an order stored in the Exchange calldata
-    ///      (which is embedded in `signedExchangeTransaction`), and records it in
-    ///      the running list of addresses to validate.
-    /// @param orderParamIndex  Index of the order in the Exchange function's signature
-    function loadMakerAddressFromOrder(uint8 orderParamIndex) internal returns (address makerAddress) {
-        uint256 orderPtr = uint256(loadExchangeData(orderParamIndex * 0x20));
-        makerAddress = address(loadExchangeData(orderPtr));
-    }
-
-    /// @dev Extracts the maker addresses from an array of orders stored in the Exchange calldata
-    ///      (which is embedded in `signedExchangeTransaction`), and records them in
-    ///      the running list of addresses to validate.
-    /// @param orderArrayParamIndex  Index of the order array in the Exchange function's signature
-    function loadMakerAddressesFromOrderArray(uint8 orderArrayParamIndex)
-        internal
-        returns (address[] makerAddresses)
-    {
-        uint256 orderArrayPtr = uint256(loadExchangeData(orderArrayParamIndex * 0x20));
-        uint256 orderArrayLength = uint256(loadExchangeData(orderArrayPtr));
-        uint256 orderArrayElementPtr = orderArrayPtr + 0x20;
-        uint256 orderArrayElementEndPtr = orderArrayElementPtr + (orderArrayLength * 0x20);
-        for(uint orderPtrOffset = orderArrayElementPtr; orderPtrOffset < orderArrayElementEndPtr; orderPtrOffset += 0x20) {
-            uint256 orderPtr = uint256(loadExchangeData(orderPtrOffset));
-            address makerAddress = address(loadExchangeData(orderPtr + orderArrayElementPtr));
-            recordAddressToValidate(makerAddress, makerAddresses);
-        }
-    }
+    
 
     /// @dev Validates addresses meet the balance threshold specified by `BALANCE_THRESHOLD`
     ///      for the asset `THRESHOLD_ASSET`. If one address does not meet the thresold
@@ -188,12 +115,10 @@ contract MixinBalanceThresholdFilterCore is
             recordAddressToValidate(rightOrderAddress, addressesToValidate);
             recordAddressToValidate(signerAddress, addressesToValidate);
         } else if(
-            exchangeFunctionSelector == cancelOrderSelector         || 
-            exchangeFunctionSelector == batchCancelOrdersSelector   ||
-            exchangeFunctionSelector == cancelOrdersUpToSelector
+            exchangeFunctionSelector != cancelOrderSelector         && 
+            exchangeFunctionSelector != batchCancelOrdersSelector   &&
+            exchangeFunctionSelector != cancelOrdersUpToSelector
         ) {
-            // Do nothing
-        } else {
             revert("INVALID_OR_BLOCKED_EXCHANGE_SELECTOR");
         }
 
