@@ -42,8 +42,16 @@ describe('format', () => {
             expect(format.ethUnitAmount(BIG_NUMBER_IRRATIONAL)).toBe('5.301 ETH');
         });
         it('shows 1 significant digit when rounded amount would be 0', () => {
-            expect(format.ethUnitAmount(new BigNumber(0.00000045))).toBe('0.0000005 ETH');
-            expect(format.ethUnitAmount(new BigNumber(0.00000044))).toBe('0.0000004 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0.00003))).toBe('0.00003 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0.000034))).toBe('0.00003 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0.000035))).toBe('0.00004 ETH');
+        });
+        it('shows < 0.00001 when hits threshold', () => {
+            expect(format.ethUnitAmount(new BigNumber(0.000011))).toBe('0.00001 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0.00001))).toBe('0.00001 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0.000009))).toBe('< 0.00001 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0.0000000009))).toBe('< 0.00001 ETH');
+            expect(format.ethUnitAmount(new BigNumber(0))).toBe('0 ETH');
         });
         it('returns defaultText param when ethUnitAmount is not defined', () => {
             const defaultText = 'defaultText';
