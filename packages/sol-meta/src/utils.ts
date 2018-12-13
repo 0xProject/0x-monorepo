@@ -2,10 +2,10 @@ import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
 
-// TODO: Replace with Array.flatMap https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatMap
+// TODO(recmo): Replace with Array.flatMap https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatMap
 export const flatMap = <A, B>(a: A[], f: ((a: A) => B[])): B[] => ([] as B[]).concat(..._.map(a, f));
 
-// TODO: Use Map instead?
+// TODO(recmo): Use Map instead?
 export const objectZip = <T>(keys: string[], values: T[]): { [key: string]: T } =>
     keys.reduce<{ [key: string]: T }>(
         (others, key, index) => ({
@@ -15,7 +15,7 @@ export const objectZip = <T>(keys: string[], values: T[]): { [key: string]: T } 
         {},
     );
 
-// TODO: Is the order in Object.keys and Object.values equal?
+// TODO(recmo): Is the order in Object.keys and Object.values equal?
 export const objectMap = <A, B>(obj: { [key: string]: A }, f: (v: A) => B): { [key: string]: B } =>
     objectZip(Object.keys(obj), _.map(_.values(obj), f));
 
@@ -129,7 +129,7 @@ export const nameParameters = (params: S.ParameterList, prefix: string = '_arg')
 
 export const argumentExpressions = (params: S.ParameterList): S.Expression[] =>
     _.map(params.parameters, ({ name }) => {
-        // TODO: rewrite using throw expressions or do notation
+        // TODO(recmo): rewrite using throw expressions or do notation
         if (name !== null) {
             return identifier(name);
         } else {

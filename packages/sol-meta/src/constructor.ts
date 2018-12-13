@@ -11,7 +11,7 @@ export interface ConstructorArguments {
  * Creates a constructor function AST node with a given parameter list
  */
 export function makeConstructor(consArgs: ConstructorArguments): S.FunctionDefinition {
-    // TODO: Only include actually used constructors.
+    // TODO(recmo): Only include actually used constructors.
     return {
         type: S.NodeType.FunctionDefinition,
         name: null,

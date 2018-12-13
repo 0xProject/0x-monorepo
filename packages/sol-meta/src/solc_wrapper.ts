@@ -17,7 +17,7 @@ export const compile = async (sources: SourceCollection, ast: S.SourceUnit) => {
     const compiler = await Solc.getSolcAsync(version);
 
     // Solidity standard JSON input
-    // TODO: Typescript typings
+    // TODO(recmo): Typescript typings
     // See: https://solidity.readthedocs.io/en/develop/using-the-compiler.html#compiler-input-and-output-json-description
     const input = {
         language: 'Solidity',
@@ -27,7 +27,7 @@ export const compile = async (sources: SourceCollection, ast: S.SourceUnit) => {
         },
         settings: {
             remappings: {
-                // TODO
+                // TODO(recmo)
             },
         },
         outputSelection: {

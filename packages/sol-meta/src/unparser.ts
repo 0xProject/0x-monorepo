@@ -1,4 +1,4 @@
-// TODO: instead use https://github.com/prettier-solidity/prettier-plugin-solidity/blob/master/src/printer.js
+// TODO(recmo): instead use https://github.com/prettier-solidity/prettier-plugin-solidity/blob/master/src/printer.js
 
 import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
@@ -103,7 +103,7 @@ const visitor: Visitor<string> = {
         `for (${unparse(i).replace(';', '')}; ${unparse(c)}; ${unparse(l).replace(';', '')}) ${unparse(body)}`,
 
     InlineAssemblyStatement: (
-        { language, body }, // TODO language
+        { language, body }, // TODO(recmo): use language
     ) => `assembly ${unparse(body)}`,
 
     // Types
@@ -123,13 +123,13 @@ const visitor: Visitor<string> = {
     BooleanLiteral: ({ value: isTrue }) => (isTrue ? 'true' : 'false'),
 
     NumberLiteral: (
-        { number: value, subdenomination }, // TODO subdenomination
+        { number: value, subdenomination }, // TODO(recmo): subdenomination
     ) => value,
 
     StringLiteral: ({ value }) => stresc(value),
 
     FunctionCall: (
-        { expression, arguments: args, names }, // TODO: names
+        { expression, arguments: args, names }, // TODO(recmo): names
     ) => `(${unparse(expression)}(${_.map(args, unparse).join(', ')}))`,
 
     Conditional: ({ condition, trueExpression, falseExpression }) =>

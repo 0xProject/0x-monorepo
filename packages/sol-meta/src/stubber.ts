@@ -6,9 +6,7 @@ import * as utils from './utils';
 // tslint:disable-next-line:no-duplicate-imports
 import { argumentExpressions, identifier, nameParameters } from './utils';
 
-// Todo rename to stubber.
-
-// TODO: both Actions and Functions can throw in addition to returning. Throwing should take arbitrary data.
+// TODO(recmo): both Actions and Functions can throw in addition to returning. Throwing should take arbitrary data.
 
 export const mockContractName = (contractName: string) => `${contractName}Mock`;
 export const programmerName = (funcName: string) => `${funcName}Mock`;

@@ -217,7 +217,7 @@ const visitor: Visitor<S.ContractMember[]> = {
             return [getter(node)];
         }
         return [getter(node), setter(node)];
-        // TODO: handle mappings: The keys become additional
+        // TODO(recmo): handle mappings: The keys become additional
         // function arguments to the getter and setter.
     },
 

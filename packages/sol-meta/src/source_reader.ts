@@ -136,11 +136,11 @@ export class ContractReader {
 
         // Recursively parse imported sources
         // Note: This will deadlock on cyclical imports. (We will end up awaiting our own promise.)
-        // TODO: Throw an error instead.
+        // TODO(recmo): Throw an error instead.
         const importInfo = await Promise.all(_.map(importPaths, async path => this._readSourceAsync(path)));
 
         // Compute global scope include imports
-        // TODO: Support `SomeContract as SomeAlias` in import directives.
+        // TODO(recmo): Support `SomeContract as SomeAlias` in import directives.
         let scope: { [name: string]: S.ContractDefinition } = {};
         importInfo.forEach(({ scope: importedContracts }) => {
             scope = { ...scope, ...importedContracts };

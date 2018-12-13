@@ -47,7 +47,7 @@ export function mockContract(
     });
 
     // Find all constructors that require arguments
-    // TODO: Ignore constructors already called from other constructors
+    // TODO(recmo): Ignore constructors already called from other constructors
     const constructors = _.map(
         _.filter(parents, ({ subNodes }) =>
             subNodes.some(
@@ -68,7 +68,7 @@ export function mockContract(
     });
 
     // Find all abstract functions
-    // TODO: Public member variables generate implicit getter functions that can satisfy an abstract.
+    // TODO(recmo): Public member variables generate implicit getter functions that can satisfy an abstract.
     const abstracts = flat.subNodes.filter(
         node => node.type === S.NodeType.FunctionDefinition && node.body === null,
     ) as S.FunctionDefinition[];
@@ -113,7 +113,7 @@ export function mockContract(
             ...sources[path].parsed.children.filter(({ type }) => type === S.NodeType.PragmaDirective),
 
             // Add an import to include the source file
-            // TODO: Make relative
+            // TODO(recmo): Make relative
             {
                 type: S.NodeType.ImportDirective,
                 path,

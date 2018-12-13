@@ -38,12 +38,12 @@ function merge(base: S.ContractMember[], derived: S.ContractMember[]): S.Contrac
         ...modifiers(derived),
     };
 
-    // TODO: Merge constructors
-    // TODO: Implement rules that enforce type signature and visibility etc.
+    // TODO(recmo): Merge constructors
+    // TODO(recmo): Implement rules that enforce type signature and visibility etc.
     //       to be preserved when overriding.
-    // TODO: Check other objects than functions.
-    // TODO: Sort members by type
-    // TODO: Less derived functions remain available through `super`
+    // TODO(recmo): Check other objects than functions.
+    // TODO(recmo): Sort members by type
+    // TODO(recmo): Less derived functions remain available through `super`
     //       and `SomeBase.functionName(...)`.
     return [...others(base), ...others(derived), ...Object.values(mergedModifiers), ...Object.values(mergedFunctions)];
 }
