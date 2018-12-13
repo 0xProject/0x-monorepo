@@ -20,8 +20,8 @@ pragma solidity 0.4.24;
 
 import "@0x/contracts-utils/contracts/utils/LibBytes/LibBytes.sol";
 import "@0x/contracts-utils/contracts/utils/Ownable/Ownable.sol";
-import "../../tokens/ERC20Token/IERC20Token.sol";
-import "../../tokens/ERC721Token/IERC721Token.sol";
+import "@0x/contracts-tokens/contracts/tokens/ERC20Token/IERC20Token.sol";
+import "@0x/contracts-tokens/contracts/tokens/ERC721Token/IERC721Token.sol";
 import "./mixins/MAssets.sol";
 import "./libs/LibConstants.sol";
 
@@ -98,6 +98,7 @@ contract MixinAssets is
     )
         internal
     {
+        // 4 byte id + 12 0 bytes before ABI encoded token address.
         address token = assetData.readAddress(16);
 
         // Transfer tokens.
@@ -149,7 +150,9 @@ contract MixinAssets is
             "INVALID_AMOUNT"
         );
         // Decode asset data.
+        // 4 byte id + 12 0 bytes before ABI encoded token address.
         address token = assetData.readAddress(16);
+        // 4 byte id + 32 byte ABI encoded token address before token id.
         uint256 tokenId = assetData.readUint256(36);
 
         // Perform transfer.

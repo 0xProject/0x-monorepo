@@ -11,6 +11,7 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
+import { artifacts as tokenArtifacts, DummyERC20TokenContract, DummyERC721TokenContract } from '@0x/contracts-tokens';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
@@ -20,8 +21,6 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { DummyERC20TokenContract } from '../../generated-wrappers/dummy_erc20_token';
-import { DummyERC721TokenContract } from '../../generated-wrappers/dummy_erc721_token';
 import { ERC20ProxyContract } from '../../generated-wrappers/erc20_proxy';
 import { ERC721ProxyContract } from '../../generated-wrappers/erc721_proxy';
 import { ExchangeContract, ExchangeFillEventArgs } from '../../generated-wrappers/exchange';
@@ -444,7 +443,7 @@ describe('OrderMatcher', () => {
                 signedOrderLeft.signature,
                 signedOrderRight.signature,
             );
-            const logDecoder = new LogDecoder(web3Wrapper, artifacts);
+            const logDecoder = new LogDecoder(web3Wrapper, { ...artifacts, ...tokenArtifacts });
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                 await web3Wrapper.sendTransactionAsync({
                     data,
@@ -457,6 +456,7 @@ describe('OrderMatcher', () => {
                 txReceipt.logs,
                 log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
             );
+            // Only 2 Fill logs should exist for `matchOrders` call. `fillOrder` should not have been called and should not have emitted a Fill event.
             expect(fillLogs.length).to.be.equal(2);
         });
         it('should only take a spread in rightMakerAsset if entire leftMakerAssetSpread amount can be used to fill rightOrder after matchOrders call', async () => {
@@ -680,7 +680,7 @@ describe('OrderMatcher', () => {
         });
         it('should allow owner to withdraw ERC721 tokens', async () => {
             const erc721Token = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
-                artifacts.DummyERC721Token,
+                tokenArtifacts.DummyERC721Token,
                 provider,
                 txDefaults,
                 constants.DUMMY_TOKEN_NAME,
@@ -725,7 +725,7 @@ describe('OrderMatcher', () => {
         });
         it('should be able to approve an ERC721 token by passing in allowance = 1', async () => {
             const erc721Token = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
-                artifacts.DummyERC721Token,
+                tokenArtifacts.DummyERC721Token,
                 provider,
                 txDefaults,
                 constants.DUMMY_TOKEN_NAME,
@@ -742,7 +742,7 @@ describe('OrderMatcher', () => {
         });
         it('should be able to approve an ERC721 token by passing in allowance > 1', async () => {
             const erc721Token = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
-                artifacts.DummyERC721Token,
+                tokenArtifacts.DummyERC721Token,
                 provider,
                 txDefaults,
                 constants.DUMMY_TOKEN_NAME,

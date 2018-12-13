@@ -230,7 +230,7 @@ contract MixinMatchOrders is
                     // | 932                       | a       | rightMakerAssetData Contents                |
                     // | 932 + a                   | 32      | rightTakerAssetData Length                  |
                     // | 964                       | b       | rightTakerAssetData Contents                |
-                    // | 964 + b                   | 32      | rightSigature Length (always 0)             |
+                    // | 964 + b                   | 32      | rightSignature Length (always 0)            |
 
                     // We assume that `leftOrder.makerAssetData == rightOrder.takerAssetData` and `leftOrder.takerAssetData == rightOrder.makerAssetData`
                     // `EXCHANGE.matchOrders` already makes this assumption, so it is likely
@@ -280,6 +280,7 @@ contract MixinMatchOrders is
                     )
                     mstore(rightSignatureStart, 0)
 
+                    // function selector (4 bytes) + 3 params (3 * 32 bytes) must be stored before `rightOrderStart`
                     let cdStart := sub(rightOrderStart, 100)
 
                     // `fillOrder` selector = 0xb4be83d5
@@ -288,7 +289,7 @@ contract MixinMatchOrders is
                     // Write offset to `rightOrder`
                     mstore(add(cdStart, 4), 96)
 
-                    // Write `takerAssetFillAmount`
+                    // Write `takerAssetFillAmount`, which will be the `leftMakerAssetSpreadAmount` received from the `matchOrders` call
                     mstore(add(cdStart, 36), mload(256))
 
                     // Write offset to `rightSignature`

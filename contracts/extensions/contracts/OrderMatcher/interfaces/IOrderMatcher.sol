@@ -18,7 +18,7 @@
 
 pragma solidity 0.4.24;
 
-import "../../../utils/Ownable/IOwnable.sol";
+import "@0x/contract-utils/contracts/utils/Ownable/IOwnable.sol";
 import "./IMatchOrders.sol";
 import "./IAssets.sol";
 

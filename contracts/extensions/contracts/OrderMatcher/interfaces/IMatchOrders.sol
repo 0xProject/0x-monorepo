@@ -19,7 +19,7 @@
 pragma solidity 0.4.24;
 pragma experimental ABIEncoderV2;
 
-import "../../../protocol/Exchange/libs/LibOrder.sol";
+import "@0x/contracts-libs/contracts/libs/LibOrder.sol";
 
 
 contract IMatchOrders {
