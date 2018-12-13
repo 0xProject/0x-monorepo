@@ -255,9 +255,9 @@ const DropdownWrap = styled.div<DropdownWrapInterface>`
 `;
 
 const TradeButton = styled(Button)`
-    padding: 14px 22px;
+    padding: 14px 22px !important;
 
-    @media (max-width: 928px) {
-        display: none;
+    @media (max-width: 990px) {
+        display: none !important;
     }
 `;
