@@ -21,14 +21,14 @@ export const SectionLandingCta = (props: Props) => (
         flexBreakpoint="900px"
     >
         <BlockIconLink
-            icon=""
+            icon="getStarted"
             title="Ready to build on 0x?"
             linkLabel="Get Started"
             linkUrl="#"
         />
         <BlockIconLink
-            icon="coin"
-            title="Wat help from the 0x team?"
+            icon="getInTouch"
+            title="Want help from the 0x team?"
             linkLabel="Get in Touch"
             onClick={props.onContactClick}
         />
