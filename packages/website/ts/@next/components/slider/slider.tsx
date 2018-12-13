@@ -70,6 +70,12 @@ const StyledSlider = styled.div`
         touch-action: pan-y;
         -webkit-tap-highlight-color: transparent;
         outline: none;
+
+        @media (max-width: 500px) {
+            overflow: hidden;
+            margin-left: -20px;
+            width: calc(100vw - 20px);
+        }
     }
 
     .flickity-viewport {
@@ -132,17 +138,26 @@ const StyledSlide = styled.div`
     opacity: 0.3;
     transition: opacity .40s ease-in-out;
 
+    & + & {
+        margin-left: 30px;
+    }
+
+    @media (max-width: 1200px) {
+        width: 100%;
+    }
+
     @media (max-width: 500px) {
-        width: calc(100vw - 10px - 32px);
+        //width: calc(100vw - 10px - 32px);
+        width: calc(100vw - 10px - 30px);
         height: 450px;
+
+        & + & {
+            margin-left: 10px;
+        }
     }
 
     &.is-selected {
         opacity: 1;
-    }
-
-    & + & {
-        margin-left: 30px;
     }
 `;
 
