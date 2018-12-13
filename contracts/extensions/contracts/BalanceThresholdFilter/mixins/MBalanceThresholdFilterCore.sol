@@ -17,7 +17,6 @@
 */
 
 pragma solidity 0.4.24;
-pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-interfaces/contracts/protocol/Exchange/IExchange.sol";
 import "../interfaces/IThresholdAsset.sol";
@@ -33,10 +32,10 @@ contract MBalanceThresholdFilterCore {
     IThresholdAsset internal THRESHOLD_ASSET;
 
     // The minimum balance of `THRESHOLD_ASSET` that must be held by makers/takers
-    uint256 internal THRESHOLD_BALANCE;
+    uint256 internal BALANCE_THRESHOLD;
     // solhint-enable var-name-mixedcase
 
-    // Addresses that hold at least `THRESHOLD_BALANCE` of `THRESHOLD_ASSET`
+    // Addresses that hold at least `BALANCE_THRESHOLD` of `THRESHOLD_ASSET`
     event ValidatedAddresses (
         address[] addresses
     );
@@ -79,5 +78,5 @@ contract MBalanceThresholdFilterCore {
     ///      No parameters are taken as this function reads arguments directly from calldata, to save gas.
     ///      If all addresses are valid then this function emits a ValidatedAddresses event, listing all
     ///      of the addresses whose balance thresholds it checked.
-    function validateBalanceThresholdsOrRevert() internal;
+    function validateBalanceThresholdsOrRevert(address signerAddress) internal;
 }
