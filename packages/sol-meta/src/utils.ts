@@ -7,7 +7,7 @@ export const flatMap = <A, B>(a: A[], f: ((a: A) => B[])): B[] => ([] as B[]).co
 
 // TODO: Use Map instead?
 export const objectZip = <T>(keys: string[], values: T[]): { [key: string]: T } =>
-    keys.reduce(
+    keys.reduce<{ [key: string]: T }>(
         (others, key, index) => ({
             ...others,
             [key]: values[index],
@@ -19,26 +19,26 @@ export const objectZip = <T>(keys: string[], values: T[]): { [key: string]: T } 
 export const objectMap = <A, B>(obj: { [key: string]: A }, f: (v: A) => B): { [key: string]: B } =>
     objectZip(Object.keys(obj), _.map(_.values(obj), f));
 
-export const objectPromise = async <T>(obj: { [key: string]: Promise<T> }): Promise<{ [key: string]: T }> =>
+export const objectPromiseAsync = async <T>(obj: { [key: string]: Promise<T> }): Promise<{ [key: string]: T }> =>
     objectZip(Object.keys(obj), await Promise.all(Object.values(obj)));
 
 export const objectFilter = <A>(obj: { [key: string]: A }, f: (key: string, v: A) => boolean): { [key: string]: A } =>
     Object.keys(obj)
         .filter(key => f(key, obj[key]))
-        .reduce((a, key) => ({ ...a, [key]: obj[key] }), {});
+        .reduce<{ [key: string]: A }>((a, key) => ({ ...a, [key]: obj[key] }), {});
 
-export const existsAsync = (path: string): Promise<boolean> =>
-    new Promise((resolve, reject) =>
+export const existsAsync = async (path: string): Promise<boolean> =>
+    new Promise<boolean>((resolve, reject) =>
         fs.access(path, fs.constants.R_OK, error => (error ? resolve(false) : resolve(true))),
     );
 
-export const readFileAsync = (path: string): Promise<string> =>
-    new Promise((resolve, reject) =>
+export const readFileAsync = async (path: string): Promise<string> =>
+    new Promise<string>((resolve, reject) =>
         fs.readFile(path, 'utf-8', (error, contents) => (error ? reject(error) : resolve(contents))),
     );
 
-export const writeFileAsync = (path: string, contents: string): Promise<void> =>
-    new Promise((resolve, reject) =>
+export const writeFileAsync = async (path: string, contents: string): Promise<void> =>
+    new Promise<void>((resolve, reject) =>
         fs.writeFile(path, contents, 'utf-8', error => (error ? reject(error) : resolve())),
     );
 

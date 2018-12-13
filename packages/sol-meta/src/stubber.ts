@@ -2,11 +2,9 @@ import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
 
 import * as utils from './utils';
-import { makeConstructor, ConstructorArguments } from './constructor';
-import { identifier, nameParameters, argumentExpressions } from './utils';
-import { visit, Visitor } from './visitor';
-import { FunctionScript, scriptFunction } from './scripter';
-import { exposeNode } from './exposer';
+// Note(recmo): False positive, see https://github.com/palantir/tslint/issues/3418
+// tslint:disable-next-line:no-duplicate-imports
+import { argumentExpressions, identifier, nameParameters } from './utils';
 
 // Todo rename to stubber.
 
@@ -121,7 +119,9 @@ const makeResultType = (name: string, fields: S.ParameterList): S.StructDefiniti
     members: [
         variableDeclaration('_enabled', utils.types.bool),
         variableDeclaration('_reverts', utils.types.bool),
-        ..._.map(fields.parameters, ({ name, typeName }) => variableDeclaration(name as string, typeName)),
+        ..._.map(fields.parameters, ({ name: memberName, typeName }) =>
+            variableDeclaration(memberName as string, typeName),
+        ),
     ],
 });
 

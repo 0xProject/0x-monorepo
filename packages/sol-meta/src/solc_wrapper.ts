@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import * as S from 'solidity-parser-antlr';
 import { ImportContents, StandardOutput } from 'solc';
+import * as S from 'solidity-parser-antlr';
 
 import { Compiler as Solc } from '@0x/sol-compiler';
 

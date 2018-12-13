@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import * as S from 'solidity-parser-antlr';
 
 import * as utils from './utils';
-import { visit, Visitor } from './visitor';
 
 export interface FunctionScriptReturn {
     inputs: { [argName: string]: string };

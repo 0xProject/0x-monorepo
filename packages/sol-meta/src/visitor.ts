@@ -87,7 +87,11 @@ export const isAssemblyExpression = (node: S.ASTNode): node is S.AssemblyExpress
         S.NodeType.HexNumber,
     ].includes(node);
 
-// Dispatches based on node type
+/**
+ * Dispatches based on node type.
+ * @param node The node to dispatch on.
+ * @param visitor A structure containing handlers for different node types.
+ */
 export function visit<T>(node: S.ASTNode, visitor: Visitor<T>): T {
     // Try to dispatch on the exact type
     const indexed = visitor as { [type: string]: (node: S.ASTNode) => T };

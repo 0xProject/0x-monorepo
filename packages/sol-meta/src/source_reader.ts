@@ -1,8 +1,8 @@
+import { Deferred } from '@0x/utils';
 import * as glob from 'glob';
 import * as _ from 'lodash';
 import * as pathUtils from 'path';
 import * as S from 'solidity-parser-antlr';
-import { Deferred } from '@0x/utils';
 
 import * as utils from './utils';
 
@@ -41,7 +41,7 @@ export class ContractReader {
 
     private readonly _opts: SourceReaderOptions;
 
-    private _result: {
+    private readonly _result: {
         [path: string]: Promise<SourceInfo>;
     };
 
@@ -67,10 +67,10 @@ export class ContractReader {
 
     public async processSourcesAsync(): Promise<SourceCollection> {
         // Read all contract sources and imports
-        await Promise.all(_.map(this._opts.sources, path => this._readSourceAsync(path)));
+        await Promise.all(_.map(this._opts.sources, async path => this._readSourceAsync(path)));
 
         // Resolve the result
-        return utils.objectPromise(this._result);
+        return utils.objectPromiseAsync(this._result);
     }
 
     // Takes an import path and returns the absolute file path
@@ -130,12 +130,14 @@ export class ContractReader {
         const imports = parsed.children.filter(
             ({ type }) => type === S.NodeType.ImportDirective,
         ) as S.ImportDirective[];
-        const importPaths = await Promise.all(_.map(imports, ({ path }) => this._resolveAsync(absolutePath, path)));
+        const importPaths = await Promise.all(
+            _.map(imports, async ({ path }) => this._resolveAsync(absolutePath, path)),
+        );
 
         // Recursively parse imported sources
         // Note: This will deadlock on cyclical imports. (We will end up awaiting our own promise.)
         // TODO: Throw an error instead.
-        const importInfo = await Promise.all(_.map(importPaths, path => this._readSourceAsync(path)));
+        const importInfo = await Promise.all(_.map(importPaths, async path => this._readSourceAsync(path)));
 
         // Compute global scope include imports
         // TODO: Support `SomeContract as SomeAlias` in import directives.
@@ -145,7 +147,7 @@ export class ContractReader {
         });
 
         // Add local contracts
-        let contracts: { [name: string]: S.ContractDefinition } = {};
+        const contracts: { [name: string]: S.ContractDefinition } = {};
         utils.contracts(parsed).forEach(contract => {
             contracts[contract.name] = contract;
             scope[contract.name] = contract;

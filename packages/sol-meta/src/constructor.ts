@@ -7,6 +7,9 @@ export interface ConstructorArguments {
     [contractName: string]: utils.Literal[];
 }
 
+/**
+ * Creates a constructor function AST node with a given parameter list
+ */
 export function makeConstructor(consArgs: ConstructorArguments): S.FunctionDefinition {
     // TODO: Only include actually used constructors.
     return {
@@ -32,10 +35,14 @@ export function makeConstructor(consArgs: ConstructorArguments): S.FunctionDefin
     };
 }
 
-// Solidity by itself does not give an error when a contract is unintentionally
-// abstract. We can force Solidity to produce an error and point us to the
-// abstract function by trying to runtime instantiate the contract. This function
-// produces a small contract that tries to instantiate the given contract.
+/**
+ * Solidity by itself does not give an error when a contract is unintentionally
+ * abstract. We can force Solidity to produce an error and point us to the
+ * abstract function by trying to runtime instantiate the contract. This function
+ * produces a small contract that tries to instantiate the given contract.
+ *
+ * @param contractName Name of the contract to force not-abstract.
+ */
 export function nonAbstractForcer(contractName: string): S.ContractDefinition {
     // contract SomeContractNonAbstractForcer {
     //     constructor() {

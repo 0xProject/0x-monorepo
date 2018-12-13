@@ -1,18 +1,17 @@
 import 'source-map-support/register';
 
+import { logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as pathUtils from 'path';
 import * as process from 'process';
-import * as S from 'solidity-parser-antlr';
 import * as yargs from 'yargs';
-import { logUtils } from '@0x/utils';
 
 import { ContractMockOptions, mockContract, mockContractName } from './contract_mocker';
 import { compile } from './solc_wrapper';
 import { readSources, SourceReaderOptions } from './source_reader';
 import { unparse } from './unparser';
 import * as utils from './utils';
-import { visit, Visitor } from './visitor';
+import { visit } from './visitor';
 
 (async () => {
     // Parse command line arguments and handle help
@@ -44,12 +43,12 @@ import { visit, Visitor } from './visitor';
 
     // TODO(recmo): Refactor to use a typed CommandLineOptions object
     let options: Partial<SourceReaderOptions> = {};
-    let defaults: ContractMockOptions = {
+    const defaults: ContractMockOptions = {
         constructors: {},
         scripted: {},
     };
     let contracts: { [contractName: string]: ContractMockOptions } = {};
-    let outputPath = `${process.cwd()}/out`;
+    const outputPath = `${process.cwd()}/out`;
 
     // Handle config file
     if (!_.isUndefined(argv.config)) {
@@ -70,7 +69,7 @@ import { visit, Visitor } from './visitor';
 
     // Handle command line arguments
     if (!_.isUndefined(argv.remapping)) {
-        options.remapping = _.reduce(
+        options.remapping = _.reduce<string[], {}>(
             _.map(argv.remapping as string[], (str: string) => str.split('=', 2)),
             (remappingsAccumulator, [from, to]) => ({ ...remappingsAccumulator, [from]: to }),
             {},
@@ -84,9 +83,7 @@ import { visit, Visitor } from './visitor';
     options.sources = [...options.sources, ...argv._];
 
     // Parse all sources
-    console.time('Parsing sources');
     const sources = await readSources(options.sources, options);
-    console.timeEnd('Parsing sources');
 
     for (const contractName of _.keys(contracts)) {
         logUtils.log(`\n${contractName}`);
@@ -102,21 +99,17 @@ import { visit, Visitor } from './visitor';
         };
 
         // Find path
-        const path = _.find(_.keys(sources), path => contractName in sources[path].contracts);
-        if (_.isUndefined(path)) {
+        const contractPath = _.find(_.keys(sources), path => contractName in sources[path].contracts);
+        if (_.isUndefined(contractPath)) {
             throw new Error(`Could not find contract ${contractName}.`);
         }
 
         // Create mock contract
-        console.time('Generating mocks');
-        const mock = mockContract(sources, path, contractName, spec);
-        console.timeEnd('Generating mocks');
+        const mock = mockContract(sources, contractPath, contractName, spec);
 
         // Optionally test
         if (!_.isUndefined(argv.test)) {
-            console.time('Test compile');
             await compile(sources, mock);
-            console.timeEnd('Test compile');
         }
 
         // Make import paths relative
@@ -131,9 +124,7 @@ import { visit, Visitor } from './visitor';
         );
 
         // Write file
-        console.time('Writing mocks');
         await utils.writeFileAsync(`${outputPath}/${mockContractName(contractName)}.sol`, unparse(mock));
-        console.timeEnd('Writing mocks');
     }
 
     // Exit successfully
@@ -141,6 +132,7 @@ import { visit, Visitor } from './visitor';
 
     // Catch errors, log and exit with failure
 })().catch(err => {
+    // tslint:disable-next-line:no-console
     console.error(err);
     process.exit(1);
 });

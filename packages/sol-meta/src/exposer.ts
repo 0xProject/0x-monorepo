@@ -94,7 +94,7 @@ const wrapFunction = (func: S.FunctionDefinition): S.FunctionDefinition => {
     const params = nameParameters(func.parameters);
     const call: S.FunctionCall = {
         type: S.NodeType.FunctionCall,
-        expression: identifier(func.name as string),
+        expression: identifier(func.name),
         arguments: argumentExpressions(params),
         names: [],
     };

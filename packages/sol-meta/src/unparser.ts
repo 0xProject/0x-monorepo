@@ -63,7 +63,7 @@ const visitor: Visitor<string> = {
         unparse(parameters) +
         '\n' +
         indent(
-            (visibility && visibility != 'default' ? visibility + ' ' : '') +
+            (visibility && visibility !== 'default' ? visibility + ' ' : '') +
                 (stateMutability || '') +
                 _.map(modifiers, unparse).join('\n') +
                 (returnParameters ? `\nreturns ${unparse(returnParameters)}` : ''),
@@ -82,7 +82,7 @@ const visitor: Visitor<string> = {
     Block: ({ statements }) => block(_.map(statements, unparse).join('\n')),
 
     VariableDeclarationStatement: ({ variables, initialValue }) =>
-        _.map(variables, unparse) + (initialValue ? ` = ${unparse(initialValue)};` : ';'),
+        _.map(variables, unparse).join(' ') + (initialValue ? ` = ${unparse(initialValue)};` : ';'),
 
     ExpressionStatement: ({ expression }) => `${unparen(unparse(expression))};`,
 
@@ -120,7 +120,7 @@ const visitor: Visitor<string> = {
 
     Identifier: ({ name }) => name,
 
-    BooleanLiteral: ({ value }) => (value ? 'true' : 'false'),
+    BooleanLiteral: ({ value: isTrue }) => (isTrue ? 'true' : 'false'),
 
     NumberLiteral: (
         { number: value, subdenomination }, // TODO subdenomination
@@ -150,7 +150,7 @@ const visitor: Visitor<string> = {
         `${unparse(typeName)} ` +
         (isIndexed ? 'indexed ' : '') +
         (storageLocation ? storageLocation + ' ' : '') +
-        (visibility && visibility != 'default' ? visibility + ' ' : '') +
+        (visibility && visibility !== 'default' ? visibility + ' ' : '') +
         (isDeclaredConst ? 'constant ' : '') +
         `${name}` +
         (expression ? ` = ${unparse(expression)}` : ''),
@@ -170,7 +170,7 @@ const visitor: Visitor<string> = {
         `let ${_.map(names, unparse).join(', ')} := ${unparse(expression)}`,
 
     AssemblyCall: ({ functionName, arguments: args }) =>
-        args.length == 0 ? functionName : `${functionName}(${_.map(args, unparse).join(', ')})`,
+        args.length === 0 ? functionName : `${functionName}(${_.map(args, unparse).join(', ')})`,
 
     AssemblyIf: ({ condition, body }) => `if ${unparse(condition)} ${unparse(body)}`,
 
@@ -178,16 +178,14 @@ const visitor: Visitor<string> = {
 
     AssemblySwitch: ({ expression, cases }) => `switch ${unparse(expression)}\n${_.map(cases, unparse).join('\n')}`,
 
-    AssemblyCase: ({ value, block }) => `case ${unparse(value)} ${unparse(block)}`,
+    AssemblyCase: ({ value, block: asmBlock }) => `case ${unparse(value)} ${unparse(asmBlock)}`,
 
     DecimalNumber: ({ value }) => value,
 
     HexNumber: ({ value }) => value,
 
     ASTNode: node => {
-        console.log(node);
-        console.trace();
-        return `<${node.type}>`;
+        throw new Error(`Unsupported node type ${node.type}`);
     },
 };
 

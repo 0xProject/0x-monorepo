@@ -4,11 +4,10 @@ import * as S from 'solidity-parser-antlr';
 import { makeConstructor, nonAbstractForcer } from './constructor';
 import { exposeNode } from './exposer';
 import { flattenContract } from './flattener';
-import { stubFunction } from './stubber';
 import { FunctionScript, scriptFunction } from './scripter';
 import { SourceCollection } from './source_reader';
+import { stubFunction } from './stubber';
 import * as utils from './utils';
-import { unparse } from './unparser';
 
 export const mockContractName = (contractName: string) => `${contractName}Mock`;
 
@@ -21,6 +20,13 @@ export interface ContractMockOptions {
     };
 }
 
+/**
+ * Mock a contract by implementing all abstract functions.
+ * @param sources The collection of relevant sources.
+ * @param path Absolute path to the contract source.
+ * @param contractName Name of the contract in the source.
+ * @param options Mocking options such as constructors and scripted behaviour.
+ */
 export function mockContract(
     sources: SourceCollection,
     path: string,
@@ -35,7 +41,6 @@ export function mockContract(
     }
     const [flat, parents] = flattenContract(sourceInfo.contracts[contractName], name => {
         if (!(name in sourceInfo.scope)) {
-            console.log(Object.keys(sourceInfo.scope));
             throw new Error(`Contract ${name} not in scope of ${path}.`);
         }
         return sourceInfo.scope[name];
@@ -87,7 +92,7 @@ export function mockContract(
         ],
         subNodes: [
             // Call parent constructors
-            makeConstructor(utils.objectFilter(options.constructors, (key, _) => constructors.includes(key))),
+            makeConstructor(utils.objectFilter(options.constructors, key => constructors.includes(key))),
 
             // Expose things marked `internal`
             ...utils.flatMap(flat.subNodes, exposeNode),
