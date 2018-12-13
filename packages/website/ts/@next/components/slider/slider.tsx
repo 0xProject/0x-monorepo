@@ -147,7 +147,6 @@ const StyledSlide = styled.div`
     }
 
     @media (max-width: 500px) {
-        //width: calc(100vw - 10px - 32px);
         width: calc(100vw - 10px - 30px);
         height: 450px;
 
