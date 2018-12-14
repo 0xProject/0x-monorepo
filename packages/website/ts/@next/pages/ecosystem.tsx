@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
@@ -52,18 +53,30 @@ const benefits: BenefitProps[] = [
 
 export const NextEcosystem = () => (
   <SiteWrap theme="light">
-    <Section>
+    <Section isTextCentered={true}>
         <Column>
             <Heading size="medium" isCentered={true}>
                 Jumpstart your Business on 0x
             </Heading>
-            <Paragraph size="medium" isCentered={true} isMuted={true}>
+            <Paragraph size="medium" isCentered={true} isMuted={true} marginBottom="0">
                 The Ecosystem Acceleration Program gives teams access to a variety of services including funding, personalized technical support, and recruiting assistance. We created the Ecosystem Acceleration Program to bolster the expansion of both infrastructure projects and relayers building on 0x.
             </Paragraph>
-            <div>
-                <a href="#">Apply Now</a>
-                <a href="#">Learn More</a>
-            </div>
+            <LinkWrap>
+                <Button
+                    to="#"
+                    isWithArrow={true}
+                    isAccentColor={true}
+                >
+                    Apply now
+                </Button>
+                <Button
+                    to="#"
+                    isWithArrow={true}
+                    isAccentColor={true}
+                >
+                    Learn More
+                </Button>
+            </LinkWrap>
         </Column>
     </Section>
 
@@ -90,3 +103,12 @@ export const NextEcosystem = () => (
 
   </SiteWrap>
 );
+
+const LinkWrap = styled.div`
+    display: inline-flex;
+    margin-top: 60px;
+
+    a + a {
+        margin-left: 60px;
+    }
+`;
