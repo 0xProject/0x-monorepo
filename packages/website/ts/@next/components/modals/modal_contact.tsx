@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as React from 'react';
+import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
@@ -16,6 +17,11 @@ interface Props {
     theme?: GlobalStyle;
     isOpen?: boolean;
     onDismiss?: () => void;
+}
+
+interface FormProps {
+    isSuccessful?: boolean;
+    isSubmitting?: boolean;
 }
 
 export class ModalContact extends React.Component<Props> {

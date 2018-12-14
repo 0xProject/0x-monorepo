@@ -5,6 +5,7 @@ import {Hero} from 'ts/@next/components/hero';
 
 import { Banner } from 'ts/@next/components/banner';
 import { Button } from 'ts/@next/components/button';
+import { Definition } from 'ts/@next/components/definition';
 import { Icon } from 'ts/@next/components/icon';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 
