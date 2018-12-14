@@ -71,7 +71,7 @@ export const Next0xInstant = () => (
         <Section isFullWidth={true} isPadded={false} padding="30px 0">
           <MarqueeWrap>
               <div>
-                  {[...Array(12)].map((item, index) => (
+                  {[...Array(18)].map((item, index) => (
                     <Card key={`card-${index}`} index={index}>
                       <img src={`/images/@next/0x-instant/widget-${(index % 6) + 1}.png`} />
                     </Card>
@@ -114,9 +114,10 @@ export const Next0xInstant = () => (
 );
 
 // scroll animation calc is simply (imageWidth * totalRepetitions) / 2
+// img width is 370px
 const scroll = keyframes`
-    0% { transform: translate3d(0, 0, 0) }
-    100% { transform: translate3d(-2220px, 0, 0) }
+    0% { transform: translate3d(-2220px, 0, 0) }
+    100% { transform: translate3d(-4440px, 0, 0) }
 `;
 
 const scrollMobile = keyframes`
@@ -142,6 +143,7 @@ const ConfiguratorSection = styled(Section)<SectionProps>`
 `;
 
 // width = 370 * 12
+// mobile width = 300
 const MarqueeWrap = styled.div`
     width: 100vw;
     height: 514px;
@@ -151,19 +153,20 @@ const MarqueeWrap = styled.div`
         height: auto;
         display: flex;
         will-change: transform;
+        transform: translate3d(-2220px, 0, 0);
     }
 
     @media (min-width: 768px) {
       > div {
-          width: 4440px;
-          animation: ${scroll} 30s linear infinite;
+          width: 6660px;
+          animation: ${scroll} 70s linear infinite;
       }
     }
 
     @media (max-width: 768px) {
       > div {
-          width: 3600px;
-          animation: ${scrollMobile} 30s linear infinite;
+          width: 5400px;
+          animation: ${scrollMobile} 70s linear infinite;
       }
     }
 `;
