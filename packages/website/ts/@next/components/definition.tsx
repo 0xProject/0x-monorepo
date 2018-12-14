@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { Button } from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
-import { Paragraph } from 'ts/@next/components/text';
+import { Paragraph, Heading } from 'ts/@next/components/text';
 
 interface Action {
     label: string;
@@ -18,6 +18,7 @@ interface Props {
     icon: string;
     iconSize?: 'medium' | 'large' | number;
     title: string;
+    titleSize?: 'small' | 'default' | number;
     description: React.ReactNode | string;
     actions?: Action[];
 }
@@ -31,9 +32,14 @@ export const Definition = (props: Props) => (
         />
 
         <TextWrap {...props}>
-            <Title>
+            <Heading
+                asElement="h2"
+                fontWeight="400"
+                marginBottom={props.titleSize === 'small' ? '7px' : '15px'}
+                size={props.titleSize || 'default'}
+            >
                 {props.title}
-            </Title>
+            </Heading>
 
             <Paragraph isMuted={true}>
                 {props.description}
@@ -89,12 +95,6 @@ const TextWrap = styled.div<Props>`
     @media (min-width: 768px) {
         margin-left: ${props => props.isInlineIcon && '60px'};
     }
-`;
-
-const Title = styled.h2`
-    font-size: 20px;
-    line-height: 1.3;
-    margin-bottom: 15px;
 `;
 
 const LinkWrap = styled.div`

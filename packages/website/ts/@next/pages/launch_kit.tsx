@@ -55,6 +55,7 @@ export class NextLaunchKit extends React.PureComponent {
                 >
                     <Definition
                         title="Networked Liquidity Pool"
+                        titleSize="small"
                         description="Tap into and share liquidity with other relayers"
                         icon="supportForAllEthereumStandards"
                         iconSize="large"
@@ -63,6 +64,7 @@ export class NextLaunchKit extends React.PureComponent {
 
                     <Definition
                         title="Extensible Code Repo"
+                        titleSize="small"
                         description="Fork and extend to support modes of exchange"
                         icon="networkedLiquidity"
                         iconSize="large"
@@ -71,6 +73,7 @@ export class NextLaunchKit extends React.PureComponent {
 
                     <Definition
                         title="Exchange Ethereum based Tokens"
+                        titleSize="small"
                         description="Enable trading for any ERC-20 or ERC-721 asset"
                         icon="flexibleIntegration"
                         iconSize="large"
@@ -85,7 +88,8 @@ export class NextLaunchKit extends React.PureComponent {
                         icon={item.icon}
                         title={item.title}
                         description={item.description}
-                        isWithMargin={true}
+                        isInlineIcon={true}
+                        iconSize={240}
                     />
                 ))}
                 </Section>
