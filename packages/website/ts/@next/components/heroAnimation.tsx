@@ -85,6 +85,6 @@ const Rectangle = styled.path`
 `;
 
 const Logo = styled.path`
-    animation: ${spin} 4s -2.65s infinite;
+    animation: ${spin} 4s -2.8s infinite;
     transform-origin: 202px 202.7px;
 `;
