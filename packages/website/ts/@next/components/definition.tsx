@@ -41,9 +41,15 @@ export const Definition = (props: Props) => (
                 {props.title}
             </Heading>
 
-            <Paragraph isMuted={true}>
-                {props.description}
-            </Paragraph>
+            {typeof props.description === 'string' ? (
+                <Paragraph isMuted={true}>
+                    {props.description}
+                </Paragraph>
+            ) : (
+                <>
+                    {props.description}
+                </>
+            )}
 
             {props.actions &&
                 <LinkWrap>
@@ -91,6 +97,17 @@ const Wrap = styled.div<Props>`
 const TextWrap = styled.div<Props>`
     width: 100%;
     max-width: 560px;
+
+    ul {
+        padding-left: 1rem;
+    }
+
+    li {
+        list-style: disc;
+        opacity: 0.75;
+        line-height: 1.444444444;
+        margin-bottom: 1rem;
+    }
 
     @media (min-width: 768px) {
         margin-left: ${props => props.isInlineIcon && '60px'};
