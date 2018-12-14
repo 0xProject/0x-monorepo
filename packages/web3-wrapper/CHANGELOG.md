@@ -5,7 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v3.2.0 - _December 10, 2018_
+## v3.2.1 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v3.2.0 - _December 11, 2018_
 
     * Return `value` and `gasPrice` as BigNumbers to avoid loss of precision errors (#1402)
 

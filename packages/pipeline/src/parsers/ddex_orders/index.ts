@@ -1,7 +1,8 @@
 import { BigNumber } from '@0x/utils';
-import * as R from 'ramda';
 
-import { DdexMarket, DdexOrder, DdexOrderbook } from '../../data_sources/ddex';
+import { aggregateOrders } from '../utils';
+
+import { DdexMarket, DdexOrderbook } from '../../data_sources/ddex';
 import { TokenOrderbookSnapshot as TokenOrder } from '../../entities';
 import { OrderType } from '../../types';
 
@@ -25,19 +26,6 @@ export function parseDdexOrders(
     const parsedBids = aggregatedBids.map(order => parseDdexOrder(ddexMarket, observedTimestamp, 'bid', source, order));
     const parsedAsks = aggregatedAsks.map(order => parseDdexOrder(ddexMarket, observedTimestamp, 'ask', source, order));
     return parsedBids.concat(parsedAsks);
-}
-
-/**
- * Aggregates orders by price point for consistency with other exchanges.
- * Querying the Ddex API at level 3 setting returns a breakdown of
- * individual orders at each price point. Other exchanges only give total amount
- * at each price point. Returns an array of <price, amount> tuples.
- * @param ddexOrders A list of Ddex orders awaiting aggregation.
- */
-export function aggregateOrders(ddexOrders: DdexOrder[]): Array<[string, BigNumber]> {
-    const sumAmount = (acc: BigNumber, order: DdexOrder): BigNumber => acc.plus(order.amount);
-    const aggregatedPricePoints = R.reduceBy(sumAmount, new BigNumber(0), R.prop('price'), ddexOrders);
-    return Object.entries(aggregatedPricePoints);
 }
 
 /**
@@ -66,12 +54,14 @@ export function parseDdexOrder(
     tokenOrder.orderType = orderType;
     tokenOrder.price = price;
 
-    tokenOrder.baseAssetSymbol = ddexMarket.baseToken;
-    tokenOrder.baseAssetAddress = ddexMarket.baseTokenAddress;
-    tokenOrder.baseVolume = price.times(amount);
+    // ddex currently confuses quote and base assets.
+    // We switch them here to maintain our internal consistency.
+    tokenOrder.baseAssetSymbol = ddexMarket.quoteToken;
+    tokenOrder.baseAssetAddress = ddexMarket.quoteTokenAddress;
+    tokenOrder.baseVolume = amount;
 
-    tokenOrder.quoteAssetSymbol = ddexMarket.quoteToken;
-    tokenOrder.quoteAssetAddress = ddexMarket.quoteTokenAddress;
-    tokenOrder.quoteVolume = amount;
+    tokenOrder.quoteAssetSymbol = ddexMarket.baseToken;
+    tokenOrder.quoteAssetAddress = ddexMarket.baseTokenAddress;
+    tokenOrder.quoteVolume = price.times(amount);
     return tokenOrder;
 }

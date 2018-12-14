@@ -5,7 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.1.0 - _December 10, 2018_
+## v1.1.1 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v1.1.0 - _December 11, 2018_
 
     * NPMResolver now supports scoped packages (#1311)
 

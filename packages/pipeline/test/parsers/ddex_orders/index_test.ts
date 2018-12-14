@@ -4,7 +4,7 @@ import 'mocha';
 
 import { DdexMarket } from '../../../src/data_sources/ddex';
 import { TokenOrderbookSnapshot as TokenOrder } from '../../../src/entities';
-import { aggregateOrders, parseDdexOrder } from '../../../src/parsers/ddex_orders';
+import { parseDdexOrder } from '../../../src/parsers/ddex_orders';
 import { OrderType } from '../../../src/types';
 import { chaiSetup } from '../../utils/chai_setup';
 
@@ -13,19 +13,6 @@ const expect = chai.expect;
 
 // tslint:disable:custom-no-magic-numbers
 describe('ddex_orders', () => {
-    describe('aggregateOrders', () => {
-        it('aggregates orders by price point', () => {
-            const input = [
-                { price: '1', amount: '20', orderId: 'testtest' },
-                { price: '1', amount: '30', orderId: 'testone' },
-                { price: '2', amount: '100', orderId: 'testtwo' },
-            ];
-            const expected = [['1', new BigNumber(50)], ['2', new BigNumber(100)]];
-            const actual = aggregateOrders(input);
-            expect(actual).deep.equal(expected);
-        });
-    });
-
     describe('parseDdexOrder', () => {
         it('converts ddexOrder to TokenOrder entity', () => {
             const ddexOrder: [string, BigNumber] = ['0.5', new BigNumber(10)];
@@ -52,12 +39,14 @@ describe('ddex_orders', () => {
             expected.observedTimestamp = observedTimestamp;
             expected.orderType = 'bid';
             expected.price = new BigNumber(0.5);
-            expected.baseAssetSymbol = 'DEF';
-            expected.baseAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';
-            expected.baseVolume = new BigNumber(5);
-            expected.quoteAssetSymbol = 'ABC';
-            expected.quoteAssetAddress = '0x0000000000000000000000000000000000000000';
-            expected.quoteVolume = new BigNumber(10);
+            // ddex currently confuses base and quote assets.
+            // Switch them to maintain our internal consistency.
+            expected.baseAssetSymbol = 'ABC';
+            expected.baseAssetAddress = '0x0000000000000000000000000000000000000000';
+            expected.baseVolume = new BigNumber(10);
+            expected.quoteAssetSymbol = 'DEF';
+            expected.quoteAssetAddress = '0xb45df06e38540a675fdb5b598abf2c0dbe9d6b81';
+            expected.quoteVolume = new BigNumber(5);
 
             const actual = parseDdexOrder(ddexMarket, observedTimestamp, orderType, source, ddexOrder);
             expect(actual).deep.equal(expected);

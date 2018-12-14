@@ -63,7 +63,7 @@
         }
     },
     "devDependencies": {
-        "@0x-lerna-fork/lerna": "3.0.0-beta.25",
+        "@0x-lerna-fork/lerna": "3.0.0-beta.26",
         "@0xproject/npm-cli-login": "^0.0.11",
         "async-child-process": "^1.1.1",
         "bundlewatch": "^0.2.1",

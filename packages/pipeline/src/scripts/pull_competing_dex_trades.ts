@@ -15,11 +15,11 @@ let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
-    await getAndSaveTrades();
+    await getAndSaveTradesAsync();
     process.exit(0);
 })().catch(handleError);
 
-async function getAndSaveTrades(): Promise<void> {
+async function getAndSaveTradesAsync(): Promise<void> {
     const apiKey = process.env.BLOXY_API_KEY;
     if (apiKey === undefined) {
         throw new Error('Missing required env var: BLOXY_API_KEY');

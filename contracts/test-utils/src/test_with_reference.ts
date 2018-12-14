@@ -26,7 +26,7 @@ type PromiseResult<T> = Value<T> | ErrorMessage;
 // TODO(albrow): This seems like a generic utility function that could exist in
 // lodash. We should replace it by a library implementation, or move it to our
 // own.
-async function evaluatePromise<T>(promise: Promise<T>): Promise<PromiseResult<T>> {
+async function evaluatePromiseAsync<T>(promise: Promise<T>): Promise<PromiseResult<T>> {
     try {
         return new Value<T>(await promise);
     } catch (e) {
@@ -93,10 +93,10 @@ export async function testWithReferenceFuncAsync(
     values: any[],
 ): Promise<void> {
     // Measure correct behaviour
-    const expected = await evaluatePromise(referenceFuncAsync(...values));
+    const expected = await evaluatePromiseAsync(referenceFuncAsync(...values));
 
     // Measure actual behaviour
-    const actual = await evaluatePromise(testFuncAsync(...values));
+    const actual = await evaluatePromiseAsync(testFuncAsync(...values));
 
     // Compare behaviour
     if (expected instanceof ErrorMessage) {

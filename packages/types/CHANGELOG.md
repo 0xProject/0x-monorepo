@@ -5,7 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v1.4.0 - _December 10, 2018_
+## v1.4.1 - _December 13, 2018_
+
+    * Dependencies updated
+
+## v1.4.0 - _December 11, 2018_
 
     * Add `LengthMismatch` and `LengthGreaterThan3Required` revert reasons (#1224)
     * Add RevertReasons for DutchAuction contract (#1225)

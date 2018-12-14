@@ -17,11 +17,11 @@ let connection: Connection;
 
 (async () => {
     connection = await createConnection(ormConfig as ConnectionOptions);
-    await getRelayers();
+    await getRelayersAsync();
     process.exit(0);
 })().catch(handleError);
 
-async function getRelayers(): Promise<void> {
+async function getRelayersAsync(): Promise<void> {
     console.log('Getting latest relayer info...');
     const relayerRepository = connection.getRepository(Relayer);
     const relayerSource = new RelayerRegistrySource(RELAYER_REGISTRY_URL);

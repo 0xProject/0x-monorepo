@@ -58,6 +58,7 @@ export class ScalingAmountInput extends React.Component<ScalingAmountInputProps,
         const { textLengthThreshold, fontColor, maxFontSizePx, onFontSizeChange } = this.props;
         return (
             <ScalingInput
+                type="number"
                 maxFontSizePx={maxFontSizePx}
                 textLengthThreshold={textLengthThreshold}
                 onFontSizeChange={onFontSizeChange}

@@ -25,7 +25,7 @@ let connection: Connection;
     const markets = await ddexSource.getActiveMarketsAsync();
     for (const marketsChunk of R.splitEvery(MARKET_ORDERBOOK_REQUEST_BATCH_SIZE, markets)) {
         await Promise.all(
-            marketsChunk.map(async (market: DdexMarket) => getAndSaveMarketOrderbook(ddexSource, market)),
+            marketsChunk.map(async (market: DdexMarket) => getAndSaveMarketOrderbookAsync(ddexSource, market)),
         );
         await new Promise<void>(resolve => setTimeout(resolve, MILLISEC_MARKET_ORDERBOOK_REQUEST_DELAY));
     }
@@ -38,7 +38,7 @@ let connection: Connection;
  * @param ddexSource Data source which can query Ddex API.
  * @param market Object from Ddex API containing market data.
  */
-async function getAndSaveMarketOrderbook(ddexSource: DdexSource, market: DdexMarket): Promise<void> {
+async function getAndSaveMarketOrderbookAsync(ddexSource: DdexSource, market: DdexMarket): Promise<void> {
     const orderBook = await ddexSource.getMarketOrderbookAsync(market.id);
     const observedTimestamp = Date.now();
 
