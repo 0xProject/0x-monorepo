@@ -205,6 +205,11 @@ jobs:
                       cd python-packages/json_schemas
                       python -m ensurepip
                       python -m pip install .[dev]
+                      # HACK! installing the package should do the following
+                      # copy for us, but it's not working in CircleCI for some
+                      # reason.  Support ticket raised (#43979).
+                      mkdir /usr/local/lib/python3.7/site-packages/zero_ex/json_schemas/schemas
+                      cp -R src/zero_ex/json_schemas/schemas/* /usr/local/lib/python3.7/site-packages/zero_ex/json_schemas/schemas
             - run:
                   command: |
                       cd python-packages/order_utils
