@@ -50,7 +50,7 @@ export const NextAboutJobs = () => (
         <Section bgColor="#F3F6F4" isFlex={true} maxWidth="1170px" wrapWidth="100%">
                 <Column maxWidth="442px">
                     <Heading size="medium" marginBottom="30px">
-                        Powered by a Diverse Worldwide Community
+                        Powered by a Diverse, Global Community
                     </Heading>
 
                     <Paragraph>

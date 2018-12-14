@@ -20,7 +20,7 @@ const values = [
         icon: 'consistently-ship',
     },
     {
-        title: 'Focus on long-term Impact',
+        title: 'Focus on Long-term Impact',
         description: 'We anticipate that over time, awareness of the fundamentally disruptive nature of frictionless global exchange will cause some to see this technology as a threat. There will be setbacks, some will claim that this technology is too disruptive, and we will face adversity. Persistence and a healthy long-term focus will see us through these battles.',
         icon: 'long-term-impact',
     },
