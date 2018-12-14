@@ -21,7 +21,7 @@ export const AboutPageLayout = (props: Props) => (
     <SiteWrap theme="light">
         <Section isFlex={true} maxWidth="1170px" wrapWidth="100%">
             <Column>
-               <ChapterLink to="/next/about/mission">Our Mission</ChapterLink>
+               <ChapterLink to="/next/about/mission">Mission</ChapterLink>
                <ChapterLink to="/next/about/team">Team</ChapterLink>
                <ChapterLink to="/next/about/press">Press</ChapterLink>
                <ChapterLink to="/next/about/jobs">Jobs</ChapterLink>
