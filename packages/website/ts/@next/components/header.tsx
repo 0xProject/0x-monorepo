@@ -12,6 +12,7 @@ import { Logo } from 'ts/@next/components/logo';
 import { MobileNav } from 'ts/@next/components/mobileNav';
 import { FlexWrap } from 'ts/@next/components/newLayout';
 import { ThemeValuesInterface } from 'ts/@next/components/siteWrap';
+import { WebsitePaths } from 'ts/types';
 
 interface HeaderProps {
     location?: Location;
@@ -35,12 +36,12 @@ interface DropdownWrapInterface {
 const navItems: NavItemProps[] = [
     {
         id: 'why',
-        url: '/next/why',
+        url: WebsitePaths.Why,
         text: 'Why 0x',
     },
     {
         id: 'products',
-        url: '/next/instant',
+        url: '#',
         text: 'Products',
         dropdownComponent: DropdownProducts,
         dropdownWidth: 280,
@@ -54,7 +55,7 @@ const navItems: NavItemProps[] = [
     },
     {
         id: 'about',
-        url: '/next/about/mission',
+        url: WebsitePaths.AboutMission,
         text: 'About',
     },
     {

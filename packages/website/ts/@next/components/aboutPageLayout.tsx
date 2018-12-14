@@ -8,6 +8,7 @@ import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
 import { addFadeInAnimation } from 'ts/@next/constants/animations';
+import { WebsitePaths } from 'ts/types';
 
 interface Props {
     title: string;
@@ -21,10 +22,10 @@ export const AboutPageLayout = (props: Props) => (
     <SiteWrap theme="light">
         <Section isFlex={true} maxWidth="1170px" wrapWidth="100%">
             <Column>
-               <ChapterLink to="/next/about/mission">Mission</ChapterLink>
-               <ChapterLink to="/next/about/team">Team</ChapterLink>
-               <ChapterLink to="/next/about/press">Press</ChapterLink>
-               <ChapterLink to="/next/about/jobs">Jobs</ChapterLink>
+               <ChapterLink to={WebsitePaths.AboutMission}>Mission</ChapterLink>
+               <ChapterLink to={WebsitePaths.AboutTeam}>Team</ChapterLink>
+               <ChapterLink to={WebsitePaths.AboutPress}>Press</ChapterLink>
+               <ChapterLink to={WebsitePaths.AboutJobs}>Jobs</ChapterLink>
            </Column>
 
            <Column width="70%" maxWidth="800px">

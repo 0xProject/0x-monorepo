@@ -5,6 +5,7 @@ import {Hero} from 'ts/@next/components/hero';
 import {LandingAnimation} from 'ts/@next/components/heroImage';
 
 import {HeroAnimation} from 'ts/@next/components/heroAnimation';
+import { WebsitePaths } from 'ts/types';
 
 export const SectionLandingHero = () => (
     <Hero
@@ -23,7 +24,7 @@ const HeroActions = () => (
             Get Started
         </Button>
 
-        <Button to="/next/why" isTransparent={true} isInline={true}>
+        <Button to={WebsitePaths.Why} isTransparent={true} isInline={true}>
             Learn More
         </Button>
     </>

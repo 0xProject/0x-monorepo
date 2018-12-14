@@ -12,6 +12,8 @@ import { SiteWrap } from 'ts/@next/components/siteWrap';
 import {Section} from 'ts/@next/components/newLayout';
 import { ModalContact } from '../components/modals/modal_contact';
 
+import { WebsitePaths } from 'ts/types';
+
 const offersData = [
     {
         icon: 'supportForAllEthereumStandards',
@@ -120,7 +122,7 @@ const HeroActions = () => (
             Get Started
         </Button>
 
-        <Button to="/next/why" isTransparent={true} isInline={true}>
+        <Button to={WebsitePaths.Why} isTransparent={true} isInline={true}>
             Learn More
         </Button>
     </>

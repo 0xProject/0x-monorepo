@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { Logo } from 'ts/@next/components/logo';
 import { Column, FlexWrap, WrapGrid } from 'ts/@next/components/newLayout';
 import { NewsletterForm } from 'ts/@next/components/newsletter_form';
+import { WebsitePaths } from 'ts/types';
 
 interface LinkInterface {
     text: string;
@@ -29,8 +30,8 @@ const linkRows: LinkRows[] = [
         heading: 'Products',
         isOnMobile: true,
         links: [
-            { url: '/next/instant', text: '0x Instant' },
-            { url: '#', text: '0x Launch Kit' },
+            { url: WebsitePaths.Instant, text: '0x Instant' },
+            { url: WebsitePaths.LaunchKit, text: '0x Launch Kit' },
         ],
     },
     {
@@ -45,11 +46,11 @@ const linkRows: LinkRows[] = [
         heading: 'About',
         isOnMobile: true,
         links: [
-            { url: '#', text: 'Mission' },
-            { url: '#', text: 'Team' },
-            { url: '#', text: 'Jobs' },
-            { url: '#', text: 'Press Kit' },
-            { url: '/next/ecosystem-program', text: 'Grant Program' },
+            { url: WebsitePaths.AboutMission, text: 'Mission' },
+            { url: WebsitePaths.AboutTeam, text: 'Team' },
+            { url: WebsitePaths.AboutJobs, text: 'Jobs' },
+            { url: WebsitePaths.AboutPress, text: 'Press Kit' },
+            { url: WebsitePaths.Ecosystem, text: 'Grant Program' },
         ],
     },
     {

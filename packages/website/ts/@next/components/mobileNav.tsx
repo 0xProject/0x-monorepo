@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import {Link} from 'react-router-dom';
 
 import {WrapGrid, WrapProps} from 'ts/@next/components/newLayout';
+import { WebsitePaths } from 'ts/types';
 
 interface Props {
     isToggled: boolean;
@@ -38,18 +39,13 @@ export class MobileNav extends React.PureComponent<Props> {
                     <Section isDark={true}>
                         <Grid as="ul" isFullWidth={true} isWrapped={true}>
                             <li>
-                                <Link to="/next/why">
+                                <Link to={WebsitePaths.Why}>
                                     Why 0x
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/next/about/mission">
+                                <Link to={WebsitePaths.AboutMission}>
                                     About
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/next">
-                                    Products
                                 </Link>
                             </li>
                             <li>

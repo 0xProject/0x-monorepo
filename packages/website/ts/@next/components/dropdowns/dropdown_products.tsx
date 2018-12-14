@@ -4,22 +4,19 @@ import * as React from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components';
 import {Heading, Paragraph} from 'ts/@next/components/text';
+import { WebsitePaths } from 'ts/types';
 
 const navData = [
         {
             title: '0x Instant',
             description: 'Simple crypto purchasing',
-            url: '/next/0x-instant',
+            url: WebsitePaths.Instant,
         },
         {
             title: '0x Launch kit',
             description: 'Build on the 0x protocol',
-            url: '#',
+            url: WebsitePaths.LaunchKit,
         },
-        // {
-        //     title: 'Extensions',
-        //     url: '#',
-        // },
 ];
 
 export const DropdownProducts: React.FunctionComponent<{}> = () => (
