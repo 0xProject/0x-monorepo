@@ -1,4 +1,5 @@
 import * as React from 'react';
+import MediaQuery from 'react-responsive';
 import styled from 'styled-components';
 
 import {Link} from 'react-router-dom';
@@ -15,53 +16,55 @@ export class MobileNav extends React.PureComponent<Props> {
         const { isToggled, toggleMobileNav } = this.props;
 
         return (
-            <Wrap isToggled={isToggled}>
-                <Section>
-                    <h4>Products</h4>
+            <MediaQuery maxWidth={800}>
+                <Wrap isToggled={isToggled}>
+                    <Section>
+                        <h4>Products</h4>
 
-                    <ul>
-                        <li>
-                            <Link to="#">
-                                0x instant
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="#">
-                                0x Launch Kit
-                            </Link>
-                        </li>
-                    </ul>
-                </Section>
+                        <ul>
+                            <li>
+                                <Link to="#">
+                                    0x instant
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="#">
+                                    0x Launch Kit
+                                </Link>
+                            </li>
+                        </ul>
+                    </Section>
 
-                <Section isDark={true}>
-                    <Grid as="ul" isWrapped={true}>
-                        <li>
-                            <Link to="/next/why">
-                                Why 0x
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/next/about/mission">
-                                About
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/next">
-                                Products
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="https://blog.0xproject.com/latest">
-                                Blog
-                            </Link>
-                        </li>
-                    </Grid>
-                </Section>
+                    <Section isDark={true}>
+                        <Grid as="ul" width="100%" isWrapped={true}>
+                            <li>
+                                <Link to="/next/why">
+                                    Why 0x
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/next/about/mission">
+                                    About
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/next">
+                                    Products
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="https://blog.0xproject.com/latest">
+                                    Blog
+                                </Link>
+                            </li>
+                        </Grid>
+                    </Section>
 
-                {isToggled &&
-                    <Overlay onClick={toggleMobileNav} />
-                }
-            </Wrap>
+                    {isToggled &&
+                        <Overlay onClick={toggleMobileNav} />
+                    }
+                </Wrap>
+            </MediaQuery>
         );
     }
 }

@@ -69,6 +69,8 @@ export const Column = styled.div<ColumnProps>`
 `;
 
 export const FlexWrap = styled.div<FlexProps>`
+    max-width: 1500px;
+    margin: 0 auto;
     padding: ${props => props.padding};
 
     @media (min-width: ${props => props.flexBreakpoint || '768px'}) {
