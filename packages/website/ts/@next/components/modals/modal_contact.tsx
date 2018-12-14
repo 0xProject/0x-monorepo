@@ -31,6 +31,10 @@ export class ModalContact extends React.Component<Props> {
         errors: {},
     };
     public nameRef: React.RefObject<HTMLInputElement> = React.createRef();
+    public emailRef: React.RefObject<HTMLInputElement> = React.createRef();
+    public companyProjectRef: React.RefObject<HTMLInputElement> = React.createRef();
+    public linkRef: React.RefObject<HTMLInputElement> = React.createRef();
+    public commentsRef: React.RefObject<HTMLInputElement> = React.createRef();
     public constructor(props: Props) {
         super(props);
     }
@@ -56,11 +60,14 @@ export class ModalContact extends React.Component<Props> {
                                     type="text"
                                     width={InputWidth.Half}
                                     ref={this.nameRef}
+                                    required={true}
                                 />
                                 <Input
                                     name="email"
                                     label="Your email"
                                     type="email"
+                                    ref={this.emailRef}
+                                    required={true}
                                     width={InputWidth.Half}
                                 />
                             </InputRow>
@@ -69,6 +76,8 @@ export class ModalContact extends React.Component<Props> {
                                     name="companyOrProject"
                                     label="Name of your project / company"
                                     type="text"
+                                    ref={this.companyProjectRef}
+                                    required={true}
                                 />
                             </InputRow>
                             <InputRow>
@@ -76,6 +85,7 @@ export class ModalContact extends React.Component<Props> {
                                     name="link"
                                     label="Do you have any documentation or a website?"
                                     type="text"
+                                    ref={this.linkRef}
                                 />
                             </InputRow>
                             <InputRow>
@@ -83,6 +93,7 @@ export class ModalContact extends React.Component<Props> {
                                     name="comments"
                                     label="Anything else?"
                                     type="textarea"
+                                    ref={this.commentsRef}
                                 />
                             </InputRow>
                             <ButtonRow>
@@ -112,23 +123,23 @@ export class ModalContact extends React.Component<Props> {
     private async _onSubmitAsync(e: Event): Promise<void> {
         e.preventDefault();
 
-        // const email = this.emailInput.current.value;
-        const email = '';
-        const projectOrCompany = '';
-        const link = '';
-        const comments = '';
+        const name = this.nameRef.current.value;
+        const email = this.emailRef.current.value;
+        const projectOrCompany = this.companyProjectRef.current.value;
+        const link = this.linkRef.current.value;
+        const comments = this.commentsRef.current.value;
 
         this.setState({ ...this.state, isSubmitting: true });
 
         try {
-            const response = await fetch('https://website-api.0xproject.com/leads', {
+            await fetch('https://website-api.0xproject.com/leads', {
                 method: 'post',
                 mode: 'cors',
                 credentials: 'same-origin',
                 headers: {
                     'content-type': 'application/json; charset=utf-8',
                 },
-                body: JSON.stringify({ email, projectOrCompany, link, comments }),
+                body: JSON.stringify({ name, email, projectOrCompany, link, comments }),
             });
 
             this.setState({ ...this.state, isSuccessful: true });
