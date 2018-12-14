@@ -40,7 +40,7 @@ const navItems: NavItemProps[] = [
     },
     {
         id: 'products',
-        url: '/next/0x-instant',
+        url: '/next/instant',
         text: 'Products',
         dropdownComponent: DropdownProducts,
         dropdownWidth: 280,

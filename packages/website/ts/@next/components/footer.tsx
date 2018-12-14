@@ -29,7 +29,7 @@ const linkRows: LinkRows[] = [
         heading: 'Products',
         isOnMobile: true,
         links: [
-            { url: '/next/0x-instant', text: '0x Instant' },
+            { url: '/next/instant', text: '0x Instant' },
             { url: '#', text: '0x Launch Kit' },
         ],
     },
