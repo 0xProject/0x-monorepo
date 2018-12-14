@@ -99,17 +99,17 @@ export const NextAboutJobs = () => (
 
 const Position = ({ position }) => (
     <PositionWrap>
-        <Column width="30%">
+        <StyledColumn width="30%">
             <Heading asElement="h3" size="small" fontWeight="400" marginBottom="0"><a href={position.href}>{position.title}</a></Heading>
-        </Column>
+        </StyledColumn>
 
         <StyledColumn width="50%" padding="0 40px 0 0">
             <Paragraph isMuted={true} marginBottom="0">{position.location}</Paragraph>
         </StyledColumn>
 
-        <Column width="20%">
+        <StyledColumn width="20%">
             <Paragraph marginBottom="0" textAlign="right"><Link href={position.href}>Apply</Link></Paragraph>
-        </Column>
+        </StyledColumn>
     </PositionWrap>
 );
 
@@ -137,6 +137,12 @@ const ImageWrap = styled.figure`
 
 const StyledColumn = styled(Column)`
     flex-shrink: 0;
+
+    @media (max-width: 768px) {
+        & + & {
+            margin-top: 15px;
+        }
+    }
 `;
 
 const PositionWrap = styled(FlexWrap)`
