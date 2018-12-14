@@ -72,7 +72,7 @@ class HeaderBase extends React.Component<HeaderProps> {
         return (
             <StyledHeader>
                 <HeaderWrap>
-                    <ReactRouterLink to="/next">
+                    <ReactRouterLink to={WebsitePaths.Home}>
                         <Logo />
                     </ReactRouterLink>
 
