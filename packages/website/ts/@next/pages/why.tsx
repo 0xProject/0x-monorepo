@@ -228,18 +228,21 @@ const SectionWrap = styled.div<SectionProps>`
     }
 `;
 
-const SectionTitle = styled(Heading)`
+const SectionTitle = styled(Heading)<{ isNoBorder?: boolean }>`
     position: relative;
 
-    &:before {
-        content: '';
-        width: 100vw;
-        position: absolute;
-        top: -30px;
-        left: 0;
-        height: 1px;
-        background-color: #3d3d3d;
-    }
+    ${props => !props.isNoBorder && `
+        &:before {
+            content: '';
+            width: 100vw;
+            position: absolute;
+            top: -53px;
+            left: 0;
+            height: 1px;
+            background-color: #3d3d3d;
+        }
+    `}
+
 
     @media (max-width: 768px) {
         &:before {
