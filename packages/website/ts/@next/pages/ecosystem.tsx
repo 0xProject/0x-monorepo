@@ -5,12 +5,10 @@ import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 import {Button} from 'ts/@next/components/button';
+import { Icon } from 'ts/@next/components/icon';
 import { Column, Section, WrapGrid } from 'ts/@next/components/newLayout';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 import { Heading, Paragraph } from 'ts/@next/components/text';
-import { Icon } from 'ts/@next/components/icon';
-
-import RightThingIcon from 'ts/@next/icons/illustrations/right-thing.svg';
 
 interface BenefitProps {
     title: string;
