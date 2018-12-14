@@ -64,29 +64,31 @@ describe('assetDataUtil', () => {
                 'Not enough ZRX available',
             );
         });
-        it('should return custom message for InsufficientAssetLiquidityError error for token w/ 18 decimals', () => {
-            const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(20.059), 18);
-            expect(
-                assetUtils.assetBuyerErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
-            ).toEqual('There are only 20.05 ZRX available to buy');
-        });
-        it('should return custom message for InsufficientAssetLiquidityError error for token w/ 18 decimals and small amount available', () => {
-            const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.01), 18);
-            expect(
-                assetUtils.assetBuyerErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
-            ).toEqual('There are only 0.01 ZRX available to buy');
-        });
-        it('should return custom message for InsufficientAssetLiquidityError error for token w/ 8 decimals', () => {
-            const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 8);
-            expect(
-                assetUtils.assetBuyerErrorMessage(WAX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
-            ).toEqual('There are only 3 WAX available to buy');
-        });
-        it('should generic message for InsufficientAssetLiquidityError error when amount available rounds to zero', () => {
-            const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.002), 18);
-            expect(
-                assetUtils.assetBuyerErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
-            ).toEqual('Not enough ZRX available');
+        describe('InsufficientAssetLiquidityError', () => {
+            it('should return custom message for token w/ 18 decimals', () => {
+                const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(20.059), 18);
+                expect(
+                    assetUtils.assetBuyerErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
+                ).toEqual('There are only 20.05 ZRX available to buy');
+            });
+            it('should return custom message for token w/ 18 decimals and small amount available', () => {
+                const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.01), 18);
+                expect(
+                    assetUtils.assetBuyerErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
+                ).toEqual('There are only 0.01 ZRX available to buy');
+            });
+            it('should return custom message for token w/ 8 decimals', () => {
+                const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(3), 8);
+                expect(
+                    assetUtils.assetBuyerErrorMessage(WAX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
+                ).toEqual('There are only 3 WAX available to buy');
+            });
+            it('should generic message when amount available rounds to zero', () => {
+                const amountAvailable = Web3Wrapper.toBaseUnitAmount(new BigNumber(0.002), 18);
+                expect(
+                    assetUtils.assetBuyerErrorMessage(ZRX_ASSET, new InsufficientAssetLiquidityError(amountAvailable)),
+                ).toEqual('Not enough ZRX available');
+            });
         });
         it('should return message for InsufficientZrxLiquidity', () => {
             const insufficientZrxError = new Error(AssetBuyerError.InsufficientZrxLiquidity);
