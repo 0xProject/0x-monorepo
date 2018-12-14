@@ -39,10 +39,10 @@ export class Configurator extends React.Component<ConfiguratorProps> {
             <FlexWrap
                 isFlex={true}
             >
-                <Column width="442px" padding="0 30px 0 0">
+                <Column width="442px" padding="0 70px 0 0">
                     <ConfigGenerator value={this.state.instantConfig} onConfigChange={this._handleConfigChange} />
                 </Column>
-                <Column width="560px">
+                <Column width="100%">
                     <HeadingWrapper>
                         <Heading size="small" marginBottom="15px">Code Snippet</Heading>
                         <Link
