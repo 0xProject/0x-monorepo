@@ -106,9 +106,9 @@ const Position = ({ position }) => (
 
         <StyledColumn width="50%">
             <Paragraph isMuted={true}>{position.location}</Paragraph>
-        </Column>
+        </StyledColumn>
 
-        <Column colWidth="1/3">
+        <Column width="20%">
             <Paragraph><Link href={position.href}>Apply</Link></Paragraph>
         </Column>
     </FlexWrap>

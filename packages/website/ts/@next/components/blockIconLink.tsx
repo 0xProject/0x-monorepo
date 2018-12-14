@@ -8,8 +8,8 @@ interface Props {
     icon: string;
     title: string;
     linkLabel: string;
-    linkUrl: string;
-    linkAction: () => void;
+    linkUrl?: string;
+    linkAction?: () => void;
 }
 
 export const BlockIconLink = (props: Props) => (

@@ -9,7 +9,7 @@ import {Hero} from 'ts/@next/components/hero';
 
 import {Button} from 'ts/@next/components/button';
 import {Definition} from 'ts/@next/components/definition';
-import {Section} from 'ts/@next/components/newLayout';
+import {Section, SectionProps} from 'ts/@next/components/newLayout';
 import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 import { Configurator } from 'ts/@next/pages/instant/configurator';
@@ -135,7 +135,7 @@ const fadeUp = keyframes`
   }
 `;
 
-const ConfiguratorSection = styled(Section)`
+const ConfiguratorSection = styled(Section)<SectionProps>`
   @media (max-width: 1050px) {
       display: none;
   }
@@ -168,7 +168,7 @@ const MarqueeWrap = styled.div`
     }
 `;
 
-const Card = styled.div`
+const Card = styled.div<{index: number}>`
   opacity: 0;
   flex-shrink: 0;
   transform: translateY(10px);

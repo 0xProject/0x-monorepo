@@ -6,13 +6,13 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { ConfigGeneratorAddressInput } from 'ts/@next/pages/instant/config_generator_address_input';
+import { FeePercentageSlider } from 'ts/@next/pages/instant/fee_percentage_slider';
 import { CheckMark } from 'ts/components/ui/check_mark';
 import { Container } from 'ts/components/ui/container';
 import { MultiSelect } from 'ts/components/ui/multi_select';
 import { Spinner } from 'ts/components/ui/spinner';
 import { Text } from 'ts/components/ui/text';
-import { ConfigGeneratorAddressInput } from 'ts/@next/pages/instant/config_generator_address_input';
-import { FeePercentageSlider } from 'ts/@next/pages/instant/fee_percentage_slider';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
@@ -314,7 +314,11 @@ const OptionalText = styled.span`
     flex-shrink: 0;
 `;
 
-const CheckboxText = styled.span`
+interface CheckboxTextProps {
+    isSelected?: boolean;
+}
+
+const CheckboxText = styled.span<CheckboxTextProps>`
     font-size: 14px;
     line-height: 18px;
     color: ${props => props.isSelected ? colors.brandDark : '#666666'}

@@ -10,6 +10,7 @@ const SliderWithTooltip = (Slider as any).createSliderWithTooltip(Slider);
 
 export interface FeePercentageSliderProps {
     value: number;
+    isDisabled?: boolean;
     onChange: (value: number) => void;
 }
 

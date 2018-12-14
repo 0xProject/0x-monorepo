@@ -51,7 +51,7 @@ export class ModalContact extends React.Component<Props> {
                     onDismiss={onDismiss}
                 >
                     <StyledDialogContent>
-                        <Form onSubmit={this._onSubmit.bind(this)} isSuccessful={isSuccessful}>
+                        <Form onSubmit={this._onSubmitAsync.bind(this)} isSuccessful={isSuccessful}>
                             <Heading color={colors.textDarkPrimary} size={34} asElement="h2">Contact the 0x Core Team</Heading>
                             <Paragraph isMuted={true} color={colors.textDarkPrimary}>If you're considering building on 0x, we're happy to answer your questions. Fill out the form so we can connect you with the right person to help you get started.</Paragraph>
                             <InputRow>
@@ -113,7 +113,7 @@ export class ModalContact extends React.Component<Props> {
             </>
         );
     }
-    private async _onSubmit(e): void {
+    private async _onSubmitAsync(e: Event): Promise<void> {
         e.preventDefault();
 
         // const email = this.emailInput.current.value;
@@ -138,17 +138,9 @@ export class ModalContact extends React.Component<Props> {
             const json = await response.json();
 
             this.setState({ ...this.state, isSuccessful: true });
-
-            console.log(response);
         } catch (e) {
             this.setState({ ...this.state, errors: [] });
-            console.log(e);
         }
-    }
-    private async _onDone(e): void {
-        e.preventDefault();
-
-        this.props.onDismiss();
     }
 }
 // Handle errors: {"errors":[{"location":"body","param":"name","msg":"Invalid value"},{"location":"body","param":"email","msg":"Invalid value"}]}

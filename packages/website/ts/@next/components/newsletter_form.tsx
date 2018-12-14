@@ -27,7 +27,7 @@ const Input: React.ReactNode = React.forwardRef((props: InputProps, ref) => {
             <StyledInput ref={ref} id={id} placeholder={label} {...props} />
         </InnerInputWrapper>
     );
-};
+});
 
 export class NewsletterForm extends React.Component {
     public emailInput = React.createRef();
@@ -38,7 +38,7 @@ export class NewsletterForm extends React.Component {
         const {isSubmitted} = this.state;
 
         return (
-            <StyledForm onSubmit={this._onSubmit.bind(this)}>
+            <StyledForm onSubmit={this._onSubmitAsync.bind(this)}>
                 <InputWrapper>
                     <Input isSubmitted={isSubmitted} name="email" type="email" label="Email Address" ref={this.emailInput} required />
 
@@ -54,7 +54,7 @@ export class NewsletterForm extends React.Component {
         );
     }
 
-    private async _onSubmit(e) {
+    private async _onSubmitAsync(e: Event): Promise<void> {
         e.preventDefault();
 
         const email = this.emailInput.current.value;

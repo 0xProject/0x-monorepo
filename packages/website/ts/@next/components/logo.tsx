@@ -27,7 +27,7 @@ const Icon = styled(LogoIcon)<LogoInterface>`
     flex-shrink: 0;
 
     path {
-        fill: ${(props => props.theme.textColor};
+        fill: ${props => props.theme.textColor};
     }
 `;
 

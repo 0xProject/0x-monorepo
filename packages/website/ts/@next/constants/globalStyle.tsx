@@ -6,6 +6,7 @@ export interface GlobalStyle {
         bgColor: string;
         textColor: string;
         linkColor: string;
+        dropdownButtonBg: string;
     };
 }
 

@@ -18,7 +18,7 @@ interface Props {
     icon: string;
     iconSize?: 'medium' | 'large' | number;
     title: string;
-    description: Node;
+    description: Node | string;
     actions?: Action[];
 }
 

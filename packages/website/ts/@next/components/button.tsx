@@ -16,6 +16,7 @@ interface ButtonInterface {
     hasIcon?: boolean | string;
     isInline?: boolean;
     href?: string;
+    type?: string;
     to?: string;
     onClick?: () => any;
     theme?: {
@@ -57,7 +58,7 @@ const ButtonBase = styled.button<ButtonInterface>`
     border: 1px solid transparent;
     display: inline-block;
     background-color: ${props => props.bgColor || colors.brandLight};
-    background-color: ${props => (props.isTransparent || props.isWithArrow) && 'transparent'}
+    background-color: ${props => (props.isTransparent || props.isWithArrow) && 'transparent'};
     border-color: ${props => (props.isTransparent && !props.isWithArrow) && 'rgba(255, 255, 255, .4)'};
     color: ${props => props.isAccentColor ? props.theme.linkColor : (props.color || props.theme.textColor)};
     padding: ${props => (!props.isNoPadding && !props.isWithArrow) && '18px 30px'};

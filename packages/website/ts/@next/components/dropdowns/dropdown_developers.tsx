@@ -113,7 +113,13 @@ export const DropdownDevelopers = withTheme((props: Props) => (
                 </Column>
 
                 <Column width="calc(100% - 15px)">
-                    <Heading asElement="h4" size={14} color="inherit" isMuted={0.35}>
+                    <Heading
+                        asElement="h4"
+                        size={14}
+                        color="inherit"
+                        marginBottom="15px"
+                        isMuted={0.35}
+                    >
                         Useful Links
                     </Heading>
 

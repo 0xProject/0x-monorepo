@@ -10,7 +10,7 @@ export enum InputWidth {
 
 interface InputProps {
     name: string;
-    width: InputWidth;
+    width?: InputWidth;
     label: string;
     type?: string;
 }

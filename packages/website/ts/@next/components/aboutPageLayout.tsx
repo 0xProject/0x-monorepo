@@ -11,7 +11,7 @@ import { addFadeInAnimation } from 'ts/@next/constants/animations';
 
 interface Props {
     title: string;
-    description: Node;
+    description: React.ReactNode | string;
     linkLabel?: string;
     linkUrl?: string;
     children?: Node;

@@ -35,7 +35,7 @@ export class NextLanding extends React.Component<Props> {
         );
     }
 
-    private _onOpenContactModal(e): void {
+    private _onOpenContactModal(e: Event): void {
         e.preventDefault();
         this.setState({ isContactModalOpen: true });
     }
