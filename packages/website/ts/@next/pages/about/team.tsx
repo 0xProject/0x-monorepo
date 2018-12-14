@@ -239,16 +239,22 @@ const StyledGrid = styled.div`
 const Member = ({ name, title, imageUrl }: TeamMember) => (
     <StyledMember>
         <img src={imageUrl} alt={name}/>
-        <Heading color={colors.textDarkPrimary} size="small" isNoMargin={true}>{name}</Heading>
-        <Paragraph isMuted={0.5} style={{ textTransform: 'capitalize' }}>{title}</Paragraph>
+        <Name>{name}</Name>
+        <MemberTitle isMuted={0.5} size={14} style={{ textTransform: 'capitalize' }}>{title}</MemberTitle>
     </StyledMember>
 );
 
 const StyledMember = styled.div`
-    width: calc(25% - 15px);
     margin-bottom: 10px;
     float: left;
-    margin-right: 10px;
+    width: calc(50% - 15px);
+    margin-right: 15px;
+
+    @media (max-width: 600px) {
+        &:nth-child(2n+1) {
+            clear: left;
+        }
+    }
 
     img, svg {
         width: 100%;
@@ -257,11 +263,35 @@ const StyledMember = styled.div`
         margin-bottom: 10px;
     }
 
-    @media (max-width: 900px) {
+    @media (min-width: 600px) {
         width: calc(33.3333% - 30px);
+        margin-right: 20px;
+
+        &:nth-child(3n+1) {
+            clear: left;
+        }
     }
 
-    @media (max-width: 600px) {
-        width: calc(50% - 15px);
+    @media (min-width: 900px) {
+        width: calc(25% - 30px);
+
+        &:nth-child(3n+1) {
+            clear: none;
+        }
+
+        &:nth-child(4n+1) {
+            clear: left;
+        }
     }
+`;
+
+const Name = styled.h3`
+    color: ${colors.textDarkPrimary};
+    font-size: 14px;
+    line-height: 1;
+    margin: 0;
+`;
+
+const MemberTitle = styled(Paragraph)`
+    font-size: 14px;
 `;
