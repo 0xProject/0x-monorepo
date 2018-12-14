@@ -8,11 +8,11 @@ export const testHelpers = {
         functionWhichTriggersError: () => void,
         expectedAmountAvailableToFill?: BigNumber,
     ): void => {
-        let errorThrown = false;
+        let wasErrorThrown = false;
         try {
             functionWhichTriggersError();
         } catch (e) {
-            errorThrown = true;
+            wasErrorThrown = true;
             expect(e).to.be.instanceOf(InsufficientAssetLiquidityError);
             if (expectedAmountAvailableToFill) {
                 expect(e.amountAvailableToFill).to.be.bignumber.equal(expectedAmountAvailableToFill);
@@ -21,6 +21,6 @@ export const testHelpers = {
             }
         }
 
-        expect(errorThrown).to.be.true();
+        expect(wasErrorThrown).to.be.true();
     },
 };
