@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 import { Container } from 'ts/components/ui/container';
-import { Text } from 'ts/components/ui/text';
+
 import { Paragraph } from 'ts/@next/components/text';
 
 export interface ConfigGeneratorAddressInputProps {
@@ -24,7 +24,6 @@ export interface InputProps {
     width?: string;
     fontSize?: string;
     fontColor?: string;
-    border?: string;
     padding?: string;
     placeholderColor?: string;
     placeholder?: string;
@@ -42,7 +41,6 @@ export class ConfigGeneratorAddressInput extends React.Component<
     public render(): React.ReactNode {
         const { errMsg } = this.state;
         const hasError = !_.isEmpty(errMsg);
-        const border = hasError ? '1px solid red' : undefined;
         return (
             <Container height="80px">
                 <Input

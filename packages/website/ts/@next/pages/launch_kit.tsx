@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import AnchorLink from 'react-anchor-link-smooth-scroll';
 import styled from 'styled-components';
 
 import {Hero} from 'ts/@next/components/hero';
@@ -10,7 +9,7 @@ import { Button } from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
 
-import {Section, WrapSticky} from 'ts/@next/components/newLayout';
+import {Section} from 'ts/@next/components/newLayout';
 
 const offersData = [
     {
@@ -117,35 +116,3 @@ const HeroActions = () => (
 interface SectionProps {
     isNotRelative?: boolean;
 }
-
-const SectionWrap = styled.div<SectionProps>`
-    position: ${props => !props.isNotRelative && 'relative'};
-
-    & + & {
-        padding-top: 60px;
-        margin-top: 60px;
-    }
-
-    & + &:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 1px;
-        background-color: #3d3d3d;
-    }
-
-    @media (min-width: 768px) {
-        & + &:before {
-            width: 100vw;
-        }
-    }
-
-    @media (max-width: 768px) {
-        text-align: left;
-
-        & + &:before {
-            width: 100%;
-        }
-    }
-`;
