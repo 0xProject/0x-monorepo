@@ -49,6 +49,7 @@ const linkRows: LinkRows[] = [
             { url: '#', text: 'Team' },
             { url: '#', text: 'Jobs' },
             { url: '#', text: 'Press Kit' },
+            { url: '/next/ecosystem-program', text: 'Grant Program' },
         ],
     },
     {
