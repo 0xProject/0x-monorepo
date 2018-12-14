@@ -7,13 +7,17 @@ import { Link } from 'ts/@next/components/link';
 import { Column, FlexWrap, Section } from 'ts/@next/components/newLayout';
 import { Heading, Paragraph } from 'ts/@next/components/text';
 
-interface PositionInterface {
+interface PositionProps {
     title: string;
     location: string;
     href: string;
 }
 
-const positions: PositionInterface[] = [
+interface PositionItemProps {
+    position: PositionProps;
+}
+
+const positions: PositionProps[] = [
     {
         title: 'Product Designer',
         location: 'San Francisco, Remote',
@@ -62,7 +66,7 @@ export const NextAboutJobs = () => (
         </Section>
 
         <Section isFlex={true} maxWidth="1170px" wrapWidth="100%">
-                <Column colWidth="1/3">
+                <Column>
                     <Heading size="medium">Benefits</Heading>
                 </Column>
 
@@ -97,21 +101,24 @@ export const NextAboutJobs = () => (
     </AboutPageLayout>
 );
 
-const Position = ({ position }) => (
-    <PositionWrap>
-        <StyledColumn width="30%">
-            <Heading asElement="h3" size="small" fontWeight="400" marginBottom="0"><a href={position.href}>{position.title}</a></Heading>
-        </StyledColumn>
+export const Position: React.FunctionComponent<PositionItemProps> = (props: PositionItemProps) => {
+    const { position } = props;
+    return (
+        <PositionWrap>
+            <StyledColumn width="30%">
+                <Heading asElement="h3" size="small" fontWeight="400" marginBottom="0"><a href={position.href}>{position.title}</a></Heading>
+            </StyledColumn>
 
-        <StyledColumn width="50%" padding="0 40px 0 0">
-            <Paragraph isMuted={true} marginBottom="0">{position.location}</Paragraph>
-        </StyledColumn>
+            <StyledColumn width="50%" padding="0 40px 0 0">
+                <Paragraph isMuted={true} marginBottom="0">{position.location}</Paragraph>
+            </StyledColumn>
 
-        <StyledColumn width="20%">
-            <Paragraph marginBottom="0" textAlign="right"><Link href={position.href}>Apply</Link></Paragraph>
-        </StyledColumn>
-    </PositionWrap>
-);
+            <StyledColumn width="20%">
+                <Paragraph marginBottom="0" textAlign="right"><Link href={position.href}>Apply</Link></Paragraph>
+            </StyledColumn>
+        </PositionWrap>
+    );
+};
 
 const BenefitsList = styled.ul`
     color: #000;

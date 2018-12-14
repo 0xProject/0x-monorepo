@@ -196,7 +196,7 @@ export const NextAboutTeam = () => (
                 width="70%"
                 maxWidth="800px"
             >
-                <StyledGrid isWrapped={true} isCentered={false}>
+                <StyledGrid>
                     {_.map(team, (info: TeamMember, index: number) => (
                         <Member key={`team-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
                     ))}
@@ -219,7 +219,7 @@ export const NextAboutTeam = () => (
                 width="70%"
                 maxWidth="800px"
             >
-                <StyledGrid isWrapped={true} isCentered={false}>
+                <StyledGrid>
                     {_.map(advisors, (info: TeamMember, index: number) => (
                         <Member key={`advisor-${index}`} name={info.name} title={info.title} imageUrl={info.imageUrl} />
                     ))}

@@ -14,8 +14,6 @@ import {SiteWrap} from 'ts/@next/components/siteWrap';
 import {Heading, Paragraph} from 'ts/@next/components/text';
 import { Configurator } from 'ts/@next/pages/instant/configurator';
 
-const CONFIGURATOR_HASH = 'configure';
-
 const featuresData = [
     {
         title: 'Support ERC-20 and ERC-721 tokens',
@@ -96,7 +94,7 @@ export const Next0xInstant = () => (
 
         <ConfiguratorSection maxWidth="1386px" padding="0 58px 70px" bgColor={colors.backgroundDark}>
           <Heading>0x Instant Configurator</Heading>
-          <Configurator hash={CONFIGURATOR_HASH} />
+          <Configurator />
         </ConfiguratorSection>
 
         <Banner

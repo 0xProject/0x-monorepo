@@ -33,7 +33,7 @@ const StyledHeading = styled.h1<HeadingProps>`
     display: ${props => props.isFlex && `inline-flex`};
     align-items: center;
     justify-content: ${props => props.isFlex && `space-between`};
-    font-size: ${props => isNaN(props.size) ? `var(--${props.size || 'default'}Heading)` : `${props.size}px`};
+    font-size: ${props => typeof props.size === 'string' ? `var(--${props.size || 'default'}Heading)` : `${props.size}px`};
     line-height: ${props => `var(--${props.size || 'default'}HeadingHeight)`};
     text-align: ${props => props.isCentered && 'center'};
     padding: ${props => props.padding && getCSSPadding(props.padding)};
@@ -49,7 +49,7 @@ export const Heading: React.StatelessComponent<HeadingProps> = props => {
     const {
         asElement = 'h1',
         children,
-        ...style,
+        ...style
     } = props;
     const Component = StyledHeading.withComponent(asElement);
 

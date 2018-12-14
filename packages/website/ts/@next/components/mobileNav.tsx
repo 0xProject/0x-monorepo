@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import {Link} from 'react-router-dom';
 
-import {WrapGrid} from 'ts/@next/components/newLayout';
+import {WrapGrid, WrapProps} from 'ts/@next/components/newLayout';
 
 interface Props {
     isToggled: boolean;
@@ -36,7 +36,7 @@ export class MobileNav extends React.PureComponent<Props> {
                     </Section>
 
                     <Section isDark={true}>
-                        <Grid as="ul" width="100%" isWrapped={true}>
+                        <Grid as="ul" isFullWidth={true} isWrapped={true}>
                             <li>
                                 <Link to="/next/why">
                                     Why 0x
@@ -112,7 +112,7 @@ const Section = styled.div<{ isDark?: boolean }>`
     background-color: ${props => props.isDark && props.theme.mobileNavBgLower};
 `;
 
-const Grid = styled(WrapGrid)`
+const Grid = styled(WrapGrid)<WrapProps>`
     li {
         width: 50%;
         flex-shrink: 0;

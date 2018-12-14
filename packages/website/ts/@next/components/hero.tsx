@@ -13,7 +13,7 @@ interface Props {
 }
 
 export const Hero = (props: Props) => (
-    <Section maxWidth="1170px">
+    <Section>
         <Wrap isCentered={!props.figure} isFullWidth={props.isFullWidth}>
             {props.figure &&
                 <Content width="400px">

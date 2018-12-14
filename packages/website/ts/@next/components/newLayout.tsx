@@ -25,6 +25,7 @@ export interface SectionProps extends WrapProps {
     isPadded?: boolean;
     isFullWidth?: boolean;
     isFlex?: boolean;
+    padding?: string;
     paddingMobile?: string;
     flexBreakpoint?: string;
     maxWidth?: string;

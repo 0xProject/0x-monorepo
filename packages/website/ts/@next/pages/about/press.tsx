@@ -7,14 +7,18 @@ import { Button } from 'ts/@next/components/button';
 import { Column, FlexWrap } from 'ts/@next/components/newLayout';
 import { Paragraph } from 'ts/@next/components/text';
 
-interface HighlightInterface {
+interface HighlightProps {
     logo: string;
     title?: string;
     text: string;
     href: string;
 }
 
-const highlights: HighlightInterface[] = [
+interface HighlightItemProps {
+    highlight: HighlightProps;
+}
+
+const highlights: HighlightProps[] = [
     {
         logo: '/images/@next/press/logo-forbes.png',
         title: 'Forbes',
@@ -58,18 +62,21 @@ export const NextAboutPress = () => (
     />
 );
 
-const Highlight = ({ highlight }) => (
-    <HighlightWrap>
-        <Column>
-            <img src={highlight.logo} alt={highlight.title} />
-        </Column>
+export const Highlight: React.FunctionComponent<HighlightItemProps> = (props: HighlightItemProps) => {
+    const { highlight } = props;
+    return (
+        <HighlightWrap>
+            <Column>
+                <img src={highlight.logo} alt={highlight.title} />
+            </Column>
 
-        <Column width="60%" maxWidth="560px">
-            <Paragraph isMuted={false}>{highlight.text}</Paragraph>
-            <Button href={highlight.href} isWithArrow={true} isNoBorder={true}>Read Article</Button>
-        </Column>
-    </HighlightWrap>
-);
+            <Column width="60%" maxWidth="560px">
+                <Paragraph isMuted={false}>{highlight.text}</Paragraph>
+                <Button href={highlight.href} isWithArrow={true} isNoBorder={true}>Read Article</Button>
+            </Column>
+        </HighlightWrap>
+    );
+};
 
 const HighlightWrap = styled(FlexWrap)`
     border-top: 1px solid #eaeaea;
