@@ -10,6 +10,7 @@ export const SectionLandingHero = () => (
     <Hero
         title="Powering Decentralized Exchange"
         isLargeTitle={true}
+        isFullWidth={true}
         description="0x is an open protocol that enables the peer-to-peer exchange of assets on the Ethereum blockchain."
         figure={<LandingAnimation image={<HeroAnimation />} />}
         actions={<HeroActions />}
