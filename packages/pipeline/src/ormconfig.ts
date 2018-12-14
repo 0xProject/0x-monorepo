@@ -14,7 +14,6 @@ import {
     TokenMetadata,
     TokenOrderbookSnapshot,
     Transaction,
-    TrustedToken,
 } from './entities';
 
 const entities = [
@@ -31,7 +30,6 @@ const entities = [
     TokenMetadata,
     TokenOrderbookSnapshot,
     Transaction,
-    TrustedToken,
 ];
 
 const config: ConnectionOptions = {

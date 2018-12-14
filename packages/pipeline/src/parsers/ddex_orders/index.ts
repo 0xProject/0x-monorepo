@@ -54,12 +54,14 @@ export function parseDdexOrder(
     tokenOrder.orderType = orderType;
     tokenOrder.price = price;
 
-    tokenOrder.baseAssetSymbol = ddexMarket.baseToken;
-    tokenOrder.baseAssetAddress = ddexMarket.baseTokenAddress;
-    tokenOrder.baseVolume = price.times(amount);
+    // ddex currently confuses quote and base assets.
+    // We switch them here to maintain our internal consistency.
+    tokenOrder.baseAssetSymbol = ddexMarket.quoteToken;
+    tokenOrder.baseAssetAddress = ddexMarket.quoteTokenAddress;
+    tokenOrder.baseVolume = amount;
 
-    tokenOrder.quoteAssetSymbol = ddexMarket.quoteToken;
-    tokenOrder.quoteAssetAddress = ddexMarket.quoteTokenAddress;
-    tokenOrder.quoteVolume = amount;
+    tokenOrder.quoteAssetSymbol = ddexMarket.baseToken;
+    tokenOrder.quoteAssetAddress = ddexMarket.baseTokenAddress;
+    tokenOrder.quoteVolume = price.times(amount);
     return tokenOrder;
 }

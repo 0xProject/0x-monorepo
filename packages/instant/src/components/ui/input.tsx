@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { ColorOption, styled } from '../../style/theme';
 
-export interface InputProps {
+export interface InputProps extends React.HTMLAttributes<HTMLInputElement> {
     tabIndex?: number;
     className?: string;
     value?: string;
@@ -32,6 +32,10 @@ export const Input =
             color: ${props => props.theme[props.fontColor || 'white']} !important;
             opacity: 0.5 !important;
         }
+        &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
     }
 `;
 

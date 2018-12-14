@@ -11,9 +11,6 @@ pids
 *.seed
 *.pid.lock
 
-# OSX folder metadata
-.DS_Store
-
 # SQLite database files
 *.db
 *.sqlite

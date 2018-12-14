@@ -27,7 +27,7 @@ let connection: Connection;
     logUtils.log(`Got ${markets.length} markets.`);
     for (const marketsChunk of R.splitEvery(MARKET_ORDERBOOK_REQUEST_BATCH_SIZE, markets)) {
         await Promise.all(
-            marketsChunk.map(async (marketId: string) => getAndSaveMarketOrderbook(idexSource, marketId)),
+            marketsChunk.map(async (marketId: string) => getAndSaveMarketOrderbookAsync(idexSource, marketId)),
         );
         await new Promise<void>(resolve => setTimeout(resolve, MILLISEC_MARKET_ORDERBOOK_REQUEST_DELAY));
     }
@@ -40,7 +40,7 @@ let connection: Connection;
  * @param idexSource Data source which can query Idex API.
  * @param marketId String representing market of interest, eg. 'ETH_TIC'.
  */
-async function getAndSaveMarketOrderbook(idexSource: IdexSource, marketId: string): Promise<void> {
+async function getAndSaveMarketOrderbookAsync(idexSource: IdexSource, marketId: string): Promise<void> {
     logUtils.log(`${marketId}: Retrieving orderbook.`);
     const orderBook = await idexSource.getMarketOrderbookAsync(marketId);
     const observedTimestamp = Date.now();

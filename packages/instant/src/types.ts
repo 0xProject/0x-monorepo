@@ -185,6 +185,7 @@ export interface ZeroExInstantRequiredBaseConfig {
 
 export interface ZeroExInstantOptionalBaseConfig {
     provider: Provider;
+    walletDisplayName: string;
     availableAssetDatas: string[];
     defaultAssetBuyAmount: number;
     defaultSelectedAssetData: string;
