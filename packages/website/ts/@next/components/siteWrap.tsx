@@ -23,7 +23,7 @@ interface MainProps {
 export interface ThemeInterface {
     [key: string]: {
         bgColor: string;
-        darkBgColor: string;
+        darkBgColor?: string;
         lightBgColor: string;
         textColor: string;
         paragraphColor: string;
@@ -61,6 +61,7 @@ const GLOBAL_THEMES: ThemeInterface = {
     },
     light: {
         bgColor: '#FFFFFF',
+        lightBgColor: '#003831',
         textColor: '#000000',
         paragraphColor: '#474747',
         linkColor: colors.brandDark,
@@ -77,6 +78,7 @@ const GLOBAL_THEMES: ThemeInterface = {
     },
     gray: {
         bgColor: '#e0e0e0',
+        lightBgColor: '#003831',
         textColor: '#000000',
         paragraphColor: '#777777',
         linkColor: colors.brandDark,
