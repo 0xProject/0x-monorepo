@@ -30,7 +30,7 @@ export const Slide: React.StatelessComponent<SlideProps> = (props: SlideProps) =
     return (
         <StyledSlide>
             <SlideHead>
-                <Icon name={icon} size="large" margin="auto" />
+                <Icon name={icon} size="large" />
             </SlideHead>
             <SlideContent>
                 <Heading asElement="h4" size="small" marginBottom="15px">{heading}</Heading>

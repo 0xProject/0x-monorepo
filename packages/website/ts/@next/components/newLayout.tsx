@@ -45,7 +45,7 @@ export interface ColumnProps {
     maxWidth?: string;
 }
 
-export const Section = (props: SectionProps) => {
+export const Section: React.FunctionComponent<SectionProps> = (props: SectionProps) => {
     return (
         <SectionBase {...props}>
             <Wrap {...props}>
