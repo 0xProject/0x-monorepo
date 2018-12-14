@@ -3,19 +3,14 @@ import * as React from 'react';
 import AnchorLink from 'react-anchor-link-smooth-scroll';
 import styled from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
 import {Hero} from 'ts/@next/components/hero';
 
 import { Banner } from 'ts/@next/components/banner';
 import { Button } from 'ts/@next/components/button';
 import { Icon } from 'ts/@next/components/icon';
 import { SiteWrap } from 'ts/@next/components/siteWrap';
-import { Slide, Slider } from 'ts/@next/components/slider/slider';
-import { Heading, Paragraph } from 'ts/@next/components/text';
 
-import {Definition} from 'ts/@next/components/definition';
-import {Column, Section, WrapSticky} from 'ts/@next/components/newLayout';
+import {Section, WrapSticky} from 'ts/@next/components/newLayout';
 
 const offersData = [
     {
@@ -153,31 +148,4 @@ const SectionWrap = styled.div<SectionProps>`
             width: 100%;
         }
     }
-`;
-
-const NavStickyWrap = styled(WrapSticky)`
-    padding-left: 60px;
-    z-index: 15;
-
-    @media (max-width: 768px) {
-        display: none;
-    }
-`;
-
-const ChapterLink = styled(AnchorLink)`
-    color: ${props => props.theme.textColor};
-    font-size: 22px;
-    margin-bottom: 25px;
-    display: block;
-    opacity: 0.8;
-
-    &:hover,
-    &:active {
-        opacity: 1;
-    }
-`;
-
-const ChapterItemWrap = styled.div`
-    max-width: 560px;
-    margin-top: 60px;
 `;
