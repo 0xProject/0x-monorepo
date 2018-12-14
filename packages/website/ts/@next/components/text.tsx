@@ -61,6 +61,10 @@ export const Heading: React.StatelessComponent<HeadingProps> = props => {
     );
 };
 
+Heading.defaultProps = {
+    size: 'default',
+};
+
 // No need to declare it twice as Styled then rewrap as a stateless comp
 // Note: this would be useful to be implemented the same way was "Heading"
 // and be more generic. e.g. <Text /> with a props asElement so we can use it
