@@ -14,7 +14,7 @@ interface Props {
     description: React.ReactNode | string;
     linkLabel?: string;
     linkUrl?: string;
-    children?: Node;
+    children?: React.ReactNode;
 }
 
 export const AboutPageLayout = (props: Props) => (
@@ -41,6 +41,7 @@ export const AboutPageLayout = (props: Props) => (
                         <AnimatedLink
                             to={props.linkUrl}
                             isWithArrow={true}
+                            isAccentColor={true}
                         >
                             {props.linkLabel}
                         </AnimatedLink>

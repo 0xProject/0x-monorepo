@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 interface LinkInterface {
     color?: string;
-    children?: Node | string;
+    children?: React.ReactNode | string;
     isNoArrow?: boolean;
     hasIcon?: boolean | string;
     isBlock?: boolean;

@@ -9,7 +9,7 @@ import { colors } from 'ts/style/colors';
 interface ButtonInterface {
     bgColor?: string;
     color?: string;
-    children?: Node | string;
+    children?: React.ReactNode | string;
     isTransparent?: boolean;
     isNoBorder?: boolean;
     isNoPadding?: boolean;
