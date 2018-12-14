@@ -28,7 +28,7 @@ import { NextAboutTeam } from 'ts/@next/pages/about/team';
 import { NextEcosystem } from 'ts/@next/pages/ecosystem';
 import { Next0xInstant } from 'ts/@next/pages/instant';
 import { NextLanding } from 'ts/@next/pages/landing';
-import { NextLaunchKit } from 'ts/@next/pages/launchKit';
+import { NextLaunchKit } from 'ts/@next/pages/launch_kit';
 import { NextWhy } from 'ts/@next/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
