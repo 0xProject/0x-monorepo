@@ -97,6 +97,11 @@ export class SiteWrap extends React.Component<Props, State> {
         isMobileNavOpen: false,
     };
 
+    public componentDidMount(): void {
+        document.documentElement.style.overflowY = 'auto';
+        window.scrollTo(0, 0);
+    }
+
     public toggleMobileNav = () => {
         this.setState({
             isMobileNavOpen: !this.state.isMobileNavOpen,
