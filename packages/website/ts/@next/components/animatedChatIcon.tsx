@@ -13,8 +13,8 @@ export const AnimatedChatIcon = () => (
         <Bubble>
             <path vector-effect="non-scaling-stroke" d="M113 75C113 85.3064 108.897 94.6546 102.235 101.5C98.4048 105.436 71 132.5 71 132.5V112.792C51.8933 110.793 37 94.6359 37 75C37 54.0132 54.0132 37 75 37C95.9868 37 113 54.0132 113 75Z" stroke="#00AE99" strokeWidth="3"/>
             <Dot delay={0} vector-effect="non-scaling-stroke" cx="75" cy="75" r="4" stroke="#00AE99" strokeWidth="3"/>
-            <Dot delay={5.6} vector-effect="non-scaling-stroke" cx="91" cy="75" r="4" stroke="#00AE99" strokeWidth="3"/>
-            <Dot delay={-5.8} vector-effect="non-scaling-stroke" cx="59" cy="75" r="4" stroke="#00AE99" strokeWidth="3"/>
+            <Dot delay={5.4} vector-effect="non-scaling-stroke" cx="91" cy="75" r="4" stroke="#00AE99" strokeWidth="3"/>
+            <Dot delay={-5.6} vector-effect="non-scaling-stroke" cx="59" cy="75" r="4" stroke="#00AE99" strokeWidth="3"/>
         </Bubble>
     </svg>
 );
@@ -27,11 +27,11 @@ const scale = keyframes`
 `;
 
 const fadeInOut = keyframes`
-    0%, 50%, 54%, 100% {
+    0%, 50%, 70%, 100% {
         transform: initial;
     }
 
-    25% {
+    60% {
         transform: translateY(-5px);
     }
 `;
