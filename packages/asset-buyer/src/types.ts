@@ -118,10 +118,10 @@ export enum AssetBuyerError {
 }
 
 export class InsufficientAssetLiquidityError extends Error {
-    public numAssetsAvailable: BigNumber;
-    constructor(numAssetsAvailable: BigNumber) {
+    public amountAvailableToFill: BigNumber;
+    constructor(amountAvailableToFill: BigNumber) {
         super(AssetBuyerError.InsufficientAssetLiquidity);
-        this.numAssetsAvailable = numAssetsAvailable;
+        this.amountAvailableToFill = amountAvailableToFill;
         // Setting prototype so instanceof works.  See https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
         Object.setPrototypeOf(this, InsufficientAssetLiquidityError.prototype);
     }

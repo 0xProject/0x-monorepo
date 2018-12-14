@@ -6,7 +6,7 @@ export const testHelpers = {
     expectInsufficientLiquidityError: (
         expect: Chai.ExpectStatic,
         functionWhichTriggersError: () => void,
-        expectedNumAvailable: BigNumber,
+        expectedAmountAvailableToFill: BigNumber,
     ): void => {
         let errorThrown = false;
         try {
@@ -14,7 +14,7 @@ export const testHelpers = {
         } catch (e) {
             errorThrown = true;
             expect(e).to.be.instanceOf(InsufficientAssetLiquidityError);
-            expect(e.numAssetsAvailable).to.be.bignumber.equal(expectedNumAvailable);
+            expect(e.amountAvailableToFill).to.be.bignumber.equal(expectedAmountAvailableToFill);
         }
 
         expect(errorThrown).to.be.true();

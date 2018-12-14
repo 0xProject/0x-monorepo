@@ -18,6 +18,7 @@ export {
     BuyQuoteExecutionOpts,
     BuyQuoteInfo,
     BuyQuoteRequestOpts,
+    InsufficientAssetLiquidityError,
     OrderProvider,
     OrderProviderRequest,
     OrderProviderResponse,

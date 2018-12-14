@@ -81,6 +81,34 @@ describe('buyQuoteCalculator', () => {
             };
             testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(400));
         });
+        it('should throw if not enough maker asset liquidity (multiple orders with 20% slippage)', () => {
+            // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
+            const errorFunction = () => {
+                buyQuoteCalculator.calculate(
+                    ordersAndFillableAmounts,
+                    smallFeeOrderAndFillableAmount,
+                    new BigNumber(500),
+                    0,
+                    0.2,
+                    false,
+                );
+            };
+            testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(333));
+        });
+        it('should throw if not enough maker asset liquidity (multiple orders with 5% slippage)', () => {
+            // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
+            const errorFunction = () => {
+                buyQuoteCalculator.calculate(
+                    ordersAndFillableAmounts,
+                    smallFeeOrderAndFillableAmount,
+                    new BigNumber(600),
+                    0,
+                    0.05,
+                    false,
+                );
+            };
+            testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(380));
+        });
         it('should throw if not enough maker asset liquidity (partially filled order)', () => {
             const firstOrderAndFillableAmount: OrdersAndFillableAmounts = {
                 orders: [firstOrder],
