@@ -116,7 +116,7 @@ const NavItem = (props: { link: NavItem; key: string }) => {
 
             {link.dropdownComponent &&
                 <DropdownWrap width={link.dropdownWidth}>
-                    <Subnav />
+                    {Subnav}
                 </DropdownWrap>
             }
         </LinkWrap>
